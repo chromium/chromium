@@ -1008,7 +1008,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateTabBasedTodos) {
 
   base::test::TestFuture<bool> future;
   handler_->GenerateTabBasedTodos(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(future.Get());
 }
 #endif
 

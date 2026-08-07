@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -24,6 +25,7 @@
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/page_content_annotations/content/mock_page_content_services.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -214,7 +216,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
   service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
                                  future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
@@ -233,7 +235,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
   service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
                                  future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EligibleTabFetchesAPC) {
@@ -244,10 +246,19 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EligibleTabFetchesAPC) {
       ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
   web_contents->WasHidden();
 
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+
+  page_content_annotations::ExtractedPageContentResult extracted_result(
+      std::move(apc), base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(
                   testing::Ref(web_contents->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::nullopt));
+      .WillOnce(RunOnceCallback<1>(std::move(extracted_result)));
 
   base::test::TestFuture<bool> future;
   service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
@@ -277,10 +288,26 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MultipleTabsFiltering) {
       ->SetLastActiveTime(base::Time::Now() - base::Hours(5));
   web_contents3->WasHidden();
 
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc1 =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  page_content_annotations::ExtractedPageContentResult extracted_result1(
+      std::move(apc1), base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc3 =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  page_content_annotations::ExtractedPageContentResult extracted_result3(
+      std::move(apc3), base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(
                   testing::Ref(web_contents1->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::nullopt));
+      .WillOnce(RunOnceCallback<1>(std::move(extracted_result1)));
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(
                   testing::Ref(web_contents2->GetPrimaryPage()), _, _))
@@ -288,7 +315,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MultipleTabsFiltering) {
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(
                   testing::Ref(web_contents3->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::nullopt));
+      .WillOnce(RunOnceCallback<1>(std::move(extracted_result3)));
 
   base::test::TestFuture<bool> future;
   service_.GenerateTabBasedTodos(
@@ -325,8 +352,54 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_ReentrancyBlocked) {
                                  future2.GetCallback());
   EXPECT_FALSE(future2.Get());
 
-  std::move(saved_callback).Run(std::nullopt);
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  page_content_annotations::ExtractedPageContentResult extracted_result(
+      std::move(apc), base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+  std::move(saved_callback).Run(std::move(extracted_result));
   EXPECT_TRUE(future1.Get());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateTabBasedTodos_NavigatedPageDuringExtraction) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
+  web_contents->WasHidden();
+
+  page_content_annotations::PageContentExtractionService::
+      GetExtractedPageContentAndEligibilityCallback saved_callback;
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
+      .WillOnce([&](content::Page&, auto cb, bool) {
+        saved_callback = std::move(cb);
+      });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+
+  // Navigate to a new page, making the old page non-primary.
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com/new_page"));
+
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  page_content_annotations::ExtractedPageContentResult extracted_result(
+      std::move(apc), base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+
+  // Old extraction callback returns with extracted page content for old page,
+  // but page is no longer primary.
+  std::move(saved_callback).Run(std::move(extracted_result));
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NullWebContents) {
@@ -335,7 +408,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NullWebContents) {
   service_.GenerateTabBasedTodos({base::WeakPtr<content::WebContents>()},
                                  future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ContextHubServiceTest, SaveTab) {

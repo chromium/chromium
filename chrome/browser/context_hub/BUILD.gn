@@ -48,6 +48,7 @@ source_set("context_hub") {
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
     "//components/saved_tab_groups/public",
+    "//components/sessions",
     "//sql",
   ]
 }

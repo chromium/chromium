@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
@@ -39,6 +40,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -77,12 +79,32 @@ using TabContextBarrierCallback = base::RepeatingCallback<void(
 
 void OnPageContentExtracted(
     TabContextBarrierCallback barrier_callback,
-    base::WeakPtr<content::WebContents> /*web_contents*/,
+    base::WeakPtr<content::WebContents> web_contents,
+    base::WeakPtr<content::Page> page,
     std::optional<page_content_annotations::ExtractedPageContentResult>
-    /*extracted_result*/) {
-  // TODO(crbug.com/543605762): Extract page content and add to barrier
-  // callback to queue up for MES.
-  barrier_callback.Run(std::make_pair(TabData(), std::nullopt));
+        extracted_result) {
+  // Protect against navigations during the async extraction.
+  if (!web_contents || !page || !page->IsPrimary()) {
+    barrier_callback.Run(std::make_pair(TabData(), std::nullopt));
+    return;
+  }
+
+  // Populate the tab data to be used in the barrier callback.
+  TabData tab;
+  SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents.get());
+  tab.id = session_id.is_valid() ? session_id.id() : -1;
+  tab.title = base::UTF16ToUTF8(web_contents->GetTitle());
+  tab.url = web_contents->GetLastCommittedURL();
+  tab.last_active_time = web_contents->GetLastActiveTime();
+
+  std::optional<optimization_guide::proto::PageContext> page_context;
+  if (extracted_result && extracted_result->page_content) {
+    page_context.emplace();
+    *page_context->mutable_annotated_page_content() =
+        extracted_result->page_content->data;
+  }
+  barrier_callback.Run(std::make_pair(std::move(tab), std::move(page_context)));
 }
 
 }  // namespace
@@ -190,7 +212,9 @@ void ContextHubService::GenerateTabBasedTodos(
 
   if (eligible_tabs.empty()) {
     if (callback) {
-      std::move(callback).Run(false);
+      // Return early if there are no eligible tabs to process. Return true to
+      // indicate that the operation was successful, just with no results.
+      std::move(callback).Run(true);
     }
     return;
   }
@@ -215,11 +239,12 @@ void ContextHubService::GenerateTabBasedTodos(
 
     // Get the page content from the primary page.
     content::Page& primary_page = tab->GetPrimaryPage();
+    base::WeakPtr<content::Page> page_weak_ptr = primary_page.GetWeakPtr();
     page_content_extraction_service_
         ->GetExtractedPageContentAndEligibilityForPageAsync(
             primary_page,
             base::BindOnce(&OnPageContentExtracted, barrier_callback,
-                           std::move(tab)),
+                           std::move(tab), std::move(page_weak_ptr)),
             /*trigger_if_not_cached=*/true);
   }
 }
