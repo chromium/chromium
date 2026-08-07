@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "wallet_reminder_notice_coordinator.h",
+    "wallet_reminder_notice_coordinator.mm",
     "wallet_reminder_notice_mediator.h",
     "wallet_reminder_notice_mediator.mm",
   ]
@@ -12,6 +14,11 @@ source_set("coordinator") {
     "//components/strings",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/wallet_reminder_notice/ui:wallet_reminder_notice",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//net",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -19,7 +26,10 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "wallet_reminder_notice_mediator_unittest.mm" ]
+  sources = [
+    "wallet_reminder_notice_coordinator_unittest.mm",
+    "wallet_reminder_notice_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
@@ -28,7 +38,14 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/wallet_reminder_notice/ui:wallet_reminder_notice",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/web/public/test",
+    "//net",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
