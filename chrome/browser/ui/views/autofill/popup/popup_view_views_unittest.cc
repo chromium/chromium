@@ -2322,6 +2322,215 @@ TEST_F(PopupViewViewsTest, SubPopupClosesWhenMouseExitsSubPopup) {
   EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
+// Tests that hovering the parent chevron prevents the sub-popup from closing
+// when mouse exited in children is fired.
+TEST_F(PopupViewViewsTest, SubPopupRemainsOpenWhileHoveringParentChevron) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kPasswordEntry,
+          {Suggestion(u"Child #1",
+                      SuggestionType::kPasswordFieldByFieldFilling)}),
+  });
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(),
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+
+  // Simulate mouse moving on the chevron of the parent view.
+  PopupRowView* row = test_api(view()).rows().empty()
+                          ? nullptr
+                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  ASSERT_TRUE(row);
+  ASSERT_TRUE(row->GetExpandChildSuggestionsView());
+
+  generator().MoveMouseTo(
+      row->GetExpandChildSuggestionsView()->GetBoundsInScreen().CenterPoint());
+
+  // Sub-popup notifies parent of mouse exit in children (e.g. from sub-popup
+  // destruction/switch).
+  sub_view->OnMouseExited(
+      ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0));
+
+  // Fast forward past the 1s hide delay.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The sub-popup should remain open because the chevron is still hovered.
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+}
+
+// Tests that moving the hover from one chevron to another opens the new
+// sub-popup and keeps it open while hovered on the new chevron, without being
+// dismissed by a timer from the previous sub-popup.
+TEST_F(PopupViewViewsTest,
+       SubPopupRemainsOpenWhileTransitioningBetweenChevrons) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren(
+          SuggestionType::kPasswordEntry,
+          {Suggestion(u"Child #1",
+                      SuggestionType::kPasswordFieldByFieldFilling)},
+          u"Parent 1"),
+      CreateSuggestionWithChildren(
+          SuggestionType::kPasswordEntry,
+          {Suggestion(u"Child #2",
+                      SuggestionType::kPasswordFieldByFieldFilling)},
+          u"Parent 2"),
+  });
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  // Open sub-popup for row 0.
+  CellIndex cell_0{0, CellType::kControl};
+  view().SetSelectedCell(cell_0, PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_0.first);
+
+  auto [sub_controller_0, sub_view_0] = OpenSubView(
+      view(),
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+
+  // Move mouse to row 1's chevron.
+  CellIndex cell_1{1, CellType::kControl};
+  view().SetSelectedCell(cell_1, PopupCellSelectionSource::kMouse);
+
+  PopupRowView* row_1 =
+      test_api(view()).rows().size() > 1
+          ? std::get<PopupRowView*>(test_api(view()).rows()[1])
+          : nullptr;
+  ASSERT_TRUE(row_1);
+  ASSERT_TRUE(row_1->GetExpandChildSuggestionsView());
+  generator().MoveMouseTo(row_1->GetExpandChildSuggestionsView()
+                              ->GetBoundsInScreen()
+                              .CenterPoint());
+
+  // Wait for row 1 sub-popup delay to open row 1's sub-popup.
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_1.first);
+
+  // Fast forward past the 1s hide delay.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Row 1's sub-popup must remain open.
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), cell_1.first);
+}
+
+// Tests that for non-acceptable suggestions with children (e.g. manual
+// fallback), hovering the content cell keeps the sub-popup open.
+TEST_F(PopupViewViewsTest,
+       SubPopupRemainsOpenWhileHoveringNonAcceptableContent) {
+  Suggestion non_acceptable_suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kPasswordEntry,
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+  non_acceptable_suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+
+  controller().set_suggestions({non_acceptable_suggestion});
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  CellIndex cell{0, CellType::kContent};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(),
+      {Suggestion(u"Child #1", SuggestionType::kAddressFieldByFieldFilling)});
+
+  PopupRowView* row = test_api(view()).rows().empty()
+                          ? nullptr
+                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  ASSERT_TRUE(row);
+
+  generator().MoveMouseTo(
+      row->GetContentView().GetBoundsInScreen().CenterPoint());
+
+  sub_view->OnMouseExited(
+      ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0));
+
+  // Fast forward past the 1s hide delay.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The sub-popup should remain open because non-acceptable content is hovered.
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+}
+
+// Tests that for acceptable suggestions with children, hovering the content
+// area (which fills the field, not the chevron) allows the sub-popup to close
+// after delay.
+TEST_F(PopupViewViewsTest, SubPopupClosesWhenHoveringAcceptableContent) {
+  Suggestion acceptable_suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kPasswordEntry,
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+  acceptable_suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableAndAcceptable;
+
+  controller().set_suggestions({acceptable_suggestion});
+
+  CreateAndShowView(
+      /*widget_params=*/std::nullopt,
+      /*search_bar_config=*/std::nullopt,
+      /*tabbed_pane_config=*/std::nullopt,
+      /*sub_popup_config=*/
+      AutofillPopupView::SubPopupConfig{.no_selection_hide_delay =
+                                            base::Seconds(1)});
+
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), cell.first);
+
+  auto [sub_controller, sub_view] = OpenSubView(
+      view(),
+      {Suggestion(u"Child #1", SuggestionType::kPasswordFieldByFieldFilling)});
+
+  PopupRowView* row = test_api(view()).rows().empty()
+                          ? nullptr
+                          : std::get<PopupRowView*>(test_api(view()).rows()[0]);
+  ASSERT_TRUE(row);
+
+  // Mouse moves onto content view (not the control chevron).
+  generator().MoveMouseTo(
+      row->GetContentView().GetBoundsInScreen().CenterPoint());
+
+  sub_view->OnMouseExited(
+      ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0));
+
+  // Fast forward past the 1s hide delay.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The sub-popup should be closed because the content of an acceptable
+  // suggestion was hovered.
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   controller().set_suggestions({
       CreateSuggestionWithChildren(

@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_notice_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -1731,8 +1732,27 @@ void PopupViewViews::OnMouseEnteredInChildren() {
 }
 
 void PopupViewViews::OnMouseExitedInChildren() {
-  if (GetSelectedCell() && !row_with_open_sub_popup_) {
-    return;
+  const std::optional<size_t> row_to_check = row_with_selected_cell_.has_value()
+                                                 ? row_with_selected_cell_
+                                                 : row_with_open_sub_popup_;
+  if (row_to_check && controller_ &&
+      *row_to_check < static_cast<size_t>(controller_->GetLineCount())) {
+    if (PopupRowView* row = MaybeGetPopupRowViewAt(*row_to_check)) {
+      // If we are hovering the control cell, do not schedule close.
+      views::View* control_view = row->GetExpandChildSuggestionsView();
+      if (control_view && control_view->IsMouseHovered()) {
+        return;
+      }
+
+      // Similarly, do not close the sub-popup if we are hovering the content
+      // cell and the content cell acts in the same way as the chevron.
+      const Suggestion& suggestion =
+          controller_->GetSuggestionAt(*row_to_check);
+      if (ContentCellShouldOpenSubPopupSuggestion(suggestion) &&
+          row->GetContentView().IsMouseHovered()) {
+        return;
+      }
+    }
   }
 
   if (parent_ && parent_->get()) {
@@ -1844,6 +1864,9 @@ void PopupViewViews::SetRowWithOpenSubPopup(
 
   // Open a sub-popup on the new cell if provided.
   if (row_index) {
+    // Any open sub-popup change invalidates a pending close timer for an
+    // earlier sub-popup.
+    StopSubPopupClosing();
     PopupRowView* row = MaybeGetPopupRowViewAt(*row_index);
     if (row && row->IsSelectable()) {
       const Suggestion& suggestion = controller_->GetSuggestionAt(*row_index);
