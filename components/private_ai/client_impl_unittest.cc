@@ -18,6 +18,7 @@
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -254,6 +255,26 @@ TEST_F(ClientImplTest, AsyncDisconnect) {
 
   // Running pending tasks should destroy the connection.
   EXPECT_TRUE(destroyed_future.Wait());
+}
+
+TEST(ClientTest, FormatUrl) {
+  std::string api_key;
+
+  GURL url1 = Client::FormatUrl("example.com", "test-key");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url1, "key", &api_key));
+  EXPECT_EQ(api_key, "test-key");
+
+  GURL url2 = Client::FormatUrl("wss://example.com", "test-key");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url2, "key", &api_key));
+  EXPECT_EQ(api_key, "test-key");
+
+  GURL url3 = Client::FormatUrl("example.com?foo=bar", "test-key");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url3, "key", &api_key));
+  EXPECT_EQ(api_key, "test-key");
+
+  GURL url4 = Client::FormatUrl("wss://example.com?foo=bar", "test-key");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url4, "key", &api_key));
+  EXPECT_EQ(api_key, "test-key");
 }
 
 }  // namespace private_ai
