@@ -217,6 +217,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // shared tabs.
   NSArray<GeminiPageContext*>* GetSharedTabs() const;
 
+  // Returns whether there is at least one shared (non-active) tab attached.
+  bool HasSharedTabs() const;
+
   // Generates partial page contexts for `tabs_to_fetch` and triggers async
   // full page context retrieval for them. Page contexts are inserted directly
   // into `attached_tabs_`.
@@ -237,6 +240,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Helper to get the GeminiTabHelper for the active web state if it matches
   // the provided web state.
   GeminiTabHelper* GetActiveTabHelper(web::WebState* web_state) const;
+
+  // Returns the ID of the active web state, or an invalid ID if none exists.
+  web::WebStateID GetActiveWebStateID() const;
 
   // Callback for scroll events.
   void OnScrollEvent();
