@@ -762,6 +762,7 @@ void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
       !pixel_restore_bounds.IsEmpty()) {
     WINDOWPLACEMENT placement = {0};
     placement.length = sizeof(WINDOWPLACEMENT);
+    ::GetWindowPlacement(hwnd(), &placement);
     placement.showCmd = SW_SHOWMAXIMIZED;
     placement.rcNormalPosition = pixel_restore_bounds.ToRECT();
     ::SetWindowPlacement(hwnd(), &placement);
