@@ -64,12 +64,11 @@ class DictationOverlayContentsView : public views::View {
     SetLayoutManager(std::move(layout));
 
     // TODO(b/525859277): Use non-placeholder values.
-    auto mic_button = views::ImageButton::CreateIconButton(
-        toggle_active_stream_callback_, vector_icons::kMicIcon, u"Dictation",
-        views::ImageButton::MaterialIconStyle::kSmall);
-    mic_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-    mic_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    auto mic_button = views::CreateVectorImageButtonWithNativeTheme(
+        toggle_active_stream_callback_, vector_icons::kMicIcon, 20,
+        ui::kColorSysOnSurface, ui::kColorIconDisabled, ui::kColorSysOnSurface);
     mic_button->SetBorder(nullptr);
+    mic_button->SetAccessibleName(u"Dictation");
     mic_button->SetPreferredSize(gfx::Size(20, 20));
     mic_button->SetProperty(
         views::kElementIdentifierKey,
@@ -86,7 +85,7 @@ class DictationOverlayContentsView : public views::View {
 
     auto finalizing_image = std::make_unique<views::ImageView>();
     finalizing_image->SetImage(ui::ImageModel::FromVectorIcon(
-        views::kMoreHorizIcon, ui::kColorIcon, 20));
+        views::kMoreHorizIcon, ui::kColorSysOnSurface, 20));
     finalizing_image->SetPreferredSize(gfx::Size(20, 20));
     finalizing_image->SetProperty(
         views::kElementIdentifierKey,
@@ -158,6 +157,7 @@ DictationOverlayView::DictationOverlayView(
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true) {
   set_parent_window(parent_window);
+  SetBackgroundColor(ui::kColorBubbleBackground);
   SetContentsView(std::make_unique<DictationOverlayContentsView>(
       std::move(toggle_active_stream_callback)));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
