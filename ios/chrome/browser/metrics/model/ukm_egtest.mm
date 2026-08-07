@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/metrics/metrics_features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -12,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::GoogleServicesSettingsButton;
@@ -363,5 +366,125 @@ using chrome_test_util::SettingsDoneButton;
              @"Failed to assert that UKM was enabled.");
 }
 // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:HistoryDeleteCheck)
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testConsentMigrationSignedIn)] ||
+      [self isRunningTest:@selector(testConsentMigrationRollback)]) {
+    config.features_disabled.push_back(
+        metrics::features::kRestructureMetricsConsentSettings);
+  }
+  return config;
+}
+
+- (void)testConsentMigrationSignedIn {
+  // Since the app launched with the feature disabled (due to
+  // appConfigurationForTestCase), verify migration is not done yet.
+  GREYAssert(![MetricsAppInterface isAdvancedReportingProfileMigrationDone],
+             @"Migration should not be done when feature is disabled.");
+
+  // Make sure any pending prefs changes are written to disk before relaunch.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
+  // Relaunch the app with the feature enabled and metrics reporting force
+  // enabled.
+  AppLaunchConfiguration config_enabled;
+  config_enabled.features_enabled.push_back(
+      metrics::features::kRestructureMetricsConsentSettings);
+  config_enabled.additional_args.push_back("--force-enable-metrics-reporting");
+
+  // Pass the fake identity to survive relaunch.
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  std::string add_identities_arg =
+      "-add-fake-identities=" +
+      [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]];
+  config_enabled.additional_args.push_back(add_identities_arg);
+
+  config_enabled.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:config_enabled];
+
+  // Re-apply the mock overrides in the newly launched app process.
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  GREYAssert(![MetricsAppInterface setMetricsAndCrashReportingForTesting:YES],
+             @"Unpaired set/reset of user consent.");
+
+  // Verify that migration is now done, and advanced reporting is enabled (since
+  // MSBB was enabled in setUp).
+  GREYAssert([MetricsAppInterface isAdvancedReportingProfileMigrationDone],
+             @"Migration should be done after relaunch.");
+  GREYAssert([MetricsAppInterface isAdvancedReportingEnabled],
+             @"Advanced reporting should be enabled.");
+
+  // Verify that the UKM recorder is indeed enabled.
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"Failed to assert that UKM was enabled.");
+}
+
+- (void)testConsentMigrationRollback {
+  // Since the app launched with the feature disabled, verify migration is not
+  // done yet.
+  GREYAssert(![MetricsAppInterface isAdvancedReportingProfileMigrationDone],
+             @"Migration should not be done when feature is disabled.");
+
+  // Make sure any pending prefs changes are written to disk before relaunch.
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
+  // Relaunch the app with the feature enabled.
+  AppLaunchConfiguration config_enabled;
+  config_enabled.features_enabled.push_back(
+      metrics::features::kRestructureMetricsConsentSettings);
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  std::string add_identities_arg =
+      "-add-fake-identities=" +
+      [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]];
+  config_enabled.additional_args.push_back(add_identities_arg);
+  config_enabled.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:config_enabled];
+
+  // Re-apply the mock overrides.
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  GREYAssert(![MetricsAppInterface setMetricsAndCrashReportingForTesting:YES],
+             @"Unpaired set/reset of user consent.");
+
+  // Verify that migration is now done, and advanced reporting is enabled (since
+  // MSBB was enabled in setUp).
+  GREYAssert([MetricsAppInterface isAdvancedReportingProfileMigrationDone],
+             @"Migration should be done after relaunch.");
+  GREYAssert([MetricsAppInterface isAdvancedReportingEnabled],
+             @"Advanced reporting should be enabled.");
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"UKM should be enabled.");
+
+  // Manually disable advanced reporting preference.
+  [MetricsAppInterface setAdvancedReportingEnabledPref:NO];
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
+             @"UKM should be disabled when advanced reporting is disabled.");
+
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
+  // Relaunch the app with the feature flag DISABLED (rollback).
+  AppLaunchConfiguration config_disabled;
+  config_disabled.features_disabled.push_back(
+      metrics::features::kRestructureMetricsConsentSettings);
+  config_disabled.additional_args.push_back(add_identities_arg);
+  config_disabled.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:config_disabled];
+
+  // Re-apply the mock overrides.
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  GREYAssert(![MetricsAppInterface setMetricsAndCrashReportingForTesting:YES],
+             @"Unpaired set/reset of user consent.");
+
+  // Since the feature flag is DISABLED, the UKM recorder should ignore
+  // the advanced reporting pref and remain ENABLED (since MSBB is enabled).
+  GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
+             @"UKM should still be enabled under old logic.");
+}
 
 @end

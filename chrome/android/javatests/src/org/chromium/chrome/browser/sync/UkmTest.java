@@ -15,10 +15,16 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.PageTransition;
 
@@ -105,6 +111,99 @@ public class UkmTest {
     }
 
     // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:ConsentAddedButNoSyncCheck)
+
+    @Test
+    @SmallTest
+    @EnableFeatures("RestructureMetricsConsentSettings")
+    public void testConsentMigrationOnStartup_SignedOut() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    boolean migrationDone =
+                            UserPrefs.get(profile)
+                                    .getBoolean(Pref.ADVANCED_REPORTING_PROFILE_MIGRATION_DONE);
+                    Assert.assertTrue("Migration done:", migrationDone);
+
+                    // By default in fresh profile, MSBB is disabled.
+                    // So kAdvancedReportingEnabled should be migrated to false.
+                    boolean advancedReportingEnabled =
+                            UserPrefs.get(profile).getBoolean(Pref.ADVANCED_REPORTING_ENABLED);
+                    Assert.assertFalse("Advanced reporting enabled:", advancedReportingEnabled);
+                });
+
+        Tab normalTab = mSyncTestRule.getActivityTab();
+        enableUkmUi(normalTab);
+        Assert.assertFalse("UKM Enabled:", isUkmEnabled(normalTab));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures("RestructureMetricsConsentSettings")
+    public void testConsentMigrationRollback() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(true));
+
+        // Sign in and set up sync and MSBB.
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
+        Tab normalTab = mSyncTestRule.getActivityTab();
+        enableUkmUi(normalTab);
+        Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
+
+        // Simulate a rollback scenario: the migration had run in a previous session
+        // (when the flag was enabled) and wrote kAdvancedReportingEnabled to false.
+        // Now, we are starting a session with the flag disabled (rolled back).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    UserPrefs.get(profile)
+                            .setBoolean(Pref.ADVANCED_REPORTING_PROFILE_MIGRATION_DONE, true);
+                    UserPrefs.get(profile).setBoolean(Pref.ADVANCED_REPORTING_ENABLED, false);
+                });
+
+        // Since the feature flag is DISABLED, the UKM recorder should ignore
+        // advanced_reporting_enabled (which is false) and remain ENABLED (reverting to MSBB logic).
+        Assert.assertTrue("UKM Enabled after rollback:", isUkmEnabled(normalTab));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures("RestructureMetricsConsentSettings")
+    public void testConsentMigrationRollback_MsbbDisabled() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(true));
+
+        // Sign in and set up sync.
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
+        Tab normalTab = mSyncTestRule.getActivityTab();
+        enableUkmUi(normalTab);
+        Assert.assertTrue("UKM Enabled:", isUkmEnabled(normalTab));
+
+        // Disable MSBB.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    UserPrefs.get(profile)
+                            .setBoolean(Pref.URL_KEYED_ANONYMIZED_DATA_COLLECTION_ENABLED, false);
+                });
+        Assert.assertFalse("UKM Disabled after MSBB disabled:", isUkmEnabled(normalTab));
+
+        // Simulate a rollback scenario: the migration had run in a previous session
+        // (when the flag was enabled) and wrote kAdvancedReportingEnabled to true.
+        // Now, we are starting a session with the flag disabled (rolled back).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
+                    UserPrefs.get(profile)
+                            .setBoolean(Pref.ADVANCED_REPORTING_PROFILE_MIGRATION_DONE, true);
+                    UserPrefs.get(profile).setBoolean(Pref.ADVANCED_REPORTING_ENABLED, true);
+                });
+
+        // Since the feature flag is DISABLED, the UKM recorder should ignore
+        // advanced_reporting_enabled (which is true) and remain DISABLED (reverting to MSBB logic).
+        Assert.assertFalse(
+                "UKM Disabled after rollback even if advanced reporting is true:",
+                isUkmEnabled(normalTab));
+    }
 
     @Test
     @SmallTest

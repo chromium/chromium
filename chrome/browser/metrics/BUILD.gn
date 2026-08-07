@@ -768,6 +768,7 @@ if (!is_android) {
 
     sources = [
       "dwa_browsertest.cc",
+      "metrics_consent_migration_browsertest.cc",
       "metrics_reporting_state_browsertest.cc",
       "metrics_service_browsertest.cc",
       "metrics_service_user_demographics_browsertest.cc",

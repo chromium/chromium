@@ -171,6 +171,15 @@ constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
 + (NSError*)expectCount:(int)expectedCount
           forUserAction:(NSString*)userAction [[nodiscard]];
 
+// Returns YES if advanced reporting migration is completed.
++ (BOOL)isAdvancedReportingProfileMigrationDone;
+
+// Returns YES if advanced reporting is enabled for the profile.
++ (BOOL)isAdvancedReportingEnabled;
+
+// Sets the advanced reporting enabled preference for the profile.
++ (void)setAdvancedReportingEnabledPref:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_METRICS_APP_INTERFACE_H_

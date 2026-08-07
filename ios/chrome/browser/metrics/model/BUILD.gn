@@ -451,6 +451,7 @@ source_set("eg2_tests") {
     ":tab_usage_recorder_metrics",
     "//base/test:test_support",
     "//components/country_codes",
+    "//components/metrics",
     "//components/metrics/demographics",
     "//components/metrics/private_metrics",
     "//components/metrics/private_metrics:private_metrics_features",

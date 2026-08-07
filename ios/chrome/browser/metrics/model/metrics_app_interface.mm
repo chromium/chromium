@@ -14,17 +14,22 @@
 #import "components/metrics/dwa/dwa_entry_builder.h"
 #import "components/metrics/dwa/dwa_recorder.h"
 #import "components/metrics/dwa/dwa_service.h"
+#import "components/metrics/metrics_profile_pref_names.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics/private_metrics/private_metrics_reporting_service.h"
 #import "components/metrics/private_metrics/puma_histogram_functions.h"
 #import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_country_id.h"
 #import "components/ukm/ukm_service.h"
 #import "components/ukm/ukm_test_helper.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -440,6 +445,31 @@ metrics::MetricsService* GetMetricsService() {
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
   return nil;
+}
+
++ (PrefService*)profilePrefs {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return profile ? profile->GetPrefs() : nullptr;
+}
+
++ (BOOL)isAdvancedReportingProfileMigrationDone {
+  PrefService* prefs = [self profilePrefs];
+  return prefs ? prefs->GetBoolean(
+                     metrics::prefs::kAdvancedReportingProfileMigrationDone)
+               : NO;
+}
+
++ (BOOL)isAdvancedReportingEnabled {
+  PrefService* prefs = [self profilePrefs];
+  return prefs ? prefs->GetBoolean(metrics::prefs::kAdvancedReportingEnabled)
+               : NO;
+}
+
++ (void)setAdvancedReportingEnabledPref:(BOOL)enabled {
+  PrefService* prefs = [self profilePrefs];
+  if (prefs) {
+    prefs->SetBoolean(metrics::prefs::kAdvancedReportingEnabled, enabled);
+  }
 }
 
 @end
