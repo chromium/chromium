@@ -171,7 +171,6 @@ using ::testing::UnorderedElementsAre;
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
@@ -762,20 +761,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
 
   histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
-  ExecuteJsTest();
-
-  RunTestSequence(
-      InstrumentTab(kSettingsTab),
-      WaitForWebContentsReady(
-          kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)));
-
-  // Confirm that this no-response request does not get latency metrics
-  // recorded.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Api.RequestHostLatency.OpenGlicSettingsPage", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,

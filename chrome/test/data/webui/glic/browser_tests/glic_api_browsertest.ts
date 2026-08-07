@@ -81,14 +81,6 @@ class ApiTests extends ApiTestFixtureBase {
         panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
   }
 
-  async testOpenGlicSettingsPage() {
-    assertDefined(this.host.openGlicSettingsPage);
-    this.host.openGlicSettingsPage();
-    // There is a problem with InProcessBrowserTest::QuitBrowsers(). Opening a
-    // browser at the same time as exiting a test results in QuitBrowsers()
-    // never exiting. This sleep avoids this problem.
-    await sleep(500);
-  }
 
   async testOpenPasswordManagerSettingsPage() {
     assertDefined(this.host.openPasswordManagerSettingsPage);

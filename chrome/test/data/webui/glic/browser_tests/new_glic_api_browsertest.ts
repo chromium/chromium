@@ -94,6 +94,11 @@ class ApiTests extends ApiTestFixtureBase {
     link.click();
   }
 
+  async testOpenGlicSettingsPage() {
+    assertDefined(this.host.openGlicSettingsPage);
+    this.host.openGlicSettingsPage();
+  }
+
   async testUnresponsive() {
     // Don't respond to responsiveness checks.
     this.client.checkResponsive = () => {

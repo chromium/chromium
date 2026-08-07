@@ -2245,6 +2245,21 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPopupOpens) {
   ASSERT_OK(RunUntilEqual([&]() { return GetPopupCount(); }, 1));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testOpenGlicSettingsPage) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(
+      RunUntilEqual([&]() { return GetTabListInterface()->GetTabCount(); }, 2));
+  EXPECT_EQ(
+      GetTabListInterface()->GetActiveTab()->GetContents()->GetVisibleURL(),
+      chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage));
+  histogram_tester.ExpectTotalCount(
+      "Glic.Api.RequestHostLatency.OpenGlicSettingsPage", 0);
+}
+#endif
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvoke) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient());
