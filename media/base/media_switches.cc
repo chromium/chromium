@@ -1224,6 +1224,12 @@ BASE_FEATURE(kPlatformHEVCDecoderSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPlatformHEVCEncoderSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_APPLE)
+// Enables HEVC Main10 (10-bit) hardware accelerated encoding on macOS.
+BASE_FEATURE(kPlatformHEVCMain10EncoderSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_APPLE)
+
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)

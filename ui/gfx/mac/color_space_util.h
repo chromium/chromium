@@ -29,7 +29,8 @@ COLOR_SPACE_EXPORT gfx::ColorSpace ColorSpaceFromCVImageBufferKeys(
     CFTypeRef primaries,
     CFTypeRef transfer,
     CFTypeRef gamma,
-    CFTypeRef matrix);
+    CFTypeRef matrix,
+    CFTypeRef range);
 
 }  // namespace gfx
 

@@ -23,6 +23,7 @@
 #include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -99,7 +100,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Reset the encoder's compression session by destroying the existing one and
   // creating a new one. The new session is configured using
   // ConfigureCompressionSession().
-  bool ResetCompressionSession();
+  bool ResetCompressionSession(gfx::ColorSpace::RangeID source_range);
 
   // Configure the current compression session using current encoder settings.
   bool ConfigureCompressionSession(VideoCodec codec);
@@ -193,6 +194,9 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   // Color space of the first frame sent to Encode().
   std::optional<gfx::ColorSpace> encoder_color_space_;
+  // HDR metadata from the first frame, used for VT session MDCV/CLLI
+  // properties.
+  std::optional<gfx::HDRMetadata> encoder_hdr_metadata_;
   bool can_set_encoder_color_space_ = true;
 
   bool encoder_produces_svc_spec_compliant_bitstream_ = false;

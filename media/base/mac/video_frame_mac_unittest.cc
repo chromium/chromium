@@ -92,6 +92,38 @@ TEST(VideoFrameMac, CheckFormats) {
   }
 }
 
+TEST(VideoFrameMac, CheckP010Format) {
+  gfx::Size size(kWidth, kHeight);
+  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_P010LE, size,
+                                       gfx::Rect(size), size, kTimestamp);
+  ASSERT_TRUE(frame.get());
+
+  auto pb = WrapVideoFrameInCVPixelBuffer(frame);
+  ASSERT_TRUE(pb.get());
+  EXPECT_EQ(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
+            CVPixelBufferGetPixelFormatType(pb.get()));
+  EXPECT_EQ(2u, CVPixelBufferGetPlaneCount(pb.get()));
+  EXPECT_EQ(static_cast<size_t>(kWidth),
+            CVPixelBufferGetWidthOfPlane(pb.get(), 0));
+  EXPECT_EQ(static_cast<size_t>(kWidth / 2),
+            CVPixelBufferGetWidthOfPlane(pb.get(), 1));
+}
+
+TEST(VideoFrameMac, CheckP010FullRangeFormat) {
+  gfx::Size size(kWidth, kHeight);
+  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_P010LE, size,
+                                       gfx::Rect(size), size, kTimestamp);
+  ASSERT_TRUE(frame.get());
+  frame->set_color_space(gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
+      gfx::ColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::FULL));
+
+  auto pb = WrapVideoFrameInCVPixelBuffer(frame);
+  ASSERT_TRUE(pb.get());
+  EXPECT_EQ(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+            CVPixelBufferGetPixelFormatType(pb.get()));
+}
+
 TEST(VideoFrameMac, CheckLifetime) {
   gfx::Size size(kWidth, kHeight);
   auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size, gfx::Rect(size),

@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_H264_BUILDER_H_
 #define MEDIA_GPU_H264_BUILDER_H_
 
+#include <optional>
+
 #include "media/gpu/media_gpu_export.h"
 #include "media/parsers/h264_parser.h"
 
@@ -21,6 +23,16 @@ MEDIA_GPU_EXPORT void BuildPackedH264PPS(
     H26xAnnexBBitstreamBuilder& bitstream_builder,
     const H264SPS& sps,
     const H264PPS& pps);
+
+// Build an SEI NALU carrying the HDR static metadata messages, i.e. the
+// mastering display colour volume (payload type 137) and content light level
+// information (payload type 144). Only the messages that are present are
+// emitted; if both are absent, nothing is appended.
+MEDIA_GPU_EXPORT void BuildPackedH264SEI(
+    H26xAnnexBBitstreamBuilder& bitstream_builder,
+    const std::optional<H26xSEIMasteringDisplayInfo>& mastering_display,
+    const std::optional<H26xSEIContentLightLevelInfo>& content_light_level);
+
 // Returns the H264 Prefix NALU bitstream for temporal layer encoding with
 // the arguments.
 MEDIA_GPU_EXPORT std::vector<uint8_t> BuildPrefixNALU(

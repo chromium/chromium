@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/gpu/h264_builder.h"
 
 #include "base/bits.h"
@@ -10,6 +9,33 @@
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
 
 namespace media {
+
+namespace {
+
+// SEI payload types (T-REC H.264 Table D.1.29, D.1.31).
+constexpr int kSEIPayloadTypeMasteringDisplayColourVolume = 137;
+constexpr int kSEIPayloadTypeContentLightLevelInfo = 144;
+
+// SEI payload sizes in bytes.
+constexpr int kSEIPayloadSizeMasteringDisplayColourVolume = 24;
+constexpr int kSEIPayloadSizeContentLightLevelInfo = 4;
+
+// D.1.1 / 7.3.2.3.1 sei_message() header: writes the payload type and payload
+// size using the 0xFF continuation form (last byte < 0xFF).
+void BuildPackedH264SEIMessageHeader(H26xAnnexBBitstreamBuilder& builder,
+                                     int payload_type,
+                                     int payload_size) {
+  for (; payload_type >= 0xFF; payload_type -= 0xFF) {
+    builder.AppendBits(8, 0xFF);
+  }
+  builder.AppendBits(8, payload_type);
+  for (; payload_size >= 0xFF; payload_size -= 0xFF) {
+    builder.AppendBits(8, 0xFF);
+  }
+  builder.AppendBits(8, payload_size);
+}
+
+}  // namespace
 
 void BuildPackedH264SPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
                         const H264SPS& sps) {
@@ -166,6 +192,43 @@ void BuildPackedH264PPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
     // Ignoring the scaling matrix branch as we don't produce it.
     CHECK(!pps.pic_scaling_matrix_present_flag);
     bitstream_builder.AppendSE(pps.second_chroma_qp_index_offset);
+  }
+
+  bitstream_builder.FinishNALU();
+}
+
+void BuildPackedH264SEI(
+    H26xAnnexBBitstreamBuilder& bitstream_builder,
+    const std::optional<H26xSEIMasteringDisplayInfo>& mastering_display,
+    const std::optional<H26xSEIContentLightLevelInfo>& content_light_level) {
+  if (!mastering_display.has_value() && !content_light_level.has_value()) {
+    return;
+  }
+
+  bitstream_builder.BeginNALU(H264NALU::kSEIMessage, /*nal_ref_idc=*/0);
+
+  if (mastering_display.has_value()) {
+    BuildPackedH264SEIMessageHeader(
+        bitstream_builder, kSEIPayloadTypeMasteringDisplayColourVolume,
+        kSEIPayloadSizeMasteringDisplayColourVolume);
+    for (const auto& primary : mastering_display->display_primaries) {
+      bitstream_builder.AppendBits(16, primary[0]);  // display_primaries_x[c]
+      bitstream_builder.AppendBits(16, primary[1]);  // display_primaries_y[c]
+    }
+    bitstream_builder.AppendBits(16, mastering_display->white_points[0]);
+    bitstream_builder.AppendBits(16, mastering_display->white_points[1]);
+    bitstream_builder.AppendBits(32, mastering_display->max_luminance);
+    bitstream_builder.AppendBits(32, mastering_display->min_luminance);
+  }
+
+  if (content_light_level.has_value()) {
+    BuildPackedH264SEIMessageHeader(bitstream_builder,
+                                    kSEIPayloadTypeContentLightLevelInfo,
+                                    kSEIPayloadSizeContentLightLevelInfo);
+    bitstream_builder.AppendBits(16,
+                                 content_light_level->max_content_light_level);
+    bitstream_builder.AppendBits(
+        16, content_light_level->max_picture_average_light_level);
   }
 
   bitstream_builder.FinishNALU();

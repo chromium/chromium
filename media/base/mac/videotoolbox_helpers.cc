@@ -128,7 +128,8 @@ OSStatus GetParameterSetAtIndex(VideoCodec codec,
 bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     CMSampleBufferRef sbuf,
                                     AnnexBBuffer* annexb_buffer,
-                                    bool keyframe) {
+                                    bool keyframe,
+                                    base::span<const uint8_t> sei_nalu) {
   // Perform two pass, one to figure out the total output size, and another to
   // copy the data after having performed a single output allocation. Note that
   // we'll allocate a bit more because we'll count 4 bytes instead of 3 for
@@ -142,7 +143,7 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   DCHECK(fdesc);
 
   const size_t bb_size = CMBlockBufferGetDataLength(bb);
-  size_t total_bytes = bb_size;
+  size_t total_bytes = bb_size + sei_nalu.size();
 
   size_t pset_count;
   int nal_size_field_bytes;
@@ -194,6 +195,10 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
     }
   }
 
+  if (!sei_nalu.empty()) {
+    annexb_buffer->Append(base::as_chars(sei_nalu).data(), sei_nalu.size());
+  }
+
   // Block buffers can be composed of non-contiguous chunks. For the sake of
   // keeping this code simple, flatten non-contiguous block buffers.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> contiguous_bb(
@@ -243,18 +248,19 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     bool keyframe,
                                     std::string* annexb_buffer) {
   StringAnnexBBuffer buffer(annexb_buffer);
-  return CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe);
+  return CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe, {});
 }
 
 bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     CMSampleBufferRef sbuf,
                                     bool keyframe,
+                                    base::span<const uint8_t> sei_nalu,
                                     size_t annexb_buffer_size,
                                     char* annexb_buffer,
                                     size_t* used_buffer_size) {
   RawAnnexBBuffer buffer(annexb_buffer, annexb_buffer_size);
   const bool copy_rv =
-      CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe);
+      CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe, sei_nalu);
   *used_buffer_size = buffer.GetReservedSize();
   return copy_rv;
 }
@@ -308,6 +314,11 @@ bool SessionPropertySetter::Set(CFStringRef key, CFArrayRef value) {
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, CFDictionaryRef value) {
+  DCHECK(session_);
+  return VTSessionSetProperty(session_.get(), key, value) == noErr;
+}
+
+bool SessionPropertySetter::Set(CFStringRef key, CFDataRef value) {
   DCHECK(session_);
   return VTSessionSetProperty(session_.get(), key, value) == noErr;
 }

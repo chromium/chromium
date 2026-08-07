@@ -279,30 +279,44 @@ gfx::ColorSpace::MatrixID GetCoreVideoMatrix(CFTypeRef matrix_untyped) {
   return matrix_id;
 }
 
+gfx::ColorSpace::RangeID GetCoreVideoRange(CFTypeRef range_untyped) {
+  if (!range_untyped) {
+    return gfx::ColorSpace::RangeID::LIMITED;
+  }
+  if (CFGetTypeID(range_untyped) == CFBooleanGetTypeID()) {
+    return CFBooleanGetValue(static_cast<CFBooleanRef>(range_untyped))
+               ? gfx::ColorSpace::RangeID::FULL
+               : gfx::ColorSpace::RangeID::LIMITED;
+  }
+  CFStringRef range = base::apple::CFCast<CFStringRef>(range_untyped);
+  if (!range) {
+    return gfx::ColorSpace::RangeID::LIMITED;
+  }
+  if (CFEqual(range, kCVPixelFormatComponentRange_FullRange)) {
+    return gfx::ColorSpace::RangeID::FULL;
+  }
+  return gfx::ColorSpace::RangeID::LIMITED;
+}
+
 }  // anonymous namespace
 
 gfx::ColorSpace ColorSpaceFromCVImageBufferKeys(CFTypeRef primaries_untyped,
                                                 CFTypeRef transfer_untyped,
                                                 CFTypeRef gamma_untyped,
-                                                CFTypeRef matrix_untyped) {
+                                                CFTypeRef matrix_untyped,
+                                                CFTypeRef range_untyped) {
   double gamma;
   auto primary_id = GetCoreVideoPrimary(primaries_untyped);
   auto matrix_id = GetCoreVideoMatrix(matrix_untyped);
   auto transfer_id =
       GetCoreVideoTransferFn(transfer_untyped, gamma_untyped, &gamma);
+  auto range_id = GetCoreVideoRange(range_untyped);
 
   if (primary_id == gfx::ColorSpace::PrimaryID::INVALID ||
       matrix_id == gfx::ColorSpace::MatrixID::INVALID ||
       transfer_id == gfx::ColorSpace::TransferID::INVALID) {
     return gfx::ColorSpace();
   }
-
-  // It is specified to the decoder to use luma=[16,235] chroma=[16,240] via
-  // the kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
-  //
-  // TODO(crbug.com/40139254): We'll probably need support for more than limited
-  // range content if we want this to be used for more than video sites.
-  auto range_id = gfx::ColorSpace::RangeID::LIMITED;
 
   if (transfer_id == gfx::ColorSpace::TransferID::CUSTOM) {
     // Transfer functions can also be specified as a gamma value.

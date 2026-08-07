@@ -41,6 +41,10 @@ struct CodecParamToProfile {
     {"vp8", VP8PROFILE_ANY},
     {"vp9", VP9PROFILE_PROFILE0},
     {"av1", AV1PROFILE_PROFILE_MAIN},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    {"hevc", HEVCPROFILE_MAIN},
+    {"hevcmain10", HEVCPROFILE_MAIN10},
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 };
 
 struct SVCConfig {
@@ -92,6 +96,7 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   switch (codec) {
     case VideoCodec::kH264:
     case VideoCodec::kVP8:
+    case VideoCodec::kHEVC:
       codec_index = 0;
       break;
     case VideoCodec::kVP9:

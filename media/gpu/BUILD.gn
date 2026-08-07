@@ -645,8 +645,17 @@ source_set("unit_tests") {
     "h264_ratectrl_rtc_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
+  if (use_libgav1_parser) {
+    # h264_builder_unittest.cc includes TemporalScalabilityIdExtractor, whose
+    # public header contains libgav1 types.
+    sources += [ "h264_builder_unittest.cc" ]
+    deps += [ "//third_party/libgav1:libgav1_parser" ]
+  }
   if (enable_hevc_parser_and_hw_decoder) {
-    sources += [ "h265_decoder_unittest.cc" ]
+    sources += [
+      "h265_builder_unittest.cc",
+      "h265_decoder_unittest.cc",
+    ]
   }
   if (enable_platform_dolby_vision) {
     sources += [ "dolby_vision_metadata_unittest.cc" ]
@@ -708,10 +717,7 @@ source_set("unit_tests") {
     ]
 
     if (enable_hevc_parser_and_hw_decoder) {
-      sources += [
-        "h265_builder_unittest.cc",
-        "windows/d3d12_video_encode_h265_delegate_unittest.cc",
-      ]
+      sources += [ "windows/d3d12_video_encode_h265_delegate_unittest.cc" ]
     }
   }
 
@@ -722,7 +728,6 @@ source_set("unit_tests") {
   if (is_win || use_vaapi) {
     sources += [
       "av1_builder_unittest.cc",
-      "h264_builder_unittest.cc",
       "svc_layers_unittest.cc",
     ]
   }

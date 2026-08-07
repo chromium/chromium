@@ -75,7 +75,8 @@ The following arguments are supported:
   --vmodule             enable verbose mode for the specified module,
                         e.g. --vmodule=*media/gpu*=2.
   --codec               codec profile to encode, "h264" (baseline),
-                        "h264main, "h264high", "vp8", "vp9", "av1".
+                        "h264main, "h264high", "vp8", "vp9", "av1",
+                        "hevc", "hevcmain10".
                         H264 Baseline is selected if unspecified.
   --num_spatial_layers  the number of spatial layers of the encoded
                         bitstream. A default value is 1. Only affected

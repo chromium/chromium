@@ -51,9 +51,11 @@ source_set("unit_tests") {
   sources = [
     "channel_layout_util_mac_unittest.cc",
     "video_frame_mac_unittest.cc",
+    "videotoolbox_helpers_unittest.cc",
   ]
   frameworks = [
     "AudioToolbox.framework",
+    "CoreMedia.framework",
     "CoreVideo.framework",
   ]
   configs += [ "//media:media_config" ]

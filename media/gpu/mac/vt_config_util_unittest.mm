@@ -61,15 +61,18 @@ base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
 }
 
 base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
-    media::VideoColorSpace cs) {
+    media::VideoColorSpace cs,
+    std::optional<OSType> pixel_format_override = std::nullopt) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> fmt = CreateFormatExtensions(
       kCMVideoCodecType_H264, media::H264PROFILE_MAIN, 8, cs, std::nullopt);
 
   base::apple::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
-  OSStatus err =
-      CVPixelBufferCreate(kCFAllocatorDefault, 16, 16,
-                          kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-                          nullptr, image_buffer.InitializeInto());
+  const OSType pixel_format = pixel_format_override.value_or(
+      cs.range() == gfx::ColorSpace::RangeID::FULL
+          ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+          : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
+  OSStatus err = CVPixelBufferCreate(kCFAllocatorDefault, 16, 16, pixel_format,
+                                     nullptr, image_buffer.InitializeInto());
   if (err != noErr) {
     EXPECT_EQ(err, noErr);
     return base::apple::ScopedCFTypeRef<CVImageBufferRef>();
@@ -83,7 +86,8 @@ base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
 base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormatDescription(
     CFStringRef primaries,
     CFStringRef transfer,
-    CFStringRef matrix) {
+    CFStringRef matrix,
+    bool full_range = false) {
   NSMutableDictionary* extensions = [NSMutableDictionary dictionary];
 
   if (primaries) {
@@ -97,6 +101,10 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormatDescription(
   if (matrix) {
     extensions[CFToNSPtrCast(kCMFormatDescriptionExtension_YCbCrMatrix)] =
         CFToNSPtrCast(matrix);
+  }
+  if (full_range) {
+    extensions[CFToNSPtrCast(kCMFormatDescriptionExtension_FullRangeVideo)] =
+        @YES;
   }
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> result;
   CMFormatDescriptionCreate(nullptr, kCMMediaType_Video,
@@ -289,6 +297,41 @@ TEST(VTConfigUtil, GetImageBufferColorSpace_BT709) {
   EXPECT_EQ(expected_cs, GetImageBufferColorSpace(image_buffer.get()));
 }
 
+TEST(VTConfigUtil, GetImageBufferColorSpace_FullRange) {
+  auto cs = VideoColorSpace(
+      VideoColorSpace::PrimaryID::BT709, VideoColorSpace::TransferID::BT709,
+      VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
+  auto image_buffer = CreateCVImageBuffer(cs);
+  ASSERT_TRUE(image_buffer);
+
+  EXPECT_EQ(ToBT709_APPLE(cs.ToGfxColorSpace()),
+            GetImageBufferColorSpace(image_buffer.get()));
+}
+
+TEST(VTConfigUtil, GetImageBufferColorSpace_FullRangeFormats) {
+  const auto cs = VideoColorSpace(
+      VideoColorSpace::PrimaryID::BT709, VideoColorSpace::TransferID::BT709,
+      VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
+  constexpr OSType kFullRangePixelFormats[] = {
+      kCVPixelFormatType_420YpCbCr8PlanarFullRange,
+      kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+      kCVPixelFormatType_422YpCbCr8BiPlanarFullRange,
+      kCVPixelFormatType_444YpCbCr8BiPlanarFullRange,
+      kCVPixelFormatType_422YpCbCr8FullRange,
+      kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+      kCVPixelFormatType_422YpCbCr10BiPlanarFullRange,
+      kCVPixelFormatType_444YpCbCr10BiPlanarFullRange,
+  };
+
+  for (const OSType pixel_format : kFullRangePixelFormats) {
+    auto image_buffer = CreateCVImageBuffer(cs, pixel_format);
+    ASSERT_TRUE(image_buffer);
+    EXPECT_EQ(ToBT709_APPLE(cs.ToGfxColorSpace()),
+              GetImageBufferColorSpace(image_buffer.get()))
+        << pixel_format;
+  }
+}
+
 TEST(VTConfigUtil, GetImageBufferColorSpace_GAMMA22) {
   auto cs = VideoColorSpace(VideoColorSpace::PrimaryID::SMPTE170M,
                             VideoColorSpace::TransferID::GAMMA22,
@@ -351,6 +394,20 @@ TEST(VTConfigUtil, FormatDescriptionBT709) {
   ASSERT_TRUE(format_descriptor);
   auto cs = GetFormatDescriptionColorSpace(format_descriptor.get());
   EXPECT_EQ(ToBT709_APPLE(gfx::ColorSpace::CreateREC709()), cs);
+}
+
+TEST(VTConfigUtil, FormatDescriptionFullRange) {
+  auto format_descriptor = CreateFormatDescription(
+      kCMFormatDescriptionColorPrimaries_ITU_R_709_2,
+      kCMFormatDescriptionTransferFunction_ITU_R_709_2,
+      kCMFormatDescriptionYCbCrMatrix_ITU_R_709_2, /*full_range=*/true);
+  ASSERT_TRUE(format_descriptor);
+
+  const gfx::ColorSpace expected(gfx::ColorSpace::PrimaryID::BT709,
+                                 gfx::ColorSpace::TransferID::BT709_APPLE,
+                                 gfx::ColorSpace::MatrixID::BT709,
+                                 gfx::ColorSpace::RangeID::FULL);
+  EXPECT_EQ(expected, GetFormatDescriptionColorSpace(format_descriptor.get()));
 }
 
 }  // namespace media

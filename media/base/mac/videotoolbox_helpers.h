@@ -7,8 +7,10 @@
 
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
+#include <stdint.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
@@ -21,12 +23,17 @@ MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                                  CMSampleBufferRef sbuf,
                                                  bool keyframe,
                                                  std::string* annexb_buffer);
-MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
-                                                 CMSampleBufferRef sbuf,
-                                                 bool keyframe,
-                                                 size_t annexb_buffer_size,
-                                                 char* annexb_buffer,
-                                                 size_t* used_buffer_size);
+
+// As above, but optionally inserts a complete Annex B `sei_nalu` after the
+// parameter sets and before the sample NAL units.
+MEDIA_EXPORT bool CopySampleBufferToAnnexBBuffer(
+    VideoCodec codec,
+    CMSampleBufferRef sbuf,
+    bool keyframe,
+    base::span<const uint8_t> sei_nalu,
+    size_t annexb_buffer_size,
+    char* annexb_buffer,
+    size_t* used_buffer_size);
 
 struct ScopedVTCompressionSessionRefTraits {
   static VTCompressionSessionRef InvalidValue() { return nullptr; }
@@ -60,6 +67,7 @@ class MEDIA_EXPORT SessionPropertySetter {
   bool Set(CFStringRef key, CFStringRef value);
   bool Set(CFStringRef key, CFArrayRef value);
   bool Set(CFStringRef key, CFDictionaryRef value);
+  bool Set(CFStringRef key, CFDataRef value);
 
  private:
   base::apple::ScopedCFTypeRef<VTCompressionSessionRef> session_;

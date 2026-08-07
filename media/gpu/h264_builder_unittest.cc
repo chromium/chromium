@@ -142,4 +142,54 @@ TEST_F(H264BuilderTest, H264BuildPrefixNALU) {
                    param.temporal_id);
   }
 }
+
+TEST_F(H264BuilderTest, BuildHDRStaticMetadataSEI) {
+  H26xSEIMasteringDisplayInfo mdcv;
+  mdcv.display_primaries[0] = {13250, 34500};  // G
+  mdcv.display_primaries[1] = {7500, 3000};    // B
+  mdcv.display_primaries[2] = {34000, 16000};  // R
+  mdcv.white_points = {15635, 16450};
+  mdcv.max_luminance = 10000000;
+  // Contains a 0x000001 sequence, exercising emulation prevention.
+  mdcv.min_luminance = 500;
+
+  H26xSEIContentLightLevelInfo clli;
+  clli.max_content_light_level = 1000;
+  clli.max_picture_average_light_level = 400;
+
+  H26xAnnexBBitstreamBuilder builder(
+      /*insert_emulation_prevention_bytes=*/true);
+  BuildPackedH264SEI(builder, mdcv, clli);
+  builder.Flush();
+
+  H264Parser parser;
+  parser.SetStream(builder.data());
+  H264NALU nalu;
+  ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
+  ASSERT_EQ(H264NALU::kSEIMessage, nalu.nal_unit_type);
+
+  H264SEI sei;
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSEI(&sei));
+  bool found_mdcv = false;
+  bool found_clli = false;
+  for (const auto& sei_msg : sei.msgs) {
+    if (const auto* info = std::get_if<H26xSEIMasteringDisplayInfo>(&sei_msg)) {
+      found_mdcv = true;
+      EXPECT_EQ(info->display_primaries, mdcv.display_primaries);
+      EXPECT_EQ(info->white_points, mdcv.white_points);
+      EXPECT_EQ(info->max_luminance, mdcv.max_luminance);
+      EXPECT_EQ(info->min_luminance, mdcv.min_luminance);
+    } else if (const auto* clli_info =
+                   std::get_if<H26xSEIContentLightLevelInfo>(&sei_msg)) {
+      found_clli = true;
+      EXPECT_EQ(clli_info->max_content_light_level,
+                clli.max_content_light_level);
+      EXPECT_EQ(clli_info->max_picture_average_light_level,
+                clli.max_picture_average_light_level);
+    }
+  }
+  EXPECT_TRUE(found_mdcv);
+  EXPECT_TRUE(found_clli);
+}
+
 }  // namespace media
