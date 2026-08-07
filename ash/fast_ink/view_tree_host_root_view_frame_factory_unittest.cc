@@ -5,6 +5,7 @@
 #include "ash/fast_ink/view_tree_host_root_view_frame_factory.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -159,71 +160,64 @@ TEST_F(ViewTreeHostRootViewFrameFactoryTest, CorrectQuadConfigured) {
   EXPECT_EQ(shared_quad_state->visible_quad_layer_rect, gfx::Rect(400, 200));
 }
 
+struct ViewTreeHostRootViewFrameResourceTestParams {
+  std::string display_spec;
+  gfx::Rect content_rect;
+  gfx::Size expected_resource_size;
+};
+
 class ViewTreeHostRootViewFrameResourceTest
     : public ViewTreeHostRootViewFrameFactoryTest,
       public ::testing::WithParamInterface<
-          std::tuple<std::string, gfx::Rect, gfx::Size>> {
- public:
-  ViewTreeHostRootViewFrameResourceTest()
-      : display_spec_(std::get<0>(GetParam())),
-        content_rect_(std::get<1>(GetParam())),
-        expected_resource_size_(std::get<2>(GetParam())) {}
-
-  ViewTreeHostRootViewFrameResourceTest(
-      const ViewTreeHostRootViewFrameResourceTest&) = delete;
-  ViewTreeHostRootViewFrameResourceTest& operator=(
-      const ViewTreeHostRootViewFrameResourceTest&) = delete;
-
-  ~ViewTreeHostRootViewFrameResourceTest() override = default;
-
- protected:
-  std::string display_spec_;
-  gfx::Rect content_rect_;
-  gfx::Size expected_resource_size_;
-};
+          ViewTreeHostRootViewFrameResourceTestParams> {};
 
 TEST_P(ViewTreeHostRootViewFrameResourceTest, CorrectResourceCreated) {
-  UpdateDisplay(display_spec_);
+  const auto& params = GetParam();
+  UpdateDisplay(params.display_spec);
   auto frame = factory_->CreateCompositorFrame(
-      viz::BeginFrameAck::CreateManualAckWithDamage(), content_rect_,
-      content_rect_,
+      viz::BeginFrameAck::CreateManualAckWithDamage(), params.content_rect,
+      params.content_rect,
       /*use_overlays=*/true, resource_manager_);
-
-  auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
   ASSERT_EQ(frame->resource_list.size(), 1u);
 
   auto& resource = frame->resource_list.back();
-  EXPECT_EQ(resource.GetSize(), expected_resource_size_);
+  EXPECT_EQ(resource.GetSize(), params.expected_resource_size);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ViewTreeHostRootViewFrameResourceTest,
     testing::Values(
-        std::make_tuple("500x400",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(200, 100)),
-        std::make_tuple("500x400*2",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(400, 200)),
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(200, 100)},
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400*2",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(400, 200)},
         // Display is rotated by 90 degrees clockwise.
-        std::make_tuple("500x400/r",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(100, 200)),
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400/r",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(100, 200)},
         // Display is rotated by 180 degrees clockwise.
-        std::make_tuple("500x400/u",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(200, 100)),
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400/u",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(200, 100)},
         // Display is rotated by 270 degrees clockwise.
-        std::make_tuple("500x400/l",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(100, 200)),
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400/l",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(100, 200)},
         // Display is rotated by 90 degrees clockwise and has device scale
         // factor of 2.
-        std::make_tuple("500x400*2/r",
-                        /*content_rect=*/gfx::Rect(200, 100),
-                        /*expected_resource_size=*/gfx::Size(200, 400))));
+        ViewTreeHostRootViewFrameResourceTestParams{
+            .display_spec = "500x400*2/r",
+            .content_rect = gfx::Rect(200, 100),
+            .expected_resource_size = gfx::Size(200, 400)}));
 
 TEST_F(ViewTreeHostRootViewFrameFactoryTest,
        OnlyCreateNewResourcesWhenNecessary) {
