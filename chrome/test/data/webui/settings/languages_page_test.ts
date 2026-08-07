@@ -12,7 +12,7 @@ import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/setti
 import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
@@ -140,10 +140,10 @@ suite('LanguagesPage', function() {
           {childList: true});
 
       actionButton =
-          dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button')!;
+          dialog.shadowRoot.querySelector<CrButtonElement>('.action-button')!;
       assertTrue(!!actionButton);
       cancelButton =
-          dialog.shadowRoot!.querySelector<CrButtonElement>('.cancel-button')!;
+          dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button')!;
       assertTrue(!!cancelButton);
       flush();
 
@@ -178,9 +178,9 @@ suite('LanguagesPage', function() {
     test('add languages and cancel', async function() {
       // Check some languages.
       dialogItems[1]!.click();  // en-CA.
-      await dialogItems[1]!.updateComplete;
+      await microtasksFinished();
       dialogItems[2]!.click();  // tk.
-      await dialogItems[2]!.updateComplete;
+      await microtasksFinished();
 
       // Canceling the dialog should close and remove it without enabling
       // the checked languages.
@@ -202,17 +202,17 @@ suite('LanguagesPage', function() {
 
       // Check and uncheck one language.
       dialogItems[0]!.click();
-      await dialogItems[0]!.updateComplete;
+      await microtasksFinished();
       assertFalse(actionButton.disabled);
       dialogItems[0]!.click();
-      await dialogItems[0]!.updateComplete;
+      await microtasksFinished();
       assertTrue(actionButton.disabled);
 
       // Check multiple languages.
       dialogItems[0]!.click();  // en.
-      await dialogItems[0]!.updateComplete;
+      await microtasksFinished();
       dialogItems[2]!.click();  // tk.
-      await dialogItems[2]!.updateComplete;
+      await microtasksFinished();
       assertFalse(actionButton.disabled);
 
       // The action button should close and remove the dialog, enabling the
@@ -228,8 +228,8 @@ suite('LanguagesPage', function() {
 
     // Test that searching languages works whether the displayed or native
     // language name is queried.
-    test('search languages', function() {
-      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+    test('search languages', async function() {
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       assertTrue(!!searchInput);
 
       const getItems = function() {
@@ -241,32 +241,32 @@ suite('LanguagesPage', function() {
 
       // Issue query that matches the |displayedName|.
       searchInput.setValue('greek');
-      flush();
+      await microtasksFinished();
       assertEquals(1, getItems().length);
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('Ελληνικά');
-      flush();
+      await microtasksFinished();
       assertEquals(1, getItems().length);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
-      flush();
+      await microtasksFinished();
       assertEquals(0, getItems().length);
 
       // Issue query that should never match any language.
       searchInput.setValue('_arc_ime_language_');
-      flush();
+      await microtasksFinished();
       assertEquals(0, getItems().length);
     });
 
     test('AddLanguagesDialogFocusgroup', function() {
-      const list = dialog.shadowRoot!.querySelector('#list')!;
+      const list = dialog.shadowRoot.querySelector('#list')!;
       assertEquals('listbox block', list.getAttribute('focusgroup'));
     });
 
     test('Escape key behavior', function() {
-      const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       assertTrue(!!searchInput);
       searchInput.setValue('dummyquery');
 

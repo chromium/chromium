@@ -79,13 +79,6 @@ export class ExceptionCurrentSitesListElement extends CrLitElement {
       detail: {length: this.currentSites_.length},
     }));
 
-    // TODO(crbug.com/540914692): Workaround for Blink bug, by resetting
-    // focusgroup attribute restores FocusgroupData that was wiped out during
-    // detachment/attachment. Can probably remove this after migrating to Lit,
-    // since detachment/attachment happens due to the parent chain using dom-if.
-    this.$.list.setAttribute(
-        'focusgroup', this.$.list.getAttribute('focusgroup')!);
-
     this.onVisibilityChanged_();
     this.onVisibilityChangedListener_ = this.onVisibilityChanged_.bind(this);
     document.addEventListener(

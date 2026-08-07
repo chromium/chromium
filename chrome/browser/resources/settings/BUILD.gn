@@ -222,7 +222,6 @@ build_webui("build") {
   if (!is_chromeos) {
     web_component_files += [
       "clear_browsing_data_dialog/clear_browsing_data_account_indicator.ts",
-      "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/languages_page_index.ts",
       "languages_page/spell_check_page.ts",
@@ -420,6 +419,8 @@ build_webui("build") {
       "default_browser_page/default_browser_browser_proxy.ts",
       "default_browser_page/default_browser_page.html.ts",
       "default_browser_page/default_browser_page.ts",
+      "languages_page/add_languages_dialog.html.ts",
+      "languages_page/add_languages_dialog.ts",
       "languages_page/languages.ts",
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
@@ -489,6 +490,7 @@ build_webui("build") {
     "controls/settings_dropdown_menu.css",
     "controls/settings_slider.css",
     "downloads_page/downloads_page.css",
+    "languages_page/add_languages_dialog.css",
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",
     "performance_page/battery_page.css",
