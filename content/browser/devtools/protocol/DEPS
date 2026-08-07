@@ -8,6 +8,8 @@ include_rules = [
   "+device/fido/virtual_fido_device.h",
   # For VirtualU2fDevice::IsTransportSupported used in protocol/webauthn_handler.cc.
   "+device/fido/virtual_u2f_device.h",
+  # For MediaEncodingService used in content/browser/devtools/protocol/media_recorder.cc.
+  "+content/services/devtools_media_encoding_service/public/mojom",
 ]
 
 specific_include_rules = {

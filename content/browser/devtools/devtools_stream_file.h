@@ -9,12 +9,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/devtools/devtools_io_context.h"
+#include "content/common/content_export.h"
 
 #include <string>
 
 namespace content {
 
-class DevToolsStreamFile : public DevToolsIOContext::Stream {
+class CONTENT_EXPORT DevToolsStreamFile : public DevToolsIOContext::Stream {
  public:
   static scoped_refptr<DevToolsStreamFile> Create(DevToolsIOContext* context,
                                                   bool binary);

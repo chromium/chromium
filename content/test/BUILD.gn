@@ -2620,6 +2620,7 @@ test("content_unittests") {
     "../browser/devtools/devtools_session_unittest.cc",
     "../browser/devtools/devtools_video_consumer_unittest.cc",
     "../browser/devtools/protocol/digital_credentials_handler_unittest.cc",
+    "../browser/devtools/protocol/media_recorder_unittest.cc",
     "../browser/devtools/protocol/tracing_handler_unittest.cc",
     "../browser/devtools/protocol_unittest.cc",
     "../browser/devtools/request_body_collector_unittest.cc",

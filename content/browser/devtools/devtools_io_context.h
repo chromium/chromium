@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -19,9 +20,9 @@ class SequencedTaskRunner;
 
 namespace content {
 
-class DevToolsIOContext final {
+class CONTENT_EXPORT DevToolsIOContext final {
  public:
-  class Stream : public base::RefCountedDeleteOnSequence<Stream> {
+  class CONTENT_EXPORT Stream : public base::RefCountedDeleteOnSequence<Stream> {
    public:
     enum Status {
       StatusSuccess,
