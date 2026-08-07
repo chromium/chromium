@@ -816,6 +816,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   not_restored_reasons_.reset();
   prescient_networking_.reset();
+  microtasks_pauser_.reset();
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
