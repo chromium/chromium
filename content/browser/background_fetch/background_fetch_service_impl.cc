@@ -222,6 +222,24 @@ bool BackgroundFetchServiceImpl::ValidateRequests(
     return false;
   }
 
+  // Ensure all requests are valid and use the HTTP or HTTPS scheme.
+  for (const auto& request : requests) {
+    if (!request) {
+      mojo::ReportBadMessage("Null request");
+      return false;
+    }
+
+    if (!request->url.is_valid()) {
+      mojo::ReportBadMessage("Invalid request URL");
+      return false;
+    }
+
+    if (!request->url.SchemeIsHTTPOrHTTPS()) {
+      mojo::ReportBadMessage("Invalid request URL scheme");
+      return false;
+    }
+  }
+
   return true;
 }
 

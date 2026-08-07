@@ -493,10 +493,68 @@ TEST_F(BackgroundFetchServiceTest, FetchInvalidArguments) {
     blink::mojom::BackgroundFetchRegistrationPtr registration;
 
     Fetch(/* service_worker_registration_id= */ 42, kExampleDeveloperId,
-          std::move(requests), std::move(options), SkBitmap(), &error,
+          std::move(requests), options.Clone(), SkBitmap(), &error,
           &registration);
     ASSERT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
     EXPECT_EQ("Invalid requests", bad_message_observer.WaitForBadMessage());
+  }
+
+  // Request URLs must use the HTTP or HTTPS scheme.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    std::vector<blink::mojom::FetchAPIRequestPtr> requests;
+    auto request = CreateRequestWithProvidedResponse(
+        "GET", GURL("file:///test.txt"),
+        TestResponseBuilder(200).MakeIndefinitelyPending().Build());
+    requests.push_back(std::move(request));
+
+    blink::mojom::BackgroundFetchError error;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(/* service_worker_registration_id= */ 42, kExampleDeveloperId,
+          std::move(requests), options.Clone(), SkBitmap(), &error,
+          &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Invalid request URL scheme",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // Request URLs must be valid URLs.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    std::vector<blink::mojom::FetchAPIRequestPtr> requests;
+    auto request = CreateRequestWithProvidedResponse(
+        "GET", GURL("invalid-url"),
+        TestResponseBuilder(200).MakeIndefinitelyPending().Build());
+    requests.push_back(std::move(request));
+
+    blink::mojom::BackgroundFetchError error;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(/* service_worker_registration_id= */ 42, kExampleDeveloperId,
+          std::move(requests), options.Clone(), SkBitmap(), &error,
+          &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Invalid request URL", bad_message_observer.WaitForBadMessage());
+  }
+
+  // Request objects in the vector must be non-null.
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    std::vector<blink::mojom::FetchAPIRequestPtr> requests;
+    requests.push_back(nullptr);
+
+    blink::mojom::BackgroundFetchError error;
+    blink::mojom::BackgroundFetchRegistrationPtr registration;
+
+    Fetch(/* service_worker_registration_id= */ 42, kExampleDeveloperId,
+          std::move(requests), std::move(options), SkBitmap(), &error,
+          &registration);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::INVALID_ARGUMENT);
+    EXPECT_EQ("Null request", bad_message_observer.WaitForBadMessage());
   }
 }
 
