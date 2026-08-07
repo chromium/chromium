@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -63,6 +64,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/browser_ntp_promos.h"
@@ -1654,6 +1656,20 @@ void MaybeRegisterChromeFeaturePromos(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)
           .SetMetadata(108, "agale@chromium.org",
                        "Triggered when device is low on memory.")));
+
+  // kIPHPdfTranslateBubbleFeature
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHPdfTranslateBubbleFeature,
+          TranslateBubbleView::kIdentifier, IDS_PDF_TRANSLATE_PROMO_TEXT,
+          IDS_PDF_TRANSLATE_PROMO_ACCESSIBLE_TEXT,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+          .SetBubbleIcon(&kMenuBookIcon)
+          .SetBubbleTitleText(IDS_PDF_TRANSLATE_PROMO_TITLE)
+          .SetMetadata(153, "danft@chromium.org",
+                       "Shows an IPH when a user translates a PDF for the "
+                       "first time.")));
 
   // kIPHDiscardRingFeature:
   registry.RegisterFeature(std::move(

@@ -722,6 +722,8 @@ should be able to be added at any place in this file.
   <variant name="_PdfSearchifyFeature" summary="For PDF Searchify feature."/>
   <variant name="_PdfTextAnnotations"
       summary="For PDF Text Annotations feature."/>
+  <variant name="_PdfTranslateBubble"
+      summary="For PDF translate bubble feature."/>
   <variant name="_PerformanceInterventionDialog"
       summary="For triggering the performance intervention dialog and toolbar
                button feature."/>

@@ -551,6 +551,8 @@ chromium-metrics-reviews@google.com.
       summary="educating users about PDF searchify feature"/>
   <variant name="IPH_PdfTextAnnotations"
       summary="educating users about PDF Text Annotations feature"/>
+  <variant name="IPH_PdfTranslateBubble"
+      summary="educating users about PDF translate bubble feature"/>
   <variant name="IPH_PerformanceInterventionDialog"
       summary="triggering the performance intervention dialog and toolbar
                button"/>

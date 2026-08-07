@@ -11105,6 +11105,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_MEMORY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
         Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps
       </message>
+      <message name="IDS_PDF_TRANSLATE_PROMO_TITLE" desc="The title shown for the pdf reading mode translate in-product promo bubble">
+        Translate PDFs
+      </message>
+      <message name="IDS_PDF_TRANSLATE_PROMO_TEXT" desc="The text shown for the pdf reading mode translate in-product promo bubble">
+        PDF translations appear in the reading mode side panel
+      </message>
+      <message name="IDS_PDF_TRANSLATE_PROMO_ACCESSIBLE_TEXT" desc="Screen reader text for the pdf reading mode translate in-product promo bubble">
+        In-Product Help: PDF translations appear in the reading mode side panel
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT" desc="In Title Case: The custom action button text for the high efficiency mode in-product promo bubble">
           Turn On
