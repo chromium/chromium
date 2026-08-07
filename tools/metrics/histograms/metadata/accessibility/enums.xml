@@ -2623,6 +2623,7 @@ Unknown properties are collapsed to zero. -->
   <int value="-2000560105" label="baidupinyin.exe">Baidu Pinyin IME</int>
   <int value="-1984512110" label="autoglm.exe"/>
   <int value="-1981894995" label="nvda.exe">NVDA</int>
+  <int value="-1980584527" label="ctlcli.exe">SKYSEA Client View</int>
   <int value="-1971781539" label="zt.exe">ZoomText</int>
   <int value="-1932774260" label="feishu.exe">ByteDance Feishu</int>
   <int value="-1868732334" label="ctfmon.exe">CTF Loader</int>
@@ -2636,6 +2637,7 @@ Unknown properties are collapsed to zero. -->
   <int value="-1582301949" label="manictime.exe">ManicTime</int>
   <int value="-1578118129" label="teamviewer_desktop.exe">TeamViewer</int>
   <int value="-1502995850" label="doubao.exe">ByteDance Doubao</int>
+  <int value="-1465502644" label="cwagent.exe">CurrentWare</int>
   <int value="-1416795230" label="quark.exe">Alibaba Quark browser</int>
   <int value="-1408239264" label="snagit32.exe">
     TechSmith Snagit capture (legacy)
@@ -2652,6 +2654,7 @@ Unknown properties are collapsed to zero. -->
   <int value="-1269415642" label="magnify.exe">Windows Magnifier</int>
   <int value="-1255218607" label="qmaiservice64.exe"/>
   <int value="-1185400973" label="opera.exe">Opera and Opera GX</int>
+  <int value="-1151866815" label="secureconnection.exe"/>
   <int value="-1104618680" label="clipboardmaster.exe">
     Jumping Bytes ClipboardMaster
   </int>
@@ -2683,6 +2686,7 @@ Unknown properties are collapsed to zero. -->
   <int value="-500219036" label="globalpresenter.exe">
     Lenovo Voice Assistant
   </int>
+  <int value="-499561769" label="glance.exe">Glance by Mirametrix</int>
   <int value="-472748876" label="vivaldi.exe">Vivaldi</int>
   <int value="-374590939" label="powerpnt.exe">Microsoft PowerPoint</int>
   <int value="-287045346" label="eaio_agent.exe"/>
@@ -2695,6 +2699,7 @@ Unknown properties are collapsed to zero. -->
     Start Menu Experience Host
   </int>
   <int value="46599781" label="sogoucloud.exe">Sogou Pinyin cloud input</int>
+  <int value="52957709" label="runplugin.exe"/>
   <int value="57225726" label="qianwen.exe">Alibaba Qwen app</int>
   <int value="58353144" label="cici.exe">ByteDance Cici</int>
   <int value="68647119" label="dwm.exe">Desktop Window Manager</int>
@@ -2709,6 +2714,7 @@ Unknown properties are collapsed to zero. -->
   <int value="359265946" label="smartscreen.exe">
     Microsoft Defender SmartScreen
   </int>
+  <int value="418806523" label="mm.exe"/>
   <int value="432524448" label="weixin.exe">Tencent Weixin</int>
   <int value="452333607" label="chrome.exe">Google Chrome</int>
   <int value="459851463" label="rtkauduservice64.exe">
@@ -2717,6 +2723,7 @@ Unknown properties are collapsed to zero. -->
   <int value="482325164" label="fluentsearch.exe">Fluent Search</int>
   <int value="491213080" label="qqpctray.exe">Tencent PC Manager</int>
   <int value="509874236" label="inspect.exe">Windows SDK Inspect</int>
+  <int value="599360552" label="computercenter.exe"/>
   <int value="602801217" label="sihost.exe">Shell Infrastructure Host</int>
   <int value="621100454" label="wineyes.exe">Window-Eyes</int>
   <int value="641500889" label="zoom.exe">Zoom Workplace</int>
@@ -2743,6 +2750,7 @@ Unknown properties are collapsed to zero. -->
   <int value="867957808" label="cyberhavensessionmonitor.exe">
     Cyberhaven Lightbeam
   </int>
+  <int value="927150300" label="dcuapp.exe">Verint</int>
   <int value="979294987" label="bemyeyes.exe">Be My Eyes</int>
   <int value="1006442042" label="magictext.exe">HONOR MagicText</int>
   <int value="1022247735" label="osk.exe">On-Screen Keyboard</int>
@@ -2760,6 +2768,8 @@ Unknown properties are collapsed to zero. -->
     Power Automate automation server
   </int>
   <int value="1248433627" label="jfw.exe">JAWS</int>
+  <int value="1282146672" label="highlight.exe"/>
+  <int value="1284249628" label="connector.exe"/>
   <int value="1304689049" label="nvda_nouiaccess.exe">
     NVDA without UIAccess
   </int>
@@ -2785,6 +2795,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1838143251" label="autocorrect.exe"/>
   <int value="1842752105" label="text blaze.exe">Text Blaze</int>
   <int value="1864328181" label="textexpander.exe">TextExpander</int>
+  <int value="1864458576" label="scthost.exe">ActivTrak</int>
   <int value="1864496181" label="spotify.exe">Spotify</int>
   <int value="1884249869" label="nortonui.exe">Norton security products</int>
   <int value="1889756734" label="shadowbot.uiautomation.provider.exe">
@@ -2793,6 +2804,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1938163567" label="propresenter.exe">ProPresenter</int>
   <int value="1946420109" label="brave.exe">Brave Browser</int>
   <int value="1976295005" label="hal.exe">Dolphin SuperNova</int>
+  <int value="2037552505" label="main.exe"/>
   <int value="2063844378" label="ideashare.exe">Huawei IdeaShare</int>
   <int value="2075022684" label="eoaexperiences.exe">
     Windows text cursor indicator
