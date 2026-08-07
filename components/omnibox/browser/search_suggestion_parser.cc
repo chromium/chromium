@@ -612,6 +612,7 @@ void SearchSuggestionParser::NavigationResult::
   TermMatches term_matches_in_url = FindTermMatches(input_text, formatted_url_);
   // Convert TermMatches (offset, length) to MatchPosition (start, end).
   std::vector<AutocompleteMatch::MatchPosition> match_positions;
+  match_positions.reserve(term_matches_in_url.size());
   for (auto match : term_matches_in_url) {
     match_positions.emplace_back(match.offset, match.offset + match.length);
   }
