@@ -55,6 +55,7 @@ source_set("payments") {
       "omnibox_autofill_page_action_controller.h",
       "payments_churned_users_bubble_controller.h",
       "payments_churned_users_page_action_controller.h",
+      "wallet_reminder_notice_page_action_controller.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
       "webauthn_dialog_controller_impl.h",
@@ -155,6 +156,7 @@ source_set("impl") {
       "omnibox_autofill_page_action_controller.cc",
       "payments_churned_users_bubble_controller.cc",
       "payments_churned_users_page_action_controller.cc",
+      "wallet_reminder_notice_page_action_controller.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
     ]
@@ -321,6 +323,7 @@ source_set("unit_tests") {
       "omnibox_autofill_bubble_controller_unittest.cc",
       "omnibox_autofill_page_action_controller_unittest.cc",
       "save_card_bubble_controller_impl_unittest.cc",
+      "wallet_reminder_notice_page_action_controller_unittest.cc",
     ]
     deps += [
       ":payments",
@@ -371,6 +374,7 @@ if (!is_android && !is_chromeos_device) {
     sources = [
       "desktop_payments_window_manager_interactive_uitest.cc",
       "save_card_bubble_controller_impl_interactive_uitest.cc",
+      "wallet_reminder_notice_page_action_controller_interactive_uitest.cc",
     ]
 
     public_deps = [
@@ -382,12 +386,14 @@ if (!is_android && !is_chromeos_device) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/browser/payments:card_unmask_challenge_option",
+      "//components/autofill/core/common",
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",
