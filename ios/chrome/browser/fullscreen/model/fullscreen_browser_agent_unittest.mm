@@ -424,3 +424,83 @@ TEST_F(FullscreenBrowserAgentTest, WillShutDown) {
 
   EXPECT_TRUE(observer.will_shut_down_called_);
 }
+
+// Test forcing fullscreen mode for a single feature.
+TEST_F(FullscreenBrowserAgentTest, ForceFullscreenSingleFeature) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_FALSE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kHideToolbars);
+  EXPECT_TRUE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/false,
+                         ForceFullscreenFeature::kHideToolbars);
+  EXPECT_FALSE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+}
+
+// Test forcing fullscreen mode with multiple features.
+TEST_F(FullscreenBrowserAgentTest, ForceFullscreenMultipleFeatures) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kHideToolbars);
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kFindInPage);
+  EXPECT_TRUE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/false,
+                         ForceFullscreenFeature::kHideToolbars);
+  EXPECT_TRUE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/false,
+                         ForceFullscreenFeature::kFindInPage);
+  EXPECT_FALSE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+}
+
+// Test exiting forced fullscreen mode for all features.
+TEST_F(FullscreenBrowserAgentTest, ExitForceFullscreen) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kHideToolbars);
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kFindInPage);
+  EXPECT_TRUE(agent->IsForceFullscreen());
+
+  agent->ExitForceFullscreen(PassKey());
+  EXPECT_FALSE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+}
+
+// Test interaction between disabled counter and forced fullscreen mode.
+TEST_F(FullscreenBrowserAgentTest, ForceFullscreenWithDisabledCounter) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  agent->IncrementDisabledCounter(PassKey(), /*animated=*/false);
+  EXPECT_FALSE(agent->IsEnabled());
+
+  agent->ForceFullscreen(PassKey(), /*enable=*/true,
+                         ForceFullscreenFeature::kHideToolbars);
+  EXPECT_TRUE(agent->IsForceFullscreen());
+  EXPECT_EQ(FullscreenState::kUIExpanded, agent->State());
+
+  agent->DecrementDisabledCounter(PassKey());
+  EXPECT_TRUE(agent->IsEnabled());
+  EXPECT_EQ(FullscreenState::kUICollapsed, agent->State());
+}

@@ -48,7 +48,7 @@ void FullscreenBrowserAgent::RemoveObserver(
 }
 
 void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
-  if (!IsEnabled()) {
+  if (!IsEnabled() || IsForceFullscreen()) {
     return;
   }
 
@@ -199,9 +199,49 @@ void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key,
   }
 }
 
-void FullscreenBrowserAgent::DecrementDisabledCounter(PassKey) {
+void FullscreenBrowserAgent::DecrementDisabledCounter(PassKey pass_key) {
   if (disabled_count_ > 0) {
     disabled_count_--;
+    if (disabled_count_ == 0 && IsForceFullscreen()) {
+      EnterFullscreen(pass_key, FullscreenModeTransitionTrigger::kForcedByCode,
+                      /*animated=*/true);
+    }
+  }
+}
+
+bool FullscreenBrowserAgent::IsForceFullscreen() const {
+  return !forced_features_.empty();
+}
+
+void FullscreenBrowserAgent::ForceFullscreen(PassKey pass_key,
+                                             bool enable,
+                                             ForceFullscreenFeature feature) {
+  const bool was_forced = IsForceFullscreen();
+  if (enable) {
+    forced_features_.Put(feature);
+  } else {
+    forced_features_.Remove(feature);
+  }
+  if (was_forced == IsForceFullscreen() || !IsEnabled()) {
+    return;
+  }
+  if (IsForceFullscreen()) {
+    EnterFullscreen(pass_key, FullscreenModeTransitionTrigger::kForcedByCode,
+                    /*animated=*/true);
+  } else {
+    ExitFullscreen(pass_key, FullscreenModeTransitionTrigger::kForcedByCode,
+                   /*animated=*/true);
+  }
+}
+
+void FullscreenBrowserAgent::ExitForceFullscreen(PassKey pass_key) {
+  if (!IsForceFullscreen()) {
+    return;
+  }
+  forced_features_.Clear();
+  if (IsEnabled()) {
+    ExitFullscreen(pass_key, FullscreenModeTransitionTrigger::kForcedByCode,
+                   /*animated=*/true);
   }
 }
 

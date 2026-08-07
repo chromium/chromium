@@ -351,6 +351,14 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
   _browserAgent->DecrementDisabledCounter(PassKey());
 }
 
+- (void)forceFullscreen:(BOOL)enable feature:(ForceFullscreenFeature)feature {
+  _browserAgent->ForceFullscreen(PassKey(), enable, feature);
+}
+
+- (void)exitForceFullscreen {
+  _browserAgent->ExitForceFullscreen(PassKey());
+}
+
 #pragma mark - System Notifications
 
 - (void)voiceOverStatusDidChange {

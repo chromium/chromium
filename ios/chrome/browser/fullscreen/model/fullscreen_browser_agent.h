@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/containers/enum_set.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "base/time/time.h"
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 
 class FullscreenBrowserAgentTest;
 class FullscreenMediatorPassKeyFactory;
@@ -98,6 +100,15 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // Returns whether fullscreen is enabled.
   bool IsEnabled() const;
 
+  // Enables or disables forced fullscreen mode for `feature`.
+  void ForceFullscreen(PassKey, bool enable, ForceFullscreenFeature feature);
+
+  // Exits forced fullscreen mode for all features immediately.
+  void ExitForceFullscreen(PassKey);
+
+  // Returns whether any feature is forcing fullscreen mode.
+  bool IsForceFullscreen() const;
+
   // Returns the current fullscreen state.
   FullscreenState State() const;
 
@@ -131,6 +142,13 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // The number of features currently disabling fullscreen.
   size_t disabled_count_ = 0;
+
+  using ForceFullscreenFeatureSet =
+      base::EnumSet<ForceFullscreenFeature,
+                    ForceFullscreenFeature::kMinValue,
+                    ForceFullscreenFeature::kMaxValue>;
+  // The set of features currently forcing fullscreen mode.
+  ForceFullscreenFeatureSet forced_features_;
 
   // The insets.
   UIEdgeInsets insets_ = UIEdgeInsetsZero;
