@@ -38,9 +38,10 @@ class TraceProcessorTestCase(unittest.TestCase):
     return trace_file.name
 
   def testConvertProtoTraceToJson(self):
-    with mock.patch(RUN_METHOD):
+    with mock.patch(RUN_METHOD) as run_patch:
       trace_processor.ConvertProtoTraceToJson(self.tp_path, '/path/to/proto',
                                               '/path/to/json')
+      self.assertIn('--allow-sql-file-access', run_patch.call_args[0])
 
   def testRunMetricNoRepeated(self):
     metric_output = """
