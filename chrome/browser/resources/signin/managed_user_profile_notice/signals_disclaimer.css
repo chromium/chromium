@@ -66,6 +66,7 @@ main {
 .link {
   color: var(--cr-link-color);
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .link:focus-visible {
