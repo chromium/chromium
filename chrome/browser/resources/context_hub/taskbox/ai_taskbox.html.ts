@@ -21,11 +21,11 @@ export function getHtml(this: AiTaskboxElement) {
             <!-- Gmail Todos Section -->
             <section class="todo-column">
                 <div class="column-header">
-                    <h2>Gmail Todos</h2>
+                    <h2>Workspace Todos</h2>
                     <cr-button class="tonal-button"
                         ?disabled="${!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
                         @click="${this.onGenerateGmailTodosClick_}">
-                      ${this.isGeneratingGmailTodos_ ? 'Generating...' : 'Generate my Gmail Todos'}
+                      ${this.isGeneratingGmailTodos_ ? 'Generating...' : 'Generate Workspace Todos'}
                     </cr-button>
                 </div>
 
@@ -46,15 +46,15 @@ export function getHtml(this: AiTaskboxElement) {
                     `) :
                               this.hasGmailGenerationError_ ? html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text error-text">Failed to generate Gmail Todos. Please try again.</p>
+                        <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
                     ` : this.hasGeneratedGmail_ ? html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text">You're all caught up! No Gmail Todos found.</p>
+                        <p class="placeholder-text">You're all caught up!</p>
                       </div>
                     ` : html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text">No Gmail Todos yet.</p>
+                        <p class="placeholder-text">No Workspace Todos yet.</p>
                       </div>
                     `}
                 </div>
@@ -63,10 +63,10 @@ export function getHtml(this: AiTaskboxElement) {
             <!-- Tab-based Todos Section -->
             <section class="todo-column">
                 <div class="column-header">
-                    <h2>Tab-based Todos</h2>
+                    <h2>Browser Todos</h2>
                     <cr-button class="tonal-button" disabled
                         @click="${this.onGenerateTabTodosClick_}">
-                      ${this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate my Tab Todos'}
+                      ${this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate Browser Todos'}
                     </cr-button>
                 </div>
 
@@ -83,26 +83,16 @@ export function getHtml(this: AiTaskboxElement) {
                     `) :
       this.hasTabGenerationError_ ? html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text error-text">Failed to generate Tab Todos. Please try again.</p>
+                        <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
                     ` : this.hasGeneratedTab_ ? html`
                       <div class="placeholder-card">
-                        <p class="placeholder-text">You're all caught up! No Tab Todos found.</p>
+                        <p class="placeholder-text">You're all caught up!</p>
                       </div>
                     ` : html`
-                      <todo-item
-                          .id="${'placeholder-tab-1'}"
-                          .heading="${'Example Tab One'}"
-                          .description="${
-              'Page hasn\'t been active in X days and contains an unfinished action'}"
-                          .variant="${TodoItemVariant.TAB}">
-                      </todo-item>
-                      <todo-item
-                          .id="${'placeholder-tab-2'}"
-                          .heading="${'Example Tab Two'}"
-                          .description="${'Page hasn\'t been active in X days'}"
-                          .variant="${TodoItemVariant.TAB}">
-                      </todo-item>
+                      <div class="placeholder-card">
+                        <p class="placeholder-text">No Browser Todos yet.</p>
+                      </div>
                     `}
                 </div>
             </section>
