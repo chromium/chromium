@@ -254,6 +254,9 @@ public final class EventConstants {
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
+    /** The user clicked on the Sent Tab to Self entry point in the omnibox long-press menu. */
+    public static final String SEND_TAB_TO_SELF_OMNIBOX_USED = "send_tab_to_self_omnibox_used";
+
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 

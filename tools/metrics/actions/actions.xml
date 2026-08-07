@@ -803,6 +803,9 @@ should be able to be added at any place in this file.
       summary="For the gesture navigation in RTL mode."/>
   <variant name="_SearchPromotionFeature"
       summary="IPH for Search extension promo on Windows"/>
+  <variant name="_SendTabToSelfOmnibox"
+      summary="IPH for Send Tab to Self entry point in the omnibox long-press
+               menu"/>
   <variant name="_SharedHighlightingBuilder"
       summary="For SharedHighlightingBuilder feature."/>
   <variant name="_SharedHighlightingReceiver"

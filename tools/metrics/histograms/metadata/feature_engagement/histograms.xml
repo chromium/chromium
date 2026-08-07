@@ -652,6 +652,9 @@ chromium-metrics-reviews@google.com.
                gesture navigation in RTL mode."/>
   <variant name="IPH_SearchPromotionFeature"
       summary="Showing the Search extension promo on Windows"/>
+  <variant name="IPH_SendTabToSelfOmnibox"
+      summary="IPH for Send Tab to Self entry point in the omnibox long-press
+               menu"/>
   <variant name="IPH_SharedHighlightingBuilder"
       summary="the in product help message to notify the user that the share
                action can preemptively share a link-to-text"/>

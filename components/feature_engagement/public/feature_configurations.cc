@@ -3518,6 +3518,24 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+  if (kIPHSendTabToSelfOmnibox.name == feature->name) {
+    // A config that allows the Send Tab to Self Omnibox IPH to be shown once
+    // per week, up to 3 times per year, unless the user actually taps the
+    // "Send to your device" option in the omnibox long-press menu.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("send_tab_to_self_omnibox_iph_triggered",
+                                 Comparator(LESS_THAN, 3), 360, 360);
+    config.event_configs.insert(
+        EventConfig("send_tab_to_self_omnibox_iph_triggered",
+                    Comparator(EQUAL, 0), 7, 360));
+    config.used = EventConfig("send_tab_to_self_omnibox_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHAutofillHomeWorkProfileSuggestionFeature.name == feature->name) {
     // Allows an IPH for showing the home and work address suggestion. This will
     // only be shown once.

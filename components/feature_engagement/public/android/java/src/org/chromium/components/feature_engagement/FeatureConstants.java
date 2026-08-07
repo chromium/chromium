@@ -120,6 +120,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE,
     FeatureConstants.REQUEST_DESKTOP_SITE_WINDOW_SETTING_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
+    FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX,
     FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
     FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
     FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
@@ -441,6 +442,9 @@ public @interface FeatureConstants {
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
      */
     String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
+
+    /** IPH for Send Tab to Self entry point in the omnibox long-press menu */
+    String SEND_TAB_TO_SELF_OMNIBOX = "IPH_SendTabToSelfOmnibox";
 
     /** An IPH feature to inform users about the link-to-text on selection share. */
     String SHARED_HIGHLIGHTING_BUILDER_FEATURE = "IPH_SharedHighlightingBuilder";

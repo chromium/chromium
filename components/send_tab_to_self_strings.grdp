@@ -76,4 +76,7 @@
   <message name="IDS_SEND_TAB_TO_SELF_DEVICE_SHORTCUT_LONG_LABEL" desc="Long label for a dynamic shortcut representing another device belonging to the user." formatter_data="android_java">
     <ph name="USER_GIVEN_NAME">%1$s<ex>Elisa</ex></ph> • <ph name="DEVICE_NAME">%2$s<ex>Pixel 9</ex></ph>
   </message>
+  <message name="IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT" desc="Text shown in an In-Product Help bubble educating the user to touch and hold the address bar to send the current tab to another device.">
+    To quickly send this page to another device, touch &amp; hold the address bar
+  </message>
 </grit-part>
