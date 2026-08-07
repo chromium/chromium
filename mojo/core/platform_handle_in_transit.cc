@@ -64,6 +64,13 @@ HANDLE TransferHandle(HANDLE handle,
     return INVALID_HANDLE_VALUE;
   }
 
+  if (error == ERROR_INVALID_HANDLE ||
+      trust == PlatformHandleInTransit::kUntrustedTarget) {
+    DPLOG(ERROR) << "DuplicateHandle failed from " << from_process << " to "
+                 << to_process << " for handle " << handle;
+    return INVALID_HANDLE_VALUE;
+  }
+
   base::debug::Alias(&handle);
   base::debug::Alias(&from_process);
   base::debug::Alias(&to_process);
