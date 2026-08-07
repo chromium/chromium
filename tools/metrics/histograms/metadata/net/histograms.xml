@@ -5850,13 +5850,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedByPublicReset{HandshakeType}"
-    enum="Boolean" expires_after="2024-06-02">
+    enum="Boolean" expires_after="2027-02-07">
   <owner>wub@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     For a QUIC session that is closed by a public reset, where the handshake was
     {HandshakeType}, this boolean shows whether it is a public reset sent from a
     Google server or not.
+
+    Warning: this histogram was expired between 2024-06-02 and 2026-08-07 so
+    some data is missing.
   </summary>
   <token key="HandshakeType">
     <variant name="" summary="not confirmed"/>
