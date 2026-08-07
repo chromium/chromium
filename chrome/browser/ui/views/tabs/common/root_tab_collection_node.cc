@@ -248,14 +248,8 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
   tab_strip_controller_->TabGroupFocusChanged(new_focused_group_id,
                                               old_focused_group_id);
 
-  // Child container views calculate their own child visibility dynamically
-  // during layout (via CalculateProposedLayout), so invalidating layout on
-  // child containers ensures their layout calculations re-run with the updated
-  // focus state.
-  for (auto& child : children_) {
-    if (child->view()) {
-      child->view()->InvalidateLayout();
-    }
+  if (view()) {
+    view()->InvalidateLayout();
   }
 }
 

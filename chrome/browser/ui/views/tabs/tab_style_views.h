@@ -51,7 +51,7 @@ class TabStyleViewDelegate {
   virtual bool IsClosing() const = 0;
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
   virtual std::optional<SkColor> GetGroupColor() const = 0;
-  virtual bool IsGroupFocused() const = 0;
+  virtual bool IsInFocusedGroup() const = 0;
   virtual bool IsSplit() const = 0;
   virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
 
