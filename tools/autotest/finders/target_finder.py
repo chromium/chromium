@@ -82,7 +82,8 @@ def _ParseRefsOutput(output: str) -> list[str]:
   return targets
 
 
-def _FindTestTargetsViaGnRefs(out_dir: str, gn_paths: list[str]) -> list[str]:
+def _FindTestTargetsViaGnRefs(
+    out_dir: str, gn_paths: list[str]) -> tuple[list[str], list[str]]:
   gn_path: str = os.path.join(str(const.DEPOT_TOOLS_DIR), 'gn.py')
 
   cmd: list[str] = [
@@ -119,7 +120,7 @@ def _FindTestTargetsViaGnRefs(out_dir: str, gn_paths: list[str]) -> list[str]:
     if not test_targets and targets:
       test_targets = _ParseRefsOutput(
           command.RunCommand(cmd + ['--type=executable']))
-  return test_targets
+  return test_targets, targets
 
 
 def FindTestTargets(
@@ -142,18 +143,21 @@ def FindTestTargets(
     web_test_paths = {p for p in paths if file_finder.IsWebTestFile(p)}
     gn_paths = [p for p in paths if p not in web_test_paths]
     test_targets = []
+    raw_targets = []
 
     if gn_paths:
-      test_targets = _FindTestTargetsViaGnRefs(out_dir, gn_paths)
+      test_targets, raw_targets = _FindTestTargetsViaGnRefs(out_dir, gn_paths)
 
     if web_test_paths:
       test_targets.append('//blink_tests')
 
-  if not test_targets:
-    command.ExitWithMessage(
-        f'"{paths}" did not match any test targets. Consider adding'
-        f' one of the following targets to _TEST_TARGET_ALLOWLIST within '
-        f'{__file__}: \n' + '\n'.join(targets))
+    if not test_targets:
+      msg = f'"{paths}" did not match any test targets.'
+      if raw_targets:
+        msg += (f' Consider adding one of the following targets to '
+                f'TEST_TARGET_ALLOWLIST within {const.__file__}: \n' +
+                '\n'.join(raw_targets))
+      command.ExitWithMessage(msg)
 
   test_targets.sort()
   target_cache.Store(paths, test_targets)

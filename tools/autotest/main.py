@@ -193,16 +193,16 @@ def main(ctx, **kwargs) -> int:
   web_test_files = {f for f in filenames if file_finder.IsWebTestFile(f)}
   gn_files = [f for f in filenames if f not in web_test_files]
 
+  targets = []
+  used_cache = False
   if config.target:
     targets = [t.removeprefix('//') for t in config.target]
-    used_cache = False
-  else:
-    if not filenames and not direct_suites:
-      command.ExitWithMessage('No associated test files found.')
-
+  elif filenames:
     targets, used_cache = target_finder.FindTestTargets(
         target_cache, out_dir, filenames, config.run_all, config.run_changed
         or config.run_related, config.target_index, config.files)
+  elif not direct_suites:
+    command.ExitWithMessage('No associated test files found.')
 
   # Add any direct suites
   for suite in direct_suites:
