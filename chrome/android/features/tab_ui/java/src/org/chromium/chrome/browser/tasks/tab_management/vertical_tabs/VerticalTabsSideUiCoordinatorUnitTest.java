@@ -108,6 +108,28 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testDetermineShowableSize_isAutoHiddenSupplierWhenHiddenDueToNarrow() {
+        // When Vertical Tabs is ON (mManualVisible = true) and determineShowableSize calculates
+        // shouldHide = true
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        mCoordinator.determineShowableSize(
+                mExpandedRailWidth - 1, mWideWindowWidth, /* isFullscreen= */ false);
+
+        assertTrue(mCoordinator.getIsAutoHiddenSupplier().get());
+
+        // When Vertical Tabs gets shown again (shouldHide = false)
+        mCoordinator.determineShowableSize(
+                mExpandedRailWidth, mWideWindowWidth, /* isFullscreen= */ false);
+
+        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
+
+        // When Vertical Tabs is turned off
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        assertFalse(mCoordinator.getIsAutoHiddenSupplier().get());
+    }
+
+    @Test
+    @SmallTest
     public void testObserverRegistration() {
         // Constructor is called in setUp(), verify registration happened.
         verify(mMockSideUiCoordinator).addObserver(mCoordinator);
