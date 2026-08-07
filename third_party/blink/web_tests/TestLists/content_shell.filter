@@ -475,7 +475,6 @@ external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import
 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/*
 external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
-external/wpt/html/syntax/charset/without-inheritance.html
 external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/data-xhtml-with-dtd.html
 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
 external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html

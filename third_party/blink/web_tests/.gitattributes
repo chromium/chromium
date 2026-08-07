@@ -68,6 +68,8 @@ external/wpt/html/form-elements/the-textarea-element/multiline-placeholder-cr.ht
 external/wpt/html/form-elements/the-textarea-element/multiline-placeholder-crlf.html -text
 external/wpt/html/input/the-placeholder-attribute/multiline-cr.html -text
 external/wpt/html/input/the-placeholder-attribute/multiline-crlf.html -text
+external/wpt/html/syntax/charset/after-head-after-1kb-crlf.html -text
+external/wpt/html/syntax/charset/after-head-in-1kb-crlf.html -text
 fast/backgrounds/background-position-rounding.html -crlf
 fast/backgrounds/repeat/resources/background-repeat-shorthand.js -crlf
 fast/backgrounds/repeat/resources/margin-shorthand.js -crlf
