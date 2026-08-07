@@ -163,8 +163,9 @@ public final class UnownedUserDataHost {
     private @Nullable Handler mHandler;
 
     /** The core data structure within this host. */
+    // Default capacity (16) is oversized for typical 1-6 entries.
     private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<Object>> mUnownedUserDataMap =
-            new HashMap<>();
+            new HashMap<>(4);
 
     public UnownedUserDataHost() {
         this(new Handler(retrieveNonNullLooperOrThrow()));

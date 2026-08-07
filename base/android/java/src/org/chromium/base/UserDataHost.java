@@ -57,7 +57,8 @@ import java.util.Objects;
 public final class UserDataHost {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    private @Nullable Map<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
+    // Default capacity (16) is oversized for typical 1-3 entries.
+    private @Nullable Map<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>(4);
 
     @EnsuresNonNull("mUserDataMap")
     private void checkThreadAndState() {
