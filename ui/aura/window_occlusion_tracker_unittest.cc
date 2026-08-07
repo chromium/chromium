@@ -472,6 +472,91 @@ TEST_F(WindowOcclusionTrackerTest, LockStateWithScopedPause) {
   EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
 }
 
+TEST_F(WindowOcclusionTrackerTest, UnlockWhilePausedAfterOcclusionChange) {
+  MockWindowDelegate* delegate_a = new MockWindowDelegate();
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  auto* window_a = CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
+  window_a->SetName("A");
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  // 1. Occlude window_a.
+  MockWindowDelegate* delegate_b = new MockWindowDelegate();
+  delegate_b->set_expectation(Window::OcclusionState::VISIBLE);
+  delegate_a->set_expectation(Window::OcclusionState::OCCLUDED);
+  auto* window_b = CreateTrackedWindow(delegate_b, gfx::Rect(0, 0, 10, 10));
+  window_b->SetName("B");
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_FALSE(delegate_b->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+
+  // 2. Lock window_a (locked to OCCLUDED).
+  std::unique_ptr<WindowOcclusionTracker::ScopedLockState> lock =
+      std::make_unique<WindowOcclusionTracker::ScopedLockState>(window_a);
+
+  // 3. Remove window_b (window_a is naturally VISIBLE again, but locked to
+  // OCCLUDED). This triggers computation and marks root dirty, but since it is
+  // not paused, the computation completes and clears the dirty flag. We don't
+  // expect delegate_a to be notified because it is locked.
+  delete window_b;
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+
+  // 4. Pause tracker.
+  std::unique_ptr<WindowOcclusionTracker::ScopedPause> pause =
+      std::make_unique<WindowOcclusionTracker::ScopedPause>();
+
+  // 5. Unlock window_a while paused.
+  // With fix: state -> UnlockPending.
+  // Without fix: state -> Unlocked, lock reset, but root NOT marked dirty.
+  lock.reset();
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+
+  // 6. Unpause tracker.
+  // With fix: UnlockPending triggers MarkRootWindowAsDirty, forcing
+  // computation. Without fix: No dirty root, computation skipped, window_a
+  // stays OCCLUDED.
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  pause.reset();
+
+  // Without fix, this will fail because delegate_a is still expecting call
+  // (it was never notified of VISIBLE) and window_a state is still OCCLUDED.
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+}
+
+#if defined(GTEST_HAS_DEATH_TEST)
+using WindowOcclusionTrackerDeathTest = WindowOcclusionTrackerTest;
+
+TEST_F(WindowOcclusionTrackerDeathTest, LockStateTransitions) {
+  MockWindowDelegate* delegate_a = new MockWindowDelegate();
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE);
+  auto* window_a = CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
+  window_a->SetName("A");
+
+  test::WindowOcclusionTrackerTestApi test_api(
+      Env::GetInstance()->GetWindowOcclusionTracker());
+
+  // Initial state is Unlocked.
+  // Lock it -> Unlocked to Locked (Valid).
+  test_api.Lock(window_a, /*lock=*/true);
+
+  // Lock it again -> Locked to Locked (Banned).
+  EXPECT_CHECK_DEATH_WITH(
+      { test_api.Lock(window_a, /*lock=*/true); },
+      "Check failed: occlusion_data\\.lock_state != LockState::kLocked");
+
+  // Unlock it -> Locked to Unlocked (Valid).
+  test_api.Lock(window_a, /*lock=*/false);
+
+  // Unlock it again -> Unlocked to Unlocked (Banned).
+  EXPECT_CHECK_DEATH_WITH(
+      { test_api.Lock(window_a, /*lock=*/false); },
+      "Check failed: occlusion_data\\.lock_state == LockState::kLocked");
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+
 class WindowOcclusionTrackerOpacityTest
     : public WindowOcclusionTrackerTest,
       public testing::WithParamInterface<bool> {

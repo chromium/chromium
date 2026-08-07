@@ -39,5 +39,9 @@ bool WindowOcclusionTrackerTestApi::IsPaused() const {
   return tracker_->num_pause_occlusion_tracking_;
 }
 
+void WindowOcclusionTrackerTestApi::Lock(Window* window, bool lock) {
+  tracker_->Lock(window, lock);
+}
+
 }  // namespace test
 }  // namespace aura

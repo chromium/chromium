@@ -170,6 +170,24 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     raw_ptr<Window> window_;
   };
 
+  // State transitions:
+  // - Unlocked -> Locked (Valid)
+  // - Locked -> Unlocked (Valid)
+  // - Locked -> UnlockPending (Valid)
+  // - UnlockPending -> Locked (Valid)
+  // - UnlockPending -> Unlocked (Valid)
+  // All other transitions are invalid and will cause a crash (e.g. double
+  // lock/unlock).
+  // UnlockPending is used to defer the state update notification
+  // when the state tracking is unlocked during tracking is paused.
+  // The up-to-date state will be notified when unpaused.
+  enum class LockState {
+    kUnlocked,
+    kLocked,
+    // Unlocked while paused.
+    kUnlockPending,
+  };
+
   // Holds occlusion related information for tracked windows.
   struct OcclusionData {
     // Occlusion state for a tracked window.
@@ -178,6 +196,8 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     SkRegion occluded_region;
     // A locked occlusion state.
     std::optional<Window::OcclusionState> locked_occlusion_state;
+    // State of the lock.
+    LockState lock_state = LockState::kUnlocked;
     // A locked occluded region. This is not an optional to avoid explicit
     // constructor/destructor. Use `locked_occlusion_state` if the value should
     // be used.
