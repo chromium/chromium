@@ -119,7 +119,6 @@ TEST_F(PageStabilityJavascriptTest,
 
   id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
   NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
-  NSLog(@"DEBUG_RESULT: %@", resultDict);
   ASSERT_TRUE(resultDict);
   EXPECT_FALSE([resultDict[@"settled"] boolValue]);
   EXPECT_TRUE([resultDict[@"timedOut"] boolValue]);
@@ -187,6 +186,109 @@ TEST_F(PageStabilityJavascriptTest,
   ASSERT_TRUE(resultDict);
   EXPECT_FALSE([resultDict[@"settled"] boolValue]);
   EXPECT_FALSE([resultDict[@"timedOut"] boolValue]);
+}
+
+// Test that WaitForLcp resolves to false when the timeout is reached.
+TEST_F(PageStabilityJavascriptTest, WaitForLcp_Timeout_ResolvesToFalse) {
+  NSString* script = @R"(
+    return __gCrWeb.getRegisteredApi('page_stability')
+                   .getFunction('waitForLcp')({
+                     timeoutMs: 10,
+                   });
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_NE(nil, resultDict[@"lcpReceived"]);
+  EXPECT_FALSE([resultDict[@"lcpReceived"] boolValue]);
+}
+
+// Test that WaitForLcp resolves to false when cancelWaitForLcp is called.
+TEST_F(PageStabilityJavascriptTest, WaitForLcp_Cancel_ResolvesToFalse) {
+  NSString* script = @R"(
+    const promise = __gCrWeb.getRegisteredApi('page_stability')
+                            .getFunction('waitForLcp')({
+                              timeoutMs: 5000,
+                            });
+     setTimeout(() => {
+      __gCrWeb.getRegisteredApi('page_stability')
+           .getFunction('cancelWaitForLcp')();
+    }, 100);
+    return promise;
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_NE(nil, resultDict[@"lcpReceived"]);
+  EXPECT_FALSE([resultDict[@"lcpReceived"] boolValue]);
+}
+
+// Test that WaitForLcp resolves to true if Largest Contentful Paint already
+// was recorded.
+TEST_F(PageStabilityJavascriptTest, WaitForLcp_Success_LcpAlreadyExists) {
+  NSString* script = @R"(
+    window.PerformanceObserver = function() {};
+    window.PerformanceObserver.supportedEntryTypes = ['largest-contentful-paint'];
+
+    performance.getEntriesByType = (type) => {
+      if (type === 'largest-contentful-paint') {
+        return [{ entryType: 'largest-contentful-paint' }];
+      }
+    };
+
+    return __gCrWeb.getRegisteredApi('page_stability')
+                    .getFunction('waitForLcp')({
+                      timeoutMs: 1000,
+                    });
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_NE(nil, resultDict[@"lcpReceived"]);
+  EXPECT_TRUE([resultDict[@"lcpReceived"] boolValue]);
+}
+
+// Test that WaitForLcp resolves to true if Largest Contentful Paint triggers
+// while waiting.
+TEST_F(PageStabilityJavascriptTest, WaitForLcp_Success_LcpFiresLater) {
+  NSString* script = @R"(
+    window.PerformanceObserver = function(callback) {
+      this.observe = () => {
+        callback({ getEntries: () => [{ entryType: 'largest-contentful-paint' }] });
+      };
+      this.disconnect = () => {};
+    };
+    window.PerformanceObserver.supportedEntryTypes = ['largest-contentful-paint'];
+
+    return __gCrWeb.getRegisteredApi('page_stability')
+                   .getFunction('waitForLcp')({
+                     timeoutMs: 2000,
+                   });
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_NE(nil, resultDict[@"lcpReceived"]);
+  EXPECT_TRUE([resultDict[@"lcpReceived"] boolValue]);
+}
+
+// Test that WaitForLcp resolves to false when PerformanceObserver does not
+// support the LCP entry type.
+TEST_F(PageStabilityJavascriptTest, WaitForLcp_LcpEntryNotSupported) {
+  NSString* script = @R"(
+    window.PerformanceObserver = function() {};
+    window.PerformanceObserver.supportedEntryTypes = ['measure'];
+
+    return __gCrWeb.getRegisteredApi('page_stability')
+                   .getFunction('waitForLcp')({
+                     timeoutMs: 100,
+                   });
+  )";
+  id result = web::test::ExecuteAsyncJavaScript(web_view(), script, nil);
+  NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+  ASSERT_TRUE(resultDict);
+  EXPECT_NE(nil, resultDict[@"lcpReceived"]);
+  EXPECT_FALSE([resultDict[@"lcpReceived"] boolValue]);
 }
 
 }  // namespace

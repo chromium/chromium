@@ -150,10 +150,104 @@ function cancelWaitForStability() {
   }
 }
 
+/**
+ * Result returned by waitForLcp.
+ */
+interface LcpResult {
+  lcpReceived: boolean;
+}
+
+let cancelLcpCheck: (() => void)|null = null;
+
+/**
+ * Waits for the Largest Contentful Paint (LCP) event or until timeoutMs
+ * expires.
+ *
+ * @param options.timeoutMs Maximum duration to wait for LCP.
+ * @returns An object indicating whether LCP was received.
+ */
+function waitForLcp(options: {
+  timeoutMs: number,
+}): Promise<LcpResult> {
+  let timeoutTimerId: number|null = null;
+  let observer: PerformanceObserver|null = null;
+
+  if (cancelLcpCheck !== null) {
+    cancelLcpCheck();
+  }
+  const cleanUp = () => {
+    cancelLcpCheck = null;
+    if (timeoutTimerId !== null) {
+      clearTimeout(timeoutTimerId);
+    }
+    if (observer !== null) {
+      observer.disconnect();
+    }
+  };
+
+  const cancelPromise = new Promise<LcpResult>((resolve) => {
+    cancelLcpCheck = () => {
+      cleanUp();
+      resolve({
+        lcpReceived: false,
+      });
+    };
+  });
+
+  const timeoutPromise = new Promise<LcpResult>((resolve) => {
+    timeoutTimerId = setTimeout(() => {
+      cleanUp();
+      resolve({
+        lcpReceived: false,
+      });
+    }, options.timeoutMs);
+  });
+
+  const lcpPromise = new Promise<LcpResult>((resolve) => {
+    const isLcpSupported =
+        typeof PerformanceObserver !== 'undefined' &&
+        Boolean(
+            PerformanceObserver.supportedEntryTypes?.includes(
+                'largest-contentful-paint',
+                ),
+        );
+
+    if (!isLcpSupported) {
+      // If observing LCP is not supported in this WebKit version, don't
+      // resolve and let the other promises win the race.
+      return;
+    }
+
+    const entries = performance.getEntriesByType('largest-contentful-paint');
+    if (entries.length > 0) {
+      cleanUp();
+      resolve({lcpReceived: true});
+      return;
+    }
+
+    observer = new PerformanceObserver((entryList) => {
+      if (entryList.getEntries().length > 0) {
+        cleanUp();
+        resolve({lcpReceived: true});
+      }
+    });
+    observer.observe({type: 'largest-contentful-paint', buffered: true});
+  });
+
+  return Promise.race([cancelPromise, timeoutPromise, lcpPromise]);
+}
+
+function cancelWaitForLcp() {
+  if (cancelLcpCheck !== null) {
+    cancelLcpCheck();
+  }
+}
 
 const pageStabilityApi = new CrWebApi('page_stability');
 pageStabilityApi.addFunction('waitForStability', waitForStability);
 pageStabilityApi.addFunction('cancelWaitForStability', cancelWaitForStability);
+pageStabilityApi.addFunction('waitForLcp', waitForLcp);
+pageStabilityApi.addFunction('cancelWaitForLcp', cancelWaitForLcp);
 if (!gCrWeb.hasRegisteredApi('page_stability')) {
   gCrWeb.registerApi(pageStabilityApi);
 }
