@@ -12,6 +12,10 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -805,5 +809,48 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperOptionalHostPermissions,
     EXPECT_TRUE(ExtensionWantsToRun());
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
+                       UpdateSiteAccess_MultipleTabsSameOrigin) {
+  content::WebContents* tab_a = GetActiveWebContents();
+  ASSERT_TRUE(ContentScriptInjected());
+
+  // Open Tab B on the same origin.
+  ASSERT_TRUE(AddTabAtIndex(1, original_url_, ui::PAGE_TRANSITION_TYPED));
+  content::WebContents* tab_b =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_TRUE(content::WaitForLoadStop(tab_b));
+
+  // Switch back to Tab A.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  auto reload_page_dialog_reset =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
+
+  // Update site access on Tab A to kOnClick.
+  permissions_helper_->UpdateSiteAccess(
+      *extension_, tab_a, UserSiteAccess::kOnClick,
+      tab_a->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  // Tab A reloads immediately via the accepted reload bubble dialog, resetting
+  // its reload requirement.
+  ASSERT_TRUE(WaitForReloadToFinish());
+  TabHelper* tab_helper_a = TabHelper::FromWebContents(tab_a);
+  ASSERT_TRUE(tab_helper_a);
+  EXPECT_FALSE(tab_helper_a->IsReloadRequired());
+
+  // Tab B is marked as requiring a reload.
+  TabHelper* tab_helper_b = TabHelper::FromWebContents(tab_b);
+  ASSERT_TRUE(tab_helper_b);
+  EXPECT_TRUE(tab_helper_b->IsReloadRequired());
+
+  // Activating Tab B triggers OnVisibilityChanged(), which displays the Reload
+  // Page bubble on Tab B.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  ASSERT_TRUE(WaitForReloadToFinish());
+  EXPECT_FALSE(tab_helper_b->IsReloadRequired());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

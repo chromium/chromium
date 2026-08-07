@@ -2272,7 +2272,10 @@ source_set("unit_tests") {
 
     # developer_private_api_unittest.cc includes extension_util_bridge.h under
     # IS_ANDROID.
-    deps += [ "//chrome/browser/ui/android/extensions:public" ]
+    deps += [
+      "//chrome/browser/ui/android/extensions:public",
+      "//chrome/browser/ui/android/tab_model:test_support",
+    ]
   }
 
   if (is_chromeos) {

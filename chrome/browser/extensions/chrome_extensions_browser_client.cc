@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -79,6 +80,14 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -118,6 +127,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/install_prompt_data.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
@@ -1060,13 +1070,65 @@ void ChromeExtensionsBrowserClient::RunBlockActionsIfNeeded(
 void ChromeExtensionsBrowserClient::ShowReloadBubbleForAllExtensions(
     const std::vector<const Extension*>& extensions,
     content::WebContents* web_contents) {
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner) {
+  if (!web_contents) {
     return;
   }
 
-  action_runner->ShowReloadPageBubble(extensions);
+  url::Origin origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (origin.opaque()) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+
+  // For open tabs on the same origin: clear activeTab permissions and mark the
+  // tab as requiring a reload so the reload bubble or menu prompt appears.
+  auto process_tab = [&](content::WebContents* contents) {
+    if (!contents) {
+      return;
+    }
+    if (!contents->GetPrimaryMainFrame()
+             ->GetLastCommittedOrigin()
+             .IsSameOriginWith(origin)) {
+      return;
+    }
+
+    if (auto* granter = ActiveTabPermissionGranter::FromWebContents(contents)) {
+      for (const auto* extension : extensions) {
+        granter->ClearActiveExtensionAndNotify(extension->id());
+      }
+    }
+    if (auto* tab_helper = TabHelper::FromWebContents(contents)) {
+      tab_helper->SetReloadRequired(extensions);
+    }
+  };
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* collection = ProfileBrowserCollection::GetForProfile(profile)) {
+    collection->ForEach([&](BrowserWindowInterface* bwi) {
+      if (auto* model = bwi->GetTabStripModel()) {
+        for (int i = 0; i < model->count(); ++i) {
+          process_tab(model->GetWebContentsAt(i));
+        }
+      }
+      return true;
+    });
+  }
+#else
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() != profile) {
+      continue;
+    }
+    for (int i = 0; i < model->GetTabCount(); ++i) {
+      process_tab(model->GetWebContentsAt(i));
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeExtensionsBrowserClient::HasBeenBlocked(
