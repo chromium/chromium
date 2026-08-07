@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -36,14 +37,13 @@ constexpr auto kPublicKeyInfo = std::to_array<uint8_t>({
 TEST(IDUtilTest, GenerateID) {
   {
     // Test span-based API.
-    std::string extension_id = GenerateId(kPublicKeyInfo);
-    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
+    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", GenerateId(kPublicKeyInfo));
   }
 
   {
     // Test string_view-based API.
-    std::string extension_id = GenerateId(base::as_string_view(kPublicKeyInfo));
-    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
+    EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp",
+              GenerateId(base::as_string_view(kPublicKeyInfo)));
 
     EXPECT_EQ("jpignaibiiemhngfjkcpokkamffknabf", GenerateId("test"));
     EXPECT_EQ("ncocknphbhhlhkikpnnlmbcnbgdempcd", GenerateId("_"));
@@ -68,8 +68,8 @@ TEST(IDUtilTest, GenerateIDFromHex) {
 }
 
 TEST(IDUtilTest, GenerateIDForPath) {
-  base::FilePath path(FILE_PATH_LITERAL("/path/to/file.ext"));
-  std::string generated = GenerateIdForPath(path);
+  const std::string generated =
+      GenerateIdForPath(base::FilePath(FILE_PATH_LITERAL("/path/to/file.ext")));
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ("jjlkojfgbeklddcpckipekckcmgcbfjn", generated);
 #else

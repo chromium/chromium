@@ -6,8 +6,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
