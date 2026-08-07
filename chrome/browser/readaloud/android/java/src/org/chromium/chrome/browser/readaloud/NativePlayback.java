@@ -18,8 +18,8 @@ import org.chromium.content_public.browser.WebContents;
 
 /**
  * Session adapter for active tab article audio, bridging the Java {@link Playback} interface to the
- * on-device C++ {@code ReadAloudService} via JNI and driving UI updates via {@link
- * PlaybackListener} observers.
+ * on-device C++ {@code ReadAloudService} via {@link ReadAloudNativeBridge} and driving UI updates
+ * via {@link PlaybackListener} observers.
  *
  * <p>This class is not thread-safe and should only be accessed from a single thread. All lifecycle
  * operations and JNI callbacks must run on the Android Main UI thread.
@@ -29,10 +29,9 @@ import org.chromium.content_public.browser.WebContents;
  * <ul>
  *   <li>Created by {@link ReadAloudController} when audio playback is requested on an active tab.
  *   <li>Reuses a single anonymous {@link PlaybackListener.PlaybackData} instance across
- *       high-frequency JNI progress notifications ({@code notifyPlaybackProgressUpdated}) to
- *       guarantee zero heap allocations and prevent GC pauses.
- *   <li>Nullifies native pointer via {@code setNativeServicePtr(0)} upon profile or controller
- *       teardown.
+ *       high-frequency progress notifications ({@code notifyPlaybackProgressUpdated}) to guarantee
+ *       zero heap allocations and prevent GC pauses.
+ *   <li>Delegates native control commands and pointer safety to {@link ReadAloudNativeBridge}.
  * </ul>
  */
 @NullMarked
@@ -41,19 +40,19 @@ class NativePlayback implements Playback {
     private final NativeMetadata mMetadata;
     private final @Nullable WebContents mWebContents;
     private final PlaybackListener.PlaybackData mPlaybackData;
-    private long mNativeServicePtr;
+    private final ReadAloudNativeBridge mNativeBridge;
     private @PlaybackListener.State int mState = PlaybackListener.State.BUFFERING;
     private long mAbsolutePositionNanos;
     private long mTotalDurationNanos;
 
     NativePlayback(
-            long nativeServicePtr,
+            ReadAloudNativeBridge nativeBridge,
             @Nullable WebContents webContents,
             @Nullable String languageCode,
             @Nullable String canonicalUrl,
             @Nullable PlaybackMode playbackMode) {
         ThreadUtils.assertOnUiThread();
-        mNativeServicePtr = nativeServicePtr;
+        mNativeBridge = nativeBridge;
         mWebContents = webContents;
         mMetadata = new NativeMetadata(languageCode, canonicalUrl, playbackMode);
         // Reused across progress updates to prevent heap allocations and GC pauses.
@@ -97,15 +96,6 @@ class NativePlayback implements Playback {
                         return mTotalDurationNanos;
                     }
                 };
-    }
-
-    /**
-     * Called by {@link ReadAloudController} during profile or service teardown (passing 0) to
-     * prevent subsequent JNI calls on a destroyed native service.
-     */
-    void setNativeServicePtr(long nativeServicePtr) {
-        ThreadUtils.assertOnUiThread();
-        mNativeServicePtr = nativeServicePtr;
     }
 
     /**
@@ -174,33 +164,25 @@ class NativePlayback implements Playback {
     @Override
     public void play() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0 && mWebContents != null && !mWebContents.isDestroyed()) {
-            ReadAloudControllerJni.get().play(mNativeServicePtr, mWebContents);
-        }
+        mNativeBridge.play(mWebContents);
     }
 
     @Override
     public void pause() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().pause(mNativeServicePtr);
-        }
+        mNativeBridge.pause();
     }
 
     @Override
     public void seekRelative(long seekDurationNanos) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().seekRelative(mNativeServicePtr, seekDurationNanos);
-        }
+        mNativeBridge.seekRelative(seekDurationNanos);
     }
 
     @Override
     public void seek(long absolutePositionNanos) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().seek(mNativeServicePtr, absolutePositionNanos);
-        }
+        mNativeBridge.seek(absolutePositionNanos);
     }
 
     @Override
@@ -218,18 +200,13 @@ class NativePlayback implements Playback {
     @Override
     public void setRate(float rate) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().setPlaybackRate(mNativeServicePtr, rate);
-        }
+        mNativeBridge.setPlaybackRate(rate);
     }
 
     @Override
     public void release() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().stop(mNativeServicePtr);
-            mNativeServicePtr = 0;
-        }
+        mNativeBridge.stop();
         mListeners.clear();
     }
 
@@ -241,15 +218,15 @@ class NativePlayback implements Playback {
         ThreadUtils.assertOnUiThread();
         // TODO(b/522834235): Pass negativeFeedbackReason to native service and invoke callback via
         // JNI once the native feedback operation completes.
-        if (mNativeServicePtr != 0) {
-            ReadAloudControllerJni.get().sendFeedback(mNativeServicePtr, feedbackType.getValue());
+        if (mNativeBridge.isInitialized()) {
+            mNativeBridge.sendFeedback(feedbackType.getValue());
             if (callback != null) {
                 // NOTE: Currently invoked synchronously as a placeholder. UI must NOT rely on
                 // immediate execution, as this flow will become asynchronous when fully wired.
                 callback.onSuccess();
             }
         } else if (callback != null) {
-            callback.onFailure(new Exception("Native service pointer is null"));
+            callback.onFailure(new Exception("Native bridge is not initialized"));
         }
     }
 }

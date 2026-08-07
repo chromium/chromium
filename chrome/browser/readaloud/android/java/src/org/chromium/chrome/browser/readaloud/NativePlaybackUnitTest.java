@@ -8,11 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyFloat;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,13 +35,12 @@ import org.chromium.content_public.browser.WebContents;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NativePlaybackUnitTest {
-    private static final long NATIVE_PTR = 12345L;
     private static final String LANGUAGE = "en";
     private static final String CANONICAL_URL = "https://example.com/article";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ReadAloudController.Natives mNativeMock;
+    @Mock private ReadAloudNativeBridge mBridgeMock;
     @Mock private WebContents mWebContents;
     @Mock private PlaybackListener mListener;
     @Mock private SendFeedbackCallback mFeedbackCallback;
@@ -56,10 +50,10 @@ public class NativePlaybackUnitTest {
 
     @Before
     public void setUp() {
-        ReadAloudControllerJni.setInstanceForTesting(mNativeMock);
+        when(mBridgeMock.isInitialized()).thenReturn(true);
         mPlayback =
                 new NativePlayback(
-                        NATIVE_PTR, mWebContents, LANGUAGE, CANONICAL_URL, PlaybackMode.CLASSIC);
+                        mBridgeMock, mWebContents, LANGUAGE, CANONICAL_URL, PlaybackMode.CLASSIC);
     }
 
     @Test
@@ -123,23 +117,15 @@ public class NativePlaybackUnitTest {
 
     @Test
     public void testPlay() {
-        when(mWebContents.isDestroyed()).thenReturn(false);
         mPlayback.play();
-        verify(mNativeMock).play(eq(NATIVE_PTR), eq(mWebContents));
-    }
-
-    @Test
-    public void testPlay_destroyedWebContents() {
-        when(mWebContents.isDestroyed()).thenReturn(true);
-        mPlayback.play();
-        verify(mNativeMock, never()).play(anyLong(), any());
+        verify(mBridgeMock).play(mWebContents);
     }
 
     @Test
     public void testNullConstructorInputs_safeFallback() {
         NativePlayback nullPlayback =
                 new NativePlayback(
-                        NATIVE_PTR,
+                        mBridgeMock,
                         /* webContents= */ null,
                         /* languageCode= */ null,
                         /* canonicalUrl= */ null,
@@ -149,48 +135,34 @@ public class NativePlaybackUnitTest {
         assertEquals(PlaybackMode.CLASSIC, nullPlayback.getMetadata().playbackMode());
 
         nullPlayback.play();
-        verify(mNativeMock, never()).play(anyLong(), any());
+        verify(mBridgeMock).play(null);
     }
 
     @Test
     public void testPauseSeekRateAndRelease() {
         mPlayback.pause();
-        verify(mNativeMock).pause(eq(NATIVE_PTR));
+        verify(mBridgeMock).pause();
 
         mPlayback.seek(100L);
-        verify(mNativeMock).seek(eq(NATIVE_PTR), eq(100L));
+        verify(mBridgeMock).seek(100L);
 
         mPlayback.seekRelative(50L);
-        verify(mNativeMock).seekRelative(eq(NATIVE_PTR), eq(50L));
+        verify(mBridgeMock).seekRelative(50L);
 
         mPlayback.setRate(1.5f);
-        verify(mNativeMock).setPlaybackRate(eq(NATIVE_PTR), eq(1.5f));
+        verify(mBridgeMock).setPlaybackRate(1.5f);
 
         mPlayback.release();
-        verify(mNativeMock).stop(eq(NATIVE_PTR));
+        verify(mBridgeMock).stop();
     }
 
     @Test
-    public void testSetNativeServicePtrToZero_preventsJniCalls() {
-        mPlayback.setNativeServicePtr(0);
-        when(mWebContents.isDestroyed()).thenReturn(false);
+    public void testUninitializedBridge_failsFeedback() {
+        when(mBridgeMock.isInitialized()).thenReturn(false);
 
-        mPlayback.play();
-        mPlayback.pause();
-        mPlayback.seek(100L);
-        mPlayback.seekRelative(50L);
-        mPlayback.setRate(1.5f);
-        mPlayback.release();
         mPlayback.sendFeedback(
                 FeedbackType.POSITIVE, NegativeFeedbackReason.OTHER, mFeedbackCallback);
 
-        verify(mNativeMock, never()).play(anyLong(), any());
-        verify(mNativeMock, never()).pause(anyLong());
-        verify(mNativeMock, never()).seek(anyLong(), anyLong());
-        verify(mNativeMock, never()).seekRelative(anyLong(), anyLong());
-        verify(mNativeMock, never()).setPlaybackRate(anyLong(), anyFloat());
-        verify(mNativeMock, never()).stop(anyLong());
-        verify(mNativeMock, never()).sendFeedback(anyLong(), anyInt());
         verify(mFeedbackCallback).onFailure(any(Exception.class));
     }
 
@@ -198,7 +170,7 @@ public class NativePlaybackUnitTest {
     public void testSendFeedback() {
         mPlayback.sendFeedback(
                 FeedbackType.POSITIVE, NegativeFeedbackReason.OTHER, mFeedbackCallback);
-        verify(mNativeMock).sendFeedback(eq(NATIVE_PTR), eq(FeedbackType.POSITIVE.getValue()));
+        verify(mBridgeMock).sendFeedback(FeedbackType.POSITIVE.getValue());
         verify(mFeedbackCallback).onSuccess();
     }
 }

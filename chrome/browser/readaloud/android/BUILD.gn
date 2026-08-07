@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerSupplier.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudNativeBridge.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/readaloud/TabModelTabObserver.java",
@@ -69,8 +70,8 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudNativeBridge.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
   ]
 }
@@ -230,6 +231,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudNativeBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/TabModelTabObserverUnitTest.java",

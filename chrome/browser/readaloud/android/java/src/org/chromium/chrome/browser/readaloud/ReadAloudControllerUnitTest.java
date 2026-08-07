@@ -136,7 +136,11 @@ import java.util.Locale;
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS, ChromeFeatureList.GLIC})
+@DisableFeatures({
+    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
+    ChromeFeatureList.GLIC,
+    AccessibilityFeatures.READ_ALOUD_NATIVE
+})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL sTestRedirectGURL = JUnitTestGURLs.URL_1_WITH_PATH;
@@ -193,6 +197,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
     @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
+    @Mock private ReadAloudNativeBridge.Natives mNativeBridgeNatives;
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private ActorUiTabController mActorUiTabController;
@@ -273,6 +278,7 @@ public class ReadAloudControllerUnitTest {
         TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
         ReadAloudPrefsJni.setInstanceForTesting(mReadAloudPrefsNatives);
         ReadAloudFeaturesJni.setInstanceForTesting(mReadAloudFeaturesNatives);
+        ReadAloudNativeBridgeJni.setInstanceForTesting(mNativeBridgeNatives);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         when(mPrefService.hasPrefPath("readaloud.playback_mode")).thenReturn(true);

@@ -15,7 +15,7 @@
 #include "url/android/gurl_android.h"
 
 // JNI header generated automatically by JNI Zero.
-#include "chrome/browser/readaloud/android/jni_headers/ReadAloudController_jni.h"
+#include "chrome/browser/readaloud/android/jni_headers/ReadAloudNativeBridge_jni.h"
 
 using jni_zero::AttachCurrentThread;
 using jni_zero::JavaRef;
@@ -24,9 +24,9 @@ using jni_zero::ScopedJavaLocalRef;
 namespace readaloud {
 
 ReadAloudBridge::ReadAloudBridge(JNIEnv* env,
-                                 const JavaRef<jobject>& j_controller,
+                                 const JavaRef<jobject>& j_native_bridge,
                                  ReadAloudService* service)
-    : weak_java_controller_(env, j_controller), service_(service) {}
+    : weak_java_native_bridge_(env, j_native_bridge), service_(service) {}
 
 ReadAloudBridge::~ReadAloudBridge() = default;
 
@@ -37,34 +37,34 @@ ReadAloudBridge::~ReadAloudBridge() = default;
 void ReadAloudBridge::OnMetadataAvailable(std::string_view title,
                                           std::string_view publisher) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onMetadataAvailable(
-      env, java_controller, std::string(title), std::string(publisher));
+  Java_ReadAloudNativeBridge_onMetadataAvailable(
+      env, j_bridge, std::string(title), std::string(publisher));
 }
 
 void ReadAloudBridge::OnPlaybackProgressUpdated(base::TimeDelta elapsed,
                                                 base::TimeDelta duration) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onPlaybackProgressUpdated(
-      env, java_controller, elapsed.InNanoseconds(), duration.InNanoseconds());
+  Java_ReadAloudNativeBridge_onPlaybackProgressUpdated(
+      env, j_bridge, elapsed.InNanoseconds(), duration.InNanoseconds());
 }
 
 void ReadAloudBridge::OnPlaybackStateChanged(
     ReadAloudService::PlaybackState playback_state) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onPlaybackStateChanged(
-      env, java_controller, static_cast<jint>(playback_state));
+  Java_ReadAloudNativeBridge_onPlaybackStateChanged(
+      env, j_bridge, static_cast<jint>(playback_state));
 }
 
 void ReadAloudBridge::OnVoicesAvailable(
@@ -80,268 +80,200 @@ void ReadAloudBridge::OnVoicesAvailable(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onVoicesAvailable(
-      env, java_controller, ids, display_names, std::string(selected_voice_id));
+  Java_ReadAloudNativeBridge_onVoicesAvailable(
+      env, j_bridge, ids, display_names, std::string(selected_voice_id));
 }
 
 void ReadAloudBridge::OnWordHighlightUpdated(int absolute_start_index,
                                              int absolute_end_index) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onWordHighlightUpdated(
-      env, java_controller, absolute_start_index, absolute_end_index);
+  Java_ReadAloudNativeBridge_onWordHighlightUpdated(
+      env, j_bridge, absolute_start_index, absolute_end_index);
 }
 
 void ReadAloudBridge::OnHighlightingSupported(bool supported) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onHighlightingSupported(env, java_controller,
-                                                   supported);
+  Java_ReadAloudNativeBridge_onHighlightingSupported(env, j_bridge, supported);
 }
 
 void ReadAloudBridge::OnFallbackEngaged() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onFallbackEngaged(env, java_controller);
+  Java_ReadAloudNativeBridge_onFallbackEngaged(env, j_bridge);
 }
 
 void ReadAloudBridge::OnPlaybackError(std::string_view error_message) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onPlaybackError(env, java_controller,
-                                           std::string(error_message));
+  Java_ReadAloudNativeBridge_onPlaybackError(env, j_bridge,
+                                             std::string(error_message));
 }
 
 void ReadAloudBridge::OnVoicePreviewPlaybackStateChanged(
     std::string_view voice_id,
     ReadAloudService::PlaybackState playback_state) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onVoicePreviewPlaybackStateChanged(
-      env, java_controller, std::string(voice_id),
-      static_cast<jint>(playback_state));
+  Java_ReadAloudNativeBridge_onVoicePreviewPlaybackStateChanged(
+      env, j_bridge, std::string(voice_id), static_cast<jint>(playback_state));
 }
 
 void ReadAloudBridge::OnReadabilityResult(const GURL& url, bool is_readable) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (!j_bridge) {
     return;
   }
-  Java_ReadAloudController_onReadabilityResult(env, java_controller, url,
-                                               is_readable);
+  Java_ReadAloudNativeBridge_onReadabilityResult(env, j_bridge, url,
+                                                 is_readable);
 }
 
 void ReadAloudBridge::OnNativeDestroyed() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_controller = weak_java_controller_.get(env);
-  if (!java_controller) {
-    return;
+  ScopedJavaLocalRef<jobject> j_bridge = weak_java_native_bridge_.get(env);
+  if (j_bridge) {
+    Java_ReadAloudNativeBridge_onNativeDestroyed(env, j_bridge);
   }
-  Java_ReadAloudController_onNativeDestroyed(env, java_controller);
+  weak_java_native_bridge_.reset();
+  service_ = nullptr;
 }
 
 // ============================================================================
-// JNI Inbound Methods (Called by Java -> C++)
+// JNI Inbound Methods (Java -> C++ Commands)
 // ============================================================================
 
-static jlong JNI_ReadAloudController_GetReadAloudService(JNIEnv* env,
-                                                         Profile* profile) {
+static jlong JNI_ReadAloudNativeBridge_Init(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaRef<jobject>& j_native_bridge) {
   if (!profile) {
     return 0;
   }
   ReadAloudService* service = ReadAloudServiceFactory::GetForProfile(profile);
-  return reinterpret_cast<jlong>(service);
-}
-
-static void JNI_ReadAloudController_SetController(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    const JavaRef<jobject>& j_caller) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
   if (!service) {
-    return;
+    return 0;
   }
-  auto bridge = std::make_unique<ReadAloudBridge>(env, j_caller, service);
+  auto bridge =
+      std::make_unique<ReadAloudBridge>(env, j_native_bridge, service);
+  auto* bridge_ptr = bridge.get();
   service->SetDelegate(std::move(bridge));
+  return reinterpret_cast<jlong>(bridge_ptr);
 }
 
-static void JNI_ReadAloudController_ClearController(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::Play(JNIEnv* env, content::WebContents* web_contents) {
+  if (service_) {
+    service_->Play(web_contents);
   }
-  service->SetDelegate(nullptr);
 }
 
-static void JNI_ReadAloudController_Play(JNIEnv* env,
-                                         jlong read_aloud_service_ptr,
-                                         content::WebContents* web_contents) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::Pause(JNIEnv* env) {
+  if (service_) {
+    service_->Pause();
   }
-  service->Play(web_contents);
 }
 
-static void JNI_ReadAloudController_Pause(JNIEnv* env,
-                                          jlong read_aloud_service_ptr) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::Stop(JNIEnv* env) {
+  if (service_) {
+    service_->Stop();
   }
-  service->Pause();
 }
 
-static void JNI_ReadAloudController_Stop(JNIEnv* env,
-                                         jlong read_aloud_service_ptr) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SeekToWordIndex(JNIEnv* env, jint word_index) {
+  if (service_) {
+    service_->SeekToWordIndex(word_index);
   }
-  service->Stop();
 }
 
-static void JNI_ReadAloudController_SeekToWordIndex(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    jint word_index) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::Seek(JNIEnv* env, jlong absolute_time_nanos) {
+  if (service_ && absolute_time_nanos >= 0) {
+    service_->Seek(base::Nanoseconds(absolute_time_nanos));
   }
-  service->SeekToWordIndex(word_index);
 }
 
-static void JNI_ReadAloudController_Seek(JNIEnv* env,
-                                         jlong read_aloud_service_ptr,
-                                         jlong absolute_time_nanos) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SeekRelative(JNIEnv* env, jlong offset_nanos) {
+  if (service_) {
+    service_->SeekRelative(base::Nanoseconds(offset_nanos));
   }
-  if (absolute_time_nanos < 0) {
-    return;
-  }
-  service->Seek(base::Nanoseconds(absolute_time_nanos));
 }
 
-static void JNI_ReadAloudController_SeekRelative(JNIEnv* env,
-                                                 jlong read_aloud_service_ptr,
-                                                 jlong offset_nanos) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SetPlaybackRate(JNIEnv* env, jfloat rate) {
+  if (service_) {
+    service_->SetPlaybackRate(rate);
   }
-  service->SeekRelative(base::Nanoseconds(offset_nanos));
 }
 
-static void JNI_ReadAloudController_SetPlaybackRate(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    jfloat rate) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SetVoice(JNIEnv* env, const std::string& voice_id) {
+  if (service_) {
+    service_->SetVoice(voice_id);
   }
-  service->SetPlaybackRate(rate);
 }
 
-static void JNI_ReadAloudController_SetVoice(JNIEnv* env,
-                                             jlong read_aloud_service_ptr,
-                                             const std::string& voice_id) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::PreviewVoice(JNIEnv* env, const std::string& voice_id) {
+  if (service_) {
+    service_->PreviewVoice(voice_id);
   }
-  service->SetVoice(voice_id);
 }
 
-static void JNI_ReadAloudController_PreviewVoice(JNIEnv* env,
-                                                 jlong read_aloud_service_ptr,
-                                                 const std::string& voice_id) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::StopVoicePreview(JNIEnv* env) {
+  if (service_) {
+    service_->StopVoicePreview();
   }
-  service->PreviewVoice(voice_id);
 }
 
-static void JNI_ReadAloudController_StopVoicePreview(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SetPlaybackMode(JNIEnv* env, jint mode) {
+  if (service_) {
+    service_->SetPlaybackMode(
+        static_cast<ReadAloudService::PlaybackMode>(mode));
   }
-  service->StopVoicePreview();
 }
 
-static void JNI_ReadAloudController_SetPlaybackMode(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    jint mode) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SetHighlightingEnabled(JNIEnv* env, jboolean enabled) {
+  if (service_) {
+    service_->SetHighlightingEnabled(enabled);
   }
-  service->SetPlaybackMode(static_cast<ReadAloudService::PlaybackMode>(mode));
 }
 
-static void JNI_ReadAloudController_SetHighlightingEnabled(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    jboolean enabled) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::SendFeedback(JNIEnv* env, jint feedback_type) {
+  if (service_) {
+    service_->SendFeedback(
+        static_cast<ReadAloudService::FeedbackType>(feedback_type));
   }
-  service->SetHighlightingEnabled(enabled);
 }
 
-static void JNI_ReadAloudController_SendFeedback(JNIEnv* env,
-                                                 jlong read_aloud_service_ptr,
-                                                 jint feedback_type) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::CheckReadability(JNIEnv* env, const GURL& url) {
+  if (service_) {
+    service_->CheckReadability(url);
   }
-  service->SendFeedback(
-      static_cast<ReadAloudService::FeedbackType>(feedback_type));
 }
 
-static void JNI_ReadAloudController_CheckReadability(
-    JNIEnv* env,
-    jlong read_aloud_service_ptr,
-    const GURL& url) {
-  auto* service = reinterpret_cast<ReadAloudService*>(read_aloud_service_ptr);
-  if (!service) {
-    return;
+void ReadAloudBridge::Destroy(JNIEnv* env) {
+  weak_java_native_bridge_.reset();
+  if (service_) {
+    service_->SetDelegate(nullptr);
   }
-  service->CheckReadability(url);
 }
 
 }  // namespace readaloud
 
-DEFINE_JNI(ReadAloudController)
+DEFINE_JNI(ReadAloudNativeBridge)

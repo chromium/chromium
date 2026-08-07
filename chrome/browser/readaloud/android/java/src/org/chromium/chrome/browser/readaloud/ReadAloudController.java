@@ -24,11 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -121,7 +116,6 @@ import java.util.function.Supplier;
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
  * availability and triggering playback. Only instantiate after native is initialized.
  */
-@JNINamespace("readaloud")
 @NullMarked
 public class ReadAloudController
         implements Player.Observer,
@@ -200,6 +194,7 @@ public class ReadAloudController
     private boolean mHasKeyboardInsets;
     private boolean mIsInTabSwitcher;
     @Nullable private CallbackController mCallbackController;
+    private final ReadAloudNativeBridge mNativeBridge = new ReadAloudNativeBridge();
 
     @Nullable private List<String> mUrls;
     private int mCurrentUrlIndex;
@@ -707,6 +702,10 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onProfileAvailable(Profile profile) {
         TraceEvent.begin("ReadAloudController#onProfileAvailable");
+        // Initialize native C++ ReadAloudService binding when native Read Aloud is enabled.
+        if (ReadAloudFeatures.isNativeEnabled()) {
+            mNativeBridge.initialize(profile, this);
+        }
         ReadAloudReadabilityHooksFactory factory =
                 ServiceLoaderUtil.maybeCreate(ReadAloudReadabilityHooksFactory.class);
         if (factory != null) {
@@ -1377,6 +1376,8 @@ public class ReadAloudController
             mCallbackController.destroy();
             mCallbackController = null;
         }
+        // Unregister controller delegate from C++ service and reset native pointer.
+        mNativeBridge.destroy();
         sInstances.remove(this);
         mIsDestroyed = true;
         if (mVoicePreviewPlayback != null) {
@@ -2267,20 +2268,17 @@ public class ReadAloudController
     }
 
     // ============================================================================
-    // JNI Callbacks (Called by C++ -> Java)
+    // Listener Callbacks (Invoked by ReadAloudNativeBridge)
     // ============================================================================
 
     // Called when the active article's metadata (title and publisher) is loaded.
-    @CalledByNative
-    private void onMetadataAvailable(
-            @JniType("std::string") String title, @JniType("std::string") String publisher) {
+    void onMetadataAvailable(String title, String publisher) {
         // TODO: Update property model with title and publisher.
         Log.d(TAG, "onMetadataAvailable: title = %s, publisher = %s", title, publisher);
     }
 
     // Called periodically to report the current playback progress and total duration.
-    @CalledByNative
-    private void onPlaybackProgressUpdated(long elapsedNanos, long durationNanos) {
+    void onPlaybackProgressUpdated(long elapsedNanos, long durationNanos) {
         // TODO: Update property model with playback progress.
         Log.d(
                 TAG,
@@ -2290,18 +2288,13 @@ public class ReadAloudController
     }
 
     // Called when the audio playback state transitions (e.g., playing, paused, stopped).
-    @CalledByNative
-    private void onPlaybackStateChanged(int playbackState) {
+    void onPlaybackStateChanged(int playbackState) {
         // TODO: Update property model with playback state.
         Log.d(TAG, "onPlaybackStateChanged: playbackState = %d", playbackState);
     }
 
     // Called when the list of available synthesis voices is loaded or changed.
-    @CalledByNative
-    private void onVoicesAvailable(
-            @JniType("std::vector<std::string>") String[] voiceIds,
-            @JniType("std::vector<std::string>") String[] voiceDisplayNames,
-            @JniType("std::string") String selectedVoiceId) {
+    void onVoicesAvailable(String[] voiceIds, String[] voiceDisplayNames, String selectedVoiceId) {
         // TODO: Update property model with available voices.
         Log.d(
                 TAG,
@@ -2313,8 +2306,7 @@ public class ReadAloudController
     }
 
     // Called when the active word highlight boundary shifts in the text.
-    @CalledByNative
-    private void onWordHighlightUpdated(int absoluteStartIndex, int absoluteEndIndex) {
+    void onWordHighlightUpdated(int absoluteStartIndex, int absoluteEndIndex) {
         // TODO: Update property model with word highlight boundaries.
         Log.d(
                 TAG,
@@ -2324,30 +2316,25 @@ public class ReadAloudController
     }
 
     // Called to notify if synchronized word highlighting is supported for the current content.
-    @CalledByNative
-    private void onHighlightingSupported(boolean supported) {
+    void onHighlightingSupported(boolean supported) {
         // TODO: Update property to toggle highlight visibility.
         Log.d(TAG, "onHighlightingSupported: supported = %b", supported);
     }
 
     // Called when playback switches to the on-device system TTS engine.
-    @CalledByNative
-    private void onFallbackEngaged() {
+    void onFallbackEngaged() {
         // TODO: Update property to toggle fallback state.
         Log.d(TAG, "onFallbackEngaged");
     }
 
     // Called when an unrecoverable playback error occurs.
-    @CalledByNative
-    private void onPlaybackError(@JniType("std::string") String errorMessage) {
+    void onPlaybackError(String errorMessage) {
         // TODO: Handle playback error.
         Log.d(TAG, "onPlaybackError: errorMessage = %s", errorMessage);
     }
 
     // Called when the playback state of a voice preview changes in settings.
-    @CalledByNative
-    private void onVoicePreviewPlaybackStateChanged(
-            @JniType("std::string") String voiceId, int playbackState) {
+    void onVoicePreviewPlaybackStateChanged(String voiceId, int playbackState) {
         // TODO: Update property model with voice preview playback state.
         Log.d(
                 TAG,
@@ -2357,76 +2344,13 @@ public class ReadAloudController
     }
 
     // Called with the result of an asynchronous page readability check.
-    @CalledByNative
-    private void onReadabilityResult(@JniType("GURL") GURL url, boolean isReadable) {
+    void onReadabilityResult(GURL url, boolean isReadable) {
         // TODO: Update property model with readability result.
         Log.d(TAG, "onReadabilityResult: url = %s, isReadable = %b", url.getSpec(), isReadable);
     }
 
     // Called immediately before the native service is destroyed.
-    @CalledByNative
-    private void onNativeDestroyed() {
-        // TODO: Clean up native controller bindings.
-        Log.d(TAG, "onNativeDestroyed");
-    }
-
-    // ============================================================================
-    // JNI Native Methods (Called by Java -> C++)
-    // ============================================================================
-
-    @NativeMethods
-    interface Natives {
-        // Retrieves the pointer to the native ReadAloudService for the profile.
-        long getReadAloudService(@JniType("Profile*") Profile profile);
-
-        // Registers the Java controller as the native service delegate.
-        void setController(long readAloudServicePtr, ReadAloudController caller);
-
-        // Unregisters the Java controller from the native service.
-        void clearController(long readAloudServicePtr);
-
-        // Starts or resumes audio playback.
-        void play(
-                long readAloudServicePtr,
-                @JniType("content::WebContents*") WebContents webContents);
-
-        // Pauses the current audio playback.
-        void pause(long readAloudServicePtr);
-
-        // Stops audio playback and releases playback resources.
-        void stop(long readAloudServicePtr);
-
-        // Seeks to the start of the word at the specified index in the text.
-        void seekToWordIndex(long readAloudServicePtr, int wordIndex);
-
-        // Seeks to a specific absolute time offset from the beginning of the audio.
-        void seek(long readAloudServicePtr, long absoluteTimeNanos);
-
-        // Seeks forward or backward relatively (e.g., for the +10s / -10s skip buttons).
-        void seekRelative(long readAloudServicePtr, long offsetNanos);
-
-        // Adjusts the audio playback speed (rate multiplier).
-        void setPlaybackRate(long readAloudServicePtr, float rate);
-
-        // Sets the voice to be used for text-to-speech synthesis.
-        void setVoice(long readAloudServicePtr, @JniType("std::string") String voiceId);
-
-        // Plays a short audio sample of the specified voice.
-        void previewVoice(long readAloudServicePtr, @JniType("std::string") String voiceId);
-
-        // Stops the active voice preview playback.
-        void stopVoicePreview(long readAloudServicePtr);
-
-        // Sets the playback mode (classic full read or summary overview).
-        void setPlaybackMode(long readAloudServicePtr, int mode);
-
-        // Toggles synchronized word highlighting in the UI.
-        void setHighlightingEnabled(long readAloudServicePtr, boolean enabled);
-
-        // Submits user feedback (e.g., thumbs up/down) for logging.
-        void sendFeedback(long readAloudServicePtr, int feedbackType);
-
-        // Initiates an asynchronous check to determine if the URL is readable.
-        void checkReadability(long readAloudServicePtr, @JniType("GURL") GURL url);
+    void onNativeDestroyed() {
+        // TODO(b/542628333): Reset active NativePlayback session when NativePlayback is wired up.
     }
 }
