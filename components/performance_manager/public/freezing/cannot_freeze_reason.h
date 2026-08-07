@@ -38,8 +38,8 @@ enum class CannotFreezeReason {
   kNotificationPermission,
   kOptedOut,
   kMostRecentlyUsed,
-  kNonTabWebUI,
-  kMax = kNonTabWebUI,  // Upper bound for EnumSet.
+  kWebUI,
+  kMax = kWebUI,  // Upper bound for EnumSet.
 };
 
 using CannotFreezeReasonSet = base::EnumSet<CannotFreezeReason,

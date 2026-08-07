@@ -2398,6 +2398,58 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTab) {
                             /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
 }
 
+TEST_F(FreezingPolicyTest, FreezeVoteWhenWebUI) {
+  // Navigate to a WebUI URL.
+  page_node()->OnMainFrameNavigationCommitted(
+      /*same_document=*/false, base::TimeTicks::Now(), /*navigation_id=*/2,
+      GURL("chrome://settings"), /*contents_mime_type=*/"",
+      /*notification_permission_status=*/std::nullopt);
+
+  // Adding a freeze vote should NOT trigger MaybeFreezePageNode because of
+  // CannotFreezeReason::kWebUI.
+  policy()->AddFreezeVote(page_node());
+  VerifyFreezerExpectations();
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting,
+                            ElementsAre(CannotFreezeReason::kWebUI));
+
+  // Since there is still a freeze vote and the CannotFreezeReason::kWebUI is
+  // about to be removed, the page should be frozen as part of the navigation.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+
+  // Navigate to a non-WebUI URL.
+  page_node()->OnMainFrameNavigationCommitted(
+      /*same_document=*/false, base::TimeTicks::Now(), /*navigation_id=*/3,
+      GURL("https://example.com"), /*contents_mime_type=*/"",
+      /*notification_permission_status=*/std::nullopt);
+
+  VerifyFreezerExpectations();
+  ExpectCannotFreezeReasons(page_node(), FreezingType::kVoting, IsEmpty());
+}
+
+TEST_F(FreezingPolicyTest, FreezeVoteWhenWebUiDialog) {
+  // Create a new page representing a WebDialog (it remains PageType::kUnknown).
+  auto dialog_page = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken(), GURL());
+  auto dialog_frame =
+      CreateFrameNodeAutoId(process_node(), dialog_page.get(),
+                            /* parent_frame_node=*/nullptr, kBrowsingInstanceA);
+
+  // Navigate to a WebUI URL (representing the constrained dialog opening
+  // chrome://print).
+  dialog_page->OnMainFrameNavigationCommitted(
+      /*same_document=*/false, base::TimeTicks::Now(), /*navigation_id=*/2,
+      GURL("chrome://print"), /*contents_mime_type=*/"",
+      /*notification_permission_status=*/std::nullopt);
+
+  // Verify that adding a freeze vote does NOT freeze the page because it has
+  // the CannotFreezeReason::kWebUI reason.
+  policy()->AddFreezeVote(dialog_page.get());
+  VerifyFreezerExpectations();
+  ExpectCannotFreezeReasons(dialog_page.get(), FreezingType::kVoting,
+                            ElementsAre(CannotFreezeReason::kWebUI));
+}
+
 TEST_F(FreezingPolicyInfiniteTabsTest, NonTabWebUI) {
   // Create a new page of type `kNonTabWebUI`.
   auto webui_page = CreateNode<PageNodeImpl>(
@@ -2409,10 +2461,16 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTabWebUI) {
       CreateFrameNodeAutoId(process_node(), webui_page.get(),
                             /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
 
-  // It should have both kVisible and kNonTabWebUI cannot freeze reasons.
-  ExpectCannotFreezeReasons(webui_page.get(), FreezingType::kInfiniteTabs,
-                            ElementsAre(CannotFreezeReason::kVisible,
-                                        CannotFreezeReason::kNonTabWebUI));
+  // Navigate to a WebUI URL.
+  webui_page->OnMainFrameNavigationCommitted(
+      /*same_document=*/false, base::TimeTicks::Now(), /*navigation_id=*/2,
+      GURL("chrome://tab-search"), /*contents_mime_type=*/"",
+      /*notification_permission_status=*/std::nullopt);
+
+  // It should have both kVisible and kWebUI cannot freeze reasons.
+  ExpectCannotFreezeReasons(
+      webui_page.get(), FreezingType::kInfiniteTabs,
+      ElementsAre(CannotFreezeReason::kVisible, CannotFreezeReason::kWebUI));
 
   // When it becomes hidden, it should not be frozen because of the cannot
   // freeze reason.
@@ -2420,9 +2478,9 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTabWebUI) {
   AdvanceClock(base::Milliseconds(1));
   VerifyFreezerExpectations();
 
-  // Now it should only have the kNonTabWebUI cannot freeze reason.
+  // Now it should only have the kWebUI cannot freeze reason.
   ExpectCannotFreezeReasons(webui_page.get(), FreezingType::kInfiniteTabs,
-                            ElementsAre(CannotFreezeReason::kNonTabWebUI));
+                            ElementsAre(CannotFreezeReason::kWebUI));
 }
 
 }  // namespace performance_manager
