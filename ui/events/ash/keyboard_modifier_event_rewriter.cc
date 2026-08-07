@@ -165,17 +165,7 @@ std::unique_ptr<Event> KeyboardModifierEventRewriter::RewritePressKeyEvent(
         remapped.key == DomKey::ALT_GRAPH) {
       modifier_flag |= EF_MOD3_DOWN;
     }
-    if (pressed_modifier_keys_.insert_or_assign(physical_key, modifier_flag)
-            .second) {
-      // Flip capslock state if needed. Note: do not on repeated events.
-      // Toggling of CapsLock in the `ImeKeyboard` is handled by
-      // `CapsLockEventRewriter`, here we only rewrite the physical key press to
-      // CapsLock.
-      if (!ash::features::IsModifierSplitEnabled() &&
-          remapped.key == DomKey::CAPS_LOCK) {
-        ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
-      }
-    }
+    pressed_modifier_keys_.insert_or_assign(physical_key, modifier_flag);
   }
 
   // Rebuild rewritten event.
@@ -303,21 +293,12 @@ EventFlags KeyboardModifierEventRewriter::RewriteModifierFlags(
                                               EF_COMMAND_DOWN | EF_ALTGR_DOWN |
                                               EF_MOD3_DOWN | EF_FUNCTION_DOWN;
   flags &= ~kTargetModifierFlags;
-  if (!ash::features::IsModifierSplitEnabled()) {
-    flags &= ~EF_CAPS_LOCK_ON;
-  }
 
   // Recalculate modifier flags from the currently pressed keys.
   for (const auto& [unused, modifier] : pressed_modifier_keys_) {
     flags |= modifier;
   }
 
-  if (!ash::features::IsModifierSplitEnabled()) {
-    // Update CapsLock.
-    if (ime_keyboard_->IsCapsLockEnabled()) {
-      flags |= EF_CAPS_LOCK_ON;
-    }
-  }
 
   // Update latched ALTGR modifier.
   if (altgr_latch_) {

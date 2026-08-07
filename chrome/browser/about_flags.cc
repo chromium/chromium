@@ -10157,10 +10157,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshPickerGifsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPickerGifs)},
 
-    {"ash-modifier-split", flag_descriptions::kAshModifierSplitName,
-     flag_descriptions::kAshModifierSplitDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kModifierSplit)},
-
     {"ash-split-keyboard-refactor",
      flag_descriptions::kAshSplitKeyboardRefactorName,
      flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,

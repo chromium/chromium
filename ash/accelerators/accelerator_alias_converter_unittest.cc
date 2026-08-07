@@ -201,8 +201,6 @@ class AcceleratorAliasConverterTest : public AshTestBase {
 };
 
 TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -217,8 +215,6 @@ TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -251,8 +247,6 @@ TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, UpdateFunctionAlias) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -493,8 +487,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCameraAccessToggleKeyAlias) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, SplitModifierKeyboardCapsLockAlias) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -573,8 +565,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, CheckQuickInsertInList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -596,8 +586,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckQuickInsertInList) {
 }
 
 TEST_F(AcceleratorAliasConverterTest, CheckQuickInsertNotInList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();

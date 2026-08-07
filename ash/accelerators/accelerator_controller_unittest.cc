@@ -1982,8 +1982,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kModifierSplit, features::kPeripheralCustomization}, {});
+  feature_list.InitWithFeatures({features::kPeripheralCustomization}, {});
 
   const int kKeyboardDeviceIdWithFunction = 123;
   const int kKeyboardDeviceId = 456;
@@ -2049,8 +2048,7 @@ TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
 
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kModifierSplit, features::kPeripheralCustomization}, {});
+  feature_list.InitWithFeatures({features::kPeripheralCustomization}, {});
 
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();

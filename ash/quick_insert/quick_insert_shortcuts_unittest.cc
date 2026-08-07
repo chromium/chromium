@@ -4,12 +4,10 @@
 
 #include "ash/quick_insert/quick_insert_shortcuts.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/auto_reset.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -54,7 +52,6 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithLauncherKey) {
 }
 
 TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kModifierSplit);
   ui::KeyboardDevice keyboard(/*id=*/1, ui::INPUT_DEVICE_INTERNAL,
                               /*name=*/"Keyboard1", /*has_assistant_key=*/true,
                               /*has_function_key=*/true);

@@ -632,9 +632,7 @@ void LoginPasswordView::SubmitPassword() {
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
-  const gfx::VectorIcon& capslock_icon =
-      features::IsModifierSplitEnabled() ? kModifierSplitLockScreenCapsLockIcon
-                                         : kLockScreenCapsLockIcon;
+  const gfx::VectorIcon& capslock_icon = kModifierSplitLockScreenCapsLockIcon;
   const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
   const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(

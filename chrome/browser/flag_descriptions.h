@@ -7265,10 +7265,6 @@ inline constexpr char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
-inline constexpr char kAshModifierSplitName[] = "Modifier split feature";
-inline constexpr char kAshModifierSplitDescription[] =
-    "Enable new modifier split feature on ChromeOS.";
-
 inline constexpr char kAshPickerGifsName[] = "Picker GIFs search";
 inline constexpr char kAshPickerGifsDescription[] =
     "Enable GIf search for Picker.";

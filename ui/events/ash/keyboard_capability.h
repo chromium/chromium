@@ -347,10 +347,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasQuickInsertKey(const KeyboardDevice& keyboard) const;
   bool HasQuickInsertKey(int device_id) const;
 
-  // Check if the QuickInsert key exists, but only for on OOBE screen.
-  bool HasQuickInsertKeyForOobe(const KeyboardDevice& keyboard) const;
-  bool HasQuickInsertKeyForOobe(int device_id) const;
-
   // Returns the appropriate meta key present on the given keyboard.
   ui::mojom::MetaKey GetMetaKey(const KeyboardDevice& keyboard) const;
   ui::mojom::MetaKey GetMetaKey(int device_id) const;

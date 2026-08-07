@@ -23,7 +23,7 @@ class FullscreenPixelTest : public AshTestBase {
 // Verifies the primary fullscreen of an active user session.
 TEST_F(FullscreenPixelTest, VerifyDefaultPrimaryDisplay) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "primary_display", /*revision_number=*/10,
+      "primary_display", /*revision_number=*/11,
       Shell::GetPrimaryRootWindow()));
 }
 

@@ -591,7 +591,6 @@ BASE_DECLARE_FEATURE(kMediaAppImageMantisRemoveBackground);
 enum class MantisModel { V1, V2 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kModifierSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kMouseImposterCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kMultiCalendarSupport);
@@ -1230,7 +1229,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubShortQuickActionPodsTitlesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubCallNotificationEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsModifierSplitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMouseImposterCheckEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSplitKeyboardRefactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPickerUpdateEnabled();

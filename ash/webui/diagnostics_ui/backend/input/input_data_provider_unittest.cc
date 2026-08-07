@@ -869,8 +869,6 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
 }
 
 TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
@@ -889,8 +887,6 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
 }
 
 TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboardWithoutConfig) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;

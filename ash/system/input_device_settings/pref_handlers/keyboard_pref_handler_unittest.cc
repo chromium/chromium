@@ -1249,34 +1249,7 @@ TEST_F(KeyboardPrefHandlerTest, SettingsUpdateMetricTest) {
   }
 }
 
-TEST_F(KeyboardPrefHandlerTest,
-       InitializeSplitModifierKeyboardPreFeatureEnable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kModifierSplit);
-
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      {kSampleSplitModifierKeyboard});
-
-  mojom::Keyboard keyboard;
-  keyboard.id = kSampleSplitModifierKeyboard.id;
-  keyboard.is_external = false;
-  keyboard.modifier_keys = {ui::mojom::ModifierKey::kAssistant};
-  pref_handler_->InitializeKeyboardSettings(nullptr, /*keyboard_policies=*/{},
-                                            &keyboard);
-  const auto& settings = keyboard.settings;
-  EXPECT_EQ(1u, settings->modifier_remappings.size());
-  ASSERT_TRUE(settings->modifier_remappings.contains(
-      ui::mojom::ModifierKey::kAssistant));
-  EXPECT_EQ(
-      ui::mojom::ModifierKey::kCapsLock,
-      settings->modifier_remappings.at(ui::mojom::ModifierKey::kAssistant));
-}
-
-TEST_F(KeyboardPrefHandlerTest,
-       InitializeSplitModifierKeyboardPostFeatureEnable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
-
+TEST_F(KeyboardPrefHandlerTest, InitializeSplitModifierKeyboard) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleSplitModifierKeyboard});
 

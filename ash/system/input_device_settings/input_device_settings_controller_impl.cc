@@ -1062,24 +1062,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     pref_service->ClearPref(prefs::kSixPackKeyInsertNotificationsRemaining);
   }
 
-  if (!features::IsModifierSplitEnabled()) {
-    pref_service->ClearPref(prefs::kTopRowRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kPageUpRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kPageDownRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kHomeRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kEndRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kDeleteRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kInsertRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kCapsLockRemappingNudgeShownCount);
-    pref_service->ClearPref(prefs::kTopRowRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kPageUpRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kPageDownRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kHomeRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kEndRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kDeleteRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kInsertRemappingNudgeLastShown);
-    pref_service->ClearPref(prefs::kCapsLockRemappingNudgeLastShown);
-  }
   active_pref_service_ = pref_service;
   active_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
   auto* cache = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
@@ -1186,13 +1168,11 @@ void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
 
   // Modifiers must be refreshed before settings so settings are retrieved for
   // the correct modifiers.
-  if (features::IsModifierSplitEnabled()) {
-    sequenced_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
+          weak_ptr_factory_.GetWeakPtr()));
 
   settings_refresh_pending_ = true;
   sequenced_task_runner_->PostTask(

@@ -276,9 +276,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
 
 TEST_F(InputDeviceSettingsMetricsManagerTest,
        RecordMetricForSplitModifierKeyboard) {
-  // Enable the modifier split feature flag.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
   mojom::Keyboard split_modifier_keyboard;
 
   split_modifier_keyboard.device_key = kInternalKeyboardDeviceKey;

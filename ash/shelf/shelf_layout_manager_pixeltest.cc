@@ -64,7 +64,7 @@ TEST_P(ShelfLayoutManagerPixelRTLTest, AutohideShelfVisibility) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("shelf_no_auto_hide"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 1,
       shelf->GetWindow(), shelf->hotseat_widget()));
 
   // When the auto-hide is set and a window is shown fullscreen, the shelf
@@ -84,7 +84,7 @@ TEST_P(ShelfLayoutManagerPixelRTLTest, AutohideShelfVisibility) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("shelf_show_with_auto_hide"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 16 : 1,
       shelf->GetWindow(), shelf->hotseat_widget()));
 }
 

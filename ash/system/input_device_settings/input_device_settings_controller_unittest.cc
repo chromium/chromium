@@ -665,7 +665,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         {features::kPeripheralCustomization,
          features::kAltClickAndSixPackCustomization,
          features::kPeripheralNotification,
-         ::features::kSupportF11AndF12KeyShortcuts, features::kModifierSplit},
+         ::features::kSupportF11AndF12KeyShortcuts},
         {});
     NoSessionAshTestBase::SetUp();
     Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
