@@ -47,6 +47,13 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_focus_test.js", "mocha.run()");
 }
 
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, EditDictionaryPage) {
+  RunTest("settings/edit_dictionary_page_test.js",
+          "runMochaSuite('EditDictionaryPageFocus')");
+}
+#endif
+
 // Times out on Mac. See https://crbug.com/40679346.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SettingsUIToolbarAndDrawer DISABLED_SettingsUIToolbarAndDrawer

@@ -201,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DropdownMenu) {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
-  RunTest("settings/edit_dictionary_page_test.js", "mocha.run()");
+  RunTest("settings/edit_dictionary_page_test.js",
+          "runMochaSuite('EditDictionaryPage')");
 }
 #endif
 

@@ -13,7 +13,7 @@
       justify-content: normal;
     }
 
-    iron-list .word {
+    #list .word {
       flex: 1;
     }
   </style>
@@ -38,19 +38,17 @@
     </div>
     <div class="list-frame">
       <template is="dom-if" if="[[hasWords_]]">
-        <iron-list id="list" items="[[words_]]" preserve-focus
-            scroll-target="[[subpageScrollTarget]]" risk-selection>
-          <template>
+        <div id="list" role="listbox" focusgroup="listbox block">
+          <template is="dom-repeat" items="[[words_]]">
             <div class="list-item">
               <div id$="word[[index]]" class="word text-elide">[[item]]</div>
               <cr-icon-button class="icon-clear" on-click="onRemoveWordClick_"
-                  tabindex$="[[tabIndex]]"
                   title="$i18n{deleteDictionaryWordButton}"
                   aria-describedby$="word[[index]]">
               </cr-icon-button>
             </div>
           </template>
-        </iron-list>
+        </div>
       </template>
       <div id="noWordsLabel" class="list-item" hidden$="[[hasWords_]]">
         $i18n{noCustomDictionaryWordsFound}
