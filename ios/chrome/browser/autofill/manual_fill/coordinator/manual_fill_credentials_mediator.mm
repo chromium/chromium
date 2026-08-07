@@ -520,7 +520,9 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
   for (const auto& credential : credentials) {
     std::vector<PasswordForm> correspondingPasswordForms =
-        _savedPasswordsPresenter->GetCorrespondingPasswordForms(credential);
+        password_manager::ToPasswordForms(
+            _savedPasswordsPresenter->GetCorrespondingStoredCredentials(
+                credential));
     passwordforms.insert(passwordforms.end(),
                          correspondingPasswordForms.begin(),
                          correspondingPasswordForms.end());

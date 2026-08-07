@@ -108,6 +108,10 @@ struct StoredCredential {
   std::optional<std::u16string> GetPasswordBackup() const;
   std::optional<base::Time> GetPasswordBackupDateCreated() const;
 
+  std::u16string GetPasswordNote() const;
+  void SetPasswordNote(const std::u16string& new_note_value);
+  void DeletePasswordBackupNote();
+
 #if defined(UNIT_TEST)
   friend bool operator==(const StoredCredential&,
                          const StoredCredential&) = default;

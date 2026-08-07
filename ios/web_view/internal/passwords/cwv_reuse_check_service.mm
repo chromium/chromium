@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/passwords_grouper.h"
@@ -59,32 +60,40 @@
 - (void)checkReusedPasswords:(NSArray<CWVPassword*>*)passwords
            completionHandler:
                (void (^)(NSSet<NSString*>* reusedPasswords))completionHandler {
-  std::vector<password_manager::PasswordForm> passwordForms;
+  std::vector<password_manager::StoredCredential> storedCredentials;
+  storedCredentials.reserve(passwords.count);
   for (CWVPassword* password in passwords) {
-    passwordForms.push_back(*password.internalPasswordForm);
+    storedCredentials.push_back(
+        password_manager::FromPasswordForm(*password.internalPasswordForm));
   }
 
-  // Convert forms to Facets.
+  // Convert credentials to Facets.
   std::vector<affiliations::FacetURI> facets;
-  facets.reserve(passwordForms.size());
-  for (const auto& form : passwordForms) {
+  facets.reserve(storedCredentials.size());
+  for (const auto& credential : storedCredentials) {
     // Blocked forms aren't grouped.
-    if (form.blocked_by_user) {
+    if (credential.blocked_by_user) {
       continue;
     }
     facets.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
-        GetFacetRepresentation(form)));
+        GetFacetRepresentation(credential)));
   }
 
-  base::OnceClosure updateAffiliationsAndBrandingClosure = base::BindOnce(^{
-    base::OnceClosure groupCredentialsClosure = base::BindOnce(^{
-      [self groupPasswordsWithCompletionHandler:completionHandler
-                                      passwords:std::move(passwords)];
-    });
+  base::OnceClosure updateAffiliationsAndBrandingClosure = base::BindOnce(
+      [](CWVReuseCheckService* self,
+         std::vector<password_manager::StoredCredential> storedCredentials,
+         void (^completionHandler)(NSSet<NSString*>*),
+         NSArray<CWVPassword*>* passwords) {
+        base::OnceClosure groupCredentialsClosure = base::BindOnce(^{
+          [self groupPasswordsWithCompletionHandler:completionHandler
+                                          passwords:passwords];
+        });
 
-    self->_passwords_grouper->GroupCredentials(
-        passwordForms, {}, std::move(groupCredentialsClosure));
-  });
+        self->_passwords_grouper->GroupCredentials(
+            std::move(storedCredentials), {},
+            std::move(groupCredentialsClosure));
+      },
+      self, std::move(storedCredentials), completionHandler, passwords);
 
   _affiliation_service->UpdateAffiliationsAndBranding(
       facets, std::move(updateAffiliationsAndBrandingClosure));

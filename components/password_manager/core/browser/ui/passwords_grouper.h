@@ -10,6 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
@@ -23,7 +24,7 @@ namespace password_manager {
 // grouping: firstly passwords with affiliated |signon_realm| are grouped
 // together which corresponds to |AffiliatedGroup|. Withing these groups
 // passwords are grouped by username/password pair and are referred as
-// |CredentialUIEntry|. So PasswordForms with affiliated signon_realms and
+// |CredentialUIEntry|. So credentials with affiliated signon_realms and
 // matching username/password are considered a single credential. Blocked
 // websites aren't grouped at all.
 class PasswordsGrouper {
@@ -38,10 +39,10 @@ class PasswordsGrouper {
   // "m.facebook.com" that have the same username and password. These
   // credentials are part of the same affiliated group so they will be grouped
   // together.
-  // |forms| PasswordForms to be grouped.
+  // |stored_credentials| StoredCredentials to be grouped.
   // |passkeys| Passkey metadata to be grouped.
   // |callback| is called after the grouping is finished.
-  void GroupCredentials(std::vector<PasswordForm> password_forms,
+  void GroupCredentials(std::vector<StoredCredential> stored_credentials,
                         std::vector<PasskeyCredential> passkeys,
                         base::OnceClosure callback);
 
@@ -56,8 +57,8 @@ class PasswordsGrouper {
   // only deduplicated.
   std::vector<CredentialUIEntry> GetBlockedSites() const;
 
-  // Returns PasswordForm corresponding to 'credential'.
-  std::vector<PasswordForm> GetPasswordFormsFor(
+  // Returns StoredCredentials corresponding to 'credential'.
+  std::vector<StoredCredential> GetStoredCredentialsFor(
       const CredentialUIEntry& credential) const;
 
   // Returns the passkey corresponding to the given |credential| entry. If there
@@ -81,9 +82,9 @@ class PasswordsGrouper {
     Credentials();
     ~Credentials();
 
-    // Password forms grouped by username-password keys.
-    std::map<UsernamePasswordKey, std::vector<std::unique_ptr<PasswordForm>>>
-        forms;
+    // Stored credentials grouped by username-password keys.
+    std::map<UsernamePasswordKey, std::vector<StoredCredential>>
+        stored_credentials;
 
     // List of passkeys associated to the group.
     std::vector<PasskeyCredential> passkeys;
@@ -94,8 +95,8 @@ class PasswordsGrouper {
   std::map<std::string, GroupId> MapFacetsToGroupId(
       const std::vector<affiliations::GroupedFacets>& groups);
 
-  void GroupPasswordsImpl(
-      std::vector<PasswordForm> forms,
+  void GroupCredentialsImpl(
+      std::vector<StoredCredential> stored_credentials,
       std::vector<PasskeyCredential> passkeys,
       const std::vector<affiliations::GroupedFacets>& groups);
 
@@ -118,8 +119,7 @@ class PasswordsGrouper {
 
   // Structure to keep track of the blocked sites by user. Key represents a name
   // displayed in the UI.
-  std::map<std::string, std::vector<std::unique_ptr<PasswordForm>>>
-      blocked_sites_;
+  std::map<std::string, std::vector<StoredCredential>> blocked_sites_;
 
   // The set of domains that the server uses as an extension to the PSL.
   base::flat_set<std::string> psl_extensions_;
@@ -130,7 +130,7 @@ class PasswordsGrouper {
 // Converts signon_realm (url for federated forms) into GURL and strips path. If
 // form is valid Android credential or conversion fails signon_realm is returned
 // as it is.
-std::string GetFacetRepresentation(const PasswordForm& form);
+std::string GetFacetRepresentation(const StoredCredential& credential);
 
 std::string GetFacetRepresentation(const PasskeyCredential& passkey);
 

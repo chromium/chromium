@@ -11,7 +11,7 @@
 namespace password_manager {
 
 class PasswordStoreInterface;
-struct PasswordForm;
+struct StoredCredential;
 
 // Helper class to revert deletion of a saved passwords or password exception
 // entries.
@@ -23,9 +23,9 @@ class PasswordUndoHelper {
   PasswordUndoHelper& operator=(const PasswordUndoHelper&) = delete;
 
   // Adds password to the undo action.
-  void PasswordRemoved(const PasswordForm& form);
+  void PasswordRemoved(StoredCredential credential);
   // Adds backup password to the undo action.
-  void BackupPasswordRemoved(const PasswordForm& form);
+  void BackupPasswordRemoved(StoredCredential credential);
 
   // Reverts last grouped deletion.
   void Undo();

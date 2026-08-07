@@ -77,8 +77,8 @@ std::optional<password_manager::PasswordForm> GetCorrespondingPasswordForm(
     return std::nullopt;
   }
 
-  const std::vector<PasswordForm> forms =
-      presenter.GetCorrespondingPasswordForms(*found_credential_it);
+  const std::vector<PasswordForm> forms = ToPasswordForms(
+      presenter.GetCorrespondingStoredCredentials(*found_credential_it));
   const std::vector<PasswordForm>::const_iterator& found_form_it =
       std::ranges::find_if(forms, [&payload](const PasswordForm& form) {
         return form.signon_realm == payload.signon_realm;

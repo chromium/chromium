@@ -56,45 +56,46 @@ using EditResult = password_manager::SavedPasswordsPresenter::EditResult;
 
 bool IsUsernameAlreadyUsed(
     const password_manager::SavedPasswordsPresenter::DuplicatePasswordsMap&
-        key_to_forms,
-    const std::vector<password_manager::PasswordForm>& forms_to_check,
+        key_to_credentials,
+    const std::vector<password_manager::StoredCredential>& credentials_to_check,
     const std::u16string& new_username) {
   // In case the username changed, make sure that there exists no other
   // credential with the same signon_realm and username in the same store.
-  auto has_conflicting_username = [&forms_to_check,
+  auto has_conflicting_username = [&credentials_to_check,
                                    &new_username](const auto& pair) {
     const password_manager::StoredCredential& cred = pair.second;
     return new_username == cred.username_value &&
-           std::ranges::any_of(forms_to_check, [&cred](const auto& old_form) {
-             return cred.signon_realm == old_form.signon_realm &&
-                    cred.IsUsingAccountStore() ==
-                        old_form.IsUsingAccountStore();
-           });
+           std::ranges::any_of(
+               credentials_to_check, [&cred](const auto& old_credential) {
+                 return cred.signon_realm == old_credential.signon_realm &&
+                        cred.IsUsingAccountStore() ==
+                            old_credential.IsUsingAccountStore();
+               });
   };
-  return std::ranges::any_of(key_to_forms, has_conflicting_username);
+  return std::ranges::any_of(key_to_credentials, has_conflicting_username);
 }
 
-password_manager::PasswordForm GenerateFormFromCredential(
+password_manager::StoredCredential GenerateStoredCredentialFromCredential(
     password_manager::CredentialUIEntry credential,
     password_manager::PasswordForm::Type type) {
-  password_manager::PasswordForm form;
-  form.url = credential.GetURL();
-  form.signon_realm = credential.GetFirstSignonRealm();
-  form.username_value = credential.username;
-  form.password_value = credential.password;
-  form.type = type;
-  form.date_created = base::Time::Now();
-  form.date_password_modified = form.date_created;
+  password_manager::StoredCredential stored_credential;
+  stored_credential.url = credential.GetURL();
+  stored_credential.signon_realm = credential.GetFirstSignonRealm();
+  stored_credential.username_value = credential.username;
+  stored_credential.password_value =
+      password_manager::PasswordString(std::move(credential.password));
+  stored_credential.type = type;
+  stored_credential.date_created = base::Time::Now();
+  stored_credential.date_password_modified = stored_credential.date_created;
 
   if (!credential.note.empty()) {
-    form.SetNoteWithEmptyUniqueDisplayName(credential.note);
+    stored_credential.SetPasswordNote(credential.note);
   }
 
   DCHECK(!credential.stored_in.empty());
-  form.in_store = *credential.stored_in.begin();
-  return form;
+  stored_credential.in_store = *credential.stored_in.begin();
+  return stored_credential;
 }
-
 
 bool MergeDeleteAllResultsFromPasswordStores(std::vector<bool> results) {
   return std::ranges::all_of(results, [](bool result) { return result; });
@@ -123,7 +124,7 @@ void SavedPasswordsPresenter::Init(base::OnceClosure completion_callback) {
   init_completion_callback_ = std::move(completion_callback);
 
   // Clear old cache.
-  sort_key_to_password_forms_.clear();
+  sort_key_to_stored_credentials_.clear();
   passwords_grouper_->ClearCache();
 
   // Password store is not supported in some configurations.
@@ -163,39 +164,40 @@ bool SavedPasswordsPresenter::RemoveCredential(
     }
     return true;
   }
-  std::vector<PasswordForm> forms_to_delete =
-      GetCorrespondingPasswordForms(credential);
+  std::vector<StoredCredential> credentials_to_delete =
+      GetCorrespondingStoredCredentials(credential);
   undo_helper_->StartGroupingActions();
-  for (const auto& current_form : forms_to_delete) {
-    // Make sure |credential| and |current_form| share the same store.
-    if (credential.stored_in.contains(current_form.in_store)) {
-      // |current_form| is unchanged result obtained from
+  for (auto& current_credential : credentials_to_delete) {
+    // Make sure |credential| and |current_credential| share the same store.
+    if (credential.stored_in.contains(current_credential.in_store)) {
+      // |current_credential| is unchanged result obtained from
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
       // store at a time.
-      GetStoreFor(current_form)
-          .RemoveLogin(FROM_HERE, FromPasswordForm(current_form));
-      undo_helper_->PasswordRemoved(current_form);
+      undo_helper_->PasswordRemoved(CloneStoredCredential(current_credential));
+      GetStoreFor(current_credential)
+          .RemoveLogin(FROM_HERE, std::move(current_credential));
     }
   }
   undo_helper_->EndGroupingActions();
-  return !forms_to_delete.empty();
+  return !credentials_to_delete.empty();
 }
 bool SavedPasswordsPresenter::RemoveBackupPassword(
     const CredentialUIEntry& credential) {
-  std::vector<PasswordForm> forms_to_update =
-      GetCorrespondingPasswordForms(credential);
+  std::vector<StoredCredential> credentials_to_update =
+      GetCorrespondingStoredCredentials(credential);
   undo_helper_->StartGroupingActions();
-  for (const auto& current_form : forms_to_update) {
-    PasswordForm without_backup(current_form);
+  for (const auto& current_credential : credentials_to_update) {
+    StoredCredential without_backup = CloneStoredCredential(current_credential);
     without_backup.DeletePasswordBackupNote();
-    // |current_form| is unchanged result obtained from
+    // |current_credential| is unchanged result obtained from
     // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
     // store at a time.
-    GetStoreFor(current_form).UpdateLogin(FromPasswordForm(without_backup));
-    undo_helper_->BackupPasswordRemoved(current_form);
+    GetStoreFor(current_credential).UpdateLogin(std::move(without_backup));
+    undo_helper_->BackupPasswordRemoved(
+        CloneStoredCredential(current_credential));
   }
   undo_helper_->EndGroupingActions();
-  return !forms_to_update.empty();
+  return !credentials_to_update.empty();
 }
 
 void SavedPasswordsPresenter::DeleteAllData(
@@ -260,10 +262,10 @@ SavedPasswordsPresenter::GetExpectedAddResult(
       };
 
   bool existing_credential_profile =
-      std::ranges::any_of(sort_key_to_password_forms_,
+      std::ranges::any_of(sort_key_to_stored_credentials_,
                           have_equal_username_and_realm_in_profile_store);
   bool existing_credential_account =
-      std::ranges::any_of(sort_key_to_password_forms_,
+      std::ranges::any_of(sort_key_to_stored_credentials_,
                           have_equal_username_and_realm_in_account_store);
 
   if (!existing_credential_profile && !existing_credential_account) {
@@ -276,7 +278,7 @@ SavedPasswordsPresenter::GetExpectedAddResult(
            credential.password == pair.second.password_value;
   };
 
-  if (std::ranges::any_of(sort_key_to_password_forms_, have_exact_match)) {
+  if (std::ranges::any_of(sort_key_to_stored_credentials_, have_exact_match)) {
     return AddResult::kExactMatch;
   }
 
@@ -299,9 +301,11 @@ bool SavedPasswordsPresenter::AddCredential(const CredentialUIEntry& credential,
   }
 
   UnblocklistBothStores(credential);
-  PasswordForm form = GenerateFormFromCredential(credential, type);
+  StoredCredential stored_credential =
+      GenerateStoredCredentialFromCredential(credential, type);
 
-  GetStoreFor(form).AddLogin(FromPasswordForm(form), std::move(completion));
+  GetStoreFor(stored_credential)
+      .AddLogin(std::move(stored_credential), std::move(completion));
   return true;
 }
 
@@ -328,36 +332,38 @@ void SavedPasswordsPresenter::AddCredentials(
     return;
   }
 
-  std::vector<PasswordForm> password_forms;
-  std::ranges::transform(credentials, std::back_inserter(password_forms),
+  std::vector<StoredCredential> stored_credentials;
+  std::ranges::transform(credentials, std::back_inserter(stored_credentials),
                          [&](const CredentialUIEntry& credential) {
-                           return GenerateFormFromCredential(credential, type);
+                           return GenerateStoredCredentialFromCredential(
+                               credential, type);
                          });
 
-  CHECK(std::ranges::all_of(password_forms, [&](const PasswordForm& form) {
-    return password_forms[0].in_store == form.in_store;
-  }));
+  CHECK(std::ranges::all_of(
+      stored_credentials, [&](const StoredCredential& form) {
+        return stored_credentials[0].in_store == form.in_store;
+      }));
 
-  PasswordStoreInterface& store = GetStoreFor(password_forms[0]);
-  store.AddLogins(FromPasswordForms(std::move(password_forms)),
-                  std::move(completion));
+  PasswordStoreInterface& store = GetStoreFor(stored_credentials[0]);
+  store.AddLogins(std::move(stored_credentials), std::move(completion));
 }
 
-void SavedPasswordsPresenter::UpdatePasswordForms(
-    const std::vector<PasswordForm>& password_forms,
+void SavedPasswordsPresenter::UpdateStoredCredentials(
+    std::vector<StoredCredential> stored_credentials,
     base::OnceClosure completion) {
-  if (password_forms.empty()) {
+  if (stored_credentials.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(completion));
     return;
   }
 
-  CHECK(std::ranges::all_of(password_forms, [&](const PasswordForm& form) {
-    return password_forms[0].in_store == form.in_store;
-  }));
+  CHECK(std::ranges::all_of(
+      stored_credentials, [&](const StoredCredential& form) {
+        return stored_credentials[0].in_store == form.in_store;
+      }));
 
-  GetStoreFor(password_forms[0])
-      .UpdateLogins(FromPasswordForms(password_forms), std::move(completion));
+  PasswordStoreInterface& store = GetStoreFor(stored_credentials[0]);
+  store.UpdateLogins(std::move(stored_credentials), std::move(completion));
 }
 
 SavedPasswordsPresenter::EditResult
@@ -374,9 +380,9 @@ SavedPasswordsPresenter::EditSavedCredentials(
 void SavedPasswordsPresenter::MoveCredentialsToAccount(
     const std::vector<CredentialUIEntry>& credentials) {
   for (const auto& credential : credentials) {
-    std::vector<PasswordForm> move_form_candidates =
-        GetCorrespondingPasswordForms(credential);
-    // signon_realms of PasswordForms which are saved in account.
+    std::vector<StoredCredential> move_form_candidates =
+        GetCorrespondingStoredCredentials(credential);
+    // signon_realms of StoredCredentials which are saved in account.
     auto account_credentials_signon_realms = base::MakeFlatSet<std::string>(
         move_form_candidates, {}, [](const auto& form) {
           return form.IsUsingAccountStore() ? form.signon_realm : "";
@@ -392,9 +398,9 @@ void SavedPasswordsPresenter::MoveCredentialsToAccount(
       // store, 1) to avoid unnecessary sync cycles, 2) to avoid potential
       // last_used_date update.
       if (!account_credentials_signon_realms.contains(form.signon_realm)) {
-        account_store_->AddLogin(FromPasswordForm(form));
+        account_store_->AddLogin(CloneStoredCredential(form));
       }
-      profile_store_->RemoveLogin(FROM_HERE, FromPasswordForm(form));
+      profile_store_->RemoveLogin(FROM_HERE, CloneStoredCredential(form));
     }
   }
 }
@@ -403,12 +409,12 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
     const {
 #if BUILDFLAG(IS_ANDROID)
   std::vector<CredentialUIEntry> credentials;
-  auto it = sort_key_to_password_forms_.begin();
-  while (it != sort_key_to_password_forms_.end()) {
+  auto it = sort_key_to_stored_credentials_.begin();
+  while (it != sort_key_to_stored_credentials_.end()) {
     auto current_key = it->first;
     // Aggregate all passwords for the current key.
     std::vector<StoredCredential> current_passwords_group;
-    while (it != sort_key_to_password_forms_.end() &&
+    while (it != sort_key_to_stored_credentials_.end() &&
            it->first == current_key) {
       current_passwords_group.push_back(CloneStoredCredential(it->second));
       ++it;
@@ -447,12 +453,14 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
   for (const CredentialUIEntry& credential : GetSavedCredentials()) {
     std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
         credential.GetAffiliatedDomains();
-    for (const PasswordForm& form : GetCorrespondingPasswordForms(credential)) {
-      if (form.actor_login_approved) {
+    for (const StoredCredential& stored_credential :
+         GetCorrespondingStoredCredentials(credential)) {
+      if (stored_credential.actor_login_approved) {
         auto form_domain_info_it = std::ranges::find_if(
             affiliated_domains.begin(), affiliated_domains.end(),
-            [&form](const CredentialUIEntry::DomainInfo& domain_info) {
-              return form.signon_realm == domain_info.signon_realm;
+            [&stored_credential](
+                const CredentialUIEntry::DomainInfo& domain_info) {
+              return stored_credential.signon_realm == domain_info.signon_realm;
             });
         // This can happen if a user has credentials stored for 2 app versions
         // with the same app package name. Affiliated domains are unique per
@@ -472,8 +480,8 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
           }
         }
 
-        permissions.emplace_back(*form_domain_info_it, form.username_value,
-                                 favicon_url);
+        permissions.emplace_back(*form_domain_info_it,
+                                 stored_credential.username_value, favicon_url);
       }
     }
   }
@@ -484,12 +492,15 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
     for (const auto& credential : group.GetCredentials()) {
       std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
           credential.GetAffiliatedDomains();
-      for (const auto& form : GetCorrespondingPasswordForms(credential)) {
-        if (form.actor_login_approved) {
+      for (const auto& stored_credential :
+           GetCorrespondingStoredCredentials(credential)) {
+        if (stored_credential.actor_login_approved) {
           auto form_domain_info_it = std::ranges::find_if(
               affiliated_domains.begin(), affiliated_domains.end(),
-              [&form](const CredentialUIEntry::DomainInfo& domain_info) {
-                return form.signon_realm == domain_info.signon_realm;
+              [&stored_credential](
+                  const CredentialUIEntry::DomainInfo& domain_info) {
+                return stored_credential.signon_realm ==
+                       domain_info.signon_realm;
               });
           // This can happen if a user has credentials stored for 2 app versions
           // with the same app package name. Affiliated domains are unique per
@@ -498,7 +509,8 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
           if (form_domain_info_it == affiliated_domains.end()) {
             continue;
           }
-          permissions.emplace_back(*form_domain_info_it, form.username_value,
+          permissions.emplace_back(*form_domain_info_it,
+                                   stored_credential.username_value,
                                    group.GetAllowedIconUrl(sync_service));
         }
       }
@@ -518,34 +530,36 @@ void SavedPasswordsPresenter::RevokeActorLoginPermission(
   credentials = passwords_grouper_->GetAllCredentials();
 #endif
   for (const CredentialUIEntry& credential : credentials) {
-    for (const PasswordForm& form : GetCorrespondingPasswordForms(credential)) {
-      if (form.signon_realm == signon_realm &&
-          form.username_value == base::UTF8ToUTF16(username)) {
-        PasswordForm updated_form = form;
-        updated_form.actor_login_approved = false;
-        GetStoreFor(updated_form)
-            .UpdateLogin(FromPasswordForm(std::move(updated_form)));
+    for (const StoredCredential& stored_credential :
+         GetCorrespondingStoredCredentials(credential)) {
+      if (stored_credential.signon_realm == signon_realm &&
+          stored_credential.username_value == base::UTF8ToUTF16(username)) {
+        StoredCredential updated_credential =
+            CloneStoredCredential(stored_credential);
+        updated_credential.actor_login_approved = false;
+        GetStoreFor(updated_credential)
+            .UpdateLogin(std::move(updated_credential));
       }
     }
   }
 }
 
-std::vector<PasswordForm>
-SavedPasswordsPresenter::GetCorrespondingPasswordForms(
+std::vector<StoredCredential>
+SavedPasswordsPresenter::GetCorrespondingStoredCredentials(
     const CredentialUIEntry& credential) const {
-  std::vector<PasswordForm> forms;
+  std::vector<StoredCredential> credentials;
 #if BUILDFLAG(IS_ANDROID)
   const auto range =
-      sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
+      sort_key_to_stored_credentials_.equal_range(CreateSortKey(credential));
   std::ranges::transform(
-      range.first, range.second, std::back_inserter(forms),
-      [](const auto& pair) { return ToPasswordForm(pair.second); });
+      range.first, range.second, std::back_inserter(credentials),
+      [](const auto& pair) { return CloneStoredCredential(pair.second); });
 #else
   passwords_grouper_->CheckHeapIntegrity();
-  forms = passwords_grouper_->GetPasswordFormsFor(credential);
+  credentials = passwords_grouper_->GetStoredCredentialsFor(credential);
   passwords_grouper_->CheckHeapIntegrity();
 #endif
-  return forms;
+  return credentials;
 }
 
 void SavedPasswordsPresenter::AddObserver(Observer* observer) {
@@ -612,7 +626,7 @@ void SavedPasswordsPresenter::OnLoginsRetained(
   bool is_using_account_store = store == account_store_.get();
 
   // Remove cached credentials for the current store.
-  std::erase_if(sort_key_to_password_forms_,
+  std::erase_if(sort_key_to_stored_credentials_,
                 [is_using_account_store](
                     const DuplicatePasswordsMap::value_type& key_to_cred) {
                   return key_to_cred.second.IsUsingAccountStore() ==
@@ -670,9 +684,9 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsOrErrorFrom(
 }
 
 PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(
-    const PasswordForm& form) {
-  DCHECK_NE(form.IsUsingAccountStore(), form.IsUsingProfileStore());
-  return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
+    const StoredCredential& credential) {
+  DCHECK_NE(credential.IsUsingAccountStore(), credential.IsUsingProfileStore());
+  return credential.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
 
 void SavedPasswordsPresenter::RemoveCredentials(
@@ -683,7 +697,7 @@ void SavedPasswordsPresenter::RemoveCredentials(
     // PasswordForms with the same unique keys but different passwords if and
     // only if they are from different stores.
     std::erase_if(
-        sort_key_to_password_forms_,
+        sort_key_to_stored_credentials_,
         [&cred](const DuplicatePasswordsMap::value_type& key_to_cred) {
           return AreStoredCredentialUniqueKeysEqual(key_to_cred.second, cred) &&
                  key_to_cred.second.in_store == cred.in_store;
@@ -696,10 +710,10 @@ void SavedPasswordsPresenter::AddCredentialsToCache(
     base::OnceClosure completion) {
   for (auto& cred : credentials) {
     // TODO(crbug.com/40862365): Consider replacing
-    // |sort_key_to_password_forms_| when grouping is launched.
+    // |sort_key_to_stored_credentials_| when grouping is launched.
     auto sort_key =
         CreateSortKey(CredentialUIEntry(CloneStoredCredential(cred)));
-    sort_key_to_password_forms_.insert(
+    sort_key_to_stored_credentials_.insert(
         std::make_pair(std::move(sort_key), std::move(cred)));
   }
 
@@ -718,10 +732,10 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
     return;
   }
   // TODO(crbug.com/40858918): Pass only added forms to |passwords_grouper_|.
-  std::vector<PasswordForm> all_forms;
-  all_forms.reserve(sort_key_to_password_forms_.size());
-  for (auto const& [key, cred] : sort_key_to_password_forms_) {
-    all_forms.push_back(ToPasswordForm(cred));
+  std::vector<StoredCredential> all_credentials;
+  all_credentials.reserve(sort_key_to_stored_credentials_.size());
+  for (auto const& [key, cred] : sort_key_to_stored_credentials_) {
+    all_credentials.push_back(CloneStoredCredential(cred));
   }
 
   // Passkeys are collected synchronously.
@@ -738,7 +752,7 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
   // Notify observers after grouping is complete.
   passwords_grouper_->CheckHeapIntegrity();
   passwords_grouper_->GroupCredentials(
-      std::move(all_forms), std::move(passkeys),
+      std::move(all_credentials), std::move(passkeys),
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
   passwords_grouper_->CheckHeapIntegrity();
@@ -780,9 +794,9 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
 SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
     const CredentialUIEntry& original_credential,
     const CredentialUIEntry& updated_credential) {
-  std::vector<PasswordForm> forms_to_change =
-      GetCorrespondingPasswordForms(original_credential);
-  if (forms_to_change.empty()) {
+  std::vector<StoredCredential> credentials_to_change =
+      GetCorrespondingStoredCredentials(original_credential);
+  if (credentials_to_change.empty()) {
     return EditResult::kNotFound;
   }
 
@@ -791,10 +805,9 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
   IsPasswordChanged password_changed(updated_credential.password !=
                                      original_credential.password);
   IsPasswordNoteChanged note_changed(
-      forms_to_change[0].GetNoteWithEmptyUniqueDisplayName() !=
-      updated_credential.note);
-  bool issues_changed =
-      updated_credential.password_issues != forms_to_change[0].password_issues;
+      credentials_to_change[0].GetPasswordNote() != updated_credential.note);
+  bool issues_changed = updated_credential.password_issues !=
+                        credentials_to_change[0].password_issues;
 
   // Password can't be empty.
   if (updated_credential.password.empty()) {
@@ -802,9 +815,9 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
   }
 
   // Username can't be changed to the existing one.
-  if (username_changed &&
-      IsUsernameAlreadyUsed(sort_key_to_password_forms_, forms_to_change,
-                            updated_credential.username)) {
+  if (username_changed && IsUsernameAlreadyUsed(sort_key_to_stored_credentials_,
+                                                credentials_to_change,
+                                                updated_credential.username)) {
     return EditResult::kAlreadyExisits;
   }
 
@@ -818,41 +831,41 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
   // Only change in username or password is interesting for OnEdited listeners.
   if (username_changed || password_changed) {
     completion_barrier_closure = base::BarrierClosure(
-        forms_to_change.size(),
+        credentials_to_change.size(),
         base::BindOnce(&SavedPasswordsPresenter::NotifyEdited,
                        weak_ptr_factory_.GetWeakPtr(), updated_credential));
   }
 
-  for (const auto& old_form : forms_to_change) {
-    PasswordStoreInterface& store = GetStoreFor(old_form);
-    PasswordForm new_form = old_form;
+  for (const auto& old_credential : credentials_to_change) {
+    PasswordStoreInterface& store = GetStoreFor(old_credential);
+    StoredCredential new_credential = CloneStoredCredential(old_credential);
 
     if (issues_changed) {
-      new_form.password_issues = updated_credential.password_issues;
+      new_credential.password_issues = updated_credential.password_issues;
     }
 
     if (password_changed) {
-      new_form.password_value = updated_credential.password;
-      new_form.date_password_modified = base::Time::Now();
-      new_form.password_issues.clear();
+      new_credential.password_value =
+          PasswordString(std::u16string(updated_credential.password));
+      new_credential.date_password_modified = base::Time::Now();
+      new_credential.password_issues.clear();
     }
 
     if (note_changed) {
-      new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
+      new_credential.SetPasswordNote(updated_credential.note);
     }
 
     // An updated username implies a change in the primary key, thus we need
     // to make sure to call the right API.
     if (username_changed) {
-      new_form.username_value = updated_credential.username;
-      new_form.password_issues.erase(InsecureType::kPhished);
-      new_form.password_issues.erase(InsecureType::kLeaked);
-      store.UpdateLoginWithPrimaryKey(FromPasswordForm(std::move(new_form)),
-                                      FromPasswordForm(old_form),
+      new_credential.username_value = updated_credential.username;
+      new_credential.password_issues.erase(InsecureType::kPhished);
+      new_credential.password_issues.erase(InsecureType::kLeaked);
+      store.UpdateLoginWithPrimaryKey(std::move(new_credential),
+                                      CloneStoredCredential(old_credential),
                                       completion_barrier_closure);
     } else {
-      store.UpdateLogin(FromPasswordForm(std::move(new_form)),
-                        completion_barrier_closure);
+      store.UpdateLogin(std::move(new_credential), completion_barrier_closure);
     }
   }
 

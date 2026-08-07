@@ -356,10 +356,10 @@ TEST_F(PasswordDetailsMediatorTest, RemoveCredential) {
 // consumer is notified with the expected information after moving the password.
 TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStore) {
   // Get the password form associated with the saved credential.
-  PasswordForm expected_form =
+  PasswordForm expected_form = password_manager::ToPasswordForm(
       password_check_manager()
           ->GetSavedPasswordsPresenter()
-          ->GetCorrespondingPasswordForms(mediator().credentials[0])[0];
+          ->GetCorrespondingStoredCredentials(mediator().credentials[0])[0]);
 
   // Verify that the credential is in the profile password store and that the
   // account password store is empty.
@@ -410,15 +410,15 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStoreWithConflict) {
   std::vector<CredentialUIEntry> credentials = GetAffiliatedGroupCredentials();
   mediator().credentials = credentials;
 
-  PasswordForm account_store_form =
+  PasswordForm account_store_form = password_manager::ToPasswordForm(
       password_check_manager()
           ->GetSavedPasswordsPresenter()
-          ->GetCorrespondingPasswordForms(mediator().credentials[0])[0];
+          ->GetCorrespondingStoredCredentials(mediator().credentials[0])[0]);
 
-  PasswordForm profile_store_form =
+  PasswordForm profile_store_form = password_manager::ToPasswordForm(
       password_check_manager()
           ->GetSavedPasswordsPresenter()
-          ->GetCorrespondingPasswordForms(mediator().credentials[1])[0];
+          ->GetCorrespondingStoredCredentials(mediator().credentials[1])[0]);
 
   // Check that the mediator's credentials are associated with the expected
   // store.
@@ -487,15 +487,15 @@ TEST_F(PasswordDetailsMediatorTest,
   credentials[1].last_used_time = base::Time::Now() + base::Hours(1);
   mediator().credentials = credentials;
 
-  PasswordForm profile_store_form =
+  PasswordForm profile_store_form = password_manager::ToPasswordForm(
       password_check_manager()
           ->GetSavedPasswordsPresenter()
-          ->GetCorrespondingPasswordForms(mediator().credentials[0])[0];
+          ->GetCorrespondingStoredCredentials(mediator().credentials[0])[0]);
 
-  PasswordForm account_store_form =
+  PasswordForm account_store_form = password_manager::ToPasswordForm(
       password_check_manager()
           ->GetSavedPasswordsPresenter()
-          ->GetCorrespondingPasswordForms(mediator().credentials[1])[0];
+          ->GetCorrespondingStoredCredentials(mediator().credentials[1])[0]);
 
   // Check that the mediator's credentials are associated with the expected
   // store.

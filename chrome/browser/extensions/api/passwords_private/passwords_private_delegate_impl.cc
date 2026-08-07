@@ -53,6 +53,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
@@ -741,7 +742,8 @@ void PasswordsPrivateDelegateImpl::SharePassword(
   }
 
   std::vector<password_manager::PasswordForm> corresponding_credentials =
-      saved_passwords_presenter_.GetCorrespondingPasswordForms(*entry);
+      password_manager::ToPasswordForms(
+          saved_passwords_presenter_.GetCorrespondingStoredCredentials(*entry));
   if (corresponding_credentials.empty()) {
     return;
   }

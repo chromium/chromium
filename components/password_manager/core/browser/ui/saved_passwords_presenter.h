@@ -162,13 +162,14 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Deletes all saved credentials: passwords, passkeys, blocked entries.
   void DeleteAllData(base::OnceCallback<void(bool)> success_callback);
 
-  // Updates all matching password forms in |password_forms|.
+  // Updates all matching stored credentials in |stored_credentials|.
   // |completion| will be run after the forms are updated.
   //
   // NOTE: Updates to different password stores is not supported and hence all
-  // forms in |password_forms| must belong to the same store.
-  void UpdatePasswordForms(const std::vector<PasswordForm>& password_forms,
-                           base::OnceClosure completion = base::DoNothing());
+  // forms in |stored_credentials| must belong to the same store.
+  void UpdateStoredCredentials(
+      std::vector<StoredCredential> stored_credentials,
+      base::OnceClosure completion = base::DoNothing());
 
   // Modifies all the saved credentials matching |original_credential| to
   // |updated_credential|. Only username, password, notes, display names and
@@ -201,8 +202,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RevokeActorLoginPermission(const std::string& signon_realm,
                                   const std::string& username);
 
-  // Returns PasswordForms corresponding to |credential|.
-  std::vector<PasswordForm> GetCorrespondingPasswordForms(
+  // Returns StoredCredentials corresponding to |credential|.
+  std::vector<StoredCredential> GetCorrespondingStoredCredentials(
       const CredentialUIEntry& credential) const;
 
   // Allows clients and register and de-register themselves.
@@ -237,10 +238,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // memory cache.
   AddResult GetExpectedAddResult(const CredentialUIEntry& credential) const;
 
-  // Returns the `profile_store_` or `account_store_` if `form` is stored in
-  // the profile store or the account store accordingly. This function should
+  // Returns the `profile_store_` or `account_store_` if `credential` is stored
+  // in the profile store or the account store accordingly. This function should
   // be used only for credential stored in a single store.
-  PasswordStoreInterface& GetStoreFor(const PasswordForm& form);
+  PasswordStoreInterface& GetStoreFor(const StoredCredential& credential);
 
   // Try to unblocklist in both stores.If credentials don't
   // exist, the unblocklist operation is a no-op.
@@ -279,7 +280,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::unique_ptr<PasswordsGrouper> passwords_grouper_;
 
   // Structure used to deduplicate list of passwords.
-  DuplicatePasswordsMap sort_key_to_password_forms_;
+  DuplicatePasswordsMap sort_key_to_stored_credentials_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

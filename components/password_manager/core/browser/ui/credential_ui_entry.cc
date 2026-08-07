@@ -69,89 +69,88 @@ bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
 
 CredentialUIEntry::CredentialUIEntry() = default;
 
-CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
-    : username(form.username_value),
-      password(form.password_value),
-      federation_origin(form.federation_origin),
-      creation_time(form.date_created),
-      password_issues(form.password_issues),
-      note(form.GetNoteWithEmptyUniqueDisplayName()),
-      blocked_by_user(form.blocked_by_user),
-      last_used_time(form.date_last_used) {
-  if (form.GetPasswordBackup()) {
-    backup_password = {
-        .value = form.GetPasswordBackup().value(),
-        .creation_timestamp = form.GetPasswordBackupDateCreated().value()};
+CredentialUIEntry::CredentialUIEntry(const StoredCredential& credential)
+    : username(credential.username_value),
+      password(credential.password_value.value()),
+      federation_origin(credential.federation_origin),
+      creation_time(credential.date_created),
+      password_issues(credential.password_issues),
+      note(credential.GetPasswordNote()),
+      blocked_by_user(credential.blocked_by_user),
+      last_used_time(credential.date_last_used) {
+  if (credential.GetPasswordBackup()) {
+    backup_password = {.value = credential.GetPasswordBackup().value(),
+                       .creation_timestamp =
+                           credential.GetPasswordBackupDateCreated().value()};
   }
   CredentialFacet facet;
-  facet.display_name = form.app_display_name;
-  facet.url = form.url;
-  facet.signon_realm = form.signon_realm;
-  facet.affiliated_web_realm = form.affiliated_web_realm;
+  facet.display_name = credential.app_display_name;
+  facet.url = credential.url;
+  facet.signon_realm = credential.signon_realm;
+  facet.affiliated_web_realm = credential.affiliated_web_realm;
 
   facets.push_back(std::move(facet));
 
-  if (form.IsUsingAccountStore()) {
+  if (credential.IsUsingAccountStore()) {
     stored_in.insert(PasswordForm::Store::kAccountStore);
   }
-  if (form.IsUsingProfileStore()) {
+  if (credential.IsUsingProfileStore()) {
     stored_in.insert(PasswordForm::Store::kProfileStore);
   }
 }
 
-CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
-  CHECK(!forms.empty());
+CredentialUIEntry::CredentialUIEntry(
+    const std::vector<StoredCredential>& credentials) {
+  CHECK(!credentials.empty());
 
-  username = forms[0].username_value;
-  password = forms[0].password_value;
-  federation_origin = forms[0].federation_origin;
-  password_issues = forms[0].password_issues;
-  blocked_by_user = forms[0].blocked_by_user;
-  last_used_time = forms[0].date_last_used;
-  creation_time = forms[0].date_created;
+  username = credentials[0].username_value;
+  password = credentials[0].password_value.value();
+  federation_origin = credentials[0].federation_origin;
+  password_issues = credentials[0].password_issues;
+  blocked_by_user = credentials[0].blocked_by_user;
+  last_used_time = credentials[0].date_last_used;
+  creation_time = credentials[0].date_created;
 
   // For cases when the notes differ within grouped passwords (e.g: a
   // credential exists in both account and profile stores), respective notes
   // should be concatenated and linebreak used as a delimiter.
-  auto unique_notes =
-      base::MakeFlatSet<std::u16string>(forms, {}, [](const auto& form) {
-        return form.GetNoteWithEmptyUniqueDisplayName();
-      });
+  auto unique_notes = base::MakeFlatSet<std::u16string>(
+      credentials, {}, [](const auto& cred) { return cred.GetPasswordNote(); });
   unique_notes.erase(u"");
   note = base::JoinString(std::move(unique_notes).extract(), u"\n");
 
   // Add credential facets.
-  for (const auto& form : forms) {
+  for (const auto& credential : credentials) {
     CredentialFacet facet;
-    facet.display_name = form.app_display_name;
-    facet.url = form.url;
-    facet.signon_realm = form.signon_realm;
-    facet.affiliated_web_realm = form.affiliated_web_realm;
+    facet.display_name = credential.app_display_name;
+    facet.url = credential.url;
+    facet.signon_realm = credential.signon_realm;
+    facet.affiliated_web_realm = credential.affiliated_web_realm;
 
     facets.push_back(std::move(facet));
 
-    if (form.IsUsingAccountStore()) {
+    if (credential.IsUsingAccountStore()) {
       stored_in.insert(PasswordForm::Store::kAccountStore);
     }
-    if (form.IsUsingProfileStore()) {
+    if (credential.IsUsingProfileStore()) {
       stored_in.insert(PasswordForm::Store::kProfileStore);
     }
     // TODO(crbug.com/407501259): instead of saving the last non-empty backup,
     // consider storing all backups in the credential UI entry and create a
     // separate card for each of them.
-    if (form.GetPasswordBackup()) {
-      backup_password = {
-          .value = form.GetPasswordBackup().value(),
-          .creation_timestamp = form.GetPasswordBackupDateCreated().value()};
+    if (credential.GetPasswordBackup()) {
+      backup_password = {.value = credential.GetPasswordBackup().value(),
+                         .creation_timestamp =
+                             credential.GetPasswordBackupDateCreated().value()};
     }
   }
 }
 
-CredentialUIEntry::CredentialUIEntry(StoredCredential cred)
-    : CredentialUIEntry(ToPasswordForm(std::move(cred))) {}
+CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
+    : CredentialUIEntry(FromPasswordForm(form)) {}
 
-CredentialUIEntry::CredentialUIEntry(std::vector<StoredCredential> creds)
-    : CredentialUIEntry(ToPasswordForms(std::move(creds))) {}
+CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms)
+    : CredentialUIEntry(FromPasswordForms(forms)) {}
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
     : passkey_credential_id(passkey.credential_id()),

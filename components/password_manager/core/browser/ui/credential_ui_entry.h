@@ -100,10 +100,10 @@ struct CredentialUIEntry {
   };
 
   CredentialUIEntry();
+  explicit CredentialUIEntry(const StoredCredential& credential);
+  explicit CredentialUIEntry(const std::vector<StoredCredential>& credentials);
   explicit CredentialUIEntry(const PasswordForm& form);
   explicit CredentialUIEntry(const std::vector<PasswordForm>& forms);
-  explicit CredentialUIEntry(StoredCredential cred);
-  explicit CredentialUIEntry(std::vector<StoredCredential> creds);
   explicit CredentialUIEntry(const PasskeyCredential& passkey);
   explicit CredentialUIEntry(
       const CSVPassword& csv_password,

@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -37,7 +38,7 @@ IncomingPasswords& IncomingPasswords::operator=(IncomingPasswords&& other) =
 
 struct ConflictsResolutionCache {
   ConflictsResolutionCache(IncomingPasswords incoming_passwords,
-                           std::vector<std::vector<PasswordForm>> conflicts,
+                           std::vector<std::vector<StoredCredential>> conflicts,
                            ImportResults results)
       : incoming_passwords(std::move(incoming_passwords)),
         conflicts(std::move(conflicts)),
@@ -47,9 +48,9 @@ struct ConflictsResolutionCache {
   // Aggregated passwords that need to be added or updated.
   IncomingPasswords incoming_passwords;
   // Conflicting credential that could be updated. Each nested vector
-  // represents one credential, i.e. all PasswordForm's in such a vector have
-  // the same signon_ream, username, password.
-  std::vector<std::vector<PasswordForm>> conflicts;
+  // represents one credential, i.e. all StoredCredential's in such a vector
+  // have the same signon_ream, username, password.
+  std::vector<std::vector<StoredCredential>> conflicts;
   // Aggregated results of the current import.
   ImportResults results;
 };
@@ -199,20 +200,21 @@ std::optional<CredentialUIEntry> GetConflictingCredential(
   return std::nullopt;
 }
 
-std::vector<PasswordForm> GetMatchingPasswordForms(
+std::vector<StoredCredential> GetMatchingStoredCredentials(
     SavedPasswordsPresenter* presenter,
     const CredentialUIEntry& credential,
     PasswordForm::Store store) {
-  // Returns matching local forms for a given `credential`, excluding grouped
-  // forms with different `signon_realm`.
+  // Returns matching local credentials for a given `credential`, excluding
+  // grouped credentials with different `signon_realm`.
   CHECK(presenter);
-  std::vector<PasswordForm> results;
-  std::ranges::copy_if(
-      presenter->GetCorrespondingPasswordForms(credential),
-      std::back_inserter(results), [&](const PasswordForm& form) {
-        return form.signon_realm == credential.GetFirstSignonRealm() &&
-               store == form.in_store;
-      });
+  std::vector<StoredCredential> results;
+  for (StoredCredential& stored_credential :
+       presenter->GetCorrespondingStoredCredentials(credential)) {
+    if (stored_credential.signon_realm == credential.GetFirstSignonRealm() &&
+        store == stored_credential.in_store) {
+      results.push_back(std::move(stored_credential));
+    }
+  }
   return results;
 }
 
@@ -243,19 +245,19 @@ std::u16string ComputeNotesConcatenation(const std::u16string& local_note,
   return base::JoinString(/*parts=*/{local_note, imported_note}, u"\n");
 }
 
-void MergeNotesOrReportError(const std::vector<PasswordForm>& local_forms,
-                             const CredentialUIEntry& imported_credential,
-                             ImportResults& results,
-                             std::vector<PasswordForm>& edit_forms,
-                             NotesImportMetrics& metrics) {
+void MergeNotesOrReportError(
+    const std::vector<StoredCredential>& local_credentials,
+    const CredentialUIEntry& imported_credential,
+    ImportResults& results,
+    std::vector<StoredCredential>& edit_credentials,
+    NotesImportMetrics& metrics) {
   // Attempts to concatenate the note of `imported_credential` with
-  // `local_forms`.
-  // If notes concatenation is possible and required, `local_forms` will be
-  // updated and added to `edit_forms`.
-  // If concatenation exceeds MAX_NOTE_LENGTH, the error entry will be added to
-  // the `results`.
-  // `metrics` is used to track different outcomes.
-  const std::u16string local_note = CredentialUIEntry(local_forms).note;
+  // `local_credentials`.
+  // If notes concatenation is possible and required, `local_credentials` will
+  // be updated and added to `edit_credentials`. If concatenation exceeds
+  // MAX_NOTE_LENGTH, the error entry will be added to the `results`. `metrics`
+  // is used to track different outcomes.
+  const std::u16string local_note = CredentialUIEntry(local_credentials).note;
   const std::u16string& imported_note = imported_credential.note;
   const std::u16string concatenation =
       ComputeNotesConcatenation(local_note, imported_note, metrics);
@@ -269,9 +271,10 @@ void MergeNotesOrReportError(const std::vector<PasswordForm>& local_forms,
 
   if (concatenation != local_note) {
     // Local credential needs to be updated with concatenation.
-    for (PasswordForm form : local_forms) {
-      form.SetNoteWithEmptyUniqueDisplayName(concatenation);
-      edit_forms.emplace_back(std::move(form));
+    for (const StoredCredential& cred : local_credentials) {
+      StoredCredential updated_credential = CloneStoredCredential(cred);
+      updated_credential.SetPasswordNote(concatenation);
+      edit_credentials.emplace_back(std::move(updated_credential));
     }
     metrics.notes_concatenations_per_file_count++;
   }
@@ -347,7 +350,7 @@ void ProcessParsedCredential(
         credentials_by_username,
     PasswordForm::Store to_store,
     IncomingPasswords& incoming_passwords,
-    std::vector<std::vector<PasswordForm>>& conflicts,
+    std::vector<std::vector<StoredCredential>>& conflicts,
     ImportResults& results,
     NotesImportMetrics& notes_metrics,
     size_t& duplicates_count) {
@@ -361,21 +364,23 @@ void ProcessParsedCredential(
   std::optional<CredentialUIEntry> conflicting_credential =
       GetConflictingCredential(credentials_by_username, imported_credential);
   if (conflicting_credential.has_value()) {
-    std::vector<PasswordForm> forms = GetMatchingPasswordForms(
-        presenter, conflicting_credential.value(), to_store);
+    std::vector<StoredCredential> conflicting_credentials =
+        GetMatchingStoredCredentials(presenter, conflicting_credential.value(),
+                                     to_store);
     // Password notes are not taken into account when conflicting passwords
     // are overwritten. Only the local note is persisted.
-    for (PasswordForm& form : forms) {
-      form.password_value = imported_credential.password;
+    for (StoredCredential& credential : conflicting_credentials) {
+      credential.password_value =
+          PasswordString(std::u16string(imported_credential.password));
     }
-    conflicts.push_back(std::move(forms));
+    conflicts.push_back(std::move(conflicting_credentials));
     return;
   }
 
   // Check for duplicates.
-  std::vector<PasswordForm> forms =
-      GetMatchingPasswordForms(presenter, imported_credential, to_store);
-  if (!forms.empty()) {
+  std::vector<StoredCredential> matching_credentials =
+      GetMatchingStoredCredentials(presenter, imported_credential, to_store);
+  if (!matching_credentials.empty()) {
     duplicates_count++;
 
     if (imported_credential.note.empty()) {
@@ -385,8 +390,10 @@ void ProcessParsedCredential(
     }
 
     MergeNotesOrReportError(
-        /*local_forms=*/forms, /*imported_credential=*/imported_credential,
-        /*results=*/results, /*edit_forms=*/incoming_passwords.edit_forms,
+        /*local_credentials=*/matching_credentials,
+        /*imported_credential=*/imported_credential,
+        /*results=*/results,
+        /*edit_credentials=*/incoming_passwords.edit_credentials,
         /*metrics=*/notes_metrics);
     return;
   }
@@ -504,8 +511,9 @@ void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
   for (int id : selected_ids) {
     conflicts_cache_->results.number_imported++;
     CHECK_LT(static_cast<size_t>(id), conflicts_cache_->conflicts.size());
-    for (const PasswordForm& form : conflicts_cache_->conflicts[id]) {
-      conflicts_cache_->incoming_passwords.edit_forms.push_back(form);
+    for (const StoredCredential& credential : conflicts_cache_->conflicts[id]) {
+      conflicts_cache_->incoming_passwords.edit_credentials.push_back(
+          CloneStoredCredential(credential));
     }
   }
 
@@ -569,9 +577,9 @@ void PasswordImporter::ConsumePasswords(
   IncomingPasswords incoming_passwords;
 
   // Conflicting credential that could be updated. Each nested vector
-  // represents one credential, i.e. all PasswordForm's in such a vector have
-  // the same signon_ream, username, password.
-  std::vector<std::vector<PasswordForm>> conflicts;
+  // represents one credential, i.e. all StoredCredential's in such a vector
+  // have the same signon_ream, username, password.
+  std::vector<std::vector<StoredCredential>> conflicts;
 
   // Go over all canonically parsed passwords:
   // 1) aggregate all valid ones in `incoming_passwords` to be passed over to
@@ -611,7 +619,7 @@ void PasswordImporter::ShowImportConflicts(
     ImportResultsCallback results_callback,
     ImportResults results,
     IncomingPasswords incoming_passwords,
-    std::vector<std::vector<PasswordForm>> conflicts) {
+    std::vector<std::vector<StoredCredential>> conflicts) {
   state_ = kUserInteractionRequired;
   ImportResults conflicts_results;
   conflicts_results.number_to_import = results.number_imported;
@@ -632,7 +640,7 @@ void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
                                      IncomingPasswords incoming_passwords,
                                      size_t conflicts_count) {
   // Run `results_callback` when both `AddCredentials` and
-  // `UpdatePasswordForms` have finished running.
+  // `UpdateStoredCredentials` have finished running.
   auto barrier_done_callback = base::BarrierClosure(
       2, base::BindOnce(
              &PasswordImporter::ImportFinished, weak_ptr_factory_.GetWeakPtr(),
@@ -641,8 +649,8 @@ void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
   presenter_->AddCredentials(incoming_passwords.add_credentials,
                              PasswordForm::Type::kImported,
                              barrier_done_callback);
-  presenter_->UpdatePasswordForms(incoming_passwords.edit_forms,
-                                  barrier_done_callback);
+  presenter_->UpdateStoredCredentials(
+      std::move(incoming_passwords.edit_credentials), barrier_done_callback);
 }
 
 void PasswordImporter::ImportFinished(ImportResultsCallback results_callback,

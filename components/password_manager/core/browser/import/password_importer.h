@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
@@ -44,7 +45,7 @@ struct IncomingPasswords {
   // Passwords that should be added to the store.
   std::vector<CredentialUIEntry> add_credentials;
   // Passwords that should be updated in the store.
-  std::vector<PasswordForm> edit_forms;
+  std::vector<StoredCredential> edit_credentials;
 };
 
 struct ConflictsResolutionCache;
@@ -164,10 +165,11 @@ class PasswordImporter {
 
   // Caches the import results and triggers the user interaction flow to resolve
   // conflicts or confirm the import.
-  void ShowImportConflicts(ImportResultsCallback results_callback,
-                           ImportResults results,
-                           IncomingPasswords incoming_passwords,
-                           std::vector<std::vector<PasswordForm>> conflicts);
+  void ShowImportConflicts(
+      ImportResultsCallback results_callback,
+      ImportResults results,
+      IncomingPasswords incoming_passwords,
+      std::vector<std::vector<StoredCredential>> conflicts);
 
   // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,
