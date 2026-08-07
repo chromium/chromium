@@ -260,7 +260,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
   }
 
   // Getter for raw `attached_tabs_` member.
-  std::map<web::WebStateID, GeminiPageContext*> GetRawAttachedTabs() {
+  GeminiBrowserAgent::AttachedTabsList GetRawAttachedTabs() {
     return gemini_browser_agent_->attached_tabs_;
   }
 
@@ -1647,6 +1647,53 @@ TEST_F(GeminiBrowserAgentTest, TestMetricsBlockProviders) {
       ios::provider::GeminiPageContextAttachmentState::kDetached;
   EXPECT_EQ(1u, AttachedTabsCount());
   EXPECT_TRUE(GetSharedTabsCount() > 0);
+}
+
+// Test that attached shared tabs preserve their insertion order regardless of
+// WebStateID values or subsequent context updates.
+TEST_F(GeminiBrowserAgentTest, TestSharedTabsPreserveInsertionOrder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  // Create WebStateIDs out of numerical order to verify that sorting is by
+  // insertion order rather than by WebStateID value.
+  web::WebStateID id_first = web::WebStateID::FromSerializedValue(100);
+  web::WebStateID id_second = web::WebStateID::FromSerializedValue(50);
+  web::WebStateID id_third = web::WebStateID::FromSerializedValue(200);
+
+  GeminiPageContext* context_first = [[GeminiPageContext alloc] init];
+  context_first.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(id_first, context_first);
+
+  GeminiPageContext* context_second = [[GeminiPageContext alloc] init];
+  context_second.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(id_second, context_second);
+
+  GeminiPageContext* context_third = [[GeminiPageContext alloc] init];
+  context_third.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(id_third, context_third);
+
+  auto raw_tabs = GetRawAttachedTabs();
+  ASSERT_EQ(3u, raw_tabs.size());
+  EXPECT_EQ(id_first, raw_tabs[0].first);
+  EXPECT_EQ(id_second, raw_tabs[1].first);
+  EXPECT_EQ(id_third, raw_tabs[2].first);
+
+  // Updating an existing tab's context should not alter insertion order.
+  GeminiPageContext* updated_context_first = [[GeminiPageContext alloc] init];
+  updated_context_first.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(id_first, updated_context_first);
+
+  raw_tabs = GetRawAttachedTabs();
+  ASSERT_EQ(3u, raw_tabs.size());
+  EXPECT_EQ(id_first, raw_tabs[0].first);
+  EXPECT_EQ(id_second, raw_tabs[1].first);
+  EXPECT_EQ(id_third, raw_tabs[2].first);
+  EXPECT_EQ(updated_context_first, raw_tabs[0].second);
 }
 
 // Tests that ShowGeminiLiveMicrophoneAlert presents the OS settings alert when

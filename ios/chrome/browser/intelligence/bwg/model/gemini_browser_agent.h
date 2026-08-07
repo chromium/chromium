@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <map>
 #import <memory>
 #import <set>
+#import <utility>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
@@ -75,6 +76,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public TabGridStateObserver,
                            public GeminiContainerMediatorEventHandler {
  public:
+  using AttachedTabsList =
+      std::vector<std::pair<web::WebStateID, __strong GeminiPageContext*>>;
+
   // Observer interface for GeminiBrowserAgent.
   class Observer : public base::CheckedObserver {
    public:
@@ -407,7 +411,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns the attached page context for `tab_id`, or nil if not found.
   GeminiPageContext* GetAttachedPageContext(web::WebStateID tab_id) const;
 
-  // Adds or updates `page_context` for `tab_id` in `attached_tabs_`.
+  // Adds or updates `page_context` for `tab_id` in `attached_tabs_`, preserving
+  // the insertion order if `tab_id` already exists.
   void SetAttachedPageContext(web::WebStateID tab_id,
                               GeminiPageContext* page_context);
 
@@ -442,8 +447,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   bool is_keyboard_visible_ = false;
 
   // The active and shared tabs currently attached to the floaty, represented by
-  // a mapping of the tab's WebStateID to its page context.
-  std::map<web::WebStateID, __strong GeminiPageContext*> attached_tabs_;
+  // a list of WebStateID and page context tuples in insertion order.
+  AttachedTabsList attached_tabs_;
 
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.
