@@ -195,10 +195,8 @@
 #pragma mark - SigninPromoViewConsumer
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
-  [self.delegate configureSigninPromoWithConfigurator:configurator
-                                      identityChanged:identityChanged];
+    (SigninPromoViewConfigurator*)configurator {
+  [self.delegate configureSigninPromoWithConfigurator:configurator];
 }
 
 - (void)promoProgressStateDidChange {

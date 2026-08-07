@@ -651,8 +651,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
+    (SigninPromoViewConfigurator*)configurator {
   if (![self.consumer.tableViewModel
           hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
     return;

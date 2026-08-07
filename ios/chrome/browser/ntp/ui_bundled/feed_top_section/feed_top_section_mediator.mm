@@ -139,8 +139,7 @@ using base::UserMetricsAction;
 #pragma mark - SigninPromoViewConsumer
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
+    (SigninPromoViewConfigurator*)configurator {
   // No-op: The NTP is always recreated when the identity changes, so this is
   // not needed.
 }

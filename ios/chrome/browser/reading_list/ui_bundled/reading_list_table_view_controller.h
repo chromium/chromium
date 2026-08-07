@@ -50,8 +50,7 @@ class Browser;
 
 // Updates the sign-in promo view after identity updates.
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)promoConfigurator
-                             identityChanged:(BOOL)identityChanged;
+    (SigninPromoViewConfigurator*)promoConfigurator;
 
 @end
 

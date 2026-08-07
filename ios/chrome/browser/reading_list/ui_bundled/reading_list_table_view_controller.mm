@@ -843,8 +843,7 @@ BOOL IsAllSelected(NSUInteger selected_unread_count,
 }
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)promoConfigurator
-                             identityChanged:(BOOL)identityChanged {
+    (SigninPromoViewConfigurator*)promoConfigurator {
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:kSectionIdentifierSignInPromo]) {
     return;

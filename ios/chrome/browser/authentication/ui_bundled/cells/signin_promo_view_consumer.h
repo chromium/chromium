@@ -19,10 +19,8 @@
 // Called when the default identity is changed or updated. This method is not
 // called when the sign-in is in progress.
 // `configurator`, new instance set each time, to configure a SigninPromoView.
-// `identityChanged` is set to YES when the default identity is changed.
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged;
+    (SigninPromoViewConfigurator*)configurator;
 
 @optional
 

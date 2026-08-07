@@ -1490,8 +1490,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SigninPromoViewConsumer
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
+    (SigninPromoViewConfigurator*)configurator {
   DCHECK(self.signinPromoViewMediator);
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOtherDevices] ||

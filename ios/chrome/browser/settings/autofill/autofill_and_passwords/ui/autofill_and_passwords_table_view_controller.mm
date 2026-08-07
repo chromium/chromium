@@ -312,8 +312,7 @@
 }
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)promoConfigurator
-                             identityChanged:(BOOL)identityChanged {
+    (SigninPromoViewConfigurator*)promoConfigurator {
   TableViewModel* model = self.tableViewModel;
   if (![model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn]) {
     return;

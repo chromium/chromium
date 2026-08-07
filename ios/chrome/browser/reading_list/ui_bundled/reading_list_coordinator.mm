@@ -570,11 +570,8 @@
 #pragma mark - SigninPromoViewConsumer
 
 - (void)configureSigninPromoWithConfigurator:
-            (SigninPromoViewConfigurator*)configurator
-                             identityChanged:(BOOL)identityChanged {
-  [self.tableViewController
-      configureSigninPromoWithConfigurator:configurator
-                           identityChanged:identityChanged];
+    (SigninPromoViewConfigurator*)configurator {
+  [self.tableViewController configureSigninPromoWithConfigurator:configurator];
 }
 
 - (void)promoProgressStateDidChange {
