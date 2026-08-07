@@ -36,8 +36,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -251,6 +253,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
     public void testMaybeShowPromoDialog_AimSuccessfulShow() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG))
@@ -279,6 +282,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
     public void testAimPositiveButtonClickDismissesAndNotifiesAccepted() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_AIM_PROMO_DIALOG))
