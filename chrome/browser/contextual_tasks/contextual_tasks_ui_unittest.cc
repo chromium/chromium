@@ -847,6 +847,9 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
        false},  // smstk present
       {GURL("https://www.google.com/search?udm=50&smstk="),
        true},  // smstk empty
+      {GURL("https://www.google.com/search?udm=50&mtid=test"),
+       false},  // mtid present
+      {GURL("https://www.google.com/search?udm=50&mtid="), true},  // mtid empty
   };
 
   ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com")))
@@ -879,6 +882,15 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
       EXPECT_CALL(*contextual_tasks_service_, CreateTask())
           .WillOnce(Return(task));
       EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+    } else {
+      std::string temp;
+      if (net::GetValueForKeyInQuery(test_case.url, "mtid", &temp)) {
+        base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+        ContextualTask task(task_id);
+        EXPECT_CALL(*contextual_tasks_service_,
+                    CreateTaskFromUrl(test_case.url))
+            .WillOnce(Return(task));
+      }
     }
 
     std::unique_ptr<content::MockNavigationHandle> nav_handle =

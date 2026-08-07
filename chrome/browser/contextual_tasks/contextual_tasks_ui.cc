@@ -1796,7 +1796,6 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     bool should_create_new_task = pending_task_title_mismatch ||
                                   is_thread_switch ||
                                   (is_new_conversation && !has_reusable_task);
-
     if (should_create_new_task) {
       OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
                                   "FrameNavObserver::DidFinishNavigation "
@@ -1853,21 +1852,23 @@ bool ContextualTasksUI::IsZeroState(
   std::string smstk_value;
   std::string vsrid_value;
   std::string cinpts_value;
+  std::string mtid_value;
   net::GetValueForKeyInQuery(url, "q", &query_value);
   net::GetValueForKeyInQuery(url, "mstk", &mstk_value);
   net::GetValueForKeyInQuery(url, "smstk", &smstk_value);
   net::GetValueForKeyInQuery(url, "vsrid", &vsrid_value);
   net::GetValueForKeyInQuery(url, "cinpts", &cinpts_value);
+  net::GetValueForKeyInQuery(url, "mtid", &mtid_value);
 
-  // If the URL is an AI URL and there's no query or (s)mstk, it's zero state.
-  // If there is either a query or (s)mstk, assume it's not zero state. If there
-  // is a vsrid/cinpts, assume it's not zero state since there will soon be an
-  // mstk.
+  // If the URL is an AI URL and there's no query or (s)mstk/mtid, it's zero
+  // state. If there is either a query or (s)mstk/mtid, assume it's not zero
+  // state. If there is a vsrid/cinpts, assume it's not zero state since there
+  // will soon be an mstk.
   // TODO(crbug.com/472336339): Find a more robust way to determine if the page
   // is zero state instead of query params.
   return ui_service->IsAiUrl(url) && query_value.empty() &&
          mstk_value.empty() && smstk_value.empty() && vsrid_value.empty() &&
-         cinpts_value.empty();
+         cinpts_value.empty() && mtid_value.empty();
 }
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
