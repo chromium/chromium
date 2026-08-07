@@ -25,32 +25,31 @@ export function getHtml(this: DownloadsManagerElement) {
     @save-dangerous-click="${this.onSaveDangerousClick_}">
   <div class="cr-scrollable-top-shadow"></div>
   <managed-footnote ?hidden="${this.inSearchMode_}"></managed-footnote>
-  <cr-infinite-list id="downloadsList" .items="${this.items_}"
-      role="grid" aria-rowcount="${this.items_.length}"
-      ?hidden="${!this.hasDownloads_}" .scrollTarget="${this.listScrollTarget_}"
+  <cr-infinite-list id="downloadsList" .items="${this.items_}" role="grid"
+      aria-rowcount="${this.items_.length}" ?hidden="${!this.hasDownloads_}"
+      .scrollTarget="${this.listScrollTarget_}"
       @restore-list-focus="${this.onRestoreListFocus_}"
       .template="${(item: MojomData, index: number, tabindex: number) => html`
-  <if expr="_google_chrome">
+<if expr="_google_chrome">
         <downloads-item .data="${item}" tabindex="${tabindex}"
             .listTabIndex="${tabindex}" .lastFocused="${this.lastFocused_}"
             @last-focused-changed="${this.onLastFocusedChanged_}"
             .listBlurred="${this.listBlurred_}"
             @list-blurred-changed="${this.onListBlurredChanged_}"
             .focusRowIndex="${index}"
-            .showEsbPromotion="${this.shouldShowEsbPromotion_(item)}"
-        >
-  </if>
-  <if expr="not _google_chrome">
+            .showEsbPromotion="${this.shouldShowEsbPromotion_(item)}">
+        </downloads-item>
+</if>
+<if expr="not _google_chrome">
         <downloads-item .data="${item}" tabindex="${tabindex}"
             .listTabIndex="${tabindex}" .lastFocused="${this.lastFocused_}"
             @last-focused-changed="${this.onLastFocusedChanged_}"
             .listBlurred="${this.listBlurred_}"
             @list-blurred-changed="${this.onListBlurredChanged_}"
-            .focusRowIndex="${index}"
-        >
-  </if>
-        </downloads-item>`
-      }">
+            .focusRowIndex="${index}">
+        </downloads-item>
+</if>
+      `}">
   </cr-infinite-list>
   <div id="no-downloads" ?hidden="${this.hasDownloads_}">
     <div>
@@ -64,12 +63,12 @@ export function getHtml(this: DownloadsManagerElement) {
     $i18n{undo}
   </cr-button>
 </cr-toast-manager>
-${this.shouldShowBypassWarningPrompt_() ?
-    html`<downloads-bypass-warning-confirmation-dialog
-        .fileName="${this.computeBypassWarningDialogFileName_()}"
-        @close="${this.onBypassWarningConfirmationDialogClose_}">
-    </downloads-bypass-warning-confirmation-dialog>`
-  : ''}
+${this.shouldShowBypassWarningPrompt_() ? html`
+  <downloads-bypass-warning-confirmation-dialog
+      .fileName="${this.computeBypassWarningDialogFileName_()}"
+      @close="${this.onBypassWarningConfirmationDialogClose_}">
+  </downloads-bypass-warning-confirmation-dialog>
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

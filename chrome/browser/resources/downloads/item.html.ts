@@ -28,17 +28,14 @@ export function getHtml(this: DownloadsItemElement) {
     <div id="details">
       <div id="title-area" role="gridcell"><!--
         Can't have any line breaks.
-        --><a is="action-link" id="fileLink"
-            href="${this.data?.url || ''}"
+        --><a is="action-link" id="fileLink" href="${this.data?.url || ''}"
             @click="${this.onFileLinkClick_}" focus-row-control
-            focus-type="fileLink"
-            title="${this.data?.fileName || ''}"
+            focus-type="fileLink" title="${this.data?.fileName || ''}"
             ?hidden="${!this.shouldLinkFilename_}"><!-- No line break
           -->${this.data?.fileName || ''}<!-- No line break
         --></a><!--
         Before #name.
-        --><span id="name"
-            title="${this.data?.fileName || ''}"
+        --><span id="name" title="${this.data?.fileName || ''}"
             ?hidden="${this.shouldLinkFilename_}"><!-- No line break
           -->${this.data?.fileName || ''}</span>
         <span id="tag">${this.computeTag_()}</span>
@@ -63,11 +60,11 @@ export function getHtml(this: DownloadsItemElement) {
 
       ${this.showProgress_ ? html`
         <div role="gridcell">
-          <cr-progress id="progress"
-              .indeterminate="${this.isIndeterminate_()}"
+          <cr-progress id="progress" .indeterminate="${this.isIndeterminate_()}"
               .value="${this.data?.percent || 0}">
           </cr-progress>
-        </div>` : ''}
+        </div>
+      ` : ''}
 
       <div id="safe" class="controls" ?hidden="${this.isDangerous_}">
         <span role="gridcell" ?hidden="${!this.showDeepScan_}">
@@ -85,34 +82,33 @@ export function getHtml(this: DownloadsItemElement) {
       <!-- Menu and/or quick action(s). -->
       <div id="action-icon-buttons">
         <cr-icon-button id="copy-download-link"
-            iron-icon="${this.webuiRoundedIconsEnabled_
-                ? 'downloads:link'
-                : 'downloads:link-old'}"
+            iron-icon="${this.webuiRoundedIconsEnabled_ ? 'downloads:link' :
+                                             'downloads:link-old'}"
             ?hidden="${!this.computeShowCopyDownloadLink_()}"
             title="$i18n{controlCopyDownloadLink}"
             aria-label="$i18n{controlCopyDownloadLink}"
-            @click="${this.onCopyDownloadLinkClick_}"
-            focus-row-control focus-type="copyDownloadLink">
+            @click="${this.onCopyDownloadLinkClick_}" focus-row-control
+            focus-type="copyDownloadLink">
         </cr-icon-button>
         <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
-            ?hidden="${!this.computeShowActionMenu_()}"
-            class="dropdown-trigger" title="$i18n{moreActions}"
-            @click="${this.onMoreActionsClick_}" aria-haspopup="menu"
-            focus-row-control focus-type="actionMenuButton">
+            ?hidden="${!this.computeShowActionMenu_()}" class="dropdown-trigger"
+            title="$i18n{moreActions}" @click="${this.onMoreActionsClick_}"
+            aria-haspopup="menu" focus-row-control
+            focus-type="actionMenuButton">
         </cr-icon-button>
         <cr-icon-button id="quick-show-in-folder" class="icon-folder-open"
             ?hidden="${!this.computeShowQuickShow_()}"
             title="${this.data?.showInFolderText || ''}"
             aria-label="${this.data?.showInFolderText || ''}"
-            @click="${this.onShowClick_}"
-            focus-row-control focus-type="quickShow">
+            @click="${this.onShowClick_}" focus-row-control
+            focus-type="quickShow">
         </cr-icon-button>
         <cr-icon-button id="quick-remove" class="icon-clear"
             ?hidden="${!this.computeShowQuickRemove_()}"
             title="$i18n{controlDeleteFromHistory}"
             aria-label="$i18n{controlDeleteFromHistory}"
-            @click="${this.onQuickRemoveClick_}"
-            focus-row-control focus-type="quickRemove">
+            @click="${this.onQuickRemoveClick_}" focus-row-control
+            focus-type="quickRemove">
         </cr-icon-button>
       </div>
       <cr-action-menu id="more-actions-menu"
@@ -174,17 +170,16 @@ export function getHtml(this: DownloadsItemElement) {
       </div>
     </div>
   </div>
-  <if expr="_google_chrome">
-    ${this.showEsbPromotion ? html`
-      <cr-link-row
-          id="esb-download-row-promo"
-          start-icon="downloads-internal:gshield"
-          external
-          @click="${this.onEsbPromotionClick_}"
-          button-aria-description="$i18n{esbDownloadRowPromoA11y}"
-          label="$i18n{esbDownloadRowPromoString}">
-      </cr-link-row>` : ''}
-  </if>
+<if expr="_google_chrome">
+  ${this.showEsbPromotion ? html`
+    <cr-link-row id="esb-download-row-promo"
+        start-icon="downloads-internal:gshield" external
+        @click="${this.onEsbPromotionClick_}"
+        button-aria-description="$i18n{esbDownloadRowPromoA11y}"
+        label="$i18n{esbDownloadRowPromoString}">
+    </cr-link-row>
+  ` : ''}
+</if>
 </div>
 <!--_html_template_end_-->`;
   // clang-format on
