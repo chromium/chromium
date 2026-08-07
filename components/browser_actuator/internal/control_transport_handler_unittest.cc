@@ -27,7 +27,7 @@ class TestTransportSession : public TransportSession {
   std::string_view GetSessionId() const override { return session_id_; }
   base::expected<void, SendMessageError> SendMessage(
       PayloadType payload_type,
-      std::string_view payload) override {
+      const google::protobuf::MessageLite& message) override {
     return {};
   }
 

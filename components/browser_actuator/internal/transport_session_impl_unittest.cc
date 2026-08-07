@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/test_support/mock_transport_channel.h"
 #include "components/browser_actuator/test_support/mock_transport_handler.h"
@@ -29,21 +30,27 @@ TEST(TransportSessionImplTest, SendMessage) {
   MockTransportChannel channel;
   TransportSessionImpl session("test_session", channel.GetWeakPtr());
 
+  ControlCommand command;
+  command.mutable_close_channel();
+
   EXPECT_CALL(channel,
               SendUpstreamMessage("test_session", PayloadType::kUnspecified,
-                                  "test_payload"));
-  EXPECT_TRUE(session.SendMessage(PayloadType::kUnspecified, "test_payload")
-                  .has_value());
+                                  testing::Ref(command)));
+  EXPECT_TRUE(
+      session.SendMessage(PayloadType::kUnspecified, command).has_value());
 }
 
 TEST(TransportSessionImplTest, SendMessageAfterChannelDestruction) {
   auto channel = std::make_unique<MockTransportChannel>();
   TransportSessionImpl session("test_session", channel->GetWeakPtr());
 
+  ControlCommand command;
+  command.mutable_close_channel();
+
   EXPECT_CALL(*channel, SendUpstreamMessage).Times(0);
   channel.reset();
   base::expected<void, SendMessageError> result =
-      session.SendMessage(PayloadType::kUnspecified, "test_payload");
+      session.SendMessage(PayloadType::kUnspecified, command);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), SendMessageError::kChannelDisconnected);
 }

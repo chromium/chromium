@@ -107,9 +107,10 @@ void TransportChannelImpl::OnStreamConnectionStateChange(bool connected) {
 
 // Upstream: assemble the outgoing message for a session, reading that
 // session's own counters.
-void TransportChannelImpl::SendUpstreamMessage(std::string_view session_id,
-                                               PayloadType payload_type,
-                                               std::string_view payload) {
+void TransportChannelImpl::SendUpstreamMessage(
+    std::string_view session_id,
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransportSessionImpl* session = session_registry_->GetSessionImpl(session_id);
   if (!session) {

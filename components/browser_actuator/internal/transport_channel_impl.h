@@ -61,9 +61,10 @@ class TransportChannelImpl : public TransportChannel,
   // TransportChannel:
   TransportHandlerFactoryRegistry* GetHandlerFactoryRegistry() override;
   TransportSessionRegistry* GetSessionRegistry() override;
-  void SendUpstreamMessage(std::string_view session_id,
-                           PayloadType payload_type,
-                           std::string_view payload) override;
+  void SendUpstreamMessage(
+      std::string_view session_id,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) override;
 
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;

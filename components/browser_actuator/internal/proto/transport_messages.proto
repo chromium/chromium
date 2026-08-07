@@ -36,6 +36,8 @@ enum ActuatorUpstreamPayloadType {
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED = 0;
   // Channel control command, e.g. destroy channel or close session.
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND = 1;
+  // Legacy experimental triggering message.
+  ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING = 2;
 }
 
 // Wrapper that pairs a payload with its routing type.

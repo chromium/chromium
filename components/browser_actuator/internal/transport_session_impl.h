@@ -50,7 +50,7 @@ class TransportSessionImpl : public TransportSession {
 
   base::expected<void, SendMessageError> SendMessage(
       PayloadType payload_type,
-      std::string_view payload) override;
+      const google::protobuf::MessageLite& message) override;
 
   // Routes a downstream message payload of a given `payload_type` to all active
   // handlers registered to receive it. Handlers are lazily instantiated from
