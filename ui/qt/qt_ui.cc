@@ -604,8 +604,6 @@ void QtUi::ThemeChanged() {
   // Unlike GTK (which has settings signals), the Qt provider must be told to
   // re-derive the toolkit color scheme when the Qt theme changes.
   os_settings_provider_->OnThemeChanged();
-  // Animations enabled depends on the theme animation duration.
-  NotifyAnimationsEnabledChanged();
 }
 
 void QtUi::ScaleFactorMaybeChanged() {
