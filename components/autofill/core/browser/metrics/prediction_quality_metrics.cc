@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/label_source_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -823,12 +824,15 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
   FieldType actual_type =
       GetActualFieldType(field.possible_types(), predicted_type);
   if (actual_type != UNKNOWN_TYPE && actual_type != EMPTY_TYPE) {
+    bool was_prediction_correct = predicted_type == actual_type;
     base::UmaHistogramBoolean(
         base::StrCat(
             {kAggregateFieldPredictionMetricPrefix,
              GetQualityMetricPredictionSource(PREDICTION_SOURCE_HEURISTIC), ".",
              LabelSourceToString(field.label_source())}),
-        predicted_type == actual_type);
+        was_prediction_correct);
+    LogHeuristicPredictionQualityForLowQualityLabels(field,
+                                                     was_prediction_correct);
   }
 }
 
@@ -1057,6 +1061,41 @@ void LogFieldTypeAtSubmissionMetrics(const AutofillField& field) {
                            "PreferredSource.", "ByFieldType"),
         GetFieldTypePredictionSourceBucket(overall_type,
                                            *field.PredictionSource()));
+  }
+}
+
+void LogHeuristicPredictionQualityForLowQualityLabels(
+    const AutofillField& field,
+    bool was_prediction_correct) {
+  std::optional<MatchInfo> match_info = field.regex_match_info();
+
+  // Feature `AutofillBetterLocalHeuristicPlaceholderSupport` can improve the
+  // prediction quality only in the specific cases. Return early if the base
+  // requirements are not met.
+  if (!match_info || field.label().empty() || field.placeholder().empty() ||
+      match_info->matched_attribute !=
+          MatchInfo::MatchAttribute::kLowQualityLabel) {
+    return;
+  }
+  // Since the label is of high quality (e.g. originates from label attribute),
+  // the match had to originate from the placeholder (or poor man's
+  // placeholder).
+  if (IsLabelHigherQualityThanPlaceholder(field.label_source())) {
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {kAggregateFieldPredictionMetricPrefix,
+             GetQualityMetricPredictionSource(PREDICTION_SOURCE_HEURISTIC),
+             ".PlaceholderMatchWithHighQualityLabelPresent"}),
+        was_prediction_correct);
+  } else {
+    // The label is of low quality (e.g. originates from aria label) and it got
+    // matched despite placeholder (or poor man's placeholder) being present.
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {kAggregateFieldPredictionMetricPrefix,
+             GetQualityMetricPredictionSource(PREDICTION_SOURCE_HEURISTIC),
+             ".LowQualityLabelMatchWithPlaceholderPresent"}),
+        was_prediction_correct);
   }
 }
 

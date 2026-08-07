@@ -224,6 +224,14 @@ void LogFieldPredictionOverlapMetrics(const AutofillField& field);
 // Also records the prediction source for the overall type of the field.
 void LogFieldTypeAtSubmissionMetrics(const AutofillField& field);
 
+// Logs metric conditionally to evaluate
+// `AutofillBetterLocalHeuristicPlaceholderSupport` feature.
+// TODO(crbug.com/430258039): Clean up along with the corresponding histograms
+// after feature is launched.
+void LogHeuristicPredictionQualityForLowQualityLabels(
+    const AutofillField& field,
+    bool was_prediction_correct);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PREDICTION_QUALITY_METRICS_H_

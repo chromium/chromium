@@ -4409,6 +4409,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.FieldPredictionQuality.Aggregate.Heuristic.LowQualityLabelMatchWithPlaceholderPresent"
+    enum="BooleanCorrect" expires_after="2027-02-12">
+  <owner>ggrzelachowski@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Metric is logged when a heuristics match was based on a low quality label
+    and the field also had a placeholder (or poor man's placeholder). Logged
+    value indicates whether the predicted type matched the observed type. The
+    metric is emitted on form submission.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.FieldPredictionQuality.Aggregate.Heuristic.PlaceholderMatchWithHighQualityLabelPresent"
+    enum="BooleanCorrect" expires_after="2027-02-12">
+  <owner>ggrzelachowski@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Metric is logged when a heuristics match was based on a placeholder (or poor
+    man's placeholder) and the field had high quality label. Logged value
+    indicates whether the predicted type matched the observed type. The metric
+    is emitted on form submission.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.FieldPredictionQuality.Aggregate.Heuristic.{LabelSource}"
     enum="BooleanPredictionQualityByLabelSource" expires_after="2026-12-12">
   <owner>fleimgruber@google.com</owner>
