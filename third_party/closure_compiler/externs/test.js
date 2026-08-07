@@ -183,8 +183,10 @@ chrome.test.assertNoLastError = function() {};
 chrome.test.assertLastError = function(expectedError) {};
 
 /**
+ * Asserts that a given function throws an error. If it does not, or if the
+ * thrown error doesn't match expectedError (if defined), the test fails.
  * @param {function(): void} fn
- * @param {(string|RegExp)=} expectedError
+ * @param {(string|RegExp)=} expectedError Expected error message or RegExp.
  * @param {string=} message Custom failure message.
  * @see https://developer.chrome.com/extensions/test#method-assertThrows
  */
