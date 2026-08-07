@@ -16,6 +16,7 @@
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -326,7 +327,20 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
   if (found_manager) {
     if (IsGlobal(identifier)) {
-      Hide(identifier);
+      content::WebContents* web_contents =
+          ContentInfoBarManager::WebContentsFromInfoBar(infobar);
+      if (web_contents) {
+        BrowserWindowInterface* browser =
+            FindBrowserWithWebContents(web_contents);
+        if (browser) {
+          if (browser->GetTabStripModel()->closing_all() ||
+              browser->IsDeleteScheduled()) {
+            // Do nothing.
+          } else {
+            Hide(identifier);
+          }
+        }
+      }
     }
   }
 }
@@ -407,6 +421,18 @@ bool BrowserInfoBarManager::IsGlobal(
   auto it = registered_specs_.find(identifier);
   return it != registered_specs_.end() &&
          it->second.scope() == InfoBarScope::kGlobal;
+}
+
+BrowserWindowInterface* BrowserInfoBarManager::FindBrowserWithWebContents(
+    content::WebContents* web_contents) {
+  for (const auto& [browser, subscription] : active_tab_subscriptions_) {
+    for (tabs::TabInterface* tab : browser->GetAllTabInterfaces()) {
+      if (tab->GetContents() == web_contents) {
+        return browser;
+      }
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace infobars

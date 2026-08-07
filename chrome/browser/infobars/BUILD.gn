@@ -51,6 +51,10 @@ source_set("infobars") {
     deps += [ "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar" ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
+
   if (toolkit_views) {
     deps += [ "//chrome/browser/ui/views/infobars" ]
   }

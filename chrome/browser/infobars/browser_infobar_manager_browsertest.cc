@@ -230,15 +230,79 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   auto* infobar_manager2 =
       ContentInfoBarManager::FromWebContents(web_contents2);
 
-  ASSERT_EQ(1u, infobar_manager1->infobars().size());
-  ASSERT_EQ(1u, infobar_manager2->infobars().size());
+  auto has_test_infobar = [](ContentInfoBarManager* manager) {
+    for (const auto& ib : manager->infobars()) {
+      if (ib->delegate()->GetIdentifier() == InfoBarDelegate::TEST_INFOBAR) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  ASSERT_TRUE(has_test_infobar(infobar_manager1));
+  ASSERT_TRUE(has_test_infobar(infobar_manager2));
+
+  // Find the test infobar on browser2 to remove it.
+  infobars::InfoBar* test_ib2 = nullptr;
+  for (const auto& ib : infobar_manager2->infobars()) {
+    if (ib->delegate()->GetIdentifier() == InfoBarDelegate::TEST_INFOBAR) {
+      test_ib2 = ib.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(test_ib2);
 
   // Manually dismiss the infobar on browser2.
-  infobar_manager2->RemoveInfoBar(infobar_manager2->infobars()[0]);
+  infobar_manager2->RemoveInfoBar(test_ib2);
 
   // It should be removed from browser1 as well (global cascade).
-  EXPECT_EQ(0u, infobar_manager1->infobars().size());
-  EXPECT_EQ(0u, infobar_manager2->infobars().size());
+  EXPECT_FALSE(has_test_infobar(infobar_manager1));
+  EXPECT_FALSE(has_test_infobar(infobar_manager2));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalNoDismissalOnWindowDestruction) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  auto spec = InfoBarSpec::Builder(identifier)
+                  .SetMessageText(u"Test Message")
+                  .SetScope(InfoBarScope::kGlobal)
+                  .Build();
+
+  manager()->Register(std::move(spec));
+
+  manager()->ShowGlobally(identifier);
+
+  // Open a second browser.
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+
+  content::WebContents* web_contents1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* infobar_manager1 =
+      ContentInfoBarManager::FromWebContents(web_contents1);
+
+  content::WebContents* web_contents2 =
+      browser2->tab_strip_model()->GetActiveWebContents();
+  auto* infobar_manager2 =
+      ContentInfoBarManager::FromWebContents(web_contents2);
+
+  auto has_test_infobar = [](ContentInfoBarManager* manager) {
+    for (const auto& ib : manager->infobars()) {
+      if (ib->delegate()->GetIdentifier() == InfoBarDelegate::TEST_INFOBAR) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  ASSERT_TRUE(has_test_infobar(infobar_manager1));
+  ASSERT_TRUE(has_test_infobar(infobar_manager2));
+
+  // Close browser2. This should destroy its window and its infobar manager,
+  // triggering OnInfoBarRemoved due to tab destruction.
+  CloseBrowserSynchronously(browser2);
+
+  // The infobar should STILL be present on browser1 (no cascade).
+  EXPECT_TRUE(has_test_infobar(infobar_manager1));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {
