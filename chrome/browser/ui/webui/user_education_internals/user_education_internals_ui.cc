@@ -27,6 +27,10 @@
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserEducationInternalsUI, kMenuElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserEducationInternalsUI,
+                                      kMenuItemElementId);
+
 UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
     : DefaultInternalWebUIConfig(chrome::kChromeUIUserEducationInternalsHost) {}
 
@@ -52,7 +56,11 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
                               IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
+      this, std::vector<ui::ElementIdentifier>{
+                kWebUIIPHDemoElementIdentifier,
+                kMenuElementId,
+                kMenuItemElementId,
+            });
 }
 
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;

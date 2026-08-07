@@ -1013,6 +1013,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui",
       "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/browser/ui/webui/tracked_element:browser_tests",
       "//chrome/common",
       "//chrome/test:test_support",
       "//components/local_state",

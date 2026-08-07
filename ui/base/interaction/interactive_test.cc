@@ -469,7 +469,7 @@ InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
   return std::visit(
       absl::Overload{
           [](TrackedElement* el) {
-            CHECK(el) << "NameView(TrackedElement*): view must be set.";
+            CHECK(el) << "NameElement(TrackedElement*): element must be set.";
             return base::BindOnce(
                 [](const SafeElementReference& ref, TrackedElement*) {
                   LOG_IF(ERROR, !ref.get()) << "NameElement(TrackedElement*): "

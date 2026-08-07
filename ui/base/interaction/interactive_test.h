@@ -923,7 +923,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElementRelative(
          ui::TrackedElement* el) {
         TrackedElement* const result = std::move(find_callback).Run(el);
         if (!result) {
-          LOG(ERROR) << "NameElement(): No View found.";
+          LOG(ERROR) << "NameElement(): No element found.";
           seq->FailForTesting();
           return;
         }

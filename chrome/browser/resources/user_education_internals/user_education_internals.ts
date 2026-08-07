@@ -28,6 +28,7 @@ import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -72,6 +73,11 @@ export class UserEducationInternalsElement extends
        */
       filter: {type: String},
       /**
+       * Index of the selected "tab" determining which data to show. -1 means
+       * show all.
+       */
+      selectedTabIndex: {type: Number},
+      /**
        * List of tutorials and feature_promos that can be started.
        * Each tutorial has a string identifier.
        */
@@ -108,12 +114,12 @@ export class UserEducationInternalsElement extends
       ntpPromoPreferences_: {type: Array},
       sessionData_: {type: Array},
       currentChromeVersion_: {type: Number},
-      selectedTabIndex_: {type: Number},
       initialized_: {type: Boolean},
     };
   }
 
   accessor filter: string = '';
+  accessor selectedTabIndex = -1;
   protected accessor tutorials_: FeaturePromoDemoPageInfo[] = [];
   protected accessor featurePromos_: FeaturePromoDemoPageInfo[] = [];
   protected accessor newBadges_: FeaturePromoDemoPageInfo[] = [];
@@ -131,7 +137,6 @@ export class UserEducationInternalsElement extends
       loadTimeData.getInteger('whatsNewVersionToRequest');
   protected accessor currentChromeVersion_: number =
       loadTimeData.getInteger('currentChromeVersion');
-  protected accessor selectedTabIndex_ = -1;
   protected accessor initialized_ = false;
 
   private handler_: UserEducationInternalsPageHandlerInterface;
@@ -145,6 +150,18 @@ export class UserEducationInternalsElement extends
     ColorChangeUpdater.forDocument().start();
 
     this.checkInitializedAndReadAllData_();
+
+    // These are used in tests of the TrackedElementManager and its handler.
+    const manager = TrackedElementManager.getInstance();
+    manager.startTracking(
+        this.$.menu, 'UserEducationInternalsUI::kMenuElementId');
+    for (const child of this.$.menu.children) {
+      if (child instanceof HTMLElement && child.getAttribute('index')) {
+        manager.startTracking(
+            child, 'UserEducationInternalsUI::kMenuItemElementId',
+            {secondaryId: 'index:' + child.getAttribute('index')});
+      }
+    }
   }
 
   // If data is read from the backend before the Feature Engagement system is
@@ -432,7 +449,7 @@ export class UserEducationInternalsElement extends
     this.$.menu.selected = index;
     if (index >= 0) {
       this.$.selector.removeAttribute('show-all');
-      this.selectedTabIndex_ = index;
+      this.selectedTabIndex = index;
     } else {
       this.$.selector.setAttribute('show-all', 'true');
     }

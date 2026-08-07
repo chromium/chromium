@@ -79,7 +79,7 @@ export function getHtml(this: UserEducationInternalsElement) {
         </p>
       </div>
       <cr-page-selector ?hidden="${!this.initialized_}"
-                        .selected="${this.selectedTabIndex_}" show-all="true"
+                        .selected="${this.selectedTabIndex}" show-all="true"
                         id="selector">
         <div id="iph" class="promo-list">
           <h2>Feature Promos</h2>

@@ -34,6 +34,9 @@ class UserEducationInternalsUI
   explicit UserEducationInternalsUI(content::WebUI* web_ui);
   ~UserEducationInternalsUI() override;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuItemElementId);
+
   void BindInterface(
       mojo::PendingReceiver<
           mojom::user_education_internals::UserEducationInternalsPageHandler>
