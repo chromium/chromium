@@ -306,6 +306,12 @@ TEST_F(AccountInfoTest, EmptyTheSameAsDeprecatedSentinelValues) {
 }
 
 TEST_F(AccountInfoTest, CreateWithPossiblyEmptyGaiaId) {
+  // TODO(crbug.com/502237328): Remove this test after launching
+  // kGaiaAccountIdEnforcement.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kGaiaAccountIdEnforcement);
+
   AccountInfo info = AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
                          GaiaId(), "test@example.org")
                          .Build();
