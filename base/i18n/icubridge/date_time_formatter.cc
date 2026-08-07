@@ -365,11 +365,19 @@ icu::UnicodeString GetFormattedSkeleton(
     size_t second_count = std::ranges::count(skeleton, 's');
     size_t subsecond_count = std::ranges::count(skeleton, 'S');
     // Hour
-    if (hour_12_count) {
-      output_skeleton.append(std::u16string(hour_12_count, 'h'));
-    }
-    if (hour_24_count) {
-      output_skeleton.append(std::u16string(hour_24_count, 'H'));
+    if (options.hour_clock_type == base::k12HourClock) {
+      output_skeleton.append(std::u16string(
+          std::max<size_t>(hour_12_count + hour_24_count, 1), 'h'));
+    } else if (options.hour_clock_type == base::k24HourClock) {
+      output_skeleton.append(std::u16string(
+          std::max<size_t>(hour_12_count + hour_24_count, 1), 'H'));
+    } else {
+      if (hour_12_count) {
+        output_skeleton.append(std::u16string(hour_12_count, 'h'));
+      }
+      if (hour_24_count) {
+        output_skeleton.append(std::u16string(hour_24_count, 'H'));
+      }
     }
 
     if (options.time_precision !=

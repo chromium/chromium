@@ -630,6 +630,28 @@ TEST_F(DateTimeFormatterTest, HourClockType) {
       datetime_options::T::Short().with_hour_clock_type(base::k24HourClock));
   EXPECT_NE(result24.find(u"22:30"), std::u16string::npos);
   EXPECT_EQ(result24.find(u"PM"), std::u16string::npos);
+
+  // Overriding hour clock type on a pattern that contains date fields, e.g.
+  // YMDT. en-US normally uses 12-hour clock for YMDT. Let's verify we can
+  // override to 24-hour.
+  std::u16string result_ymdt24 =
+      formatter.Format(time, GetKnownLanguageTag("en-US"),
+                       datetime_options::YMDT::Medium().with_hour_clock_type(
+                           base::k24HourClock));
+  EXPECT_NE(result_ymdt24.find(u"22:30:00"), std::u16string::npos);
+  EXPECT_EQ(result_ymdt24.find(u"PM"), std::u16string::npos);
+
+  // en-GB normally uses 24-hour clock for YMDT. Let's verify we can override to
+  // 12-hour.
+  std::u16string result_ymdt12 =
+      formatter.Format(time, GetKnownLanguageTag("en-GB"),
+                       datetime_options::YMDT::Medium().with_hour_clock_type(
+                           base::k12HourClock));
+  EXPECT_NE(result_ymdt12.find(u"10:30:00"), std::u16string::npos);
+  EXPECT_TRUE(result_ymdt12.find(u"pm") != std::u16string::npos ||
+              result_ymdt12.find(u"PM") != std::u16string::npos ||
+              result_ymdt12.find(u"p.m.") != std::u16string::npos ||
+              result_ymdt12.find(u"P.M.") != std::u16string::npos);
 }
 
 TEST_F(DateTimeFormatterTest, AmPmClockType) {
