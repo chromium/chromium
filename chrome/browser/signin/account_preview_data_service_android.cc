@@ -38,7 +38,8 @@ inline ScopedJavaLocalRef<jobject> ToJniType(
     const signin::AccountPreviewDataService::AccountPreviewPreference&
         preference) {
   return signin::Java_AccountPreviewPreference_Constructor(
-      env, preference.gaia_id, preference.preferred_data_types);
+      env, preference.gaia_id, preference.preferred_data_types,
+      preference.other_device_form_factor);
 }
 
 }  // namespace jni_zero

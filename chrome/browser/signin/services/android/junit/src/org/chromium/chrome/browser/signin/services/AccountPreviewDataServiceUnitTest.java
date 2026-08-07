@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.sync.DataType;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link AccountPreviewDataService} and {@link AccountPreviewPreference}. */
@@ -28,6 +29,8 @@ public class AccountPreviewDataServiceUnitTest {
     private static final GaiaId GAIA_ID = new GaiaId("gaia-id-1");
     private static final @DataType int[] DATA_TYPES =
             new int[] {DataType.BOOKMARKS, DataType.PASSWORDS};
+    private static final DeviceFormFactor OTHER_DEVICE_FORM_FACTOR =
+            DeviceFormFactor.DEVICE_FORM_FACTOR_TABLET;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -40,17 +43,20 @@ public class AccountPreviewDataServiceUnitTest {
 
     @Test
     public void testPreferenceGetters() {
-        AccountPreviewPreference preference = new AccountPreviewPreference(GAIA_ID, DATA_TYPES);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(GAIA_ID, DATA_TYPES, OTHER_DEVICE_FORM_FACTOR);
         assertEquals(GAIA_ID, preference.getGaiaId());
         assertEquals(DATA_TYPES.length, preference.getPreferredDataTypes().length);
         assertEquals(DataType.BOOKMARKS, preference.getPreferredDataTypes()[0]);
         assertEquals(DataType.PASSWORDS, preference.getPreferredDataTypes()[1]);
+        assertEquals(OTHER_DEVICE_FORM_FACTOR, preference.getOtherDeviceFormFactor());
     }
 
     @Test
     public void testPreferenceImmutability() {
         @DataType int[] input = new int[] {DataType.BOOKMARKS};
-        AccountPreviewPreference preference = new AccountPreviewPreference(GAIA_ID, input);
+        AccountPreviewPreference preference =
+                new AccountPreviewPreference(GAIA_ID, input, OTHER_DEVICE_FORM_FACTOR);
 
         // Mutate input array
         input[0] = DataType.PASSWORDS;
@@ -64,17 +70,24 @@ public class AccountPreviewDataServiceUnitTest {
 
     @Test
     public void testPreferenceEqualsAndHashCode() {
-        AccountPreviewPreference pref = new AccountPreviewPreference(GAIA_ID, DATA_TYPES);
+        AccountPreviewPreference pref =
+                new AccountPreviewPreference(GAIA_ID, DATA_TYPES, OTHER_DEVICE_FORM_FACTOR);
         AccountPreviewPreference prefSameValues =
                 new AccountPreviewPreference(
                         new GaiaId("gaia-id-1"),
-                        new int[] {DataType.BOOKMARKS, DataType.PASSWORDS});
+                        new int[] {DataType.BOOKMARKS, DataType.PASSWORDS},
+                        OTHER_DEVICE_FORM_FACTOR);
         AccountPreviewPreference prefDifferentGaia =
                 new AccountPreviewPreference(
                         new GaiaId("gaia-id-2"),
-                        new int[] {DataType.BOOKMARKS, DataType.PASSWORDS});
+                        new int[] {DataType.BOOKMARKS, DataType.PASSWORDS},
+                        OTHER_DEVICE_FORM_FACTOR);
         AccountPreviewPreference prefDifferentDataTypes =
-                new AccountPreviewPreference(GAIA_ID, new int[] {DataType.BOOKMARKS});
+                new AccountPreviewPreference(
+                        GAIA_ID, new int[] {DataType.BOOKMARKS}, OTHER_DEVICE_FORM_FACTOR);
+        AccountPreviewPreference prefDifferentFormFactor =
+                new AccountPreviewPreference(
+                        GAIA_ID, DATA_TYPES, DeviceFormFactor.DEVICE_FORM_FACTOR_PHONE);
 
         // Reflexive
         assertTrue(pref.equals(pref));
@@ -90,5 +103,8 @@ public class AccountPreviewDataServiceUnitTest {
 
         assertFalse(pref.equals(prefDifferentDataTypes));
         assertNotEquals(pref.hashCode(), prefDifferentDataTypes.hashCode());
+
+        assertFalse(pref.equals(prefDifferentFormFactor));
+        assertNotEquals(pref.hashCode(), prefDifferentFormFactor.hashCode());
     }
 }

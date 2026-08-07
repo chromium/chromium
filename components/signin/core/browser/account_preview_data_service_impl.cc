@@ -30,6 +30,8 @@ namespace signin {
 namespace {
 constexpr char kPreferredAccountDictGaiaIdKey[] = "gaia_id";
 constexpr char kPreferredAccountDictDataTypesKey[] = "data_types";
+constexpr char kPreferredAccountDictOtherDeviceFormFactorKey[] =
+    "other_device_form_factor";
 
 constexpr base::TimeDelta kMinPeriodicRefreshInterval = base::Hours(12);
 
@@ -476,6 +478,15 @@ AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
       }
     }
   }
+
+  std::optional<int> form_factor_int =
+      dict.FindInt(kPreferredAccountDictOtherDeviceFormFactorKey);
+  if (form_factor_int.has_value() &&
+      sync_pb::SyncEnums::DeviceFormFactor_IsValid(*form_factor_int)) {
+    preference.other_device_form_factor =
+        static_cast<sync_pb::SyncEnums_DeviceFormFactor>(*form_factor_int);
+  }
+
   return preference;
 }
 
@@ -493,6 +504,8 @@ void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
     data_types_list.Append(syncer::DataTypeToStableIdentifier(data_type));
   }
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
+  dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,
+           static_cast<int>(preference->other_device_form_factor));
   pref_service_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 }
 

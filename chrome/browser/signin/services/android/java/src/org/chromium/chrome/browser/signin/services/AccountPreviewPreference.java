@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.sync.DataType;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceFormFactor;
 import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Arrays;
@@ -25,13 +26,28 @@ import java.util.Objects;
 public final class AccountPreviewPreference {
     private final GaiaId mGaiaId;
     private final @DataType int[] mPreferredDataTypes;
+    private final DeviceFormFactor mOtherDeviceFormFactor;
+
+    public AccountPreviewPreference(
+            GaiaId gaiaId,
+            @DataType int[] preferredDataTypes,
+            DeviceFormFactor otherDeviceFormFactor) {
+        mGaiaId = Objects.requireNonNull(gaiaId);
+        mPreferredDataTypes = Objects.requireNonNull(preferredDataTypes).clone();
+        mOtherDeviceFormFactor = Objects.requireNonNull(otherDeviceFormFactor);
+    }
 
     @CalledByNative
     public AccountPreviewPreference(
             @JniType("GaiaId") GaiaId gaiaId,
-            @JniType("std::vector<syncer::DataType>") @DataType int[] preferredDataTypes) {
-        mGaiaId = Objects.requireNonNull(gaiaId);
-        mPreferredDataTypes = Objects.requireNonNull(preferredDataTypes).clone();
+            @JniType("std::vector<syncer::DataType>") @DataType int[] preferredDataTypes,
+            @JniType("sync_pb::SyncEnums_DeviceFormFactor") int otherDeviceFormFactor) {
+        this(
+                gaiaId,
+                preferredDataTypes,
+                Objects.requireNonNullElse(
+                        DeviceFormFactor.forNumber(otherDeviceFormFactor),
+                        DeviceFormFactor.DEVICE_FORM_FACTOR_UNSPECIFIED));
     }
 
     public GaiaId getGaiaId() {
@@ -42,16 +58,21 @@ public final class AccountPreviewPreference {
         return mPreferredDataTypes.clone();
     }
 
+    public DeviceFormFactor getOtherDeviceFormFactor() {
+        return mOtherDeviceFormFactor;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof AccountPreviewPreference preference)) return false;
         return Objects.equals(mGaiaId, preference.mGaiaId)
-                && Arrays.equals(mPreferredDataTypes, preference.mPreferredDataTypes);
+                && Arrays.equals(mPreferredDataTypes, preference.mPreferredDataTypes)
+                && mOtherDeviceFormFactor == preference.mOtherDeviceFormFactor;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mGaiaId, Arrays.hashCode(mPreferredDataTypes));
+        return Objects.hash(mGaiaId, Arrays.hashCode(mPreferredDataTypes), mOtherDeviceFormFactor);
     }
 }

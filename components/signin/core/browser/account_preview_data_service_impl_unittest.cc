@@ -1431,4 +1431,23 @@ TEST_F(AccountPreviewDataServiceTest, NullSyncService) {
   EXPECT_EQ("device_1", preview_data->devices[0].cache_guid);
 }
 
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForPromo_OtherDeviceFormFactor) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  base::DictValue dict;
+  dict.Set("gaia_id", account.gaia.ToString());
+  dict.Set("other_device_form_factor",
+           static_cast<int>(
+               sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET));
+  prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
+  auto preference = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preference.has_value());
+  EXPECT_EQ(account.gaia, preference->gaia_id);
+  EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
+            preference->other_device_form_factor);
+}
+
 }  // namespace signin

@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 
 class PrefRegistrySimple;
@@ -25,6 +26,10 @@ class AccountPreviewDataService : public KeyedService {
   struct AccountPreviewPreference {
     GaiaId gaia_id;
     std::vector<syncer::DataType> preferred_data_types;
+    sync_pb::SyncEnums_DeviceFormFactor other_device_form_factor =
+        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED;
+
+    bool operator==(const AccountPreviewPreference&) const = default;
   };
 
   AccountPreviewDataService() = default;
