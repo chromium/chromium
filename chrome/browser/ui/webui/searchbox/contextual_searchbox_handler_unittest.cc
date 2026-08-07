@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
+#include "components/lens/lens_features.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -923,6 +924,10 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_FileTooLarge) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_UnsupportedType) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      lens::features::kLensSendRawFileMediaTypes);
+
   profile()->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
       static_cast<int>(
