@@ -17,10 +17,3 @@
 .multi-card > .card:first-of-type {
   margin-top: 0;
 }
-
-/* TODO(crbug.com/454617005): this is a quick fix, remove */
-.card h2 {
-  align-self: auto;
-  padding-bottom: 0;
-  padding-top: 12px;
-}
