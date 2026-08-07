@@ -1126,7 +1126,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   lens::ContextualInputData expected_input_data;
   expected_input_data.page_url = GURL();
   expected_input_data.page_title = std::nullopt;
-  expected_input_data.primary_content_type = primary_content_type;
+  expected_input_data.primary_content_type = lens::MimeType::kImage;
   expected_input_data.viewport_screenshot = router.GetViewportScreenshot();
   expected_input_data.pdf_current_page = std::nullopt;
   expected_input_data.is_page_context_eligible = true;
