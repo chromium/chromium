@@ -658,7 +658,7 @@ void AppBannerManager::Stop(InstallableStatusCode code) {
   ResetBindings();
   UpdateState(State::COMPLETE);
   for (Observer& observer : observer_list_) {
-    observer.OnComplete();
+    observer.OnComplete(code);
   }
   status_reporter_ = std::make_unique<NullStatusReporter>();
 }
@@ -1046,5 +1046,4 @@ void AppBannerManager::DisplayAppBanner() {
     UpdateState(State::SENDING_EVENT_GOT_EARLY_PROMPT);
   }
 }
-
 }  // namespace webapps

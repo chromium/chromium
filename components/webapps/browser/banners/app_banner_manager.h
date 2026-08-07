@@ -82,7 +82,7 @@ class AppBannerManager final : public content::WebContentsObserver,
     virtual void OnBannerPromptReply() {}
 
     // Called when the pipeline finishes
-    virtual void OnComplete() {}
+    virtual void OnComplete(InstallableStatusCode code) {}
   };
 
   // Result of trying to show the banner UI.

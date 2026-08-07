@@ -90,7 +90,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
   void OnInstall() override;
   void OnBannerShown() override;
   void OnBannerPromptReply() override;
-  void OnComplete() override;
+  void OnComplete(InstallableStatusCode code) override;
 
   bool installable_check_in_progress_ = true;
   base::ListValue debug_log_;

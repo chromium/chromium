@@ -128,10 +128,14 @@ class AppBannerManagerObserverAdapter : public AppBannerManager::Observer {
     }
   }
 
-  void OnComplete() override {
-    if (on_done_)
+  void OnComplete(InstallableStatusCode code) override {
+    if (code == InstallableStatusCode::MANIFEST_URL_CHANGED) {
+      return;
+    }
+    if (on_done_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_done_));
+    }
   }
 
   void OnBannerPromptReply() override {
@@ -333,10 +337,8 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                 std::nullopt);
 }
 
-// TODO(crbug.com/538642992): DelayedManifestTriggersPipeline is consistently
-// failing.
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
-                       DISABLED_DelayedManifestTriggersPipeline) {
+                       DelayedManifestTriggersPipeline) {
   auto observer = CreateAppBannerManagerObserver();
   RunBannerTest(
       web_contents(), observer.get(),
@@ -349,10 +351,8 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
       observer.get(), base::BindLambdaForTesting([&]() {
         EXPECT_TRUE(content::ExecJs(web_contents(), "addManifestLinkTag()"));
       }),
-      /*expected_will_show=*/false, std::nullopt);
-  TriggerBannerFlow(observer.get(), base::DoNothing(),
-                    /*expected_will_show=*/false,
-                    AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
+      /*expected_will_show=*/false,
+      AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
 }
 

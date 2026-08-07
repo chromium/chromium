@@ -165,7 +165,7 @@ void TestAppBannerManagerDesktop::OnBannerShown() {
   }
 }
 
-void TestAppBannerManagerDesktop::OnComplete() {
+void TestAppBannerManagerDesktop::OnComplete(InstallableStatusCode code) {
   RunInstallableQuitClosureIfNeeded();
   if (on_complete_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
