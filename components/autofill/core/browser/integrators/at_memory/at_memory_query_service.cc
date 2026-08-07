@@ -509,24 +509,6 @@ void OnFetchPiiEntityCompleted(
   RunCallbackAsync(std::move(callback), std::move(*unmasked_value));
 }
 
-// Filters `entries` by keeping only those that match at least one specification
-// in `fetch_specifications`.
-std::vector<MemorySearchResult> FilterResults(
-    std::vector<MemorySearchResult> entries,
-    base::span<const personal_context::proto::AutofillFetchSpecification>
-        fetch_specifications) {
-  std::erase_if(entries, [&](const MemorySearchResult& entry) {
-    return !std::ranges::any_of(fetch_specifications, [&](const auto& spec) {
-      return internal::MatchesFetchSpecification(entry, spec);
-    });
-  });
-  return entries;
-}
-
-}  // namespace
-
-namespace internal {
-
 bool MatchesStringFilter(
     std::u16string_view entry_string,
     const AutofillFetchSpecification::StringFilter& filter) {
@@ -643,7 +625,21 @@ bool MatchesFetchSpecification(const MemorySearchResult& entry,
   });
 }
 
-}  // namespace internal
+// Filters `entries` by keeping only those that match at least one specification
+// in `fetch_specifications`.
+std::vector<MemorySearchResult> FilterResults(
+    std::vector<MemorySearchResult> entries,
+    base::span<const personal_context::proto::AutofillFetchSpecification>
+        fetch_specifications) {
+  std::erase_if(entries, [&](const MemorySearchResult& entry) {
+    return !std::ranges::any_of(fetch_specifications, [&](const auto& spec) {
+      return MatchesFetchSpecification(entry, spec);
+    });
+  });
+  return entries;
+}
+
+}  // namespace
 
 AtMemoryQueryService::AtMemoryQueryService(
     std::unique_ptr<AutofillDataProvider> data_provider,
