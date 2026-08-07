@@ -1306,9 +1306,7 @@ TEST_F(AISummarizerManifestTest, InputLimitExceededErrorSpeedPreference) {
             blink::mojom::kTinyModelMaxInputTokenSize);
 }
 
-// TODO(crbug.com/543163435): Flaky.
-TEST_F(AISummarizerManifestTest,
-       DISABLED_CanCreateAndCreateWithManifestGemma4) {
+TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestGemma4) {
   version_info::Channel channel = chrome::GetChannel();
   if (channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV &&
