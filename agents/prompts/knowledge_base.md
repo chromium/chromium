@@ -87,6 +87,14 @@ orient yourself before diving into specific component code.
     *   Consult `tools/metrics/ukm/README.md` for instructions on how to
         define and record new URL-Keyed Metrics.
 
+### **Topic: Adding or Modifying UI Strings (.grd/.grdp files)**
+
+*   **For questions about adding or modifying UI translation strings, or fixing
+    presubmit errors about missing screenshot `.sha1` hashes:**
+    *   Consult `tools/translation/README.md` for instructions on using
+        `tools/translation/upload_screenshots.py` to generate and upload screenshot
+        `.sha1` files (Note: uploading requires Google internal credentials).
+
 ### **Topic: Debugging**
 
 *   **For a "header file not found" error:**
