@@ -10,13 +10,15 @@
 namespace blink {
 
 enum class VisualRectFlag {
+  kMinValue,
+
   // The following flags are used in both
   // LayoutObject::MapToVisualRectInAncestorSpace() and
   // GeometryMapper::LocalToAncestorVisualRect().
-  kMin,
+
   // Use gfx::RectF::InclusiveIntersect instead of gfx::RectF::Intersect for
   // intersection.
-  kEdgeInclusive = kMin,
+  kEdgeInclusive = kMinValue,
   // Don't expand visual rect for pixel-moving filters.
   kIgnoreFilters,
 
@@ -49,11 +51,10 @@ enum class VisualRectFlag {
   // obtain the unclipped geometry and once without it for the fully clipped
   // rect, ensuring identical transform and scroll offset logic.
   kSkipAncestorAndViewportClips,
-  kMax = kSkipAncestorAndViewportClips,
+  kMaxValue = kSkipAncestorAndViewportClips,
 };
 
-using VisualRectFlags =
-    base::EnumSet<VisualRectFlag, VisualRectFlag::kMin, VisualRectFlag::kMax>;
+using VisualRectFlags = base::EnumSet<VisualRectFlag>;
 
 }  // namespace blink
 
