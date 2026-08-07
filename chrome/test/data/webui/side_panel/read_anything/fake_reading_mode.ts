@@ -172,12 +172,6 @@ export class FakeReadingMode {
     return (nodeId > this.maxNodeId) ? [] : [nodeId + 1];
   }
 
-  // Returns content of "data-font-css" html attribute. This is needed for
-  // rendering content from annotated canvas in Google Docs.
-  getDataFontCss(_nodeId: number): string {
-    return '400 14.6667px "Courier New"';
-  }
-
   // Returns the HTML tag of the AXNode for the provided AXNodeID. For testing,
   // odd numbered nodes are divs and even numbered nodes are text.
   getHtmlTag(nodeId: number): string {
@@ -467,12 +461,6 @@ export class FakeReadingMode {
   // Sets the same structure as setContentForTesting but forces
   // the processing of the AX Tree Anchors.
   setAnchorsForTesting(_snapshotLite: Object, _contentNodeIds: number[]) {}
-
-  // Set the theme. Used by tests only.
-  setThemeForTesting(
-      _fontName: string, _fontSize: number, _linksEnabled: boolean,
-      _foregroundColor: number, _backgroundColor: number, _lineSpacing: number,
-      _letterSpacing: number) {}
 
   // Sets the language. Used by tests only.
   setLanguageForTesting(_code: string) {}

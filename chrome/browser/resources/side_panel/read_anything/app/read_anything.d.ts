@@ -213,10 +213,6 @@ declare namespace chrome {
     // contained within the selection.
     function getChildren(nodeId: number): number[];
 
-    // Returns content of "data-font-css" html attribute. This is needed for
-    // rendering content from annotated canvas in Google Docs.
-    function getDataFontCss(nodeId: number): string;
-
     // Returns the HTML tag of the AXNode for the provided AXNodeID.
     function getHtmlTag(nodeId: number): string;
 
@@ -398,12 +394,6 @@ declare namespace chrome {
     // the processing of the AX Tree Anchors.
     function setAnchorsForTesting(
         snapshotLite: Object, contentNodeIds: number[]): void;
-
-    // Set the theme. Used by tests only.
-    function setThemeForTesting(
-        fontName: string, fontSize: number, linksEnabled: boolean,
-        foregroundColor: number, backgroundColor: number, lineSpacing: number,
-        letterSpacing: number): void;
 
     // Sets the page language. Used by tests only.
     function setLanguageForTesting(code: string): void;
