@@ -127,6 +127,7 @@ static_library("android") {
     "//components/password_manager/core/browser/form_parsing",
     "//components/prefs",
     "//components/security_state/content",
+    "//components/security_state/content/android",
     "//components/user_prefs",
     "//components/webauthn/android",
     "//content/public/browser",

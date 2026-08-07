@@ -25,14 +25,12 @@ security_state::MaliciousContentStatus
 GetMaliciousContentStatusForWebContentsInternal(
     content::WebContents* web_contents,
     SecurityStateModelDelegate* delegate);
-SecurityStateModelDelegate* CreateSecurityStateModelDelegate();
 }  // namespace security_state::internal
 
 using security_state::MaliciousContentStatus;
 using security_state::SecurityLevel;
 using security_state::SecurityStateClient;
 using security_state::SetSecurityStateClient;
-using security_state::internal::CreateSecurityStateModelDelegate;
 using security_state::internal::GetMaliciousContentStatusForWebContentsInternal;
 using security_state::internal::GetSecurityLevelForWebContentsInternal;
 using testing::AtMost;
@@ -54,6 +52,10 @@ class MockSecurityStateModelDelegate : public SecurityStateModelDelegate {
               (const override));
   MOCK_METHOD(SecurityLevel,
               GetSecurityLevel,
+              (content::WebContents * web_contents),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<security_state::VisibleSecurityState>,
+              GetVisibleSecurityState,
               (content::WebContents * web_contents),
               (const override));
 };
@@ -172,14 +174,14 @@ INSTANTIATE_TEST_SUITE_P(
         MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN,
         MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK));
 
-using CreateSecurityStateModelDelegateTest = SecurityStateBridgeTest;
+using GetSecurityStateModelDelegateTest = SecurityStateBridgeTest;
 
-TEST_F(CreateSecurityStateModelDelegateTest, ReturnsNullWhenClientIsNull) {
+TEST_F(GetSecurityStateModelDelegateTest, ReturnsNullWhenClientIsNull) {
   SetSecurityStateClient(nullptr);
-  EXPECT_THAT(CreateSecurityStateModelDelegate(), IsNull());
+  EXPECT_THAT(security_state::GetSecurityStateModelDelegate(), IsNull());
 }
 
-TEST_F(CreateSecurityStateModelDelegateTest,
+TEST_F(GetSecurityStateModelDelegateTest,
        ReturnsNullWhenMaybeCreateReturnsNull) {
   // The mock_client_ is set up in SecurityStateBridgeTest::SetUp.
   // Expect MaybeCreateSecurityStateModelDelegate to be called and return a
@@ -187,19 +189,23 @@ TEST_F(CreateSecurityStateModelDelegateTest,
   EXPECT_CALL(*mock_client_, MaybeCreateSecurityStateModelDelegate())
       .WillOnce(Return(ByMove(nullptr)));
 
-  EXPECT_THAT(CreateSecurityStateModelDelegate(), IsNull());
+  EXPECT_THAT(security_state::GetSecurityStateModelDelegate(), IsNull());
 }
 
-TEST_F(CreateSecurityStateModelDelegateTest, ReturnsValidDelegateWhenCreated) {
+TEST_F(GetSecurityStateModelDelegateTest, ReturnsValidDelegateWhenCreated) {
   auto mock_delegate =
       std::make_unique<StrictMock<MockSecurityStateModelDelegate>>();
   // Keep a raw pointer to the mock_delegate before ownership is moved.
   SecurityStateModelDelegate* expected_raw_ptr = mock_delegate.get();
 
+  // The delegate is created once and then owned and cached by the client:
+  // repeated lookups return the same instance without a second
+  // MaybeCreateSecurityStateModelDelegate() call.
   EXPECT_CALL(*mock_client_, MaybeCreateSecurityStateModelDelegate())
       .WillOnce(Return(ByMove(std::move(mock_delegate))));
 
-  EXPECT_EQ(CreateSecurityStateModelDelegate(), expected_raw_ptr);
+  EXPECT_EQ(security_state::GetSecurityStateModelDelegate(), expected_raw_ptr);
+  EXPECT_EQ(security_state::GetSecurityStateModelDelegate(), expected_raw_ptr);
 }
 
 }  // namespace

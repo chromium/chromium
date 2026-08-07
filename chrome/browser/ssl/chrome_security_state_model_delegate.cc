@@ -21,3 +21,10 @@ ChromeSecurityStateModelDelegate::GetMaliciousContentStatus(
   DCHECK(web_contents);
   return chrome_security_state::GetMaliciousContentStatus(web_contents);
 }
+
+std::unique_ptr<security_state::VisibleSecurityState>
+ChromeSecurityStateModelDelegate::GetVisibleSecurityState(
+    content::WebContents* web_contents) const {
+  DCHECK(web_contents);
+  return chrome_security_state::GetVisibleSecurityState(web_contents);
+}
