@@ -3165,6 +3165,46 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_all_win_debug_gtests",
+    targets = [
+        "gpu_win_debug_gtests",
+        "gpu_fyi_win_debug_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_win_debug_telemetry_tests",
+    targets = [
+        "gpu_win_debug_telemetry_tests",
+        "gpu_fyi_win_debug_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_win_release_gtests",
+    targets = [
+        "gpu_win_release_gtests",
+        "gpu_fyi_win_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_win_release_isolated_scripts",
+    targets = [
+        "gpu_win_release_isolated_scripts",
+        "gpu_fyi_win_release_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_all_win_release_telemetry_tests",
+    targets = [
+        "gpu_win_release_telemetry_tests",
+        "gpu_fyi_win_release_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_angle_fuchsia_unittests_isolated_scripts",
     targets = [
         "angle_unittests",
@@ -3423,15 +3463,6 @@ targets.bundle(
         "gpu_common_and_optional_telemetry_tests",
         "gpu_metal_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_common_win_telemetry_tests",
-    targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
     ],
 )
 
@@ -4327,29 +4358,21 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_win_amd_release_telemetry_tests",
+    name = "gpu_fyi_win_debug_gtests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webrtc_telemetry_test",
-        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_fyi_win_release_gtests",
     ],
 )
 
 targets.bundle(
     name = "gpu_fyi_win_debug_telemetry_tests",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
     ],
 )
 
 targets.bundle(
-    name = "gpu_fyi_win_gtests",
+    name = "gpu_fyi_win_release_gtests",
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
@@ -4361,22 +4384,20 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_win_intel_release_telemetry_tests",
+    name = "gpu_fyi_win_release_isolated_scripts",
     targets = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
-        "gpu_webrtc_telemetry_test",
-        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+        "gpu_command_buffer_perf_passthrough_isolated_scripts",
     ],
 )
 
 targets.bundle(
-    name = "gpu_fyi_win_optional_isolated_scripts",
+    name = "gpu_fyi_win_release_telemetry_tests",
     targets = [
-        "gpu_command_buffer_perf_passthrough_isolated_scripts",
+        "gpu_passthrough_graphite_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webrtc_telemetry_test",
+        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
     ],
 )
 
@@ -4723,11 +4744,41 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_win_gtests",
+    name = "gpu_win_debug_gtests",
+    targets = [
+        "gpu_win_release_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_win_debug_telemetry_tests",
+    targets = [
+        "gpu_win_release_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_win_release_gtests",
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_default_and_optional_win_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_win_release_isolated_scripts",
+    targets = [
+        # No non-FYI isolated script tests at the moment.
+    ],
+)
+
+targets.bundle(
+    name = "gpu_win_release_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
     ],
 )
 

@@ -737,8 +737,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_win_gtests",
-            "gpu_common_win_telemetry_tests",
+            "gpu_win_debug_gtests",
+            "gpu_win_debug_telemetry_tests",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
@@ -804,8 +804,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_win_gtests",
-            "gpu_common_win_telemetry_tests",
+            "gpu_win_release_gtests",
+            "gpu_win_release_telemetry_tests",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",

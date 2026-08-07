@@ -74,8 +74,10 @@ targets.legacy_compound_suite(
     ],
 )
 
+# This is functionally equivalent to the gpu_all_win_release_telemetry_tests
+# bundle, but is defined separately since V8 needs to use legacy suites for now.
 targets.legacy_compound_suite(
-    name = "gpu_fyi_win_release_telemetry_tests",
+    name = "gpu_v8_win_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_graphite_telemetry_tests",

@@ -880,7 +880,7 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_v8_win_release_telemetry_tests',
         },
       },
     },

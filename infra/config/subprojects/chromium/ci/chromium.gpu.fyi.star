@@ -2578,7 +2578,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_debug_gtests",
             "gpu_fyi_win_debug_telemetry_tests",
         ],
         mixins = [
@@ -2597,28 +2597,6 @@ ci.thin_tester(
                 reason = [
                     "crbug.com/380431384 flaky crashes in random tests",
                 ],
-            ),
-            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/382422293): Remove when fixed
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
-            "trace_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 2,
-                    ),
-                ),
             ),
         },
     ),
@@ -2847,11 +2825,11 @@ ci.thin_tester(
         # When the experimental driver is identical to the stable driver, this
         # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
         # should be running the same test_suites as
-        # 'Win10 FYI x64 Release (NVIDIA)'
+        # 'Win10 FYI x64 Release (NVIDIA)' and "Win10 x64 Release (NVIDIA)".
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
+            "gpu_all_win_release_isolated_scripts",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -2899,13 +2877,19 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_amd_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win11_amd_rx_5500_xt_stable",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
             "gl_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
@@ -2916,6 +2900,15 @@ ci.thin_tester(
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on AMD",
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
         },
     ),
@@ -2949,13 +2942,25 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_intel_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands if capacity permits and mark as CI-only due to future optional trybot mirroring.",
+            ),
             "xr_browser_tests": targets.mixin(
                 args = [
                     # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
@@ -2995,17 +3000,29 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_intel_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win10_intel_uhd_770_stable",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.uhd_770.gl_tests_passthrough.filter",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
             "xr_browser_tests": targets.mixin(
                 args = [
@@ -3046,9 +3063,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_release_gtests",
             "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_fyi_win_release_isolated_scripts",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
@@ -3067,21 +3084,6 @@ ci.thin_tester(
                 ],
             ),
             "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
-                mixins = targets.mixin(
-                    args = [
-                        # TODO(crbug.com/382422293): Remove when fixed
-                        "--jobs=1",
-                    ],
-                ),
-                replacements = targets.replacements(
-                    args = {
-                        # Magic substitution happens after regular replacement, so remove it
-                        # now since we are manually applying the number of jobs above.
-                        targets.magic_args.GPU_PARALLEL_JOBS: None,
-                    },
-                ),
-            ),
-            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     args = [
                         # TODO(crbug.com/382422293): Remove when fixed
@@ -3178,13 +3180,19 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_amd_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win11_amd_rx_7600_stable",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",
@@ -3194,6 +3202,15 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.7600.gl_unittests.filter",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
         },
     ),
@@ -3327,14 +3344,20 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_amd_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "very_limited_capacity_bot",
             "gpu_amd_rx_9070_xt_win_experimental",
         ],
         per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "expected_color_pixel_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
             "gl_unittests": targets.mixin(
                 args = [
                     # Skip failing tests inline instead of using filter files
@@ -3342,6 +3365,15 @@ ci.thin_tester(
                     # long-term.
                     "--gtest_filter=-DCompPresenterPixelTest.YUY2SwapChain*",
                 ],
+            ),
+            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "screenshot_sync_passthrough_graphite_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
         },
     ),
@@ -3418,9 +3450,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
+            "gpu_all_win_release_isolated_scripts",
         ],
         mixins = [
             "very_limited_capacity_bot",
@@ -3457,9 +3489,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
-            "gpu_fyi_win_optional_isolated_scripts",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
+            "gpu_all_win_release_isolated_scripts",
         ],
         mixins = [
             "win11_nvidia_rtx_4070_super_stable",
@@ -3532,9 +3564,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_optional_isolated_scripts",
-            "gpu_fyi_win_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_isolated_scripts",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
@@ -3615,8 +3647,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_fyi_win_gtests",
-            "gpu_fyi_win_release_telemetry_tests",
+            "gpu_all_win_release_gtests",
+            "gpu_all_win_release_telemetry_tests",
         ],
         mixins = [
             "win11_qualcomm_snapdragon_x_elite_stable",
