@@ -56,7 +56,7 @@ suite('LineFocusController', () => {
   }
 
   function toggleKey(): KeyboardEvent {
-    return keyDown('l');
+    return new KeyboardEvent('keydown', {key: 'l', altKey: true});
   }
 
   function downKey(): KeyboardEvent {

@@ -57,7 +57,7 @@ function hasNoModifiers(e: KeyboardEvent): boolean {
 }
 
 export function isLineFocusShortcut(e: KeyboardEvent): boolean {
-  return e.key?.toLowerCase() === 'l' && hasNoModifiers(e);
+  return e.altKey && e.key?.toLowerCase() === 'l';
 }
 
 export function isPlayPauseShortcut(e: KeyboardEvent): boolean {

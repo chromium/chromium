@@ -189,13 +189,13 @@ suite('AppContent', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     assertFalse(lineFocusController.isEnabled());
 
-    // 'l' toggle
-    keyDownOn(app, 0, undefined, 'l');
+    // Alt+'l' toggle
+    keyDownOn(app, 0, ['alt'], 'l');
     await microtasksFinished();
     assertTrue(lineFocusController.isEnabled());
 
-    // 'L' toggle
-    keyDownOn(app, 0, undefined, 'L');
+    // Alt+'L' toggle
+    keyDownOn(app, 0, ['alt'], 'L');
     await microtasksFinished();
     assertFalse(lineFocusController.isEnabled());
 
@@ -250,12 +250,12 @@ suite('AppContent', () => {
     assertLT(0, getLineFocusPadding());
 
     // Toggling off should remove padding.
-    keyDownOn(app, 0, undefined, 'l');
+    keyDownOn(app, 0, ['alt'], 'l');
     await microtasksFinished();
     assertEquals(0, getLineFocusPadding());
 
     // Toggling on should remove padding.
-    keyDownOn(app, 0, undefined, 'l');
+    keyDownOn(app, 0, ['alt'], 'l');
     await microtasksFinished();
     assertLT(0, getLineFocusPadding());
   });
