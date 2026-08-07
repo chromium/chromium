@@ -74,6 +74,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -99,6 +101,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private ActivityWindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     @Mock private PrefService mPrefService;
     @Mock private StripLayoutTrailingButtonsObserver mObserver;
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
@@ -133,6 +136,9 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         CompositorAnimationHandler.setTestingMode(true);
         when(mUpdateHost.getAnimationHandler())
                 .thenReturn(new CompositorAnimationHandler(CallbackUtils.emptyRunnable()));
+
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
+        when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -1097,5 +1103,31 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 initialWidth,
                 button.getWidth(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testGlicButton_PrefChangeUpdatesVisibility_Incognito() {
+        mCoordinator.onTabModelSwitched(true);
+        assertTrue(
+                "Glic button should initially be visible when pinned.",
+                mCoordinator.shouldGlicBeVisible());
+
+        // Simulate unpinning in preferences.
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
+        mCoordinator.onGlicPrefChanged();
+
+        assertFalse(
+                "Glic button should be hidden after unpinning.",
+                mCoordinator.shouldGlicBeVisible());
+        assertFalse("Glic button visible property should be false.", mGlicButton.isVisible());
+
+        // Simulate re-pinning in preferences.
+        when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
+        mCoordinator.onGlicPrefChanged();
+
+        assertTrue(
+                "Glic button should be visible again after pinning.",
+                mCoordinator.shouldGlicBeVisible());
+        assertTrue("Glic button visible property should be true.", mGlicButton.isVisible());
     }
 }

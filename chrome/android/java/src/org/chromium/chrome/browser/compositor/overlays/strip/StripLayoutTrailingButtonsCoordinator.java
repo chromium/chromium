@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicNudgeActivity;
+import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegateBridge;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
@@ -62,6 +63,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -141,6 +144,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
     // Lifecycle & Caching Objects
     private @Nullable Profile mProfile;
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable LayerTitleCache mLayerTitleCache;
 
     // Callbacks
@@ -499,6 +503,10 @@ public class StripLayoutTrailingButtonsCoordinator {
             mStateController.destroy();
             mStateController = null;
         }
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
             mGlicButtonContextMenuCoordinator = null;
@@ -531,10 +539,23 @@ public class StripLayoutTrailingButtonsCoordinator {
             }
         }
 
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+        mPrefChangeRegistrar = new PrefChangeRegistrar(UserPrefs.get(profile));
+        mPrefChangeRegistrar.addObserver(
+                GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, this::onGlicPrefChanged);
+
         GlicButtonStateController stateController = getOrCreateStateController();
         if (stateController != null) {
             stateController.updateObservations(profile);
         }
+    }
+
+    @VisibleForTesting
+    /* package */ void onGlicPrefChanged() {
+        updateTrailingButtonsState(/* animate= */ false, /* forceLayoutChanged= */ false);
     }
 
     /** Returns the Glic button instance. */
