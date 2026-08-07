@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
-
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -1514,14 +1513,16 @@ class FaviconOmittedTest extends FaviconTest {
 
 class InvokeClient extends WebClient {
   calls: string[] = [];
+  lastInvokeOptions: InvokeOptions|null = null;
   override async notifyPanelWillOpen(
       panelOpeningData: PanelOpeningData&PanelState): Promise<OpenPanelInfo> {
     this.calls.push('notifyPanelWillOpen');
     return super.notifyPanelWillOpen!(panelOpeningData);
   }
 
-  override async invoke(_options: InvokeOptions): Promise<void> {
+  override async invoke(options: InvokeOptions): Promise<void> {
     this.calls.push('invoke');
+    this.lastInvokeOptions = options;
   }
 }
 
@@ -1530,13 +1531,28 @@ class InvokeTest extends ApiTests {
     return new InvokeClient();
   }
 
+  getInvokeClient(): InvokeClient {
+    return this.client as InvokeClient;
+  }
+
   async testInvokeWaitsForNotifyPanelWillOpen() {
-    const client: InvokeClient = this.client as InvokeClient;
+    const client = this.getInvokeClient();
     await runUntil(() => {
       return client.calls.length === 2;
     });
 
     assertEquals('notifyPanelWillOpen,invoke', client.calls.join(','));
+  }
+
+  async testInvoke() {
+    const client = this.getInvokeClient();
+    await runUntil(() => {
+      return client.lastInvokeOptions !== null;
+    });
+    assertDefined(client.lastInvokeOptions);
+    assertEquals(
+        client.lastInvokeOptions!.invocationSource,
+        InvocationSource.TOP_CHROME_BUTTON);
   }
 }
 

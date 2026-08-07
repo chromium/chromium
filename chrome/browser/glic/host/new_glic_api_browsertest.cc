@@ -2245,6 +2245,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPopupOpens) {
   ASSERT_OK(RunUntilEqual([&]() { return GetPopupCount(); }, 1));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvoke) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient());
+  auto options = mojom::InvokeOptions::New();
+  options->invocation_source = mojom::InvocationSource::kTopChromeButton;
+  instance->host().GetPrimaryWebClient()->Invoke(std::move(options),
+                                                 base::DoNothing());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetContextFromFocusedTabWithIframe) {
   ASSERT_TRUE(content::NavigateToURL(
       GetTabListInterface()->GetActiveTab()->GetContents(),

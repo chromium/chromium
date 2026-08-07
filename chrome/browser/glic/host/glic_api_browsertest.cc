@@ -764,15 +764,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvoke) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  auto options = mojom::InvokeOptions::New();
-  options->invocation_source = mojom::InvocationSource::kTopChromeButton;
-  GetGlicInstanceImpl()->host().GetPrimaryWebClient()->Invoke(
-      std::move(options), base::DoNothing());
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 

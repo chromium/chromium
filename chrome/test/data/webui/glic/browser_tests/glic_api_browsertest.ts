@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, FocusedTabData, InvokeOptions, OpenPanelInfo, PanelOpeningData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import type {CancelActionsResult, FocusedTabData, OpenPanelInfo, PanelOpeningData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -1770,25 +1770,6 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
 }
 
 
-class WebClientWithInvoke extends WebClient {
-  invokePromise = Promise.withResolvers<InvokeOptions>();
-  override async invoke(options: InvokeOptions): Promise<void> {
-    this.invokePromise.resolve(options);
-  }
-}
-
-class ApiTestWithInvoke extends ApiTestFixtureBase {
-  override createWebClient(): WebClient {
-    return new WebClientWithInvoke();
-  }
-
-  async testInvoke() {
-    const options =
-        await (this.client as WebClientWithInvoke).invokePromise.promise;
-    assertEquals(options.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
-  }
-}
-
 // All test fixtures. We look up tests by name, and the fixture name is ignored.
 // Therefore all tests must have unique names.
 const TEST_FIXTURES = [
@@ -1796,7 +1777,6 @@ const TEST_FIXTURES = [
   DaisyChainApiTests,
   NotifyPanelWillOpenTest,
   ApiTestWithoutOpen,
-  ApiTestWithInvoke,
 ];
 
 testMain(TEST_FIXTURES);
