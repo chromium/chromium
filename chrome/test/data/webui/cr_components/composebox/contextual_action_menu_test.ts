@@ -2235,7 +2235,7 @@ suite('ContextualActionMenu', () => {
 
       // Main menu toggle is NOT visible
       const mainMenuToggle = $$(actionMenu, '#smartTabSharingItem');
-      assertFalse(!!mainMenuToggle);
+      assertFalse(isVisible(mainMenuToggle));
 
       // Open flyout
       trigger.dispatchEvent(new PointerEvent('pointerenter'));
@@ -2271,9 +2271,12 @@ suite('ContextualActionMenu', () => {
 
       assertEquals('true', mainMenuToggle.getAttribute('aria-checked'));
       assertTrue(!!mainMenuToggle.querySelector('.share-tabs-check'));
+      const icon = mainMenuToggle.querySelector('cr-icon:not(.share-tabs-check)');
+      assertTrue(!!icon);
+      assertEquals('composebox:screensaverAuto', icon.getAttribute('icon'));
       // Trigger is NOT visible
       const trigger = $$(actionMenu, '#shareTabsTrigger');
-      assertFalse(!!trigger);
+      assertFalse(isVisible(trigger));
     });
 
     test('Clicking toggle in flyout closes the menu', async () => {
@@ -2338,7 +2341,7 @@ suite('ContextualActionMenu', () => {
           assertTrue(isVisible(mainMenuToggle));
 
           const trigger = $$(actionMenu, '#shareTabsTrigger');
-          assertFalse(!!trigger);
+          assertFalse(isVisible(trigger));
         });
   });
 

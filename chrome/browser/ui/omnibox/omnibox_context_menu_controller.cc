@@ -335,7 +335,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
                          GetSmartTabSharingMegaplusMenuLabel());
     menu_model_->SetIconForCommandId(
         IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING,
-        ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
+        ui::ImageModel::FromVectorIcon(kScreensaverAutoIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
     menu_model_->SetMinorIcon(
         index,
