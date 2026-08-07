@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
+import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -107,6 +108,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private SearchUiCoordinator mSearchUiCoordinator;
     @Mock private LocationBarCoordinator mLocationBarCoordinator;
     @Mock private UrlBarCoordinator mUrlBarCoordinator;
+    @Mock private View mLocationBarContainerView;
+    @Mock private UrlBar mUrlBar;
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private SearchActivityLocationBarLayout mSearchBox;
     @Mock private Profile mProfile;
@@ -160,6 +163,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
         when(mLocationBarCoordinator.getOmniboxStub()).thenReturn(mOmniboxStub);
+        when(mLocationBarCoordinator.getContainerView()).thenReturn(mLocationBarContainerView);
+        when(mLocationBarContainerView.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
         when(mOmniboxStub.isUrlBarFocused()).thenReturn(true);
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
         when(mLocationBarCoordinator.getSuggestionsListNonEmptySupplier())
@@ -228,6 +233,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         verify(mUrlBarCoordinator)
                 .setUrlBarHintText(
                         mActivity.getResources().getString(R.string.hub_search_empty_hint));
+        verify(mUrlBar).setTextAppearance(R.style.TextAppearance_TextMedium);
     }
 
     @Test
