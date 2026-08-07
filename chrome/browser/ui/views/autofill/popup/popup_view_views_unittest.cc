@@ -1582,10 +1582,19 @@ TEST_F(PopupViewViewsTestKeyboard, UnfocusFootnoteLinkOnSuggestionSelection) {
   EXPECT_FALSE(bnpl_footnote->IsSettingsLinkFocused());
 }
 
+// TODO(crbug.com/337222641): Remove fixture when removing feature flag and use
+// `PopupViewViewsTest` instead.
+class PopupViewViewsInputDelayTest : public PopupViewViewsTest {
+ private:
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion};
+};
+
 // Tests that accepting a suggestion with the TAB key is blocked for 500 ms
-// (AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration)
+// (`AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration`)
 // (crbug.com/501770542).
-TEST_F(PopupViewViewsTest, TabAcceptsSuggestionOnlyWhenRowVisibleLongEnough) {
+TEST_F(PopupViewViewsInputDelayTest,
+       TabAcceptsSuggestionOnlyWhenRowVisibleLongEnough) {
   MockFunction<void(std::string_view)> check;
   {
     InSequence s;
@@ -1601,9 +1610,6 @@ TEST_F(PopupViewViewsTest, TabAcceptsSuggestionOnlyWhenRowVisibleLongEnough) {
         .Times(0);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
   ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
       .WillByDefault(Return(true));
 
@@ -3182,11 +3188,18 @@ TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesLoadingState) {
   static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 
-TEST_F(PopupViewViewsTest, TabSelected_A11yAnnouncesBnplFootnote) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePayNowPayLaterTabs);
+// TODO(crbug.com/477689220): Remove fixture when cleaning up feature flag and
+// use `PopupViewViewsTest` instead.
+class PopupViewViewsPayNowPayLaterTabsTest : public PopupViewViewsTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+};
 
+// Tests that the accessibility announcement is triggered for the BNPL footnote
+// when switching tabs.
+TEST_F(PopupViewViewsPayNowPayLaterTabsTest,
+       TabSelected_A11yAnnouncesBnplFootnote) {
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
       {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
        {TabbedPaneTabType::kPayLater, u"Pay Later Test"}});
