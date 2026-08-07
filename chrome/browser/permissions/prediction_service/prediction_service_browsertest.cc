@@ -887,6 +887,12 @@ class Aiv4ModelPredictionServiceBrowserTestBase
                                               {permissions::features::
                                                    kPermissionsAIP92}) {}
 
+  Aiv4ModelPredictionServiceBrowserTestBase(
+      const std::vector<FeatureRefAndParams>& enabled_features,
+      const std::vector<FeatureRef>& disabled_features)
+      : AivXModelPredictionServiceBrowserTest(enabled_features,
+                                              disabled_features) {}
+
   void SetUpOnMainThread() override {
     AivXModelPredictionServiceBrowserTest<
         PermissionsAiv4HandlerFake>::SetUpOnMainThread();
@@ -1733,6 +1739,124 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceAIP92BrowserTest, TestAIP92Workflow) {
   TriggerPromptAndVerifyUi(/*test_url=*/"test.a", PermissionAction::DISMISSED,
                            GetParam().should_expect_quiet_ui,
                            /*expected_relevance=*/std::nullopt,
+                           GetParam().prediction_service_likelihood);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
+}
+
+// ---------------------------------------------------------------------------
+// --------- Prediction Service AILikelihoodOrRelevance --------------------
+// ---------------------------------------------------------------------------
+struct PredictionServiceAILikelihoodOrRelevanceTestCase {
+  std::string test_name;
+  bool feature_enabled;
+  std::string_view model_name;
+  PermissionRequestRelevance expected_relevance;
+  PermissionUiSelector::PredictionGrantLikelihood prediction_service_likelihood;
+  bool should_expect_quiet_ui;
+};
+
+class PredictionServiceAILikelihoodOrRelevanceBrowserTest
+    : public Aiv4ModelPredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<
+          PredictionServiceAILikelihoodOrRelevanceTestCase> {
+ public:
+  PredictionServiceAILikelihoodOrRelevanceBrowserTest()
+      : Aiv4ModelPredictionServiceBrowserTestBase(
+            /*enabled_features=*/GetParam().feature_enabled
+                ? std::vector<
+                      FeatureRefAndParams>{{permissions::features::
+                                                kPermissionsAIv4,
+                                            {}},
+                                           {permissions::features::
+                                                kPermissionsAILikelihoodOrRelevance,
+                                            {}},
+                                           CONFIGURE_NO_HOLDBACK_CHANCE}
+                : std::vector<
+                      FeatureRefAndParams>{{permissions::features::
+                                                kPermissionsAIv4,
+                                            {}},
+                                           CONFIGURE_NO_HOLDBACK_CHANCE},
+            /*disabled_features=*/GetParam().feature_enabled
+                ? std::vector<
+                      FeatureRef>{permissions::features::kPermissionsAIP92}
+                : std::vector<FeatureRef>{
+                      permissions::features::kPermissionsAIP92,
+                      permissions::features::
+                          kPermissionsAILikelihoodOrRelevance}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PredictionServiceAILikelihoodOrRelevanceTest,
+    PredictionServiceAILikelihoodOrRelevanceBrowserTest,
+    ValuesIn<PredictionServiceAILikelihoodOrRelevanceTestCase>({
+        {/*test_name=*/"FeatureEnabled_VeryLowRelevance_LikelyPrediction",
+         /*feature_enabled=*/true,
+         /*model_name=*/kZeroReturnAiv4Model,
+         /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
+         /*prediction_service_likelihood=*/kLikelihoodLikely,
+         /*should_expect_quiet_ui=*/true},
+        {/*test_name=*/"FeatureEnabled_VeryHighRelevance_LikelyPrediction",
+         /*feature_enabled=*/true,
+         /*model_name=*/kOneReturnAiv4Model,
+         /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+         /*prediction_service_likelihood=*/kLikelihoodLikely,
+         /*should_expect_quiet_ui=*/false},
+        {/*test_name=*/"FeatureEnabled_VeryHighRelevance_UnlikelyPrediction",
+         /*feature_enabled=*/true,
+         /*model_name=*/kOneReturnAiv4Model,
+         /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+         /*prediction_service_likelihood=*/kLikelihoodUnlikely,
+         /*should_expect_quiet_ui=*/true},
+        {/*test_name=*/"FeatureEnabled_VeryHighRelevance_"
+                       "VeryUnlikelyPrediction",
+         /*feature_enabled=*/true,
+         /*model_name=*/kOneReturnAiv4Model,
+         /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+         /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+         /*should_expect_quiet_ui=*/true},
+        {/*test_name=*/"FeatureDisabled_VeryLowRelevance_LikelyPrediction",
+         /*feature_enabled=*/false,
+         /*model_name=*/kZeroReturnAiv4Model,
+         /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
+         /*prediction_service_likelihood=*/kLikelihoodLikely,
+         /*should_expect_quiet_ui=*/false},
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PredictionServiceAILikelihoodOrRelevanceBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(PredictionServiceAILikelihoodOrRelevanceBrowserTest,
+                       TestAILikelihoodOrRelevanceWorkflow) {
+  ASSERT_TRUE(aiv4_model_handler());
+
+  PushModelFileToModelExecutor(ModelFilePath(GetParam().model_name));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  set_dummy_screenshot_for_testing();
+  set_dummy_inner_text_for_testing();
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(GetParam().prediction_service_likelihood);
+
+  PredictionRequestFeatures expected_features =
+      BuildRequestFeatures(request_type(), ExperimentId::kAiV4ExperimentId,
+                           GetParam().expected_relevance);
+  EXPECT_CALL(prediction_service(),
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
+      .WillOnce(WithArg<2>(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          }));
+
+  TriggerPromptAndVerifyUi(/*test_url=*/"test.a", PermissionAction::DISMISSED,
+                           GetParam().should_expect_quiet_ui,
+                           GetParam().expected_relevance,
                            GetParam().prediction_service_likelihood);
 
   histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,

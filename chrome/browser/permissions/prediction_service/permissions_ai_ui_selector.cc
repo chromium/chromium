@@ -27,6 +27,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -106,7 +107,14 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
 }
 
 bool ShouldPredictionTriggerQuietUi(
-    PermissionUiSelector::PredictionGrantLikelihood likelihood) {
+    PermissionUiSelector::PredictionGrantLikelihood likelihood,
+    PermissionRequestRelevance relevance) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsAILikelihoodOrRelevance)) {
+    return likelihood == Unlikely || likelihood == VeryUnlikely ||
+           relevance == PermissionRequestRelevance::kVeryLow ||
+           relevance == PermissionRequestRelevance::kLow;
+  }
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIP92)) {
     return likelihood == Unlikely || likelihood == VeryUnlikely;
   }
@@ -353,7 +361,8 @@ void PermissionsAiUiSelector::SelectUiToUse(
     VLOG(1) << "[CPSS] Using likelihood override value that was provided via "
                "command line";
     if (ShouldPredictionTriggerQuietUi(
-            likelihood_override_for_testing_.value())) {
+            likelihood_override_for_testing_.value(),
+            PermissionRequestRelevance::kUnspecified)) {
       FinishRequest(Decision::UseQuietUi(
           QuietUiReason::kServicePredictedVeryUnlikelyGrant,
           Decision::ShowNoWarning()));
@@ -595,7 +604,10 @@ void PermissionsAiUiSelector::LookupResponseReceived(
              "likelihood: "
           << last_request_grant_likelihood_.value();
 
-  if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
+  if (ShouldPredictionTriggerQuietUi(
+          last_request_grant_likelihood_.value(),
+          last_permission_request_relevance_.value_or(
+              PermissionRequestRelevance::kUnspecified))) {
     FinishRequest(Decision::UseQuietUi(
         is_on_device_cpss_v1
             ? QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant
