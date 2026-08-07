@@ -36,6 +36,8 @@ class BrowserLaunchEventUploaderDesktop final
   ~BrowserLaunchEventUploaderDesktop() override;
 
   // BrowserLaunchEventUploader:
+  PrefService* GetPrefService() const override;
+  const char* GetPolicyPrefName() const override;
   std::string_view GetMetricSuffix() const override;
   void UploadEvent(
       const ::chrome::cros::reporting::proto::BrowserLaunchEvent& event,

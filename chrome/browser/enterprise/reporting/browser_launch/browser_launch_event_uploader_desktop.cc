@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -32,6 +33,20 @@ BrowserLaunchEventUploaderDesktop::~BrowserLaunchEventUploaderDesktop() {
         .Run(policy::CloudPolicyClient::Result(
             policy::CloudPolicyClient::NotRegistered()));
   }
+}
+
+PrefService* BrowserLaunchEventUploaderDesktop::GetPrefService() const {
+  if (profile_) {
+    return profile_->GetPrefs();
+  }
+  return g_browser_process->local_state();
+}
+
+const char* BrowserLaunchEventUploaderDesktop::GetPolicyPrefName() const {
+  if (profile_) {
+    return kCloudProfileReportingEnabled;
+  }
+  return kCloudReportingEnabled;
 }
 
 std::string_view BrowserLaunchEventUploaderDesktop::GetMetricSuffix() const {

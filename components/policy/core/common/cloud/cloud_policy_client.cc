@@ -1294,7 +1294,7 @@ void CloudPolicyClient::UploadSecurityEvent(bool include_device_info,
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_registered()) {
+  if (!is_registered() || !service() || !service()->configuration()) {
     std::move(callback).Run(CloudPolicyClient::Result::CreateForRealtimeUpload(
         NotRegistered(), std::move(request)));
     return;
@@ -1313,7 +1313,7 @@ void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
                                                   ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_registered()) {
+  if (!is_registered() || !service() || !service()->configuration()) {
     std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
     return;
   }

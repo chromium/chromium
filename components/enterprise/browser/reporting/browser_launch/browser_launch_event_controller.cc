@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/browser_launch/browser_launch_event_uploader.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/backoff_entry.h"
 
 namespace enterprise_reporting {
@@ -71,7 +72,32 @@ BrowserLaunchEventController::~BrowserLaunchEventController() {
 
 void BrowserLaunchEventController::CollectAndUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!pending_upload_event_.has_value());
+
+  PrefService* pref_service = uploader_->GetPrefService();
+  const char* pref_name = uploader_->GetPolicyPrefName();
+
+  CHECK(pref_service);
+  CHECK(pref_name);
+
+  // If the policy preference is disabled, observe it until enabled mid-session.
+  if (!pref_service->GetBoolean(pref_name)) {
+    if (!pref_change_registrar_.IsObserved(pref_name)) {
+      pref_change_registrar_.Init(pref_service);
+      pref_change_registrar_.Add(
+          pref_name,
+          base::BindRepeating(&BrowserLaunchEventController::CollectAndUpload,
+                              base::Unretained(this)));
+    }
+    return;
+  }
+
+  // Stop observing preference changes once policy is enabled.
+  pref_change_registrar_.RemoveAll();
+
+  // Ensure collection and upload only happen once per browser session.
+  if (pending_upload_event_.has_value()) {
+    return;
+  }
 
   pending_upload_event_ = collector_->GetEvent();
 

@@ -15,6 +15,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
 
+#include "components/prefs/pref_change_registrar.h"
+
 namespace enterprise_reporting {
 
 class BrowserLaunchEventUploader;
@@ -46,9 +48,10 @@ class BrowserLaunchEventController {
       delete;
   ~BrowserLaunchEventController();
 
-  // Pulls data from the collector once and initiates the first upload attempt.
-  // This should only be called once per browser session. Subsequent calls
-  // will trigger a CHECK.
+  // Pulls data from the collector once and initiates the first upload attempt
+  // if reporting is enabled by policy. If reporting is disabled, observes the
+  // policy preference until enabled mid-session. This should only collect and
+  // upload once per browser session.
   void CollectAndUpload();
 
  private:
@@ -71,6 +74,7 @@ class BrowserLaunchEventController {
 
   net::BackoffEntry retry_backoff_;
   base::OneShotTimer retry_timer_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

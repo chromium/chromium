@@ -15,6 +15,8 @@
 #include "components/enterprise/browser/reporting/browser_launch/browser_launch_event_uploader.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,6 +46,8 @@ class MockBrowserLaunchEventUploader : public BrowserLaunchEventUploader {
   MockBrowserLaunchEventUploader() = default;
   ~MockBrowserLaunchEventUploader() override = default;
 
+  MOCK_METHOD(PrefService*, GetPrefService, (), (const, override));
+  MOCK_METHOD(const char*, GetPolicyPrefName, (), (const, override));
   MOCK_METHOD(std::string_view, GetMetricSuffix, (), (const, override));
   MOCK_METHOD(void,
               UploadEvent,
@@ -60,6 +64,8 @@ class BrowserLaunchEventControllerTest : public testing::Test {
   ~BrowserLaunchEventControllerTest() override = default;
 
   void SetUp() override {
+    pref_service_.registry()->RegisterBooleanPref("test_policy_pref", true);
+
     auto collector = std::make_unique<MockLaunchDataCollector>();
     collector_ptr_ = collector.get();
 
@@ -75,6 +81,10 @@ class BrowserLaunchEventControllerTest : public testing::Test {
 
     auto uploader = std::make_unique<MockBrowserLaunchEventUploader>();
     uploader_ptr_ = uploader.get();
+    EXPECT_CALL(*uploader_ptr_, GetPrefService())
+        .WillRepeatedly(testing::Return(&pref_service_));
+    EXPECT_CALL(*uploader_ptr_, GetPolicyPrefName())
+        .WillRepeatedly(testing::Return("test_policy_pref"));
     EXPECT_CALL(*uploader_ptr_, GetMetricSuffix())
         .WillRepeatedly(testing::Return("Browser"));
     controller_ = std::make_unique<BrowserLaunchEventController>(
@@ -84,6 +94,7 @@ class BrowserLaunchEventControllerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<BrowserLaunchEventController> controller_;
   raw_ptr<MockLaunchDataCollector> collector_ptr_;
   raw_ptr<MockBrowserLaunchEventUploader> uploader_ptr_;
@@ -209,12 +220,26 @@ TEST_F(BrowserLaunchEventControllerTest, NonRetryableFailure) {
       "Enterprise.BrowserLaunchEvent.SwitchCount.Browser", 1, 1);
 }
 
-TEST_F(BrowserLaunchEventControllerTest, MultipleCallsTriggerCheck) {
+TEST_F(BrowserLaunchEventControllerTest, MultipleCallsNoop) {
   EXPECT_CALL(*collector_ptr_, GetEvent()).Times(1);
   EXPECT_CALL(*uploader_ptr_, UploadEvent(_, _)).Times(1);
 
   controller_->CollectAndUpload();
-  EXPECT_CHECK_DEATH(controller_->CollectAndUpload());
+  controller_->CollectAndUpload();
+}
+
+TEST_F(BrowserLaunchEventControllerTest, PolicyDisabledObservesPref) {
+  pref_service_.SetBoolean("test_policy_pref", false);
+
+  EXPECT_CALL(*collector_ptr_, GetEvent()).Times(0);
+  EXPECT_CALL(*uploader_ptr_, UploadEvent(_, _)).Times(0);
+
+  controller_->CollectAndUpload();
+
+  EXPECT_CALL(*collector_ptr_, GetEvent()).Times(1);
+  EXPECT_CALL(*uploader_ptr_, UploadEvent(_, _)).Times(1);
+
+  pref_service_.SetBoolean("test_policy_pref", true);
 }
 
 TEST_F(BrowserLaunchEventControllerTest, NotRegisteredFailure) {
