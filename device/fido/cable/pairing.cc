@@ -5,44 +5,12 @@
 #include "device/fido/cable/pairing.h"
 
 #include <algorithm>
-#include <cstring>
+#include <tuple>
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/i18n/string_compare.h"
-#include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "components/cbor/values.h"
-#include "crypto/random.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/fido_parsing_utils.h"
-#include "third_party/boringssl/src/include/openssl/aes.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/hkdf.h"
-#include "third_party/boringssl/src/include/openssl/mem.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace device::cablev2 {
-
-Pairing::NameComparator::NameComparator(const icu::Locale* locale) {
-  UErrorCode error = U_ZERO_ERROR;
-  collator_.reset(icu::Collator::createInstance(*locale, error));
-}
-
-Pairing::NameComparator::NameComparator(NameComparator&&) = default;
-
-Pairing::NameComparator::~NameComparator() = default;
-
-bool Pairing::NameComparator::operator()(const std::unique_ptr<Pairing>& a,
-                                         const std::unique_ptr<Pairing>& b) {
-  return base::i18n::CompareString16WithCollator(
-             *collator_, base::UTF8ToUTF16(a->name),
-             base::UTF8ToUTF16(b->name)) == UCOL_LESS;
-}
 
 Pairing::Pairing() = default;
 Pairing::~Pairing() = default;
@@ -99,30 +67,6 @@ std::optional<std::unique_ptr<Pairing>> Pairing::Parse(
   }
 
   return pairing;
-}
-
-// static
-bool Pairing::CompareByMostRecentFirst(const std::unique_ptr<Pairing>& a,
-                                       const std::unique_ptr<Pairing>& b) {
-  return a->last_updated > b->last_updated;
-}
-
-// static
-bool Pairing::CompareByLeastStableChannelFirst(
-    const std::unique_ptr<Pairing>& a,
-    const std::unique_ptr<Pairing>& b) {
-  return a->channel_priority > b->channel_priority;
-}
-
-// static
-bool Pairing::CompareByPublicKey(const std::unique_ptr<Pairing>& a,
-                                 const std::unique_ptr<Pairing>& b) {
-  return a->peer_public_key_x962 < b->peer_public_key_x962;
-}
-
-// static
-Pairing::NameComparator Pairing::CompareByName(const icu::Locale* locale) {
-  return NameComparator(locale);
 }
 
 // static

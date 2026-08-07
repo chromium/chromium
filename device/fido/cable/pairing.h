@@ -11,7 +11,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,40 +18,16 @@
 #include "base/time/time.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/public/fido_constants.h"
-#include "third_party/icu/source/common/unicode/uversion.h"
 
 namespace cbor {
 class Value;
 }
-
-// third_party/icu/source/common/unicode/uversion.h will set namespace icu.
-namespace U_ICU_NAMESPACE {
-class Collator;
-class Locale;
-}  // namespace U_ICU_NAMESPACE
 
 namespace device::cablev2 {
 
 // Pairing represents information previously received from a caBLEv2
 // authenticator that enables future interactions to skip scanning a QR code.
 struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
-  // NameComparator is a less-than operation for sorting `Pairing` by name.
-  // See `CompareByName`.
-  class COMPONENT_EXPORT(DEVICE_FIDO) NameComparator {
-   public:
-    explicit NameComparator(const icu::Locale* locale);
-    NameComparator(NameComparator&&);
-    NameComparator(const NameComparator&) = delete;
-    NameComparator& operator=(const NameComparator&) = delete;
-    ~NameComparator();
-
-    bool operator()(const std::unique_ptr<Pairing>&,
-                    const std::unique_ptr<Pairing>&);
-
-   private:
-    std::unique_ptr<icu::Collator> collator_;
-  };
-
   Pairing();
   ~Pairing();
   Pairing(const Pairing&);
@@ -67,13 +42,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       base::span<const uint8_t, 32> handshake_hash);
 
-  static bool CompareByMostRecentFirst(const std::unique_ptr<Pairing>&,
-                                       const std::unique_ptr<Pairing>&);
-  static bool CompareByLeastStableChannelFirst(const std::unique_ptr<Pairing>&,
-                                               const std::unique_ptr<Pairing>&);
-  static bool CompareByPublicKey(const std::unique_ptr<Pairing>&,
-                                 const std::unique_ptr<Pairing>&);
-  static NameComparator CompareByName(const icu::Locale* locale);
   static bool EqualPublicKeys(const std::unique_ptr<Pairing>&,
                               const std::unique_ptr<Pairing>&);
 
