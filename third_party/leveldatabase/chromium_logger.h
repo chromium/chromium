@@ -11,8 +11,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
-#include "base/i18n/time_formatting.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -27,13 +25,15 @@ class ChromiumLogger : public Logger {
   ~ChromiumLogger() override = default;
 
   void Logv(const char* format, va_list arguments) override {
-    std::string str = base::StrCat(
-        {base::UnlocalizedTimeFormatWithPattern(base::Time::Now(),
-                                                "yyyy/MM/dd-HH:mm:ss.SSS"),
-         base::StringPrintf(
-             " %" PRIx64 " ",
-             static_cast<uint64_t>(base::PlatformThread::CurrentId())),
-         base::StringPrintV(format, arguments)});
+    base::Time::Exploded now;
+    base::Time::Now().LocalExplode(&now);
+
+    std::string str = base::StringPrintf(
+        "%04d/%02d/%02d-%02d:%02d:%02d.%03d %" PRIx64 " ", now.year,
+        now.month, now.day_of_month, now.hour, now.minute, now.second,
+        now.millisecond,
+        static_cast<uint64_t>(base::PlatformThread::CurrentId()));
+    base::StringAppendV(&str, format, arguments);
     if (str.back() != '\n') {
       str.push_back('\n');
     }
