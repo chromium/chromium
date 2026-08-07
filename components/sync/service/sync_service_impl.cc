@@ -2026,10 +2026,15 @@ SyncServiceImpl::CreateDeviceStatisticsRequest(const CoreAccountInfo& account,
       MakeUserAgentForSync(channel_), account, url);
 }
 
-std::vector<std::string>
-SyncServiceImpl::GetCurrentDeviceCacheGuidsForDeviceStatistics() {
-  return SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+base::flat_set<std::string>
+SyncServiceImpl::GetCurrentDeviceCacheGuidsForAllGaiaIds() const {
+  return SyncTransportDataPrefs::GetCurrentDeviceCacheGuidsForAllGaiaIds(
       sync_client_->GetPrefService());
+}
+
+base::flat_set<std::string>
+SyncServiceImpl::GetCurrentDeviceCacheGuidsForDeviceStatistics() {
+  return GetCurrentDeviceCacheGuidsForAllGaiaIds();
 }
 
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(

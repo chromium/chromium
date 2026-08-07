@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -171,6 +172,10 @@ class TestSyncService : public SyncService {
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::ListValue)> callback) override;
   DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
+  base::flat_set<std::string> GetCurrentDeviceCacheGuidsForAllGaiaIds()
+      const override;
+  void SetCurrentDeviceCacheGuidsForAllGaiaIds(
+      base::flat_set<std::string> guids);
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
@@ -222,6 +227,8 @@ class TestSyncService : public SyncService {
   GURL sync_service_url_;
 
   DataTypeSet unsynced_types_;
+
+  base::flat_set<std::string> current_device_cache_guids_for_all_gaia_ids_;
 
   std::map<DataType, LocalDataDescription> local_data_descriptions_;
 

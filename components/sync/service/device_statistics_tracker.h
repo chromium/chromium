@@ -40,10 +40,11 @@ class DeviceStatisticsTracker {
       DeviceStatisticsRequest>(const CoreAccountInfo&, const GURL&)>;
 
   // `identity_manager` must not be null.
-  DeviceStatisticsTracker(signin::IdentityManager* identity_manager,
-                          const GURL& sync_server_url,
-                          RequestFactory request_factory,
-                          std::vector<std::string> current_device_cache_guids);
+  DeviceStatisticsTracker(
+      signin::IdentityManager* identity_manager,
+      const GURL& sync_server_url,
+      RequestFactory request_factory,
+      base::flat_set<std::string> current_device_cache_guids);
   ~DeviceStatisticsTracker();
 
   // If there was no previous invocation today, sends `DeviceStatisticsRequest`s

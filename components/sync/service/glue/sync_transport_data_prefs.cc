@@ -155,7 +155,8 @@ void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(
 }
 
 // static
-std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+base::flat_set<std::string>
+SyncTransportDataPrefs::GetCurrentDeviceCacheGuidsForAllGaiaIds(
     const PrefService* pref_service) {
   std::vector<std::string> result;
   const base::DictValue& data_per_account =
@@ -169,6 +170,7 @@ std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
       result.push_back(*cache_guid);
     }
   }
+  // Implicit transform to `base::flat_set<std::string>`.
   return result;
 }
 

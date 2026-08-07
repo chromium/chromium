@@ -38,9 +38,9 @@ class DeviceStatisticsSchedulerTest
     return request;
   }
 
-  std::vector<std::string> GetCurrentDeviceCacheGuidsForDeviceStatistics()
+  base::flat_set<std::string> GetCurrentDeviceCacheGuidsForDeviceStatistics()
       override {
-    return std::vector<std::string>{"test_guid"};
+    return base::flat_set<std::string>{"test_guid"};
   }
 
  protected:

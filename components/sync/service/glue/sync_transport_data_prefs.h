@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -60,7 +61,7 @@ class SyncTransportDataPrefs {
   // includes the current cache GUID (per GetCacheGuid()), but also the cache
   // GUIDs for any other accounts that were the primary account in this profile
   // before (and haven't been cleared).
-  static std::vector<std::string> GetCacheGuidsForAllGaiaIds(
+  static base::flat_set<std::string> GetCurrentDeviceCacheGuidsForAllGaiaIds(
       const PrefService* pref_service);
 
   // All of the following prefs are Gaia-keyed (to the `gaia_id_hash`) passed

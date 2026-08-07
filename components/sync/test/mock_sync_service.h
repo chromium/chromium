@@ -58,6 +58,10 @@ class MockSyncService : public SyncService {
               (),
               (const override));
   MOCK_METHOD(bool, IsLocalSyncEnabled, (), (const override));
+  MOCK_METHOD(base::flat_set<std::string>,
+              GetCurrentDeviceCacheGuidsForAllGaiaIds,
+              (),
+              (const override));
   MOCK_METHOD(CoreAccountInfo, GetAccountInfo, (), (const override));
   MOCK_METHOD(bool, HasSyncConsent, (), (const override));
   MOCK_METHOD(GoogleServiceAuthError, GetAuthError, (), (const override));

@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/wall_clock_timer.h"
@@ -37,7 +37,7 @@ class DeviceStatisticsScheduler : public signin::IdentityManager::Observer {
     virtual std::unique_ptr<DeviceStatisticsRequest>
     CreateDeviceStatisticsRequest(const CoreAccountInfo&, const GURL&) = 0;
 
-    virtual std::vector<std::string>
+    virtual base::flat_set<std::string>
     GetCurrentDeviceCacheGuidsForDeviceStatistics() = 0;
   };
 

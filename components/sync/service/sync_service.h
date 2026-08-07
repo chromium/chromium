@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
@@ -527,6 +528,10 @@ class SyncService : public KeyedService {
   // SyncServiceObserver::OnStateChanged() to track status changes. Must be
   // called for real data types only.
   virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
+
+  // Returns the cache GUIDs for the current device across all Gaia IDs.
+  virtual base::flat_set<std::string> GetCurrentDeviceCacheGuidsForAllGaiaIds()
+      const = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS

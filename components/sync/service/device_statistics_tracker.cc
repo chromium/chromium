@@ -203,7 +203,7 @@ DeviceStatisticsTracker::DeviceStatisticsTracker(
     signin::IdentityManager* identity_manager,
     const GURL& sync_server_url,
     RequestFactory request_factory,
-    std::vector<std::string> current_device_cache_guids)
+    base::flat_set<std::string> current_device_cache_guids)
     : identity_manager_(identity_manager),
       sync_server_url_(sync_server_url),
       request_factory_(std::move(request_factory)),
