@@ -13,9 +13,13 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.robolectric.annotation.Config;
 
-@RunWith(JUnit4.class)
+import org.chromium.base.test.BaseRobolectricTestRunner;
+
+/** Unit tests for {@link TokenHolder}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class TokenHolderTest {
     private final Runnable mCallback = mock(Runnable.class);
     private final TokenHolder mHolder = new TokenHolder(mCallback);

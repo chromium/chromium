@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.util.ArraySet;
+
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -11,10 +13,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 /**
  * Manages the logic pertaining to tracking pending tab closures for a {@link TabModelImpl}. This
@@ -64,7 +66,7 @@ public class PendingTabClosureManager {
     /** Represents a set of tabs closed together. */
     static class TabClosureEvent {
         private final List<Tab> mClosingTabs;
-        private final HashSet<Tab> mUnhandledTabs;
+        private final Set<Tab> mUnhandledTabs;
         private final @Nullable Runnable mUndoRunnable;
         private final long mTimestamp;
 
@@ -74,7 +76,7 @@ public class PendingTabClosureManager {
          */
         public TabClosureEvent(List<Tab> tabs, @Nullable Runnable undoRunnable) {
             mClosingTabs = new ArrayList<>(tabs);
-            mUnhandledTabs = new HashSet<>(mClosingTabs);
+            mUnhandledTabs = new ArraySet<>(mClosingTabs);
             mUndoRunnable = undoRunnable;
             mTimestamp = TimeUtils.currentTimeMillis();
         }

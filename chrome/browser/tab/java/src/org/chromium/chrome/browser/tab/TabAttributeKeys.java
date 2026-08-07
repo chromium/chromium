@@ -24,6 +24,10 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface TabAttributeKeys {
+    // Number of string keys declared in this interface. Used to preallocate
+    // TabAttributes.mAttributes.
+    int NUM_ENTRIES = 7;
+
     /** Whether the tab should be grouped with its parent tab. True by default. */
     String GROUPED_WITH_PARENT = "isTabGroupedWithParent";
 

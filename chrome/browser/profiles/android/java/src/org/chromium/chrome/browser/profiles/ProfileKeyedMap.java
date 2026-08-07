@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import android.util.ArrayMap;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
@@ -14,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -49,7 +50,9 @@ public class ProfileKeyedMap<T> {
         int REDIRECTED_TO_ORIGINAL = 1;
     }
 
-    private final Map<Profile, T> mData = new HashMap<>();
+    // Initial capacity 2 covers the common profile combinations (regular and incognito/OTR)
+    // without incurring HashMap entry node allocations.
+    private final Map<Profile, T> mData = new ArrayMap<>(2);
     @ProfileSelection private final int mProfileSelection;
     private final @Nullable Callback<T> mDestroyAction;
 

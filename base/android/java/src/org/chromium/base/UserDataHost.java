@@ -4,12 +4,13 @@
 
 package org.chromium.base;
 
+import android.util.ArrayMap;
+
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -57,8 +58,8 @@ import java.util.Objects;
 public final class UserDataHost {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    // Default capacity (16) is oversized for typical 1-3 entries.
-    private @Nullable Map<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>(4);
+    // ArrayMap with capacity 4 avoids heap entry allocations and fits typical 1-3 entries per host.
+    private @Nullable Map<Class<? extends UserData>, UserData> mUserDataMap = new ArrayMap<>(4);
 
     @EnsuresNonNull("mUserDataMap")
     private void checkThreadAndState() {

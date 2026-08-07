@@ -14,6 +14,8 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartO
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.util.ArrayMap;
+import android.util.ArraySet;
 import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
@@ -70,8 +72,6 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -312,7 +312,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(0);
     private final Set<Integer> mMultiSelectedTabs = new LinkedHashSet<>();
-    private final Set<Token> mHidingTabGroups = new HashSet<>();
+    private final Set<Token> mHidingTabGroups = new ArraySet<>();
 
     // Efficient lookup of tabs by id rather than index (stored in C++). Also ensures the Java Tab
     // objects are not GC'd as the C++ TabAndroid objects only hold weak references to their Java
@@ -1416,7 +1416,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public Set<Token> getAllTabGroupIds() {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return Collections.emptySet();
-        return new HashSet<>(
+        return new ArraySet<>(
                 TabCollectionTabModelImplJni.get()
                         .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr));
     }
@@ -1459,7 +1459,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         // would likely perform better as the tabs could be iterated over only a single time.
         Supplier<Set<Token>> supplier =
                 () -> {
-                    Set<Token> tabGroupIds = new HashSet<>();
+                    Set<Token> tabGroupIds = new ArraySet<>();
                     TabList tabList = includePendingClosures ? getComprehensiveModel() : this;
                     for (Tab tab : tabList) {
                         if (tabsToExclude.contains(tab)) continue;
@@ -1842,7 +1842,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         } else {
             tabsToClose = new ArrayList<>(assumeNonNull(params.tabs));
             if (canHideTabGroups) {
-                Set<Tab> closingTabIds = new HashSet<>(tabsToClose);
+                Set<Tab> closingTabIds = new ArraySet<>(tabsToClose);
                 for (Token tabGroupId : getAllTabGroupIds()) {
                     if (closingTabIds.containsAll(getTabsInGroup(tabGroupId))) {
                         mHidingTabGroups.add(tabGroupId);
@@ -1887,7 +1887,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         }
 
-        Set<Integer> tabsToCloseIds = new HashSet<>();
+        Set<Integer> tabsToCloseIds = new ArraySet<>(tabsToClose.size());
         boolean didCloseAlone = params.tabCloseType == TabCloseType.SINGLE;
         for (Tab tab : tabsToClose) {
             tabsToCloseIds.add(tab.getId());
@@ -2144,7 +2144,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mCurrentTabSupplier.willSet(nearbyTab);
         }
 
-        Map<Token, @Nullable Tab> tabGroupShownTabs = new HashMap<>();
+        Map<Token, @Nullable Tab> tabGroupShownTabs = new ArrayMap<>();
         for (Tab tab : tabsToRemove) {
             assert mTabIdToTabs.indexOfKey(tab.getId()) >= 0 : "Tab not found in tab model.";
             if (pauseMedia) TabUtils.pauseMedia(tab);
@@ -2629,7 +2629,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     private List<Token> getCandidateTabGroupIdsForMerge(List<Tab> tabsToMerge) {
-        HashSet<Token> processedTabGroups = new HashSet<>();
+        Set<Token> processedTabGroups = new ArraySet<>();
         List<Token> candidateTabGroupIds = new ArrayList<>();
         for (Tab tab : tabsToMerge) {
             Token tabGroupId = tab.getTabGroupId();
@@ -2723,7 +2723,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private List<Token> maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
-        Set<Token> processedTabGroups = new HashSet<>();
+        Set<Token> processedTabGroups = new ArraySet<>();
         List<Token> closingTabGroupIds = new ArrayList<>();
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();

@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.util.ArrayMap;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -21,6 +22,7 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -295,7 +297,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      * @param keys The key types supported by this model.
      */
     public PropertyModel(PropertyKey... keys) {
-        this(buildData(keys));
+        this(buildData(Arrays.asList(keys)));
     }
 
     /**
@@ -304,7 +306,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
      * @param keys The key types supported by this model.
      */
     public PropertyModel(Collection<PropertyKey> keys) {
-        this(buildData(keys.toArray(new PropertyKey[keys.size()])));
+        this(buildData(keys));
     }
 
     private PropertyModel(Map<PropertyKey, ValueContainer> startingValues) {
@@ -572,6 +574,10 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
                 mTransformers;
 
         public Builder(PropertyKey... keys) {
+            this(buildData(Arrays.asList(keys)));
+        }
+
+        public Builder(Collection<PropertyKey> keys) {
             this(buildData(keys));
         }
 
@@ -673,7 +679,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
                 throw new IllegalArgumentException("Transforming key already exists.");
             }
             mData.put(key, null);
-            if (mTransformers == null) mTransformers = new HashMap<>();
+            // Transforming keys are typically limited to 1-2 properties (e.g. text or icon
+            // transformation in views), so capacity 2 minimizes memory footprint without rehashing.
+            if (mTransformers == null) mTransformers = new ArrayMap<>(2);
             assert transformer != null : "Requires non-null transformer";
             mTransformers.put(key, transformer);
             return this;
@@ -720,8 +728,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         return outList;
     }
 
-    private static Map<PropertyKey, ValueContainer> buildData(PropertyKey[] keys) {
-        Map<PropertyKey, ValueContainer> data = new HashMap<>();
+    // Threshold below which ArrayMap is used instead of HashMap to reduce memory overhead and
+    // avoid entry object allocations for typical small key sets (<= 32).
+    private static final int ARRAY_MAP_KEY_THRESHOLD = 32;
+
+    private static Map<PropertyKey, ValueContainer> buildData(Collection<PropertyKey> keys) {
+        int size = keys.size();
+        Map<PropertyKey, ValueContainer> data =
+                size <= ARRAY_MAP_KEY_THRESHOLD ? new ArrayMap<>(size) : new HashMap<>(size);
         for (PropertyKey key : keys) {
             if (data.containsKey(key)) {
                 throw new IllegalArgumentException("Duplicate key: " + key);

@@ -4,9 +4,10 @@
 
 package org.chromium.ui.util;
 
+import android.util.ArraySet;
+
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -20,7 +21,8 @@ public class TokenHolder {
 
     private int mNextToken;
 
-    private final Set<Integer> mAcquiredTokens = new HashSet<>();
+    // Normally there should not be very many tokens so an ArraySet should be fine.
+    private final Set<Integer> mAcquiredTokens = new ArraySet<>();
     private final Runnable mCallback;
 
     /**

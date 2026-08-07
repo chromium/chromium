@@ -38,8 +38,9 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
                 SettableMonotonicObservableSupplier<T>,
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();
-    protected @Nullable ObserverList<Callback<T>> mObservers = new ObserverList<>();
+    protected @Nullable ObserverList<Callback<T>> mObservers;
     protected T mObject;
+    private boolean mIsDestroyed;
 
     @Deprecated // Migrate to ObservableSuppliers.*
     public ObservableSupplierImpl() {
@@ -61,9 +62,12 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        assert mObservers != null : "addObserver called on destroyed supplier";
-        if (mObservers == null) {
+        assert !mIsDestroyed : "addObserver called on destroyed supplier";
+        if (mIsDestroyed) {
             return null;
+        }
+        if (mObservers == null) {
+            mObservers = new ObserverList<>();
         }
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
@@ -77,7 +81,9 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
                 ThreadUtils.assertOnUiThread();
                 ThreadUtils.postOnUiThread(
                         () -> {
-                            if (mObject == currentObject && mObservers.hasObserver(obs)) {
+                            if (mObject == currentObject
+                                    && mObservers != null
+                                    && mObservers.hasObserver(obs)) {
                                 obs.onResult(currentObject);
                             }
                         });
@@ -103,21 +109,28 @@ class ObservableSupplierImpl<T> extends BaseObservableSupplierImpl<T>
         // destroyed, so it's easier to ignore set() after destroy() than to have callers have to
         // track the state. It can also be hard to ensure queued callbacks that call set() are
         // cancelled, so again, just ignore after destroy().
-        if (mObservers != null) {
+        if (!mIsDestroyed) {
             mThreadChecker.assertOnValidThread();
             assert object != null || !Boolean.FALSE.equals(mAllowSetToNull)
                     : "set(null) called on a non-nullable supplier";
             T prevValue = mObject;
             mObject = object;
-            callObservers(prevValue);
+            if (mObservers != null) {
+                callObservers(prevValue);
+            }
         }
     }
 
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
+        mIsDestroyed = true;
         mObservers = null;
         mObject = null;
+    }
+
+    /* package */ boolean isDestroyed() {
+        return mIsDestroyed;
     }
 
     @RequiresNonNull("mObservers")

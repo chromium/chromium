@@ -88,7 +88,7 @@ class TransitiveObservableSupplier<
     public ChildT get() {
         // If we have no observers, our copy of the value is not kept current.
         // Also - do not call any delegates after destroy(), since it might not be safe to do so.
-        if (mObservers != null && mObservers.isEmpty()) {
+        if (!isDestroyed() && !hasObservers()) {
             ChildT ret = null;
             ParentT parentValue = mParentSupplier.get();
             if (parentValue != null) {

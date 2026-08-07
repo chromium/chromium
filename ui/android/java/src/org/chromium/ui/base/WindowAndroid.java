@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.SystemClock;
+import android.util.ArraySet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -81,8 +82,8 @@ import org.chromium.ui.widget.Toast;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -191,7 +192,8 @@ public class WindowAndroid
     private @Nullable ComponentCallbacks mComponentCallbacks;
 
     // We track all animations over content and provide a drawing placeholder for them.
-    private final HashSet<Animator> mAnimationsOverContent = new HashSet<>();
+    // ArraySet avoids heap entry overhead for tracking the small active animation set.
+    private final Set<Animator> mAnimationsOverContent = new ArraySet<>();
     private @Nullable View mAnimationPlaceholderView;
 
     /** A mechanism for observing and updating the application window's bottom inset. */

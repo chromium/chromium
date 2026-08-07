@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.util.ArrayMap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -17,7 +19,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -146,7 +147,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
         int[] indices = new int[tabs.size()];
         Arrays.fill(indices, TabList.INVALID_TAB_INDEX);
 
-        Map<Tab, Integer> tabToTargetIndex = new HashMap<>();
+        Map<Tab, Integer> tabToTargetIndex = new ArrayMap<>(tabs.size());
         for (int i = 0; i < tabs.size(); i++) {
             tabToTargetIndex.put(tabs.get(i), i);
         }

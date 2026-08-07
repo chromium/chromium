@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
+import android.util.ArraySet;
 
 import androidx.annotation.IntDef;
 
@@ -34,7 +35,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -85,7 +85,8 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private boolean mIsFullscreenWaitingForLoad;
     private boolean mIsFocusedNodeEditable;
 
-    private final Set<Long> mOutstandingNavigations = new HashSet<>();
+    // There shouldn't be very many outstanding navigations at once so an ArraySet should be fine.
+    private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
     /**
      * Basic constructor.
