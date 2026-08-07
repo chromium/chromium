@@ -2151,6 +2151,14 @@ bool AppMenuModel::GetAcceleratorForCommandId(
                                                  accelerator);
   }
 
+  // Reading mode uses different command IDs for different ways of opening
+  // it, so adjust to use the command ID for the keyboard shortcut to grab
+  // the proper accelerator.
+  if (command_id == IDC_SHOW_READING_MODE_SIDE_PANEL) {
+    return provider_->GetAcceleratorForCommandId(IDC_SHOW_READING_MODE_KEYBOARD,
+                                                 accelerator);
+  }
+
   if (command_id == IDC_NEW_INCOGNITO_WINDOW) {
     if (!IncognitoModePrefs::IsIncognitoAllowed(browser_->GetProfile())) {
       return false;
