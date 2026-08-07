@@ -177,12 +177,9 @@ public class RequestCoordinatorBridge {
             OfflinePageOrigin origin,
             @Nullable Callback<Integer> callback) {
         Callback<Integer> wrapper =
-                new Callback<>() {
-                    @Override
-                    public void onResult(Integer i) {
-                        if (callback != null) {
-                            callback.onResult(i);
-                        }
+                i -> {
+                    if (callback != null) {
+                        callback.onResult(i);
                     }
                 };
         RequestCoordinatorBridgeJni.get()

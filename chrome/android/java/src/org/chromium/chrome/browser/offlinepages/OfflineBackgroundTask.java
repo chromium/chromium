@@ -80,12 +80,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
 
     /** Wraps the callback for code reuse */
     private Callback<Boolean> wrapCallback(final TaskFinishedCallback callback) {
-        return new Callback<>() {
-            @Override
-            public void onResult(Boolean result) {
-                callback.taskFinished(result);
-            }
-        };
+        return result -> callback.taskFinished(result);
     }
 
     /**

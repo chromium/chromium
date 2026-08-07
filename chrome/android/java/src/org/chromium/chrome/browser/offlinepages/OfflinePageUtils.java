@@ -772,11 +772,8 @@ public class OfflinePageUtils {
 
             bridge.deletePagesByClientId(
                     clientIds,
-                    new Callback<>() {
-                        @Override
-                        public void onResult(Integer result) {
-                            // Result is ignored.
-                        }
+                    result -> {
+                        // Result is ignored.
                     });
         }
     }
