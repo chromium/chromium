@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // mojom::WebNNTensor
   void ReadTensor(ReadTensorCallback callback) override;
   void WriteTensor(mojo_base::BigBuffer src_buffer) override;
-  void ImportTensor(uint64_t flow_id, const gpu::SyncToken& fence) override;
+  void ImportTensor(uint64_t flow_id, uint64_t release_count) override;
   void ExportTensor(uint64_t flow_id, uint64_t release_count) override;
   void ExportTensorSync(uint64_t flow_id,
                         uint64_t release_count,

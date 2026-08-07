@@ -461,7 +461,8 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
 
         // WaitSyncToken(t3)
         // WebNNTensor::ImportTensor calls WaitSyncToken.
-        tensor->remote_tensor_->ImportTensor(flow_id, webgpu_finished_access_token);
+        tensor->remote_tensor_->ImportTensor(
+            flow_id, webgpu_finished_access_token.release_count());
 
         // Resume use of MLTensor.
         tensor->gpu_buffer_.Clear();

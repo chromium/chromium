@@ -119,8 +119,7 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
       GetMojoReceiver().GetBadMessageCallback()));
 }
 
-void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
-                                   const gpu::SyncToken& fence) {
+void WebNNTensorImpl::ImportTensor(uint64_t flow_id, uint64_t release_count) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ImportTensor");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
@@ -131,6 +130,13 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
   if (!context_->gpu_task_scheduler()) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
+  }
+
+  gpu::SyncToken fence;
+  if (release_count != 0) {
+    fence = gpu::SyncToken(context_->gpu_task_scheduler()->namespace_id(),
+                           context_->gpu_task_scheduler()->command_buffer_id(),
+                           release_count);
   }
 
   // Defer the next task until the fence is released, after prior scheduled
@@ -159,7 +165,7 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
           },
           base::RetainedRef(this), std::move(scoped_trace), flow_id,
           GetMojoReceiver().GetBadMessageCallback()),
-      {fence});
+      fence);
 }
 
 void WebNNTensorImpl::ExportTensor(uint64_t flow_id, uint64_t release_count) {

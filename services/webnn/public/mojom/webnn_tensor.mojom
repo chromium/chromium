@@ -4,7 +4,6 @@
 
 module webnn.mojom;
 
-import "gpu/ipc/common/sync_token.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
@@ -79,8 +78,10 @@ interface WebNNTensor {
   // Returns access of an exportable `WebNNTensor` back to WebNN after the
   // renderer is finished with it.
   //
-  // WebNN execution will be deferred asynchronously until the provided fence
-  // has been released, ensuring that any renderer-side work is complete.
+  // WebNN execution will be deferred asynchronously until the fence with
+  // `release_count` has been released, ensuring that any renderer-side work is
+  // complete. A value of 0 means ImportTensor does not wait for a SyncToken
+  // for this import.
   //
   // This call is the counterpart to `ExportTensor()`. Ownership of an
   // exportable tensor may be passed back and forth between WebNN and the
@@ -89,5 +90,5 @@ interface WebNNTensor {
   // `flow_id` is the same ID used in `ExportTensor()`. This allows the GPU
   // process to terminate the cross-process trace flow, linking this import
   // back to the renderer-side export.
-  ImportTensor(uint64 flow_id, gpu.mojom.SyncToken fence);
+  ImportTensor(uint64 flow_id, uint64 release_count);
 };
