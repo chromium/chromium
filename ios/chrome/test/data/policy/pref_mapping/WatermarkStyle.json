@@ -28,13 +28,13 @@
           "policies": {},
           "prefs": {
             "policy.watermark_style.fill_opacity": {
-              "default_value": 4
+              "default_value": 10
             },
             "policy.watermark_style.outline_opacity": {
-              "default_value": 6
+              "default_value": 15
             },
             "policy.watermark_style.font_size": {
-              "default_value": 24
+              "default_value": 16
             }
           }
         },
@@ -49,10 +49,10 @@
               "value": 50
             },
             "policy.watermark_style.outline_opacity": {
-              "default_value": 6
+              "default_value": 15
             },
             "policy.watermark_style.font_size": {
-              "default_value": 24
+              "default_value": 16
             }
           }
         },
@@ -71,7 +71,7 @@
               "value": 80
             },
             "policy.watermark_style.font_size": {
-              "default_value": 24
+              "default_value": 16
             }
           }
         }

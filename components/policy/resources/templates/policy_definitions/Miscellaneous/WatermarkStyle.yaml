@@ -2,7 +2,7 @@ caption: Configure Custom Watermark Settings
 desc: |-
   Allows administrators to customize the appearance of watermarks applied by Data Loss Prevention (DLP) rules. This includes setting its fill/outline opacity, defining its font size, and setting its timestamp time zone.
   If this policy or some values is not set, Chrome will use its default watermark behavior.
-  The default values are: fill opacity at 4, outline opacity at 6, font size at 24, and timestamp time zone set to 'user_device' (user's local device time zone).
+  The default values on desktop are: fill opacity at 4, outline opacity at 6, font size at 24. On iOS, the default values are: fill opacity at 10, outline opacity at 15, font size at 16. On all platforms, the timestamp time zone defaults to 'user_device' (user's local device time zone).
 
   The 'Fill Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
   The 'Outline Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
