@@ -49,6 +49,7 @@ import {SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
+import type {FuseboxAction} from './fusebox_action.mojom-webui.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
 import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash} from './metrics_utils.js';
@@ -984,10 +985,22 @@ export class AppElement extends AppElementBase {
       model: detail.fuseboxAction?.preselectedModel,
       suggestInventory: detail.fuseboxAction?.preferredInventory,
     } as ComposeboxState);
+    this.handleFuseboxAction_(detail.fuseboxAction);
   }
 
   protected onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
     this.openComposebox_(e.detail);
+  }
+
+  protected async handleFuseboxAction_(action?: FuseboxAction|null) {
+    if (action) {
+      await this.updateComplete;
+      const composebox =
+          this.shadowRoot?.querySelector<NtpComposeboxElement>('#composebox');
+      if (composebox) {
+        composebox.handleFuseboxAction(action);
+      }
+    }
   }
 
   protected onContextMenuEntrypointClick_() {

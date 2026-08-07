@@ -34,6 +34,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
+import {InputSource} from './fusebox_action.mojom-webui.js';
+import type {FuseboxAction} from './fusebox_action.mojom-webui.js';
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
 
@@ -185,6 +187,25 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
       this.queryAutocomplete(/* clearMatches= */ true);
     }
     return file;
+  }
+
+  handleFuseboxAction(action: FuseboxAction) {
+    if (action.preselectedInputSource) {
+      switch (action.preselectedInputSource) {
+        case InputSource.kInputSourceGallery:
+          this.$.fileInputs.shadowRoot
+              ?.querySelector<HTMLInputElement>('#imageInput')
+              ?.click();
+          break;
+        case InputSource.kInputSourceFilePicker:
+          this.$.fileInputs.shadowRoot
+              ?.querySelector<HTMLInputElement>('#fileInput')
+              ?.click();
+          break;
+        default:
+          break;
+      }
+    }
   }
 }
 
