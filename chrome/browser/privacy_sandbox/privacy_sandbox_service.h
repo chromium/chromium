@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/time/time.h"
+#include <optional>
+#include <string>
+
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "net/base/schemeful_site.h"
+
+class GURL;
 
 // Service which encapsulates logic related to displaying and controlling the
 // users Privacy Sandbox settings. This service contains the chrome/ specific
@@ -21,10 +23,6 @@
 // Sandbox APIs.
 class PrivacySandboxService : public KeyedService {
  public:
-  // If set to true, this treats the testing environment as that of a branded
-  // Chrome build.
-  virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
-
   // Toggles the RelatedWebsiteSets preference.
   virtual void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) = 0;
 

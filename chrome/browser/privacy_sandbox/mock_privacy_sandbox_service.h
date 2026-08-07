@@ -22,7 +22,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MockPrivacySandboxService();
   ~MockPrivacySandboxService() override;
 
-  MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
   MOCK_METHOD(void, SetRelatedWebsiteSetsDataAccessEnabled, (bool), (override));
   MOCK_METHOD(bool,
               IsRelatedWebsiteSetsDataAccessEnabled,

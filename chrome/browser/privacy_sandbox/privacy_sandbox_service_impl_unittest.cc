@@ -4,49 +4,29 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
-#include <tuple>
+#include <memory>
+#include <optional>
 
-#include "base/containers/to_vector.h"
-#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/strings/strcat.h"
-#include "base/test/bind.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/content_settings/core/test/content_settings_mock_provider.h"
-#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
-#include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -54,59 +34,19 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace {
-
-using ::privacy_sandbox::CanonicalTopic;
-
-using ::testing::Combine;
-using ::testing::ElementsAre;
-using ::testing::Eq;
-using ::testing::NiceMock;
-using ::testing::Pair;
-using ::testing::ValuesIn;
-
-using enum privacy_sandbox_test_util::StateKey;
-using enum privacy_sandbox_test_util::InputKey;
-using enum privacy_sandbox_test_util::OutputKey;
-
-using privacy_sandbox_test_util::InputKey;
-using privacy_sandbox_test_util::OutputKey;
-using privacy_sandbox_test_util::StateKey;
-
-using privacy_sandbox_test_util::TestCase;
-using privacy_sandbox_test_util::TestInput;
-using privacy_sandbox_test_util::TestOutput;
-using privacy_sandbox_test_util::TestState;
 
 constexpr char kFirstPartySetsStateHistogram[] =
     "Settings.FirstPartySets.State";
 constexpr char kTrackingProtectionStateHistogram[] =
     "Settings.TrackingProtection.Enabled";
-constexpr char kDefaultProfileUsername[] = "user@gmail.com";
-constexpr char kTestEmail[] = "test@test.com";
 
 const base::Version& GetRelatedWebsiteSetsVersion() {
   static const base::NoDestructor<base::Version> kVersion("1.2.3");
   return *kVersion;
 }
-
-class TestPrivacySandboxService
-    : public privacy_sandbox_test_util::PrivacySandboxServiceTestInterface {
- public:
-  explicit TestPrivacySandboxService(PrivacySandboxService* service)
-      : service_(service) {}
-
-  // PrivacySandboxServiceTestInterface
-  void ForceChromeBuildForTests(bool force_chrome_build) const override {
-    service_->ForceChromeBuildForTests(force_chrome_build);
-  }
-
- private:
-  raw_ptr<PrivacySandboxService> service_;
-};
 
 // Remove any user preference settings for Related Website Set related
 // preferences, returning them to their default value.
@@ -123,17 +63,13 @@ class PrivacySandboxServiceTest : public testing::Test {
  public:
   PrivacySandboxServiceTest()
       : browser_task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
-    CreateDefaultProfile();
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     first_party_sets_policy_service_ =
         std::make_unique<first_party_sets::FirstPartySetsPolicyService>(
             profile()->GetOriginalProfile());
   }
 
   void SetUp() override {
-    InitializeFeaturesBeforeStart();
     CreateService();
 
     base::RunLoop run_loop;
@@ -144,108 +80,17 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    privacy_sandbox_service_->Shutdown();
-    privacy_sandbox_service_ = nullptr;
-  }
-
-  virtual void InitializeFeaturesBeforeStart() {}
-
-  void CreateDefaultProfile() {
-    default_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(default_profile_manager_->SetUp());
-
-    default_profile_ = default_profile_manager_->CreateTestingProfile(
-        kDefaultProfileUsername, IdentityTestEnvironmentProfileAdaptor::
-                                     GetIdentityTestEnvironmentFactories());
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            default_profile_.get());
-    identity_test_env_adaptor_->identity_test_env()
-        ->EnableRemovalOfExtendedAccountInfo();
-  }
-
-  void EnableSignIn() {
-    auto account_info = identity_test_env_adaptor_->identity_test_env()
-                            ->MakePrimaryAccountAvailable(
-                                kTestEmail, signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info);
-    signin::UpdateAccountInfoForAccount(
-        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
-        account_info);
-    mutator.set_can_use_model_execution_features(true);
-    identity_test_env_adaptor_->identity_test_env()
-        ->UpdateAccountInfoForAccount(account_info);
-  }
-
-  void EnableSignInU18() {
-    auto account_info = identity_test_env_adaptor_->identity_test_env()
-                            ->MakePrimaryAccountAvailable(
-                                kTestEmail, signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_run_chrome_privacy_sandbox_trials(false);
-    signin::UpdateAccountInfoForAccount(
-        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
-        account_info);
-    mutator.set_can_use_model_execution_features(true);
-    identity_test_env_adaptor_->identity_test_env()
-        ->UpdateAccountInfoForAccount(account_info);
-  }
-
-  void EnableSignInOver18() {
-    auto account_info = identity_test_env_adaptor_->identity_test_env()
-                            ->MakePrimaryAccountAvailable(
-                                kTestEmail, signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_run_chrome_privacy_sandbox_trials(true);
-    signin::UpdateAccountInfoForAccount(
-        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
-        account_info);
-    mutator.set_can_use_model_execution_features(true);
-    identity_test_env_adaptor_->identity_test_env()
-        ->UpdateAccountInfoForAccount(account_info);
-  }
-
-// ChromeOS users cannot sign out, their account preferences can never be
-// cleared.
-#if !BUILDFLAG(IS_CHROMEOS)
-
-  void SignOut() {
-    identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
-  }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  virtual std::unique_ptr<
-      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
-  CreateMockDelegate() {
-    auto mock_delegate = std::make_unique<testing::NiceMock<
-        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
-    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
-        /*restricted=*/false);
-    return mock_delegate;
-  }
-
-  signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_adaptor_->identity_test_env();
-  }
-
-  void CreateService() {
-    // `CreateService` is sometimes called twice, or more in a tests.
-    // Previous instances must be destroyed in the opposite order of their
-    // construction.
     if (privacy_sandbox_service_) {
       privacy_sandbox_service_->Shutdown();
       privacy_sandbox_service_ = nullptr;
     }
+  }
 
-    auto mock_delegate = CreateMockDelegate();
-    mock_delegate_ = mock_delegate.get();
-
-    privacy_sandbox_settings_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
-            std::move(mock_delegate), host_content_settings_map(),
-            cookie_settings(), prefs());
+  void CreateService() {
+    if (privacy_sandbox_service_) {
+      privacy_sandbox_service_->Shutdown();
+      privacy_sandbox_service_ = nullptr;
+    }
 
     privacy_sandbox_service_ =
         PrivacySandboxServiceFactory::GetInstance()
@@ -255,62 +100,24 @@ class PrivacySandboxServiceTest : public testing::Test {
                                base::Unretained(this)));
   }
 
-  virtual profile_metrics::BrowserProfileType GetProfileType() {
-    return profile_type_;
-  }
+  profile_metrics::BrowserProfileType GetProfileType() { return profile_type_; }
 
   void SetProfileType(profile_metrics::BrowserProfileType profile_type) {
     profile_type_ = profile_type;
   }
 
-  void RunTestCase(const TestState& test_state,
-                   const TestInput& test_input,
-                   const TestOutput& test_output) {
-    auto user_provider = std::make_unique<content_settings::MockProvider>();
-    auto* user_provider_raw = user_provider.get();
-    auto managed_provider = std::make_unique<content_settings::MockProvider>();
-    auto* managed_provider_raw = managed_provider.get();
-    content_settings::TestUtils::OverrideProvider(
-        host_content_settings_map(), std::move(user_provider),
-        content_settings::ProviderType::kPrefProvider);
-    content_settings::TestUtils::OverrideProvider(
-        host_content_settings_map(), std::move(managed_provider),
-        content_settings::ProviderType::kPolicyProvider);
-    auto service_wrapper = TestPrivacySandboxService(privacy_sandbox_service());
-
-    privacy_sandbox_test_util::RunTestCase(
-        browser_task_environment(), prefs(), host_content_settings_map(),
-        mock_delegate(), privacy_sandbox_settings(), &service_wrapper,
-        user_provider_raw, managed_provider_raw,
-        TestCase(test_state, test_input, test_output));
-  }
-
-  PrefService* local_state() {
-    return TestingBrowserProcess::GetGlobal()->local_state();
-  }
-  TestingProfile* profile() { return default_profile_; }
+  TestingProfile* profile() { return &profile_; }
   PrivacySandboxServiceImpl* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
   }
   privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
-    return privacy_sandbox_settings_.get();
+    return PrivacySandboxSettingsFactory::GetForProfile(profile());
   }
-  base::test::ScopedFeatureList* feature_list() { return &inner_feature_list_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
   }
-  HostContentSettingsMap* host_content_settings_map() {
-    return HostContentSettingsMapFactory::GetForProfile(profile());
-  }
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(profile()).get();
-  }
-  content::BrowsingDataRemover* browsing_data_remover() {
-    return profile()->GetBrowsingDataRemover();
-  }
-  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
-  mock_delegate() {
-    return mock_delegate_;
   }
   first_party_sets::ScopedMockFirstPartySetsHandler&
   mock_first_party_sets_handler() {
@@ -321,47 +128,23 @@ class PrivacySandboxServiceTest : public testing::Test {
     return first_party_sets_policy_service_.get();
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
-  content::BrowserTaskEnvironment* browser_task_environment() {
-    return &browser_task_environment_;
-  }
-
- protected:
-  base::HistogramTester histogram_tester_;
-
  private:
   std::unique_ptr<PrivacySandboxServiceImpl> BuildTestService(
       content::BrowserContext* context) {
     return std::make_unique<PrivacySandboxServiceImpl>(
-        profile(), privacy_sandbox_settings(), cookie_settings(),
-        profile()->GetPrefs(), GetProfileType(), browsing_data_remover(),
-        host_content_settings_map(), first_party_sets_policy_service());
+        privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
+        GetProfileType(), first_party_sets_policy_service());
   }
 
   content::BrowserTaskEnvironment browser_task_environment_;
-
-  // In production, ProfileManager is created much earlier than Profile
-  // creation.
-  std::unique_ptr<TestingProfileManager> default_profile_manager_;
-  raw_ptr<TestingProfile> default_profile_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
+  TestingProfile profile_;
   profile_metrics::BrowserProfileType profile_type_ =
       profile_metrics::BrowserProfileType::kRegular;
-
-  base::test::ScopedFeatureList outer_feature_list_;
-  base::test::ScopedFeatureList inner_feature_list_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
   std::unique_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
-  std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
-      privacy_sandbox_settings_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
-      mock_delegate_;  // Owned by |privacy_sandbox_settings_|.
-  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 
   raw_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_ = nullptr;
 };
@@ -765,80 +548,4 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
       net::SchemefulSite(GURL("https://googlesource.com"))));
   EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
-}
-
-class PrivacySandboxServiceM1DelayCreation : public PrivacySandboxServiceTest {
- public:
-  // Override SetUp to prevent the service from being created by base class.
-  void SetUp() override { InitializeFeaturesBeforeStart(); }
-
-  void InitializeFeaturesBeforeStart() override {
-    feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PrivacySandboxServiceM1DelayCreation,
-       UnrestrictedRemainsEnabledWithConsent) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
-  prefs()->SetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
-                   base::Time::Now());
-  prefs()->SetInteger(
-      prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
-      static_cast<int>(
-          privacy_sandbox::TopicsConsentUpdateSource::kConfirmation));
-  prefs()->SetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate,
-                     "foo");
-
-  CreateService();
-
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
-  EXPECT_TRUE(
-      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
-  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime),
-            base::Time::Now());
-  EXPECT_EQ(static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
-                prefs()->GetInteger(
-                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)),
-            privacy_sandbox::TopicsConsentUpdateSource::kConfirmation);
-  EXPECT_EQ(
-      prefs()->GetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate),
-      "foo");
-}
-
-TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxTopicsPolicy) {
-  base::HistogramTester histogram_tester;
-  // Disable the Topics api via policy and check topics is not allowed.
-  RunTestCase(TestState{{kM1TopicsDisabledByPolicy, true}}, TestInput{},
-              TestOutput{{kIsTopicsAllowed, false}});
-}
-
-TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxFledgePolicy) {
-  base::HistogramTester histogram_tester;
-  // Disable the Fledge api via policy and check fledge is not allowed.
-  RunTestCase(TestState{{kM1FledgeDisabledByPolicy, true}},
-              TestInput{{kTopFrameOrigin,
-                         url::Origin::Create(GURL("https://top-frame.com"))},
-                        {kFledgeAuctionPartyOrigin,
-                         url::Origin::Create(GURL("https://embedded.com"))}},
-              TestOutput{{kIsFledgeJoinAllowed, false}});
-}
-
-TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxAdMeasurementPolicy) {
-  base::HistogramTester histogram_tester;
-  // Disable the ad measurement api via policy and check the api is not allowed.
-  RunTestCase(TestState{{kM1AdMesaurementDisabledByPolicy, true}},
-              TestInput{{kTopFrameOrigin,
-                         url::Origin::Create(GURL("https://top-frame.com"))},
-                        {kAdMeasurementReportingOrigin,
-                         url::Origin::Create(GURL("https://embedded.com"))}},
-              TestOutput{{kIsPrivateAggregationAllowed, false}});
 }

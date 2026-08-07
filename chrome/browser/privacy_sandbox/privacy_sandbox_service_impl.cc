@@ -4,29 +4,17 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
-#include <algorithm>
-#include <iterator>
 #include <optional>
 
-#include "base/feature_list.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/url_formatter/url_formatter.h"
-#include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/browsing_data_remover.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
@@ -67,27 +55,20 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 }  // namespace
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
-    Profile* profile,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     profile_metrics::BrowserProfileType profile_type,
-    content::BrowsingDataRemover* browsing_data_remover,
-    HostContentSettingsMap* host_content_settings_map,
-    first_party_sets::FirstPartySetsPolicyService* first_party_sets_service)
-    : profile_(profile),
-      privacy_sandbox_settings_(privacy_sandbox_settings),
+    first_party_sets::FirstPartySetsPolicyService*
+        first_party_sets_policy_service)
+    : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       profile_type_(profile_type),
-      browsing_data_remover_(browsing_data_remover),
-      host_content_settings_map_(host_content_settings_map),
-      first_party_sets_policy_service_(first_party_sets_service) {
+      first_party_sets_policy_service_(first_party_sets_policy_service) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
-  // Register observers for the Privacy Sandbox preferences.
-  user_prefs_registrar_.Init(pref_service_);
 
   // Clears the Topics, Fledge, and Measurement Privacy Sandbox API Prefs, if
   // the PrivacySandboxAdPrivacyUxDeprecation feature is enabled.
@@ -104,19 +85,10 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 void PrivacySandboxServiceImpl::Shutdown() {
-  user_prefs_registrar_.RemoveAll();
   first_party_sets_policy_service_ = nullptr;
-  host_content_settings_map_ = nullptr;
-  browsing_data_remover_ = nullptr;
   pref_service_ = nullptr;
   cookie_settings_ = nullptr;
   privacy_sandbox_settings_ = nullptr;
-  profile_ = nullptr;
-}
-
-void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
-    bool force_chrome_build) {
-  force_chrome_build_for_tests_ = force_chrome_build;
 }
 
 void PrivacySandboxServiceImpl::SetRelatedWebsiteSetsDataAccessEnabled(
