@@ -57,6 +57,12 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(voiceOverStatusDidChange)
+             name:UIAccessibilityVoiceOverStatusDidChangeNotification
+           object:nil];
+
   _sheetState = BottomSheetSnappingStateResting;
 
   self.view.layer.cornerRadius = 24.0;
@@ -189,7 +195,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     _feedScrollView = [self findScrollViewInView:_feedViewController.view];
     if (_feedScrollView) {
       _feedScrollView.scrollEnabled =
-          (_sheetState == BottomSheetSnappingStateExpanded);
+          (_sheetState == BottomSheetSnappingStateExpanded) ||
+          UIAccessibilityIsVoiceOverRunning();
       id originalDelegate = _feedScrollView.delegate;
       if (originalDelegate != self &&
           ![originalDelegate isKindOfClass:[ScrollDelegateProxy class]]) {
@@ -333,7 +340,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   if (_feedScrollView) {
     _feedScrollView.scrollEnabled =
-        (_sheetState == BottomSheetSnappingStateExpanded);
+        (_sheetState == BottomSheetSnappingStateExpanded) ||
+        UIAccessibilityIsVoiceOverRunning();
   }
 
   if (_sheetState != BottomSheetSnappingStateExpanded && _feedScrollView) {
@@ -518,6 +526,10 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   if (_sheetState != BottomSheetSnappingStateExpanded) {
+    if (UIAccessibilityIsVoiceOverRunning() && scrollView.contentOffset.y > 0) {
+      _sheetState = BottomSheetSnappingStateExpanded;
+      [self updateBottomSheetPositionAnimated:YES];
+    }
     return;
   }
 
@@ -526,6 +538,14 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   if (currentConstant > expanded) {
     scrollView.contentOffset = CGPointZero;
+  }
+}
+
+- (void)voiceOverStatusDidChange {
+  if (_feedScrollView) {
+    _feedScrollView.scrollEnabled =
+        (_sheetState == BottomSheetSnappingStateExpanded) ||
+        UIAccessibilityIsVoiceOverRunning();
   }
 }
 

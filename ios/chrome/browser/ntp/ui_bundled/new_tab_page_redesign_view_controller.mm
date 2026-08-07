@@ -376,6 +376,12 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   [super viewDidAppear:animated];
   self.viewDidAppear = YES;
 
+  if (self.focusAccessibilityOmniboxWhenViewAppears) {
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    _fakeLocationBar);
+    self.focusAccessibilityOmniboxWhenViewAppears = NO;
+  }
+
   if (_lensButton && self.useNewBadgeForLensButton &&
       !_didNotifyLensBadgeDisplay) {
     [self.mutator notifyLensBadgeDisplayed];
