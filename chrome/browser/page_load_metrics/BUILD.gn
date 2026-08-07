@@ -272,6 +272,7 @@ source_set("unit_tests") {
       "observers/initial_webui_page_load_metrics_observer_unittest.cc",
       "observers/non_tab_webui_page_load_metrics_observer_unittest.cc",
       "observers/top_chrome_webui_metrics_observer_unittest.cc",
+      "page_load_metrics_initialize_unittest.cc",
     ]
   }
 

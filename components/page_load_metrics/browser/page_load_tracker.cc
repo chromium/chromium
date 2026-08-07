@@ -301,6 +301,8 @@ PageLoadTracker::PageLoadTracker(
       is_origin_visit_(
           CalculateIsOriginVisit(*is_first_navigation_in_web_contents,
                                  navigation_handle->GetPageTransition())),
+      navigation_scenario_(
+          embedder_interface->GetNavigationScenario(navigation_handle)),
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
@@ -1355,6 +1357,10 @@ ukm::SourceId PageLoadTracker::GetUkmSourceIdForSameDocumentNavigation(
 
 bool PageLoadTracker::IsFirstNavigationInWebContents() const {
   return *is_first_navigation_in_web_contents_;
+}
+
+NavigationScenario PageLoadTracker::GetNavigationScenario() const {
+  return navigation_scenario_;
 }
 
 bool PageLoadTracker::IsOriginVisit() const {

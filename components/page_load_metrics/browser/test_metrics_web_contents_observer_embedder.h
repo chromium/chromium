@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "components/page_load_metrics/browser/navigation_scenario.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -34,8 +35,13 @@ class TestMetricsWebContentsObserverEmbedder
   bool IsNonTabWebUI(const GURL& url) override;
   bool IsInternalWebUI(const GURL& url) override;
   bool ShouldObserveScheme(std::string_view scheme) override;
+  NavigationScenario GetNavigationScenario(
+      content::NavigationHandle* navigation_handle) const override;
 
   void set_is_ntp(bool is_ntp) { is_ntp_ = is_ntp; }
+  void set_navigation_scenario(NavigationScenario scenario) {
+    navigation_scenario_ = scenario;
+  }
 
   const std::vector<mojom::PageLoadTimingPtr>& updated_timings() const {
     return updated_timings_;
@@ -98,6 +104,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<blink::UseCounterFeature> observed_features_;
   std::optional<bool> is_first_navigation_in_web_contents_;
   bool is_ntp_ = false;
+  NavigationScenario navigation_scenario_ = NavigationScenario::kUnknown;
   int count_on_enter_back_forward_cache_ = 0;
 };
 

@@ -80,6 +80,11 @@ class TestPageLoadMetricsEmbedderInterface
 
   bool ShouldObserveScheme(std::string_view scheme) override { return false; }
 
+  NavigationScenario GetNavigationScenario(
+      content::NavigationHandle* navigation_handle) const override {
+    return test_->GetNavigationScenario(navigation_handle);
+  }
+
  private:
   raw_ptr<PageLoadMetricsObserverTester> test_;
 };

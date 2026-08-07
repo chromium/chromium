@@ -247,4 +247,10 @@ bool TestMetricsWebContentsObserverEmbedder::ShouldObserveScheme(
   return false;
 }
 
+NavigationScenario
+TestMetricsWebContentsObserverEmbedder::GetNavigationScenario(
+    content::NavigationHandle* navigation_handle) const {
+  return navigation_scenario_;
+}
+
 }  // namespace page_load_metrics

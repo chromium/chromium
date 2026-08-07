@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/page_load_metrics/browser/interaction_to_next_paint_calculator.h"
+#include "components/page_load_metrics/browser/navigation_scenario.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
@@ -119,6 +120,13 @@ class PageLoadMetricsObserverDelegate {
   virtual bool StartedInForeground() const = 0;
   // Page's visibility at activation.
   virtual PageVisibility GetVisibilityAtActivation() const = 0;
+
+  // Returns the navigation scenario classification associated with this page
+  // load.
+  //
+  // Observers query this method to slice metrics based on navigation scenarios
+  // such as browser startup, new window creation, or same-window navigations.
+  virtual NavigationScenario GetNavigationScenario() const = 0;
 
   // True if the page load is a reload of a page that was discarded.
   virtual bool IsReloadAfterDiscard() const = 0;

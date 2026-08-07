@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,9 +49,13 @@
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -76,6 +81,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_test_helper.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
@@ -4350,3 +4356,129 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({BackForwardCacheStatus::kDisabled,
                        BackForwardCacheStatus::kEnabled}),
     PageLoadMetricsBackForwardCacheBrowserTest::DescribeParams);
+
+// ============================================================================
+// Desktop Paint Timing Slices Test Suite
+// ============================================================================
+//
+// Domain:
+// Validates end-to-end integration of desktop paint timing metric slices
+// across core post-startup navigation scenarios (NewWindow and SameWindow).
+// Startup navigation and granular combinatorial edge cases are covered by unit
+// tests in page_load_metrics_initialize_unittest.cc.
+
+namespace {
+
+constexpr char kFcpPrefix[] =
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint";
+constexpr char kLcpPrefix[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2";
+constexpr std::array<const char*, 3> kMetricSuffixes = {
+    ".Startup", ".NewWindow", ".SameWindow"};
+
+// Verifies that the expected slice suffix receives the specified metric count
+// and all other scenario slice suffixes receive zero recordings.
+void ExpectSlicedPaintMetrics(const base::HistogramTester& tester,
+                              const std::string& expected_suffix,
+                              size_t expected_count) {
+  for (const char* suffix : kMetricSuffixes) {
+    const size_t count = (expected_suffix == suffix) ? expected_count : 0;
+    tester.ExpectTotalCount(std::string(kFcpPrefix) + suffix, count);
+    tester.ExpectTotalCount(std::string(kLcpPrefix) + suffix, count);
+  }
+}
+
+}  // namespace
+
+using DesktopPaintTimingSliceBrowserTest = PageLoadMetricsBrowserTest;
+
+// Validates paint timing metric slices for a single-tab new window navigation
+// after startup completion.
+//
+// Scenario:
+// - Action: Open URL in a newly created browser window.
+// - Precondition: `is_startup` = false, new window target index = 0.
+// - Expected Metric Suffix: `.NewWindow`
+IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
+                       NewWindowNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  base::HistogramTester histogram_tester;
+  NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
+  nav_params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  Navigate(&nav_params);
+
+  Browser* new_browser = static_cast<Browser*>(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  PageLoadMetricsTestWaiter waiter(
+      new_browser->tab_strip_model()->GetActiveWebContents());
+  waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
+  waiter.AddPageExpectation(TimingField::kLoadEvent);
+  waiter.Wait();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(new_browser, GURL(url::kAboutBlankURL)));
+  ExpectSlicedPaintMetrics(histogram_tester, ".NewWindow", 1);
+}
+
+// Validates paint timing metric slices for opening a new tab within an
+// existing window after startup completion.
+//
+// Scenario:
+// - Action: Open URL in a new foreground tab within existing window.
+// - Precondition: `is_startup` = false, target index = 1.
+// - Expected Metric Suffix: `.SameWindow`
+IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
+                       SameWindowNewTabNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  base::HistogramTester histogram_tester;
+  NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
+  nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&nav_params);
+
+  PageLoadMetricsTestWaiter waiter(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
+  waiter.AddPageExpectation(TimingField::kLoadEvent);
+  waiter.Wait();
+
+  NavigateToUntrackedUrl();
+  ExpectSlicedPaintMetrics(histogram_tester, ".SameWindow", 1);
+}
+
+// Validates paint timing metric slices for tab reloads within an existing
+// window after startup completion.
+//
+// Scenario:
+// - Action: Reload active tab in existing window.
+// - Precondition: `is_startup` = false, active undiscarded tab.
+// - Expected Metric Suffix: `.SameWindow` (2 recordings: 1 for initial load, 1
+// for reload)
+IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
+                       TabReloadNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  base::HistogramTester histogram_tester;
+  auto waiter = CreatePageLoadMetricsTestWaiter("initial_waiter");
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter->Wait();
+
+  waiter = CreatePageLoadMetricsTestWaiter("reload_waiter");
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  waiter->Wait();
+
+  NavigateToUntrackedUrl();
+  ExpectSlicedPaintMetrics(histogram_tester, ".SameWindow", 2);
+}

@@ -10,6 +10,7 @@
 
 namespace page_load_metrics {
 
+class PageLoadMetricsObserver;
 class PageLoadTracker;
 
 // This is base class for PageLoadMetricsEmbedderInterface implementation, it
@@ -23,6 +24,8 @@ class PageLoadMetricsEmbedderBase : public PageLoadMetricsEmbedderInterface {
   // PageLoadMetricsEmbedderInterface:
   void RegisterObservers(PageLoadTracker* tracker,
                          content::NavigationHandle* navigation_handle) override;
+  NavigationScenario GetNavigationScenario(
+      content::NavigationHandle* navigation_handle) const override;
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
   bool HasWebUIConfig(const GURL& url) override;
   bool IsInternalWebUI(const GURL& url) override;

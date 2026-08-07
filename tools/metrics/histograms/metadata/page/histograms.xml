@@ -221,6 +221,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
 
+<variants name="NavigationScenario">
+  <variant name=".NewWindow"
+      summary="recorded for page loads in a newly created browser window
+               (excluding startup)."/>
+  <variant name=".SameWindow"
+      summary="recorded for page loads in an existing browser window
+               (including subsequent navigations in the same tab, and page
+               loads in newly opened tabs within an existing window)."/>
+  <variant name=".Startup"
+      summary="recorded for page loads during browser startup."/>
+</variants>
+
 <variants name="NavigationTypeForAbandonment">
   <variant name="BrowserNav"/>
   <variant name="HistoryNav"/>
@@ -5231,6 +5243,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint{NavigationScenario}"
+    units="ms" expires_after="2027-08-06">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mych@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from navigation start to first contentful paint,
+    {NavigationScenario}
+
+    This is only logged on desktop, in addition to the main
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint histogram.
+  </summary>
+  <token key="NavigationScenario" variants="NavigationScenario"/>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.NavigationToFirstImagePaint" units="ms"
     expires_after="2026-09-27">
   <owner>sullivan@chromium.org</owner>
@@ -5494,6 +5523,25 @@ chromium-metrics-reviews@google.com.
 
     Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2{NavigationScenario}"
+    units="ms" expires_after="2027-08-06">
+  <owner>mych@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames,
+    {NavigationScenario}
+
+    This is only logged on desktop, in addition to the main
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 histogram.
+  </summary>
+  <token key="NavigationScenario" variants="NavigationScenario"/>
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"

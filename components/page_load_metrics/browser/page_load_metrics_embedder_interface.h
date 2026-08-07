@@ -8,6 +8,8 @@
 #include <memory>
 #include <string_view>
 
+#include "components/page_load_metrics/browser/navigation_scenario.h"
+
 class GURL;
 
 namespace base {
@@ -32,6 +34,15 @@ class PageLoadMetricsEmbedderInterface {
   virtual void RegisterObservers(
       PageLoadTracker* metrics,
       content::NavigationHandle* navigation_handle) = 0;
+
+  // Returns the navigation scenario classification for the given navigation.
+  //
+  // Embedders implement this method to categorize navigations based on
+  // embedder-specific state (such as browser startup completion or window
+  // counts).
+  virtual NavigationScenario GetNavigationScenario(
+      content::NavigationHandle* navigation_handle) const = 0;
+
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer() = 0;
   virtual bool HasWebUIConfig(const GURL& url) = 0;
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
