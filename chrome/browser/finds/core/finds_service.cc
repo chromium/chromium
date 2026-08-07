@@ -190,8 +190,11 @@ notifications::NotificationData GetNotificationData(
 
 void RecordFindsResultAndRunCallback(
     base::OnceCallback<void(FindsService::Result)> callback,
-    FindsService::Result result) {
+    FindsService::Result result,
+    base::TimeTicks start_time) {
   base::UmaHistogramEnumeration("Finds.Result", result.status);
+  base::UmaHistogramTimes("Finds.ExecutionTime",
+                          base::TimeTicks::Now() - start_time);
   if (callback) {
     std::move(callback).Run(std::move(result));
   }
@@ -290,18 +293,23 @@ void FindsService::MaybeDeleteNotificationsOnPermissionLoss() {
 
 void FindsService::ExecuteModelAndScheduleNotification(
     base::OnceCallback<void(Result)> callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (!IsAllowedByEnterprisePolicy(pref_service_)) {
     RecordFindsResultAndRunCallback(
-        std::move(callback), {Result::Status::kDisabledByEnterprisePolicy,
-                              "Error: Feature disabled by enterprise policy."});
+        std::move(callback),
+        {Result::Status::kDisabledByEnterprisePolicy,
+         "Error: Feature disabled by enterprise policy."},
+        start_time);
     return;
   }
 
   if (!IsHistorySyncAndMsbbEnabled(sync_service_, pref_service_)) {
     RecordFindsResultAndRunCallback(
-        std::move(callback), {Result::Status::kDisabledByHistorySyncOrMsbb,
-                              "Error: Feature disabled because History Sync or "
-                              "MSBB is not enabled."});
+        std::move(callback),
+        {Result::Status::kDisabledByHistorySyncOrMsbb,
+         "Error: Feature disabled because History Sync or "
+         "MSBB is not enabled."},
+        start_time);
     return;
   }
 
@@ -309,21 +317,24 @@ void FindsService::ExecuteModelAndScheduleNotification(
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kModelExecutionDisabledByParam,
-         "Error: Model execution disabled by feature parameter."});
+         "Error: Model execution disabled by feature parameter."},
+        start_time);
     return;
   }
 
   if (!IsModelExecutionCooldownPassed(pref_service_)) {
     RecordFindsResultAndRunCallback(std::move(callback),
                                     {Result::Status::kModelExecutionOnCooldown,
-                                     "Error: Model execution is on cooldown."});
+                                     "Error: Model execution is on cooldown."},
+                                    start_time);
     return;
   }
 
   if (!history_service_) {
     RecordFindsResultAndRunCallback(std::move(callback),
                                     {Result::Status::kHistoryServiceUnavailable,
-                                     "Error: HistoryService not available."});
+                                     "Error: HistoryService not available."},
+                                    start_time);
     return;
   }
 
@@ -331,7 +342,8 @@ void FindsService::ExecuteModelAndScheduleNotification(
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kOptimizationGuideUnavailable,
-         "Error: OptimizationGuideKeyedService not available."});
+         "Error: OptimizationGuideKeyedService not available."},
+        start_time);
     return;
   }
 
@@ -343,7 +355,8 @@ void FindsService::ExecuteModelAndScheduleNotification(
   history_service_->QueryHistory(
       std::u16string(), options,
       base::BindOnce(&FindsService::OnHistoryQueryComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     start_time),
       &history_task_tracker_);
 }
 
@@ -441,12 +454,14 @@ void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
 
 void FindsService::OnHistoryQueryComplete(
     base::OnceCallback<void(Result)> callback,
+    base::TimeTicks start_time,
     history::QueryResults results) {
   if (!opt_guide_service_) {
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kOptimizationGuideUnavailable,
-         "Error: OptimizationGuideKeyedService not available."});
+         "Error: OptimizationGuideKeyedService not available."},
+        start_time);
     return;
   }
 
@@ -454,7 +469,8 @@ void FindsService::OnHistoryQueryComplete(
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kEmptyHistory,
-         "Error: No history available to suggest themes."});
+         "Error: No history available to suggest themes."},
+        start_time);
     return;
   }
 
@@ -472,11 +488,13 @@ void FindsService::OnHistoryQueryComplete(
       optimization_guide::ModelExecutionOptions{
           .execution_timeout = features::kModelExecutionRequestTimeout.Get()},
       base::BindOnce(&FindsService::OnModelExecutionComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     start_time));
 }
 
 void FindsService::OnModelExecutionComplete(
     base::OnceCallback<void(Result)> callback,
+    base::TimeTicks start_time,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.response.has_value()) {
@@ -485,7 +503,7 @@ void FindsService::OnModelExecutionComplete(
                            static_cast<int>(result.response.error().error()));
     RecordFindsResultAndRunCallback(
         std::move(callback),
-        {Result::Status::kModelExecutionFailed, error_message});
+        {Result::Status::kModelExecutionFailed, error_message}, start_time);
     return;
   }
 
@@ -496,14 +514,15 @@ void FindsService::OnModelExecutionComplete(
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kResponseParsingFailed,
-         "Model execution successful, but failed to parse response."});
+         "Model execution successful, but failed to parse response."},
+        start_time);
     return;
   }
 
   if (response->suggested_themes().empty()) {
     RecordFindsResultAndRunCallback(
         std::move(callback),
-        {Result::Status::kNoThemesFound, "No themes found."});
+        {Result::Status::kNoThemesFound, "No themes found."}, start_time);
     return;
   }
 
@@ -513,7 +532,8 @@ void FindsService::OnModelExecutionComplete(
     RecordFindsResultAndRunCallback(
         std::move(callback),
         {Result::Status::kNoNonCooldownThemesFound,
-         "No themes found that passed cooldown criteria."});
+         "No themes found that passed cooldown criteria."},
+        start_time);
     return;
   }
 
@@ -521,23 +541,28 @@ void FindsService::OnModelExecutionComplete(
   // GetHighestScoredThemeIfPossible.
   if (best_theme->theme_suggested_contents().empty()) {
     RecordFindsResultAndRunCallback(
-        std::move(callback), {Result::Status::kNoSuggestionsForTheme,
-                              "No suggestions available for this theme."});
+        std::move(callback),
+        {Result::Status::kNoSuggestionsForTheme,
+         "No suggestions available for this theme."},
+        start_time);
     return;
   }
 
   bool schedule_success = ScheduleNotificationWithModelResult(*best_theme);
   if (!schedule_success) {
     RecordFindsResultAndRunCallback(
-        std::move(callback), {Result::Status::kFailedToScheduleNotification,
-                              "Could not schedule notification."});
+        std::move(callback),
+        {Result::Status::kFailedToScheduleNotification,
+         "Could not schedule notification."},
+        start_time);
     return;
   }
 
   RecordFindsResultAndRunCallback(
       std::move(callback),
       {Result::Status::kSuccess,
-       FindsSuggestionResponseToHumanReadableString(*response)});
+       FindsSuggestionResponseToHumanReadableString(*response)},
+      start_time);
 }
 
 void FindsService::OnGetClientOverview(notifications::ClientOverview overview) {

@@ -373,6 +373,7 @@ TEST_F(FindsServiceTest, Success) {
   EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
   histogram_tester_.ExpectUniqueSample(
       "Finds.Result", FindsService::Result::Status::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Finds.ExecutionTime", 1);
 }
 
 TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {

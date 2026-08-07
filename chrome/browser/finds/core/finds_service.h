@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "chrome/browser/finds/core/finds_metrics.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -140,9 +141,11 @@ class FindsService : public KeyedService,
 
   void CheckFindsNotificationsEnabledAndMaybeExecute();
   void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
+                              base::TimeTicks start_time,
                               history::QueryResults results);
   void OnModelExecutionComplete(
       base::OnceCallback<void(Result)> callback,
+      base::TimeTicks start_time,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void OnGetClientOverview(notifications::ClientOverview overview);
