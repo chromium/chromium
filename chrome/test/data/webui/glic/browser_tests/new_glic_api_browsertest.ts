@@ -99,6 +99,11 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openGlicSettingsPage();
   }
 
+  async testOpenPasswordManagerSettingsPage() {
+    assertDefined(this.host.openPasswordManagerSettingsPage);
+    this.host.openPasswordManagerSettingsPage();
+  }
+
   async testUnresponsive() {
     // Don't respond to responsiveness checks.
     this.client.checkResponsive = () => {

@@ -82,11 +82,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
-  async testOpenPasswordManagerSettingsPage() {
-    assertDefined(this.host.openPasswordManagerSettingsPage);
-    this.host.openPasswordManagerSettingsPage();
-  }
-
 
 
   async testCanAttachPanelToFallbackEmbedder() {

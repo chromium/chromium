@@ -763,19 +763,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testOpenPasswordManagerSettingsPage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerTab);
-
-  const GURL settings_url =
-      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)
-          ? chrome::GetSettingsUrl(chrome::kGlicLoginSettingsSubpage)
-          : GURL(GetGooglePasswordManagerSubPageURLStr());
-  RunTestSequence(InstrumentNextTab(kPasswordManagerTab),
-                  Do([this]() { ExecuteJsTest(); }),
-                  WaitForWebContentsReady(kPasswordManagerTab, settings_url));
-}
-
 class GlicApiTestWithDaisyChain : public GlicApiTest {
  public:
   GlicApiTestWithDaisyChain() {
