@@ -423,8 +423,6 @@ public class ProcessInitializationHandler {
         ContactsPickerDelegateProvider.initialize();
 
         SearchActivityPreferencesManager.onNativeLibraryReady();
-        SearchWidgetProvider.initialize();
-        QuickActionSearchWidgetProvider.initialize();
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
 
@@ -712,6 +710,11 @@ public class ProcessInitializationHandler {
         // Asynchronously query system accessibility state so it is ready for clients.
         tasks.add(AccessibilityState::initializeOnStartup);
         tasks.add(TabPersistentStoreImpl::onDeferredStartup);
+        tasks.add(
+                () -> {
+                    SearchWidgetProvider.initialize();
+                    QuickActionSearchWidgetProvider.initialize();
+                });
     }
 
     /**
