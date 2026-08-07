@@ -299,9 +299,6 @@ bool MockRenderProcessHost::FastShutdownStarted() {
 }
 
 const base::Process& MockRenderProcessHost::GetProcess() {
-  if (process.IsValid())
-    return process;
-
   static const base::Process current_process(base::Process::Current());
   return current_process;
 }

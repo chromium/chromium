@@ -304,10 +304,6 @@ class MockRenderProcessHost : public RenderProcessHost {
     is_for_top_chrome_web_ui_ = is_for_top_chrome_web_ui;
   }
 
-  void SetProcess(base::Process&& new_process) {
-    process = std::move(new_process);
-  }
-
   void SetProcessLaunchedTime(base::TimeTicks time) {
     process_launched_time_ = time;
   }
@@ -354,7 +350,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool has_immersive_xr_session_ = false;
   bool is_ready_ = false;
   base::TimeTicks process_launched_time_;
-  base::Process process;
   int pending_view_count_;
   int worker_ref_count_;
   int pending_reuse_ref_count_;

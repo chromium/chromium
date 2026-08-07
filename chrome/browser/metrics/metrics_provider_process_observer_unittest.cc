@@ -105,7 +105,6 @@ TEST_F(MetricsProviderProcessObserverTest, ObservesRenderProcesses) {
                                           /*downsampling_factor=*/1);
 
   content::MockRenderProcessHost rph(&profile_);
-  rph.SetProcess(base::Process::Current());
 
   observer.OnRenderProcessHostCreated(&rph);
   rph.SimulateReady();
