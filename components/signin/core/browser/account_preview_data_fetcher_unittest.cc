@@ -392,7 +392,10 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
           "deviceInfoPreview": {
             "lastUpdatedTimestamp": "123456789",
             "osType": 1,
-            "deviceFormFactor": 1
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
           }
         }
       },
@@ -402,7 +405,10 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
             "cacheGuid": 12345,
             "lastUpdatedTimestamp": "123456789",
             "osType": 1,
-            "deviceFormFactor": 1
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
           }
         }
       },
@@ -412,7 +418,10 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
             "cacheGuid": "valid_device_guid",
             "lastUpdatedTimestamp": "123456789",
             "osType": 1,
-            "deviceFormFactor": 1
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
           }
         }
       }
@@ -447,7 +456,10 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
         "specificsPreview": {
           "deviceInfoPreview": {
             "cacheGuid": "device_1",
-            "lastUpdatedTimestamp": "123456789"
+            "lastUpdatedTimestamp": "123456789",
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
           }
         }
       }
@@ -472,6 +484,74 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
             result_data->devices[0].os_type);
   EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED,
             result_data->devices[0].form_factor);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, FiltersNonChromeDevices) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_, {.password_count = 5});
+
+  std::string response_json = R"({
+    "entitiesPreviews": [
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "chrome_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1,
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
+          }
+        }
+      },
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "igsa_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 6,
+            "deviceFormFactor": 2,
+            "syncUserAgent": "iGSA/1.0",
+            "chromeVersionInfo": {
+              "versionNumber": "126.0.0.0"
+            }
+          }
+        }
+      },
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "non_chrome_device",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 2,
+            "deviceFormFactor": 2,
+            "googlePlayServicesVersionInfo": {
+              "apkVersionName": "24.16.13"
+            }
+          }
+        }
+      }
+    ]
+  })";
+
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(), response_json);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("chrome_device", result_data->devices[0].cache_guid);
 }
 
 }  // namespace signin

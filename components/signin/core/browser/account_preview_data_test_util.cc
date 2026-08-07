@@ -56,7 +56,10 @@ std::string FormatPreviewsJson(const std::vector<DevicePreview>& devices) {
           "cacheGuid": "%s",
           "lastUpdatedTimestamp": "%lld",
           "osType": %d,
-          "deviceFormFactor": %d
+          "deviceFormFactor": %d,
+          "chromeVersionInfo": {
+            "versionNumber": "126.0.0.0"
+          }
         }
       }
     })",

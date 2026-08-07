@@ -143,6 +143,15 @@ bool ParsePreviewsResponse(const std::string& response_body,
       continue;
     }
 
+    const std::string* sync_user_agent =
+        device_info_preview->FindString("syncUserAgent");
+
+    // Filter out non-Chrome devices (e.g. Google Play Services or iGSA).
+    if (!device_info_preview->FindDict("chromeVersionInfo") ||
+        (sync_user_agent && sync_user_agent->starts_with("iGSA"))) {
+      continue;
+    }
+
     DevicePreview device;
     device.cache_guid = *cache_guid;
 
@@ -165,8 +174,7 @@ bool ParsePreviewsResponse(const std::string& response_body,
     device.form_factor =
         static_cast<sync_pb::SyncEnums_DeviceFormFactor>(form_factor_int);
 
-    // TODO(crbug.com/532420460): filter out current device and remove non
-    // chrome devices.
+    // TODO(crbug.com/532420460): filter out current device.
 
     data.devices.push_back(std::move(device));
   }
