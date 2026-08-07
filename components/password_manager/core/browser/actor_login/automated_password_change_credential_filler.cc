@@ -47,6 +47,8 @@ AutomatedPasswordChangeCredentialFiller::GetMatchingStoredCredential(
   automated_form_.username_value = username_;
   automated_form_.password_value =
       password_manager::PasswordString(std::u16string(password_));
+  automated_form_.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
   return &automated_form_;
 }
 
