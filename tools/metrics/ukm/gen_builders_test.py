@@ -123,11 +123,24 @@ const DecodeMap& GetDecodeMap();""", decode_header_output)
     self.assertIn("// Generated from gen_builders.py.  DO NOT EDIT!",
                   decode_impl_output)
     self.assertIn("namespace builders", decode_impl_output)
+    self.assertIn('    "{eventName}\\0"'.format(eventName=event_info.raw_name),
+                  decode_impl_output)
     self.assertIn(
-        """
-    {{{eventName}::k{metricName}NameHash, {eventName}::k{metricName}Name}},""".
-        format(eventName=event_info.name,
-               metricName=metric_info.name), decode_impl_output)
+        '    "{metricName}\\0"'.format(metricName=metric_info.raw_name),
+        decode_impl_output)
+    self.assertIn('constexpr uint16_t kMetricCounts[]', decode_impl_output)
+    self.assertIn(
+        '    {metricCount},'.format(
+            metricCount=len(event[ukm_model._METRIC_TYPE.tag])),
+        decode_impl_output)
+    self.assertNotIn(
+        '{eventName}::kEntryName'.format(eventName=event_info.name),
+        decode_impl_output)
+    self.assertNotIn(
+        '{eventName}::k{metricName}Name'.format(eventName=event_info.name,
+                                                metricName=metric_info.name),
+        decode_impl_output)
+    self.assertIn('base::HashMetricName', decode_impl_output)
 
 
 if __name__ == '__main__':
