@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "remoting/host/linux/capture_stream.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -81,6 +82,7 @@ class PipewireCaptureStream : public CaptureStream {
   // may potentially be deleted at that point.
   void RecaptureLatestFrameAsDirty();
   void RemoveCursorObserver(CursorObserver* observer);
+  void OnIdleFrameTimer();
 
   // Called by the callback proxy.
   void OnFrameCaptureStart(int capture_session_token);
@@ -95,6 +97,26 @@ class PipewireCaptureStream : public CaptureStream {
 
   webrtc::DesktopSize resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool video_capture_started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Emits periodic empty frames when no frames are received from PipeWire (e.g.
+  // on a static desktop).
+  //
+  // Why this is done in the capturer instead of the encoder-wrapper:
+  // Synthesizing keep-alive frames downstream in the video encoder wrapper
+  // bypasses WebRTC's input pipeline. When the desktop is static, WebRTC's
+  // pending key-frame requests (PLIs) are never passed to the encoder, causing
+  // the client decoder to fail to recover if a key frame was lost or dropped.
+  // Pushing idle frames through the capturer ensures they flow through WebRTC's
+  // normal pipeline so pending key-frame requests are properly consumed and
+  // encoded as key frames.
+  //
+  // Why we do not use WebRTC's ZeroHertz mode (allow_zero_hertz_video):
+  // WebRTC's ZeroHertzAdapterMode buffers and delays every captured frame by 1
+  // frame interval (1/max_fps, ~16-33 ms), to pace frames evenly at max_fps.
+  // Emitting periodic idle frames directly from the capturer preserves 0 ms
+  // passthrough latency on all active frames.
+  base::RetainingOneShotTimer idle_frame_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the current active video capture session. Incremented on every
   // StartVideoCapture() call. This serves as a token to invalidate stale,

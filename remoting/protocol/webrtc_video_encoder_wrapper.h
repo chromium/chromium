@@ -61,8 +61,6 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   void OnRttUpdate(int64_t rtt_ms) override;
   webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
 
-  static base::TimeDelta GetKeepAliveIntervalForTesting();
-
  private:
   static constexpr int kStatsWindow = 5;
 
@@ -132,19 +130,12 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   bool top_off_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Timer to extrapolate top-off frames in a reasonable interval, until
-  // `top_off_active_` is false. It will be suppressed if either a capturer-fed
-  // frame or a keep-alive frame is encoded within the top-off interval.
+  // `top_off_active_` is false. It will be suppressed if a capturer-fed
+  // frame is encoded within the top-off interval.
   base::RetainingOneShotTimer top_off_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Timer to extrapolate keep-alive frames. It will be suppressed if either a
-  // capturer-fed frame or a top-off frame is encoded within the keep-alive
-  // interval.
-  base::RetainingOneShotTimer keep_alive_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The last capturer-fed desktop frame, used for top-off and keep-alive
-  // extrapolation.
+  // The last capturer-fed desktop frame, used for top-off extrapolation.
   std::unique_ptr<webrtc::SharedDesktopFrame> last_capturer_fed_frame_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

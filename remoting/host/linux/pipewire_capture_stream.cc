@@ -26,6 +26,12 @@
 
 namespace remoting {
 
+namespace {
+
+constexpr base::TimeDelta kIdleFrameInterval = base::Seconds(1);
+
+}  // namespace
+
 // SharedScreenCastStream runs the pipewire loop, and invokes frame callbacks,
 // on a separate thread. This class is responsible for bouncing them back to
 // the corresponding methods of `parent_` on `callback_sequence`.
@@ -187,6 +193,8 @@ void PipewireCaptureStream::StartVideoCapture() {
                                  resolution_.width(), resolution_.height(),
                                  false, callback_proxy_.get());
   video_capture_started_ = true;
+  idle_frame_timer_.Start(FROM_HERE, kIdleFrameInterval, this,
+                          &PipewireCaptureStream::OnIdleFrameTimer);
 }
 
 void PipewireCaptureStream::StopVideoCapture() {
@@ -194,6 +202,7 @@ void PipewireCaptureStream::StopVideoCapture() {
   if (!video_capture_started_) {
     return;
   }
+  idle_frame_timer_.Stop();
   stream_->StopScreenCastStream();
   callback_proxy_->Stop();
   is_capturing_frame_ = false;
@@ -205,6 +214,7 @@ void PipewireCaptureStream::SetCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
   if (!callback_) {
+    idle_frame_timer_.Stop();
     callback_proxy_->Stop();
     is_capturing_frame_ = false;
     return;
@@ -220,6 +230,9 @@ void PipewireCaptureStream::SetCallback(
   // current stack frame and could potentially delete `this`, so we should only
   // access class members if the weak pointer remains valid.
   if (self) {
+    if (video_capture_started_) {
+      idle_frame_timer_.Reset();
+    }
     callback_proxy_->Start(capture_session_token_);
   }
 }
@@ -392,9 +405,33 @@ void PipewireCaptureStream::OnCaptureResult(
   }
 
   should_mark_current_frame_dirty_ = false;
+  if (video_capture_started_ && callback_) {
+    idle_frame_timer_.Reset();
+  }
   if (callback_) {
     callback_->OnCaptureResult(result, std::move(frame));
   }
+}
+
+void PipewireCaptureStream::OnIdleFrameTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!video_capture_started_ || !callback_ || is_capturing_frame_) {
+    return;
+  }
+  auto frame = stream_->CaptureFrame();
+  if (!frame) {
+    return;
+  }
+  // An idle frame has an empty updated region to indicate that nothing on the
+  // screen has changed.
+  frame->mutable_updated_region()->Clear();
+  auto self = weak_ptr_factory_.GetWeakPtr();
+  OnFrameCaptureStart(capture_session_token_);
+  if (!self) {
+    return;
+  }
+  OnCaptureResult(capture_session_token_,
+                  webrtc::DesktopCapturer::Result::SUCCESS, std::move(frame));
 }
 
 void PipewireCaptureStream::OnCursorPositionChanged(int capture_session_token) {

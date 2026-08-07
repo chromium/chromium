@@ -590,12 +590,6 @@ void WebrtcVideoEncoderWrapper::EncodeDesktopFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!encode_pending_);
 
-  if (keep_alive_timer_.IsRunning()) {
-    keep_alive_timer_.Reset();
-  } else {
-    keep_alive_timer_.Start(FROM_HERE, kKeepAliveInterval, this,
-                            &WebrtcVideoEncoderWrapper::ExtrapolateFrame);
-  }
   if (top_off_active_) {
     top_off_timer_.Reset();
   }
@@ -681,11 +675,6 @@ void WebrtcVideoEncoderWrapper::ExtrapolateFrame() {
   }
 
   EncodeDesktopFrame(last_capturer_fed_frame_->Share());
-}
-
-// static
-base::TimeDelta WebrtcVideoEncoderWrapper::GetKeepAliveIntervalForTesting() {
-  return kKeepAliveInterval;
 }
 
 }  // namespace remoting::protocol
