@@ -2390,6 +2390,8 @@ void ContextualTasksUiService::OnTaskChanged(
       for (const auto& id : tab_ids) {
         contextual_tasks_service_->AssociateTabWithTask(final_task_id, id);
       }
+    } else {
+      contextual_tasks_service_->AssociateTabWithTask(final_task_id, active_id);
     }
 
     controller->OnTaskChanged(web_contents, final_task_id);
