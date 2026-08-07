@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -91,4 +93,64 @@ TEST_F(NewTabPageBottomSheetViewControllerTest, TestMagicStackContainerAlpha) {
   [view_controller_
       updateContentContainerInsetForOffset:(expanded + resting) / 2.0];
   EXPECT_FLOAT_EQ(0.5, container.alpha);
+}
+
+// Tests that the header container embeds magic stack container view and exists.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestHeaderContainerHierarchy) {
+  [view_controller_ loadViewIfNeeded];
+  UIView* headerContainer =
+      [view_controller_ valueForKey:@"_headerContainerView"];
+  EXPECT_NE(nil, headerContainer);
+  EXPECT_TRUE([headerContainer isDescendantOfView:view_controller_.view]);
+
+  UIView* magicStackContainer =
+      [view_controller_ valueForKey:@"_magicStackContainerView"];
+  EXPECT_NE(nil, magicStackContainer);
+  EXPECT_TRUE([magicStackContainer isDescendantOfView:headerContainer]);
+
+  UIView* contentContainer =
+      [view_controller_ valueForKey:@"_contentContainerView"];
+  EXPECT_NE(nil, contentContainer);
+  EXPECT_TRUE([contentContainer isDescendantOfView:view_controller_.view]);
+}
+
+// Tests that the MVT container view alpha updates based on top offset when
+// kMVTInBottomSheet is enabled.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestMVTContainerAlphaWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  [view_controller_ loadViewIfNeeded];
+  UIView* mvtContainer =
+      [view_controller_ valueForKey:@"_mostVisitedContainerView"];
+  EXPECT_NE(nil, mvtContainer);
+
+  id mock_delegate =
+      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
+  view_controller_.delegate = mock_delegate;
+
+  OCMStub([mock_delegate
+              restingOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(400.0);
+  OCMStub([mock_delegate
+              collapsedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(600.0);
+
+  CGFloat expanded = [view_controller_ expandedOffset];
+  CGFloat resting = [view_controller_ restingOffset];
+
+  // At resting offset, progress should be 1.0, meaning alpha is 1.0
+  [view_controller_ updateContentContainerInsetForOffset:resting];
+  EXPECT_FLOAT_EQ(1.0, mvtContainer.alpha);
+
+  // At expanded offset, progress should be 0.0, meaning alpha is 0.0
+  [view_controller_ updateContentContainerInsetForOffset:expanded];
+  EXPECT_FLOAT_EQ(0.0, mvtContainer.alpha);
+
+  // At halfway between expanded and resting, progress should be 0.5, alpha
+  // should be 0.5
+  [view_controller_
+      updateContentContainerInsetForOffset:(expanded + resting) / 2.0];
+  EXPECT_FLOAT_EQ(0.5, mvtContainer.alpha);
 }

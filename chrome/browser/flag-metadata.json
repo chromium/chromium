@@ -7329,6 +7329,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-mvt-in-bottom-sheet",
+    "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-next-canvas-chip",
     "owners": [ "rtatum@chromium.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 160

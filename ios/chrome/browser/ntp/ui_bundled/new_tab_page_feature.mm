@@ -31,6 +31,8 @@ BASE_FEATURE(kConsistentLogoDoodleHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMVTInBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNewTabPagePaddingUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -65,6 +67,10 @@ BASE_FEATURE_PARAM(int,
                    static_cast<int>(NTPPaddingUpdateVariation::kTightPadding));
 
 #pragma mark - Helpers
+
+bool IsMVTInBottomSheetEnabled() {
+  return base::FeatureList::IsEnabled(kMVTInBottomSheet);
+}
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {
   // Promo should not be shown on FRE, or for users in Great Britain for AADC

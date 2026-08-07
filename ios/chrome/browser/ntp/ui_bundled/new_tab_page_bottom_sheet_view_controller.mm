@@ -8,6 +8,8 @@
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -21,6 +23,7 @@ typedef NS_ENUM(NSInteger, BottomSheetSnappingState) {
 
 // Spacing/margin constants for content container.
 constexpr CGFloat kContentContainerTopMargin = 16.0;
+constexpr CGFloat kSpaceBetweenModules = 14.0;
 constexpr CGFloat kMagicStackToFeedSpacing = 16.0;
 
 // Minimum drag velocity required to trigger a state transition.
@@ -35,9 +38,12 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
 @implementation NewTabPageBottomSheetViewController {
   UIView* _dragHandle;
+  UIView* _headerContainerView;
   UIView* _magicStackContainerView;
+  NSLayoutConstraint* _magicStackTopConstraint;
+  UIView* _mostVisitedContainerView;
+  UIView* _mostVisitedView;
   UIView* _contentContainerView;
-  NSLayoutConstraint* _contentContainerTopConstraint;
   BottomSheetSnappingState _sheetState;
 
   CGSize _lastSize;
@@ -87,21 +93,56 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     [_dragHandle.heightAnchor constraintEqualToConstant:5],
   ]];
 
+  // Add header container view that encapsulates MVT and Magic Stack.
+  _headerContainerView = [[UIView alloc] init];
+  _headerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [visualEffectView.contentView addSubview:_headerContainerView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_headerContainerView.leadingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+    [_headerContainerView.trailingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+    [_headerContainerView.topAnchor
+        constraintEqualToAnchor:_dragHandle.bottomAnchor
+                       constant:kContentContainerTopMargin],
+  ]];
+
+  // Add most visited tiles container view if feature is enabled.
+  if (IsMVTInBottomSheetEnabled()) {
+    _mostVisitedContainerView = [[UIView alloc] init];
+    _mostVisitedContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_headerContainerView addSubview:_mostVisitedContainerView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_mostVisitedContainerView.leadingAnchor
+          constraintEqualToAnchor:_headerContainerView.leadingAnchor],
+      [_mostVisitedContainerView.trailingAnchor
+          constraintEqualToAnchor:_headerContainerView.trailingAnchor],
+      [_mostVisitedContainerView.topAnchor
+          constraintEqualToAnchor:_headerContainerView.topAnchor],
+    ]];
+  }
+
   // Add magic stack container view.
   _magicStackContainerView = [[UIView alloc] init];
   _magicStackContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [visualEffectView.contentView addSubview:_magicStackContainerView];
+  [_headerContainerView addSubview:_magicStackContainerView];
+
+  _magicStackTopConstraint = [_magicStackContainerView.topAnchor
+      constraintEqualToAnchor:_headerContainerView.topAnchor
+                     constant:0.0];
+  _magicStackTopConstraint.active = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     [_magicStackContainerView.leadingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+        constraintEqualToAnchor:_headerContainerView.leadingAnchor],
     [_magicStackContainerView.trailingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
-    [_magicStackContainerView.topAnchor
-        constraintEqualToAnchor:_dragHandle.bottomAnchor
-                       constant:kContentContainerTopMargin],
+        constraintEqualToAnchor:_headerContainerView.trailingAnchor],
     [_magicStackContainerView.heightAnchor
         constraintEqualToConstant:kMagicStackHeight],
+    [_headerContainerView.bottomAnchor
+        constraintEqualToAnchor:_magicStackContainerView.bottomAnchor],
   ]];
 
   // Add content container view.
@@ -109,16 +150,14 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   _contentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   [visualEffectView.contentView addSubview:_contentContainerView];
 
-  _contentContainerTopConstraint = [_contentContainerView.topAnchor
-      constraintEqualToAnchor:_dragHandle.bottomAnchor
-                     constant:kContentContainerTopMargin];
-  _contentContainerTopConstraint.active = YES;
-
   [NSLayoutConstraint activateConstraints:@[
     [_contentContainerView.leadingAnchor
         constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
     [_contentContainerView.trailingAnchor
         constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+    [_contentContainerView.topAnchor
+        constraintEqualToAnchor:_headerContainerView.bottomAnchor
+                       constant:kMagicStackToFeedSpacing],
     [_contentContainerView.bottomAnchor
         constraintEqualToAnchor:visualEffectView.contentView.bottomAnchor],
   ]];
@@ -132,6 +171,10 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   [self updateContentContainerInsetForOffset:
             [self targetOffsetForState:_sheetState]];
+
+  if (_mostVisitedView) {
+    [self embedMostVisitedView:_mostVisitedView];
+  }
 
   if (_magicStackViewController) {
     [self embedMagicStackViewController];
@@ -166,6 +209,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   self.delegate = nil;
   self.feedViewController = nil;
   self.magicStackViewController = nil;
+  _mostVisitedView = nil;
+  _headerContainerView = nil;
 }
 
 #pragma mark - Action Targets
@@ -282,6 +327,29 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   [_magicStackContainerView addSubview:_magicStackViewController.view];
   AddSameConstraints(_magicStackViewController.view, _magicStackContainerView);
   [_magicStackViewController didMoveToParentViewController:self];
+}
+
+- (void)embedMostVisitedView:(UIView*)mostVisitedView {
+  if (_mostVisitedView != mostVisitedView) {
+    if (_mostVisitedView) {
+      [_mostVisitedView removeFromSuperview];
+    }
+    _mostVisitedView = mostVisitedView;
+  }
+  if (self.isViewLoaded && _mostVisitedView && _mostVisitedContainerView) {
+    if (_mostVisitedView.superview == _mostVisitedContainerView) {
+      return;
+    }
+    _mostVisitedView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_mostVisitedContainerView addSubview:_mostVisitedView];
+    AddSameConstraints(_mostVisitedView, _mostVisitedContainerView);
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+    CGFloat offset = _bottomSheetTopConstraint
+                         ? _bottomSheetTopConstraint.constant
+                         : [self restingOffset];
+    [self updateContentContainerInsetForOffset:offset];
+  }
 }
 
 #pragma mark - Snapping Offsets
@@ -428,21 +496,47 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   CGFloat expanded = [self expandedOffset];
   CGFloat resting = [self restingOffset];
   if (resting <= expanded) {
-    _contentContainerTopConstraint.constant = kContentContainerTopMargin;
-    _magicStackContainerView.alpha = 1.0;
+    if (IsMVTInBottomSheetEnabled()) {
+      _mostVisitedContainerView.alpha = 0.0;
+      _magicStackTopConstraint.constant =
+          content_suggestions::FakeOmniboxHeight();
+    } else {
+      _magicStackContainerView.alpha = 1.0;
+      _magicStackTopConstraint.constant = 0.0;
+    }
     return;
   }
   CGFloat progress = (topOffset - expanded) / (resting - expanded);
   progress = MIN(1.0, MAX(0.0, progress));
 
-  _magicStackContainerView.alpha = progress;
+  if (IsMVTInBottomSheetEnabled()) {
+    _mostVisitedContainerView.alpha = progress;
 
-  CGFloat expandedTopPadding =
-      content_suggestions::FakeOmniboxHeight() + kContentContainerTopMargin;
-  CGFloat restingTopPadding = kMagicStackHeight + kMagicStackToFeedSpacing;
+    CGFloat mvtHeight = CGRectGetHeight(_mostVisitedContainerView.bounds);
+    if (mvtHeight <= 0 && _mostVisitedView) {
+      mvtHeight = [_mostVisitedView
+                      systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+                      .height;
+    }
 
-  _contentContainerTopConstraint.constant =
-      progress * restingTopPadding + (1.0 - progress) * expandedTopPadding;
+    CGFloat expandedMagicStackTop = content_suggestions::FakeOmniboxHeight();
+    CGFloat restingMagicStackTop =
+        (mvtHeight > 0) ? (mvtHeight + kSpaceBetweenModules) : 0.0;
+
+    _magicStackTopConstraint.constant =
+        progress * restingMagicStackTop +
+        (1.0 - progress) * expandedMagicStackTop;
+  } else {
+    _magicStackContainerView.alpha = progress;
+
+    CGFloat expandedMagicStackTop =
+        content_suggestions::FakeOmniboxHeight() - kMagicStackHeight;
+    CGFloat restingMagicStackTop = 0.0;
+
+    _magicStackTopConstraint.constant =
+        progress * restingMagicStackTop +
+        (1.0 - progress) * expandedMagicStackTop;
+  }
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {

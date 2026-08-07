@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/history/core/browser/history_service.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tile_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_actions_provider.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -43,6 +45,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -407,4 +410,31 @@ TEST_F(MostVisitedTilesMediatorTest, TestAccessibilityCustomActionsMove) {
   }
   EXPECT_TRUE(foundMoveLeft);
   EXPECT_FALSE(foundMoveRight);
+}
+
+// Tests that setConsumer delivers cached config when NTP Redesign is enabled.
+TEST_F(MostVisitedTilesMediatorTest,
+       TestSetConsumerDeliversConfigWhenNTPRedesignEnabled) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kNewTabPageRedesign);
+
+  ntp_tiles::NTPTilesVector tiles_vector;
+  ntp_tiles::NTPTile tile;
+  tile.url = GURL("http://chromium.org");
+  tile.title = u"Chromium";
+  tiles_vector.push_back(tile);
+  std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector> sections;
+  sections[ntp_tiles::SectionType::PERSONALIZED] = tiles_vector;
+  captured_observer_->OnURLsAvailable(/*is_user_triggered=*/true, sections);
+
+  id mock_consumer = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+  OCMExpect([mock_consumer setMostVisitedTilesConfig:[OCMArg any]]);
+
+  mediator_.consumer = mock_consumer;
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
 }

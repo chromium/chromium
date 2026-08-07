@@ -57,6 +57,12 @@ BASE_DECLARE_FEATURE(kConsistentLogoDoodleHeight);
 // Feature flag to enable the New Tab Page padding updates.
 BASE_DECLARE_FEATURE(kNewTabPagePaddingUpdate);
 
+// Feature flag to place the Most Visited Tiles in the bottom sheet.
+BASE_DECLARE_FEATURE(kMVTInBottomSheet);
+
+// Checks if the Most Visited Tiles should be placed in the bottom sheet.
+bool IsMVTInBottomSheetEnabled();
+
 #pragma mark - Feature parameters
 
 // A parameter value for the feed's refresh threshold when the feed has already

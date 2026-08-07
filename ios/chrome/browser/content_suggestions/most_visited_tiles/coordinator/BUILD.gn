@@ -54,6 +54,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/feature_engagement/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
@@ -63,6 +64,8 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
+    "//ios/chrome/browser/content_suggestions/ui",
+    "//ios/chrome/browser/content_suggestions/ui:commands",
     "//ios/chrome/browser/content_suggestions/ui:public",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",

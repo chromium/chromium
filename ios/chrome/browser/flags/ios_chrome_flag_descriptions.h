@@ -1372,6 +1372,11 @@ inline constexpr char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
 
+inline constexpr char kMVTInBottomSheetName[] = "NTP MVT in Bottom Sheet";
+inline constexpr char kMVTInBottomSheetDescription[] =
+    "Places the Most Visited Tiles inside the bottom sheet card for the NTP "
+    "Redesign.";
+
 inline constexpr char kManualLogUploadsInFREName[] =
     "Manual log uploads in the FRE";
 inline constexpr char kManualLogUploadsInFREDescription[] =

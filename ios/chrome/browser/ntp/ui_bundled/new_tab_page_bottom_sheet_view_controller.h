@@ -41,6 +41,9 @@
 // The magic stack view controller.
 @property(nonatomic, strong) UIViewController* magicStackViewController;
 
+// Embeds the Most Visited view.
+- (void)embedMostVisitedView:(UIView*)mostVisitedView;
+
 // Clears state and delegates.
 - (void)invalidate;
 
@@ -52,6 +55,9 @@
 
 // Returns the collapsed offset of the bottom sheet.
 - (CGFloat)collapsedOffset;
+
+// Updates the bottom sheet position to match its current snapping state.
+- (void)updateBottomSheetPositionAnimated:(BOOL)animated;
 
 @end
 
