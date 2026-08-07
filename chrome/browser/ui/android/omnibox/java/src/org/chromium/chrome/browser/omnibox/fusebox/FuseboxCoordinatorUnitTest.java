@@ -377,11 +377,11 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testPopupDismissed_noActionTaken_plusButtonFocused() {
+    public void testPopupDismissed_noPopupItemSelected_plusButtonFocused() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
-        doReturn(false).when(mMediator).wasActionTaken();
+        doReturn(false).when(mMediator).wasPopupItemSelected();
 
         mCoordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
 
@@ -395,11 +395,11 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testPopupDismissed_actionTaken_plusButtonNotFocused() {
+    public void testPopupDismissed_popupItemSelected_plusButtonNotFocused() {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
-        doReturn(true).when(mMediator).wasActionTaken();
+        doReturn(true).when(mMediator).wasPopupItemSelected();
 
         mCoordinator.setOnInteractionCompletedCallback(mOnInteractionCompletedCallback);
 

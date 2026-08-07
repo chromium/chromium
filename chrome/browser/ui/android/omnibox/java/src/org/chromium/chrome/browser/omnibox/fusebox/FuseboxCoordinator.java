@@ -525,13 +525,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     @VisibleForTesting
     void onContextPopupDismissed() {
         if (mViewHolder == null || mViewHolder.plusButton == null) return;
-        boolean actionTaken = mMediator != null && mMediator.wasActionTaken();
-        if (!actionTaken) {
+        boolean popupItemSelected = mMediator != null && mMediator.wasPopupItemSelected();
+        if (!popupItemSelected) {
             mViewHolder.plusButton.requestFocus();
             mViewHolder.plusButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         }
         if (mOnInteractionCompletedCallback != null) {
-            mOnInteractionCompletedCallback.onResult(actionTaken);
+            mOnInteractionCompletedCallback.onResult(popupItemSelected);
         }
     }
 
