@@ -823,7 +823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CryptographerPendingKeys"
-    enum="SyncCryptographerPendingKeysState" expires_after="2026-08-23">
+    enum="SyncCryptographerPendingKeysState" expires_after="2027-08-23">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
