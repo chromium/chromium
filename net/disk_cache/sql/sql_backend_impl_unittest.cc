@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,6 +43,9 @@
 #include "net/disk_cache/sql/sql_shared_cache.h"
 #include "net/disk_cache/sql/sql_shared_cache_handle.h"
 #include "net/disk_cache/sql/sql_shared_cache_manager.h"
+#include "net/http/http_cache.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include "net/test/gtest_util.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -58,6 +62,9 @@ using performance_scenarios::PerformanceScenarioTestHelper;
 using performance_scenarios::ScenarioScope;
 
 namespace disk_cache {
+
+using OperationHandle = ExclusiveOperationCoordinator::OperationHandle;
+
 namespace {
 
 using testing::ElementsAre;
@@ -186,6 +193,20 @@ class SqlBackendImplTest : public testing::Test {
     auto* entry = create_result.ReleaseEntry();
     CHECK(entry);
 
+    net::HttpResponseInfo response_info;
+    response_info.response_time = base::Time::Now();
+    response_info.headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\0\0");
+    auto pickle = response_info.MakePickle(false, false);
+    std::string pickle_data(reinterpret_cast<const char*>(pickle->data()),
+                            pickle->size());
+    auto pickle_buffer = base::MakeRefCounted<net::StringIOBuffer>(pickle_data);
+    net::TestCompletionCallback cb_write_pickle;
+    EXPECT_EQ(cb_write_pickle.GetResult(
+                  entry->WriteData(0, 0, pickle_buffer.get(), pickle->size(),
+                                   cb_write_pickle.callback(), false)),
+              static_cast<int>(pickle->size()));
+
     auto write_buf = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     write_buf->span().copy_from(base::as_byte_span(data));
     net::TestCompletionCallback cb_write;
@@ -196,52 +217,28 @@ class SqlBackendImplTest : public testing::Test {
     entry->Close();
     backend.RunUntilAllTasksCompleteForTest();
 
-    CacheEntryKey cache_key{std::string(key)};
+    GURL url("https://example.com");
+    net::SchemefulSite site(url);
+    net::NetworkIsolationKey nik(site, site);
+    backend.OnEntryEligibleForSharedCache(
+        std::string(key), url,
+        std::make_unique<net::HttpResponseInfo>(response_info), nik);
 
+    base::RunLoop process_run_loop;
+    backend.ProcessSharedCacheEligibleEntriesForTest(
+        base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+        base::NullCallback());
+    process_run_loop.Run();
+    backend.RunUntilAllTasksCompleteForTest();
+
+    CacheEntryKey cache_key{std::string(key)};
     auto* store = backend.GetSqlStoreForTest();
     base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> open_future;
     store->OpenEntry(cache_key, open_future.GetCallback());
     auto open_res = open_future.Take();
     CHECK(open_res.has_value());
-    SqlPersistentStore::ResId res_id = open_res->res_id;
-
-    auto* manager = store->GetSharedCacheManager();
-    CHECK(manager);
-
-    net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
-                                 net::SchemefulSite(GURL("https://bar.test")));
-    base::test::TestFuture<scoped_refptr<SqlSharedCacheHandle>> handle_future;
-    manager->GetCacheByNik(nik, /*require_shared_cache_db_id=*/true,
-                           handle_future.GetCallback());
-    scoped_refptr<SqlSharedCacheHandle> handle = handle_future.Take();
-    CHECK(handle);
-    CHECK((*handle)->shared_cache_db_id().has_value());
-    SqlSharedCacheDbId db_id = *(*handle)->shared_cache_db_id();
-
-    auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
-    headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
-    auto body = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-    body->span().copy_from(base::as_byte_span(data));
-
-    base::test::TestFuture<base::expected<
-        SqlSharedCacheRowId, SqlSharedCacheIsolatedDatabase::Error>>
-        insert_future;
-    (*handle)
-        ->isolated_database_for_testing()
-        .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
-        .WithArgs(cache_key, headers, data.size(), body)
-        .Then(insert_future.GetCallback());
-    backend.RunUntilAllTasksCompleteForTest();
-    auto insert_res = insert_future.Take();
-    CHECK(insert_res.has_value());
-    SqlSharedCacheRowId row_id = *insert_res;
-
-    const SqlSharedCacheResourceId shared_resource_id{db_id, row_id};
-    base::test::TestFuture<SqlPersistentStore::Error> move_future;
-    store->MoveBlobsToSharedCache(cache_key, res_id, shared_resource_id,
-                                  move_future.GetCallback());
-    EXPECT_EQ(move_future.Get(), SqlPersistentStore::Error::kOk);
-    return shared_resource_id;
+    return open_res->shared_cache_resource_id.value_or(
+        SqlSharedCacheResourceId{});
   }
 
   // Gets the total size of all entries.
@@ -3933,6 +3930,501 @@ TEST_F(SqlBackendImplTest, ReadFromSharedCacheHandleNotFound) {
 
   opened_entry->Close();
   backend->RunUntilAllTasksCompleteForTest();
+}
+
+class SqlBackendImplSharedCacheTest : public SqlBackendImplTest {
+ public:
+  SqlBackendImplSharedCacheTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kRendererAccessibleHttpCache);
+  }
+
+ protected:
+  void WriteResponseInfoToEntry(disk_cache::Entry* entry,
+                                const net::HttpResponseInfo& info) {
+    auto pickle = info.MakePickle(false, false);
+    std::string pickle_data(reinterpret_cast<const char*>(pickle->data()),
+                            pickle->size());
+    auto buffer = base::MakeRefCounted<net::StringIOBuffer>(pickle_data);
+    net::TestCompletionCallback cb;
+    EXPECT_EQ(cb.GetResult(entry->WriteData(0, 0, buffer.get(),
+                                            static_cast<int>(pickle->size()),
+                                            cb.callback(), false)),
+              static_cast<int>(pickle->size()));
+  }
+
+  // Helper to create an entry in store, write data and response info,
+  // optionally close it, and register it to shared cache.
+  disk_cache::Entry* CreateAndRegisterSharedCacheEntry(
+      SqlBackendImpl* backend,
+      const std::string& key,
+      const std::string& data,
+      const net::NetworkIsolationKey& nik,
+      base::Time response_time = base::Time::Now(),
+      bool close_entry = true) {
+    auto* entry = CreateEntryAndWriteData(backend, key, data);
+    net::HttpResponseInfo info;
+    info.response_time = response_time;
+    info.headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\0\0");
+    WriteResponseInfoToEntry(entry, info);
+    if (close_entry) {
+      entry->Close();
+    }
+    GURL url{net::HttpCache::GetResourceURLFromHttpCacheKey(key)};
+    backend->OnEntryEligibleForSharedCache(
+        key, url, std::make_unique<net::HttpResponseInfo>(info), nik);
+    return close_entry ? nullptr : entry;
+  }
+
+  void VerifySharedCacheResourceIdExists(SqlBackendImpl* backend,
+                                         const std::string& key) {
+    base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
+    backend->GetSqlStoreForTest()->OpenEntry(CacheEntryKey(key),
+                                             future.GetCallback());
+    auto result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->shared_cache_resource_id.has_value());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       ProcessSharedCacheEligibleEntriesMultipleNiks) {
+  auto backend = CreateBackendAndInit();
+
+  const net::SchemefulSite kSite1(GURL("https://site1.test"));
+  const net::NetworkIsolationKey kNik1(kSite1, kSite1);
+  const net::SchemefulSite kSite2(GURL("https://site2.test"));
+  const net::NetworkIsolationKey kNik2(kSite2, kSite2);
+
+  const std::string kKey1 = "0/0/https://example1.test";
+  const std::string kKey2 = "0/0/https://example2.test";
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey1, "Data 1", kNik1);
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey2, "Data 2", kNik2);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 2u);
+
+  base::RunLoop process_run_loop;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+
+  process_run_loop.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  VerifySharedCacheResourceIdExists(backend.get(), kKey1);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey2);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       ProcessSharedCacheEligibleEntriesDbFailure) {
+  auto backend = CreateBackendAndInit();
+  auto* manager =
+      backend->GetSqlStoreForTest()->shared_cache_manager_for_testing();
+  manager->SetSimulateDbFailureForTesting(true);
+
+  const net::SchemefulSite kSite(GURL("https://example.test"));
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+  const std::string kKey = "0/0/https://example.test";
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey, "Hello Shared Cache",
+                                    kNik);
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+
+  base::RunLoop process_run_loop;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      base::NullCallback());
+  process_run_loop.Run();
+
+  // On DB failure, processing fails and the entries are dropped, leaving 0
+  // pending eligible entries.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       ProcessSharedCacheEligibleEntriesSkipsActiveEntry) {
+  auto backend = CreateBackendAndInit();
+
+  const net::SchemefulSite kSite1(GURL("https://site1.test"));
+  const net::NetworkIsolationKey kNik1(kSite1, kSite1);
+  const net::SchemefulSite kSite2(GURL("https://site2.test"));
+  const net::NetworkIsolationKey kNik2(kSite2, kSite2);
+
+  const std::string kKey1 = "0/0/https://example1.test";
+  const std::string kKey2 = "0/0/https://example2.test";
+
+  // Create entry1 and entry2 and keep BOTH open (active).
+  auto* entry1 = CreateAndRegisterSharedCacheEntry(
+      backend.get(), kKey1, "Data 1", kNik1, base::Time::Now(),
+      /*close_entry=*/false);
+  auto* entry2 = CreateAndRegisterSharedCacheEntry(
+      backend.get(), kKey2, "Data 2", kNik2, base::Time::Now(),
+      /*close_entry=*/false);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 2u);
+
+  // 1. When ALL entries are active, HandleProcessSharedCacheEligibleEntries
+  // finds entries_to_process is empty and returns early without processing.
+  base::RunLoop process_run_loop_all_active;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop_all_active.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+  process_run_loop_all_active.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // Both entries were active, so 0 entries were processed, leaving 2 eligible
+  // entries.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 2u);
+
+  // 2. Close entry2, keep entry1 open.
+  entry2->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  base::RunLoop process_run_loop;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+
+  process_run_loop.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // entry1 was skipped (remains active/eligible), entry2 was processed.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey2);
+
+  // 3. Close entry1 and process again.
+  entry1->Close();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  base::RunLoop process_run_loop2;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+
+  process_run_loop2.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // entry1 should now be processed.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey1);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       OnEntryEligibleForSharedCacheUpdateWithNewerResponseTime) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "0/0/https://example.test";
+  const GURL kUrl("https://example.test");
+  const net::SchemefulSite kSite(GURL("https://example.test"));
+  const net::NetworkIsolationKey kNik(kSite, kSite);
+
+  base::Time now = base::Time::Now();
+
+  // Register an entry initially.
+  {
+    auto response_info = std::make_unique<net::HttpResponseInfo>();
+    response_info->response_time = now;
+    response_info->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
+    backend->OnEntryEligibleForSharedCache(kKey, kUrl, std::move(response_info),
+                                           kNik);
+  }
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+  {
+    const auto& map = backend->GetSharedCacheEligibleEntriesForTest();
+    auto it = map.find(CacheEntryKey(kKey));
+    ASSERT_NE(it, map.end());
+    EXPECT_EQ(it->second.response_info->response_time, now);
+  }
+
+  // Register the same key with an older response_time. It should be ignored.
+  {
+    auto response_info = std::make_unique<net::HttpResponseInfo>();
+    response_info->response_time = now - base::Seconds(10);
+    response_info->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
+    backend->OnEntryEligibleForSharedCache(kKey, kUrl, std::move(response_info),
+                                           kNik);
+  }
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+  {
+    const auto& map = backend->GetSharedCacheEligibleEntriesForTest();
+    auto it = map.find(CacheEntryKey(kKey));
+    ASSERT_NE(it, map.end());
+    EXPECT_EQ(it->second.response_info->response_time, now);
+  }
+
+  // Register the same key with a newer response_time. It should execute the if
+  // branch and update the entry.
+  base::Time newer = now + base::Seconds(10);
+  {
+    auto response_info = std::make_unique<net::HttpResponseInfo>();
+    response_info->response_time = newer;
+    response_info->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
+    backend->OnEntryEligibleForSharedCache(kKey, kUrl, std::move(response_info),
+                                           kNik);
+  }
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+  {
+    const auto& map = backend->GetSharedCacheEligibleEntriesForTest();
+    auto it = map.find(CacheEntryKey(kKey));
+    ASSERT_NE(it, map.end());
+    EXPECT_EQ(it->second.response_info->response_time, newer);
+  }
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       OnProcessSharedCacheEligibleEntriesCompleteReinsertsUnprocessedEntries) {
+  auto backend = CreateBackendAndInit();
+
+  const std::string kKey1 = "0/0/https://example1.test";
+  const std::string kKey2 = "0/0/https://example2.test";
+  const std::string kKey3 = "0/0/https://example3.test";
+
+  const net::SchemefulSite kSite1(GURL("https://site1.test"));
+  const net::NetworkIsolationKey kNik1(kSite1, kSite1);
+  const net::SchemefulSite kSite2(GURL("https://site2.test"));
+  const net::NetworkIsolationKey kNik2(kSite2, kSite2);
+
+  // kKey1 and kKey2 share kNik1; kKey3 uses kNik2.
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey1, "Data 1", kNik1);
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey2, "Data 2", kNik1);
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey3, "Data 3", kNik2);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 3u);
+
+  std::unique_ptr<OperationHandle> in_flight_handle;
+
+  base::RunLoop process_run_loop;
+  // When kKey1 finishes copying, post a normal operation so that CopyEntries
+  // aborts remaining entries in the same NIK group (kKey2) and subsequent NIK
+  // groups (kKey3).
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      base::BindRepeating(
+          [](SqlBackendImpl* backend,
+             std::unique_ptr<OperationHandle>* handle_out,
+             const CacheEntryKey& key) {
+            if (!*handle_out) {
+              backend->GetExclusiveOperationCoordinatorForTest()
+                  ->PostOrRunNormalOperation(
+                      CacheEntryKey("fake_key_for_abort"),
+                      base::BindOnce(
+                          [](std::unique_ptr<OperationHandle>* out,
+                             std::unique_ptr<OperationHandle> handle) {
+                            *out = std::move(handle);
+                          },
+                          handle_out),
+                      /*low_priority=*/false);
+            }
+          },
+          backend.get(), &in_flight_handle));
+
+  process_run_loop.Run();
+
+  // kKey1 was processed; kKey2 (same NIK) and kKey3 (different NIK) were
+  // aborted and re-inserted.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 2u);
+
+  // Release normal operation so backend becomes idle again.
+  in_flight_handle.reset();
+
+  base::RunLoop process_run_loop2;
+  backend->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
+      /*on_entry_copied_callback=*/base::NullCallback());
+  process_run_loop2.Run();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // All entries should now be in shared cache.
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey1);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey2);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey3);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       OnProcessSharedCacheEligibleEntriesCompleteConflictResponseTime) {
+  auto backend = CreateBackendAndInit();
+
+  const std::string kKey1 = "0/0/https://example1.test";
+  const std::string kKey2 = "0/0/https://example2.test";
+  const net::SchemefulSite kSite1(GURL("https://site1.test"));
+  const net::NetworkIsolationKey kNik1(kSite1, kSite1);
+  const net::SchemefulSite kSite2(GURL("https://site2.test"));
+  const net::NetworkIsolationKey kNik2(kSite2, kSite2);
+
+  base::Time now = base::Time::Now();
+  base::Time t1 = now;
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey1, "Data 1", kNik1, t1);
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey2, "Data 2", kNik2, t1);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  std::unique_ptr<OperationHandle> in_flight_handle;
+  base::Time t0 = now - base::Seconds(10);
+
+  base::RunLoop process_run_loop;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      base::BindRepeating(
+          [](SqlBackendImpl* backend,
+             std::unique_ptr<OperationHandle>* handle_out,
+             const std::string& key2, const GURL& url,
+             const net::NetworkIsolationKey& nik, base::Time t0,
+             const CacheEntryKey& key) {
+            if (!*handle_out) {
+              backend->GetExclusiveOperationCoordinatorForTest()
+                  ->PostOrRunNormalOperation(
+                      CacheEntryKey("fake_key_for_abort"),
+                      base::BindOnce(
+                          [](std::unique_ptr<OperationHandle>* out,
+                             std::unique_ptr<OperationHandle> handle) {
+                            *out = std::move(handle);
+                          },
+                          handle_out),
+                      /*low_priority=*/false);
+              auto info = std::make_unique<net::HttpResponseInfo>();
+              info->response_time = t0;
+              info->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+                  "HTTP/1.1 200 OK\n\n");
+              backend->OnEntryEligibleForSharedCache(key2, url, std::move(info),
+                                                     nik);
+            }
+          },
+          backend.get(), &in_flight_handle, kKey2,
+          GURL(net::HttpCache::GetResourceURLFromHttpCacheKey(kKey2)), kNik2,
+          t0));
+
+  process_run_loop.Run();
+  in_flight_handle.reset();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  // Unprocessed entry t1 for kKey2 is newer than t0, so t1 overwrites t0.
+  const auto& map1 = backend->GetSharedCacheEligibleEntriesForTest();
+  auto it1 = map1.find(CacheEntryKey(kKey2));
+  ASSERT_TRUE(it1 != map1.end());
+  EXPECT_EQ(it1->second.response_info->response_time, t1);
+
+  // 2. Test t2 > t1 case for kKey2.
+  base::Time t2 = now + base::Seconds(10);
+
+  // Register kKey1 again.
+  GURL url1{net::HttpCache::GetResourceURLFromHttpCacheKey(kKey1)};
+  auto info1 = std::make_unique<net::HttpResponseInfo>();
+  info1->response_time = t1;
+  info1->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n\n");
+  backend->OnEntryEligibleForSharedCache(kKey1, url1, std::move(info1), kNik1);
+
+  base::RunLoop process_run_loop2;
+  backend->ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop2.QuitClosure()),
+      base::BindRepeating(
+          [](SqlBackendImpl* backend,
+             std::unique_ptr<OperationHandle>* handle_out,
+             const std::string& key2, const GURL& url,
+             const net::NetworkIsolationKey& nik, base::Time t2,
+             const CacheEntryKey& key) {
+            if (!*handle_out) {
+              backend->GetExclusiveOperationCoordinatorForTest()
+                  ->PostOrRunNormalOperation(
+                      CacheEntryKey("fake_key_for_abort"),
+                      base::BindOnce(
+                          [](std::unique_ptr<OperationHandle>* out,
+                             std::unique_ptr<OperationHandle> handle) {
+                            *out = std::move(handle);
+                          },
+                          handle_out),
+                      /*low_priority=*/false);
+              auto info = std::make_unique<net::HttpResponseInfo>();
+              info->response_time = t2;
+              info->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+                  "HTTP/1.1 200 OK\n\n");
+              backend->OnEntryEligibleForSharedCache(key2, url, std::move(info),
+                                                     nik);
+            }
+          },
+          backend.get(), &in_flight_handle, kKey2,
+          GURL(net::HttpCache::GetResourceURLFromHttpCacheKey(kKey2)), kNik2,
+          t2));
+
+  process_run_loop2.Run();
+  in_flight_handle.reset();
+  backend->RunUntilAllTasksCompleteForTest();
+
+  const auto& map2 = backend->GetSharedCacheEligibleEntriesForTest();
+  auto it2 = map2.find(CacheEntryKey(kKey2));
+  ASSERT_TRUE(it2 != map2.end());
+  EXPECT_EQ(it2->second.response_info->response_time, t2);
+}
+
+TEST_F(SqlBackendImplSharedCacheTest,
+       ProcessAllSharedCacheEligibleEntriesForTest) {
+  auto backend = CreateBackendAndInit();
+
+  const std::string kKey1 = "0/0/https://example1.test";
+  const std::string kKey2 = "0/0/https://example2.test";
+  const net::SchemefulSite kSite1(GURL("https://site1.test"));
+  const net::NetworkIsolationKey kNik1(kSite1, kSite1);
+  const net::SchemefulSite kSite2(GURL("https://site2.test"));
+  const net::NetworkIsolationKey kNik2(kSite2, kSite2);
+
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey1, "Data 1", kNik1);
+  CreateAndRegisterSharedCacheEntry(backend.get(), kKey2, "Data 2", kNik2);
+  backend->RunUntilAllTasksCompleteForTest();
+
+  auto verify_count_task = base::BindOnce(
+      [](SqlBackendImpl* backend, std::unique_ptr<OperationHandle> handle) {
+        // While `handle` is held, pass 1 has finished and re-inserted the
+        // aborted entry (kKey2) into the queue.
+        EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 1u);
+      },
+      backend.get());
+
+  auto on_normal_op = base::BindOnce(
+      [](base::OnceCallback<void(std::unique_ptr<OperationHandle>)> task,
+         std::unique_ptr<OperationHandle> handle) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(task), std::move(handle)));
+      },
+      std::move(verify_count_task));
+
+  using NormalOpCallback =
+      base::OnceCallback<void(std::unique_ptr<OperationHandle>)>;
+  auto on_normal_op_holder =
+      std::make_unique<NormalOpCallback>(std::move(on_normal_op));
+
+  auto on_entry_copied = base::BindRepeating(
+      [](SqlBackendImpl* backend, NormalOpCallback* on_normal_op_holder,
+         const CacheEntryKey& key) {
+        if (*on_normal_op_holder) {
+          backend->GetExclusiveOperationCoordinatorForTest()
+              ->PostOrRunNormalOperation(CacheEntryKey("fake_key_for_abort"),
+                                         std::move(*on_normal_op_holder),
+                                         /*low_priority=*/false);
+        }
+      },
+      backend.get(), base::Owned(on_normal_op_holder.release()));
+
+  base::RunLoop process_run_loop;
+  backend->ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner(process_run_loop.QuitClosure()),
+      std::move(on_entry_copied));
+
+  process_run_loop.Run();
+
+  EXPECT_EQ(backend->GetSharedCacheEligibleEntriesCountForTest(), 0u);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey1);
+  VerifySharedCacheResourceIdExists(backend.get(), kKey2);
 }
 
 }  // namespace

@@ -94,16 +94,20 @@ void SqlSharedCache::CopyEntries(
     base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     base::OnceCallback<void(
-        base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback) {
+        base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback,
+    base::RepeatingCallback<void(const CacheEntryKey&)>
+        on_entry_copied_callback) {
   CHECK(pending_copy_entries_.empty());
   CHECK(!copy_callback_);
   CHECK(!current_copy_row_id_);
+  CHECK(!on_entry_copied_callback_);
   CHECK(!entries.empty());
   CHECK(shared_cache_db_id_);
   CHECK(isolated_database_);
   pending_copy_entries_ = std::move(entries);
   copy_abort_flag_ = std::move(abort_flag);
   copy_callback_ = std::move(callback);
+  on_entry_copied_callback_ = std::move(on_entry_copied_callback);
   CopyNextEntry();
 }
 
@@ -279,23 +283,26 @@ void SqlSharedCache::MoveBlobsToSharedCache(
   store_->MoveBlobsToSharedCache(
       key, res_id, {*shared_cache_db_id_, shared_cache_row_id},
       base::BindOnce(
-          [](base::WeakPtr<SqlSharedCache> self,
+          [](base::WeakPtr<SqlSharedCache> self, CacheEntryKey key,
              SqlPersistentStore::Error error) {
             if (self) {
               if (error == SqlPersistentStore::Error::kOk) {
-                self->OnCopyEntryComplete();
+                self->OnCopyEntryComplete(key);
               } else {
                 self->OnCopyEntryFailed();
               }
             }
           },
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), key));
 }
 
-void SqlSharedCache::OnCopyEntryComplete() {
+void SqlSharedCache::OnCopyEntryComplete(const CacheEntryKey& key) {
   // Resource redirection via SqlPersistentStore::MoveBlobsToSharedCache and
   // Mojo client notifications will be hooked up in a follow-up CL.
   current_copy_row_id_ = std::nullopt;
+  if (on_entry_copied_callback_) {
+    on_entry_copied_callback_.Run(key);
+  }
   CopyNextEntry();
 }
 
@@ -311,6 +318,7 @@ void SqlSharedCache::OnCopyEntryFailed() {
 void SqlSharedCache::FinishCopy() {
   CHECK(copy_callback_);
   CHECK(!current_copy_row_id_);
+  on_entry_copied_callback_.Reset();
   auto unprocessed_entries = std::move(pending_copy_entries_);
   CHECK(pending_copy_entries_.empty());
   copy_abort_flag_ = nullptr;

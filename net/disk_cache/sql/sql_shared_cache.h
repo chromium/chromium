@@ -98,7 +98,9 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       base::OnceCallback<void(
-          base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback);
+          base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback,
+      base::RepeatingCallback<void(const CacheEntryKey&)>
+          on_entry_copied_callback = {});
 
   // Deletes entries specified by `shared_cache_row_ids` from the isolated
   // database.
@@ -203,7 +205,7 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   void MoveBlobsToSharedCache(CacheEntryKey key,
                               SqlPersistentStore::ResId res_id,
                               SqlSharedCacheRowId shared_cache_row_id);
-  void OnCopyEntryComplete();
+  void OnCopyEntryComplete(const CacheEntryKey& key);
   void OnCopyEntryFailed();
   void FinishCopy();
 
@@ -232,6 +234,8 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)>
       copy_callback_;
   std::optional<SqlSharedCacheRowId> current_copy_row_id_;
+
+  base::RepeatingCallback<void(const CacheEntryKey&)> on_entry_copied_callback_;
 
   base::WeakPtrFactory<SqlSharedCache> weak_factory_{this};
 };

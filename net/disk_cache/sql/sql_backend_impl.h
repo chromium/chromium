@@ -126,6 +126,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   uint8_t GetEntryInMemoryData(const std::string& key) override;
   void OnBrowserIdle() override;
 
+  bool SupportsSharedCache() const;
+  void OnEntryEligibleForSharedCache(
+      const std::string& key,
+      const GURL& url,
+      std::unique_ptr<net::HttpResponseInfo> response_info,
+      const net::NetworkIsolationKey& network_isolation_key);
+
   // Called by SqlEntryImpl when it's being closed and is not doomed.
   // Removes the entry from `active_entries_`.
   void ReleaseActiveEntry(SqlEntryImpl& entry);
@@ -239,6 +246,41 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   int64_t GetWriteBufferTotalSizeForTesting() {
     return write_buffer_monitor_.CurrentSize();
+  }
+
+  // Triggers a single pass of processing for currently eligible entries for
+  // shared cache. If processing is interrupted or aborted by pending normal
+  // operations, unprocessed entries are re-inserted into
+  // `shared_cache_eligible_entries_`, and `scoped_closure_runner` runs when
+  // this single pass completes (even if some entries remain unprocessed).
+  void ProcessSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner scoped_closure_runner,
+      base::RepeatingCallback<void(const CacheEntryKey&)>
+          on_entry_copied_callback);
+
+  // Continuously triggers processing of eligible entries in a loop until
+  // `shared_cache_eligible_entries_` becomes empty. Unlike
+  // `ProcessSharedCacheEligibleEntriesForTest`, if any pass is interrupted or
+  // aborted, remaining entries are automatically re-triggered for processing
+  // until no eligible entries remain. `scoped_closure_runner` runs only after
+  // all eligible entries have been processed.
+  void ProcessAllSharedCacheEligibleEntriesForTest(
+      base::ScopedClosureRunner scoped_closure_runner,
+      base::RepeatingCallback<void(const CacheEntryKey&)>
+          on_entry_copied_callback);
+
+  size_t GetSharedCacheEligibleEntriesCountForTest() {
+    return shared_cache_eligible_entries_.size();
+  }
+
+  const absl::flat_hash_map<CacheEntryKey,
+                            SqlPersistentStore::SharedCacheEligibleEntry>&
+  GetSharedCacheEligibleEntriesForTest() {
+    return shared_cache_eligible_entries_;
+  }
+
+  ExclusiveOperationCoordinator* GetExclusiveOperationCoordinatorForTest() {
+    return &exclusive_operation_coordinator_;
   }
 
   base::WeakPtr<SqlBackendImpl> GetWeakPtr();
@@ -511,6 +553,23 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       SqlPersistentStore::EntryInfo& entry_info);
 
+  void ProcessSharedCacheEligibleEntries(
+      base::ScopedClosureRunner scoped_closure_runner,
+      base::RepeatingCallback<void(const CacheEntryKey&)>
+          on_entry_copied_callback);
+
+  void HandleProcessSharedCacheEligibleEntries(
+      base::ScopedClosureRunner scoped_closure_runner,
+      base::RepeatingCallback<void(const CacheEntryKey&)>
+          on_entry_copied_callback,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  void OnProcessSharedCacheEligibleEntriesComplete(
+      base::ScopedClosureRunner scoped_closure_runner,
+      std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle,
+      std::vector<SqlPersistentStore::SharedCacheEligibleEntry>
+          unprocessed_entries);
+
   SqlAsyncTaskManager async_task_manager_;
 
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
@@ -574,6 +633,15 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   // Cached value of `net::features::kSqlDiskCacheReduceUma`.
   const bool reduce_uma_;
+
+  // Entries that are eligible for the shared cache and pending processing.
+  // Entries are registered via `OnEntryEligibleForSharedCache` and processed
+  // asynchronously during browser idle time or via explicit test calls.
+  // Unprocessed entries (e.g., due to aborts from concurrent operations) are
+  // re-inserted here for subsequent processing.
+  absl::flat_hash_map<CacheEntryKey,
+                      SqlPersistentStore::SharedCacheEligibleEntry>
+      shared_cache_eligible_entries_;
 
   // Weak pointer factory for this class.
   base::WeakPtrFactory<SqlBackendImpl> weak_factory_{this};
