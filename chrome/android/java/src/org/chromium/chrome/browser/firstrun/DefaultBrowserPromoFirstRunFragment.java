@@ -168,10 +168,17 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
         // TODO(https://crbug.com/483539670): Re-use this method and move it to a shared location.
         boolean useLandscape = SigninUtils.shouldShowDualPanesHorizontalLayout(getActivity());
 
-        int layoutId =
-                useLandscape
-                        ? R.layout.default_browser_promo_fre_landscape_view
-                        : R.layout.default_browser_promo_fre_portrait_view;
+        boolean useCentered =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_FRE_LAYOUT_UPDATE);
+        int layoutId;
+        if (useLandscape) {
+            layoutId = R.layout.default_browser_promo_fre_landscape_view;
+        } else {
+            layoutId =
+                    useCentered
+                            ? R.layout.default_browser_promo_fre_portrait_centered_view
+                            : R.layout.default_browser_promo_fre_portrait_view;
+        }
 
         // Inflate without attaching to root to avoid a ClassCastException, since we can't cast a
         // FrameLayout to a DefaultBrowserPromoFirstRunView.
@@ -247,10 +254,12 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
                     R.drawable.account_row_background_rounded_down);
 
             // Decrease the button group bottom margin to create space for the promotional rows.
-            View buttonGroup = view.findViewById(R.id.default_browser_fre_button_group);
-            var buttonParams = (MarginLayoutParams) buttonGroup.getLayoutParams();
-            buttonParams.bottomMargin = buttonBottomMargin;
-            buttonGroup.setLayoutParams(buttonParams);
+            if (!useCentered) {
+                View buttonGroup = view.findViewById(R.id.default_browser_fre_button_group);
+                var buttonParams = (MarginLayoutParams) buttonGroup.getLayoutParams();
+                buttonParams.bottomMargin = buttonBottomMargin;
+                buttonGroup.setLayoutParams(buttonParams);
+            }
         }
 
         var pageDelegate = assumeNonNull(getPageDelegate());
