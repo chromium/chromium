@@ -56,10 +56,6 @@ inline constexpr char kAimCobrowseHeaderName[] = "AimCobrowseHeader";
 inline constexpr char kAimCobrowseHeaderDescription[] =
     "Changes the design of the AIM cobrowse header.";
 
-inline constexpr char kAimCobrowseName[] = "AimCobrowse";
-inline constexpr char kAimCobrowseDescription[] =
-    "Enables the AimCobrowse feature.";
-
 inline constexpr char kAimUrlNavigationFetchEnabledName[] =
     "AimUrlNavigationFetchEnabled";
 inline constexpr char kAimUrlNavigationFetchEnabledDescription[] =
