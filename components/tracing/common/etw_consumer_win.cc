@@ -15,6 +15,7 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -183,6 +184,13 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
       0x11d0,
       {0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c}};
 
+  // ImageLoad event provider GUID, 2cb15d1d-5fc1-11d2-abe1-00a0c911f518
+  static constexpr GUID kImageLoadGuid = {
+      0x2cb15d1d,
+      0x5fc1,
+      0x11d2,
+      {0xab, 0xe1, 0x00, 0xa0, 0xc9, 0x11, 0xf5, 0x18}};
+
   // StackWalk event provider GUID, def2fe46-7bd6-4b80-bd94-f57fe20d0ce3
   static constexpr GUID kStackWalkGuid = {
       0xdef2fe46,
@@ -200,6 +208,7 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
            {kMemInfoGuid, &EtwConsumer::HandleMemInfoEvent},
            {kFileIoGuid, &EtwConsumer::HandleFileIoEvent},
            {kDiskIoGuid, &EtwConsumer::HandleDiskIoEvent},
+           {kImageLoadGuid, &EtwConsumer::HandleImageLoadEvent},
            {kStackWalkGuid, &EtwConsumer::HandleStackWalkEvent}});
 
   auto* const self = reinterpret_cast<EtwConsumer*>(event_record->UserContext);
@@ -414,6 +423,66 @@ void EtwConsumer::HandleDiskIoEvent(const EVENT_HEADER& header,
   }
 }
 
+void EtwConsumer::HandleImageLoadEvent(const EVENT_HEADER& header,
+                                       const ETW_BUFFER_CONTEXT& buffer_context,
+                                       size_t pointer_size,
+                                       base::span<const uint8_t> packet_data) {
+  // Size of `ImageLoad` event:
+  //   3 pointers + 8 `uint32`s + wide string contents + wide string terminator.
+  // Check that `packet_data` is large enough to hold at least the pointers,
+  // integers, and wide string terminator.
+  const size_t kMinimumSize =
+      3 * pointer_size + 8 * sizeof(uint32_t) + sizeof(wchar_t);
+  if (packet_data.size() < kMinimumSize) {
+    return;
+  }
+
+  if (!inclusion_policy_.ShouldRecordCallStacks(header.ThreadId)) {
+    return;
+  }
+
+  // Read the contents of `packet_data`.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  const auto image_base = CopyPointer(iterator, pointer_size);
+  const auto image_size = CopyPointer(iterator, pointer_size);
+  auto process_id = *iterator.CopyObject<uint32_t>();
+  if (header.ProcessId != static_cast<DWORD>(-1)) {
+    process_id = header.ProcessId;
+  }
+  (void)iterator.CopyObject<uint32_t>();      // ImageChecksum
+  (void)iterator.CopyObject<uint32_t>();      // TimeDateStamp
+  (void)iterator.CopyObject<uint32_t>();      // Reserved0
+  (void)CopyPointer(iterator, pointer_size);  // DefaultBase
+  (void)iterator.CopyObject<uint32_t>();      // Reserved1
+  (void)iterator.CopyObject<uint32_t>();      // Reserved2
+  (void)iterator.CopyObject<uint32_t>();      // Reserved3
+  (void)iterator.CopyObject<uint32_t>();      // Reserved4
+  const auto file_name = CopyWString(iterator);
+  if (!file_name.has_value()) {
+    return;
+  }
+  base::FilePath path;
+  if (!base::DevicePathToDriveLetterPath(base::FilePath(*file_name), &path)) {
+    return;
+  }
+  switch (header.EventDescriptor.Opcode) {
+    // Emitted when an image is loaded.
+    case EVENT_TRACE_TYPE_LOAD:
+    // Emitted when tracing starts, once per image loaded at the time.
+    case EVENT_TRACE_TYPE_DC_START:
+      active_processes_.AddLoadedImage(process_id, image_base, image_size,
+                                       path);
+      break;
+    // Emitted when an image is unloaded.
+    case EVENT_TRACE_TYPE_END:
+    // Emitted when tracing ends, once per image loaded at the time.
+    case EVENT_TRACE_TYPE_DC_END:
+      active_processes_.RemoveLoadedImage(process_id, image_base, image_size,
+                                          path);
+      break;
+  }
+}
+
 void EtwConsumer::HandleStackWalkEvent(const EVENT_HEADER& header,
                                        const ETW_BUFFER_CONTEXT& buffer_context,
                                        size_t pointer_size,
@@ -432,7 +501,7 @@ void EtwConsumer::HandleStackWalkEvent(const EVENT_HEADER& header,
     return;
   }
   const auto qpc_timestamp = *iterator.CopyObject<uint64_t>();
-  (void)*iterator.CopyObject<uint32_t>();  // StackProcess
+  const auto stack_process = *iterator.CopyObject<uint32_t>();
   const auto stack_thread = *iterator.CopyObject<uint32_t>();
   if (!inclusion_policy_.ShouldRecordCallStacks(stack_thread)) {
     return;
@@ -454,8 +523,8 @@ void EtwConsumer::HandleStackWalkEvent(const EVENT_HEADER& header,
 
   // Use a hash of the call stack as a unique identifier for interning.
   size_t ip_hash = 0;
-  for (const auto& instruction_pointer : call_stack) {
-    ip_hash = base::HashInts(ip_hash, instruction_pointer);
+  for (const auto& ip : call_stack) {
+    ip_hash = base::HashInts(ip_hash, ip);
   }
   InterningIndexEntry interned_callstack =
       interned_callstacks_.LookupOrAdd(ip_hash);
@@ -483,15 +552,60 @@ void EtwConsumer::HandleStackWalkEvent(const EVENT_HEADER& header,
 
   // Intern each stack frame not seen before.
   std::vector<InterningID> frame_ids;
-  for (const auto& instruction_pointer : call_stack) {
+  for (const auto& ip : call_stack) {
+    // Intern the debug ID (unique identifier) for the module this stack frame
+    // belongs to, and the relative address (i.e., offset within the module), to
+    // enable it to be symbolized.
+    std::optional<ActiveProcesses::Image> module =
+        active_processes_.GetImageForAddress(stack_process, ip);
     InterningIndexEntry interned_frame =
-        interned_frames_.LookupOrAdd(instruction_pointer);
-    if (!interned_frame.was_emitted) {
-      auto* frame_entry = interned_data->add_frames();
-      frame_entry->set_iid(interned_frame.id);
-      frame_entry->set_rel_pc(instruction_pointer);
-    }
+        interned_frames_.LookupOrAdd(std::make_pair(stack_process, ip));
     frame_ids.push_back(interned_frame.id);
+    if (interned_frame.was_emitted) {
+      continue;
+    }
+
+    auto* frame_proto = interned_data->add_frames();
+    frame_proto->set_iid(interned_frame.id);
+    frame_proto->set_rel_pc(module.has_value() ? ip - module->base_address_
+                                               : ip);
+    if (!module.has_value()) {
+      continue;
+    }
+
+    // Intern the module this stack frame belongs to if needed.
+    InterningIndexEntry interned_module = interned_modules_.LookupOrAdd(
+        std::make_pair(stack_process, module->base_address_));
+    frame_proto->set_mapping_id(interned_module.id);
+    if (interned_module.was_emitted) {
+      continue;
+    }
+
+    // Intern the module's debug ID if needed.
+    const auto debug_id_str = module->debug_id_.value_or("");
+    InterningIndexEntry interned_module_debug_id =
+        interned_module_debug_ids_.LookupOrAdd(debug_id_str);
+    if (!interned_module_debug_id.was_emitted) {
+      auto* module_id_proto = interned_data->add_build_ids();
+      module_id_proto->set_iid(interned_module_debug_id.id);
+      module_id_proto->set_str(debug_id_str.data());
+    }
+
+    // Intern the module's filename if needed.
+    const auto module_name = module->path_.BaseName().value();
+    InterningIndexEntry interned_module_name =
+        interned_module_names_.LookupOrAdd(module_name);
+    if (!interned_module_name.was_emitted) {
+      auto* module_name_proto = interned_data->add_mapping_paths();
+      module_name_proto->set_iid(interned_module_name.id);
+      module_name_proto->set_str(base::WideToUTF8(module_name.data()));
+    }
+
+    // Intern the module.
+    auto* module_proto = interned_data->add_mappings();
+    module_proto->set_iid(interned_module.id);
+    module_proto->set_build_id(interned_module_debug_id.id);
+    module_proto->add_path_string_ids(interned_module_name.id);
   }
 
   auto* callstack_entry = interned_data->add_callstacks();

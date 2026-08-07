@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_TRACING_COMMON_ACTIVE_PROCESSES_WIN_H_
 #define COMPONENTS_TRACING_COMMON_ACTIVE_PROCESSES_WIN_H_
 
+#include <windows.h>
+
 #include <stdint.h>
 
 #include <optional>
@@ -14,6 +16,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include "absl/container/flat_hash_map.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
@@ -41,6 +45,23 @@ class TRACING_EXPORT ActiveProcesses {
     kSystem = 1,
     // Any process that doesn't meet the criteria above.
     kOther = 2,
+  };
+
+  // Details about an image (a.k.a. executable, module, or DLL) loaded in a
+  // process's memory.
+  struct Image {
+    Image();
+    Image(base::FilePath path,
+          uint64_t base_address,
+          uint64_t size,
+          std::optional<std::string> debug_id);
+    Image(const Image&);
+    ~Image();
+
+    base::FilePath path_;
+    uint64_t base_address_ = 0;
+    uint64_t size_ = 0;
+    std::optional<std::string> debug_id_;
   };
 
   // Constructs an instance for a trace initiated on behalf of the process
@@ -75,9 +96,29 @@ class TRACING_EXPORT ActiveProcesses {
   // Remove's a process's thread from the collection, if it is present.
   void RemoveThread(uint32_t pid, uint32_t tid);
 
+  // Adds a loaded image to the collection.
+  void AddLoadedImage(uint32_t pid,
+                      uint64_t base_address,
+                      uint64_t size,
+                      base::FilePath path);
+
+  // Removes a loaded image from the collection if present.
+  void RemoveLoadedImage(uint32_t process_id,
+                         uint64_t base_address,
+                         uint64_t size,
+                         base::FilePath path);
+
+  // Returns the image in the given process's address space that contains
+  // `address`.
+  std::optional<Image> GetImageForAddress(uint32_t pid, uint64_t address);
+
   // Returns the category for the process to which the thread `tid` belongs.
   // Returns kOther if `tid` is unknown.
   Category GetThreadCategory(uint32_t tid) const;
+
+  // Returns the category for the given process. Returns `kOther` if the process
+  // ID is unknown.
+  Category GetProcessCategory(uint32_t pid) const;
 
   // Returns a thread's name, or an empty view if not found or unset. The
   // returned view may become invalidated following any other operation on this
@@ -107,6 +148,7 @@ class TRACING_EXPORT ActiveProcesses {
     std::wstring command_line;
     Category category;
     std::unordered_set<uint32_t> threads;
+    base::flat_map<uint64_t, Image> loaded_images;
   };
 
   // Handles addition of the `Process` corresponding to the tracing client. All
@@ -148,6 +190,12 @@ class TRACING_EXPORT ActiveProcesses {
   // The `Process` struct with pid `client_pid_`, or null if the process has
   // not yet been added or has been removed.
   raw_ptr<Process> client_process_ = nullptr;
+
+  // A mapping of image path to debug ID, for loaded images (i.e., running
+  // executables and loaded DLLs) of interest. Enables symbolization of call
+  // stacks for ETW events.
+  // TODO(crbug.com/400769265): fill `known_debug_ids_` from the browser.
+  absl::flat_hash_map<base::FilePath, std::string> known_debug_ids_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
