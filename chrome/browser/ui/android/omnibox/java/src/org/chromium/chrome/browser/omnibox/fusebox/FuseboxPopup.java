@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -160,12 +161,16 @@ class FuseboxPopup {
                 R.string.accessibility_omnibox_add_camera_picture);
         initializeItem(
                 mGalleryButton,
-                R.string.omnibox_navattach_gallery,
+                OmniboxCapabilities.isDesktopPlatform()
+                        ? R.string.omnibox_navattach_add_images
+                        : R.string.omnibox_navattach_gallery,
                 R.drawable.add_photo_alternate_24dp,
                 R.string.accessibility_omnibox_add_images);
         initializeItem(
                 mFileButton,
-                R.string.omnibox_navattach_files,
+                OmniboxCapabilities.isDesktopPlatform()
+                        ? R.string.omnibox_navattach_add_files
+                        : R.string.omnibox_navattach_files,
                 R.drawable.ic_attach_file_24dp,
                 R.string.accessibility_omnibox_add_files);
 

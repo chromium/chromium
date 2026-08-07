@@ -142,6 +142,12 @@
       <message name="IDS_OMNIBOX_NAVATTACH_FILES" desc="The text displayed in the omnibox attachments popup. When clicked - opens file picker." formatter_data="android_java">
         Files
       </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_ADD_IMAGES" desc="The text displayed in the omnibox attachments popup. When clicked - opens image gallery." formatter_data="android_java">
+        Add images
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_ADD_FILES" desc="The text displayed in the omnibox attachments popup. When clicked - opens file picker." formatter_data="android_java">
+        Add files
+      </message>
       <message name="IDS_OMNIBOX_NAVATTACH_TABS" desc="The text displayed in the omnibox attachments popup. When clicked - opens tabs picker." formatter_data="android_java">
         Tabs
       </message>
