@@ -129,7 +129,7 @@ SENDER_TERMINATE_DRIVER_CMD = {
     'win': (
         'powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
         '-ErrorAction SilentlyContinue; '
-        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T 2>$null; exit 0"'
+        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"'
     ),
     'linux': (
         'pkill -f chromedriver || true; pkill -f chrome || true'
@@ -141,6 +141,7 @@ SENDER_TERMINATE_DRIVER_CMD = {
 
 
 WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
+WIN_SYSTEM32_TAR = 'C:/Windows/System32/tar.exe'
 
 
 class StartProcess(AbstractContextManager):
@@ -226,7 +227,7 @@ def terminate_old_chromedriver(args):
                      SENDER_TERMINATE_DRIVER_CMD[args.sender_os],
                      blocking=True)
 
-    for _ in range(5):
+    for _ in range(15):
         result = send_ssh_command(args.sender,
                                   args.username,
                                   SENDER_CHROMEDRIVER_CHECK_CMD[args.sender_os],
@@ -610,10 +611,10 @@ def install_and_setup_chrome(args, chrome_version):
                 f"-ErrorAction SilentlyContinue; "
                 f"curl.exe -L '{chrome_url}' -o '{chrome_zip_path}'; "
                 f"curl.exe -L '{driver_url}' -o '{driver_zip_path}'; "
-                f"if (Get-Command tar.exe -ErrorAction SilentlyContinue) {{ "
+                f"if (Test-Path '{WIN_SYSTEM32_TAR}') {{ "
                 f"Set-Location '{remote_tmp_dir}'; "
-                f"tar.exe -xf '{chrome_zip_name}'; "
-                f"tar.exe -xf '{driver_zip_name}' "
+                f"& '{WIN_SYSTEM32_TAR}' -xf '{chrome_zip_name}'; "
+                f"& '{WIN_SYSTEM32_TAR}' -xf '{driver_zip_name}' "
                 f"}} else {{ "
                 f"Expand-Archive -Path '{chrome_zip_path}' "
                 f"-DestinationPath '{remote_tmp_dir}' -Force; "

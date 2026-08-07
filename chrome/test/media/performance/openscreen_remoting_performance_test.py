@@ -552,8 +552,8 @@ def main():
         if FUCHSIA_INFRA_AVAILABLE:
             monitors.dump(LOG_DIR)
         common.finalize_results(actual_version)
-        common.cleanup_binaries(args, actual_version)
         common.teardown_test_environment(driver, tunnel_proc, args)
+        common.cleanup_binaries(args, actual_version)
 
 if __name__ == '__main__':
     with common.StartProcess(common.server.start, [SERVER_PORT], True):
