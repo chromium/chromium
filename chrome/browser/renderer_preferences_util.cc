@@ -43,6 +43,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -241,6 +243,16 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 
   prefs->view_source_line_wrap_enabled =
       pref_service->GetBoolean(prefs::kViewSourceLineWrappingEnabled);
+
+#if BUILDFLAG(IS_LINUX)
+  // Check the session type from the environment variable (XDG_SESSION_TYPE)
+  // instead of the Ozone platform, because XWayland sessions still require
+  // the portal eye dropper for reliable screen capture.
+  static const bool is_wayland =
+      base::nix::GetSessionType(*base::Environment::Create()) ==
+      base::nix::SessionType::kWayland;
+  prefs->system_color_chooser_is_modal = is_wayland;
+#endif
 }
 
 }  // namespace renderer_preferences_util

@@ -204,4 +204,8 @@ struct RendererPreferences {
 
   // Whether line wrapping should be enabled by default in view source pages.
   bool view_source_line_wrap_enabled = false;
+
+  // Whether the system color chooser is a modal dialog that steals focus from
+  // the browser window.
+  bool system_color_chooser_is_modal = false;
 };

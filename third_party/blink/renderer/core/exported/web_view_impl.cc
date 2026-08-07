@@ -612,6 +612,7 @@ WebViewImpl::WebViewImpl(
       *chrome_client_, opener ? opener->GetPage() : nullptr,
       agent_group_scheduler.GetAgentGroupScheduler(),
       browsing_context_group_token, color_provider_colors);
+  page_->SetRendererPreferences(renderer_preferences_);
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 
@@ -3766,6 +3767,10 @@ void WebViewImpl::UpdateRendererPreferences(
     const RendererPreferences& preferences) {
   std::string old_accept_languages = renderer_preferences_.accept_languages;
   renderer_preferences_ = preferences;
+
+  if (GetPage()) {
+    GetPage()->SetRendererPreferences(preferences);
+  }
 
   for (auto& watcher : renderer_preference_watchers_) {
     watcher->NotifyUpdate(renderer_preferences_);

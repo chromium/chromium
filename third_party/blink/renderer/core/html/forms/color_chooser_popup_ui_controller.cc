@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/forms/color_chooser_client.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/color_page_popup_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/ui_base_features.h"
@@ -240,7 +241,19 @@ void ColorChooserPopupUIController::SetValue(const String& value) {
 
 void ColorChooserPopupUIController::DidClosePopup() {
   popup_ = nullptr;
-  eye_dropper_chooser_.reset();
+
+  if (frame_ && frame_->GetPage() &&
+      frame_->GetPage()
+          ->GetRendererPreferences()
+          .system_color_chooser_is_modal) {
+    if (eye_dropper_chooser_.is_bound()) {
+      // The eye dropper is a system dialog that stole focus, causing the popup
+      // to close. Don't end the chooser yet!
+      return;
+    }
+  } else {
+    eye_dropper_chooser_.reset();
+  }
 
   if (!chooser_)
     EndChooser();
@@ -275,8 +288,15 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
                                                               uint32_t color) {
   eye_dropper_chooser_.reset();
 
-  if (!popup_)
+  if (!popup_) {
+    if (success) {
+      client_->DidChooseColor(Color::FromRGBA32(color));
+    }
+    if (!chooser_) {
+      EndChooser();
+    }
     return;
+  }
   // Notify the popup that there is a response from the eye dropper.
   SegmentedBuffer data;
   PagePopupClient::AddLiteral("window.updateData = {\n", data);

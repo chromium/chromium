@@ -291,6 +291,11 @@ struct BLINK_COMMON_EXPORT
     return data.view_source_line_wrap_enabled;
   }
 
+  static bool system_color_chooser_is_modal(
+      const ::blink::RendererPreferences& data) {
+    return data.system_color_chooser_is_modal;
+  }
+
   static bool Read(blink::mojom::RendererPreferencesDataView,
                    ::blink::RendererPreferences* out);
 };

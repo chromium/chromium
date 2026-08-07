@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//ui/views/features.gni")
 
 source_set("eye_dropper") {
@@ -32,10 +33,22 @@ source_set("eye_dropper") {
   if (use_aura) {
     sources += [ "eye_dropper_aura.cc" ]
     deps += [
+      "//build/config/linux/dbus:buildflags",
       "//chrome/browser/ui/color:color_headers",
       "//components/eye_dropper",
       "//ui/base:features",
     ]
+
+    if (use_dbus && is_linux) {
+      public += [ "eye_dropper_portal.h" ]
+      sources += [ "eye_dropper_portal.cc" ]
+      deps += [
+        "//components/dbus",
+        "//dbus",
+        "//ui/aura",
+        "//ui/linux:linux_ui",
+      ]
+    }
 
     if (is_chromeos) {
       deps += [
@@ -68,6 +81,29 @@ if (!is_android && !is_chromeos_device) {
 }
 
 if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = []
+    deps = []
+
+    if (use_aura && use_dbus && is_linux) {
+      sources += [ "eye_dropper_portal_unittest.cc" ]
+      deps += [
+        ":eye_dropper",
+        "//base",
+        "//base/test:test_support",
+        "//chrome/test:test_support",
+        "//components/dbus",
+        "//content/public/browser",
+        "//content/test:test_support",
+        "//dbus:test_support",
+        "//skia",
+        "//testing/gmock",
+        "//testing/gtest",
+      ]
+    }
+  }
+
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

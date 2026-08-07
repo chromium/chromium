@@ -1,3 +1,7 @@
 include_rules = [
+  "+components/dbus",
   "+components/eye_dropper",
+  "+dbus",
+  "+ui/aura",
+  "+ui/linux",
 ]

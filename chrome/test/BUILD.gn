@@ -7339,6 +7339,7 @@ test("unit_tests") {
       sources +=
           [ "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc" ]
       deps += [
+        "//chrome/browser/ui/views/eye_dropper:unit_tests",
         "//components/dbus",
         "//dbus:test_support",
       ]

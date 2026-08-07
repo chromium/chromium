@@ -132,6 +132,8 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 
   out->view_source_line_wrap_enabled = data.view_source_line_wrap_enabled();
 
+  out->system_color_chooser_is_modal = data.system_color_chooser_is_modal();
+
   return true;
 }
 
