@@ -14,12 +14,16 @@
 #include <sstream>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/linux/linux_ui.h"
 
 namespace content {
 
@@ -110,7 +114,8 @@ bool DiscoverOrca() {
 class BrowserAccessibilityStateImplAuralinux
     : public BrowserAccessibilityStateImpl {
  public:
-  BrowserAccessibilityStateImplAuralinux() = default;
+  BrowserAccessibilityStateImplAuralinux();
+  ~BrowserAccessibilityStateImplAuralinux() override;
 
   // BrowserAccessibilityStateImpl:
   void RefreshAssistiveTech() override;
@@ -118,6 +123,7 @@ class BrowserAccessibilityStateImplAuralinux
 
  private:
   void OnDiscoveredOrca(bool is_orca_active);
+  void OnAnimationsEnabledChanged();
 
   // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
   // an active screen reader has been detected.
@@ -126,7 +132,26 @@ class BrowserAccessibilityStateImplAuralinux
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverOrca().
   bool awaiting_known_assistive_tech_computation_ = false;
+
+  base::CallbackListSubscription animations_enabled_subscription_;
 };
+
+BrowserAccessibilityStateImplAuralinux::
+    BrowserAccessibilityStateImplAuralinux() {
+  animations_enabled_subscription_ =
+      ui::LinuxUi::RegisterAnimationsEnabledCallback(base::BindRepeating(
+          &BrowserAccessibilityStateImplAuralinux::OnAnimationsEnabledChanged,
+          base::Unretained(this)));
+}
+
+BrowserAccessibilityStateImplAuralinux::
+    ~BrowserAccessibilityStateImplAuralinux() = default;
+
+void BrowserAccessibilityStateImplAuralinux::OnAnimationsEnabledChanged() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  gfx::Animation::UpdatePrefersReducedMotion();
+  NotifyWebContentsPreferencesChanged();
+}
 
 void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
   if (!awaiting_known_assistive_tech_computation_) {

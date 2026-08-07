@@ -971,7 +971,7 @@ void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
 
 void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
                                       GtkParamSpec* param) {
-  gfx::Animation::UpdatePrefersReducedMotion();
+  NotifyAnimationsEnabledChanged();
 }
 
 void GtkUi::OnPrimaryPasteChanged(GtkSettings* settings, GtkParamSpec* param) {

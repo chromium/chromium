@@ -10,9 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -128,6 +130,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   void AddPrimaryPastePrefObserver(PrimaryPastePrefObserver* observer);
 
   void RemovePrimaryPastePrefObserver(PrimaryPastePrefObserver* observer);
+
+  // Registers a callback to be invoked when the LinuxUi instance's animation
+  // setting changes or when the active LinuxUi instance changes.
+  static base::CallbackListSubscription RegisterAnimationsEnabledCallback(
+      base::RepeatingClosure callback);
+
+  // Notifies registered callbacks that the animation setting has changed.
+  void NotifyAnimationsEnabledChanged();
 
   // Returns details about the default UI font.
   FontSettings GetDefaultFontDescription();
