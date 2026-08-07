@@ -398,6 +398,11 @@ inline constexpr char kComposeboxAdditionalAdvancedToolsDescription[] =
     "When enabled, the additional tools in the input plate are shown, such as "
     "canvas and the model picker";
 
+inline constexpr char kComposeboxAimRichAPCExtractionName[] =
+    "Composebox AIM Rich APC Extraction";
+inline constexpr char kComposeboxAimRichAPCExtractionDescription[] =
+    "Enables rich APC (v2) extraction when attaching tabs in Composebox (AIM).";
+
 inline constexpr char kComposeboxAttachmentsTypedStateName[] =
     "Enable contextual suggestions for typed state";
 inline constexpr char kComposeboxAttachmentsTypedStateDescription[] =
