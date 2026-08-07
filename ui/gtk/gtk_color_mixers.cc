@@ -212,7 +212,14 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextfieldForeground] = {GetFgColor("textview.view text")};
   mixer[ui::kColorTextfieldForegroundDisabled] = {
       GetFgColor("textview.view:disabled text")};
-  mixer[ui::kColorTextfieldForegroundPlaceholder] = {GtkCheckVersion(4)};
+  mixer[ui::kColorTextfieldForegroundPlaceholder] = {
+      GtkCheckVersion(4)
+          ? GetFgColor("entry text placeholder")
+          : GtkStyleContextLookupColor(GetStyleContextFromCss("entry"),
+                                       "placeholder_text_color")
+                // This is copied from gtkentry.c. GTK uses a fallback of 50%
+                // gray when the theme doesn't provide a placeholder color.
+                .value_or(SkColorSetRGB(127, 127, 127))};
   mixer[ui::kColorTextfieldSelectionBackground] = {kSelectedTextBackground};
   mixer[ui::kColorTextfieldSelectionForeground] = {kSelectedTextForeground};
   mixer[ui::kColorThrobber] = {GetFgColor("spinner")};
