@@ -48,6 +48,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int32_t> contents_class_offsets;
   std::vector<int32_t> contents_class_styles;
+  contents_class_offsets.reserve(contents_class.size());
+  contents_class_styles.reserve(contents_class.size());
   for (auto contents_class_item : contents_class) {
     contents_class_offsets.push_back(contents_class_item.offset);
     contents_class_styles.push_back(contents_class_item.style);
@@ -55,6 +57,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int32_t> description_class_offsets;
   std::vector<int32_t> description_class_styles;
+  description_class_offsets.reserve(description_class.size());
+  description_class_styles.reserve(description_class.size());
   for (auto description_class_item : description_class) {
     description_class_offsets.push_back(description_class_item.offset);
     description_class_styles.push_back(description_class_item.style);
@@ -229,6 +233,8 @@ void AutocompleteMatch::UpdateJavaDescription() {
   if (java_match_) {
     std::vector<int32_t> description_class_offsets;
     std::vector<int32_t> description_class_styles;
+    description_class_offsets.reserve(description_class.size());
+    description_class_styles.reserve(description_class.size());
     for (auto description_class_item : description_class) {
       description_class_offsets.push_back(description_class_item.offset);
       description_class_styles.push_back(description_class_item.style);
