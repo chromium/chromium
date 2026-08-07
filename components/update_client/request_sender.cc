@@ -291,8 +291,6 @@ void RequestSender::SendInternalComplete(
     }
 
     CHECK(use_signing_);
-    metrics::RecordCupFallbackToEtag(response_cup_server_proof.empty() &&
-                                     !response_etag.empty());
     const base::TimeTicks start_time = base::TimeTicks::Now();
     const bool valid = signer_.ValidateResponse(
         response_body,
@@ -300,6 +298,7 @@ void RequestSender::SendInternalComplete(
     metrics::RecordCupValidationResult(valid);
     metrics::RecordCupValidationTime(base::TimeTicks::Now() - start_time);
     if (valid) {
+      metrics::RecordCupFallbackToEtag2(response_cup_server_proof.empty());
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(TakeRequestSenderCallback(), 0,
                                     response_body, retry_after_sec));

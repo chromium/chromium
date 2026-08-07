@@ -5529,16 +5529,14 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="UpdateClient.CupFallbackToEtag" enum="Boolean"
+<histogram name="UpdateClient.CupFallbackToEtag2" enum="Boolean"
     expires_after="2027-07-31">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <summary>
-    Recorded for each Client Update Protocol (CUP) validation attempt. Records
-    whether the validation fell back to using ETag because the
-    X-Cup-Server-Proof header was missing but ETag was present (true), or if no
-    fallback occurred (false, either because X-Cup-Server-Proof was present or
-    both were missing).
+    Recorded for each successful Client Update Protocol (CUP) validation.
+    Records true if the proof came from the ETag header, or false if it came
+    from the X-Cup-Server-Proof header.
   </summary>
 </histogram>
 
