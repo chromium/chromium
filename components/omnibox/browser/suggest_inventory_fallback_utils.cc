@@ -24,10 +24,10 @@
 
 namespace omnibox {
 
-std::vector<std::u16string> GetFallbackPromptsForSuggestInventory(
-    SuggestInventory inventory,
-    size_t num_suggestions) {
-  std::vector<int> resource_ids;
+std::vector<std::pair<std::u16string, std::u16string>>
+GetFallbackPromptsForSuggestInventory(SuggestInventory inventory,
+                                      size_t num_suggestions) {
+  std::vector<SuggestFallbackPrompt> resource_ids;
   switch (inventory) {
     case SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM: {
       resource_ids.assign(kBrainstormPrompts.begin(), kBrainstormPrompts.end());
@@ -49,10 +49,12 @@ std::vector<std::u16string> GetFallbackPromptsForSuggestInventory(
 
   base::RandomShuffle(resource_ids.begin(), resource_ids.end());
 
-  std::vector<std::u16string> prompts;
+  std::vector<std::pair<std::u16string, std::u16string>> prompts;
   size_t count = std::min(num_suggestions, resource_ids.size());
   for (size_t i = 0; i < count; ++i) {
-    prompts.push_back(l10n_util::GetStringUTF16(resource_ids[i]));
+    prompts.emplace_back(
+        l10n_util::GetStringUTF16(resource_ids[i].short_prompt_id),
+        l10n_util::GetStringUTF16(resource_ids[i].long_prompt_id));
   }
   return prompts;
 }
@@ -62,8 +64,9 @@ std::vector<AutocompleteMatch> MaybeCreateFallbackMatchesForSuggestInventory(
     AutocompleteProviderClient* client,
     const AutocompleteInput& input,
     size_t num_suggestions) {
-  std::vector<std::u16string> prompts = GetFallbackPromptsForSuggestInventory(
-      input.suggest_inventory(), num_suggestions);
+  std::vector<std::pair<std::u16string, std::u16string>> prompts =
+      GetFallbackPromptsForSuggestInventory(input.suggest_inventory(),
+                                            num_suggestions);
   if (prompts.empty()) {
     return {};
   }
@@ -85,13 +88,13 @@ std::vector<AutocompleteMatch> MaybeCreateFallbackMatchesForSuggestInventory(
                             AutocompleteMatchType::SEARCH_SUGGEST);
     match.keyword = template_url->keyword();
     match.suggestion_group_id = omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED;
-    match.contents = prompt;
+    match.contents = prompt.first;
     match.contents_class = ClassifyTermMatches({}, match.contents.length(),
                                                ACMatchClassification::NONE,
                                                ACMatchClassification::NONE);
-    match.fill_into_edit = prompt;
+    match.fill_into_edit = prompt.second;
     match.search_terms_args =
-        std::make_unique<TemplateURLRef::SearchTermsArgs>(prompt);
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(prompt.second);
     match.search_terms_args->request_source = input.request_source();
     match.search_terms_args->page_classification =
         input.current_page_classification();

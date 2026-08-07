@@ -44,7 +44,8 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
       SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM, /*num_suggestions=*/3);
   EXPECT_EQ(prompts.size(), 3u);
   for (const auto& prompt : prompts) {
-    EXPECT_FALSE(prompt.empty());
+    EXPECT_FALSE(prompt.first.empty());
+    EXPECT_FALSE(prompt.second.empty());
   }
 }
 
@@ -55,7 +56,8 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
       /*num_suggestions=*/3);
   EXPECT_EQ(prompts.size(), 3u);
   for (const auto& prompt : prompts) {
-    EXPECT_FALSE(prompt.empty());
+    EXPECT_FALSE(prompt.first.empty());
+    EXPECT_FALSE(prompt.second.empty());
   }
 }
 
@@ -66,7 +68,8 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
       /*num_suggestions=*/3);
   EXPECT_EQ(prompts.size(), 3u);
   for (const auto& prompt : prompts) {
-    EXPECT_FALSE(prompt.empty());
+    EXPECT_FALSE(prompt.first.empty());
+    EXPECT_FALSE(prompt.second.empty());
   }
 }
 
@@ -108,9 +111,10 @@ TEST_F(SuggestInventoryFallbackUtilsTest,
                   ->GetDefaultSearchProvider()
                   ->keyword());
     EXPECT_FALSE(match.contents.empty());
-    EXPECT_EQ(match.fill_into_edit, match.contents);
+    EXPECT_FALSE(match.fill_into_edit.empty());
+    EXPECT_NE(match.fill_into_edit, match.contents);
     ASSERT_TRUE(match.search_terms_args);
-    EXPECT_EQ(match.search_terms_args->search_terms, match.contents);
+    EXPECT_EQ(match.search_terms_args->search_terms, match.fill_into_edit);
     EXPECT_EQ(match.search_terms_args->page_classification,
               OEP::NTP_COMPOSEBOX);
     EXPECT_TRUE(match.destination_url.is_valid());
