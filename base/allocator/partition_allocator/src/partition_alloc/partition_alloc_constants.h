@@ -465,16 +465,6 @@ PA_ALWAYS_INLINE constexpr size_t MaxAllocationSize() {
   return (1UL << 31) - internal::kSuperPageSize;
 }
 
-namespace internal {
-
-// TODO(https://crbug.com/542850291): Don't use this, it's being
-// removed.
-PA_ALWAYS_INLINE constexpr size_t MaxDirectMapped() {
-  return MaxAllocationSize();
-}
-
-}  // namespace internal
-
 // When trying to conserve memory, set the thread cache limit to this.
 static inline constexpr size_t kThreadCacheDefaultSizeThreshold = 512;
 
@@ -488,7 +478,6 @@ static_assert(kThreadCacheLargeSizeThreshold <=
 
 // These constants are used outside PartitionAlloc itself, so we provide
 // non-internal aliases here.
-using ::partition_alloc::internal::MaxDirectMapped;
 using ::partition_alloc::internal::PartitionPageSize;
 
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
