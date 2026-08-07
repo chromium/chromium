@@ -1,0 +1,33 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #include=settings-shared-lit md-select-lit cr-spinner-style-lit
+ * #css_wrapper_metadata_end */
+
+.description {
+  align-items: center;
+  display: flex;
+  margin-top: 16px;
+}
+
+.spinner {
+  margin: 0 8px;
+}
+
+#successIcon {
+  fill: var(--cr-checked-color);
+  height: 80px;
+  margin: auto;
+  width: 100%;
+}
+
+/* Prevent focus-outline to be chopped by the bottom of dialog body. */
+.md-select {
+  margin-top: 2px;
+}

@@ -4,13 +4,13 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {dashToCamelCase, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {BrowserProfile, ImportDataBrowserProxy, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
 import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
 import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -116,26 +116,27 @@ suite('ImportDataDialog', function() {
     document.body.appendChild(dialog);
     await PrefService.getInstance().whenInitialized();
     await browserProxy.whenCalled('initializeImportDialog');
+    await microtasksFinished();
     assertTrue(dialog.$.dialog.open);
-    flush();
   });
 
   async function ensureSettingsCheckboxCheckedStatus(
       prefName: string, checked: boolean) {
     const id = dashToCamelCase(prefName.replace(/_/g, '-'));
     const settingsCheckbox =
-        dialog.shadowRoot!.querySelector<SettingsCheckboxElement>(`#${id}`)!;
+        dialog.shadowRoot.querySelector<SettingsCheckboxElement>(`#${id}`)!;
 
     if (settingsCheckbox.checked !== checked) {
       // Use click operation to produce a 'change' event.
       settingsCheckbox.$.checkbox.click();
-      await settingsCheckbox.$.checkbox.updateComplete;
+      await microtasksFinished();
     }
   }
 
-  function simulateBrowserProfileChange(index: number) {
+  async function simulateBrowserProfileChange(index: number) {
     dialog.$.browserSelect.selectedIndex = index;
     dialog.$.browserSelect.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
   }
 
   test('Initialization', function() {
@@ -177,7 +178,7 @@ suite('ImportDataDialog', function() {
     assertTrue(dialog.$.import.disabled);
 
     // Change browser selection to "Import from Bookmarks HTML file".
-    simulateBrowserProfileChange(2);
+    await simulateBrowserProfileChange(2);
     assertTrue(dialog.$.import.disabled);
 
     // Ensure everything except |import_dialog_bookmarks| is ignored.
@@ -194,7 +195,7 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertTrue(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    const spinner = dialog.shadowRoot!.querySelector('.spinner');
+    const spinner = dialog.shadowRoot.querySelector('.spinner');
     assertTrue(!!spinner);
     assertTrue(isVisible(spinner));
   }
@@ -203,29 +204,30 @@ suite('ImportDataDialog', function() {
     assertTrue(dialog.$.import.hidden);
     assertTrue(dialog.$.cancel.hidden);
     assertFalse(dialog.$.done.hidden);
-    const spinner = dialog.shadowRoot!.querySelector('.spinner');
+    const spinner = dialog.shadowRoot.querySelector('.spinner');
     assertTrue(!!spinner);
     assertFalse(isVisible(spinner));
   }
 
-  function simulateImportStatusChange(status: ImportDataStatus) {
+  async function simulateImportStatusChange(status: ImportDataStatus) {
     webUIListenerCallback('import-data-status-changed', status);
+    await microtasksFinished();
   }
 
   test('ImportFromBookmarksFile', async function() {
-    simulateBrowserProfileChange(2);
+    await simulateBrowserProfileChange(2);
     dialog.$.import.click();
     await browserProxy.whenCalled('importFromBookmarksFile');
-    simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
+    await simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
     assertInProgressButtons();
 
-    simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
+    await simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
     assertSucceededButtons();
 
     assertFalse(dialog.$.successIcon.parentElement!.hidden);
     assertFalse(
-        dialog.shadowRoot!.querySelector(
-                              'settings-toggle-button')!.parentElement!.hidden);
+        dialog.shadowRoot.querySelector(
+                             'settings-toggle-button')!.parentElement!.hidden);
   });
 
   test('ImportFromBrowserProfile', async function() {
@@ -234,7 +236,7 @@ suite('ImportDataDialog', function() {
         'import_dialog_search_engine', true);
 
     const expectedIndex = 0;
-    simulateBrowserProfileChange(expectedIndex);
+    await simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
     const [actualIndex, types] = await browserProxy.whenCalled('importData');
@@ -243,16 +245,16 @@ suite('ImportDataDialog', function() {
     assertFalse(types['import_dialog_bookmarks']);
     assertTrue(types['import_dialog_search_engine']);
 
-    simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
+    await simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
     assertInProgressButtons();
 
-    simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
+    await simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
     assertSucceededButtons();
 
     assertFalse(dialog.$.successIcon.parentElement!.hidden);
     assertTrue(
-        dialog.shadowRoot!.querySelector(
-                              'settings-toggle-button')!.parentElement!.hidden);
+        dialog.shadowRoot.querySelector(
+                             'settings-toggle-button')!.parentElement!.hidden);
   });
 
   test('ImportFromBrowserProfileWithUnsupportedOption', async function() {
@@ -262,7 +264,7 @@ suite('ImportDataDialog', function() {
     }
 
     const expectedIndex = 1;
-    simulateBrowserProfileChange(expectedIndex);
+    await simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
     const [actualIndex, types] = await browserProxy.whenCalled('importData');
@@ -274,8 +276,8 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  test('ImportError', function() {
-    simulateImportStatusChange(ImportDataStatus.FAILED);
+  test('ImportError', async function() {
+    await simulateImportStatusChange(ImportDataStatus.FAILED);
     assertFalse(dialog.$.dialog.open);
   });
 });

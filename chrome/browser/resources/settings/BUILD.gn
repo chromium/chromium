@@ -493,6 +493,7 @@ build_webui("build") {
     "languages_page/add_languages_dialog.css",
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",
+    "people_page/import_data_dialog.css",
     "performance_page/battery_page.css",
     "performance_page/memory_page.css",
     "performance_page/performance_page_index.css",
