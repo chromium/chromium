@@ -43,7 +43,7 @@ import org.chromium.ui.util.ColorUtils;
 public class StripLayoutTabTest {
 
     private static final String TAG = "StripLayoutTabTest";
-    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.3f;
+    private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
 
     private Context mContext;
     private StripLayoutTab mNormalTab;
@@ -171,7 +171,7 @@ public class StripLayoutTabTest {
                         SemanticColorUtils.getDefaultIconColorAccent1(mContext),
                         DIVIDER_FOLIO_LIGHT_OPACITY);
         assertEquals(
-                "Light mode divider uses 30% primary color",
+                "Light mode divider uses 20% primary color",
                 expectedColor, mNormalTab.getDividerTint());
 
         // Incognito.
