@@ -3015,6 +3015,23 @@ message FrameIntervalDecider {
   optional FrameIntervalMatcherType matcher_type = 2;
 }
 
+message FrameDeadlineDecider {
+  // LINT.IfChange(SelectionReason)
+  enum SelectionReason {
+    SELECTION_REASON_UNSPECIFIED = 0;
+    SELECTION_REASON_PLATFORM_PREFERRED = 1;
+    SELECTION_REASON_ONGOING_SEQUENCE = 2;
+    SELECTION_REASON_CHROME_PREFERRED_NEW_SEQUENCE = 3;
+    SELECTION_REASON_OS_PREFERRED_NO_DEADLINE_WITHIN_TARGET = 4;
+    SELECTION_REASON_OS_PREFERRED_CHROME_PREFERRED_SOONER = 5;
+  }
+  // LINT.ThenChange(//components/viz/service/display/frame_deadline_decider.h:SelectionReason)
+
+  optional AndroidChoreographerFrameCallbackData.FrameTimeline
+      chrome_preferred_frame_timeline = 1;
+  optional SelectionReason selection_reason = 2;
+}
+
 message ChromeAccessibilityWinNotifyWinEvent {
   // The DWORD `event` parameter to ::NotifyWinEvent(). See
   // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-notifywinevent
@@ -3112,7 +3129,7 @@ message ChromeTrackEvent {
   reserved 1045;
 
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1085
+  // Next ID: 1086
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -3295,5 +3312,7 @@ message ChromeTrackEvent {
 
     optional AndroidVsyncIntervalDecision android_vsync_interval_decision = 1084
         [deprecated = true];
+
+    optional FrameDeadlineDecider frame_deadline_decider = 1085;
   }
 }

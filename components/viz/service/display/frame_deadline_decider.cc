@@ -181,9 +181,14 @@ size_t FrameDeadlineDecider::SelectDeadline(
   TRACE_EVENT_END(
       "toplevel,graphics.pipeline,viz", [&](perfetto::EventContext ctx) {
         auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                         ->set_android_choreographer_frame_callback_data();
-        auto frame_time_us = frame_time.since_origin().InMicroseconds();
-        data->set_frame_time_us(frame_time_us);
+                         ->set_frame_deadline_decider();
+        // Increment the C++ SelectionReason enum value by 1 to map to the proto
+        // enum, because the proto enum reserves 0 for
+        // SELECTION_REASON_UNSPECIFIED.
+        data->set_selection_reason(
+            static_cast<
+                perfetto::protos::pbzero::FrameDeadlineDecider_SelectionReason>(
+                static_cast<int>(result.reason) + 1));
         auto* timeline = data->set_chrome_preferred_frame_timeline();
         selected_deadline.SetTraceTimelineData(*timeline);
       });
