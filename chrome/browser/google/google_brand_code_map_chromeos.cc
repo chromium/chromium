@@ -737,6 +737,7 @@ std::string_view GetRlzBrandCode(
                      {"UZTQ", {"CJSB", "RVPJ", "EASI"}},
                      {"UZVY", {"HKZM", "CVBA", "JRWJ"}},
                      {"VAFH", {"FMPL", "YJOM", "RNEF"}},
+                     {"VAYD", {"DQAV", "SOCP", "GYRK"}},
                      {"VEUT", {"JDFA", "ALIR", "DDJM"}},
                      {"VEVA", {"HQZV", "VUXP", "KOWK"}},
                      {"VGVL", {"MTKZ", "OYBW", "EIQZ"}},
