@@ -583,6 +583,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CUI.SubmitQuery.Latency{Outcome}" units="ms"
+    expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Records the latency of submitting a query in Glic {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="" summary="regardless of the outcome"/>
+    <variant name=".Abandoned"
+        summary="when the interaction was abandoned by the user closing or
+                 hiding the UI before the response started"/>
+    <variant name=".Failed" summary="when the interaction failed"/>
+    <variant name=".FailedLatency"
+        summary="when the interaction succeeded but exceeded the latency
+                 threshold"/>
+    <variant name=".Success" summary="when the interaction succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.CUI.SubmitQuery.Outcome" enum="GlicCuiOutcome"
+    expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>Records the outcome of submitting a query in Glic.</summary>
+</histogram>
+
 <histogram name="Glic.CUI.WindowEntryPointInvocation.Latency{Outcome}"
     units="ms" expires_after="2027-06-15">
   <owner>dewittj@chromium.org</owner>
