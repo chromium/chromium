@@ -282,6 +282,10 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
   manifest_id_ = install_shortcut_info_->manifest_id;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_WebApkInstaller_registerPending(env, java_ref_, manifest_id_.spec());
+
   install_source_ = install_source;
   task_type_ = INSTALL;
 

@@ -67,6 +67,13 @@ public class WebApkInstaller {
      *     triggered.
      */
     @CalledByNative
+    private void registerPending(@JniType("std::string") String manifestId) {
+        mPendingManifestId = manifestId;
+        WebappRegistry.getInstance()
+                .registerPendingWebApk(manifestId, WebappRegistry.PENDING_PACKAGE_NAME_PLACEHOLDER);
+    }
+
+    @CalledByNative
     private void installWebApkAsync(
             @JniType("std::string") final String packageName,
             int version,

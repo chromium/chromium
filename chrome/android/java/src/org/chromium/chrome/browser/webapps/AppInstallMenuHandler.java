@@ -59,6 +59,25 @@ public class AppInstallMenuHandler {
             Tab currentTab) {
         @Nullable WebContents webContents = currentTab.getWebContents();
         if (webContents == null) return false;
+
+        String manifestId = WebappRegistry.getManifestIdOrUrl(currentTab);
+
+        boolean isPending = WebappRegistry.getInstance().isWebApkPending(manifestId);
+        if (isPending) {
+            String appName = currentTab.getTitle();
+            android.widget.Toast.makeText(
+                            activity,
+                            activity.getString(
+                                    R.string.notification_webapk_install_in_progress, appName),
+                            android.widget.Toast.LENGTH_SHORT)
+                    .show();
+            return true;
+        }
+
+        if (WebappRegistry.getInstance().wasWebApkRecentlyInstalled(manifestId, 10000)) {
+            return doOpenWebApk(activity, currentTab);
+        }
+
         @Nullable BottomSheetController controller =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (controller == null) {
@@ -161,8 +180,17 @@ public class AppInstallMenuHandler {
      */
     public static boolean doOpenWebApk(Activity activity, Tab currentTab) {
         Context context = ContextUtils.getApplicationContext();
-        @Nullable String packageName =
-                WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
+        @Nullable String packageName = null;
+        @Nullable WebContents webContents = currentTab.getWebContents();
+        if (webContents != null) {
+            String manifestId = WebappRegistry.getManifestIdOrUrl(currentTab);
+            packageName = WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
+        }
+
+        if (packageName == null) {
+            packageName =
+                    WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
+        }
 
         if (packageName == null) {
             Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
