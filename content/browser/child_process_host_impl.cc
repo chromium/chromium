@@ -279,10 +279,6 @@ void ChildProcessHostImpl::OnChannelError() {
   OnDisconnectedFromChildProcess();
 }
 
-void ChildProcessHostImpl::OnBadMessageReceived() {
-  delegate_->OnBadMessageReceived();
-}
-
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 void ChildProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
   child_process_->WriteClangProfilingProfile(std::move(callback));

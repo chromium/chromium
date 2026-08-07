@@ -402,10 +402,6 @@ void BrowserChildProcessHostImpl::OnProcessConnected() {
   }
 }
 
-void BrowserChildProcessHostImpl::OnBadMessageReceived() {
-  std::string log_message = "Bad message received of type: unknown";
-  TerminateOnBadMessageReceived(log_message);
-}
 
 void BrowserChildProcessHostImpl::BindChildHistogramFetcherFactory(
     mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>

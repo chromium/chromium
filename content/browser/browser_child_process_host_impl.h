@@ -100,7 +100,6 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   const base::Process& GetProcess() override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void OnChannelConnected(int32_t peer_pid) override;
-  void OnBadMessageReceived() override;
 
   // HistogramChildProcess implementation:
   void BindChildHistogramFetcherFactory(
