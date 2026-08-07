@@ -427,7 +427,9 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   actionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
   actionButton.titleLabel.numberOfLines = 2;
   actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  actionButton.titleLabel.isAccessibilityElement = NO;
   actionButton.accessibilityIdentifier = kInfobarBannerAcceptButtonIdentifier;
+  actionButton.accessibilityLabel = self.buttonText;
   actionButton.pointerInteractionEnabled = YES;
   actionButton.clipsToBounds = NO;
   [actionButton addTarget:self
@@ -584,6 +586,8 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
         [[NSAttributedString alloc] initWithString:_buttonText ?: @""
                                         attributes:titleAttributes];
     self.infobarButton.configuration = configuration;
+    self.infobarButton.accessibilityLabel = _buttonText;
+    self.infobarButton.titleLabel.isAccessibilityElement = NO;
   } else {
     [self.infobarButton setTitle:_buttonText forState:UIControlStateNormal];
   }
