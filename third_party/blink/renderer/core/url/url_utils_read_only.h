@@ -24,8 +24,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_READ_ONLY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_READ_ONLY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_UTILS_READ_ONLY_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_UTILS_READ_ONLY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -34,10 +34,10 @@
 
 namespace blink {
 
-class CORE_EXPORT DOMURLUtilsReadOnly {
+class CORE_EXPORT UrlUtilsReadOnly {
  public:
   virtual KURL Url() const = 0;
-  virtual ~DOMURLUtilsReadOnly() = default;
+  virtual ~UrlUtilsReadOnly() = default;
 
   // href() returns Url() if it is non-null, or Input() otherwise.
   String href();
@@ -78,4 +78,4 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_READ_ONLY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_URL_UTILS_READ_ONLY_H_

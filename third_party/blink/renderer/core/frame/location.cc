@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/url/dom_origin.h"
-#include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
+#include "third_party/blink/renderer/core/url/url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
@@ -98,31 +98,31 @@ String Location::href() const {
 }
 
 String Location::protocol() const {
-  return DOMURLUtilsReadOnly::protocol(Url());
+  return UrlUtilsReadOnly::protocol(Url());
 }
 
 String Location::host() const {
-  return DOMURLUtilsReadOnly::host(Url());
+  return UrlUtilsReadOnly::host(Url());
 }
 
 String Location::hostname() const {
-  return DOMURLUtilsReadOnly::hostname(Url());
+  return UrlUtilsReadOnly::hostname(Url());
 }
 
 String Location::port() const {
-  return DOMURLUtilsReadOnly::port(Url());
+  return UrlUtilsReadOnly::port(Url());
 }
 
 String Location::pathname() const {
-  return DOMURLUtilsReadOnly::pathname(Url());
+  return UrlUtilsReadOnly::pathname(Url());
 }
 
 String Location::search() const {
-  return DOMURLUtilsReadOnly::search(Url());
+  return UrlUtilsReadOnly::search(Url());
 }
 
 String Location::origin() const {
-  return DOMURLUtilsReadOnly::origin(Url());
+  return UrlUtilsReadOnly::origin(Url());
 }
 
 DOMStringList* Location::ancestorOrigins() {
@@ -151,7 +151,7 @@ String Location::toString() const {
 }
 
 String Location::hash() const {
-  return DOMURLUtilsReadOnly::hash(Url());
+  return UrlUtilsReadOnly::hash(Url());
 }
 
 void Location::setHref(v8::Isolate* isolate,

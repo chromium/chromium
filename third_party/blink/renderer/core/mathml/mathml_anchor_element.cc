@@ -79,7 +79,7 @@ KURL MathMLAnchorElement::Url() const {
   return url;
 }
 
-void MathMLAnchorElement::SetURL(const KURL& url) {
+void MathMLAnchorElement::SetUrl(const KURL& url) {
   setAttribute(html_names::kHrefAttr, AtomicString(url.GetString()));
 }
 

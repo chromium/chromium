@@ -24,40 +24,52 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_H_
+#include "third_party/blink/renderer/core/url/url_utils_read_only.h"
 
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
-class KURL;
+String UrlUtilsReadOnly::href() {
+  const KURL& kurl = Url();
+  if (kurl.IsNull()) {
+    return Input();
+  }
+  return kurl.GetString();
+}
 
-class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
- public:
-  virtual void SetURL(const KURL&) = 0;
-  ~DOMURLUtils() override;
+String UrlUtilsReadOnly::origin(const KURL& kurl) {
+  if (kurl.IsNull()) {
+    return "";
+  }
+  return SecurityOrigin::Create(kurl)->ToString();
+}
 
-  void setProtocol(const String&);
-  void setUsername(const String&);
-  void setPassword(const String&);
-  void setHost(const String&);
-  void setHostname(const String&);
-  void setPort(const String&);
-  void setPathname(const String&);
-  void setHash(const String&);
-  virtual void setSearch(const String&);
+String UrlUtilsReadOnly::host(const KURL& kurl) {
+  if (kurl.HostEnd() == kurl.PathStart()) {
+    return kurl.Host().ToString();
+  }
+  if (IsDefaultPortForProtocol(kurl.Port(), kurl.Protocol())) {
+    return kurl.Host().ToString();
+  }
+  return StrCat({kurl.Host(), ":", String::Number(kurl.Port())});
+}
 
- protected:
-  void SetSearchInternal(const String&);
+String UrlUtilsReadOnly::port(const KURL& kurl) {
+  if (kurl.HasPort()) {
+    return String::Number(kurl.Port());
+  }
 
-  bool IsInUpdate() const { return is_in_update_; }
+  return g_empty_string;
+}
 
-  bool is_in_update_ = false;
-};
+String UrlUtilsReadOnly::search(const KURL& kurl) {
+  return kurl.QueryWithLeadingQuestionMark().ToString();
+}
+
+String UrlUtilsReadOnly::hash(const KURL& kurl) {
+  return kurl.FragmentIdentifierWithLeadingNumberSign().ToString();
+}
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_H_

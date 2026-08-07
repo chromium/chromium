@@ -31,7 +31,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url/dom_origin_utils.h"
-#include "third_party/blink/renderer/core/url/dom_url_utils.h"
+#include "third_party/blink/renderer/core/url/url_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -46,7 +46,7 @@ class URLRegistrable;
 class URLSearchParams;
 
 class CORE_EXPORT DOMURL final : public ScriptWrappable,
-                                 public DOMURLUtils,
+                                 public UrlUtils,
                                  public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -75,7 +75,7 @@ class CORE_EXPORT DOMURL final : public ScriptWrappable,
   static String CreatePublicURL(ExecutionContext*, URLRegistrable*);
 
   KURL Url() const override { return url_; }
-  void SetURL(const KURL& url) override { url_ = url; }
+  void SetUrl(const KURL& url) override { url_ = url; }
 
   String Input() const override {
     // Url() can never be null, so Input() is never called.

@@ -24,68 +24,77 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/url/dom_url_utils.h"
+#include "third_party/blink/renderer/core/url/url_utils.h"
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 
 namespace blink {
 
-DOMURLUtils::~DOMURLUtils() = default;
+UrlUtils::~UrlUtils() = default;
 
-void DOMURLUtils::setProtocol(const String& value) {
+void UrlUtils::setProtocol(const String& value) {
   KURL kurl = Url();
-  if (kurl.IsNull())
+  if (kurl.IsNull()) {
     return;
+  }
   kurl.SetProtocol(value);
-  SetURL(kurl);
+  SetUrl(kurl);
 }
 
-void DOMURLUtils::setUsername(const String& value) {
+void UrlUtils::setUsername(const String& value) {
   KURL kurl = Url();
-  if (kurl.IsNull())
+  if (kurl.IsNull()) {
     return;
+  }
   kurl.SetUser(value);
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setPassword(const String& value) {
+void UrlUtils::setPassword(const String& value) {
   KURL kurl = Url();
-  if (kurl.IsNull())
+  if (kurl.IsNull()) {
     return;
+  }
   kurl.SetPass(value);
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setHost(const String& value) {
+void UrlUtils::setHost(const String& value) {
   KURL kurl = Url();
   if (value.empty() && !kurl.CanRemoveHost()) {
     return;
   }
-  if (!kurl.CanSetHostOrPort())
+  if (!kurl.CanSetHostOrPort()) {
     return;
+  }
 
   kurl.SetHostAndPort(value);
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setHostname(const String& value) {
+void UrlUtils::setHostname(const String& value) {
   KURL kurl = Url();
   if (value.empty() && !kurl.CanRemoveHost()) {
     return;
   }
-  if (!kurl.CanSetHostOrPort())
+  if (!kurl.CanSetHostOrPort()) {
     return;
+  }
 
   kurl.SetHost(value);
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setPort(const String& value) {
+void UrlUtils::setPort(const String& value) {
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort()) {
     return;
@@ -95,59 +104,68 @@ void DOMURLUtils::setPort(const String& value) {
   } else {
     kurl.RemovePort();
   }
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setPathname(const String& value) {
+void UrlUtils::setPathname(const String& value) {
   KURL kurl = Url();
-  if (!kurl.CanSetPathname())
+  if (!kurl.CanSetPathname()) {
     return;
+  }
   kurl.SetPath(value);
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setSearch(const String& value) {
+void UrlUtils::setSearch(const String& value) {
   SetSearchInternal(value);
 }
 
-void DOMURLUtils::SetSearchInternal(const String& value) {
+void UrlUtils::SetSearchInternal(const String& value) {
   DCHECK(!is_in_update_);
   KURL kurl = Url();
-  if (!kurl.IsValid())
+  if (!kurl.IsValid()) {
     return;
+  }
 
   // FIXME: have KURL do this clearing of the query component
   // instead, if practical. Will require addressing
   // http://crbug.com/108690, for one.
-  if ((value.length() == 1 && value[0] == '?') || value.empty())
+  if ((value.length() == 1 && value[0] == '?') || value.empty()) {
     kurl.SetQuery(String());
-  else
+  } else {
     kurl.SetQuery(value);
+  }
 
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
-void DOMURLUtils::setHash(const String& value) {
+void UrlUtils::setHash(const String& value) {
   KURL kurl = Url();
-  if (kurl.IsNull())
+  if (kurl.IsNull()) {
     return;
+  }
 
   // FIXME: have KURL handle the clearing of the fragment component
   // on the same input.
   if (value.starts_with('#')) {
     kurl.SetFragmentIdentifier(value.substr(1));
   } else {
-    if (value.empty())
+    if (value.empty()) {
       kurl.RemoveFragmentIdentifier();
-    else
+    } else {
       kurl.SetFragmentIdentifier(value);
+    }
   }
 
-  if (kurl.IsValid())
-    SetURL(kurl);
+  if (kurl.IsValid()) {
+    SetUrl(kurl);
+  }
 }
 
 }  // namespace blink

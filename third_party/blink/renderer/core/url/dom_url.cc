@@ -125,7 +125,7 @@ void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
 }
 
 void DOMURL::setSearch(const String& value) {
-  DOMURLUtils::setSearch(value);
+  UrlUtils::setSearch(value);
   if (value.starts_with('?')) {
     UpdateSearchParams(value.substr(1));
   } else {

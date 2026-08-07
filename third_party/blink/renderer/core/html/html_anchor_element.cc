@@ -348,7 +348,7 @@ KURL HTMLAnchorElementBase::Url() const {
   return href;
 }
 
-void HTMLAnchorElementBase::SetURL(const KURL& url) {
+void HTMLAnchorElementBase::SetUrl(const KURL& url) {
   SetHref(AtomicString(url.GetString()));
 }
 
