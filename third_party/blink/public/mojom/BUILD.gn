@@ -13,6 +13,35 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+mojom("dom_node_id") {
+  generate_java = true
+  generate_legacy_js_bindings = true
+  sources = [ "dom/dom_node_id.mojom" ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.mojom.DOMNodeId"
+          cpp = "::blink::DOMNodeIdType"
+        },
+      ]
+      traits_headers =
+          [ "//third_party/blink/public/common/dom/dom_node_id_mojom_traits.h" ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
+  ]
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+}
+
 # This target includes all mojom interfaces which can be used from
 # renderer/platform. In particular these mojom interfaces can't use types that
 # are typemapped to a type in renderer/core.
@@ -78,7 +107,6 @@ mojom("mojom_platform") {
     "devtools/devtools_frontend.mojom",
     "devtools/inspector_issue.mojom",
     "disk_allocator.mojom",
-    "dom/dom_node_id.mojom",
     "dom_storage/dom_storage.mojom",
     "dom_storage/session_storage_namespace.mojom",
     "dom_storage/storage_area.mojom",
@@ -320,6 +348,7 @@ mojom("mojom_platform") {
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
+    ":dom_node_id",
     "//third_party/blink/public/mojom/content_extraction",
     "//third_party/blink/public/mojom/fingerprinting_protection",
     "//third_party/blink/public/mojom/gpu",
@@ -883,18 +912,6 @@ mojom("mojom_platform") {
         "//third_party/blink/public/common/webrtc/rtc_logging_mojom_traits.h",
       ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.DOMNodeId"
-          cpp = "::blink::DOMNodeIdType"
-        },
-      ]
-      traits_headers =
-          [ "//third_party/blink/public/common/dom/dom_node_id_mojom_traits.h" ]
-      traits_sources =
-          [ "//third_party/blink/common/dom/dom_node_id_mojom_traits.cc" ]
-    },
   ]
   if (is_chromeos && use_cups) {
     cpp_typemaps += [
@@ -1220,6 +1237,7 @@ mojom("mojom_core") {
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
+    ":dom_node_id",
     "//third_party/blink/public/mojom/fingerprinting_protection",
     "//third_party/blink/public/mojom/runtime_feature_state",
     "//third_party/blink/public/mojom/service_worker:storage",
@@ -1443,6 +1461,7 @@ mojom("mojom_core") {
 
   overridden_deps_blink = [
     ":android_mojo_bindings",
+    ":dom_node_id",
     ":mojom_platform",
     "//cc/mojom",
     "//services/network/public/mojom",

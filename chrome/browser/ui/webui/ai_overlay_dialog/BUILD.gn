@@ -13,6 +13,7 @@ mojom("mojo_bindings") {
   ]
   public_deps = [
     "//mojo/public/mojom/base",
+    "//third_party/blink/public/mojom:dom_node_id",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -63,8 +64,8 @@ source_set("impl") {
     "//chrome/browser/translate",
     "//chrome/browser/ttc/resources",
     "//chrome/browser/ttc/resources:generate_tool_definitions",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
-    "//chrome/browser/ui:ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",

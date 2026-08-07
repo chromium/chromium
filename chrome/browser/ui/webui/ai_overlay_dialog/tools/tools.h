@@ -13,6 +13,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 #include "third_party/blink/public/mojom/dom/dom_node_id.mojom.h"
 
@@ -65,14 +66,14 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void RemoveBookmark(RemoveBookmarkCallback callback) override;
   void OpenPage(const std::string& query,
                 OpenPageCallback callback) override;
-  void SetText(int32_t dom_node_id,
+  void SetText(const blink::DOMNodeIdType& dom_node_id,
                const std::string& text,
                SetTextCallback callback) override;
-  void ClickElement(int32_t dom_node_id,
+  void ClickElement(const blink::DOMNodeIdType& dom_node_id,
                     ClickElementCallback callback) override;
   void SetFullscreen(bool fullscreen,
                      SetFullscreenCallback callback) override;
-  void SelectOption(int32_t dom_node_id,
+  void SelectOption(const blink::DOMNodeIdType& dom_node_id,
                     const std::string& value,
                     SelectOptionCallback callback) override;
   void InvokeGlic(const std::string& prompt,

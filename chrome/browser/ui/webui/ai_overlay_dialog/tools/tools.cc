@@ -783,7 +783,7 @@ void AiOverlayTools::OpenPage(const std::string& query,
       &task_tracker_);
 }
 
-void AiOverlayTools::SetText(int32_t dom_node_id,
+void AiOverlayTools::SetText(const blink::DOMNodeIdType& dom_node_id,
                              const std::string& text,
                              SetTextCallback callback) {
   RecordToolCallInvoked("SetText");
@@ -814,7 +814,8 @@ void AiOverlayTools::SetText(int32_t dom_node_id,
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->task_id = actor::TaskId();
-  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->target =
+      actor::mojom::ToolTarget::NewDomNodeId(dom_node_id.value());
   invocation->action =
       actor::mojom::ToolAction::NewType(std::move(type_action));
 
@@ -834,7 +835,7 @@ void AiOverlayTools::SetText(int32_t dom_node_id,
           std::move(chrome_render_frame), std::move(callback)));
 }
 
-void AiOverlayTools::ClickElement(int32_t dom_node_id,
+void AiOverlayTools::ClickElement(const blink::DOMNodeIdType& dom_node_id,
                                   ClickElementCallback callback) {
   RecordToolCallInvoked("ClickElement");
   content::WebContents* contents =
@@ -859,7 +860,8 @@ void AiOverlayTools::ClickElement(int32_t dom_node_id,
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->task_id = actor::TaskId();
-  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->target =
+      actor::mojom::ToolTarget::NewDomNodeId(dom_node_id.value());
   invocation->action =
       actor::mojom::ToolAction::NewClick(std::move(click_action));
 
@@ -895,7 +897,7 @@ void AiOverlayTools::SetFullscreen(bool fullscreen,
   std::move(callback).Run(base::ok(std::monostate()));
 }
 
-void AiOverlayTools::SelectOption(int32_t dom_node_id,
+void AiOverlayTools::SelectOption(const blink::DOMNodeIdType& dom_node_id,
                                   const std::string& value,
                                   SelectOptionCallback callback) {
   RecordToolCallInvoked("SelectOption");
@@ -920,7 +922,8 @@ void AiOverlayTools::SelectOption(int32_t dom_node_id,
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->task_id = actor::TaskId();
-  invocation->target = actor::mojom::ToolTarget::NewDomNodeId(dom_node_id);
+  invocation->target =
+      actor::mojom::ToolTarget::NewDomNodeId(dom_node_id.value());
   invocation->action =
       actor::mojom::ToolAction::NewSelect(std::move(select_action));
 

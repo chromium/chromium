@@ -65,7 +65,7 @@ def _MojomTypeToGeminiType(mojom_type):
         return 'STRING'
     if 'bool' in mojom_type:
         return 'BOOLEAN'
-    if 'int' in mojom_type:
+    if 'int' in mojom_type or 'DOMNodeId' in mojom_type:
         return 'INTEGER'
     if 'double' in mojom_type or 'float' in mojom_type: return 'NUMBER'
     return 'STRING'

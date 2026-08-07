@@ -5,6 +5,7 @@
 module ai_overlay_dialog.mojom;
 
 import "mojo/public/mojom/base/empty.mojom";
+import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "url/mojom/url.mojom";
 
 struct SwitchTabResult {
@@ -133,7 +134,7 @@ interface AiOverlayTools {
   // dom_node_id: The numeric DOM node ID of the target field from the Page
   // Content Summary (e.g. 101).
   // text: The text to set into the element.
-  SetText(int32 dom_node_id, string text)
+  SetText(blink.mojom.DOMNodeId dom_node_id, string text)
       => result<mojo_base.mojom.Empty, string>;
 
   // Click or toggle an interactive element (such as a button, radio button,
@@ -141,8 +142,7 @@ interface AiOverlayTools {
   //
   // dom_node_id: The numeric DOM node ID of the target element from the Page
   // Content Summary (e.g. 101).
-  // TODO(crbug.com/541165698): Migrate dom_node_id to blink.mojom.DOMNodeId.
-  ClickElement(int32 dom_node_id)
+  ClickElement(blink.mojom.DOMNodeId dom_node_id)
       => result<mojo_base.mojom.Empty, string>;
 
   // Set or exit full screen mode for the active browser window.
@@ -156,8 +156,9 @@ interface AiOverlayTools {
   // dom_node_id: The numeric DOM node ID of the target dropdown element from
   // the Page Content Summary (e.g. 101).
   // value: The value of the <option> element to select.
-  SelectOption(int32 dom_node_id, string value)
+  SelectOption(blink.mojom.DOMNodeId dom_node_id, string value)
       => result<mojo_base.mojom.Empty, string>;
+
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
   // video, or long text. Prefer direct voice replies for quick (<1s) tasks.

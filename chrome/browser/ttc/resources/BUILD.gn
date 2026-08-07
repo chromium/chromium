@@ -64,10 +64,12 @@ build_webui("build") {
   mojo_files_deps = [
     ":generate_tool_definitions",
     "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings_ts__generator",
+    "//third_party/blink/public/mojom:dom_node_id_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom-webui.ts",
+    "$root_gen_dir/third_party/blink/public/mojom/dom/dom_node_id.mojom-webui.ts",
     "$target_gen_dir/generated_tool_definitions.ts",
   ]
 

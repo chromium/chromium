@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/base/base_window.h"
 
 namespace ttc {
@@ -797,7 +798,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetTextSuccess) {
           .value();
 
   base::test::TestFuture<base::expected<std::monostate, std::string>> future;
-  tools()->SetText(dom_node_id, "new_value", future.GetCallback());
+  tools()->SetText(blink::DOMNodeIdType(dom_node_id), "new_value",
+                   future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ("new_value",
@@ -811,7 +813,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetTextNotFound) {
            "value='old' /></body></html>")));
 
   base::test::TestFuture<base::expected<std::monostate, std::string>> future;
-  tools()->SetText(999, "new_value", future.GetCallback());
+  tools()->SetText(blink::DOMNodeIdType(999), "new_value",
+                   future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
 }
@@ -829,7 +832,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementCheckbox) {
           .value();
 
   base::test::TestFuture<base::expected<std::monostate, std::string>> future;
-  tools()->ClickElement(dom_node_id, future.GetCallback());
+  tools()->ClickElement(blink::DOMNodeIdType(dom_node_id),
+                        future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(true,
@@ -849,7 +853,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementRadioButton) {
           .value();
 
   base::test::TestFuture<base::expected<std::monostate, std::string>> future;
-  tools()->ClickElement(dom_node_id, future.GetCallback());
+  tools()->ClickElement(blink::DOMNodeIdType(dom_node_id),
+                        future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(true,
@@ -881,7 +886,8 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SelectOptionSuccess) {
           .value();
 
   base::test::TestFuture<base::expected<std::monostate, std::string>> future;
-  tools()->SelectOption(dom_node_id, "opt2", future.GetCallback());
+  tools()->SelectOption(blink::DOMNodeIdType(dom_node_id), "opt2",
+                        future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ("opt2",
