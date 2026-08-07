@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -209,7 +210,7 @@ String WebSocketCommon::EncodeSubprotocolString(const String& protocol) {
   StringBuilder builder;
   for (wtf_size_t i = 0; i < protocol.length(); i++) {
     if (protocol[i] < 0x20 || protocol[i] > 0x7E)
-      builder.AppendFormat("\\u%04X", protocol[i]);
+      FormatTo(builder, "\\u{:04X}", protocol[i]);
     else if (protocol[i] == 0x5c)
       builder.Append("\\\\");
     else

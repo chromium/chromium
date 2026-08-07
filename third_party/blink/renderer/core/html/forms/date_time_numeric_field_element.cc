@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -110,10 +111,10 @@ void DateTimeNumericFieldElement::SetFocused(
 String DateTimeNumericFieldElement::FormatValue(int value) const {
   Locale& locale = LocaleForOwner();
   if (hard_limits_.maximum > 999)
-    return locale.ConvertToLocalizedNumber(String::Format("%04d", value));
+    return locale.ConvertToLocalizedNumber(Format("{:04}", value));
   if (hard_limits_.maximum > 99)
-    return locale.ConvertToLocalizedNumber(String::Format("%03d", value));
-  return locale.ConvertToLocalizedNumber(String::Format("%02d", value));
+    return locale.ConvertToLocalizedNumber(Format("{:03}", value));
+  return locale.ConvertToLocalizedNumber(Format("{:02}", value));
 }
 
 void DateTimeNumericFieldElement::HandleKeyboardEvent(

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -503,10 +504,10 @@ bool CachedStorageArea::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 
-  String dump_name = UNSAFE_TODO(
-      String::Format("site_storage/%s/0x%" PRIXPTR "/cache_size",
-                     IsSessionStorage() ? "session_storage" : "local_storage",
-                     reinterpret_cast<uintptr_t>(this)));
+  String dump_name =
+      Format("site_storage/{}/0x{:X}/cache_size",
+             IsSessionStorage() ? "session_storage" : "local_storage",
+             reinterpret_cast<uintptr_t>(this));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name.Utf8());
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, memory_used());

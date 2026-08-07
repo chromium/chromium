@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -1538,7 +1539,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
         if (i > 0) {
           value_builder.Append(":");
         }
-        value_builder.AppendFormat("%02X", data[i]);
+        FormatTo(value_builder, "{:02X}", data[i]);
       }
 
       fingerprints.push_back(

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -122,20 +123,20 @@ String TimeInputType::FormatDateTimeFieldsState(
       !date_time_fields_state.HasMinute() || !date_time_fields_state.HasAMPM())
     return g_empty_string;
   if (date_time_fields_state.HasMillisecond()) {
-    return String::Format(
-        "%02u:%02u:%02u.%03u", date_time_fields_state.Hour24(),
-        date_time_fields_state.Minute(),
-        date_time_fields_state.HasSecond() ? date_time_fields_state.Second()
-                                           : 0,
-        date_time_fields_state.Millisecond());
+    return Format("{:02}:{:02}:{:02}.{:03}", date_time_fields_state.Hour24(),
+                  date_time_fields_state.Minute(),
+                  date_time_fields_state.HasSecond()
+                      ? date_time_fields_state.Second()
+                      : 0,
+                  date_time_fields_state.Millisecond());
   }
   if (date_time_fields_state.HasSecond()) {
-    return String::Format("%02u:%02u:%02u", date_time_fields_state.Hour24(),
-                          date_time_fields_state.Minute(),
-                          date_time_fields_state.Second());
+    return Format("{:02}:{:02}:{:02}", date_time_fields_state.Hour24(),
+                  date_time_fields_state.Minute(),
+                  date_time_fields_state.Second());
   }
-  return String::Format("%02u:%02u", date_time_fields_state.Hour24(),
-                        date_time_fields_state.Minute());
+  return Format("{:02}:{:02}", date_time_fields_state.Hour24(),
+                date_time_fields_state.Minute());
 }
 
 void TimeInputType::SetupLayoutParameters(

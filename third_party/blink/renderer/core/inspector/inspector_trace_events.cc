@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-profiler.h"
@@ -116,8 +117,7 @@ int GetModifierFromEvent(const UIEventWithKeyState& event) {
 }  //  namespace
 
 String ToHexString(const void* p) {
-  return String::Format("0x%" PRIx64,
-                        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p)));
+  return Format("0x{:x}", reinterpret_cast<uintptr_t>(p));
 }
 uint64_t InspectorTraceEvents::GetNextSampleTraceId() {
   uint64_t sample_trace_id = base::trace_event::GetNextGlobalTraceId();

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -47,9 +48,8 @@ const char kNoPortSelected[] = "No port selected by the user.";
 
 String TokenToString(const base::UnguessableToken& token) {
   // TODO(crbug.com/918702): Implement HashTraits for UnguessableToken.
-  return String::Format("%016" PRIX64 "%016" PRIX64,
-                        token.GetHighForSerialization(),
-                        token.GetLowForSerialization());
+  return Format("{:016X}{:016X}", token.GetHighForSerialization(),
+                token.GetLowForSerialization());
 }
 
 // Carries out basic checks for the web-exposed APIs, to make sure the minimum

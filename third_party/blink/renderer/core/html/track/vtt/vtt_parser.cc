@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -505,8 +506,8 @@ static String SerializeTimeStamp(double time_stamp) {
   value /= 60;
   unsigned minutes = value % 60;
   unsigned hours = static_cast<unsigned>(value / 60);
-  return String::Format("%02u:%02u:%02u.%03u", hours, minutes, seconds,
-                        milliseconds);
+  return Format("{:02}:{:02}:{:02}.{:03}", hours, minutes, seconds,
+                milliseconds);
 }
 
 bool VTTParser::CollectTimeStamp(VTTScanner& input, double& time_stamp) {

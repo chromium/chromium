@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
@@ -64,9 +65,7 @@ std::unique_ptr<TracedValue> GetTraceArgsForScriptElement(
   if (document.GetFrame()) {
     value->SetString(
         "frame",
-        String::Format("0x%" PRIx64,
-                       static_cast<uint64_t>(
-                           reinterpret_cast<intptr_t>(document.GetFrame()))));
+        Format("0x{:x}", reinterpret_cast<uintptr_t>(document.GetFrame())));
   }
   if (text_position.line_.ZeroBasedInt() > 0 ||
       text_position.column_.ZeroBasedInt() > 0) {

@@ -161,6 +161,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/skia/include/core/SkColorType.h"
@@ -702,12 +703,10 @@ static String ExtractWebGLContextCreationError(
   StringBuilder builder;
   builder.Append("Could not create a WebGL context");
   FormatWebGLStatusString(
-      "VENDOR",
-      info.vendor_id ? String::Format("0x%04x", info.vendor_id) : "0xffff",
+      "VENDOR", info.vendor_id ? Format("0x{:04x}", info.vendor_id) : "0xffff",
       builder);
   FormatWebGLStatusString(
-      "DEVICE",
-      info.device_id ? String::Format("0x%04x", info.device_id) : "0xffff",
+      "DEVICE", info.device_id ? Format("0x{:04x}", info.device_id) : "0xffff",
       builder);
   FormatWebGLStatusString("GL_VENDOR", info.vendor_info, builder);
   FormatWebGLStatusString("GL_RENDERER", info.renderer_info, builder);
@@ -716,9 +715,9 @@ static String ExtractWebGLContextCreationError(
   FormatWebGLStatusString("Optimus", info.optimus ? "yes" : "no", builder);
   FormatWebGLStatusString("AMD switchable", info.amd_switchable ? "yes" : "no",
                           builder);
-  FormatWebGLStatusString(
-      "Reset notification strategy",
-      String::Format("0x%04x", info.reset_notification_strategy), builder);
+  FormatWebGLStatusString("Reset notification strategy",
+                          Format("0x{:04x}", info.reset_notification_strategy),
+                          builder);
   FormatWebGLStatusString("ErrorMessage", info.error_message, builder);
   builder.Append('.');
   return builder.ReleaseString();

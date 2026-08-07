@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8-local-handle.h"
 #include "v8-message.h"
@@ -555,7 +556,7 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
   }
   TRACE_EVENT_BEGIN(
       "devtools.timeline", "AnimationFrame", track_id, info.FrameStartTime(),
-      flow_id, "id", String::Format("%016" PRIx64, trace_id),
+      flow_id, "id", Format("{:016x}", trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_animation_frame_timing_info();

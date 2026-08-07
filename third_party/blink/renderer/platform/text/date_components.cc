@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -559,12 +560,12 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
 
   switch (effective_format) {
     case SecondFormat::kNone:
-      return String::Format("%02d:%02d", hour_, minute_);
+      return Format("{:02}:{:02}", hour_, minute_);
     case SecondFormat::kSecond:
-      return String::Format("%02d:%02d:%02d", hour_, minute_, second_);
+      return Format("{:02}:{:02}:{:02}", hour_, minute_, second_);
     case SecondFormat::kMillisecond:
-      return String::Format("%02d:%02d:%02d.%03d", hour_, minute_, second_,
-                            millisecond_);
+      return Format("{:02}:{:02}:{:02}.{:03}", hour_, minute_, second_,
+                    millisecond_);
     default:
       NOTREACHED();
   }
@@ -573,17 +574,16 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
 String DateComponents::ToString(SecondFormat format) const {
   switch (type_) {
     case kDate:
-      return String::Format("%04d-%02d-%02d", year_, month_ + 1, month_day_);
+      return Format("{:04}-{:02}-{:02}", year_, month_ + 1, month_day_);
     case kDateTimeLocal:
-      return StrCat(
-          {String::Format("%04d-%02d-%02dT", year_, month_ + 1, month_day_),
-           ToStringForTime(format)});
+      return Format("{:04}-{:02}-{:02}T{}", year_, month_ + 1, month_day_,
+                    ToStringForTime(format));
     case kMonth:
-      return String::Format("%04d-%02d", year_, month_ + 1);
+      return Format("{:04}-{:02}", year_, month_ + 1);
     case kTime:
       return ToStringForTime(format);
     case kWeek:
-      return String::Format("%04d-W%02d", year_, week_);
+      return Format("{:04}-W{:02}", year_, week_);
     case kInvalid:
       break;
   }

@@ -58,6 +58,21 @@ TEST(FormatTest, VFormatToDirect) {
   EXPECT_EQ("Prefix: Value: 200", builder.ReleaseString());
 }
 
+TEST(FormatTest, FormatTo) {
+  StringBuilder builder;
+  builder.Append("Prefix: ");
+  FormatTo(builder, "Hello {}", StringView("world"));
+  EXPECT_EQ("Prefix: Hello world", builder.ReleaseString());
+
+  StringBuilder builder2;
+  FormatTo(builder2, "No args");
+  EXPECT_EQ("No args", builder2.ReleaseString());
+
+  StringBuilder builder3;
+  FormatTo(builder3, "{} + {} = {}", 1, 2, 3);
+  EXPECT_EQ("1 + 2 = 3", builder3.ReleaseString());
+}
+
 TEST(FormatTest, WidthSpecifier) {
   // Empty specifier {:}
   EXPECT_EQ("42", Format("{:}", 42));

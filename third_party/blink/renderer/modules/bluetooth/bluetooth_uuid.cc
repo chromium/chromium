@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -428,7 +429,7 @@ String BluetoothUUID::getDescriptor(const V8BluetoothDescriptorUUID* name,
 
 // static
 String BluetoothUUID::canonicalUUID(unsigned alias) {
-  return String::Format("%08x-0000-1000-8000-00805f9b34fb", alias);
+  return Format("{:08x}-0000-1000-8000-00805f9b34fb", alias);
 }
 
 }  // namespace blink

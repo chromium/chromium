@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1009,7 +1010,7 @@ static String ColorParamToString(float param, int precision = 6) {
 
 String Color::SerializeAsCanvasColor() const {
   if (IsOpaque() && IsLegacyColorSpace(color_space_)) {
-    return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
+    return Format("#{:02x}{:02x}{:02x}", Red(), Green(), Blue());
   }
 
   return SerializeAsCSSColor();

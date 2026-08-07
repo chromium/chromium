@@ -15,6 +15,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -159,9 +160,8 @@ class MediaStreamAudioDeliverer {
 
  private:
   void SendLogMessage(const String& message) {
-    WebRtcLogMessage(String::Format("MSAD::%s [this=0x%" PRIXPTR "]",
-                                    message.Utf8().c_str(),
-                                    reinterpret_cast<uintptr_t>(this))
+    WebRtcLogMessage(Format("MSAD::{} [this=0x{:X}]", message,
+                            reinterpret_cast<uintptr_t>(this))
                          .Utf8());
   }
 
