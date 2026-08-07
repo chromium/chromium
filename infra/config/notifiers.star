@@ -227,9 +227,8 @@ luci.notifier(
 luci.notifier(
     name = "annotator-rel",
     notify_emails = [
-        "crmullins@chromium.org",
         "nicolaso@chromium.org",
-        "pastarmovj@chromium.org",
+        "radchuk@google.com",
     ],
     on_new_status = ["FAILURE"],
 )
