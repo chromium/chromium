@@ -245,10 +245,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // Notifies the source that it may need to reconnect to a VSync source (e.g.,
   // DisplayLinkMac) for the specified display. This is typically triggered by
   // display configuration changes in the browser process.
-  // |is_browser_vsync_supported| indicates whether the browser-side
-  // CADisplayLink is valid.
-  virtual void UpdateVSyncDisplay(int64_t display_id,
-                                  bool is_browser_vsync_supported) {}
+  virtual void UpdateVSyncDisplay(int64_t display_id) {}
 
 #endif
 

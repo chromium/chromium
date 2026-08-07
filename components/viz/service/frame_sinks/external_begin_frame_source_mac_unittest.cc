@@ -287,8 +287,7 @@ TEST_F(ExternalBeginFrameSourceMacTest, UpdateVSyncDisplay) {
   EXPECT_FALSE(source_->display_link_mac());
   EXPECT_TRUE(source_->time_source());
 
-  source_->UpdateVSyncDisplay(/*display_id=*/1,
-                              /*is_browser_vsync_supported=*/true);
+  source_->UpdateVSyncDisplay(/*display_id=*/1);
   EXPECT_TRUE(source_->display_link_mac());
   EXPECT_FALSE(source_->time_source());
 }

@@ -298,13 +298,11 @@ void FrameSinkManagerImpl::CreateCompositorDisplayLink(
           update_vsync_displays_cb);
 }
 
-void FrameSinkManagerImpl::UpdateVSyncDisplays(
-    int64_t display_id,
-    bool is_browser_vsync_supported) {
+void FrameSinkManagerImpl::UpdateVSyncDisplays(int64_t display_id) {
   for (auto& root_frame_sink : root_sink_map_) {
     if (root_frame_sink.second->external_begin_frame_source()) {
       root_frame_sink.second->external_begin_frame_source()->UpdateVSyncDisplay(
-          display_id, is_browser_vsync_supported);
+          display_id);
     }
   }
 }

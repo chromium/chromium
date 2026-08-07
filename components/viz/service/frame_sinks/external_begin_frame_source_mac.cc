@@ -122,9 +122,7 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
 // Forces an update of the DisplayLinkMac for the specified display. This is
 // called when the browser-side CADisplayLink state changes (e.g., becomes
 // valid or invalid) or when a display is added or removed.
-void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(
-    int64_t display_id,
-    bool is_browser_vsync_supported) {
+void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(int64_t display_id) {
   if (display_id_ == display_id) {
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }

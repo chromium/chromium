@@ -18,7 +18,7 @@ ExternalBeginFrameSourceMojoMac::ExternalBeginFrameSourceMojoMac(
         controller_receiver,
     mojo::PendingRemote<mojom::ExternalBeginFrameControllerClient>
         controller_remote_client,
-    base::RepeatingCallback<void(int64_t, bool)> update_vsync_displays_cb)
+    base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb)
     : receiver_(this),
       remote_client_(std::move(controller_remote_client)),
       update_vsync_displays_cb_(std::move(update_vsync_displays_cb)) {
@@ -78,7 +78,7 @@ void ExternalBeginFrameSourceMojoMac::SetSupportedDisplayLinkId(
   // When ExternalBeginFrameSourceMac is using DisplayLink in Browser, destroy
   // and recreate a DisplayLinkMac in every ExternalBeginFrameSourceMac if
   // needed.
-  update_vsync_displays_cb_.Run(display_id, is_browser_vsync_supported);
+  update_vsync_displays_cb_.Run(display_id);
 }
 
 void ExternalBeginFrameSourceMojoMac::IssueExternalBeginFrame(
