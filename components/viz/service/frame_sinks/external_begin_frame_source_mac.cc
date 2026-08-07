@@ -126,16 +126,6 @@ void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(
     int64_t display_id,
     bool is_browser_vsync_supported) {
   if (display_id_ == display_id) {
-    // Defer the transition to the browser-side DisplayLink if we are currently
-    // active (needing begin frames) to avoid rendering jank.
-    if (is_browser_vsync_supported && needs_begin_frames_) {
-      vsync_display_id_update_deferred_ = true;
-      return;
-    }
-
-    // If the browser-side DisplayLink is unsupported, or active rendering
-    // has stopped, apply the VSync display id update immediately.
-    vsync_display_id_update_deferred_ = false;
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }
 }
@@ -152,7 +142,6 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   // Forward the |display_id| to output surface for frame presentation.
   output_surface_->SetVSyncDisplayID(display_id, force_update);
 
-  vsync_display_id_update_deferred_ = false;
   // Remove the current callback from display_link_mac_ or from the timer.
   if (needs_begin_frames_ || vsync_callback_mac_) {
     StopBeginFrame(/*force_stop=*/true);
@@ -311,14 +300,6 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
     StartBeginFrame(/*display_link_keep_alive_only=*/false);
   } else {
     StopBeginFrame(/*force_stop=*/false);
-
-    // |update_vsync_params_callback_| is set in RootCompositorFrameSinkImpl().
-    // A null update_vsync_params_callback_ indicates
-    // RootCompositorFrameSinkImpl is being destroyed.
-    if (vsync_display_id_update_deferred_ && update_vsync_params_callback_) {
-      vsync_display_id_update_deferred_ = false;
-      SetVSyncDisplayID(display_id_, /*force_update=*/true);
-    }
   }
 }
 
