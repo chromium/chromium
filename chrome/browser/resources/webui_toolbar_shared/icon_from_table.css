@@ -8,13 +8,19 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Default intrinsic size. Layout containers (like toolbar-chip-button)
+     can override height/width to forcefully constrain this element. */
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 #container {
   display: inline-block;
-  height: var(--icon-size);
-  width: var(--icon-size);
+  height: 100%;
+  width: 100%;
 }
 
 #maskIconContainer,
@@ -43,5 +49,7 @@
 cr-icon {
   --iron-icon-width: var(--icon-size);
   --iron-icon-height: var(--icon-size);
+  width: 100%;
+  height: 100%;
   display: block;
 }

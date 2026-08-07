@@ -738,6 +738,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), cookies_blocked_name);
   find_criteria.name = cookies_blocked_name;
+  find_criteria.role = ax::mojom::Role::kButton;
   ui::AXPlatformNodeDelegate* cookies_node =
       content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
   ASSERT_TRUE(cookies_node);

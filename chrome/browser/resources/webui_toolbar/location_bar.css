@@ -27,7 +27,8 @@
    * anyway. We may need to compensate in chip positioning (or change the
    * approach once they exist
    */
-  padding-inline: var(--border-radius);
+  padding-inline-start: var(--border-radius);
+  padding-inline-end: var(--location-bar-trailing-decoration-edge-padding);
   transition-property: background-color;
   transition-duration: 200ms;
   transition-timing-function: linear;

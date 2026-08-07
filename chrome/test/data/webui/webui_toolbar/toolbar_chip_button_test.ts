@@ -28,11 +28,6 @@ suite('ToolbarChipButtonTest', function() {
     // Default is empty
     assertEquals('', button.getAttribute('aria-label'));
 
-    // Set attribute
-    element.setAttribute('aria-label', 'test-aria-label');
-    await microtasksFinished();
-    assertEquals('test-aria-label', button.getAttribute('aria-label'));
-
     // Set property
     element.ariaLabel = 'new-aria-label';
     await microtasksFinished();
@@ -44,11 +39,6 @@ suite('ToolbarChipButtonTest', function() {
 
     // Default is null (not present)
     assertFalse(button.hasAttribute('aria-haspopup'));
-
-    // Set attribute
-    element.setAttribute('aria-haspopup', 'menu');
-    await microtasksFinished();
-    assertEquals('menu', button.getAttribute('aria-haspopup'));
 
     // Set property
     element.ariaHasPopup = 'dialog';
@@ -67,11 +57,6 @@ suite('ToolbarChipButtonTest', function() {
     // Default is null (not present)
     assertFalse(button.hasAttribute('aria-expanded'));
 
-    // Set attribute
-    element.setAttribute('aria-expanded', 'true');
-    await microtasksFinished();
-    assertEquals('true', button.getAttribute('aria-expanded'));
-
     // Set property
     element.ariaExpanded = 'false';
     await microtasksFinished();
@@ -89,12 +74,6 @@ suite('ToolbarChipButtonTest', function() {
 
     // Default is empty
     assertEquals('', button.getAttribute('title'));
-
-    // Set attribute 'title'
-    element.setAttribute('title', 'test-title');
-    await microtasksFinished();
-    assertEquals('test-title', button.getAttribute('title'));
-    assertEquals('test-title', element.tooltip);
 
     // Set property 'tooltip'
     element.tooltip = 'new-title';

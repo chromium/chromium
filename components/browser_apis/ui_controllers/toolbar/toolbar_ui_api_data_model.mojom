@@ -426,6 +426,21 @@ struct PageActionState {
   // The icon to display.
   IconHandle icon;
 
+  // The text to display on the page action chip.
+  mojo_base.mojom.String16 text;
+
+  // Represents the target visibility state of the suggestion chip. If true, the
+  // frontend should apply the expanded CSS layout.
+  bool should_show_chip;
+
+  // Represents whether the chip should animate when expanding, as opposed to
+  // snapping open instantly. Has no effect if `should_show_chip` is false.
+  bool should_animate_chip_in;
+
+  // Represents whether the chip should animate when collapsing, as opposed to
+  // snapping shut instantly. Has no effect if `should_show_chip` is true.
+  bool should_animate_chip_out;
+
   // TODO: crbug.com/501449027 - Add remaining fields.
 };
 

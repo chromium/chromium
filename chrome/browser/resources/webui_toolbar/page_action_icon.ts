@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '/shared/icon_from_table.js';
+import './toolbar_chip_button.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
-import {IconTable} from '/shared/icon_table.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -17,10 +17,11 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './page_action_icon.css.js';
 import {getHtml} from './page_action_icon.html.js';
 import {getClickSourceType} from './toolbar_button.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface PageActionIconElement {
   $: {
-    button: CrIconButtonElement,
+    button: ToolbarChipButtonElement,
   };
 }
 
@@ -51,36 +52,42 @@ export class PageActionIconElement extends CrLitElement {
     accessibleName: '',
     tooltipText: '',
     icon: {handleId: 0n},
+    text: '',
+    shouldShowChip: false,
+    shouldAnimateChipIn: false,
+    shouldAnimateChipOut: false,
   };
 
   accessor forceFocusRing: boolean = false;
+
+  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  protected shouldShowLabel_(): boolean {
+    return this.state.shouldShowChip && !!this.state.text;
+  }
+
+  protected shouldAnimate_(): boolean {
+    return this.state.shouldShowChip ? this.state.shouldAnimateChipIn :
+                                       this.state.shouldAnimateChipOut;
+  }
 
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('forceFocusRing')) {
       this.classList.toggle('force-focus-ring', this.forceFocusRing);
     }
-  }
-
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private iconTable_: IconTable = IconTable.getInstance();
-
-  protected getIronIcon_(): string|undefined {
-    return this.iconTable_.getIconName(this.state.icon);
-  }
-
-  protected getIconStyle_(): string|undefined {
-    const providedIconUrl = this.iconTable_.getIconMaskUrl(this.state.icon);
-    const providedIconColor = this.iconTable_.getIconColor(this.state.icon);
-    let style = '';
-
-    if (providedIconUrl) {
-      style += `--cr-icon-image: url(${providedIconUrl});`;
+    if (changedProperties.has('state')) {
+      const oldState = changedProperties.get('state');
+      if (!oldState || oldState.shouldShowChip !== this.state.shouldShowChip) {
+        const button = this.$.button;
+        const fireIpc = () => {
+          this.browserProxy_.toolbarUIHandler.onPageActionChipShowingChanged(
+              this.state.pageActionId);
+        };
+        button.addEventListener('transitionend', fireIpc, {once: true});
+        ensureTransitionEndEvent(button);
+      }
     }
-    if (providedIconColor) {
-      style += `--cr-icon-button-fill-color: ${providedIconColor};`;
-    }
-    return style.length > 0 ? style : undefined;
   }
 
   protected getAriaLabel_(): string {

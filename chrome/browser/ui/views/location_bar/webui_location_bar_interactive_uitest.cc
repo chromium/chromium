@@ -76,7 +76,7 @@ const WebContentsInteractionTestUtil::DeepQuery kAIMButtonOuter = {
     "toolbar-app", "location-bar", "page-action-icons", "page-action-icon"};
 const WebContentsInteractionTestUtil::DeepQuery kAIMButton = {
     "toolbar-app", "location-bar", "page-action-icons", "page-action-icon",
-    "cr-icon-button"};
+    "toolbar-chip-button"};
 
 class ViewWidthObserver
     : public ui::test::
@@ -664,8 +664,9 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHideAIPopup) {
       // Clear it.
       SendKeyPress(kWebUIToolbarId, ui::VKEY_BACK), WaitTillOmniboxViewText(""),
       // Since text is empty, we should be able to see the AI mode button.
-      WaitForJsResultAt(kWebUIToolbarId, kAIMButton,
-                        "(el) => el.title === 'Ask AI Mode in Google Search'"),
+      WaitForJsResultAt(
+          kWebUIToolbarId, kAIMButton,
+          "(el) => el.tooltip === 'Ask AI Mode in Google Search'"),
       // Click it.
       ClickElement(kWebUIToolbarId, kAIMButton),
       // Should hide classic popup, show AIM one.

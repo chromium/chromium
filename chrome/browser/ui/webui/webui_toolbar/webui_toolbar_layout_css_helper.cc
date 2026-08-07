@@ -216,6 +216,9 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   }
 
   // Add insets.
+  AddInsets("--location-bar-page-action-icon-padding",
+            GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING), css_string);
+
   AddInsets("--location-bar-page-info-icon-padding",
             GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING), css_string);
 

@@ -289,26 +289,32 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
               if (!icon.state || icon.state.pageActionId !== $1) {
                 return false;
               }
-              const button = icon.shadowRoot?.querySelector('cr-icon-button');
+              const button = icon.shadowRoot?.querySelector(
+                  'toolbar-chip-button');
               if (!button) {
                 return false;
               }
-              if (icon.state.icon.handleId == 0) {
-                return $2;
+              if ($2) {
+                return true;
               }
-              if (!button.hasAttribute('iron-icon')) {
+              const iconFromTable = icon.shadowRoot?.querySelector(
+                  'icon-from-table');
+              if (!iconFromTable) {
                 return false;
               }
-              const crIcons =
-                  button.shadowRoot?.querySelectorAll('#icon cr-icon') || [];
-              if (crIcons.length === 0) {
-                return false;
+              const container = iconFromTable.shadowRoot?.querySelector(
+                  '#container');
+              if (!container) return false;
+
+              // Ensure the icon properly resolved and rendered its SVG
+              // contents. If an SVG is missing from the WebUI iconset
+              // bundle, this will fail.
+              const crIcon = container.querySelector('cr-icon');
+              if (crIcon) {
+                return !!crIcon.shadowRoot?.querySelector('svg');
               }
-              for (const crIcon of crIcons) {
-                if (!crIcon.shadowRoot?.querySelector('svg')) {
-                  return false;
-                }
-              }
+
+              // Fallback for non-vector icons.
               return true;
             });
         )"}),

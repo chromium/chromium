@@ -132,7 +132,7 @@ suite('IconFromTableTest', function() {
       const style = renderer.computedStyleMap();
       assertEquals(
           'rgba(0, 0, 255, 1.0)',
-          style.get('--cr-icon-button-fill-color')?.toString());
+          style.get('--iron-icon-fill-color')?.toString());
     }
 
     {

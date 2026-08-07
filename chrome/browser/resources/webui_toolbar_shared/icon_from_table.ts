@@ -11,7 +11,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './icon_from_table.css.js';
 import {getHtml} from './icon_from_table.html.js';
 import type {IconHandle} from './icon_handle.mojom-webui.js';
-import {IconType} from './icon_handle.mojom-webui.js';
 import {IconTable} from './icon_table.js';
 import type {IconInfo} from './icon_table.js';
 
@@ -70,13 +69,11 @@ export class IconFromTableElement extends CrLitElement {
   // Will be undefined if the icon doesn't request to be rendered in a specific
   // color (including when it's multicolor).
   protected getIconColorCss_(): string|undefined {
-    const propName =
-        (this.iconInfo_ && this.iconInfo_.type === IconType.kIconSet) ?
-        '--cr-icon-button-fill-color' :
-        'color';
-    return this.iconInfo_ && this.iconInfo_.color ?
-        `${propName}: ${skColorToRgba(this.iconInfo_.color)}` :
-        undefined;
+    if (!this.iconInfo_ || !this.iconInfo_.color) {
+      return undefined;
+    }
+    const rgba = skColorToRgba(this.iconInfo_.color);
+    return `color: ${rgba}; --iron-icon-fill-color: ${rgba};`;
   }
 }
 

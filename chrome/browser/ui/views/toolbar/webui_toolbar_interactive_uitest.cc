@@ -258,6 +258,16 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
     ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
                                        &webui_toolbar_view, &web_view,
                                        browser));
+
+    // Force the physical mouse cursor off the toolbar and into the center of
+    // the main web page. We do this at the very beginning of the test to ensure
+    // any CSS hover fade-out transitions have time to finish while the WebUI
+    // finishes loading during `WaitForLoadStop`.
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    gfx::Point safe_page_center =
+        browser_view->contents_web_view()->GetBoundsInScreen().CenterPoint();
+    ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(safe_page_center));
+
     // Wait for the WebContents to finish loading before checking `IsLoading()`,
     // in case a load is triggered, which can happen whenever
     // `WebUIToolbarWebView::AddedToWidget()` is called if WebUI is not

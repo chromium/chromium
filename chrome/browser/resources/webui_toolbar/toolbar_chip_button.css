@@ -40,10 +40,11 @@
   padding-inline-start: var(--toolbar-chip-leading-margin, 0);
 
   /* Animation durations matching Native Views parity. */
-  /* (see views::kHighlightFadeOutOnHoverChangeDuration in views/animation/ink_drop_host.cc) */
+  /* (see views::kHighlightFadeOutOnHoverChangeDuration in
+   * views/animation/ink_drop_host.cc) */
   --toolbar-chip-highlight-fade-duration: 250ms;
   /* (see views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT in
-   *  views/animation/flood_fill_ink_drop_ripple.cc) */
+   * views/animation/flood_fill_ink_drop_ripple.cc) */
   --toolbar-chip-pressed-fade-duration: 300ms;
 }
 
@@ -77,7 +78,8 @@
 
 /* --- HIGHLIGHT ENGINE ---
  * Mimics views::InkDrop highlight and pressed states for 1:1 parity.
- * We use ::before for the hover highlight and ::after for the pressed highlight.
+ * We use ::before for the hover highlight and ::after for the pressed
+ * highlight.
  * Slotted elements are positioned (position: relative; z-index: 1) to paint
  * cleanly on top of these absolute background highlights. */
 
@@ -104,14 +106,16 @@
 }
 
 /* HOVER STATE: Highlight layer fade-in.
- * SHOW_ON_RIPPLE compositing: Hover layer stays visible during active/menu states. */
+ * SHOW_ON_RIPPLE compositing: Hover layer stays visible during active/menu
+ * states. */
 :host(:hover) #button::before,
 :host([is-menu-open]) #button::before {
   opacity: 1;
 }
 
 /* --- PRESSED/MENU STATE ---
- * Pressed highlight layer fade-in. This layer composites on top of the hover layer. */
+ * Pressed highlight layer fade-in. This layer composites on top of the hover
+ * layer. */
 :host(:active) #button::after,
 :host([is-menu-open]) #button::after {
   opacity: 1;
@@ -141,7 +145,8 @@
   flex-shrink: 0;
   font-size: var(--toolbar-chip-font-size);
   font-weight: var(--toolbar-chip-font-weight);
-  position: relative; /* Stacks above absolute background pseudo-element highlights */
+  /* Stacks above absolute background pseudo-element highlights */
+  position: relative;
   white-space: nowrap;
   z-index: 1;
 }
@@ -149,8 +154,9 @@
 #button ::slotted(cr-icon),
 #button ::slotted([slot='prefix-icon']),
 #button ::slotted([slot='suffix-icon']) {
-  height: var(--toolbar-chip-icon-size);
-  width: var(--toolbar-chip-icon-size);
+  --icon-size: var(--toolbar-chip-icon-size);
+  --iron-icon-width: var(--toolbar-chip-icon-size);
+  --iron-icon-height: var(--toolbar-chip-icon-size);
 }
 
 :host([has-label]) {
@@ -182,6 +188,60 @@
  * away from the rounded corners */
 :host([has-label][has-suffix-icon]) #button {
   padding-inline-end: var(--toolbar-chip-padding-end);
+}
+
+/* --- SLIDING LABEL ANIMATION ---
+ * Natively handles sliding expansion/collapse animations for the slotted label
+ * text when the [has-label] attribute is toggled.
+ *
+ * When to use [animates-label]:
+ * - Provide this attribute on chips that should slide open/closed (e.g.,
+ *   page_action_icon, permission_chip).
+ * - Omit this attribute on chips with static labels, or chips that should
+ *   instantly appear/disappear without sliding.
+ */
+:host([animates-label]) {
+  interpolate-size: allow-keywords;
+}
+
+/* Attach transition properties to the base button so they are always active.
+ * This ensures properties animate smoothly in both directions (expanding and
+ * collapsing) whenever the [has-label] state is toggled. */
+:host([animates-label]) #button {
+  transition:
+      gap var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier),
+      padding-inline-start var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier),
+      padding-inline-end var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier),
+      background-color var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier);
+}
+
+/* When the label is hidden, collapse the flex gap between the icon and the
+ * text so there is no lingering empty space inside the circular button. */
+:host([animates-label]:not([has-label])) #button {
+  gap: 0;
+}
+
+/* Target the label text (the slotted element that does not have a specific
+ * "slot" attribute). When the chip expands, this transitions the text from 0
+ * width and opacity up to its intrinsic max-content width and full opacity. */
+:host([animates-label]) ::slotted(:not([slot])) {
+  max-width: max-content;
+  overflow: hidden;
+  transition:
+      max-width var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier),
+      opacity var(--toolbar-chip-expand-duration, 600ms)
+          var(--ease-out-cubic-bezier);
+}
+
+/* When the label is hidden, crush its width and opacity to 0. */
+:host([animates-label]:not([has-label])) ::slotted(:not([slot])) {
+  max-width: 0;
+  opacity: 0;
 }
 
 #button:disabled {

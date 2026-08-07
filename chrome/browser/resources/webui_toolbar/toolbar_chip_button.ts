@@ -28,29 +28,19 @@ export class ToolbarChipButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
-      ariaLabel: {
-        type: String,
-        attribute: 'aria-label',
-      },
-      ariaDescription: {
-        type: String,
-        attribute: 'aria-description',
-      },
-      tooltip: {
-        type: String,
-        attribute: 'title',
-      },
-      ariaHasPopup: {
-        type: String,
-        attribute: 'aria-haspopup',
-      },
-      ariaExpanded: {
-        type: String,
-        attribute: 'aria-expanded',
-      },
+      ariaLabel: {type: String},
+      ariaDescription: {type: String},
+      tooltip: {type: String},
+      ariaHasPopup: {type: String},
+      ariaExpanded: {type: String},
       disabled: {
         type: Boolean,
         reflect: true,
+      },
+      animatesLabel: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'animates-label',
       },
     };
   }
@@ -61,6 +51,7 @@ export class ToolbarChipButtonElement extends CrLitElement {
   override accessor ariaHasPopup: string|null = null;
   override accessor ariaExpanded: string|null = null;
   accessor disabled: boolean = false;
+  accessor animatesLabel: boolean = false;
 
   override focus() {
     this.$.button.focus();

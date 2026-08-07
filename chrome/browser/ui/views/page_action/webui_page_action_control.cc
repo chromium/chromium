@@ -237,6 +237,10 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   state->icon = cached_icon_ =
       owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
           image_model, cached_icon_);
+  state->text = model->GetText();
+  state->should_show_chip = model->ShouldShowSuggestionChip();
+  state->should_animate_chip_in = model->GetShouldAnimateChipIn();
+  state->should_animate_chip_out = model->GetShouldAnimateChipOut();
   return state;
 }
 
