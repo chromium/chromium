@@ -1156,13 +1156,16 @@ public class CompositorViewHolder extends FrameLayout
         // The view size takes into account side-anchored UI whose width should be subtracted from
         // the view if they are visible, therefore shrinking the Blink-side view size.
         int horizontalViewportInsets = 0;
+        int sideUiLeftMargin = 0;
         if ((AndroidSidePanelEnabledFn.isEnabled()
                         || VerticalTabUtils.isVerticalTabsEligible(mActivity))
                 && mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
-            horizontalViewportInsets =
-                    sideUiSpecs.getWidth(AnchorSide.LEFT) + sideUiSpecs.getWidth(AnchorSide.RIGHT);
+            sideUiLeftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
+            horizontalViewportInsets = sideUiLeftMargin + sideUiSpecs.getWidth(AnchorSide.RIGHT);
         }
+        ContentView cv = (ContentView) getContentView();
+        if (cv != null) cv.setContentOffsetXPix(sideUiLeftMargin);
 
         // The view size takes into account of the browser controls whose height should be
         // subtracted from the view if they are visible, therefore shrink Blink-side view size.
