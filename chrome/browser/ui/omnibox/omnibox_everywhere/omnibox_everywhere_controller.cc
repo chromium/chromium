@@ -163,7 +163,6 @@ Profile* OmniboxEverywhereController::GetTargetProfile() {
 
 void OmniboxEverywhereController::OnKeyPressed(
     const ui::Accelerator& accelerator) {
-  ui_manager_->SetIsNavigating(false);
   InvokeForActiveBrowserProfile(InvocationSource::kGlobalHotkey);
 }
 

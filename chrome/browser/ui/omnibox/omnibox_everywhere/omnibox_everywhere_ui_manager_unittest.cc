@@ -248,21 +248,6 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShutdownSynchronouslyDestroysResources) {
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, NavigationAndActivationStateTracking) {
-  auto ui_manager = CreateUIManager();
-
-  EXPECT_FALSE(ui_manager->IsNavigating());
-
-  ui_manager->ShowForProfile(&profile_, GetContext());
-  EXPECT_FALSE(ui_manager->IsNavigating());
-
-  ui_manager->SetIsNavigating(true);
-  EXPECT_TRUE(ui_manager->IsNavigating());
-
-  ui_manager->Close();
-  EXPECT_FALSE(ui_manager->IsNavigating());
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowPositionsOnTargetDisplay DISABLED_ShowPositionsOnTargetDisplay
 #else

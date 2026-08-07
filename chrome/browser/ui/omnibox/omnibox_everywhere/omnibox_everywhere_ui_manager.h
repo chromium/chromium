@@ -117,9 +117,6 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override {}
 
-  void SetIsNavigating(bool is_navigating) { is_navigating_ = is_navigating; }
-  bool IsNavigating() const { return is_navigating_; }
-
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
   views::Widget* widget() { return widget_.get(); }
@@ -185,7 +182,6 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
   bool is_context_menu_open_ = false;
-  bool is_navigating_ = false;
   std::optional<SkRegion> draggable_region_;
 
   std::unique_ptr<views::UnhandledKeyboardEventHandler>

@@ -35,8 +35,6 @@ class OmniboxEverywhereService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  void SetIsNavigating(bool is_navigating);
-
   void OnDrivePickerOpened();
   void OnDrivePickerClosed();
 

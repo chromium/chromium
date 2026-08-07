@@ -174,7 +174,6 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
     browser_collection_observation_.Reset();
   }
   profile_ = profile;
-  is_navigating_ = false;
 
   EnsureContentsWrapperInitialized(profile_);
   CreateAndInitWidget(context);
@@ -312,7 +311,6 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
 }
 
 void OmniboxEverywhereUIManager::Close() {
-  is_navigating_ = false;
   if (widget_) {
     if (is_file_chooser_open_ || is_drive_picker_open_) {
       CleanUpWidget();
@@ -363,7 +361,6 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
   is_context_menu_open_ = false;
-  is_navigating_ = false;
   draggable_region_.reset();
   browser_collection_observation_.Reset();
 }
