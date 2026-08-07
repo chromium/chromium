@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -20,6 +21,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -141,6 +143,13 @@ constexpr char kRequestWillBeSent[] = "Network.requestWillBeSent";
 constexpr char kRequestIdTokenHistogram[] = "Blink.FedCm.Status.RequestIdToken";
 constexpr char kIdpSigninMatchHistogram[] = "Blink.FedCm.Status.IdpSigninMatch";
 constexpr char kDisconnectHistogram[] = "Blink.FedCm.Status.Disconnect";
+constexpr char kRequestUrl[] = "request.url";
+constexpr char kRequestMethod[] = "request.method";
+constexpr char kIssueAdded[] = "Audits.issueAdded";
+constexpr char kIssueCode[] = "issue.code";
+constexpr char kFedCMIssueReasonStr[] =
+    "issue.details.federatedAuthRequestIssueDetails."
+    "federatedAuthRequestIssueReason";
 
 Matcher<WebContentsConsoleObserver::Message> HasConsoleMessage(
     const std::string& expected_substr) {
@@ -155,12 +164,23 @@ bool IsPrerender2FallbackPrefetchSpecRulesEnabled() {
       features::kPrerender2FallbackPrefetchSpecRules);
 }
 
-bool MatchesNetworkRequest(const std::string& expected_url,
-                           const std::string& expected_method,
-                           const base::DictValue& params) {
-  const std::string* url = params.FindStringByDottedPath("request.url");
-  const std::string* method = params.FindStringByDottedPath("request.method");
-  return url && *url == expected_url && method && *method == expected_method;
+using NotificationExpectations =
+    std::vector<std::pair<std::string, std::string>>;
+
+bool MatchesNotification(const NotificationExpectations& expectations,
+                         const base::DictValue& params) {
+  return std::ranges::all_of(
+      expectations,
+      [&params](const std::pair<std::string, std::string>& expectation) {
+        const std::string* value =
+            params.FindStringByDottedPath(expectation.first);
+        return value ? (*value == expectation.second) : false;
+      });
+}
+
+TestDevToolsProtocolClient::NotificationMatcher ExpectsNotification(
+    NotificationExpectations expectations) {
+  return base::BindRepeating(&MatchesNotification, std::move(expectations));
 }
 
 struct ResponseEntry {
@@ -3086,6 +3106,16 @@ class ConnectionAllowlistDevToolsTest : public ConnectionAllowlistTest,
  public:
   ConnectionAllowlistDevToolsTest() = default;
   ~ConnectionAllowlistDevToolsTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ConnectionAllowlistTest::SetUpOnMainThread();
+    AttachToWebContents(shell()->web_contents());
+  }
+
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    ConnectionAllowlistTest::TearDownOnMainThread();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistDevToolsTest,
@@ -3107,9 +3137,6 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistDevToolsTest,
       embedded_https_test_server().GetURL("b.test", "/cross-origin-resource");
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  AttachToWebContents(shell()->web_contents());
-
   SendCommandSync("Network.enable");
 
   // Load the cross-origin resource using DevTools
@@ -3141,8 +3168,6 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistDevToolsTest,
 
   EXPECT_EQ(resource->FindInt("netError").value_or(0),
             net::ERR_NETWORK_ACCESS_REVOKED);
-
-  DetachProtocolClient();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3173,8 +3198,6 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server().GetURL("b.test", "/cross-origin-resource");
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  AttachToWebContents(shell()->web_contents());
 
   // Enable auto-attach to attach the Service Worker.
   base::DictValue auto_attach_params;
@@ -3237,8 +3260,6 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(resource->FindInt("netError").value_or(0),
             net::ERR_NETWORK_ACCESS_REVOKED);
-
-  DetachProtocolClient();
 }
 
 // Verifies that if the initiating document's Connection-Allowlist blocks the
@@ -3739,14 +3760,14 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
 // matches the connection allowlist URL patterns, otherwise the request is
 // blocked.
 
-class ConnectionAllowlistFedCmTest : public ConnectionAllowlistTest,
-                                     public TestDevToolsProtocolClient {
+class ConnectionAllowlistFedCmTest : public ConnectionAllowlistDevToolsTest {
  public:
   ConnectionAllowlistFedCmTest() = default;
   ~ConnectionAllowlistFedCmTest() override = default;
 
   void SetUpOnMainThread() override {
-    ConnectionAllowlistTest::SetUpOnMainThread();
+    ConnectionAllowlistDevToolsTest::SetUpOnMainThread();
+    set_agent_host_can_close();
 
     test_browser_client_ =
         std::make_unique<webid::WebIdTestContentBrowserClient>();
@@ -3901,9 +3922,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
 
   ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
-
-  AttachToWebContents(shell()->web_contents());
   SendCommandSync("Network.enable");
+  SendCommandSync("Audits.enable");
 
   std::optional<std::string> well_known_response_error =
       webid::ComputeConsoleMessageForHttpResponseCode(
@@ -3928,19 +3948,22 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmWellKnownBlocked) {
 
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // well-known request and that its method is "GET".
-  auto matches_well_known_get = [](const std::string& expected_url,
-                                   const base::DictValue& params) {
-    const std::string* url = params.FindStringByDottedPath("request.url");
-    const std::string* method = params.FindStringByDottedPath("request.method");
-    return url && *url == expected_url && method && *method == "GET";
-  };
-  EXPECT_FALSE(
-      WaitForMatchingNotification(
-          kRequestWillBeSent,
-          base::BindRepeating(matches_well_known_get, WellKnownURL().spec()))
-          .empty());
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kRequestWillBeSent,
+                   ExpectsNotification({{kRequestUrl, WellKnownURL().spec()},
+                                        {kRequestMethod, "GET"}}))
+                   .empty());
 
-  DetachProtocolClient();
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             WellKnownBlockedByConnectionAllowlist}}))
+                   .empty());
 
   // Verify the config file request completed successfully.
   ExpectRequestsSucceeded(monitor, {ConfigURL()});
@@ -4227,6 +4250,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmConfigBlocked) {
 
   ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+  SendCommandSync("Audits.enable");
 
   std::optional<std::string> config_response_error =
       webid::ComputeConsoleMessageForHttpResponseCode(
@@ -4265,6 +4289,17 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmConfigBlocked) {
   histogram_tester.ExpectUniqueSample(
       kRequestIdTokenHistogram,
       webid::RequestIdTokenStatus::kConfigBlockedByConnectionAllowlist, 1);
+
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             ConfigBlockedByConnectionAllowlist}}))
+                   .empty());
 }
 
 // FedCM API's fetch of the well-known file and the config file are allowed by
@@ -4390,6 +4425,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsBlocked) {
 
   ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+  SendCommandSync("Audits.enable");
 
   std::optional<std::string> accounts_response_error =
       webid::ComputeConsoleMessageForHttpResponseCode(
@@ -4430,6 +4466,17 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmAccountsBlocked) {
   histogram_tester.ExpectUniqueSample(
       kIdpSigninMatchHistogram,
       webid::IdpSigninMatchStatus::kUnknownStatusWithoutAccounts, 1);
+
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             AccountsBlockedByConnectionAllowlist}}))
+                   .empty());
 }
 
 // Same as test `FedCmAccountsBlocked`, but invokes `SetIdpSigninStatus` and
@@ -4552,9 +4599,8 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
 
   ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
-
-  AttachToWebContents(shell()->web_contents());
   SendCommandSync("Network.enable");
+  SendCommandSync("Audits.enable");
 
   std::optional<std::string> token_response_error =
       webid::ComputeConsoleMessageForHttpResponseCode(
@@ -4579,18 +4625,11 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
 
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // token request and that its method is "POST".
-  auto matches_token_post = [](const std::string& expected_url,
-                               const base::DictValue& params) {
-    const std::string* url = params.FindStringByDottedPath("request.url");
-    const std::string* method = params.FindStringByDottedPath("request.method");
-    return url && *url == expected_url && method && *method == "POST";
-  };
   EXPECT_FALSE(WaitForMatchingNotification(
                    kRequestWillBeSent,
-                   base::BindRepeating(matches_token_post, TokenURL().spec()))
+                   ExpectsNotification({{kRequestUrl, TokenURL().spec()},
+                                        {kRequestMethod, "POST"}}))
                    .empty());
-
-  DetachProtocolClient();
 
   // The requests to well-known, config, and accounts should be allowed.
   ExpectRequestsSucceeded(monitor,
@@ -4606,6 +4645,17 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmTokenBlocked) {
   histogram_tester.ExpectUniqueSample(
       kRequestIdTokenHistogram,
       webid::RequestIdTokenStatus::kIdTokenBlockedByConnectionAllowlist, 1);
+
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             IdTokenBlockedByConnectionAllowlist}}))
+                   .empty());
 }
 
 // FedCM API's fetch of the account picture is allowed by the connection
@@ -5143,8 +5193,7 @@ class EmailVerificationTestContentBrowserClient
 // allowed or blocked, depending on the value of connection allowlist's redirect
 // directive.
 class ConnectionAllowlistEmailVerificationTest
-    : public ConnectionAllowlistTest,
-      public TestDevToolsProtocolClient {
+    : public ConnectionAllowlistDevToolsTest {
  public:
   ConnectionAllowlistEmailVerificationTest() {
     email_verification_feature_list_.InitWithFeatures(
@@ -5155,7 +5204,7 @@ class ConnectionAllowlistEmailVerificationTest
   ~ConnectionAllowlistEmailVerificationTest() override = default;
 
   void SetUpOnMainThread() override {
-    ConnectionAllowlistTest::SetUpOnMainThread();
+    ConnectionAllowlistDevToolsTest::SetUpOnMainThread();
 
     test_browser_client_ =
         std::make_unique<EmailVerificationTestContentBrowserClient>();
@@ -5536,8 +5585,6 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
-
-  AttachToWebContents(shell()->web_contents());
   SendCommandSync("Network.enable");
 
   URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
@@ -5551,13 +5598,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // email verification well-known request and that its method is "GET".
-  base::DictValue notification = WaitForMatchingNotification(
-      kRequestWillBeSent,
-      base::BindRepeating(&MatchesNetworkRequest,
-                          EmailVerificationWellKnownURL().spec(), "GET"));
-  EXPECT_FALSE(notification.empty());
-
-  DetachProtocolClient();
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kRequestWillBeSent,
+                   ExpectsNotification(
+                       {{kRequestUrl, EmailVerificationWellKnownURL().spec()},
+                        {kRequestMethod, "GET"}}))
+                   .empty());
 
   // Verify the initial DNS request (`DnsURL()`) and the WebID well-known and
   // accounts requests (`WebIdentityWellKnownURL()` and `AccountsURL()`)
@@ -5709,8 +5755,6 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
   EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
-
-  AttachToWebContents(shell()->web_contents());
   SendCommandSync("Network.enable");
 
   URLLoaderMonitor monitor(ToSet(GetAllRequestURLs()));
@@ -5734,12 +5778,11 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   // Verify that DevTools received Network.requestWillBeSent for the blocked
   // token request and that its method is "POST".
-  base::DictValue notification = WaitForMatchingNotification(
-      kRequestWillBeSent,
-      base::BindRepeating(&MatchesNetworkRequest, TokenURL().spec(), "POST"));
-  EXPECT_FALSE(notification.empty());
-
-  DetachProtocolClient();
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kRequestWillBeSent,
+                   ExpectsNotification({{kRequestUrl, TokenURL().spec()},
+                                        {kRequestMethod, "POST"}}))
+                   .empty());
 
   // The JWKS request is allowed.
   ExpectRequestsSucceeded(monitor, {JwksURL()});
