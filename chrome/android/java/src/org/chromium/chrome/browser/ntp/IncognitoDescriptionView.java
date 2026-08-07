@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp;
 import static org.chromium.ui.base.ViewUtils.dpToPx;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
@@ -97,12 +96,14 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // View#onConfigurationChanged() doesn't get called when resizing this view in
-        // multi-window mode, so #onMeasure() is used instead.
-        Configuration config = getContext().getResources().getConfiguration();
-        if (mWidthDp != config.screenWidthDp || mHeightDp != config.screenHeightDp) {
-            mWidthDp = config.screenWidthDp;
-            mHeightDp = config.screenHeightDp;
+        // View#onConfigurationChanged() doesn't get called when resizing this view (e.g. in
+        // multi-window mode or when side UI / vertical tabs is enabled), so #onMeasure() is used
+        // instead with the view's measured width and height.
+        int widthDp = ViewUtils.pxToDp(getContext(), MeasureSpec.getSize(widthMeasureSpec));
+        int heightDp = ViewUtils.pxToDp(getContext(), MeasureSpec.getSize(heightMeasureSpec));
+        if (widthDp > 0 && (mWidthDp != widthDp || mHeightDp != heightDp)) {
+            mWidthDp = widthDp;
+            mHeightDp = heightDp;
             adjustView();
         }
 
