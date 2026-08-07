@@ -21,6 +21,7 @@ static_library("browser") {
     "one_time_token_backend_notification.h",
     "one_time_token_log_sink.cc",
     "one_time_token_log_sink.h",
+    "one_time_token_retrieval_error.cc",
     "one_time_token_retrieval_error.h",
     "one_time_token_service.h",
     "one_time_token_service_impl.cc",

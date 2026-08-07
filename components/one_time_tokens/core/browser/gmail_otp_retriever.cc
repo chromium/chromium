@@ -301,4 +301,14 @@ void GmailOtpRetriever::OnOpaqueOriginDetected() {
       .Run(base::unexpected(OneTimeTokenRetrievalError::kGmailOtpUnknown));
 }
 
+std::ostream& operator<<(std::ostream& os, GmailOtpRetriever::Source source) {
+  switch (source) {
+    case GmailOtpRetriever::Source::kCache:
+      return os << "kCache";
+    case GmailOtpRetriever::Source::kReceived:
+      return os << "kReceived";
+  }
+  return os << static_cast<int>(source);
+}
+
 }  // namespace one_time_tokens

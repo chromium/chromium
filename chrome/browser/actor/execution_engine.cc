@@ -616,7 +616,9 @@ ExecutionEngine::ExecutionEngine(
                                                                   task_->id())),
       actor_one_time_token_filling_service_(
           std::make_unique<autofill::ActorOneTimeTokenFillingServiceImpl>(
-              task_->GetProfile())),
+              task_->GetProfile(),
+              journal_,
+              task_->id())),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       origin_gating_checker_(
           *this,

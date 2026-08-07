@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "components/actor/core/actor_switches.h"
+#include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -52,6 +54,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
@@ -100,8 +103,10 @@ GetAutofillManager(const tabs::TabInterface& tab) {
 }  // namespace
 
 ActorOneTimeTokenFillingServiceImpl::ActorOneTimeTokenFillingServiceImpl(
-    Profile* profile)
-    : profile_(profile) {}
+    Profile* profile,
+    base::SafeRef<::actor::AggregatedJournal> journal,
+    ::actor::TaskId task_id)
+    : profile_(profile), journal_(journal), task_id_(task_id) {}
 
 ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() =
     default;
@@ -177,8 +182,14 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   RecordActorOneTimeTokenFillingServiceRetrieveOtp(kStart);
 
   tabs::TabInterface* tab = tab_handle.Get();
+
   if (!tab || !tab->GetContents()) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNullTab);
+    journal_->Log(GURL(), task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Null tab or WebContents.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -187,11 +198,25 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     return;
   }
 
+  const GURL url = tab->GetContents()->GetLastCommittedURL();
+
+  journal_->Log(url, task_id_,
+                "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+                ::actor::JournalDetailsBuilder()
+                    .Add("otp_frame_origin", otp_frame_origin.Serialize())
+                    .Add("is_login_flow", is_login_flow)
+                    .Build());
+
   std::string mock_otp =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::actor::switches::kAttemptOtpFillingMockGmailOtpValue);
   if (!mock_otp.empty()) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kMockOtp);
+    journal_->Log(url, task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .Add("status", "Using mock OTP")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(mock_otp)));
     return;
@@ -204,6 +229,11 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       OneTimeTokenServiceFactory::GetForProfile(profile_);
   if (!service) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
+    journal_->Log(url, task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("OneTimeTokenService not available.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -221,6 +251,12 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   if (retrieve_otp_callback_) {
     RecordActorOtpRetrieveOtpCallbackSuperseded(
         ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded);
+    journal_->Log(url, task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .Add("warning",
+                           "Superseding previous pending RetrieveOtp callback.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -234,16 +270,23 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *service, std::move(checker), otp_frame_origin, is_login_flow,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
+    const GURL& url,
     base::expected<one_time_tokens::GmailOtpRetriever::Result,
                    OneTimeTokenRetrievalError> result) {
   gmail_otp_retriever_.reset();
   CHECK(retrieve_otp_callback_);
 
   if (!result.has_value()) {
+    journal_->Log(url, task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Failed to retrieve OTP from backend.")
+                      .Add("error_code", result.error())
+                      .Build());
     // TODO(crbug.com/532013198): Expand `kError` into all possible errors.
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(
         result.error() == OneTimeTokenRetrievalError::kSubscriptionExpired
@@ -252,6 +295,10 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
     std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
     return;
   }
+
+  journal_->Log(
+      url, task_id_, "ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved",
+      ::actor::JournalDetailsBuilder().Add("source", result->source).Build());
   if (result->source == one_time_tokens::GmailOtpRetriever::Source::kCache) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kSuccessCacheMatchFound);
   } else {
@@ -269,15 +316,33 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   using enum ActorOneTimeTokenFillingServiceFillOtp;
   RecordActorOneTimeTokenFillingServiceFillOtp(kStart);
   tabs::TabInterface* tab = tab_handle.Get();
+
   if (!tab || !tab->GetContents()) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kNullTab);
+    journal_->Log(GURL(), task_id_,
+                  "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Null tab or WebContents.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
 
+  const GURL url = tab->GetContents()->GetLastCommittedURL();
+
+  journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                ::actor::JournalDetailsBuilder()
+                    .Add("trigger_field_count", trigger_field_ids.size())
+                    .Add("otp_length", otp.size())
+                    .Build());
+
   if (trigger_field_ids.empty()) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kEmptyTriggerFieldIds);
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Empty trigger_field_ids.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -289,8 +354,10 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // coordinates sequential usage, concurrent calls are unexpected.
   if (filling_observer_) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kConcurrentCall);
-    LOG(WARNING) << "FillOtp called while another filling operation is still "
-                    "in progress. The new request is ignored.";
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Concurrent filling operation in progress.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -303,7 +370,10 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       maybe_manager = GetAutofillManager(*tab);
   if (!maybe_manager.has_value()) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kNoAutofillManager);
-    LOG(WARNING) << "FillOtp failed: AutofillManager not available.";
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("AutofillManager not available.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -321,8 +391,12 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       autofill_manager.FindCachedFormById(trigger_field_id);
   if (!form_structure) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kFormStructureNotFound);
-    LOG(WARNING) << "FillOtp failed: Form structure containing trigger field "
-                 << trigger_field_id << " not found in cache.";
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Form structure containing trigger field not "
+                                "found in cache.")
+                      .Add("trigger_field_id", trigger_field_id)
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -331,8 +405,11 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
       form_structure->GetFieldById(trigger_field_id);
   if (!autofill_field) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kTriggerFieldNotFound);
-    LOG(WARNING) << "FillOtp failed: Trigger field " << trigger_field_id
-                 << " not found in the form structure.";
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Trigger field not found in form structure.")
+                      .Add("trigger_field_id", trigger_field_id)
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -346,7 +423,10 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
 
   if (otp_fill_data.empty()) {
     RecordActorOneTimeTokenFillingServiceFillOtp(kEmptyFillData);
-    LOG(WARNING) << "FillOtp failed: Generated OtpFillData is empty.";
+    journal_->Log(url, task_id_, "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                  ::actor::JournalDetailsBuilder()
+                      .AddError("Generated OtpFillData is empty.")
+                      .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -373,29 +453,43 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   // Activate the observer and wait for completion.
   filling_observer_->Activate(base::BindOnce(
       [](base::WeakPtr<ActorOneTimeTokenFillingServiceImpl> service,
-         base::OnceCallback<void(bool)> callback,
+         const GURL& url, base::OnceCallback<void(bool)> callback,
          base::expected<base::flat_map<FieldGlobalId, std::string>,
                         ActorFormFillingError> result) {
-        using enum ActorOneTimeTokenFillingServiceFillOtp;
-        if (result.has_value()) {
-          RecordActorOneTimeTokenFillingServiceFillOtp(kSuccess);
-        } else {
-          RecordActorOneTimeTokenFillingServiceFillOtp(kError);
-        }
-        // Once the filling operation completes or times out, we must reset the
-        // observer to clear the busy state so subsequent OTP filling requests
-        // can proceed.
-        // We use `DeleteSoon` to destroy the observer asynchronously after this
-        // callback completes to avoid potential self-deletion/lifetime issues
-        // if the callback is triggered synchronously (leaving the observer
-        // in the call stack).
-        if (service && service->filling_observer_) {
-          base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-              FROM_HERE, std::move(service->filling_observer_));
+        if (service) {
+          using enum ActorOneTimeTokenFillingServiceFillOtp;
+          if (result.has_value()) {
+            RecordActorOneTimeTokenFillingServiceFillOtp(kSuccess);
+            service->journal_->Log(
+                url, service->task_id_,
+                "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                ::actor::JournalDetailsBuilder()
+                    .Add("filling_result", "Success")
+                    .Build());
+          } else {
+            RecordActorOneTimeTokenFillingServiceFillOtp(kError);
+            service->journal_->Log(
+                url, service->task_id_,
+                "ActorOneTimeTokenFillingServiceImpl::FillOtp",
+                ::actor::JournalDetailsBuilder()
+                    .AddError(result.error())
+                    .Build());
+          }
+
+          // Once the filling operation completes or times out, we must reset
+          // the observer to clear the busy state so subsequent OTP filling
+          // requests can proceed. We use `DeleteSoon` to destroy the observer
+          // asynchronously after this callback completes to avoid potential
+          // self-deletion/lifetime issues if the callback is triggered
+          // synchronously (leaving the observer in the call stack).
+          if (service->filling_observer_) {
+            base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+                FROM_HERE, std::move(service->filling_observer_));
+          }
         }
         std::move(callback).Run(result.has_value());
       },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
 FormFillingContextStatus
