@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -111,33 +112,36 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShowAndCloseWidget) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Closing the UI manager should trigger widget closure.
-  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Closing the UI manager should trigger hiding the widget.
   ui_manager->Close();
-  waiter.Wait();
+  EXPECT_FALSE(widget->IsVisible());
+  EXPECT_TRUE(ui_manager->widget());
 
+  // Shutdown should destroy the widget.
+  ui_manager->Shutdown();
   EXPECT_FALSE(ui_manager->widget());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsClosing) {
+TEST_F(OmniboxEverywhereUIManagerTest, ShowWhileWidgetIsHidden) {
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
   views::Widget* first_widget = ui_manager->widget();
   ASSERT_TRUE(first_widget);
 
-  // Close the widget.
+  // Close (hide) the widget.
   ui_manager->Close();
+  EXPECT_FALSE(first_widget->IsVisible());
 
-  // Showing it again immediately should successfully clean up the closing
-  // widget and create a new visible widget.
+  // Showing it again immediately should reactivate the existing hidden widget.
   ui_manager->ShowForProfile(&profile_, GetContext());
   views::Widget* second_widget = ui_manager->widget();
   ASSERT_TRUE(second_widget);
   EXPECT_TRUE(second_widget->IsVisible());
+  EXPECT_EQ(first_widget, second_widget);
 
   // Clean up.
-  ui_manager->Close();
+  ui_manager->Shutdown();
   EXPECT_FALSE(ui_manager->widget());
 }
 
@@ -160,11 +164,10 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivation) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Simulating deactivation (active = false) should close the widget.
-  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Simulating deactivation (active = false) should hide the widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  waiter.Wait();
-  EXPECT_FALSE(ui_manager->widget());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+  EXPECT_TRUE(ui_manager->widget());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
@@ -185,13 +188,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing file chooser and triggering deactivation should close the
+  // Clean up: closing file chooser and triggering deactivation should hide the
   // widget.
-  views::test::WidgetDestroyedWaiter waiter2(widget);
   ui_manager->OnFileChooserClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  waiter2.Wait();
-  EXPECT_FALSE(ui_manager->widget());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, MultiProfileSwapping) {
@@ -210,7 +211,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, MultiProfileSwapping) {
   EXPECT_TRUE(ui_manager->widget());
 
   // Clean up.
-  ui_manager->Close();
+  ui_manager->Shutdown();
   EXPECT_FALSE(ui_manager->widget());
 }
 
@@ -306,6 +307,49 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_ShowPositionsOnTargetDisplay) {
   display::Screen::SetScreenInstance(old_screen);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PreservePositionAcrossDisplaysOnReinvoke \
+  DISABLED_PreservePositionAcrossDisplaysOnReinvoke
+#else
+#define MAYBE_PreservePositionAcrossDisplaysOnReinvoke \
+  PreservePositionAcrossDisplaysOnReinvoke
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_PreservePositionAcrossDisplaysOnReinvoke) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  display::Screen* old_screen = display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 800, 600));
+  display::Display display2(2, gfx::Rect(800, 0, 1024, 768));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display2, display::DisplayList::Type::NOT_PRIMARY);
+
+  // Set the fake cursor on the second display initially.
+  test_screen.set_cursor_screen_point(gfx::Point(1200, 300));
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  gfx::Rect initial_bounds = widget->GetWindowBoundsInScreen();
+
+  // Move the cursor to the first display and re-invoke ShowForProfile.
+  test_screen.set_cursor_screen_point(gfx::Point(100, 100));
+  ui_manager->ShowForProfile(&profile_, GetContext());
+
+  // The widget bounds should remain unchanged on the secondary display.
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(), initial_bounds);
+
+  ui_manager->Close();
+  display::Screen::SetScreenInstance(nullptr);
+  display::Screen::SetScreenInstance(old_screen);
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {
   auto ui_manager = CreateUIManager();
   EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
@@ -335,12 +379,26 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing drive picker and triggering deactivation should close the
+  // Clean up: closing drive picker and triggering deactivation should hide the
   // widget.
-  views::test::WidgetDestroyedWaiter waiter(widget);
   ui_manager->OnDrivePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  waiter.Wait();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, CloseDestroysWidgetWhenChooserOpen) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  // Open file chooser.
+  ui_manager->OnFileChooserOpened();
+
+  // Close() while file chooser is open should destroy widget to prevent
+  // orphaned modals.
+  ui_manager->Close();
   EXPECT_FALSE(ui_manager->widget());
 }
 
@@ -433,11 +491,48 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
 
   // Clean up: closing context menu and triggering deactivation should close the
   // widget.
-  views::test::WidgetDestroyedWaiter waiter(widget);
   ui_manager->OnContextMenuClosedForTesting();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
-  waiter.Wait();
-  EXPECT_FALSE(ui_manager->widget());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+  EXPECT_TRUE(ui_manager->widget());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, CloseCancelsOpenContextMenu) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
+  bool menu_runner_created = false;
+  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+      [](bool* created, ui::MenuModel* model,
+         base::RepeatingClosure on_closed) {
+        *created = true;
+        auto runner = std::make_unique<views::MenuRunner>(
+            model,
+            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+            on_closed);
+        views::test::MenuRunnerTestAPI(runner.get())
+            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
+        return runner;
+      },
+      &menu_runner_created));
+
+  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_TRUE(menu_runner_created);
+  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+
+  // Calling Close() while context menu is open should cancel the runner and
+  // reset state.
+  ui_manager->Close();
+  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {

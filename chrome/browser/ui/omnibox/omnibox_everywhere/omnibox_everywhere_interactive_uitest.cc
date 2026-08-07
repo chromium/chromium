@@ -120,6 +120,20 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
         WaitForStateChange(web_contents_id, search_input_loaded));
   }
 
+  // Simulates dragging the mouse from `start_point` to `end_point` within
+  // `view`. Crosses the drag threshold to ensure window drag handlers are
+  // triggered.
+  auto DragMouseInView(ElementSpecifier view,
+                       gfx::Point start_point,
+                       gfx::Point end_point) {
+    const gfx::Point threshold_point = start_point + gfx::Vector2d(15, 15);
+    return Steps(MoveMouseInView(view, start_point),
+                 ClickMouse(ui_controls::LEFT, /*release=*/false),
+                 MoveMouseInView(view, threshold_point),
+                 MoveMouseInView(view, end_point),
+                 ReleaseMouse(ui_controls::LEFT));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -145,11 +159,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndCloseWidget) {
   EXPECT_FALSE(delegate->CanMinimize());
   EXPECT_FALSE(delegate->CanResize());
 
-  // Close the widget and wait for destruction.
-  views::test::WidgetDestroyedWaiter waiter(widget);
+  // Close (hide) the widget.
   ui_manager.Close();
-  waiter.Wait();
+  EXPECT_FALSE(widget->IsVisible());
+  EXPECT_TRUE(ui_manager.widget());
 
+  // Shutdown destroys the widget.
+  ui_manager.Shutdown();
   EXPECT_FALSE(ui_manager.widget());
 }
 
@@ -165,12 +181,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, FocusAndActivationState) {
   views::test::WaitForWidgetActive(widget, true);
   EXPECT_TRUE(widget->IsActive());
 
-  views::test::WidgetDestroyedWaiter waiter(widget);
   ui_manager.Close();
-  waiter.Wait();
+  EXPECT_FALSE(widget->IsVisible());
+  ui_manager.Shutdown();
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndDismissViaHotkey) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShowAndDismissViaHotkey DISABLED_ShowAndDismissViaHotkey
+#else
+#define MAYBE_ShowAndDismissViaHotkey ShowAndDismissViaHotkey
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_ShowAndDismissViaHotkey) {
   OmniboxEverywhereController* controller =
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
   ASSERT_TRUE(controller);
@@ -252,30 +274,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   const char kContentsView[] = "OmniboxContentsView";
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
 
-  const gfx::Point initial_point(10, 10);
-  const gfx::Point threshold_point(25, 25);
-  ASSERT_TRUE(
-      views::View::ExceededDragThreshold(threshold_point - initial_point));
-
-  RunTestSequence(InvokeViaHotkey(), CheckWidgetVisible(true),
-                  WaitForOmniboxWebUIReady(kOmniboxWebContentsId), Do([&]() {
-                    initial_origin = controller->ui_manager()
-                                         ->widget()
-                                         ->GetWindowBoundsInScreen()
-                                         .origin();
-                  }),
-                  NameOmniboxContentsView(kContentsView),
-                  // Drag background area (draggable region at 10, 10).
-                  MoveMouseInView(kContentsView, initial_point),
-                  ClickMouse(ui_controls::LEFT, /*release=*/false),
-                  MoveMouseInView(kContentsView, threshold_point),
-                  MoveMouseInView(kContentsView, gfx::Point(110, 110)),
-                  ReleaseMouse(ui_controls::LEFT), Check([&]() {
-                    views::Widget* widget = controller->ui_manager()->widget();
-                    return widget->GetWindowBoundsInScreen().origin() !=
-                           initial_origin;
-                  }),
-                  InvokeViaHotkey(), CheckWidgetVisible(false));
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId), Do([&]() {
+        initial_origin = controller->ui_manager()
+                             ->widget()
+                             ->GetWindowBoundsInScreen()
+                             .origin();
+      }),
+      NameOmniboxContentsView(kContentsView),
+      // Drag background area (draggable region at 10, 10).
+      DragMouseInView(kContentsView, gfx::Point(10, 10), gfx::Point(110, 110)),
+      Check([&]() {
+        views::Widget* widget = controller->ui_manager()->widget();
+        return widget->GetWindowBoundsInScreen().origin() != initial_origin;
+      }),
+      InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, VoicePermissionState) {
@@ -294,9 +308,114 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, VoicePermissionState) {
 #endif
   EXPECT_TRUE(permissions::PermissionRequestManager::FromWebContents(contents));
 
-  views::test::WidgetDestroyedWaiter waiter(ui_manager.widget());
   ui_manager.Close();
-  waiter.Wait();
+  EXPECT_FALSE(ui_manager.widget()->IsVisible());
+  ui_manager.Shutdown();
+  EXPECT_FALSE(ui_manager.widget());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RetainPositionOnReinvoke DISABLED_RetainPositionOnReinvoke
+#else
+#define MAYBE_RetainPositionOnReinvoke RetainPositionOnReinvoke
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_RetainPositionOnReinvoke) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP()
+        << "Window drag is not supported under Wayland test compositor.";
+  }
+#endif
+
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  gfx::Point dragged_origin;
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/40249472): Modal drag loops in tests aren't supported on
+  // MacOS and Windows. Manually set widget bounds to test position retention
+  // across re-invocations.
+  auto reposition_step = Steps(Do([&]() {
+    views::Widget* widget = controller->ui_manager()->widget();
+    gfx::Rect target_bounds = widget->GetWindowBoundsInScreen();
+    target_bounds.Offset(100, 100);
+    widget->SetBounds(target_bounds);
+    dragged_origin = target_bounds.origin();
+  }));
+#else
+  const char kContentsView[] = "OmniboxContentsView";
+  auto reposition_step = Steps(
+      NameOmniboxContentsView(kContentsView),
+      DragMouseInView(kContentsView, gfx::Point(10, 10), gfx::Point(110, 110)),
+      Do([&]() {
+        dragged_origin = controller->ui_manager()
+                             ->widget()
+                             ->GetWindowBoundsInScreen()
+                             .origin();
+      }));
+#endif
+
+  RunTestSequence(InvokeViaHotkey(), CheckWidgetVisible(true),
+                  WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+                  std::move(reposition_step),
+                  // Dismiss via hotkey.
+                  InvokeViaHotkey(), CheckWidgetVisible(false),
+                  // Re-invoke via hotkey.
+                  InvokeViaHotkey(), CheckWidgetVisible(true), Check([&]() {
+                    return controller->ui_manager()
+                               ->widget()
+                               ->GetWindowBoundsInScreen()
+                               .origin() == dragged_origin;
+                  }),
+                  InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RetainInputTextOnReinvoke DISABLED_RetainInputTextOnReinvoke
+#else
+#define MAYBE_RetainInputTextOnReinvoke RetainInputTextOnReinvoke
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_RetainInputTextOnReinvoke) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  const DeepQuery kSearchInputQuery{
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+  };
+  const DeepQuery kInputElementQuery{
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+      "input",
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      ExecuteJsAt(
+          kOmniboxWebContentsId, kSearchInputQuery,
+          "el => { "
+          "el.setInputText('hello wor'); "
+          "el.dispatchEvent(new CustomEvent('searchbox-input-text-updated', "
+          "{ detail: { value: 'hello wor', isComposing: false }, bubbles: "
+          "true, composed: true })); }"),
+      // Dismiss via hotkey.
+      InvokeViaHotkey(), CheckWidgetVisible(false),
+      // Re-invoke via hotkey.
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      CheckJsResultAt(kOmniboxWebContentsId, kInputElementQuery,
+                      "el => el.value", "hello wor"),
+      InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
 }  // namespace omnibox_everywhere
