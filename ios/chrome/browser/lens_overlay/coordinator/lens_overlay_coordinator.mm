@@ -358,6 +358,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
+  // C2PA: LensImageMetadata provides its own C2PA support. b/541315801
   LensImageSource* imageSource =
       [[LensImageSource alloc] initWithImageMetadata:metadata];
   [self handleOverlayImageSourceFound:imageSource
@@ -405,6 +406,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self captureSnapshotWithCompletion:^(UIImage* snapshot) {
     LensImageSource* imageSource =
         [[LensImageSource alloc] initWithSnapshot:snapshot];
+    // C2PA: Snapshots should not have C2PA metadata. b/541315801
     [weakSelf handleOverlayImageSourceFound:imageSource
                                    animated:animated
                                  completion:completion];

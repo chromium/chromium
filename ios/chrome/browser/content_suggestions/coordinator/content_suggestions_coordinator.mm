@@ -770,6 +770,7 @@ using segmentation_platform::TipIdentifier;
             [UIImage imageWithData:_tipsMediator.config.productImageData];
 
         if (productImage) {
+          // C2PA: Product image would not have C2PA metadata. b/541315801
           SearchImageWithLensCommand* command =
               [[SearchImageWithLensCommand alloc] initWithImage:productImage
                                                      entryPoint:entryPoint];

@@ -647,6 +647,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       imageURL, referrer, params.frame_id, params.frame_security_origin,
       ^(NSData* rawData) {
         // Arbitrary web image data requires sanitization before use.
+        // TODO(b/541315801): C2PA: Web images could have C2PA metadata;
+        // candidate to pass raw bytes.
         [weakSelf
             sanitizeImageData:rawData
                      mimeType:kJPEGImageMimeType

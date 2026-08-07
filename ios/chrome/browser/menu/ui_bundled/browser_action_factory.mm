@@ -378,6 +378,8 @@
           return;
         }
 
+        // TODO(b/541315801): C2PA: Clipboard images could have C2PA metadata;
+        // candidate to pass raw bytes.
         UIImage* image = [optionalImage.value().ToUIImage() copy];
         SearchImageWithLensCommand* command =
             [[SearchImageWithLensCommand alloc]

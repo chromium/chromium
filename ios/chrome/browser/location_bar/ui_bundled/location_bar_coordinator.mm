@@ -1024,6 +1024,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
     return;
   }
 
+  // TODO(b/541315801): C2PA: Copied image could have C2PA metadata; candidate
+  // to pass raw bytes.
   UIImage* image = optionalImage->ToUIImage();
   if (usingLens) {
     id<LensCommands> handler =

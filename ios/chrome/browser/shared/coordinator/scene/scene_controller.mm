@@ -2211,6 +2211,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
   __weak __typeof(self) weakSelf = self;
 
+  // TODO(b/541315801): C2PA: Shared image could have C2PA metadata; candidate
+  // to pass raw bytes.
   _imageTranscoder->TranscodeImage(
       _imageSearchData, @"image/jpeg", nil, nil, nil,
       base::BindOnce(
@@ -2231,6 +2233,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   id<LensCommands> lensHandler = HandlerForProtocol(
       self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
+  // TODO(b/541315801): C2PA: Shared image could have C2PA metadata; candidate
+  // to pass raw bytes.
   UIImage* image = [UIImage imageWithData:imageData];
   SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
       initWithImage:image
