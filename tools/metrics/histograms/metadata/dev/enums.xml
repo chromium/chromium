@@ -1594,6 +1594,25 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1" label="Stopped"/>
 </enum>
 
+<enum name="DevToolsResendRequestType">
+  <int value="0" label="XHR"/>
+  <int value="1" label="Fetch"/>
+  <int value="2" label="Script"/>
+  <int value="3" label="Stylesheet"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Media"/>
+  <int value="6" label="Font"/>
+  <int value="7" label="WASM"/>
+  <int value="8" label="Manifest"/>
+  <int value="9" label="TextTrack"/>
+  <int value="10" label="SourceMapScript"/>
+  <int value="11" label="SourceMapStyleSheet"/>
+  <int value="12" label="Document"/>
+  <int value="13" label="Prefetch"/>
+  <int value="14" label="Ping"/>
+  <int value="15" label="Other"/>
+</enum>
+
 <enum name="DevToolsSwatchActivated">
   <int value="0" label="Variable link"/>
   <int value="1" label="Animation name link"/>

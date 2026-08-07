@@ -118,6 +118,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.EditResendRequest" enum="DevToolsResendRequestType"
+    expires_after="2027-06-18">
+  <owner>dsv@chromium.org</owner>
+  <owner>dgarber@microsoft.com</owner>
+  <component>1456922</component>
+  <summary>
+    Records the resource type of a network request that the user selects to edit
+    and resend. Fired at the start of resendFromConsole(), at the point that a
+    fetch command is pasted into the console for user edit.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2027-03-01">
   <owner>yangguo@google.com</owner>
@@ -479,6 +491,17 @@ chromium-metrics-reviews@google.com.
   <owner>hablich@google.com</owner>
   <summary>
     Actions taken on the remote debugging server on chrome://inspect.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ResendRequest" enum="DevToolsResendRequestType"
+    expires_after="2027-06-18">
+  <owner>dsv@chromium.org</owner>
+  <owner>dgarber@microsoft.com</owner>
+  <component>1456922</component>
+  <summary>
+    Records the resource type of a network request resent from DevTools. Fired
+    at the start of resendRequest(), regardless of success or failure.
   </summary>
 </histogram>
 
