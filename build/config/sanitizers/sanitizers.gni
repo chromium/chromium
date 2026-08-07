@@ -501,11 +501,6 @@ if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
 # provided: your target will crash when the undefined behavior is
 # detected.
 #
-# The target sanitizer is built when
-# *   the build is not already UBSan, which should be a superset of
-#     any single sanitizer we could use here, and
-# *   the build is Clang, which provides the UBSan instrumentation.
-#
 # It is a Chromium convention that GN target names use underscores. This
 # template should be instantiated with a `foo_bar`, and the hyphenated
 # `foo-bar` should be passed via the `sanitizer` argument.
@@ -527,12 +522,18 @@ template("ubsan_hardening") {
                  "cflags",
                ])
 
-    _condition = true
+    # The target sanitizer is built when
+    # *   the build is not already UBSan, which should be a superset of
+    #     any single sanitizer we could use here,
+    # *   the build is not for Wasm, which doesn't recognize any of
+    #     these sanitizer flags (see https://crrev.com/c/7911761), and
+    # *   the build is Clang, which provides the UBSan instrumentation.
+    _condition = !is_ubsan && !is_wasm && is_clang
     if (defined(invoker.condition)) {
-      _condition = invoker.condition
+      _condition = invoker.condition && _condition
     }
 
-    if (_condition && !is_ubsan && is_clang) {
+    if (_condition) {
       cflags = [
         "-fsanitize=${invoker.sanitizer}",
         "-fsanitize-trap=${invoker.sanitizer}",

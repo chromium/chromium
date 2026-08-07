@@ -1584,7 +1584,7 @@ config("clang_warning_suppression") {
 # See also: https://crbug.com/40891132#comment10
 ubsan_hardening("c_array_bounds") {
   sanitizer = "array-bounds"
-  condition = !(is_asan && target_cpu == "x86") && !is_wasm
+  condition = !(is_asan && target_cpu == "x86")
 
   # Because we've enabled array-bounds sanitizing we also want to suppress
   # the related warning about "unsafe-buffer-usage-in-static-sized-array",
@@ -1598,7 +1598,6 @@ ubsan_hardening("c_array_bounds") {
 # `NOTREACHED()` at the end of such functions.
 ubsan_hardening("return") {
   sanitizer = "return"
-  condition = !is_wasm
 }
 
 config("rustc_revision") {
