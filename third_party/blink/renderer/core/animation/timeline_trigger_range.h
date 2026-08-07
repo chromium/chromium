@@ -68,10 +68,11 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
 
   static Node* ComputeBoundariesSource(const ScrollTimeline& timeline);
   std::optional<TriggerBoundaries> CalculateTriggerBoundaries();
-  TriggerBoundaries ComputeTriggerBoundaries(double current_offset,
-                                             Element& timeline_source,
-                                             const ScrollTimeline& timeline);
-  TriggerBoundaries ComputeTriggerBoundariesForTest(
+  std::optional<TriggerBoundaries> ComputeTriggerBoundaries(
+      double current_offset,
+      Element& timeline_source,
+      const ScrollTimeline& timeline);
+  std::optional<TriggerBoundaries> ComputeTriggerBoundariesForTest(
       double current_offset,
       Element& timeline_source,
       const ScrollTimeline& timeline) {
