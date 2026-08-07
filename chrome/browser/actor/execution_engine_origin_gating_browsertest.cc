@@ -21,6 +21,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
@@ -97,8 +98,27 @@ constexpr char kSetUpDelayedNavigationConfirmationRequestHandler[] =
           // Respond to any pending checks
           if (window.signalRequestIsPending) {
             const temp = window.signalRequestIsPending;
-            temp(request);
             window.signalRequestIsPending = null;
+            temp(request);
+          }
+        }
+      );
+  })();
+)js";
+
+constexpr char kSetUpDelayedUserConfirmationDialogRequestHandler[] =
+    R"js(
+  (() => {
+    client.browser
+      .selectUserConfirmationDialogRequestHandler()
+      .subscribe(
+        request => {
+          window.pendingRequest = request;
+          // Respond to any pending checks
+          if (window.signalRequestIsPending) {
+            const temp = window.signalRequestIsPending;
+            window.signalRequestIsPending = null;
+            temp(request);
           }
         }
       );
@@ -209,7 +229,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   [[nodiscard]] InteractiveTestApi::MultiStep
-  WaitUntilPendingNavigationConfirmationRequest(
+  WaitUntilPendingConfirmationRequest(
       const base::DictValue& expected_request,
       const base::Location& location = FROM_HERE) {
     static constexpr char kGetNavigationConfirmationRequestData[] =
@@ -245,11 +265,16 @@ class ExecutionEngineOriginGatingBrowserTestBase
                         window.signalRequestIsPending = resolve;
                         request = await promise;
                       }
-                      request.onConfirmationDecision({
+                      const arg = {
                         response: {
                           permissionGranted: $1,
                         },
-                      });
+                      };
+                      if (request.onConfirmationDecision) {
+                        request.onConfirmationDecision(arg);
+                      } else if (request.onDialogClosed) {
+                        request.onDialogClosed(arg);
+                      }
                       window.pendingRequest = null;
                     })();
                   )js",
@@ -2122,7 +2147,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingDarkLaunchBrowserTest,
 
   // Verify the background navigation confirmation request was sent to the
   // client.
-  RunTestSequence(WaitUntilPendingNavigationConfirmationRequest(
+  RunTestSequence(WaitUntilPendingConfirmationRequest(
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "taskId": $2})",
           url::Origin::Create(second_url), actor_task().id().value()))));
@@ -2239,4 +2264,187 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingSlowResponseBrowserTest,
       /*expected_bucket_count=*/1);
 }
 
+enum class UiPromptType {
+  kNone,
+  kNavConfirmation,
+  kUserConfirmationDialog,
+};
+
+struct OutOfTurnTestParam {
+  std::string_view test_name;
+  std::string_view target_host;
+  UiPromptType ui_prompt_type = UiPromptType::kNone;
+  bool expects_permission_granted = false;
+};
+
+class OutOfTurnNavigationBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<OutOfTurnTestParam> {
+ public:
+  void SetUpOnMainThread() override {
+    ExecutionEngineOriginGatingBrowserTestBase::SetUpOnMainThread();
+    ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+      {
+        "navigation_blocked": [
+          { "from": "*", "to": "bar.com" }
+        ]
+      }
+    )json");
+  }
+
+  // Sets up mock web client handlers for confirmation requests. Out-of-turn
+  // navigations are treated like any other navigation and may trigger a user
+  // confirmation dialog or a navigation confirmation request depending on
+  // the target origin, requiring handlers to resolve pending requests.
+  void SetUpUiPrompt(UiPromptType ui_prompt_type) {
+    if (ui_prompt_type == UiPromptType::kNavConfirmation) {
+      RunTestSequence(CreateMockWebClientRequest(
+          kSetUpDelayedNavigationConfirmationRequestHandler));
+    } else if (ui_prompt_type == UiPromptType::kUserConfirmationDialog) {
+      RunTestSequence(CreateMockWebClientRequest(
+          kSetUpDelayedUserConfirmationDialogRequestHandler));
+    }
+  }
+
+  void ResolveUiPromptIfNeeded(UiPromptType ui_prompt_type,
+                               const GURL& target_url,
+                               bool expects_permission_granted) {
+    if (ui_prompt_type == UiPromptType::kUserConfirmationDialog) {
+      RunTestSequence(
+          WaitUntilPendingConfirmationRequest(
+              base::test::ParseJsonDict(content::JsReplace(
+                  R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+                  url::Origin::Create(target_url)))),
+          RespondToPendingRequest(expects_permission_granted));
+    } else if (ui_prompt_type == UiPromptType::kNavConfirmation) {
+      RunTestSequence(
+          WaitUntilPendingConfirmationRequest(
+              base::test::ParseJsonDict(content::JsReplace(
+                  R"({"navigationOrigin": $1, "taskId": $2})",
+                  url::Origin::Create(target_url), actor_task().id().value()))),
+          RespondToPendingRequest(expects_permission_granted));
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
+                       IdleEngine_OutOfTurnNavigation) {
+  const OutOfTurnTestParam& param = GetParam();
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL target_url = embedded_https_test_server().GetURL(
+      param.target_host, "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+  actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                      base::DoNothing());
+  CHECK(actor_task().HasTab(active_tab()->GetHandle()));
+
+  SetUpUiPrompt(param.ui_prompt_type);
+
+  content::TestNavigationObserver nav_observer(web_contents());
+
+  // Trigger out-of-turn navigation via JavaScript.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("window.location.href = $1;", target_url)));
+
+  ResolveUiPromptIfNeeded(param.ui_prompt_type, target_url,
+                          param.expects_permission_granted);
+
+  nav_observer.Wait();
+
+  if (param.expects_permission_granted) {
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+  } else {
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
+                       InterleavedAction_OutOfTurnNavigation) {
+  const OutOfTurnTestParam& param = GetParam();
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL target_url = embedded_https_test_server().GetURL(
+      param.target_host, "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+  actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                      base::DoNothing());
+  CHECK(actor_task().HasTab(active_tab()->GetHandle()));
+
+  SetUpUiPrompt(param.ui_prompt_type);
+
+  content::TestNavigationObserver nav_observer(web_contents());
+
+  int dom_node_id = content::GetDOMNodeId(*main_frame(), "body").value();
+  std::unique_ptr<ToolRequest> click_on_page =
+      MakeClickRequest(*main_frame(), dom_node_id);
+
+  // 1. Trigger out-of-turn navigation via JS.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("window.location.href = $1;", target_url)));
+
+  // 2. While navigation is deferred/pending, execute a new action via Act().
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click_on_page), result.GetCallback());
+
+  // 3. Resolve the UI prompt for the out-of-turn navigation if required.
+  ResolveUiPromptIfNeeded(param.ui_prompt_type, target_url,
+                          param.expects_permission_granted);
+
+  // 4. Verify new action completes and navigation finishes according to
+  // expectation.
+  nav_observer.Wait();
+
+  if (param.expects_permission_granted) {
+    ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+  } else {
+    ExpectOkResult(result);
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+  }
+}
+
+constexpr OutOfTurnTestParam kOutOfTurnTestParams[] = {
+    {.test_name = "SameOriginAllowed",
+     .target_host = "example.com",
+     .ui_prompt_type = UiPromptType::kNone,
+     .expects_permission_granted = true},
+    {.test_name = "NavConfirmationAllowed",
+     .target_host = "foo.com",
+     .ui_prompt_type = UiPromptType::kNavConfirmation,
+     .expects_permission_granted = true},
+    {.test_name = "NavConfirmationDenied",
+     .target_host = "foo.com",
+     .ui_prompt_type = UiPromptType::kNavConfirmation,
+     .expects_permission_granted = false},
+    {.test_name = "UserDialogAllowed",
+     .target_host = "blocked.example.com",
+     .ui_prompt_type = UiPromptType::kUserConfirmationDialog,
+     .expects_permission_granted = true},
+    {.test_name = "UserDialogDenied",
+     .target_host = "blocked.example.com",
+     .ui_prompt_type = UiPromptType::kUserConfirmationDialog,
+     .expects_permission_granted = false},
+    {.test_name = "Blocklisted",
+     .target_host = "bar.com",
+     .ui_prompt_type = UiPromptType::kNone,
+     .expects_permission_granted = false},
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OutOfTurnNavigationBrowserTest,
+                         testing::ValuesIn(kOutOfTurnTestParams),
+                         [](const auto& info) {
+                           return std::string(info.param.test_name);
+                         });
 }  // namespace actor
