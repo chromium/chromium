@@ -68,7 +68,7 @@ shouldBeFalse('input.type = "reset"; input.willValidate');
 
 debug('');
 debug('Fieldset element');
-parent.innerHTML = '<form><fieldset><p>Fieldset test</p></fieldtset></form>';
+parent.innerHTML = '<form><fieldset><p>Fieldset test</p></fieldset></form>';
 shouldBeFalse('document.getElementsByTagName("fieldset")[0].willValidate');
 
 debug('');

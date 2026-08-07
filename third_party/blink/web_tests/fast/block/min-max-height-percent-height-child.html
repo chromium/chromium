@@ -33,23 +33,23 @@
         <h1><a href="https://bugs.webkit.org/show_bug.cgi?id=26559">Bug 26559</a>: When a block's height is determined by min-height/max-height, children with percentage heights are sized incorrectly</h1>
         <h1>Tests to make sure a child with percentage height is computed properly when the parent has a max or min height set.</h1>
         <h2>Each of the following tests should display a green rectangle with a 1 pixel red border on all sides.</h2>
-        <h3>Parent with fixed height and min set</h2>
+        <h3>Parent with fixed height and min set</h3>
         <div id="simple-min" class="parent" style="width: 50px; height: 50px; min-height: 75px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="50" data-expected-height="75"></div>
         </div>
-        <h3>Parent with fixed height and max set</h2>
+        <h3>Parent with fixed height and max set</h3>
         <div id="simple-max" class="parent" style="max-height: 25px; width: 50px; height: 50px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="50" data-expected-height="25"></div>
         </div>
-        <h3>Parent with fixed height and min greater than max</h2>
+        <h3>Parent with fixed height and min greater than max</h3>
         <div id="min-greater-max" class="parent" style="width: 50px; height: 50px; min-height: 75px; max-height: 25px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="50" data-expected-height="75"></div>
         </div>
-        <h3>Vertical parent with fixed width and max set</h2>
+        <h3>Vertical parent with fixed width and max set</h3>
         <div id="vertical-max" class="parent" style="width: 50px; max-width: 25px; height: 50px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="25" data-expected-height="50"></div>
         </div>
-        <h3>Vertical parent with fixed width and min set</h2>
+        <h3>Vertical parent with fixed width and min set</h3>
         <div id="vertical-min" class="parent" style="width: 50px; min-width: 75px; height: 50px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="75" data-expected-height="50"></div>
         </div>
@@ -102,11 +102,11 @@
             XXXXX
         </div>
         <h2>The following two tests will have a 6 pixel red border.</h2>
-        <h3>Parent with fixed height and padding and max set</h2>
+        <h3>Parent with fixed height and padding and max set</h3>
         <div id="parent-padding-max" class="parent" style="max-height: 25px; width: 50px; padding: 5px; height: 50px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="50" data-expected-height="25"></div>
         </div>
-        <h3>Parent with fixed height and padding and min set</h2>
+        <h3>Parent with fixed height and padding and min set</h3>
         <div id="parent-padding-min" class="parent" style="width: 50px; padding: 5px; height: 50px; min-height: 75px">
             <div class="child" style="width: 100%; height: 100%" data-expected-width="50" data-expected-height="75"></div>
         </div>
