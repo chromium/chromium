@@ -2003,6 +2003,12 @@ inline constexpr char kDesktopPWAsTabStripCustomizationsDescription[] =
     "Enable PWAs to customize their tab strip when in tabbed mode by adding "
     "the `tab_strip` manifest field.";
 
+inline constexpr char kDevToolsAriaLiveRecordingName[] =
+    "A11y Announcements recording in DevTools";
+inline constexpr char kDevToolsAriaLiveRecordingDescription[] =
+    "Enables the ARIA-Live and JavaScript announcements recording subpane in "
+    "DevTools.";
+
 inline constexpr char kDevToolsEnableDurableMessagesName[] =
     "Preserve HTTP message bodies across navigations for DevTools";
 inline constexpr char kDevToolsEnableDurableMessagesDescription[] =

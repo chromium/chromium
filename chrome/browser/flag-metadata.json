@@ -2580,6 +2580,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "devtools-aria-live-recording",
+    "owners": [ "migueloruiz@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "devtools-enable-durable-messages",
     "owners": [ "alexnj@chromium.org" ],
     "expiry_milestone": 160

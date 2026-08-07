@@ -12964,6 +12964,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeFindsInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(finds::features::kChromeFindsInternals)},
 
+    {"devtools-aria-live-recording",
+     flag_descriptions::kDevToolsAriaLiveRecordingName,
+     flag_descriptions::kDevToolsAriaLiveRecordingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kDevToolsAriaLiveRecording)},
+
     {"devtools-enable-durable-messages",
      flag_descriptions::kDevToolsEnableDurableMessagesName,
      flag_descriptions::kDevToolsEnableDurableMessagesDescription, kOsAll,

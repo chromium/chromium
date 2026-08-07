@@ -11149,6 +11149,7 @@ from previous Chrome versions.
   <int value="-1085842725" label="SysUiShouldHoldbackForest:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
   <int value="-1085391277" label="EnableAIPromptAPIForWebPlatform:disabled"/>
+  <int value="-1085307349" label="DevToolsAriaLiveRecording:enabled"/>
   <int value="-1085157892" label="FeedContainment:disabled"/>
   <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
   <int value="-1084500756" label="EnableViewPpd:enabled"/>
@@ -19104,6 +19105,7 @@ from previous Chrome versions.
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
   <int value="1425425055" label="WiFiDirect:disabled"/>
   <int value="1426588012" label="WebXRLayers:enabled"/>
+  <int value="1427008385" label="DevToolsAriaLiveRecording:disabled"/>
   <int value="1427040726" label="DiscountAutofill:disabled"/>
   <int value="1427427985"
       label="CacheControlNoStoreEnterBackForwardCache:enabled"/>

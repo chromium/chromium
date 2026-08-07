@@ -247,4 +247,7 @@ BASE_FEATURE(kDevToolsInstrumentationBreakpoints,
 BASE_FEATURE(kDevToolsSourceMapScopesInSourcesPanel,
              "DevToolsSourceMapScopesInSourcesPanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the A11y Announcements recording subpane is enabled in DevTools.
+BASE_FEATURE(kDevToolsAriaLiveRecording, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
