@@ -327,6 +327,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_restore/features.h"
 #include "components/cross_device/nearby/nearby_features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "remoting/host/chromeos/features.h"
@@ -7643,7 +7644,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloudPhraseHighlighting)},
 
-
     {"read-anything-docs-integration",
      flag_descriptions::kReadAnythingDocsIntegrationName,
      flag_descriptions::kReadAnythingDocsIntegrationDescription, kOsDesktop,
@@ -13167,8 +13167,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-dlp-file-system-api",
      flag_descriptions::kEnableDlpFileSystemApiName,
      flag_descriptions::kEnableDlpFileSystemApiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(enterprise_data_protection::kEnableDlpFileSystemApi)},
-#endif
+     FEATURE_VALUE_TYPE(enterprise_connectors::kEnableDlpFileSystemApi)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-bricks-native-page",

@@ -39,7 +39,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -165,7 +165,7 @@ void CompletionCallback(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          enterprise_data_protection::kEnableDlpFileSystemApi)) {
+          enterprise_connectors::kEnableDlpFileSystemApi)) {
     std::vector<content::DropData::FileSystemFileInfo> final_file_system_files;
     for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
       if (virtual_file_to_scan_file_index.contains(i)) {
@@ -329,7 +329,7 @@ void HandleOnPerformingDrop(
   base::flat_map<int, int> virtual_file_to_scan_file_index;
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          enterprise_data_protection::kEnableDlpFileSystemApi)) {
+          enterprise_connectors::kEnableDlpFileSystemApi)) {
     for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
       base::FilePath resolved_path = MaybeSubstituteFuseboxFilePath(
           profile, scan_target, drop_data.file_system_files[i].url);

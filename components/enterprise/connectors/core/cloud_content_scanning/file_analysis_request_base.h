@@ -66,6 +66,8 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
   // Fusebox).
   static bool IsVirtualFile(const base::FilePath& path);
 
+  static void SetIsVirtualFileForTesting(bool is_virtual);
+
  protected:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   virtual void ProcessZipFile(Data data) = 0;
