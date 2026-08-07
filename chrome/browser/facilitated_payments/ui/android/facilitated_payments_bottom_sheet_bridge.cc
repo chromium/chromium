@@ -118,14 +118,16 @@ void FacilitatedPaymentsBottomSheetBridge::Dismiss() {
 }
 
 void FacilitatedPaymentsBottomSheetBridge::ShowPixAccountLinkingPrompt(
-    int strike_count) {
+    int strike_count,
+    const std::string& account_email) {
   if (!GetJavaBridge()) {
     return;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsPaymentMethodsViewBridge_showPixAccountLinkingPrompt(
-      env, GetJavaBridge(), strike_count);
+      env, GetJavaBridge(), strike_count,
+      base::android::ConvertUTF8ToJavaString(env, account_email));
 }
 
 void FacilitatedPaymentsBottomSheetBridge::

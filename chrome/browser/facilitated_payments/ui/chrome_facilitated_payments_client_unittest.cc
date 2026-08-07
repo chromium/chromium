@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -45,6 +47,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   MOCK_METHOD(void,
               ShowPixAccountLinkingPrompt,
               (int strike_count,
+               const std::string& account_email,
                base::OnceCallback<void()> on_accepted,
                base::OnceCallback<void()> on_declined),
               (override));
@@ -293,9 +296,22 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, InitPixAccountLinkingFlow) {
 }
 
 // Test that the client forwards call to show Pix account linking prompt to the
-// controller.
+// controller when an account email is available.
 TEST_F(ChromeFacilitatedPaymentsClientTest, ShowPixAccountLinkingPrompt) {
-  EXPECT_CALL(controller(), ShowPixAccountLinkingPrompt(0, _, _));
+  signin::SetPrimaryAccount(IdentityManagerFactory::GetForProfile(profile()),
+                            "test@example.com", signin::ConsentLevel::kSignin);
+  EXPECT_CALL(controller(),
+              ShowPixAccountLinkingPrompt(0, "test@example.com", _, _));
+
+  base_client().ShowPixAccountLinkingPrompt(
+      /*strike_count=*/0, base::DoNothing(), base::DoNothing());
+}
+
+// Test that the client does not show Pix account linking prompt when no account
+// email is available.
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       ShowPixAccountLinkingPrompt_NoAccount_DoesNotShowPrompt) {
+  EXPECT_CALL(controller(), ShowPixAccountLinkingPrompt).Times(0);
 
   base_client().ShowPixAccountLinkingPrompt(
       /*strike_count=*/0, base::DoNothing(), base::DoNothing());

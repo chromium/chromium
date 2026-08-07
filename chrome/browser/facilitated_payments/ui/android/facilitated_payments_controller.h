@@ -89,6 +89,7 @@ class FacilitatedPaymentsController {
   // linking.
   virtual void ShowPixAccountLinkingPrompt(
       int strike_count,
+      const std::string& account_email,
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined);
 

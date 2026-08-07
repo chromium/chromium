@@ -61,7 +61,8 @@ class FacilitatedPaymentsBottomSheetBridge {
 
   // Triggers showing the Pix account linking prompt. Virtual for overriding in
   // tests.
-  virtual void ShowPixAccountLinkingPrompt(int strike_count);
+  virtual void ShowPixAccountLinkingPrompt(int strike_count,
+                                           const std::string& account_email);
 
   // Triggers showing the Pix account linking success screen. Virtual for
   // overriding in tests.

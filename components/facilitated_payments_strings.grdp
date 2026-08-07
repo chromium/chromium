@@ -165,8 +165,8 @@
     Check out faster next time?
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_C_BODY" desc="Body text for the bottom sheet showing Pix account linking prompt (Variation C)." formatter_data="android_java">You won't need to switch apps anymore. Google encryption protects your info and will confirm that it's you before payment happens.</message>
-  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_SETTINGS_LINK" desc="Text for the settings link in the bottom sheet showing Pix account linking prompt." formatter_data="android_java">
-    To turn off Pix code detection, go to <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Chrome settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_EMAIL_INFO_WITH_SETTINGS_LINK" desc="A message in the bottom sheet showing Pix account linking prompt informing the user which account email their Pix account will be linked to, followed by a link to Chrome settings to turn off Pix code detection." formatter_data="android_java">
+    Pix account will be linked to <ph name="ACCOUNT_EMAIL">%1$s<ex>user@gmail.com</ex></ph>. To turn off Pix code detection, go to <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Chrome settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
   <!-- Pix account linking success screen strings -->
   <message name="IDS_PIX_ACCOUNT_LINKING_SUCCESS_SCREEN_TITLE" desc="Title for the bottom sheet showing Pix account linking success screen." formatter_data="android_java">

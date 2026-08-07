@@ -206,8 +206,13 @@ void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
     int strike_count,
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {
+  std::optional<CoreAccountInfo> account_info = GetCoreAccountInfo();
+  if (!account_info.has_value() || account_info->email.empty()) {
+    return;
+  }
   facilitated_payments_controller_->ShowPixAccountLinkingPrompt(
-      strike_count, std::move(on_accepted), std::move(on_declined));
+      strike_count, account_info->email, std::move(on_accepted),
+      std::move(on_declined));
 }
 
 void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingSuccessScreen() {

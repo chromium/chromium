@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCOUNT_EMAIL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,30 +84,10 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
         } else if (propertyKey == DECLINE_BUTTON_TEXT_ID) {
             ButtonCompat declineButton = view.findViewById(R.id.decline_button);
             declineButton.setText(model.get(DECLINE_BUTTON_TEXT_ID));
+        } else if (propertyKey == ACCOUNT_EMAIL) {
+            updateSettingsLink(model, view);
         } else if (propertyKey == SETTINGS_LINK_CALLBACK) {
-            TextView settingsLink = view.findViewById(R.id.pix_code_detection_settings_link);
-            if (settingsLink != null) {
-                settingsLink.setText(
-                        SpanApplier.applySpans(
-                                settingsLink
-                                        .getContext()
-                                        .getString(
-                                                R.string.pix_account_linking_prompt_settings_link),
-                                new SpanApplier.SpanInfo(
-                                        "<link1>",
-                                        "</link1>",
-                                        new ChromeClickableSpan(
-                                                settingsLink.getContext(),
-                                                v -> model.get(SETTINGS_LINK_CALLBACK).onClick(v)) {
-                                            @Override
-                                            public void updateDrawState(
-                                                    android.text.TextPaint textPaint) {
-                                                super.updateDrawState(textPaint);
-                                                textPaint.setUnderlineText(false);
-                                            }
-                                        })));
-                settingsLink.setMovementMethod(LinkMovementMethod.getInstance());
-            }
+            updateSettingsLink(model, view);
         } else if (propertyKey == VIDEO_LINK_CALLBACK) {
             TextView valueProp1 = view.findViewById(R.id.value_prop_message_1);
             if (valueProp1 != null) {
@@ -134,5 +116,39 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }
+    }
+
+    private static void updateSettingsLink(PropertyModel model, View view) {
+        TextView settingsLink = view.findViewById(R.id.pix_code_detection_settings_link);
+        if (settingsLink == null) return;
+
+        String email = model.get(ACCOUNT_EMAIL);
+        if (TextUtils.isEmpty(email)) return;
+        String text =
+                view.getContext()
+                        .getString(
+                                R.string.pix_account_linking_prompt_email_info_with_settings_link,
+                                email);
+
+        settingsLink.setText(
+                SpanApplier.applySpans(
+                        text,
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new ChromeClickableSpan(
+                                        settingsLink.getContext(),
+                                        v -> {
+                                            if (model.get(SETTINGS_LINK_CALLBACK) != null) {
+                                                model.get(SETTINGS_LINK_CALLBACK).onClick(v);
+                                            }
+                                        }) {
+                                    @Override
+                                    public void updateDrawState(android.text.TextPaint textPaint) {
+                                        super.updateDrawState(textPaint);
+                                        textPaint.setUnderlineText(false);
+                                    }
+                                })));
+        settingsLink.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

@@ -34,6 +34,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCOUNT_EMAIL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
@@ -162,7 +163,6 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         mWindowAndroid = windowAndroid;
     }
 
-    @VisibleForTesting
     void setSnackbarManagerForTesting(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
     }
@@ -334,13 +334,14 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         }
     }
 
-    void showPixAccountLinkingPrompt(int strikeCount) {
+    void showPixAccountLinkingPrompt(int strikeCount, String accountEmail) {
         // Set {@link VISIBLE_STATE} to the placeholder state which is a no-op, and then update the
         // screen to the Pix account linking prompt. Finally update {@link VISIBLE_STATE} to show
         // the new screen.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
         // Set Pix account linking prompt properties and show the prompt.
+        mModel.get(SCREEN_VIEW_MODEL).set(ACCOUNT_EMAIL, accountEmail);
         mModel.get(SCREEN_VIEW_MODEL)
                 .set(ACCEPT_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptAccepted());
         mModel.get(SCREEN_VIEW_MODEL)
