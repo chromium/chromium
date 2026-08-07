@@ -79,7 +79,7 @@ namespace blink {
 // Feature that prevents an extension resource (chrome-extension://...) from
 // being fetched across isolated worlds.
 BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature that prevents resources fetched via a Service Worker from being
 // reused across different script worlds.
