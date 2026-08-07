@@ -66,6 +66,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -310,6 +311,16 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
          {.entity_type_accepted = std::nullopt,
           .accepted_entity_record_type = std::nullopt,
           .autofill_ai_field_types = field.Type().GetAutofillAiTypes()}});
+  }
+
+  if (std::ranges::contains(shown_suggestions,
+                            SuggestionType::kAutofillAiPrivateInferenceNotice,
+                            &Suggestion::type)) {
+    if (PrefService* const prefs = client_->GetPrefs()) {
+      prefs->SetTime(
+          prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
+          base::Time::Now());
+    }
   }
 }
 

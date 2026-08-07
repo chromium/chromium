@@ -15,12 +15,25 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -379,5 +392,108 @@ PopupNoticeView::~PopupNoticeView() = default;
 
 BEGIN_METADATA(PopupNoticeView)
 END_METADATA
+
+namespace {
+
+// TODO(b/524157152): Refactor AutofillPopupController to provide this.
+bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
+  if (!controller || !controller->GetWebContents()) {
+    return false;
+  }
+  Profile* profile = Profile::FromBrowserContext(
+      controller->GetWebContents()->GetBrowserContext());
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  const int policy_value = profile->GetPrefs()->GetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
+  return policy_value ==
+         std::to_underlying(
+             optimization_guide::model_execution::prefs::
+                 ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+}
+
+}  // namespace
+
+std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback,
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  std::string histogram_name =
+      controller &&
+              controller->GetMainFillingProduct() == FillingProduct::kAtMemory
+          ? "PersonalContext.AtMemory.NoticeInteractions"
+          : "PersonalContext.AmbientAutofill.NoticeInteractions";
+  std::u16string title_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+  std::u16string subtitle_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string accept_button_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+  if (controller) {
+    if (controller->GetMainFillingProduct() == FillingProduct::kAtMemory &&
+        !IsLoggingDisabledByPolicy(controller.get())) {
+      subtitle_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
+    }
+  }
+  auto on_link_clicked = base::BindRepeating(
+      [](base::WeakPtr<AutofillPopupController> controller) {
+        if (!controller || !controller->GetWebContents()) {
+          return;
+        }
+        Profile* profile = Profile::FromBrowserContext(
+            controller->GetWebContents()->GetBrowserContext());
+        if (!profile) {
+          return;
+        }
+        chrome::ShowSettingsSubPageForProfile(
+            profile, chrome::kSuggestionsFromGeminiSubPage);
+      },
+      controller);
+  return std::make_unique<PopupNoticeView>(
+      a11y_selection_delegate, announce_callback, std::move(controller),
+      line_number, title_text, subtitle_text, link_text, accept_button_text,
+      std::move(on_link_clicked), histogram_name);
+}
+
+std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback,
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  const std::u16string title_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_TITLE);
+  const std::u16string subtitle_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_DESCRIPTION);
+  const std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_LINK_TEXT);
+  const std::u16string accept_button_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_PRIMARY_BUTTON_TEXT);
+
+  auto on_link_clicked = base::BindRepeating(
+      [](base::WeakPtr<AutofillPopupController> controller) {
+        if (!controller || !controller->GetWebContents()) {
+          return;
+        }
+        if (auto* const client = ContentAutofillClient::FromWebContents(
+                controller->GetWebContents())) {
+          client->ShowAutofillSettings(
+              SuggestionType::kAutofillAiPrivateInferenceNotice);
+        }
+      },
+      controller);
+
+  return std::make_unique<PopupNoticeView>(
+      a11y_selection_delegate, announce_callback, std::move(controller),
+      line_number, title_text, subtitle_text, link_text, accept_button_text,
+      std::move(on_link_clicked),
+      "Autofill.Ai.PrivateInferenceNoticeInteractions");
+}
 
 }  // namespace autofill

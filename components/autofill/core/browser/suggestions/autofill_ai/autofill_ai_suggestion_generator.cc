@@ -1010,11 +1010,8 @@ void AppendDomainFallbackSuggestions(
 }
 
 bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
+                                      const AttributeTypeAssignment& assignment,
                                       const PrefService* prefs) {
-  const base::Time private_inference_notice_first_shown =
-      prefs ? prefs->GetTime(
-                  prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
-            : base::Time();
   const base::Time ambient_autofill_notice_acked =
       prefs ? prefs->GetTime(personal_context::prefs::
                                  kAmbientAutofillNoticeAcknowledgedTimestamp)
@@ -1031,12 +1028,14 @@ bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
     return false;
   }
 
-  const bool private_inference_notice_never_shown =
-      private_inference_notice_first_shown.is_null();
-  const bool ambient_autofill_notice_acked_enough_time_ago =
+  const bool ambient_autofill_notice_acked_not_long_ago =
       !ambient_autofill_notice_acked.is_null() &&
-      (base::Time::Now() - ambient_autofill_notice_acked) >=
+      (base::Time::Now() - ambient_autofill_notice_acked) <
           kPrivateInferenceNoticeCoolOff;
+
+  if (ambient_autofill_notice_acked_not_long_ago) {
+    return false;
+  }
 
   const bool private_inference_notice_never_acked =
       !prefs ||
@@ -1045,10 +1044,10 @@ bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
               prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
           .is_null();
 
-  return !trigger_field.Type().GetAutofillAiTypes().empty() &&
-         private_inference_notice_never_acked &&
-         (private_inference_notice_never_shown ||
-          ambient_autofill_notice_acked_enough_time_ago) &&
+  const bool is_autofill_ai_field =
+      !FindAttributesForField(assignment, trigger_field.global_id()).empty();
+
+  return is_autofill_ai_field && private_inference_notice_never_acked &&
          base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi);
 }
 
@@ -1065,7 +1064,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
       !entity_types_being_fetched.empty();
 
   const bool should_show_private_inference_notice =
-      ShouldShowPrivateInferenceNotice(trigger_field, client.GetPrefs());
+      ShouldShowPrivateInferenceNotice(trigger_field, assignment,
+                                       client.GetPrefs());
 
   std::vector<Suggestion> suggestions;
   DenseSet<AutofillAiUiSection> ui_sections;
@@ -1151,13 +1151,16 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
     return;
   }
 
+  const AttributeTypeAssignment assignment(form_structure->fields(),
+                                           trigger_autofill_field->section());
+
   const bool is_fillable =
       GetFieldsFillableByAutofillAi(*form_structure, client)
           .contains(trigger_field.global_id());
   const bool is_fetching_data_for_field =
       !GetEntityTypesBeingFetched(*trigger_autofill_field, client).empty();
   const bool should_show_private_inference_notice =
-      ShouldShowPrivateInferenceNotice(*trigger_autofill_field,
+      ShouldShowPrivateInferenceNotice(*trigger_autofill_field, assignment,
                                        client.GetPrefs());
 
   if ((!is_fillable && !is_fetching_data_for_field &&
@@ -1169,20 +1172,14 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   }
 
   std::vector<const EntityInstance*> entities = GetEntitiesForSuggestion(
-      GetFillableEntityInstances(client),
-      AttributeTypeAssignment(form_structure->fields(),
-                              trigger_autofill_field->section()),
-      trigger_field.global_id(), client.GetAppLocale(),
-      client.GetLastCommittedPrimaryMainFrameURL());
+      GetFillableEntityInstances(client), assignment, trigger_field.global_id(),
+      client.GetAppLocale(), client.GetLastCommittedPrimaryMainFrameURL());
 
   std::vector<Suggestion> suggestions = CreateAutofillAiFillingSuggestions(
       *form_structure, *trigger_autofill_field,
       base::ToVector(entities,
                      [](const EntityInstance* entity) { return *entity; }),
-      entity_manager->GetEntityInstances(),
-      AttributeTypeAssignment(form_structure->fields(),
-                              trigger_autofill_field->section()),
-      client);
+      entity_manager->GetEntityInstances(), assignment, client);
 
   callback({SuggestionDataSource::kAutofillAi, std::move(suggestions)});
 }

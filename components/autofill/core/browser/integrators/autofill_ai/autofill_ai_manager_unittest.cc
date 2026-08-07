@@ -540,6 +540,29 @@ TEST_F(AutofillAiManagerTest,
   ASSERT_FALSE(manager().OnFormSubmitted(form_structure, /*ukm_source_id=*/{}));
 }
 
+// Tests that OnAutofillAiSuggestionsShown sets
+// kAutofillAiPrivateInferenceNoticeFirstShownTimestamp when
+// kAutofillAiPrivateInferenceNotice is in the shown suggestions.
+TEST_F(
+    AutofillAiManagerTest,
+    OnAutofillAiSuggestionsShown_SetsPrivateInferenceNoticeFirstShownTimestamp) {
+  FormStructure form_structure(
+      test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
+
+  EXPECT_EQ(autofill_client().GetPrefs()->GetTime(
+                prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp),
+            base::Time());
+
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0),
+      {Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)}, {},
+      /*update_suggestions_callback=*/{});
+
+  EXPECT_NE(autofill_client().GetPrefs()->GetTime(
+                prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp),
+            base::Time());
+}
+
 // Tests that filling moment surveys are triggered even when save or update
 // prompts are shown, ensuring users who correct autofilled forms are included.
 TEST_F(AutofillAiManagerTest,

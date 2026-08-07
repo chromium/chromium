@@ -781,6 +781,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
         chrome::ShowSettingsSubPage(browser, chrome::kContactInfoSubPage);
         return;
       case SuggestionType::kManageAutofillAi:
+      case SuggestionType::kAutofillAiPrivateInferenceNotice:
         base::UmaHistogramEnumeration(
             "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
             autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);

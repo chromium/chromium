@@ -4163,6 +4163,15 @@ TEST_F(AutofillExternalDelegateTest,
                   ->is_ambient_autofill_notice_acknowledged());
 }
 
+TEST_F(AutofillExternalDelegateTest,
+       RemoveSuggestion_AutofillAiPrivateInferenceNotice) {
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)));
+  EXPECT_NE(autofill_client().GetPrefs()->GetTime(
+                prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp),
+            base::Time());
+}
+
 // Tests that accepting a personal context notice suggestion is a no-op.
 TEST_F(AutofillExternalDelegateTest,
        DidAcceptSuggestion_PersonalContextNotice_NoOp) {

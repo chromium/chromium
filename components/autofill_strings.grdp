@@ -1875,6 +1875,9 @@
     <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text for the personal context notice in Ambient Autofill/AtMemory popup.">
       OK
     </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_LINK_TEXT" desc="Link text for the private inference notice in Autofill AI popup.">
+      Manage settings
+    </message>
   </if>
 
   <!-- Personal Context Notice in Autofill Bottomsheet -->

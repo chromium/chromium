@@ -147,6 +147,22 @@ class PopupNoticeView : public PopupInteractiveRowView {
       a11y_selection_delegate_;
 };
 
+// Creates a `PopupNoticeView` for the Personal Context notice.
+std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback,
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number);
+
+// Creates a `PopupNoticeView` for the Autofill AI Private Inference Notice.
+std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback,
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_NOTICE_VIEW_H_

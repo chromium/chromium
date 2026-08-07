@@ -2313,12 +2313,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
-       PrivateInferenceNoticeShownWhenGeminiAckedLongEnoughAgo) {
+       PrivateInferenceNoticeShownWhenAmbientNoticeAckedLongEnoughAgo) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
-  client().GetPrefs()->SetTime(
-      prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
-      base::Time::Now() - base::Days(10));
   // Because the acked was done 7 days ago, creating private inference notice
   // suggestion is allowed.
   client().GetPrefs()->SetTime(
@@ -2364,25 +2361,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenAmbientAutofillShownButNotAcked) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
-  client().GetPrefs()->SetTime(
-      prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
-      base::Time::Now());
-
-  SetEntities({GetPassportEntityInstanceWithRandomGuid()});
-  SetForm({PASSPORT_NUMBER});
-
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(suggestions,
-              Not(Contains(EqualsSuggestion(
-                  SuggestionType::kAutofillAiPrivateInferenceNotice))));
-}
-
-TEST_F(
-    AutofillAiSuggestionGeneratorTest,
-    PrivateInferenceNoticeNotShownWhenPersonalContextAmbientNoticeImpressionSeenButNotAcked) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAiUsePrivateAi);
   client().GetPrefs()->SetInteger(
       personal_context::prefs::
           kPersonalContextAmbientAutofillNoticeImpressionCount,
@@ -2402,9 +2380,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenAmbientAutofillAckedTooRecently) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
-  client().GetPrefs()->SetTime(
-      prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp,
-      base::Time::Now() - base::Days(2));
   // Because the acked was done 1 day ago, creating private inference notice
   // suggestion is not allowed.
   client().GetPrefs()->SetTime(

@@ -2017,6 +2017,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.PrivateInferenceNoticeInteractions"
+    enum="PopupNoticeInteractions" expires_after="2027-03-09">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records user interactions with the private inference notice in the Autofill
+    AI popup on Desktop, Android infobar/accessory, and iOS infobar.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.PromptSuppression.{PromptType}{EntityType}"
     enum="Boolean" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

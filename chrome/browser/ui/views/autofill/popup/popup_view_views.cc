@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -120,70 +121,6 @@ using views::BubbleBorder;
 namespace autofill {
 
 namespace {
-
-// TODO(b/524157152): Refactor AutofillPopupController to provide this.
-bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
-  if (!controller || !controller->GetWebContents()) {
-    return false;
-  }
-  Profile* profile = Profile::FromBrowserContext(
-      controller->GetWebContents()->GetBrowserContext());
-  if (!profile || !profile->GetPrefs()) {
-    return false;
-  }
-  const int policy_value = profile->GetPrefs()->GetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
-  return policy_value ==
-         std::to_underlying(
-             optimization_guide::model_execution::prefs::
-                 ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
-}
-
-std::unique_ptr<PopupNoticeView> GetPersonalContextNoticeView(
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    base::RepeatingCallback<void(const std::u16string&, bool)>
-        announce_callback,
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  std::string histogram_name =
-      controller &&
-              controller->GetMainFillingProduct() == FillingProduct::kAtMemory
-          ? "PersonalContext.AtMemory.NoticeInteractions"
-          : "PersonalContext.AmbientAutofill.NoticeInteractions";
-  std::u16string title_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
-  std::u16string subtitle_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
-  std::u16string link_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
-  std::u16string accept_button_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
-  if (controller) {
-    if (controller->GetMainFillingProduct() == FillingProduct::kAtMemory &&
-        !IsLoggingDisabledByPolicy(controller.get())) {
-      subtitle_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
-    }
-  }
-  auto on_link_clicked = base::BindRepeating(
-      [](base::WeakPtr<AutofillPopupController> controller) {
-        if (!controller || !controller->GetWebContents()) {
-          return;
-        }
-        Profile* profile = Profile::FromBrowserContext(
-            controller->GetWebContents()->GetBrowserContext());
-        if (!profile) {
-          return;
-        }
-        chrome::ShowSettingsSubPageForProfile(
-            profile, chrome::kSuggestionsFromGeminiSubPage);
-      },
-      controller);
-  return std::make_unique<PopupNoticeView>(
-      a11y_selection_delegate, announce_callback, std::move(controller),
-      line_number, title_text, subtitle_text, link_text, accept_button_text,
-      std::move(on_link_clicked), histogram_name);
-}
 
 // The minimum width should exceed the maximum size of a cursor, which is 128
 // (see crbug.com/40064089).
@@ -1447,7 +1384,12 @@ void PopupViewViews::CreateSuggestionViews() {
           break;
         }
         case SuggestionType::kPersonalContextNotice: {
-          body_builder.AddRow(GetPersonalContextNoticeView(
+          body_builder.AddRow(CreatePersonalContextNoticeView(
+              *this, a11y_announcer_, controller(), current_line_number));
+          break;
+        }
+        case SuggestionType::kAutofillAiPrivateInferenceNotice: {
+          body_builder.AddRow(CreateAutofillAiPrivateInferenceNoticeView(
               *this, a11y_announcer_, controller(), current_line_number));
           break;
         }
