@@ -1767,9 +1767,7 @@ CompositeEditCommand::ComputePreservedVisibleSelectionEndpoints(
 
   const VisiblePosition visible_start = EndingVisibleSelection().VisibleStart();
   const VisiblePosition visible_end = EndingVisibleSelection().VisibleEnd();
-  if (RuntimeEnabledFeatures::
-          HandleDisconnectedSelectionDuringDOMChangesEnabled() &&
-      (visible_start.IsNull() || visible_end.IsNull())) {
+  if (visible_start.IsNull() || visible_end.IsNull()) {
     // A synchronous DOM mutation may invalidate VP endpoints.
     return std::nullopt;
   }
@@ -1787,10 +1785,8 @@ CompositeEditCommand::ComputePreservedDomSelectionEndpoints(
 
   const Position selection_start = EndingDomSelection().Start();
   const Position selection_end = EndingDomSelection().End();
-  if (RuntimeEnabledFeatures::
-          HandleDisconnectedSelectionDuringDOMChangesEnabled() &&
-      (!IsPreservedSelectionEndpointUsable(selection_start) ||
-       !IsPreservedSelectionEndpointUsable(selection_end))) {
+  if (!IsPreservedSelectionEndpointUsable(selection_start) ||
+      !IsPreservedSelectionEndpointUsable(selection_end)) {
     // A synchronous DOM mutation may stale raw-DOM endpoints.
     return std::nullopt;
   }

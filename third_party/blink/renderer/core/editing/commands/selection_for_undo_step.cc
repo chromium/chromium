@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -51,9 +50,7 @@ SelectionInDomTree SelectionForUndoStep::AsSelection() const {
   // Guard against concurrent DOM modifications that may have disconnected
   // positions. This prevents crashes when JavaScript callbacks modify DOM
   // during editing operations.
-  if (RuntimeEnabledFeatures::
-          HandleDisconnectedSelectionDuringDOMChangesEnabled() &&
-      (!anchor_.IsConnected() || !focus_.IsConnected())) {
+  if (!anchor_.IsConnected() || !focus_.IsConnected()) {
     // If positions are disconnected, return empty selection
     return SelectionInDomTree();
   }

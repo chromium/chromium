@@ -139,13 +139,9 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
   // granularity (deleteWord*, deleteSoftLine*).
   auto get_deletion_input_type = [&frame](InputType selection_type,
                                           InputType caret_type) -> InputType {
-    if (RuntimeEnabledFeatures::
-            InputEventsDeleteNonCollapsedSelectionEnabled()) {
-      return frame.Selection().ComputeVisibleSelectionInDomTree().IsRange()
-                 ? selection_type
-                 : caret_type;
-    }
-    return caret_type;
+    return frame.Selection().ComputeVisibleSelectionInDomTree().IsRange()
+               ? selection_type
+               : caret_type;
   };
 
   switch (command_type) {
@@ -486,19 +482,13 @@ static bool DeleteWithDirection(LocalFrame& frame,
     if (kill_ring) {
       editor.AddToKillRing(editor.SelectedRange());
     }
-    InputEvent::InputType input_type;
-    if (RuntimeEnabledFeatures::
-            InputEventsDeleteNonCollapsedSelectionEnabled()) {
-      // When deleting a non-collapsed selection, the granularity shouldn't
-      // matter - we're just deleting the selected content. Use the appropriate
-      // "content" input type based on direction only.
-      input_type = (direction == DeleteDirection::kBackward)
-                       ? InputEvent::InputType::kDeleteContentBackward
-                       : InputEvent::InputType::kDeleteContentForward;
-    } else {
-      // use granularity-based input type.
-      input_type = DeletionInputTypeFromTextGranularity(direction, granularity);
-    }
+    // When deleting a non-collapsed selection, the granularity shouldn't
+    // matter - we're just deleting the selected content. Use the appropriate
+    // "content" input type based on direction only.
+    const InputEvent::InputType input_type =
+        (direction == DeleteDirection::kBackward)
+            ? InputEvent::InputType::kDeleteContentBackward
+            : InputEvent::InputType::kDeleteContentForward;
     editor.DeleteSelectionWithSmartDelete(
         CanSmartCopyOrDelete(frame) ? DeleteMode::kSmart : DeleteMode::kSimple,
         input_type);
@@ -1267,24 +1257,6 @@ static bool EnabledInRichlyEditableText(LocalFrame& frame,
          selection.RootEditableElement();
 }
 
-static bool EnabledRangeInEditableText(LocalFrame& frame,
-                                       Event*,
-                                       EditorCommandSource source) {
-  if (source == EditorCommandSource::kDom &&
-      frame.GetInputMethodController().GetActiveEditContext()) {
-    return false;
-  }
-
-  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  if (source == EditorCommandSource::kMenuOrKeyBinding &&
-      !frame.Selection().SelectionHasFocus()) {
-    return false;
-  }
-  auto visible_selection =
-      frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated();
-  return visible_selection.IsRange() && visible_selection.IsContentEditable();
-}
-
 static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
                                              Event*,
                                              EditorCommandSource source) {
@@ -1306,11 +1278,7 @@ static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
 static bool IsRemoveFormatAllowed(LocalFrame& frame,
                                   Event* event,
                                   EditorCommandSource source) {
-  if (RuntimeEnabledFeatures::
-          DisableRemoveFormatForPlainTextOnlyEditableDivEnabled()) {
-    return EnabledRangeInRichlyEditableText(frame, event, source);
-  }
-  return EnabledRangeInEditableText(frame, event, source);
+  return EnabledRangeInRichlyEditableText(frame, event, source);
 }
 
 static bool EnabledRedo(LocalFrame& frame, Event*, EditorCommandSource) {

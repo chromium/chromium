@@ -1858,16 +1858,10 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
   if (is_canceled) {
     return;
   }
-  if (RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()) {
-    frame.GetEditor().InsertTextWithoutSendingTextEvent(
-        replacement, false, nullptr,
-        InputEvent::InputType::kInsertReplacementText,
-        EditCommand::PasswordEchoBehavior::kDoNotEcho, data_transfer);
-  } else {
-    frame.GetEditor().InsertTextWithoutSendingTextEvent(
-        replacement, false, nullptr,
-        InputEvent::InputType::kInsertReplacementText);
-  }
+  frame.GetEditor().InsertTextWithoutSendingTextEvent(
+      replacement, false, nullptr,
+      InputEvent::InputType::kInsertReplacementText,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho, data_transfer);
 }
 
 // |IsEmptyNonEditableNodeInEditable()| is introduced for fixing

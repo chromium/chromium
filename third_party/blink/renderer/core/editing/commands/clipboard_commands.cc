@@ -626,9 +626,7 @@ void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
   }
 
   if (paste_mode == PasteMode::kAllMimeTypes) {
-    RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()
-        ? PasteFromClipboard(frame, source, data_transfer)
-        : PasteFromClipboard(frame, source);
+    PasteFromClipboard(frame, source, data_transfer);
     return;
   }
   PasteAsPlainTextFromClipboard(frame, source);

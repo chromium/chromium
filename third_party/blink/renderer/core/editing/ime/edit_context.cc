@@ -616,10 +616,6 @@ template <typename StateMachine>
 wtf_size_t FindNextBoundaryOffset(const String& str, wtf_size_t current);
 
 void EditContext::EnsureSelectionWithinTextBounds() {
-  if (!RuntimeEnabledFeatures::
-          UseBoundedSelectionOffsetsInEditContextDeleteOperationsEnabled()) {
-    return;
-  }
   SetSelection(std::min(selection_start_, text_.length()),
                std::min(selection_end_, text_.length()));
 }

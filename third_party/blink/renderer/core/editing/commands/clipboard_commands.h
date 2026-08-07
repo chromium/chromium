@@ -141,7 +141,7 @@ class CORE_EXPORT ClipboardCommands {
   static void PasteAsPlainTextFromClipboard(LocalFrame&, EditorCommandSource);
   static void PasteFromClipboard(LocalFrame&,
                                  EditorCommandSource,
-                                 DataTransfer* = nullptr);
+                                 DataTransfer*);
   static void PasteFromImageUrl(LocalFrame&, EditorCommandSource, String);
 
   using FragmentAndPlainText = std::pair<DocumentFragment*, const bool>;

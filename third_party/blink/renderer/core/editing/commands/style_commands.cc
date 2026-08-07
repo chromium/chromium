@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_font_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -326,9 +325,7 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
   // When toggling off a decoration in an empty element, clear the typing style
   // completely rather than setting it to "none". This prevents stale decoration
   // properties from being applied to subsequently typed text.
-  if (RuntimeEnabledFeatures::
-          FixStrikethroughToggleInEmptyContentEditableEnabled() &&
-      new_style == "none" &&
+  if (new_style == "none" &&
       property_id == CSSPropertyID::kWebkitTextDecorationsInEffect) {
     const VisibleSelection& selection =
         frame.Selection().ComputeVisibleSelectionInDomTree();

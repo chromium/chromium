@@ -810,11 +810,6 @@
       status: "stable",
     },
     {
-      // Fix for https://crbug.com/471876082
-      name: "AvoidMergingStyledSpanWithSiblings",
-      status: "stable",
-    },
-    {
       // Disables the synchronous focus blur behavior when a focused form control
       // is disabled.
       name: "AvoidSynchronousBlurOnDisabledAttributeChange",
@@ -2371,11 +2366,6 @@
       base_feature: "none",
     },
     {
-      // Disables removeFormat command on Plaintext-only content editable div
-      name: "DisableRemoveFormatForPlainTextOnlyEditableDiv",
-      status: "stable",
-    },
-    {
       // Disconnected <area> elements should not trigger navigation.
       // This was added in M146, and can be removed in M148.
       name: "DisallowDisconnectedAreaNavigation",
@@ -3082,12 +3072,6 @@
       name: "FixSelectionPaintRangeNullOpt",
       status: "stable",
     },
-    {
-      // Fix for strikethrough toggle not working in empty
-      // contenteditable. See https://crbug.com/427915243
-      name: "FixStrikethroughToggleInEmptyContentEditable",
-      status: "stable",
-    },
     // Fix LayoutView viewport mapping in the GeometryMapper fast path for
     // OOPIFs.
     {
@@ -3435,10 +3419,6 @@
       status: "test",
     },
     {
-      name: "HandleDisconnectedSelectionDuringDOMChanges",
-      status: "stable",
-    },
-    {
       name: "HandleShadowDOMInSubstringUtil",
       status: "stable",
     },
@@ -3670,20 +3650,6 @@
       // Enabled in M153, safe to remove in M155.
       // https://issues.chromium.org/issues/533188858
       name: "InputDisabledHandlerFix",
-      status: "stable",
-    },
-    {
-      // Enable DataTransfer propagation to input events for insertFromPaste,
-      // insertFromDrop, and insertReplacementText operations on content-editables.
-      name: "InputEventDataTransferForInsertCmd",
-      status: "stable",
-    },
-    {
-      // When enabled, deletion commands like Ctrl+Backspace (deleteWordBackward)
-      // with selected text will correctly report deleteContentBackward instead of
-      // deleteWordBackward in both beforeinput and input events, conforming to
-      // the W3C Input Events spec.
-      name: "InputEventsDeleteNonCollapsedSelection",
       status: "stable",
     },
     {
@@ -4013,12 +3979,6 @@
       // Enables mirroring for stretchy and large MathML operators when
       // the text direction is right to left.
       name: "MathMLOperatorRTLMirroring",
-      status: "stable",
-    },
-    {
-      // Enables skipping <mtr> wrapping during ancestor wrapping in
-      // serialization. When enabled duplicate <mtr> wrapping are absent.
-      name: "MathMLSkipMtrTagInAncestorWrapping",
       status: "stable",
     },
     {
@@ -5119,14 +5079,6 @@
       status: "stable",
     },
     {
-      // Fix for removeFormat command incorrectly preserving background-color
-      // when removing styles from elements. Prevents background-color from being
-      // re-applied to child elements during style removal.
-      // See https://crbug.com/41438799
-      name: "RemoveFormatFilterBackgroundColor",
-      status: "stable",
-    },
-    {
       // Remove non-allowlisted event interfaces from document.createEvent().
       // This was added in M148 and can be removed after M150.
       // https://chromestatus.com/feature/5095987863486464
@@ -5588,20 +5540,6 @@
       name: "SelectionSetBaseAndExtentNonNullNode",
       status: "experimental",
       settable_from_internals: true,
-    },
-    {
-      // Enables skipping user-select: none content
-      // in DOMSelection::toString()
-      name: "SelectionToStringSkipsUserSelectNone",
-      status: "stable",
-    },
-    {
-      // Conditionally update selection only when autoscroll actually scrolls.
-      // This prevents infinite selection updates during autoscroll when the
-      // scroll position doesn't change.
-      // See https://crbug.com/412578722
-      name: "SelectionUpdateOnlyAfterAutoscroll",
-      status: "stable",
     },
     {
       // See https://chromestatus.com/feature/5203433409871872
@@ -6634,11 +6572,6 @@
       status: {
         "ChromeOS": "stable",
       },
-    },
-    {
-      // Fix for https://crbug.com/454639396
-      name: "UseBoundedSelectionOffsetsInEditContextDeleteOperations",
-      status: "stable"
     },
     {
       name: "UseLargestPaintedImageForLCPCandidate",

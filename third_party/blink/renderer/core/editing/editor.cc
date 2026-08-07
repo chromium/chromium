@@ -405,12 +405,8 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
     return true;
 
   if (should_insert && drop_target->isConnected()) {
-    if (RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()) {
-      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type,
-                                    data_transfer);
-    } else {
-      ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
-    }
+    ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type,
+                                  data_transfer);
   }
   return true;
 }

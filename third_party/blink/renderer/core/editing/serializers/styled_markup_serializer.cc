@@ -274,7 +274,6 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
       // elements are currently not supported - absent in mathml_names.h
       auto* mathml_element = DynamicTo<MathMLElement>(ancestor);
       if (mathml_element &&
-          RuntimeEnabledFeatures::MathMLSkipMtrTagInAncestorWrappingEnabled() &&
           mathml_element->HasTagName(mathml_names::kMtrTag)) {
         if (ancestor == highest_node_to_be_serialized_) {
           break;

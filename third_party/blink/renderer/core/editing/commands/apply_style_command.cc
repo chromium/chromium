@@ -458,11 +458,8 @@ void ApplyStyleCommand::ApplyRelativeFontStyleChange(
       auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
       // Prevent merging the span with adjacent siblings, to ensure the DOM
       // structure and traversal order do not change.
-      SurroundNodeRangeWithElement(
-          node, node, span, editing_state,
-          RuntimeEnabledFeatures::AvoidMergingStyledSpanWithSiblingsEnabled()
-              ? kDoNotMergeSiblings
-              : kMergeSiblings);
+      SurroundNodeRangeWithElement(node, node, span, editing_state,
+                                   kDoNotMergeSiblings);
       if (editing_state->IsAborted())
         return;
       element = span;
@@ -1588,21 +1585,17 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
       }
 
       if (style_to_push_down) {
-        EditingStyle* filtered_style_to_push_down = style_to_push_down;
-
-        if (RuntimeEnabledFeatures::
-                RemoveFormatFilterBackgroundColorEnabled()) {
-          // Filter out styles that should be removed - don't push down styles
-          // that conflict with the styles we're trying to remove
-          filtered_style_to_push_down = style_to_push_down->Copy();
-          if (style && style->Style() && filtered_style_to_push_down->Style()) {
-            // Remove any properties from style_to_push_down that are present in
-            // the style being removed
-            for (const CSSPropertyValue& property :
-                 style->Style()->Properties()) {
-              filtered_style_to_push_down->Style()->RemoveProperty(
-                  property.PropertyID());
-            }
+        EditingStyle* const filtered_style_to_push_down =
+            style_to_push_down->Copy();
+        // Filter out styles that should be removed - don't push down styles
+        // that conflict with the styles we're trying to remove
+        if (style && style->Style() && filtered_style_to_push_down->Style()) {
+          // Remove any properties from style_to_push_down that are present in
+          // the style being removed
+          for (const CSSPropertyValue& property :
+               style->Style()->Properties()) {
+            filtered_style_to_push_down->Style()->RemoveProperty(
+                property.PropertyID());
           }
         }
 

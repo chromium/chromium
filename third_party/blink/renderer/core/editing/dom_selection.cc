@@ -890,10 +890,7 @@ String DomSelection::toString() {
 
   TextIteratorBehavior::Builder behavior_builder;
   behavior_builder.SetForSelectionToString(true);
-
-  if (RuntimeEnabledFeatures::SelectionToStringSkipsUserSelectNoneEnabled()) {
-    behavior_builder.SetSkipsUnselectableContent(true);
-  }
+  behavior_builder.SetSkipsUnselectableContent(true);
 
   return PlainText(range, behavior_builder.Build());
 }
