@@ -327,11 +327,13 @@ bool WebUILocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
     return false;
   }
 
-  if (BoundsInScreen().Contains(event->root_location())) {
+  auto* const view = static_cast<views::View*>(event->target());
+  auto event_coords =
+      views::View::ConvertPointToScreen(view, event->location());
+  if (BoundsInScreen().Contains(event_coords)) {
     return false;
   }
 
-  auto* const view = static_cast<views::View*>(event->target());
   if (omnibox_popup_view_->presenter()->GetOuterView()->Contains(view)) {
     return false;
   }
