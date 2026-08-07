@@ -4,11 +4,21 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.View;
+import android.widget.ImageView;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -59,6 +69,66 @@ public class VerticalTabListViewBinder {
             collapseButton.setAlpha(enabled ? 1.0f : disabledAlpha);
         } else if (VerticalTabListProperties.COLLAPSE_STATE == propertyKey) {
             view.setCollapseState(model.get(VerticalTabListProperties.COLLAPSE_STATE));
+        } else if (VerticalTabListProperties.IS_INCOGNITO == propertyKey) {
+            updateIncognitoColors(view, model.get(VerticalTabListProperties.IS_INCOGNITO));
+        }
+    }
+
+    /**
+     * Updates the container background and button icon tints for incognito mode when running in a
+     * shared window (e.g. foldables and phones). If incognito runs as a separate window (e.g. on
+     * tablets), this is a no-op as the activity theme already provides incognito styling.
+     *
+     * @param view The root {@link VerticalTabRailLayout} container view.
+     * @param isIncognito Whether the active tab model is incognito branded.
+     */
+    private static void updateIncognitoColors(VerticalTabRailLayout view, boolean isIncognito) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return;
+        }
+        Context context = view.getContext();
+        int backgroundColor = TabUiThemeUtil.getTabStripBackgroundColor(context, isIncognito);
+        view.setBackgroundColor(backgroundColor);
+
+        ColorStateList iconTint =
+                isIncognito
+                        ? context.getColorStateList(R.color.incognito_tab_action_button_color)
+                        : ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColor(context));
+
+        @Nullable ImageView collapseButton = view.findViewById(R.id.collapse_button);
+        if (collapseButton != null) {
+            ImageViewCompat.setImageTintList(collapseButton, iconTint);
+        }
+
+        @Nullable ImageView gridButton = view.findViewById(R.id.grid_button);
+        if (gridButton != null) {
+            ImageViewCompat.setImageTintList(gridButton, iconTint);
+        }
+
+        @Nullable ImageView searchButton = view.findViewById(R.id.tab_search_button);
+        if (searchButton != null) {
+            ImageViewCompat.setImageTintList(searchButton, iconTint);
+        }
+
+        @Nullable ImageView newTabButton = view.findViewById(R.id.new_tab_button);
+        if (newTabButton != null) {
+            ImageViewCompat.setImageTintList(newTabButton, iconTint);
+        }
+
+        @Nullable ColorStateList buttonBgTint =
+                isIncognito
+                        ? context.getColorStateList(
+                                R.color.incognito_vertical_tabs_button_background_color)
+                        : null;
+
+        if (gridButton != null) {
+            ViewCompat.setBackgroundTintList(gridButton, buttonBgTint);
+        }
+        if (searchButton != null) {
+            ViewCompat.setBackgroundTintList(searchButton, buttonBgTint);
+        }
+        if (newTabButton != null) {
+            ViewCompat.setBackgroundTintList(newTabButton, buttonBgTint);
         }
     }
 }

@@ -26,6 +26,7 @@ android_resources("java_resources") {
     "java/res/color-night/tab_group_favicon_quater_empty_fill_color.xml",
     "java/res/color-night/tab_hover_card_bg_color.xml",
     "java/res/color/incognito_tab_highlight_card_bg_color.xml",
+    "java/res/color/incognito_vertical_tabs_button_background_color.xml",
     "java/res/color/tab_group_dialog_bg_color.xml",
     "java/res/color/tab_group_favicon_quater_empty_fill_color.xml",
     "java/res/color/tab_highlight_card_bg_color.xml",

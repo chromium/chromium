@@ -37,8 +37,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R.string;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -78,7 +81,8 @@ class TabVerticalViewBinder {
 
         if (TabProperties.TITLE == propertyKey) {
             updateTitle(R.id.tab_title, model, view);
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
             updateRegularColors(model, view);
             updateIcons(model, view);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
@@ -142,7 +146,8 @@ class TabVerticalViewBinder {
 
         if (TabProperties.TITLE == propertyKey) {
             view.setContentDescription(model.get(TabProperties.TITLE));
-        } else if (TabProperties.IS_SELECTED == propertyKey) {
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             Resources resources = view.getContext().getResources();
@@ -171,7 +176,8 @@ class TabVerticalViewBinder {
 
         if (TabProperties.TITLE == propertyKey) {
             updateTitle(R.id.group_title, model, view);
-        } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey) {
+        } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
             updateGroupHeaderColors(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             TabListViewBinderUtils.updateContentDescription(model, view);
@@ -347,8 +353,12 @@ class TabVerticalViewBinder {
         // Loading Spinner
         if (spinner != null) {
             if (loadingWanted) {
-                spinner.setIndicatorColor(
-                        SemanticColorUtils.getDefaultIconColorAccent1(view.getContext()));
+                boolean isIncognito = isIncognito(model);
+                int spinnerColor =
+                        isIncognito
+                                ? view.getContext().getColor(R.color.default_icon_color_blue_light)
+                                : SemanticColorUtils.getDefaultIconColorAccent1(view.getContext());
+                spinner.setIndicatorColor(spinnerColor);
                 spinner.show();
             } else {
                 spinner.setVisibility(View.GONE);
@@ -510,24 +520,38 @@ class TabVerticalViewBinder {
 
     // Row-Specific Layout Color Binder Helpers
 
+    /**
+     * Updates the selection state, background tint, text colors, and action button tints for a
+     * standard vertical tab row view.
+     *
+     * <p>When the active tab model is incognito (in a shared window), dark incognito palette colors
+     * are dynamically bound for background tints, title text, and action buttons. When unselected,
+     * the background remains transparent and title/action button colors use muted incognito tints.
+     * When selected, a dark surface tint is applied with high-contrast text and icon colors.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the standard tab row item.
+     */
     private static void updateRegularColors(PropertyModel model, ViewGroup view) {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isIncognito = isIncognito(model);
         Context context = view.getContext();
         view.setSelected(isSelected);
 
         @Nullable Drawable bg = view.getBackground();
         if (bg != null) {
             bg.mutate();
-            ViewCompat.setBackgroundTintList(view, getBackgroundTintList(context, isSelected));
+            ViewCompat.setBackgroundTintList(
+                    view, getBackgroundTintList(context, isSelected, isIncognito));
         }
 
         TextView titleView = view.findViewById(R.id.tab_title);
-        titleView.setTextColor(getTextColor(context, isSelected));
+        titleView.setTextColor(getTextColor(context, isSelected, isIncognito));
 
         @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
         if (actionButton != null) {
             ImageViewCompat.setImageTintList(
-                    actionButton, getActionButtonTintList(context, isSelected));
+                    actionButton, getActionButtonTintList(context, isSelected, isIncognito));
         }
         updateFaviconImage(model, view);
         setupTabHoverListener(
@@ -538,61 +562,89 @@ class TabVerticalViewBinder {
 
     /**
      * Updates the background tint and website favicon specifically for a pinned tab row view.
-     * Clears background tints when unselected, to allow the solid XML container drawable to render.
+     *
+     * <p>In regular mode, unselected pinned tabs clear background tints (set to {@code null}) to
+     * allow the solid XML container drawable to render. In incognito mode on foldables (shared
+     * window), unselected pinned tabs use the dark baseline surface container high tint ({@link
+     * R.color#gm3_baseline_surface_container_high_dark}) to provide a distinct pill container
+     * without dynamic colors, and selected pinned tabs use the dark surface background tint.
      *
      * @param model the model containing the tab properties.
      * @param view the root ViewGroup representing the pinned tab row item.
      */
     private static void updatePinnedColors(PropertyModel model, ViewGroup view) {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isIncognito = isIncognito(model);
         Context context = view.getContext();
         view.setSelected(isSelected);
 
         @Nullable Drawable bg = view.getBackground();
+        @Nullable ColorStateList defaultBackgroundColor =
+                isIncognito
+                        ? ColorStateList.valueOf(
+                                context.getColor(R.color.gm3_baseline_surface_container_high_dark))
+                        : null;
         if (bg != null) {
             bg.mutate();
-            ColorStateList tintList =
-                    isSelected ? getBackgroundTintList(context, /* isSelected= */ true) : null;
+            ColorStateList tintList;
+            if (isSelected) {
+                tintList = getBackgroundTintList(context, /* isSelected= */ true, isIncognito);
+            } else {
+                tintList = defaultBackgroundColor;
+            }
             ViewCompat.setBackgroundTintList(view, tintList);
         }
         updateFaviconImage(model, view);
-        setupTabHoverListener(model, view, /* defaultBackgroundColor= */ null);
+        setupTabHoverListener(model, view, defaultBackgroundColor);
     }
 
     /**
-     * Updates the background tint color specifically for the tab group header row view, dynamically
-     * resolving the group color ID using TabGroupColorPickerUtils.
+     * Updates the background tint, title text color, and chevron icon tint specifically for the tab
+     * group header row view.
+     *
+     * <p>Dynamically resolves group color tints and foreground text/icon colors using {@link
+     * TabGroupColorPickerUtils} with the {@code isIncognito} parameter. If no explicit group color
+     * ID is set on an incognito group header, fallback card background and title colors from {@link
+     * TabCardThemeUtil} are applied so the header matches the dark incognito styling.
      *
      * @param model the model containing the tab group properties.
      * @param view the root ViewGroup representing the tab group header row item.
      */
     private static void updateGroupHeaderColors(PropertyModel model, ViewGroup view) {
         @Nullable Integer colorId = model.get(TabProperties.TAB_GROUP_CARD_COLOR);
+        boolean isIncognito = isIncognito(model);
         Context context = view.getContext();
 
         @Nullable Drawable bg = view.getBackground();
-        if (bg != null && colorId != null) {
-            bg.mutate();
-            int backgroundColor =
-                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                            context, colorId, /* isIncognito= */ false);
-            ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(backgroundColor));
+        if (bg == null || (colorId == null && !isIncognito)) {
+            return;
+        }
+        bg.mutate();
+        int backgroundColor =
+                colorId != null
+                        ? TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                                context, colorId, isIncognito)
+                        : TabCardThemeUtil.getCardViewBackgroundColor(
+                                context, isIncognito, /* isSelected= */ false, /* colorId= */ null);
+        ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(backgroundColor));
 
-            @ColorInt
-            int foregroundColor =
-                    TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
-                            context, colorId, /* isIncognito= */ false);
+        @ColorInt
+        int foregroundColor =
+                colorId != null
+                        ? TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                                context, colorId, isIncognito)
+                        : TabCardThemeUtil.getTitleTextColor(
+                                context, isIncognito, /* isSelected= */ false, /* colorId= */ null);
 
-            TextView titleView = view.findViewById(R.id.group_title);
-            if (titleView != null) {
-                titleView.setTextColor(foregroundColor);
-            }
+        TextView titleView = view.findViewById(R.id.group_title);
+        if (titleView != null) {
+            titleView.setTextColor(foregroundColor);
+        }
 
-            @Nullable ImageView expandChevron = view.findViewById(R.id.expand_chevron);
-            if (expandChevron != null) {
-                ImageViewCompat.setImageTintList(
-                        expandChevron, ColorStateList.valueOf(foregroundColor));
-            }
+        @Nullable ImageView expandChevron = view.findViewById(R.id.expand_chevron);
+        if (expandChevron != null) {
+            ImageViewCompat.setImageTintList(
+                    expandChevron, ColorStateList.valueOf(foregroundColor));
         }
     }
 
@@ -735,19 +787,78 @@ class TabVerticalViewBinder {
 
     // Theme & Color Utility Methods
 
-    private static ColorStateList getBackgroundTintList(Context context, boolean isSelected) {
-        return isSelected
-                ? ColorStateList.valueOf(SemanticColorUtils.getColorSurface(context))
-                : ColorStateList.valueOf(Color.TRANSPARENT);
+    /**
+     * Returns whether incognito color styling should be applied for the given tab model.
+     *
+     * <p>Incognito colors are only applied dynamically when incognito tabs share an activity window
+     * with regular tabs (e.g. foldables and phones where {@link
+     * IncognitoUtils#shouldOpenIncognitoAsWindow()} is false). When incognito runs in a dedicated
+     * window with an activity-level incognito theme, standard theme colors are used instead.
+     */
+    private static boolean isIncognito(PropertyModel model) {
+        return !IncognitoUtils.shouldOpenIncognitoAsWindow()
+                && model.get(TabProperties.IS_INCOGNITO);
     }
 
-    private static @ColorInt int getTextColor(Context context, boolean isSelected) {
-        return isSelected
-                ? SemanticColorUtils.getColorOnSurface(context)
-                : SemanticColorUtils.getDefaultTextColorSecondary(context);
+    /**
+     * Resolves the background tint list for a vertical tab row based on selection and incognito
+     * state.
+     *
+     * @param context the context to retrieve theme colors from.
+     * @param isSelected whether the tab item is currently active/selected.
+     * @param isIncognito whether incognito dark mode colors should be applied.
+     * @return a {@link ColorStateList} with transparent background for unselected tabs, dark
+     *     surface tint for selected incognito tabs, and surface color for selected regular tabs.
+     */
+    private static ColorStateList getBackgroundTintList(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (!isSelected) {
+            return ColorStateList.valueOf(Color.TRANSPARENT);
+        }
+        int color =
+                isIncognito
+                        ? context.getColor(R.color.default_bg_color_dark)
+                        : SemanticColorUtils.getColorSurface(context);
+        return ColorStateList.valueOf(color);
     }
 
-    private static ColorStateList getActionButtonTintList(Context context, boolean isSelected) {
+    /**
+     * Resolves the title text color for a vertical tab row based on selection and incognito state.
+     *
+     * @param context the context to retrieve theme colors from.
+     * @param isSelected whether the tab item is currently active/selected.
+     * @param isIncognito whether incognito dark mode colors should be applied.
+     * @return text color integer supporting high-contrast white text in incognito or theme surface
+     *     text.
+     */
+    private static @ColorInt int getTextColor(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (isSelected) {
+            return isIncognito
+                    ? context.getColor(R.color.default_text_color_light)
+                    : SemanticColorUtils.getColorOnSurface(context);
+        } else {
+            return isIncognito
+                    ? context.getColor(R.color.incognito_tab_title_color)
+                    : SemanticColorUtils.getDefaultTextColorSecondary(context);
+        }
+    }
+
+    /**
+     * Resolves the tint list for the action/close button based on selection and incognito state.
+     *
+     * @param context the context to retrieve theme colors from.
+     * @param isSelected whether the tab item is currently active/selected.
+     * @param isIncognito whether incognito dark mode colors should be applied.
+     * @return a {@link ColorStateList} for the action button icon.
+     */
+    private static ColorStateList getActionButtonTintList(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (isIncognito) {
+            return isSelected
+                    ? ChromeColors.getPrimaryIconTint(context, /* isIncognito= */ true)
+                    : context.getColorStateList(R.color.incognito_tab_action_button_color);
+        }
         return ColorStateList.valueOf(
                 isSelected
                         ? SemanticColorUtils.getDefaultIconColor(context)
@@ -756,6 +867,17 @@ class TabVerticalViewBinder {
 
     // Gesture & Interaction Layout Helpers
 
+    /**
+     * Configures mouse hover listeners for the tab row view and optional action button.
+     *
+     * <p>When hovered while unselected, applies {@link TabUiThemeUtil#getHoveredTabContainerColor}
+     * corresponding to the current incognito state, and restores {@code defaultBackgroundColor} on
+     * exit.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the tab row item.
+     * @param defaultBackgroundColor the background tint list to restore on hover exit.
+     */
     private static void setupTabHoverListener(
             PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBackgroundColor) {
         @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
@@ -763,6 +885,7 @@ class TabVerticalViewBinder {
         view.setOnHoverListener(
                 (v, motionEvent) -> {
                     boolean isSelected = model.get(TabProperties.IS_SELECTED);
+                    boolean isIncognito = isIncognito(model);
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER:
                             // TODO(crbug.com/533531896): Handle clearing all backgrounds before
@@ -774,8 +897,7 @@ class TabVerticalViewBinder {
                                         view,
                                         ColorStateList.valueOf(
                                                 TabUiThemeUtil.getHoveredTabContainerColor(
-                                                        view.getContext(),
-                                                        /* isIncognito= */ false)));
+                                                        view.getContext(), isIncognito)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
                             notifyHoverChange(model, view, /* isHovered= */ true);
@@ -799,6 +921,7 @@ class TabVerticalViewBinder {
             actionButton.setOnHoverListener(
                     (v, motionEvent) -> {
                         int action = motionEvent.getAction();
+                        boolean isIncognito = isIncognito(model);
                         if (action == MotionEvent.ACTION_HOVER_ENTER) {
                             v.setHovered(true);
                             if (!model.get(TabProperties.IS_SELECTED)) {
@@ -806,8 +929,7 @@ class TabVerticalViewBinder {
                                         view,
                                         ColorStateList.valueOf(
                                                 TabUiThemeUtil.getHoveredTabContainerColor(
-                                                        view.getContext(),
-                                                        /* isIncognito= */ false)));
+                                                        view.getContext(), isIncognito)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
                             notifyHoverChange(model, view, /* isHovered= */ true);
