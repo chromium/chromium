@@ -244,7 +244,8 @@ class TabVerticalViewBinder {
     }
 
     // Icon Update Helpers.
-    // Icons priority when rail is collapsed: action > ai > media > loading > favicon
+    // Icons priority when rail is collapsed: action > recording/sharing media > ai actuation >
+    // standard media > loading > favicon
 
     private static void updateFaviconImage(PropertyModel model, ViewGroup view) {
         @Nullable ImageView faviconView = view.findViewById(R.id.tab_favicon);
@@ -295,18 +296,29 @@ class TabVerticalViewBinder {
                         && model.get(TabProperties.FAVICON_FETCHER) != null
                         && !loadingWanted;
 
-        // 2. Apply priority rules for collapsed state
+        // 2. Apply priority rules for collapsed state.
+        // Priority: Close > Recording/Sharing Media > AI Actuation > Standard Media >
+        // Loading/Favicon.
         if (isRailCollapsed) {
+            boolean isRecordingOrSharing =
+                    mediaState == MediaState.RECORDING || mediaState == MediaState.SHARING;
+            boolean recordingOrSharingWanted = mediaWanted && isRecordingOrSharing;
+            boolean standardMediaWanted = mediaWanted && !isRecordingOrSharing;
+
             if (actionWanted) {
                 actorActuationWanted = false;
                 mediaWanted = false;
+                loadingWanted = false;
+                faviconWanted = false;
+            } else if (recordingOrSharingWanted) {
+                actorActuationWanted = false;
                 loadingWanted = false;
                 faviconWanted = false;
             } else if (actorActuationWanted) {
                 mediaWanted = false;
                 loadingWanted = false;
                 faviconWanted = false;
-            } else if (mediaWanted) {
+            } else if (standardMediaWanted) {
                 loadingWanted = false;
                 faviconWanted = false;
             }

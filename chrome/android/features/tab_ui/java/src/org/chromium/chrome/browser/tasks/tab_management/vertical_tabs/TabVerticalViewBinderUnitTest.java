@@ -1541,7 +1541,7 @@ public class TabVerticalViewBinderUnitTest {
 
         // Setup all other icons to be active
         mModel.set(TabProperties.IS_LOADING, true);
-        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
         mModel.set(
                 TabProperties.ACTOR_UI_STATE,
                 new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
@@ -1575,7 +1575,7 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
-        // --- Priority 2: AI Indicator ---
+        // --- Priority 2: Recording/Sharing Media Indicator ---
         // Un-hover to hide close button
         MotionEvent hoverExitEvent =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
@@ -1583,13 +1583,24 @@ public class TabVerticalViewBinderUnitTest {
         mItemView.dispatchGenericMotionEvent(hoverExitEvent);
 
         assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
+        assertNotEquals(View.VISIBLE, mActuationSparkView.getVisibility());
+        assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
+        assertNotEquals(View.VISIBLE, spinner.getVisibility());
+        assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
+
+        // --- Priority 3: AI Actuation Indicator ---
+        // Change Media to Standard (Audible) so AI actuation takes priority
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+
+        assertNotEquals(View.VISIBLE, mCloseButton.getVisibility());
         assertEquals(View.VISIBLE, mActuationSparkView.getVisibility());
         assertNotEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
-        // --- Priority 3: Media Indicator ---
-        // Disable AI
+        // --- Priority 4: Standard Media Indicator ---
+        // Disable AI actuation
         mModel.set(
                 TabProperties.ACTOR_UI_STATE,
                 new UiTabState(0, null, null, TabIndicatorStatus.NONE, false));
@@ -1601,7 +1612,7 @@ public class TabVerticalViewBinderUnitTest {
         assertNotEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
-        // --- Priority 4: Loading Spinner ---
+        // --- Priority 5: Loading Spinner ---
         // Disable Media
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
@@ -1612,7 +1623,7 @@ public class TabVerticalViewBinderUnitTest {
         assertEquals(View.VISIBLE, spinner.getVisibility());
         assertNotEquals(View.VISIBLE, mFaviconView.getVisibility());
 
-        // --- Priority 5: Favicon ---
+        // --- Priority 6: Favicon ---
         // Disable Loading
         mModel.set(TabProperties.IS_LOADING, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_LOADING);
