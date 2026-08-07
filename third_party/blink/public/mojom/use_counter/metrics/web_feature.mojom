@@ -5299,6 +5299,7 @@ enum WebFeature {
   kAdVideoHDR = 5982,
   kLocalNetworkAccessShouldTreatAsPublicAddressCsp = 5983,
   kCreateBytesModuleScript = 5984,
+  kV8ModuleNamespaceMissingDefaultWithStarExport = 5985,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

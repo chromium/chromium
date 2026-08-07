@@ -6715,6 +6715,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5982" label="AdVideoHDR"/>
   <int value="5983" label="LocalNetworkAccessShouldTreatAsPublicAddressCsp"/>
   <int value="5984" label="CreateBytesModuleScript"/>
+  <int value="5985" label="V8ModuleNamespaceMissingDefaultWithStarExport"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
