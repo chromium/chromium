@@ -46,7 +46,7 @@ SkillsUiWindowController* SkillsUiWindowController::From(
 
 void SkillsUiWindowController::OnSkillSaved(std::string_view skill_id,
                                             bool hide_toast_button) {
-  last_saved_skill_id_ = skill_id;
+  StoreLastSavedSkillMetadata(skill_id, "", "");
   ShowToast(hide_toast_button ? ToastId::kSkillSavedWithoutInvokeButton
                               : ToastId::kSkillSaved);
 }
@@ -138,10 +138,13 @@ void SkillsUiWindowController::ShowSkillToast(ToastParams params) {
 }
 
 void SkillsUiWindowController::InvokeLastSavedSkill() {
-  InvokeSkill(last_saved_skill_id_);
+  InvokeSkill(last_saved_skill_id_, last_saved_skill_name_,
+              last_saved_skill_icon_);
 }
 
-void SkillsUiWindowController::InvokeSkill(std::string_view skill_id) {
+void SkillsUiWindowController::InvokeSkill(std::string_view skill_id,
+                                           std::string_view skill_name,
+                                           std::string_view skill_icon) {
   if (skill_id.empty()) {
     return;
   }
@@ -149,10 +152,18 @@ void SkillsUiWindowController::InvokeSkill(std::string_view skill_id) {
   if (auto* active_tab = browser_window_interface_->GetActiveTabInterface()) {
     if (auto* tab_controller =
             skills::SkillsUiTabControllerInterface::From(active_tab)) {
-      tab_controller->InvokeSkill(skill_id, /*skill_name=*/"",
-                                  /*skill_icon=*/"");
+      tab_controller->InvokeSkill(skill_id, skill_name, skill_icon);
     }
   }
+}
+
+void SkillsUiWindowController::StoreLastSavedSkillMetadata(
+    std::string_view skill_id,
+    std::string_view skill_name,
+    std::string_view skill_icon) {
+  last_saved_skill_id_ = skill_id;
+  last_saved_skill_name_ = skill_name;
+  last_saved_skill_icon_ = skill_icon;
 }
 
 }  // namespace skills

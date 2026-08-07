@@ -33,6 +33,7 @@ suite('SkillsWebviewBridgeTest', () => {
     return {
       onError: () => {},
       onShowSaveToast: () => {},
+      onShowSaveAndInvokeToast: () => {},
       onShowDeleteToast: (_skillId: string) =>
           Promise.resolve({actionClicked: false}),
       onInvokeSkill: () => {},
@@ -241,6 +242,35 @@ suite('SkillsWebviewBridgeTest', () => {
     });
 
     assertTrue(saveToastCalled);
+  });
+
+  test('HostReceivesShowToastMessage_SaveAndInvoke', () => {
+    let receivedSkillId = '';
+    let receivedSkillName = '';
+    let receivedSkillIcon = '';
+    const delegate = createMockDelegate({
+      onShowSaveAndInvokeToast:
+          (skillId: string, skillName: string, skillIcon: string) => {
+            receivedSkillId = skillId;
+            receivedSkillName = skillName;
+            receivedSkillIcon = skillIcon;
+          },
+    });
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    establishHandshake();
+
+    sendMockMessage({
+      type: SKILLS_SHOW_TOAST,
+      toastType: 'save_and_invoke',
+      skillId: 'some_id',
+      skillName: 'some_name',
+      skillIcon: 'some_icon',
+    });
+
+    assertEquals('some_id', receivedSkillId);
+    assertEquals('some_name', receivedSkillName);
+    assertEquals('some_icon', receivedSkillIcon);
   });
 
   test('HostReceivesShowToastMessage_Delete', async () => {

@@ -326,4 +326,25 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
             1);
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       StoreLastSavedSkillMetadataAndInvoke) {
+  const std::string kSkillId = "skill-123";
+  const std::string kSkillName = "Skill Name";
+  const std::string kSkillIcon = "Skill Icon";
+
+  window_controller()->StoreLastSavedSkillMetadata(kSkillId, kSkillName,
+                                                   kSkillIcon);
+  window_controller()->ShowToast(ToastId::kSkillSaved);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  // Click toast action button ("Try It").
+  ClickToastActionButton();
+
+  // Verify that the skill was invoked with name and icon parameters.
+  EXPECT_EQ(tab_controller()->GetLastInvokedSkillIdForTesting(), kSkillId);
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
 }  // namespace skills

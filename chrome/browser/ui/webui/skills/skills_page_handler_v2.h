@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -45,6 +46,9 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
   // ::skills::mojom::SkillsPageHandler:
   void SyncCookies(SyncCookiesCallback callback) override;
   void ShowSaveToast() override;
+  void ShowSaveAndInvokeToast(const std::string& skill_id,
+                              const std::string& skill_name,
+                              const std::string& skill_icon) override;
   void ShowDeleteToast(const std::string& skill_id,
                        ShowDeleteToastCallback callback) override;
   void InvokeSkill(const std::string& skill_id,
@@ -55,6 +59,8 @@ class SkillsPageHandlerV2 : public ::skills::mojom::SkillsPageHandler {
   void GetPendingEditorData(GetPendingEditorDataCallback callback) override;
 
  private:
+  BrowserWindowInterface* GetBrowserWindow();
+
   mojo::Receiver<::skills::mojom::SkillsPageHandler> receiver_;
   const base::raw_ref<Profile> profile_;
   const base::raw_ref<content::WebContents> web_contents_;

@@ -149,5 +149,11 @@ TEST_F(SkillsPageHandlerV2Test, CloseDialog) {
   remote_handler.FlushForTesting();
 }
 
+TEST_F(SkillsPageHandlerV2Test, ShowToastNoopWithoutBrowser) {
+  remote_handler_->ShowSaveToast();
+  remote_handler_->ShowSaveAndInvokeToast("id", "name", "icon");
+  remote_handler_.FlushForTesting();
+}
+
 }  // namespace
 }  // namespace skills

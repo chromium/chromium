@@ -150,6 +150,13 @@ interface SkillsPageHandler {
   // Shows a save toast.
   ShowSaveToast();
 
+  // Shows a save and invoke toast.
+  // `skill_id` is a unique identifier. We use a string type (instead of a native
+  // UUID type) to match the proto definition, and to allow potential format
+  // changes in the future, even though it currently contains a UUID.
+  // `skill_icon` is an emoji.
+  ShowSaveAndInvokeToast(string skill_id, string skill_name, string skill_icon);
+
   // Shows a delete toast. Returns true if the undo button was clicked.
   ShowDeleteToast(string skill_id) => (bool action_clicked);
 

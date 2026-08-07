@@ -86,9 +86,7 @@ void SkillsPageHandlerV2::SyncCookies(SyncCookiesCallback callback) {
 }
 
 void SkillsPageHandlerV2::ShowSaveToast() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          &web_contents_.get());
+  BrowserWindowInterface* browser = GetBrowserWindow();
   if (!browser) {
     return;
   }
@@ -101,13 +99,44 @@ void SkillsPageHandlerV2::ShowSaveToast() {
   window_controller->ShowToast(ToastId::kSkillSavedWithoutInvokeButton);
 }
 
+void SkillsPageHandlerV2::ShowSaveAndInvokeToast(
+    const std::string& skill_id,
+    const std::string& skill_name,
+    const std::string& skill_icon) {
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  if (!browser) {
+    return;
+  }
+
+  auto* window_controller = SkillsUiWindowController::From(browser);
+  if (!window_controller) {
+    return;
+  }
+
+  bool is_skills_page = false;
+  if (auto* active_tab = browser->GetActiveTabInterface()) {
+    is_skills_page =
+        active_tab->GetContents()->GetVisibleURL().spec().starts_with(
+            chrome::kChromeUISkillsURL);
+  }
+
+  // If we are on the skills page we don't want to show the invoke button.
+  if (is_skills_page) {
+    window_controller->ShowToast(ToastId::kSkillSavedWithoutInvokeButton);
+  } else {
+    window_controller->StoreLastSavedSkillMetadata(skill_id, skill_name,
+                                                   skill_icon);
+    window_controller->ShowToast(ToastId::kSkillSaved);
+  }
+
+  CloseDialog(nullptr);
+}
+
 void SkillsPageHandlerV2::ShowDeleteToast(const std::string& skill_id,
                                           ShowDeleteToastCallback callback) {
   auto wrapped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          &web_contents_.get());
+  BrowserWindowInterface* browser = GetBrowserWindow();
   if (!browser) {
     return;
   }
@@ -167,6 +196,14 @@ void SkillsPageHandlerV2::GetPendingEditorData(
                   ->RetrieveData();
   // Note: Data is cleared when this callback runs.
   std::move(callback).Run(std::move(data));
+}
+
+BrowserWindowInterface* SkillsPageHandlerV2::GetBrowserWindow() {
+  if (delegate_) {
+    return delegate_->GetBrowserWindowInterface();
+  }
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      &web_contents_.get());
 }
 
 }  // namespace skills

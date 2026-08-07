@@ -206,7 +206,7 @@ ui::test::InteractiveTestApi::StepBuilder
 SkillsInteractiveUiTestBase::InvokeSkillDirectly(std::string* skill_id_ptr) {
   return Do([this, skill_id_ptr]() {
     skills::SkillsUiWindowController::From(browser())->InvokeSkill(
-        *skill_id_ptr);
+        *skill_id_ptr, /*skill_name=*/"", /*skill_icon=*/"");
   });
 }
 

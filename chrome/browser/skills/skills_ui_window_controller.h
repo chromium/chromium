@@ -49,7 +49,15 @@ class SkillsUiWindowController {
   // Invokes last saved skill in sidepanel.
   void InvokeLastSavedSkill();
   // Invokes the skill with skill_id in sidepanel.
-  void InvokeSkill(std::string_view skill_id);
+  void InvokeSkill(std::string_view skill_id,
+                   std::string_view skill_name,
+                   std::string_view skill_icon);
+
+  // Stash the metadata for the last saved skill, so it can be invoked if the
+  // toast action is clicked.
+  void StoreLastSavedSkillMetadata(std::string_view skill_id,
+                                   std::string_view skill_name,
+                                   std::string_view skill_icon);
 
  private:
   // Shows after a skill is saved or deleted. Takes in toast params to display.
@@ -59,6 +67,8 @@ class SkillsUiWindowController {
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
   ::ui::ScopedUnownedUserData<SkillsUiWindowController> scoped_data_holder_;
   std::string last_saved_skill_id_;
+  std::string last_saved_skill_name_;
+  std::string last_saved_skill_icon_;
   std::string last_deleted_skill_id_;
   std::set<std::string> pending_deletions_;
 

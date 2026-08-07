@@ -61,6 +61,8 @@ export function urlMatchesApiAllowedOrigin(url: URL): boolean {
 export interface SkillsWebviewBridgeDelegate {
   onError(): void;
   onShowSaveToast(): void;
+  onShowSaveAndInvokeToast(
+      skillId: string, skillName: string, skillIcon: string): void;
   onShowDeleteToast(skillId: string): Promise<{actionClicked: boolean}>;
   onInvokeSkill(skillId: string, skillName: string, skillIcon: string): void;
   onUrlChanged(url: URL): void;
@@ -247,8 +249,12 @@ export class SkillsWebviewBridge {
     chrome.histograms.recordBoolean(HISTOGRAM_HANDSHAKE_RESULT, true);
   }
 
-  private async handleShowToastMessage(
-      data: {toastType: string, skillId?: string}) {
+  private async handleShowToastMessage(data: {
+    toastType: string,
+    skillId?: string,
+    skillName?: string,
+    skillIcon?: string,
+  }) {
     // TODO(b/529405584): Refactor toastType to be an enum & consider how we
     // want to surface errors to the user if skillId does not exist.
     if (data.toastType === 'save') {
@@ -261,6 +267,9 @@ export class SkillsWebviewBridge {
       } else {
         this.sendToastClosed(skillId);
       }
+    } else if (data.toastType === 'save_and_invoke') {
+      this.delegate_.onShowSaveAndInvokeToast(
+          data.skillId ?? '', data.skillName ?? '', data.skillIcon ?? '');
     }
   }
 

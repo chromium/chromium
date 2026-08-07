@@ -239,10 +239,12 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
         glic::mojom::InvocationPayload::NewSkillsPayload(
             std::move(mojo_skills_payload));
 
-    if (target_) {
+    if (!base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled) &&
+        target_) {
+      // For v1, copy target. For v2, default to DefaultConversation.
       options.target = std::move(*target_);
-      target_.reset();
     }
+    target_.reset();
     service->InvokeWithAutoSubmit(
         glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
         std::move(options));
