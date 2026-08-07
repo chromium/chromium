@@ -500,39 +500,21 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   // Check if it's a renderer.
   auto* render_process_host =
       content::RenderProcessHost::FromID(child_process_host_id_);
-  if (render_process_host)
+  if (render_process_host) {
     return RespondNow(
         TerminateIfAllowed(render_process_host->GetProcess().Handle()));
-
-  // This could be a non-renderer child process like a plugin.
-  // Try to get its handle from the BrowserChildProcessHost on the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ProcessesTerminateFunction::GetProcessHandleOnIO, this,
-                     child_process_host_id_),
-      base::BindOnce(&ProcessesTerminateFunction::OnProcessHandleOnUI, this));
-
-  // Promise to respond later.
-  return RespondLater();
-}
-
-base::ProcessHandle ProcessesTerminateFunction::GetProcessHandleOnIO(
-    int child_process_host_id) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  auto* host = content::BrowserChildProcessHost::FromID(child_process_host_id);
-  if (host) {
-    return host->GetData().GetProcess().Handle();
   }
 
-  return base::kNullProcessHandle;
-}
+  // Check if it's a non-renderer child process (e.g. utility, GPU).
+  auto* browser_child_process_host =
+      content::BrowserChildProcessHost::FromID(child_process_host_id_);
+  if (browser_child_process_host) {
+    return RespondNow(TerminateIfAllowed(
+        browser_child_process_host->GetData().GetProcess().Handle()));
+  }
 
-void ProcessesTerminateFunction::OnProcessHandleOnUI(
-    base::ProcessHandle handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Respond(TerminateIfAllowed(handle));
+  return RespondNow(Error(errors::kProcessNotFound,
+                          base::NumberToString(child_process_host_id_)));
 }
 
 ExtensionFunction::ResponseValue
