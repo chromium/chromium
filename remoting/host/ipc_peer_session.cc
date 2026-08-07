@@ -53,8 +53,7 @@ void IpcPeerSession::Start(
 
   std::string client_id;
   SplitSignalingIdResource(client_jid, &client_id, /*resource=*/nullptr);
-  // TODO(crbug.com/502281489): Populate `screen_resolution` and
-  // `required_username`.
+  // TODO(crbug.com/502281489): Populate `screen_resolution`.
   mojom::DesktopSessionOptionsPtr desktop_session_options =
       mojom::DesktopSessionOptions::New();
   desktop_session_options->is_curtained =
@@ -194,6 +193,11 @@ void IpcPeerSessionFactory::OnDesktopSessionManagerDisconnected() {
   desktop_session_manager_.reset();
 }
 
+void IpcPeerSessionFactory::SetRequiredUsername(std::string_view username) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  required_username_ = std::string(username);
+}
+
 void IpcPeerSessionFactory::GetDesktopSession(
     mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
     mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
@@ -204,6 +208,7 @@ void IpcPeerSessionFactory::GetDesktopSession(
     LOG(ERROR) << "DesktopSessionManager is not bound.";
     return;
   }
+  options->required_username = required_username_;
   desktop_session_manager_->GetDesktopSession(std::move(control_receiver),
                                               std::move(events_remote),
                                               std::move(options));

@@ -91,6 +91,10 @@ class IpcPeerSessionFactory : public PeerSessionFactory {
   // PeerSessionFactory interface:
   std::unique_ptr<PeerSession> Create() override;
 
+  // If set to a non-empty value, the login user of the desktop session must
+  // match `username`.
+  void SetRequiredUsername(std::string_view username);
+
  private:
   void EnsureBound();
   void OnPeerSessionManagerDisconnected();
@@ -102,6 +106,8 @@ class IpcPeerSessionFactory : public PeerSessionFactory {
       mojom::DesktopSessionOptionsPtr options);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::string required_username_;
 
   mojo::PendingAssociatedRemote<mojom::PeerSessionManager>
       pending_peer_session_manager_;

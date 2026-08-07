@@ -113,6 +113,7 @@ class MockDesktopSessionManager : public mojom::DesktopSessionManager {
       mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
       mojom::DesktopSessionOptionsPtr options) override {
     get_desktop_session_called_ = true;
+    last_options_ = std::move(options);
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
@@ -122,9 +123,14 @@ class MockDesktopSessionManager : public mojom::DesktopSessionManager {
     return get_desktop_session_called_;
   }
 
+  const mojom::DesktopSessionOptionsPtr& last_options() const {
+    return last_options_;
+  }
+
  private:
   mojo::AssociatedReceiver<mojom::DesktopSessionManager> receiver_{this};
   bool get_desktop_session_called_ = false;
+  mojom::DesktopSessionOptionsPtr last_options_;
   base::OnceClosure quit_closure_;
 };
 
@@ -221,6 +227,44 @@ TEST_F(IpcPeerSessionTest, CreateInvokesLaunchPeerSession) {
   run_loop.Run();
   EXPECT_TRUE(mock_peer_manager.launch_called());
   EXPECT_TRUE(mock_desktop_manager.get_desktop_session_called());
+}
+
+TEST_F(IpcPeerSessionTest,
+       SetRequiredUsernamePropagatesToDesktopSessionOptions) {
+  mojo::AssociatedRemote<mojom::PeerSessionManager> peer_remote;
+  mojo::PendingAssociatedReceiver<mojom::PeerSessionManager>
+      peer_pending_receiver = peer_remote.BindNewEndpointAndPassReceiver();
+  peer_pending_receiver.EnableUnassociatedUsage();
+
+  mojo::AssociatedRemote<mojom::DesktopSessionManager> desktop_remote;
+  mojo::PendingAssociatedReceiver<mojom::DesktopSessionManager>
+      desktop_pending_receiver =
+          desktop_remote.BindNewEndpointAndPassReceiver();
+  desktop_pending_receiver.EnableUnassociatedUsage();
+
+  MockPeerSessionManager mock_peer_manager;
+  mock_peer_manager.Bind(std::move(peer_pending_receiver));
+
+  MockDesktopSessionManager mock_desktop_manager;
+  mock_desktop_manager.Bind(std::move(desktop_pending_receiver));
+
+  IpcPeerSessionFactory factory(peer_remote.Unbind(), desktop_remote.Unbind());
+  factory.SetRequiredUsername("testuser");
+
+  base::RunLoop run_loop;
+  mock_desktop_manager.set_quit_closure(run_loop.QuitClosure());
+
+  std::unique_ptr<PeerSession> session = factory.Create();
+  EXPECT_NE(session, nullptr);
+
+  MockEventHandler event_handler;
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+                 SessionPolicies(), SessionOptions());
+
+  run_loop.Run();
+  EXPECT_TRUE(mock_desktop_manager.get_desktop_session_called());
+  ASSERT_TRUE(mock_desktop_manager.last_options());
+  EXPECT_EQ(mock_desktop_manager.last_options()->required_username, "testuser");
 }
 
 TEST_F(IpcPeerSessionTest, CreateReturnsNullWhenManagerUnbound) {

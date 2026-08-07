@@ -99,11 +99,13 @@
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
+#include "remoting/host/ipc_peer_session.h"
 #endif
 #include "remoting/host/me2me_desktop_environment.h"
 #include "remoting/host/me2me_heartbeat_service_client.h"
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mojom/peer_session.mojom.h"
 #endif
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
@@ -605,13 +607,16 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // These members are only initialized when `multi_process_` is true.
 
-  // Accessed on the UI thread.
+  // Initialized and destroyed on the UI thread, but accessed on both UI and
+  // Network threads (IPC::ChannelProxy is thread-safe).
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
-  // Raw interface pointer which refers to the object owned by
-  // |desktop_environment_factory_|.
-  raw_ptr<DesktopSessionConnector> desktop_session_connector_ = nullptr;
+  // Callback used to update the required host login username on the
+  // session or desktop environment factory in multi-process mode.
+  base::RepeatingCallback<void(std::string_view)>
+      set_required_username_callback_;
+  bool enable_peer_connection_process_ = false;
 #endif
 
   // End of multi-process-only members.
@@ -659,6 +664,12 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
       multi_process_(multi_process),
       exit_code_out_(exit_code_out),
       shutdown_watchdog_(shutdown_watchdog) {
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  enable_peer_connection_process_ =
+      multi_process_ && base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            kEnablePeerConnectionProcessSwitch);
+#endif
+
   // TODO(zijiehe):
   // desktop_environment_options_.desktop_capture_options()
   //     ->set_use_update_notifications(true);
@@ -1208,30 +1219,11 @@ void HostProcess::StartOnUiThread() {
 #endif
 
   // Create a desktop environment factory appropriate to the build type &
-  // platform.
+  // platform. Single-process hosts require UI-thread initialization for
+  // Me2MeDesktopEnvironmentFactory. Multi-process hosts create their session
+  // and desktop environment factories on the network thread in StartHost().
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
-  if (multi_process_) {
-    // Set up the AssociatedRemote used to send requests to the Daemon process.
-    // We need to do a little dance here using a pending associated receiver so
-    // that the remote is associated with the proper task_runner since it will
-    // be invoked on the network thread.
-    mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
-        desktop_session_manager;
-    mojo::GenericPendingAssociatedReceiver pending_receiver =
-        desktop_session_manager.InitWithNewEndpointAndPassReceiver();
-    daemon_channel_->GetRemoteAssociatedInterface(std::move(pending_receiver));
-
-    auto client = base::MakeRefCounted<DesktopSessionManagerClient>(
-        context_->network_task_runner(), std::move(desktop_session_manager));
-
-    auto desktop_environment_factory =
-        std::make_unique<IpcDesktopEnvironmentFactory>(
-            context_->network_task_runner(), context_->network_task_runner(),
-            base::BindRepeating(&DesktopSessionManagerClient::GetDesktopSession,
-                                client));
-    desktop_session_connector_ = desktop_environment_factory.get();
-    desktop_environment_factory_ = std::move(desktop_environment_factory);
-  } else
+  if (!multi_process_)
 #endif
   {
     desktop_environment_factory_ =
@@ -1253,9 +1245,6 @@ void HostProcess::ShutdownOnUiThread() {
   context_->network_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&HostProcess::ShutdownOnNetworkThread, this));
 
-#if BUILDFLAG(REMOTING_MULTI_PROCESS)
-  desktop_session_connector_ = nullptr;
-#endif
 
   // Tear down resources that need to be torn down on the UI thread.
   desktop_environment_factory_.reset();
@@ -1477,13 +1466,18 @@ void HostProcess::OnAgentProcessBrokerDisconnected() {
 void HostProcess::SetRequiredUsernameOnDaemonProcess() {
   DCHECK(multi_process_);
 
+  if (!set_required_username_callback_) {
+    // SetRequiredUsernameOnDaemonProcess() will be called again in
+    // StartHost() once `set_required_username_callback_` is set.
+    return;
+  }
   if (current_host_owner_email_.empty()) {
     // SetRequiredUsernameOnDaemonProcess() will be called again once
     // `current_host_owner_email_` is set.
     return;
   }
   if (!require_host_username_match_) {
-    desktop_session_connector_->SetRequiredUsername({});
+    set_required_username_callback_.Run({});
     return;
   }
   auto email_parts = base::SplitStringOnce(current_host_owner_email_, '@');
@@ -1491,7 +1485,7 @@ void HostProcess::SetRequiredUsernameOnDaemonProcess() {
     LOG(ERROR) << current_host_owner_email_ << " is not a valid email address";
     return;
   }
-  desktop_session_connector_->SetRequiredUsername(email_parts->first);
+  set_required_username_callback_.Run(email_parts->first);
 }
 #endif
 
@@ -2119,9 +2113,63 @@ void HostProcess::StartHost() {
       ->set_allow_directx_capturer(true);
 #endif
 
-  auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
-      desktop_environment_factory_.get(), std::move(get_ice_config_fetcher_cb));
-  peer_session_factory_ = peer_session_factory.get();
+  std::unique_ptr<PeerSessionFactory> peer_session_factory;
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  if (enable_peer_connection_process_) {
+    mojo::PendingAssociatedRemote<mojom::PeerSessionManager>
+        peer_session_manager;
+    daemon_channel_->GetRemoteAssociatedInterface(
+        peer_session_manager.InitWithNewEndpointAndPassReceiver());
+    mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
+        desktop_session_manager;
+    daemon_channel_->GetRemoteAssociatedInterface(
+        desktop_session_manager.InitWithNewEndpointAndPassReceiver());
+    auto factory = std::make_unique<IpcPeerSessionFactory>(
+        std::move(peer_session_manager), std::move(desktop_session_manager));
+    set_required_username_callback_ =
+        base::BindRepeating(&IpcPeerSessionFactory::SetRequiredUsername,
+                            base::Unretained(factory.get()));
+    SetRequiredUsernameOnDaemonProcess();
+    peer_session_factory = std::move(factory);
+  } else if (multi_process_) {
+    // When the PeerConnection process is disabled, DesktopEnvironmentFactory
+    // is instantiated here in the network process for legacy multi-process
+    // mode.
+    // TODO(crbug.com/502281489): Remove this fallback once the legacy
+    // non-PC-process multi-process code path is cleaned up.
+    mojo::PendingAssociatedRemote<mojom::DesktopSessionManager>
+        desktop_session_manager;
+    daemon_channel_->GetRemoteAssociatedInterface(
+        desktop_session_manager.InitWithNewEndpointAndPassReceiver());
+
+    auto client = base::MakeRefCounted<DesktopSessionManagerClient>(
+        context_->network_task_runner(), std::move(desktop_session_manager));
+
+    auto desktop_environment_factory =
+        std::make_unique<IpcDesktopEnvironmentFactory>(
+            context_->network_task_runner(), context_->network_task_runner(),
+            base::BindRepeating(&DesktopSessionManagerClient::GetDesktopSession,
+                                client));
+    set_required_username_callback_ = base::BindRepeating(
+        &IpcDesktopEnvironmentFactory::SetRequiredUsername,
+        base::Unretained(desktop_environment_factory.get()));
+    SetRequiredUsernameOnDaemonProcess();
+
+    auto session_factory = std::make_unique<PeerSessionImplFactory>(
+        desktop_environment_factory.get(),
+        std::move(get_ice_config_fetcher_cb));
+    peer_session_factory_ = session_factory.get();
+    peer_session_factory = std::move(session_factory);
+    desktop_environment_factory_ = std::move(desktop_environment_factory);
+  } else
+#endif
+  {
+    auto session_factory = std::make_unique<PeerSessionImplFactory>(
+        desktop_environment_factory_.get(),
+        std::move(get_ice_config_fetcher_cb));
+    peer_session_factory_ = session_factory.get();
+    peer_session_factory = std::move(session_factory);
+  }
 
   host_ = std::make_unique<ChromotingHost>(
       std::move(peer_session_factory), std::move(session_manager),
@@ -2234,6 +2282,9 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
 
   // Shut down everything except the HostSignalingManager.
   peer_session_factory_ = nullptr;
+#if BUILDFLAG(REMOTING_MULTI_PROCESS)
+  set_required_username_callback_.Reset();
+#endif
   host_.reset();
   host_event_logger_.reset();
   power_save_blocker_.reset();
