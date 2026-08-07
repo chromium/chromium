@@ -48,10 +48,6 @@ MATCHER_P(MatchesToken, expected_token, "") {
          expected_token.ToProto().SerializeAsString();
 }
 
-// Copy of the same constant in sync_prefs.cc, for testing purposes.
-constexpr char kObsoleteAutofillWalletImportEnabled[] =
-    "autofill.wallet_import_enabled";
-
 class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
@@ -895,54 +891,6 @@ class SyncPrefsMigrationTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   GaiaId gaia_id_;
 };
-
-TEST_F(SyncPrefsMigrationTest, MigrateAutofillWalletImportEnabledPrefIfSet) {
-  pref_service_.SetBoolean(kObsoleteAutofillWalletImportEnabled, false);
-  ASSERT_TRUE(
-      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
-
-  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
-
-  SyncPrefs prefs(&pref_service_);
-
-  EXPECT_TRUE(pref_service_.GetUserPrefValue(
-      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
-  EXPECT_FALSE(pref_service_.GetBoolean(
-      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
-}
-
-TEST_F(SyncPrefsMigrationTest, MigrateAutofillWalletImportEnabledPrefIfUnset) {
-  ASSERT_FALSE(
-      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
-
-  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
-
-  SyncPrefs prefs(&pref_service_);
-
-  EXPECT_FALSE(pref_service_.GetUserPrefValue(
-      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
-}
-
-// Regression test for crbug.com/1467307.
-TEST_F(SyncPrefsMigrationTest,
-       MigrateAutofillWalletImportEnabledPrefIfUnsetWithSyncEverythingOff) {
-  // Mimic an old profile where sync-everything was turned off without
-  // populating kObsoleteAutofillWalletImportEnabled (i.e. before the UI
-  // included the payments toggle).
-  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
-
-  ASSERT_FALSE(
-      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
-
-  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
-
-  SyncPrefs prefs(&pref_service_);
-
-  EXPECT_TRUE(pref_service_.GetUserPrefValue(
-      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
-}
 
 TEST_F(SyncPrefsMigrationTest, NoPassphraseMigrationForSignoutUsers) {
   SyncPrefs prefs(&pref_service_);

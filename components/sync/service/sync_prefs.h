@@ -265,8 +265,6 @@ class SyncPrefs {
   // temporary state from the above migration.
   void MarkPartialSyncToSigninMigrationFullyDone();
 
-  static void MigrateAutofillWalletImportEnabledPref(PrefService* pref_service);
-
   // Copies the global versions of the selected-types prefs (used for syncing
   // users) to the per-account prefs for the given `gaia_id` (used for signed-in
   // non-syncing users). To be used when an existing syncing user is migrated to

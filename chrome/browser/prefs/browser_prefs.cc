@@ -940,6 +940,10 @@ constexpr char kMetricsConsentRestructureFeatureState[] =
 
 // Deprecated 08/2026.
 constexpr char kPrivacySandboxNotices[] = "privacy_sandbox.notices";
+constexpr char kObsoleteAutofillWalletImportEnabled[] =
+    "autofill.wallet_import_enabled";
+constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
+    "sync.autofill_wallet_import_enabled_migrated";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 07/2026.
@@ -1313,6 +1317,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterStringPref(kPluginVmEngagementTimeOsVersion, std::string());
   registry->RegisterIntegerPref(kPluginVmEngagementTimeDayId, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 08/2026.
+  registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
+  registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
+                                false);
 }
 
 }  // namespace
@@ -2612,6 +2621,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kPluginVmEngagementTimeOsVersion);
   profile_prefs->ClearPref(kPluginVmEngagementTimeDayId);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 08/2026.
+  profile_prefs->ClearPref(kObsoleteAutofillWalletImportEnabled);
+  profile_prefs->ClearPref(kObsoleteAutofillWalletImportEnabledMigrated);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

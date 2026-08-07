@@ -42,18 +42,6 @@ namespace syncer {
 
 namespace {
 
-// Historic artifact for payment methods, migrated since 2023/07 to
-// prefs::internal::kSyncPayments to make the name consistent with other
-// user-selectable types.
-constexpr char kObsoleteAutofillWalletImportEnabled[] =
-    "autofill.wallet_import_enabled";
-
-// Boolean representing whether kObsoleteAutofillWalletImportEnabled was
-// migrated to the new pref representing a UserSelectableType. Should be cleaned
-// up together with the migration code (after 2024-07).
-constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
-    "sync.autofill_wallet_import_enabled_migrated";
-
 // State of the migration done by MaybeMigrateCustomPassphrasePref().
 constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
@@ -196,8 +184,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
-                                false);
   registry->RegisterIntegerPref(prefs::internal::kSyncToSigninMigrationState,
                                 kNotMigrated);
   registry->RegisterBooleanPref(
@@ -246,9 +232,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       base::Time());
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
-
-  // Obsolete prefs (registered for migrations only).
-  registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
 }
 
 void SyncPrefs::AddObserver(SyncPrefObserver* sync_pref_observer) {
@@ -982,42 +965,6 @@ void SyncPrefs::MaybeMigrateCustomPassphrasePref(const GaiaId& gaia_id) {
       pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
       signin::GaiaIdHash::FromGaiaId(gaia_id), base::Value(token));
   return;
-}
-
-// static
-void SyncPrefs::MigrateAutofillWalletImportEnabledPref(
-    PrefService* pref_service) {
-  if (pref_service->GetBoolean(kObsoleteAutofillWalletImportEnabledMigrated)) {
-    // Migration already happened; nothing else needed.
-    return;
-  }
-
-  const base::Value* autofill_wallet_import_enabled =
-      pref_service->GetUserPrefValue(kObsoleteAutofillWalletImportEnabled);
-
-  if (autofill_wallet_import_enabled != nullptr) {
-    // If the previous pref was populated explicitly, carry over the value.
-    pref_service->SetBoolean(prefs::internal::kSyncPayments,
-                             autofill_wallet_import_enabled->GetBool());
-  } else if (pref_service->GetBoolean(
-                 prefs::internal::kSyncKeepEverythingSynced)) {
-    // The old pref isn't explicitly set (defaults to true) and sync-everything
-    // is on: in this case there is no need to explicitly set individual
-    // UserSelectableType to true.
-  } else {
-    // There is a special case for very old profiles, created before 2019 (i.e.
-    // before https://codereview.chromium.org/2068653003 and similar code
-    // changes). In older versions of the UI, it was possible to set
-    // kSyncKeepEverythingSynced to false, without populating
-    // kObsoleteAutofillWalletImportEnabled. The latter defaults to true, but
-    // that's not the case for the new replacement, i.e.
-    // prefs::internal::kSyncPayments, so it needs to be populated manually to
-    // migrate the old behavior.
-    pref_service->SetBoolean(prefs::internal::kSyncPayments, true);
-  }
-
-  pref_service->ClearPref(kObsoleteAutofillWalletImportEnabled);
-  pref_service->SetBoolean(kObsoleteAutofillWalletImportEnabledMigrated, true);
 }
 
 // static
