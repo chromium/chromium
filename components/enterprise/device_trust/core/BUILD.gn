@@ -46,6 +46,27 @@ source_set("device_trust_connector_service") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  public = [ "fake_device_trust_connector_service.h" ]
+  sources = [ "fake_device_trust_connector_service.cc" ]
+
+  deps = [
+    "//components/enterprise/device_trust",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+  ]
+
+  public_deps = [
+    ":core",
+    ":device_trust_connector_service",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

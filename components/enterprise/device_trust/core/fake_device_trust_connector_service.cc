@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
+#include "components/enterprise/device_trust/core/fake_device_trust_connector_service.h"
 
 #include <string>
 #include <utility>
