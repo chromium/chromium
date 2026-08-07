@@ -3882,30 +3882,37 @@ const FeatureEntry::FeatureVariation kCCTResetTimeoutVariations[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidBottomBarDisableOnNtpParam[] = {
-    {"disable_on_ntp", "false"}};
+    {"disable_on_ntp", "false"},
+    {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
-    {{"keep_app_menu_in_toolbar", "true"}};
+    {{"keep_app_menu_in_toolbar", "true"},
+     {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam[] = {
         {"keep_app_menu_in_toolbar", "true"},
-        {"disable_on_ntp", "false"}};
+        {"disable_on_ntp", "false"},
+        {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepBothInToolbarParam[] = {
     {"keep_app_menu_in_toolbar", "true"},
-    {"keep_home_button_in_toolbar", "true"}};
+    {"keep_home_button_in_toolbar", "true"},
+    {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidBottomBarKeepBothInToolbarWithNtpParam[] = {
         {"keep_app_menu_in_toolbar", "true"},
         {"keep_home_button_in_toolbar", "true"},
-        {"disable_on_ntp", "false"}};
+        {"disable_on_ntp", "false"},
+        {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidBottomBar1AWithNtpAndGlicFilledParam[] = {
         {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"}};
+        {"always_use_filled_glic_icon", "true"},
+        {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidBottomBar1AWithNtpGtsAndGlicFilledParam[] = {
         {"disable_on_ntp", "false"},
         {"always_use_filled_glic_icon", "true"},
-        {"show_bottom_bar_on_gts", "true"}};
+        {"show_bottom_bar_on_gts", "true"},
+        {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A with NTP", kAndroidBottomBarDisableOnNtpParam, nullptr},
     {"- 1A with NTP and GLIC filled",

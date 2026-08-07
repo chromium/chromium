@@ -119,8 +119,14 @@ public class BottomBarConfigUtils {
                 && "newtab".equals(tab.getNativePage().getHost());
     }
 
+    /** Whether the feature parameter to show the GLIC setting toggle is enabled. */
+    public static boolean isGlicSettingToggleParamEnabled() {
+        return ChromeFeatureList.sAndroidBottomBarShowGlicSettingToggle.getValue();
+    }
+
     /** Returns whether the GLIC button is enabled by the user in the bottom bar. */
     public static boolean isGlicButtonEnabled() {
+        if (!isGlicSettingToggleParamEnabled()) return true;
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED, true);
     }

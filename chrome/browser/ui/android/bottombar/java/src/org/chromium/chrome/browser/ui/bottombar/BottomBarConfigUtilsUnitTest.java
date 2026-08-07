@@ -269,6 +269,7 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testIsGlicButtonEnabled() {
         assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
 
@@ -277,5 +278,34 @@ public class BottomBarConfigUtilsUnitTest {
 
         BottomBarConfigUtils.setGlicButtonEnabled(true);
         assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testIsGlicButtonEnabled_ToggleShown() {
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        assertFalse(BottomBarConfigUtils.isGlicButtonEnabled());
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
+    public void testIsGlicButtonEnabled_ToggleNotShown() {
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testIsGlicSettingToggleParamEnabled_TrueParam() {
+        assertTrue(BottomBarConfigUtils.isGlicSettingToggleParamEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
+    public void testIsGlicSettingToggleParamEnabled_FalseParam() {
+        assertFalse(BottomBarConfigUtils.isGlicSettingToggleParamEnabled());
     }
 }

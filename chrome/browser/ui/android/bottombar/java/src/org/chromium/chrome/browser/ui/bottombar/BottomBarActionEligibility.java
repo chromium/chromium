@@ -30,14 +30,15 @@ public class BottomBarActionEligibility {
     }
 
     /**
-     * Returns whether GLIC settings should be shown and is allowed in the user's country for the
-     * given profile.
+     * Returns whether the GLIC bottom bar setting toggle should be shown for the given profile.
      */
-    public static boolean shouldShowGlicSettings(@Nullable Profile profile) {
+    public static boolean shouldShowBottomBarGlicSetting(@Nullable Profile profile) {
         if (profile == null) {
             return false;
         }
-        return GlicEnabling.shouldShowSettingsPage(profile) && isGlicAllowedInCountry();
+        return GlicEnabling.shouldShowSettingsPage(profile)
+                && isGlicAllowedInCountry()
+                && BottomBarConfigUtils.isGlicSettingToggleParamEnabled();
     }
 
     /**
