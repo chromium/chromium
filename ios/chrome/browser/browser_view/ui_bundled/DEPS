@@ -19,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/payments/coordinator",
   "+ios/chrome/browser/autofill/public",
   "+ios/chrome/browser/autofill/ui_bundled",
+  "+ios/chrome/browser/autofill/wallet_reminder_notice/coordinator",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   "+ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h",
   "+ios/chrome/browser/browser_content/model",

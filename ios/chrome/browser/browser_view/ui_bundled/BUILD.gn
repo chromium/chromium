@@ -112,6 +112,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/error_dialog",
     "//ios/chrome/browser/autofill/ui_bundled/progress_dialog",
+    "//ios/chrome/browser/autofill/wallet_reminder_notice/coordinator",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
     "//ios/chrome/browser/browser_content/model",

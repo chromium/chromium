@@ -80,6 +80,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/error_dialog/autofill_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
+#import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_coordinator.h"
@@ -526,6 +527,9 @@ const char kChromeAppStoreUrl[] =
 
 @property(nonatomic, strong) VirtualCardEnrollmentBottomSheetCoordinator*
     virtualCardEnrollmentBottomSheetCoordinator;
+
+@property(nonatomic, strong)
+    WalletReminderNoticeCoordinator* walletReminderNoticeCoordinator;
 
 // Coordinator for the choice screen.
 @property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
@@ -1766,6 +1770,7 @@ const char kChromeAppStoreUrl[] =
   self.cardUnmaskAuthenticationCoordinator = nil;
 
   [self dismissSaveCardBottomSheet];
+  [self dismissWalletReminderNotice];
 
   [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   self.virtualCardEnrollmentBottomSheetCoordinator = nil;
@@ -2276,6 +2281,30 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissSaveCardBottomSheet {
   [self.saveCardBottomSheetCoordinator stop];
   self.saveCardBottomSheetCoordinator = nil;
+}
+
+- (void)showWalletReminderNoticeOnOriginWebState:(web::WebState*)originWebState
+                               legalMessageLines:(autofill::LegalMessageLines)
+                                                     legalMessageLines {
+  if (self.walletReminderNoticeCoordinator) {
+    [self.walletReminderNoticeCoordinator stop];
+  }
+
+  if (self.activeWebState != originWebState) {
+    return;
+  }
+
+  self.walletReminderNoticeCoordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                   legalMessageLines:legalMessageLines];
+  [self.walletReminderNoticeCoordinator start];
+}
+
+- (void)dismissWalletReminderNotice {
+  [self.walletReminderNoticeCoordinator stop];
+  self.walletReminderNoticeCoordinator = nil;
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
