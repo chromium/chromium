@@ -70,7 +70,7 @@ config("libvpx_config") {
     "CHROMIUM",
 
     # Maximum allowed for a direct mapping,
-    # see partition_alloc::internal::MaxDirectMapped()
+    # see partition_alloc::MaxAllocationSize()
     "VPX_MAX_ALLOCABLE_MEMORY=((1ULL << 31) - (1 << 21))",
   ]
 
