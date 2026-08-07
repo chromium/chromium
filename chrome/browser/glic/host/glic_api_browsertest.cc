@@ -780,24 +780,6 @@ class GlicApiTestWithDaisyChain : public GlicApiTest {
   base::test::ScopedFeatureList daisy_chain_features_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
-                       testCanAttachPanelToFallbackEmbedder) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  // Runs the JS test until the first `advanceToNextStep()`.
-  ExecuteJsTest();
-
-  // The JS test is now paused.
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  tab->Close();
-
-  // Continue the JS test to verify canAttachPanel is still true since it will
-  // now attach to the fallback embedder.
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testSwitchConversationToOldConversationNewInstance) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,

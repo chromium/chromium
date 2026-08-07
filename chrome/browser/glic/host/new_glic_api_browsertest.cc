@@ -1685,6 +1685,21 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
+                       testCanAttachPanelToFallbackEmbedder) {
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ExecuteJsTest();
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  GetTabListInterface()->CloseTab(active_tab->GetHandle());
+
+  ContinueJsTest();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/520959831): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, DISABLED_testEnableDragResize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
