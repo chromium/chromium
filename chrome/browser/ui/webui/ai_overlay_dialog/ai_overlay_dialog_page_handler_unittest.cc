@@ -89,11 +89,83 @@ TEST_F(AiOverlayDialogPageHandlerTest, CaptureRawViewportRegion) {
   handler_remote()->CaptureRawViewportRegion(10, 10, 100, 100,
                                              future.GetCallback());
 
-  // May return null in headless/headless unit test environment without a real view surface
+  // May return null in headless/headless unit test environment without a real
+  // view surface
   auto result = future.Take();
   if (result) {
     EXPECT_GT(result->width, 0);
     EXPECT_GT(result->height, 0);
+  }
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, RememberedNotesDictionaryStorage) {
+  // 1. Verify initially empty.
+  {
+    base::test::TestFuture<
+        std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>
+        get_future;
+    handler_remote()->GetRememberedNotes(get_future.GetCallback());
+    EXPECT_TRUE(get_future.Take().empty());
+  }
+
+  // 2. Set a remembered note.
+  {
+    auto new_note =
+        ai_overlay_dialog::mojom::RememberedNote::New("test_key", "test_val");
+    base::test::TestFuture<bool> set_future;
+    handler_remote()->SetRememberedNote(std::move(new_note),
+                                        set_future.GetCallback());
+    EXPECT_TRUE(set_future.Get());
+  }
+
+  // 3. Verify retrieving the note.
+  {
+    base::test::TestFuture<
+        std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>
+        get_future;
+    handler_remote()->GetRememberedNotes(get_future.GetCallback());
+    auto notes = get_future.Take();
+    ASSERT_EQ(1u, notes.size());
+    EXPECT_EQ("test_key", notes[0]->key);
+    EXPECT_EQ("test_val", notes[0]->value);
+  }
+
+  // 3b. Verify updating an existing note key.
+  {
+    auto update_note = ai_overlay_dialog::mojom::RememberedNote::New(
+        "test_key", "updated_val");
+    base::test::TestFuture<bool> update_future;
+    handler_remote()->SetRememberedNote(std::move(update_note),
+                                        update_future.GetCallback());
+    EXPECT_TRUE(update_future.Get());
+
+    base::test::TestFuture<
+        std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>
+        get_future;
+    handler_remote()->GetRememberedNotes(get_future.GetCallback());
+    auto notes = get_future.Take();
+    ASSERT_EQ(1u, notes.size());
+    EXPECT_EQ("test_key", notes[0]->key);
+    EXPECT_EQ("updated_val", notes[0]->value);
+  }
+
+  // 4. Delete the note by passing an empty string value.
+  {
+    auto delete_note =
+        ai_overlay_dialog::mojom::RememberedNote::New("test_key", "");
+    base::test::TestFuture<bool> delete_future;
+    handler_remote()->SetRememberedNote(std::move(delete_note),
+                                        delete_future.GetCallback());
+    EXPECT_TRUE(delete_future.Get());
+  }
+
+  // 5. Verify note is deleted.
+  {
+    base::test::TestFuture<
+        std::vector<ai_overlay_dialog::mojom::RememberedNotePtr>>
+        get_future;
+    handler_remote()->GetRememberedNotes(get_future.GetCallback());
+    EXPECT_TRUE(get_future.Take().empty());
   }
 }
 

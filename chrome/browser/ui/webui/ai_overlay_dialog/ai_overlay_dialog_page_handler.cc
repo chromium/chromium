@@ -20,18 +20,18 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/codec/jpeg_codec.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -254,16 +254,14 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
     int32_t height,
     CaptureRawViewportRegionCallback callback) {
   content::WebContents* web_contents =
-      browser_ ? browser_->GetTabStripModel()->GetActiveWebContents()
-               : nullptr;
+      browser_ ? browser_->GetTabStripModel()->GetActiveWebContents() : nullptr;
 
   if (!web_contents) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  content::RenderWidgetHostView* view =
-      web_contents->GetRenderWidgetHostView();
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
   if (!view) {
     std::move(callback).Run(nullptr);
     return;
@@ -305,4 +303,33 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
           scale, std::move(callback)));
 }
 
+// TODO(crbug.com/542590634): Determine product and architecture requirements
+// for long-term storage and persistence of remembered notes across restarts.
+void AiOverlayDialogPageHandler::SetRememberedNote(
+    ai_overlay_dialog::mojom::RememberedNotePtr note,
+    SetRememberedNoteCallback callback) {
+  if (!note || note->key.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (note->value.empty()) {
+    remembered_notes_.erase(note->key);
+  } else {
+    remembered_notes_[note->key] = note->value;
+  }
+  std::move(callback).Run(true);
+}
+
+void AiOverlayDialogPageHandler::GetRememberedNotes(
+    GetRememberedNotesCallback callback) {
+  std::vector<ai_overlay_dialog::mojom::RememberedNotePtr> result;
+  result.reserve(remembered_notes_.size());
+  for (const auto& [key, value] : remembered_notes_) {
+    auto note = ai_overlay_dialog::mojom::RememberedNote::New();
+    note->key = key;
+    note->value = value;
+    result.push_back(std::move(note));
+  }
+  std::move(callback).Run(std::move(result));
+}
 }  // namespace ttc

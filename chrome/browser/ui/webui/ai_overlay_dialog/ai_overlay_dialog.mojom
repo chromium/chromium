@@ -26,6 +26,12 @@ struct RawViewportRegionResult {
   float scale_factor;
 };
 
+// Represents a remembered conversational note or user preference entry.
+struct RememberedNote {
+  string key;
+  string value;
+};
+
 // Factory for creating a PageHandler.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -61,8 +67,17 @@ interface PageHandler {
   // width, height: Dimensions of the target region in viewport CSS pixels.
   CaptureRawViewportRegion(int32 x, int32 y, int32 width, int32 height)
       => (RawViewportRegionResult? result);
-};
 
+  // Native Primitives for Remembered Note Dictionary Storage:
+
+  // Stores a remembered note in memory, creating a new entry or updating any
+  // existing entry under `note.key`. Passing an empty string for
+  // `note.value` deletes any existing entry under that key.
+  SetRememberedNote(RememberedNote note) => (bool success);
+
+  // Retrieves all currently stored key-value remembered notes.
+  GetRememberedNotes() => (array<RememberedNote> notes);
+};
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.
 interface Page {
   // Called whenever the page has changed (e.g. a new tab has been focused, or
