@@ -61,6 +61,8 @@ static_library("app") {
     "crash_switches.h",
     "crashpad.cc",
     "crashpad.h",
+    "shared_memory_user_stream_reader.cc",
+    "shared_memory_user_stream_reader.h",
     "shared_memory_user_stream_writer.cc",
     "shared_memory_user_stream_writer.h",
   ]
@@ -306,7 +308,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "shared_memory_user_stream_writer_unittest.cc" ]
+  sources = [
+    "shared_memory_user_stream_reader_unittest.cc",
+    "shared_memory_user_stream_writer_unittest.cc",
+  ]
   deps = [
     ":app",
     ":lib",
