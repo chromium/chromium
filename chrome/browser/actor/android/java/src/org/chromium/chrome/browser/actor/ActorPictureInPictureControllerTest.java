@@ -158,6 +158,14 @@ public class ActorPictureInPictureControllerTest {
     }
 
     @Test
+    public void testOnPictureInPictureEvent_Entered_NoActiveTasks_DoesNotShowOverlay() {
+        when(mActorService.getActiveTasksCount()).thenReturn(0);
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
+
+        verify(mMockCoordinator, never()).setVisibility(true);
+    }
+
+    @Test
     public void testOnPictureInPictureEvent_Entered_ShowsOverlay() {
         createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
@@ -387,13 +395,15 @@ public class ActorPictureInPictureControllerTest {
     public void testOnTaskStateChanged_ExitsPipWhenNoTasks_Delayed() {
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
 
+        // Setup active task before entering PiP so shouldEnterPip() is true
+        ActorTask mockTask = createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
+
         // Enter PiP
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
 
         // Task finishes
-        ActorTask mockTask = createMockActorTask(101, "Test Title", ActorTaskState.FINISHED);
         when(mockTask.isCompleted()).thenReturn(true);
-        when(mActorService.getTask(101)).thenReturn(mockTask);
+        when(mockTask.getState()).thenReturn(ActorTaskState.FINISHED);
         when(mActorService.getActiveTasksCount()).thenReturn(0);
 
         var exitWatcher =

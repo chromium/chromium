@@ -351,6 +351,8 @@ public class ActorPictureInPictureController
     }
 
     private void enterPictureInPicture() {
+        if (!shouldEnterPip()) return;
+
         if (mTabSelectRunnable != null) {
             mHandler.removeCallbacks(mTabSelectRunnable);
             mTabSelectRunnable = null;
