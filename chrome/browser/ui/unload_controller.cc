@@ -14,7 +14,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
-#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -131,7 +129,7 @@ bool UnloadController::HandleBeforeClose() {
   const bool close_permitted =
       close_status == BrowserWindowInterface::ClosingStatus::kPermitted;
   if (!close_permitted) {
-    NotifyWindowCloseCancelled(close_status);
+    browser_->NotifyWindowCloseCancelled(close_status);
   }
   return close_permitted;
 }
@@ -142,7 +140,7 @@ void UnloadController::OnWindowClosing() {
   // deletion has already been scheduled and closed notifications have been
   // propagated. No-op in such cases to avoid duplicating browser-closed
   // handling.
-  if (is_delete_scheduled_) {
+  if (browser_->IsDeleteScheduled()) {
     return;
   }
 
@@ -184,7 +182,7 @@ void UnloadController::OnWindowClosing() {
   } else {
     // If there are no tabs, then a task will be scheduled (by views) to delete
     // this Browser.
-    OnWindowCloseComplete();
+    browser_->OnWindowCloseComplete();
   }
 }
 
@@ -933,56 +931,4 @@ void UnloadController::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {
       // don't prompt every time any tab is closed. http://crbug.com/40336263
       CancelWindowClose();
   }
-}
-
-void UnloadController::NotifyWindowCloseCancelled(
-    BrowserWindowInterface::ClosingStatus status) {
-  browser_close_cancelled_callback_list_.Notify(browser_, status);
-}
-
-void UnloadController::OnWindowCloseComplete() {
-  // If there are no tabs, then a task will be scheduled (by views) to delete
-  // this Browser.
-  is_delete_scheduled_ = true;
-
-  // At this point the browser has successfully closed and is scheduled for
-  // deletion.
-  browser_did_close_callback_list_.Notify(browser_);
-
-  // Application should shutdown on last window close if the user is
-  // explicitly trying to quit, or if there is nothing keeping the browser
-  // alive (such as AppController on the Mac, or BackgroundContentsService for
-  // background pages).
-  const bool should_quit_if_last_browser =
-      browser_shutdown::IsTryingToQuit() ||
-      KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
-
-  // Below will not consider browsers for which delete has already been
-  // scheduled.
-  const bool is_last_browser =
-      !GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-
-  if (should_quit_if_last_browser && is_last_browser) {
-    browser_shutdown::OnShutdownStarting(
-        browser_shutdown::ShutdownType::kWindowClose);
-  }
-
-  // Once a Browser has successfully closed, client code expects control to
-  // return to the run loop before the instance is finally deleted. To
-  // maintain existing expectations schedule the delete asynchronously here.
-  // TODO(crbug.com/413168662): Explore synchronously destroying the browser
-  // instead.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
-                                browser_->AsWeakPtr()));
-}
-
-base::CallbackListSubscription UnloadController::RegisterBrowserDidClose(
-    BrowserWindowInterface::BrowserDidCloseCallback callback) {
-  return browser_did_close_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription UnloadController::RegisterBrowserCloseCancelled(
-    BrowserWindowInterface::BrowserCloseCancelledCallback callback) {
-  return browser_close_cancelled_callback_list_.Add(std::move(callback));
 }
