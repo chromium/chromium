@@ -8,11 +8,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.base.Log;
-
-import java.util.function.IntFunction;
 
 /**
  * Helper service to provide a bridge between instrumentation tests and the
@@ -24,16 +21,25 @@ public class AccessibilityTestHelperService extends Service {
     private final IAccessibilityTestHelperService.Stub mBinder =
             new IAccessibilityTestHelperService.Stub() {
                 @Override
-                public boolean waitFor(WaitForParams params) {
+                public boolean waitForEvent(EventMatcher matcher, long timeoutMs) {
                     Log.i(
                             TAG,
-                            "waitFor called, timeoutMs: "
-                                    + params.timeoutMs
+                            "waitForEvent called, timeoutMs: "
+                                    + timeoutMs
                                     + ", eventMatcher: "
-                                    + eventMatcherToString(params.eventMatcher)
+                                    + AccessibilityTestService.eventMatcherToString(matcher));
+                    return AccessibilityTestService.waitForEvent(matcher, timeoutMs);
+                }
+
+                @Override
+                public boolean waitForNode(NodeMatcher matcher, long timeoutMs) {
+                    Log.i(
+                            TAG,
+                            "waitForNode called, timeoutMs: "
+                                    + timeoutMs
                                     + ", nodeMatcher: "
-                                    + nodeMatcherToString(params.nodeMatcher));
-                    return AccessibilityTestService.tryWaitFor(params);
+                                    + AccessibilityTestService.nodeMatcherToString(matcher));
+                    return AccessibilityTestService.waitForNode(matcher, timeoutMs);
                 }
 
                 @Override
@@ -73,97 +79,5 @@ public class AccessibilityTestHelperService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "onDestroy");
-    }
-
-    private String contentChangeTypesToString(int types) {
-        return flagsToString(
-                types, AccessibilityTestHelperService::singleContentChangeTypeToString);
-    }
-
-    private static String flagsToString(int flags, IntFunction<String> getFlagName) {
-        if (flags == 0) {
-            return "UNDEFINED";
-        }
-
-        // Parsing out the bits from flags bitmask, querying the corresponding
-        // value using getFlagName function parameter and appending to the
-        // return value.
-        StringBuilder builder = new StringBuilder();
-        int count = 0;
-        while (flags != 0) {
-            final int flag = 1 << Integer.numberOfTrailingZeros(flags);
-            flags &= ~flag;
-            if (count > 0) builder.append(", ");
-            builder.append(getFlagName.apply(flag));
-            count++;
-        }
-        return builder.toString();
-    }
-
-    private static String singleContentChangeTypeToString(int type) {
-        switch (type) {
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED:
-                return "UNDEFINED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE:
-                return "SUBTREE";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT:
-                return "TEXT";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION:
-                return "CONTENT_DESCRIPTION";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION:
-                return "STATE_DESCRIPTION";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE:
-                return "PANE_TITLE";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED:
-                return "PANE_APPEARED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED:
-                return "PANE_DISAPPEARED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_STARTED:
-                return "DRAG_STARTED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_CANCELLED:
-                return "DRAG_CANCELLED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_DROPPED:
-                return "DRAG_DROPPED";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_INVALID:
-                return "CONTENT_INVALID";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_ERROR:
-                return "ERROR";
-            case AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED:
-                return "ENABLED";
-            default:
-                return "UNKNOWN: " + Integer.toString(type);
-        }
-    }
-
-    private String eventMatcherToString(EventMatcher matcher) {
-        if (matcher == null) {
-            return "null";
-        }
-        return "EventMatcher{eventType="
-                + matcher.eventType
-                + ", contentChangeTypes="
-                + contentChangeTypesToString(matcher.contentChangeTypes)
-                + ", sourceMatcher="
-                + nodeMatcherToString(matcher.sourceMatcher)
-                + "}";
-    }
-
-    private String nodeMatcherToString(NodeMatcher matcher) {
-        if (matcher == null) {
-            return "null";
-        }
-        return "NodeMatcher{className='"
-                + matcher.className
-                + ", text='"
-                + matcher.text
-                + ", hasInputFocused="
-                + matcher.hasInputFocused
-                + ", inputFocused="
-                + matcher.inputFocused
-                + ", hasAccessibilityFocused="
-                + matcher.hasAccessibilityFocused
-                + ", accessibilityFocused="
-                + matcher.accessibilityFocused
-                + "}";
     }
 }

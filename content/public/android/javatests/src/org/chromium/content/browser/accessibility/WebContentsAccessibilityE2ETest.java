@@ -48,7 +48,6 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.accessibility.testservice.EventMatcher;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 import org.chromium.ui.accessibility.testservice.NodeMatcher;
-import org.chromium.ui.accessibility.testservice.WaitForParams;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.io.IOException;
@@ -76,7 +75,7 @@ public class WebContentsAccessibilityE2ETest {
     private static final String ACCESSIBILITY_TEST_SERVICE_NAME =
             ACCESSIBILITY_TEST_SERVICE_COMPONENT_NAME.flattenToString();
     private static final long BIND_TIMEOUT_MS = 5000;
-    private static final long EVENT_TIMEOUT_MS = 5000;
+    private static final long DEFAULT_TIMEOUT_MS = 10000;
     private static final String TAG = "WebContentsAXTest";
 
     private static final String EXTRA_SELECTION_START_OFFSET_TYPE =
@@ -147,8 +146,7 @@ public class WebContentsAccessibilityE2ETest {
 
     private boolean waitForEvent(EventMatcher matcher) {
         try {
-            return getAccessibilityHelperService()
-                    .waitFor(new WaitForParamsBuilder().setEventMatcher(matcher).build());
+            return getAccessibilityHelperService().waitForEvent(matcher, DEFAULT_TIMEOUT_MS);
         } catch (Exception e) {
             Log.e(TAG, "Error waiting for event", e);
             return false;
@@ -157,8 +155,7 @@ public class WebContentsAccessibilityE2ETest {
 
     private boolean waitForNode(NodeMatcher matcher) {
         try {
-            return getAccessibilityHelperService()
-                    .waitFor(new WaitForParamsBuilder().setNodeMatcher(matcher).build());
+            return getAccessibilityHelperService().waitForNode(matcher, DEFAULT_TIMEOUT_MS);
         } catch (Exception e) {
             Log.e(TAG, "Error waiting for node", e);
             return false;
@@ -167,12 +164,10 @@ public class WebContentsAccessibilityE2ETest {
 
     private boolean waitForNodeOnEvent(EventMatcher eventMatcher, NodeMatcher nodeMatcher) {
         try {
-            return getAccessibilityHelperService()
-                    .waitFor(
-                            new WaitForParamsBuilder()
-                                    .setEventMatcher(eventMatcher)
-                                    .setNodeMatcher(nodeMatcher)
-                                    .build());
+            boolean eventReceived =
+                    getAccessibilityHelperService().waitForEvent(eventMatcher, DEFAULT_TIMEOUT_MS);
+            if (!eventReceived) return false;
+            return getAccessibilityHelperService().waitForNode(nodeMatcher, DEFAULT_TIMEOUT_MS);
         } catch (Exception e) {
             Log.e(TAG, "Error waiting for node on event", e);
             return false;
@@ -1039,36 +1034,8 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
         Assert.assertTrue("Tree dump should contain CLICK action", treeDump.contains("CLICK"));
     }
 
-    private static class WaitForParamsBuilder {
-        private static final long DEFAULT_TIMEOUT_MS = 5000;
-
-        @Nullable private EventMatcher mEventMatcher;
-        @Nullable private NodeMatcher mNodeMatcher;
-        private final long mTimeoutMs = DEFAULT_TIMEOUT_MS;
-
-        public WaitForParamsBuilder setEventMatcher(EventMatcher eventMatcher) {
-            mEventMatcher = eventMatcher;
-            return this;
-        }
-
-        public WaitForParamsBuilder setNodeMatcher(NodeMatcher nodeMatcher) {
-            mNodeMatcher = nodeMatcher;
-            return this;
-        }
-
-        public WaitForParams build() {
-            WaitForParams matcher = new WaitForParams();
-            matcher.eventMatcher = mEventMatcher;
-            matcher.nodeMatcher = mNodeMatcher;
-            matcher.timeoutMs = mTimeoutMs;
-            return matcher;
-        }
-    }
-
     @SuppressWarnings("unused")
     private static class EventMatcherBuilder {
-        private static final long DEFAULT_TIMEOUT_MS = 5000;
-
         private int mEventType;
         private int mContentChangeTypes;
         @Nullable private NodeMatcher mSourceMatcher;
@@ -1099,8 +1066,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @SuppressWarnings("unused")
     private static class NodeMatcherBuilder {
-        private static final long DEFAULT_TIMEOUT_MS = 5000;
-
         private String mClassName = "";
         private String mText = "";
         private Boolean mInputFocused;

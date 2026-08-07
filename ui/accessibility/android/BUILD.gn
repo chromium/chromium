@@ -13,7 +13,6 @@ android_aidl("accessibility_test_service_aidl") {
     "javatest/src/org/chromium/ui/accessibility/testservice/EventMatcher.aidl",
     "javatest/src/org/chromium/ui/accessibility/testservice/IAccessibilityTestHelperService.aidl",
     "javatest/src/org/chromium/ui/accessibility/testservice/NodeMatcher.aidl",
-    "javatest/src/org/chromium/ui/accessibility/testservice/WaitForParams.aidl",
   ]
 }
 

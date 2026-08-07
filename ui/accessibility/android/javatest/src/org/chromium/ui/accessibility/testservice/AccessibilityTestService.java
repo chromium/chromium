@@ -22,6 +22,9 @@ import java.util.ListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -43,10 +46,6 @@ public class AccessibilityTestService extends AccessibilityService {
 
     public interface AccessibilityServiceListener {
         default void onAccessibilityEvent(AccessibilityEvent event) {}
-
-        default boolean shouldCacheEvent(AccessibilityEvent event) {
-            return true;
-        }
     }
 
     @GuardedBy("sLock")
@@ -59,95 +58,81 @@ public class AccessibilityTestService extends AccessibilityService {
         return sInstance;
     }
 
-    public static boolean tryWaitFor(WaitForParams params) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        final boolean hasEventMatcher = params.eventMatcher != null;
-        final boolean hasNodeMatcher = params.nodeMatcher != null;
-
-        if (!hasEventMatcher && !hasNodeMatcher) {
-            Log.e(TAG, "Neither event nor node params are set in tryWaitFor");
-            return false;
-        }
-
-        final boolean initialEventReceived;
-        synchronized (sLock) {
-            clearListenerLocked();
-
-            if (hasEventMatcher) {
-                if (searchAndConsumeEventCacheLocked(params.eventMatcher)) {
-                    Log.i(TAG, "Found event in cache.");
-                    if (hasNodeMatcher) {
-                        if (findNode(
-                                params.nodeMatcher,
-                                "Found node in tree immediately after event cache match.")) {
+    public static boolean waitForEvent(EventMatcher eventMatcher, long timeoutMs) {
+        return waitForCondition(
+                () -> {
+                    synchronized (sLock) {
+                        if (searchAndConsumeEventCacheLocked(eventMatcher)) {
+                            Log.i(
+                                    TAG,
+                                    "Found event in cache: " + eventMatcherToString(eventMatcher));
                             return true;
                         }
-                        initialEventReceived = true;
-                    } else {
+                        return false;
+                    }
+                },
+                (event) -> {
+                    if (eventMatches(event, eventMatcher)) {
+                        Log.i(TAG, "Found event: " + eventMatcherToString(eventMatcher));
+                        synchronized (sLock) {
+                            // We should clear the entire cache after having matched an event to
+                            // avoid matching against any earlier event later through the test.
+                            clearEventCacheLocked();
+                        }
                         return true;
                     }
-                } else {
-                    initialEventReceived = false;
-                }
-            } else {
-                if (findNode(params.nodeMatcher, "Found node in tree immediately.")) {
-                    return true;
-                }
-                initialEventReceived = true;
-            }
+                    return false;
+                },
+                timeoutMs,
+                "Timed out waiting for event: " + eventMatcherToString(eventMatcher));
+    }
+
+    public static boolean waitForNode(NodeMatcher nodeMatcher, long timeoutMs) {
+        return waitForCondition(
+                () -> {
+                    if (findNode(nodeMatcher)) {
+                        Log.i(TAG, "Found node instantly: " + nodeMatcherToString(nodeMatcher));
+                        return true;
+                    }
+                    return false;
+                },
+                (event) -> {
+                    if (findNode(nodeMatcher)) {
+                        Log.i(
+                                TAG,
+                                "Found node: "
+                                        + nodeMatcherToString(nodeMatcher)
+                                        + " after event: "
+                                        + event);
+                        return true;
+                    }
+                    return false;
+                },
+                timeoutMs,
+                "Timed out waiting for node: " + nodeMatcherToString(nodeMatcher));
+    }
+
+    private static boolean waitForCondition(
+            Supplier<Boolean> immediateCheck,
+            Predicate<AccessibilityEvent> eventCheck,
+            long timeoutMs,
+            String timeoutLogMessage) {
+        synchronized (sLock) {
+            clearListenerLocked();
         }
 
-        if (hasEventMatcher) {
-            synchronized (sLock) {
-                // We only clear the cache as long as we are matching an event which we didn't find
-                // in the cache.
-                clearEventCacheLocked();
-            }
+        if (immediateCheck != null && immediateCheck.get()) {
+            return true;
         }
 
-        final java.util.concurrent.atomic.AtomicBoolean eventReceived =
-                new java.util.concurrent.atomic.AtomicBoolean(initialEventReceived);
-
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         AccessibilityServiceListener listener =
                 new AccessibilityServiceListener() {
                     @Override
                     public void onAccessibilityEvent(AccessibilityEvent event) {
-                        synchronized (sLock) {
-                            if (!eventReceived.get()) {
-                                if (eventMatches(event, params.eventMatcher)) {
-                                    Log.i(TAG, "  Event MATCHED.");
-                                    eventReceived.set(true);
-                                    if (hasNodeMatcher) {
-                                        if (findNode(
-                                                params.nodeMatcher,
-                                                "Found node in tree after event.")) {
-                                            future.complete(true);
-                                        }
-                                    } else {
-                                        future.complete(true);
-                                    }
-                                }
-                            } else {
-                                if (hasNodeMatcher) {
-                                    if (findNode(params.nodeMatcher, "Found node in tree.")) {
-                                        future.complete(true);
-                                    }
-                                }
-                            }
+                        if (eventCheck.test(event)) {
+                            future.complete(true);
                         }
-                    }
-
-                    @Override
-                    public boolean shouldCacheEvent(AccessibilityEvent event) {
-                        if (hasEventMatcher && !hasNodeMatcher) {
-                            return false;
-                        }
-                        // If we're matching both an event and a node, we only should cache incoming
-                        // events as long as the desired event has been received.
-                        if (hasEventMatcher && hasNodeMatcher) {
-                            return eventReceived.get();
-                        }
-                        return true;
                     }
                 };
 
@@ -156,12 +141,12 @@ public class AccessibilityTestService extends AccessibilityService {
         }
 
         try {
-            return future.get(params.timeoutMs, TimeUnit.MILLISECONDS);
+            return future.get(timeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            Log.w(TAG, "Timed out waiting");
+            Log.w(TAG, timeoutLogMessage);
             return false;
         } catch (Exception e) {
-            Log.e(TAG, "Error waiting", e);
+            Log.e(TAG, "Error waiting for condition", e);
             return false;
         } finally {
             synchronized (sLock) {
@@ -170,7 +155,7 @@ public class AccessibilityTestService extends AccessibilityService {
         }
     }
 
-    private static boolean findNode(NodeMatcher nodeMatcher, String infoLog) {
+    private static boolean findNode(NodeMatcher nodeMatcher) {
         AccessibilityTestService instance = getInstance();
         if (instance == null) {
             Log.e(TAG, "AccessibilityTestService's instance was null when looking after node.");
@@ -178,7 +163,6 @@ public class AccessibilityTestService extends AccessibilityService {
         }
         AccessibilityNodeInfo root = instance.getRootInActiveWindow();
         if (root == null) return false;
-        Log.i(TAG, infoLog);
         return findNodeRecursive(root, nodeMatcher) != null;
     }
 
@@ -188,7 +172,7 @@ public class AccessibilityTestService extends AccessibilityService {
 
         CharSequence nodeClassName = node.getClassName();
         CharSequence nodeText = node.getText();
-        Log.i(TAG, "  findNodeRecursive: " + nodeClassName + " - " + nodeText);
+        Log.d(TAG, "  findNodeRecursive: " + nodeClassName + " - " + nodeText);
 
         if (nodeMatches(node, nodeMatcher)) {
             return node;
@@ -467,13 +451,9 @@ public class AccessibilityTestService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         Log.i(TAG, "onAccessibilityEvent: " + event);
         synchronized (sLock) {
-            boolean shouldCache = true;
+            sEventCache.add(AccessibilityEvent.obtain(event));
             if (sListener != null) {
                 sListener.onAccessibilityEvent(event);
-                shouldCache = sListener.shouldCacheEvent(event);
-            }
-            if (shouldCache) {
-                sEventCache.add(AccessibilityEvent.obtain(event));
             }
         }
     }
@@ -483,5 +463,96 @@ public class AccessibilityTestService extends AccessibilityService {
 
     private static String getExtendedSelectionString(int offset, int offsetType) {
         return "{" + offset + ", " + (offsetType == OFFSET_TYPE_TEXT ? "text" : "child") + "}";
+    }
+
+    public static String eventMatcherToString(EventMatcher matcher) {
+        if (matcher == null) {
+            return "null";
+        }
+        return "EventMatcher{eventType="
+                + matcher.eventType
+                + ", contentChangeTypes="
+                + contentChangeTypesToString(matcher.contentChangeTypes)
+                + ", sourceMatcher="
+                + nodeMatcherToString(matcher.sourceMatcher)
+                + "}";
+    }
+
+    public static String nodeMatcherToString(NodeMatcher matcher) {
+        if (matcher == null) {
+            return "null";
+        }
+        return "NodeMatcher{className='"
+                + matcher.className
+                + ", text='"
+                + matcher.text
+                + ", hasInputFocused="
+                + matcher.hasInputFocused
+                + ", inputFocused="
+                + matcher.inputFocused
+                + ", hasAccessibilityFocused="
+                + matcher.hasAccessibilityFocused
+                + ", accessibilityFocused="
+                + matcher.accessibilityFocused
+                + "}";
+    }
+
+    private static String contentChangeTypesToString(int types) {
+        return flagsToString(types, AccessibilityTestService::singleContentChangeTypeToString);
+    }
+
+    private static String flagsToString(int flags, IntFunction<String> getFlagName) {
+        if (flags == 0) {
+            return "UNDEFINED";
+        }
+
+        // Parsing out the bits from flags bitmask, querying the corresponding
+        // value using getFlagName function parameter and appending to the
+        // return value.
+        StringBuilder builder = new StringBuilder();
+        int count = 0;
+        while (flags != 0) {
+            final int flag = 1 << Integer.numberOfTrailingZeros(flags);
+            flags &= ~flag;
+            if (count > 0) builder.append(", ");
+            builder.append(getFlagName.apply(flag));
+            count++;
+        }
+        return builder.toString();
+    }
+
+    private static String singleContentChangeTypeToString(int type) {
+        switch (type) {
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED:
+                return "UNDEFINED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE:
+                return "SUBTREE";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT:
+                return "TEXT";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION:
+                return "CONTENT_DESCRIPTION";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION:
+                return "STATE_DESCRIPTION";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE:
+                return "PANE_TITLE";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED:
+                return "PANE_APPEARED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED:
+                return "PANE_DISAPPEARED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_STARTED:
+                return "DRAG_STARTED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_CANCELLED:
+                return "DRAG_CANCELLED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_DROPPED:
+                return "DRAG_DROPPED";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_INVALID:
+                return "CONTENT_INVALID";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_ERROR:
+                return "ERROR";
+            case AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED:
+                return "ENABLED";
+            default:
+                return "UNKNOWN: " + Integer.toString(type);
+        }
     }
 }
