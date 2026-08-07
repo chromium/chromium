@@ -158,7 +158,8 @@ void RecordReplayAgent::DoPaste(DomNodeId dom_node_id,
     std::move(cb).Run(false);
     return;
   }
-  element.PasteText(blink::WebString::FromUtf8(*text), /*replace_all=*/false);
+  element.PasteText(blink::WebString::FromUtf8(*text), /*replace_all=*/false,
+                    /*smart_replace=*/true);
   std::move(cb).Run(true);
 }
 

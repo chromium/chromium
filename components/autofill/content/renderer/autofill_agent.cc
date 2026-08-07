@@ -1572,7 +1572,8 @@ void AutofillAgent::ApplyFieldAction(
           }
           case mojom::FieldActionType::kReplaceSelection: {
             form_control.PasteText(WebString::FromUtf16(value),
-                                   /*replace_all=*/false);
+                                   /*replace_all=*/false,
+                                   /*smart_replace=*/true);
             break;
           }
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
@@ -1601,7 +1602,8 @@ void AutofillAgent::ApplyFieldAction(
                                              sel_start);
             }
             form_control.PasteText(WebString::FromUtf16(value),
-                                   /*replace_all=*/false);
+                                   /*replace_all=*/false,
+                                   /*smart_replace=*/true);
             break;
           }
           case mojom::FieldActionType::kSelectAll:
@@ -1641,11 +1643,13 @@ void AutofillAgent::ApplyFieldAction(
         switch (action_type) {
           case mojom::FieldActionType::kReplaceAll:
             content_editable.PasteText(WebString::FromUtf16(value),
-                                       /*replace_all=*/true);
+                                       /*replace_all=*/true,
+                                       /*smart_replace=*/true);
             break;
           case mojom::FieldActionType::kReplaceSelection:
             content_editable.PasteText(WebString::FromUtf16(value),
-                                       /*replace_all=*/false);
+                                       /*replace_all=*/false,
+                                       /*smart_replace=*/true);
             break;
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
             const std::optional<AtMemoryState::AskForValuesToFillInfo> info =
@@ -1676,7 +1680,8 @@ void AutofillAgent::ApplyFieldAction(
               }
             }
             content_editable.PasteText(WebString::FromUtf16(value),
-                                       /*replace_all=*/false);
+                                       /*replace_all=*/false,
+                                       /*smart_replace=*/true);
             break;
           }
           case mojom::FieldActionType::kSelectAll:

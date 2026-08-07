@@ -162,8 +162,11 @@ class BLINK_EXPORT WebElement : public WebNode {
   // - Otherwise, the current selection is unchanged, so that the paste replaces
   //   the selected text.
   //
+  // The `smart_replace` parameter controls whether spaces may be added around
+  // the pasted value.
+  //
   // This is a no-op if the element is not editable.
-  void PasteText(const WebString& text, bool replace_all);
+  void PasteText(const WebString& text, bool replace_all, bool smart_replace);
 
   // Returns all <label> elements associated to this element.
   std::vector<WebLabelElement> Labels() const;

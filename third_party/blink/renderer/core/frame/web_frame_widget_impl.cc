@@ -4354,7 +4354,8 @@ void WebFrameWidgetImpl::PasteIntoNode(const String& text,
     return;
   }
 
-  WebElement(target_element).PasteText(text, /*replace_all=*/false);
+  WebElement(target_element)
+      .PasteText(text, /*replace_all=*/false, /*smart_replace=*/true);
 }
 
 void WebFrameWidgetImpl::FinishComposingText(bool keep_selection) {

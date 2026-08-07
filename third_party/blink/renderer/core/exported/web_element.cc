@@ -399,7 +399,9 @@ bool WebElement::SimulateAccessibilityClick() {
   return true;
 }
 
-void WebElement::PasteText(const WebString& text, bool replace_all) {
+void WebElement::PasteText(const WebString& text,
+                           bool replace_all,
+                           bool smart_replace) {
   if (!IsEditable()) {
     return;
   }
@@ -449,9 +451,9 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
     return;
   }
   // Fires "textInput" and "input".
-  target->DispatchEvent(
-      *TextEvent::CreateForPlainTextPaste(frame->DomWindow(), text,
-                                          /*should_smart_replace=*/true));
+  target->DispatchEvent(*TextEvent::CreateForPlainTextPaste(
+      frame->DomWindow(), text,
+      /*should_smart_replace=*/smart_replace));
 }
 
 std::vector<WebLabelElement> WebElement::Labels() const {

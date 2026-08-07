@@ -446,15 +446,18 @@ TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
-  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  TestElement().PasteText("fancy text", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   // The &nbsp; is outside the inserted range and is preserved.
   EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>fancy text</b>&nbsp;here.");
   // Paste and replace all.
-  TestElement().PasteText("Hello", /*replace_all=*/true);
+  TestElement().PasteText("Hello", /*replace_all=*/true,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->GetInnerHTMLString(), "Hello");
   // Paste into an unfocused element.
   element->nextElementSibling()->Focus();
-  TestElement().PasteText("world", /*replace_all=*/false);
+  TestElement().PasteText(" world", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->GetInnerHTMLString(), "Hello world");
 }
 
@@ -473,15 +476,37 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
                 element->selectionEnd() - element->selectionStart()),
             String("plain text"));
   // Paste and replace selection.
-  TestElement().PasteText("boring text", /*replace_all=*/false);
+  TestElement().PasteText("boring text", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->Value(), "Some boring text here.");
   // Paste and replace all.
-  TestElement().PasteText("Hello", /*replace_all=*/true);
+  TestElement().PasteText("Hello", /*replace_all=*/true,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->Value(), "Hello");
   // Paste into an unfocused element.
   element->previousElementSibling()->Focus();
-  TestElement().PasteText("world", /*replace_all=*/false);
+  TestElement().PasteText(" world", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->Value(), "Hello world");
+}
+
+// Tests that the `smart_replace` parameter controls whether smart replace is
+// used.
+TEST_F(WebElementTest, PasteTextWithSmartReplace) {
+  InsertHTML("<textarea id=testElement>Hello</textarea>");
+  auto* element = blink::To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("testElement")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  element->Focus();
+  element->setSelectionStart(5);
+  element->setSelectionEnd(5);
+  // Paste and replace selection.
+  TestElement().PasteText("world", /*replace_all=*/false,
+                          /*smart_replace=*/true);
+  EXPECT_EQ(element->Value(), "Hello world");
+  TestElement().PasteText("world", /*replace_all=*/false,
+                          /*smart_replace=*/false);
+  EXPECT_EQ(element->Value(), "Hello worldworld");
 }
 
 // Tests that PasteText() aborts when the JavaScript handler of the 'paste'
@@ -499,7 +524,8 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenPasteIsCancelled) {
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
-  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  TestElement().PasteText("fancy text", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>UPPERCASE TEXT</b> here.");
 }
 
@@ -519,7 +545,8 @@ TEST_F(WebElementTest, PasteTextIsNoOpWhenBeforeInputIsCancelled) {
   Selection().SelectSubString(*element->firstElementChild(), 0, 9);
   ASSERT_EQ(Selection().SelectedText(), String("rich text"));
   // Paste and replace selection.
-  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  TestElement().PasteText("fancy text", /*replace_all=*/false,
+                          /*smart_replace=*/false);
   EXPECT_EQ(element->GetInnerHTMLString(), "Some <b>UPPERCASE TEXT</b> here.");
 }
 
