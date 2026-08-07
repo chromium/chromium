@@ -93,6 +93,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_table",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_active_state_manager",
     "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",

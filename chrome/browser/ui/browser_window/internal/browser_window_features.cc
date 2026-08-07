@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -266,6 +267,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   app_browser_controller_ =
       GetUserDataFactory().CreateInstanceWithFactoryMethod(
           *browser, &web_app::MaybeCreateAppBrowserController, browser);
+
+  browser_active_state_manager_ =
+      GetUserDataFactory().CreateInstance<BrowserActiveStateManager>(
+          *browser, *browser, app_browser_controller_.get());
 
   {
     auto* merged_bookmarks_service =

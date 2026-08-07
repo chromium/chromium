@@ -1113,14 +1113,7 @@ IN_PROC_BROWSER_TEST_F(
   // instead convert this to an interactive browser test and directly activate
   // the browser's backing ui::BaseWindow.
   const auto activate_browser = [](BrowserWindowInterface* browser) {
-    // We must fake deactivation the previously activated browser first.
-    GlobalBrowserCollection::GetInstance()
-        ->GetLastActiveBrowser()
-        ->GetBrowserForMigrationOnly()
-        ->DidBecomeInactive();
-
-    // Simulate activation of `browser`.
-    browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+    ui_test_utils::DeprecatedFakeActivateBrowser(browser);
   };
 
   activate_browser(browser());

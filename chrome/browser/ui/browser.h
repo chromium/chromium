@@ -61,7 +61,6 @@
 
 class BackgroundContents;
 class BrowserInitState;
-class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
 class FindBarController;
@@ -391,10 +390,6 @@ class Browser : public TabStripModelObserver,
   DesktopBrowserWindowCapabilities* capabilities() override;
   const DesktopBrowserWindowCapabilities* capabilities() const override;
 
-  // Called by BrowserView on active change for the browser.
-  void DidBecomeActive();
-  void DidBecomeInactive();
-
   // Synchronously destroys the browser, `this` is no longer valid after the
   // operation completes.
   // WARNING: Clients should generally not use this and instead prefer
@@ -584,9 +579,6 @@ class Browser : public TabStripModelObserver,
   // This Browser's window.
   std::unique_ptr<BrowserWindow, BrowserWindowDeleter> window_;
 
-  // The active state of this browser.
-  bool is_active_ = false;
-
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
 
@@ -635,14 +627,6 @@ class Browser : public TabStripModelObserver,
   using DidActiveTabChangeCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
   DidActiveTabChangeCallbackList did_active_tab_change_callback_list_;
-
-  using DidBecomeActiveCallbackList =
-      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
-  DidBecomeActiveCallbackList did_become_active_callback_list_;
-
-  using DidBecomeInactiveCallbackList =
-      base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
-  DidBecomeInactiveCallbackList did_become_inactive_callback_list_;
 
   ui::UnownedUserDataHost unowned_user_data_host_;
 

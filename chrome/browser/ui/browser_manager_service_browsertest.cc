@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -90,13 +91,13 @@ class BrowserManagerServiceTest : public InProcessBrowserTest {
   // TODO(crbug.com/356183782): Consider rewriting this test as an interactive
   // ui test and using ui_test_utils::BringBrowserWindowToFront() instead.
   void ActivatePrimaryBrowser(Browser* const secondary_browser) {
-    browser()->DidBecomeActive();
-    secondary_browser->DidBecomeInactive();
+    BrowserActiveStateManager::From(browser())->DidBecomeActive();
+    BrowserActiveStateManager::From(secondary_browser)->DidBecomeInactive();
   }
 
   void ActivateSecondaryBrowser(Browser* const secondary_browser) {
-    secondary_browser->DidBecomeActive();
-    browser()->DidBecomeInactive();
+    BrowserActiveStateManager::From(secondary_browser)->DidBecomeActive();
+    BrowserActiveStateManager::From(browser())->DidBecomeInactive();
   }
 };
 

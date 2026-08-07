@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -128,13 +129,7 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
 // instead convert this to an interactive browser test and directly activate
 // the browser's backing ui::BaseWindow.
 void ActivateBrowser(BrowserWindowInterface* browser) {
-  // We must fake deactivation the previously activated browser first.
-  GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-      ->GetBrowserForMigrationOnly()
-      ->DidBecomeInactive();
-
-  // Simulate activation of `browser`.
-  browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser);
 }
 
 }  // namespace

@@ -17,6 +17,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_init_state.h"
@@ -280,7 +281,7 @@ void WebUIBrowserWindow::Show() {
   // OnWidgetActivationChanged() until we return to the runloop. Therefore any
   // calls to Browser::GetLastActive() will return the wrong result if we do
   // not explicitly set it here.
-  browser_->DidBecomeActive();
+  BrowserActiveStateManager::From(browser_)->DidBecomeActive();
 #endif
 
   // If the window is already visible, just activate it.
@@ -304,9 +305,9 @@ void WebUIBrowserWindow::Show() {
 // BrowserView::PaintAsActiveChanged().
 void WebUIBrowserWindow::PaintAsActiveChanged() {
   if (widget_->ShouldPaintAsActive()) {
-    browser_->DidBecomeActive();
+    BrowserActiveStateManager::From(browser_)->DidBecomeActive();
   } else {
-    browser_->DidBecomeInactive();
+    BrowserActiveStateManager::From(browser_)->DidBecomeInactive();
   }
   if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
     page->OnPaintAsActiveChanged(widget_->ShouldPaintAsActive());

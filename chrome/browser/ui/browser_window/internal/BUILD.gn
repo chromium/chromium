@@ -76,6 +76,7 @@ source_set("internal") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/animation",
       "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_active_state_manager",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/commerce",
@@ -201,6 +202,7 @@ source_set("unit_tests") {
     ":internal",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

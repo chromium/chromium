@@ -41,9 +41,9 @@
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -746,12 +746,12 @@ void DeprecatedFakeActivateBrowser(BrowserWindowInterface* browser) {
   CHECK(browser);
 
   // We must deactivate the currently active browser first.
-  GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-      ->GetBrowserForMigrationOnly()
+  BrowserActiveStateManager::From(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile())
       ->DidBecomeInactive();
 
   // Fake activation of the target browser.
-  browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+  BrowserActiveStateManager::From(browser)->DidBecomeActive();
 }
 
 void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,

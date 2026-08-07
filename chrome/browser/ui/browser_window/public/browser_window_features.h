@@ -39,6 +39,7 @@ class BookmarksServiceFeature;
 class BreadcrumbManagerBrowserAgent;
 class Browser;
 class BrowserActions;
+class BrowserActiveStateManager;
 class BrowserAnimationController;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserElements;
@@ -552,6 +553,7 @@ class BrowserWindowFeatures {
       breadcrumb_manager_browser_agent_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
+  std::unique_ptr<BrowserActiveStateManager> browser_active_state_manager_;
   std::unique_ptr<BrowserAnimationController> browser_animation_controller_;
   std::unique_ptr<chrome::BrowserCommandController> browser_command_controller_;
   std::unique_ptr<BrowserElements> browser_elements_;

@@ -1125,6 +1125,7 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/browser_active_state_manager",
       "//chrome/browser/ui/infobars",
       "//chrome/browser/ui/views/frame:glass_frame_service",
       "//chrome/browser/ui/views/relaunch_notification",
@@ -5146,6 +5147,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_active_state_manager",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

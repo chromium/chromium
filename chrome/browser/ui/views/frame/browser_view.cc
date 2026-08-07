@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -1589,7 +1590,7 @@ void BrowserView::Show() {
   // OnWidgetActivationChanged() until we return to the runloop. Therefore any
   // calls to Browser::GetLastActive() will return the wrong result if we do not
   // explicitly set it here.
-  browser()->DidBecomeActive();
+  BrowserActiveStateManager::From(browser())->DidBecomeActive();
 #endif
 
   // If the window is already visible, just activate it.
@@ -1684,7 +1685,7 @@ void BrowserView::Activate() {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // Update the list managed by `BrowserList` synchronously the same way
   // `BrowserView::Show()` does.
-  browser_->DidBecomeActive();
+  BrowserActiveStateManager::From(browser_)->DidBecomeActive();
 #endif
   browser_widget_->Activate();
 }
@@ -5930,9 +5931,9 @@ void BrowserView::PaintAsActiveChanged() {
   // BrowserWindowInterface clients. The latter is more accurate definition
   // where the top level window or any of its child widgets can have focus.
   if (is_active) {
-    browser_->DidBecomeActive();
+    BrowserActiveStateManager::From(browser_)->DidBecomeActive();
   } else {
-    browser_->DidBecomeInactive();
+    BrowserActiveStateManager::From(browser_)->DidBecomeInactive();
   }
 
   if (web_app_frame_toolbar()) {

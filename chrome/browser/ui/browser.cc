@@ -72,6 +72,7 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_manager_service.h"
@@ -593,28 +594,19 @@ Browser::GetWebContentsModalDialogHostForTab(
 }
 
 bool Browser::IsActive() const {
-// TODO(https://crbug.com/376306245): This is a temporary workaround for the
-// fact that window_->IsActive() does not return the right result for macOS
-// standalone PWA windows. This new behavior is still not technically correct,
-// since it's checking that the last active window is `this`, as opposed to
-// whether `this` is active.
-#if BUILDFLAG(IS_MAC)
-  // If this is a standalone PWA window, check BrowserList instead.
-  if (web_app::AppBrowserController::From(this)) {
-    return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == this;
-  }
-#endif
-  return is_active_;
+  return BrowserActiveStateManager::From(this)->IsActive();
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeActive(
     DidBecomeActiveCallback callback) {
-  return did_become_active_callback_list_.Add(std::move(callback));
+  return BrowserActiveStateManager::From(this)->RegisterDidBecomeActive(
+      std::move(callback));
 }
 
 base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
     DidBecomeInactiveCallback callback) {
-  return did_become_inactive_callback_list_.Add(std::move(callback));
+  return BrowserActiveStateManager::From(this)->RegisterDidBecomeInactive(
+      std::move(callback));
 }
 
 void Browser::SynchronouslyDestroyBrowser() {
@@ -673,21 +665,6 @@ DesktopBrowserWindowCapabilities* Browser::capabilities() {
 
 const DesktopBrowserWindowCapabilities* Browser::capabilities() const {
   return DesktopBrowserWindowCapabilities::From(this);
-}
-
-void Browser::DidBecomeActive() {
-  if (!is_active_) {
-    is_active_ = true;
-    did_become_active_callback_list_.Notify(this);
-    base::RecordAction(base::UserMetricsAction("ActiveBrowserChanged"));
-  }
-}
-
-void Browser::DidBecomeInactive() {
-  if (is_active_) {
-    is_active_ = false;
-    did_become_inactive_callback_list_.Notify(this);
-  }
 }
 
 void Browser::OnWindowCloseComplete() {

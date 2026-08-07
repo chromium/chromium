@@ -21,6 +21,7 @@
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -127,13 +128,7 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
   // instead convert this to an interactive browser test and directly activate
   // the browser's backing ui::BaseWindow.
   void ActivateBrowser(BrowserWindowInterface* browser) {
-    // We must fake deactivation the previously activated browser first.
-    GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-        ->GetBrowserForMigrationOnly()
-        ->DidBecomeInactive();
-
-    // Simulate activation of `browser`.
-    browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+    ui_test_utils::DeprecatedFakeActivateBrowser(browser);
   }
 
   EventManager* event_manager() { return EventManager::Get(profile()); }

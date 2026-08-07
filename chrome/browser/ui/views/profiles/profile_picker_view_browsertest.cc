@@ -78,6 +78,7 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -4655,7 +4656,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   ASSERT_TRUE(popup_browser);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  popup_browser->DidBecomeInactive();
+  BrowserActiveStateManager::From(popup_browser)->DidBecomeInactive();
   widget()->Activate();
 
   // Click Learn More again.
