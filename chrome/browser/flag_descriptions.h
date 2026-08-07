@@ -5778,6 +5778,13 @@ inline constexpr char
         "Dynamically position keyboard accessory above or below the field on "
         "devices with large form factors.";
 
+inline constexpr char kAutofillAndroidKeyboardAccessoryHoverPreviewName[] =
+    "Autofill Keyboard Accessory Hover Preview on Android";
+inline constexpr char
+    kAutofillAndroidKeyboardAccessoryHoverPreviewDescription[] =
+        "When enabled, hovering over suggestions in the Android keyboard "
+        "accessory previews the suggestion.";
+
 inline constexpr char kAutofillAndroidDesktopKeyboardAccessoryRevampName[] =
     "Move keyboard accessory to top on devices with large form factors";
 inline constexpr char

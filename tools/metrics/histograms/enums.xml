@@ -13031,6 +13031,8 @@ from previous Chrome versions.
   <int value="-493551777" label="StaleWhileRevalidate2:disabled"/>
   <int value="-492972850" label="SettingsAppNotificationSettings:disabled"/>
   <int value="-492864618" label="NTPForeignSessionsSuggestions:disabled"/>
+  <int value="-492066434"
+      label="AutofillAndroidKeyboardAccessoryHoverPreview:disabled"/>
   <int value="-491975582" label="AccessibilitySlowKeys:enabled"/>
   <int value="-491821073" label="ComposeboxSkillsOmniboxEverywhere:disabled"/>
   <int value="-491546546" label="MeteredShowToggle:enabled"/>
@@ -15173,6 +15175,8 @@ from previous Chrome versions.
   <int value="191891628" label="AutocompleteExtendedSuggestions:enabled"/>
   <int value="192167036" label="LogJsConsoleMessages:disabled"/>
   <int value="192320180" label="ignore-gpu-blocklist"/>
+  <int value="192516843"
+      label="AutofillAndroidKeyboardAccessoryHoverPreview:enabled"/>
   <int value="192624345" label="RequestDesktopSiteDefaultsDowngrade:disabled"/>
   <int value="192693676"
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>

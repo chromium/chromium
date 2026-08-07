@@ -477,6 +477,14 @@ BASE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus,
 BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, on Android, hovering over an Autofill suggestion in the keyboard
+// accessory triggers a preview of the suggestion.
+// TODO(crbug.com/542535472): Remove when launched.
+BASE_FEATURE(kAutofillAndroidKeyboardAccessoryHoverPreview,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Feature flag for kAutofillAtMemory.
 BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 
