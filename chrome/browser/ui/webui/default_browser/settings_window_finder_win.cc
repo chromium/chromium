@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_propvariant.h"
+#include "ui/gfx/win/hwnd_util.h"
 
 namespace {
 
@@ -82,6 +83,14 @@ void SettingsWindowFinderWin::Start(base::TimeDelta timeout,
       ::SetWinEventHook(EVENT_OBJECT_CREATE, EVENT_OBJECT_SHOW, nullptr,
                         &SettingsWindowFinderWin::WinEventCallback, 0, 0,
                         WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+
+  //  Launching Settings window can be transiently DWM-cloaked, which
+  //  IsLikelySettingsWindow() rejects. Listen for the uncloak so such a window
+  //  is matched the moment it becomes visible.
+  uncloak_hook_ =
+      ::SetWinEventHook(EVENT_OBJECT_UNCLOAKED, EVENT_OBJECT_UNCLOAKED, nullptr,
+                        &SettingsWindowFinderWin::WinEventCallback, 0, 0,
+                        WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
   UpdateGlobalInstance();
 
   timeout_timer_.Start(FROM_HERE, timeout, this,
@@ -95,6 +104,11 @@ void SettingsWindowFinderWin::Stop() {
   if (winevent_hook_) {
     ::UnhookWinEvent(winevent_hook_);
     winevent_hook_ = nullptr;
+  }
+
+  if (uncloak_hook_) {
+    ::UnhookWinEvent(uncloak_hook_);
+    uncloak_hook_ = nullptr;
   }
 
   is_active_ = false;
@@ -134,7 +148,7 @@ void SettingsWindowFinderWin::StopObservingLocationChanges() {
 
 void SettingsWindowFinderWin::UpdateGlobalInstance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (winevent_hook_ || location_change_hook_) {
+  if (winevent_hook_ || uncloak_hook_ || location_change_hook_) {
     if (GetGlobalFinderInstance().get() != this) {
       if (auto old_finder = GetGlobalFinderInstance()) {
         old_finder->Stop();
@@ -172,7 +186,8 @@ HWND SettingsWindowFinderWin::FindSettingsTopLevelWindow() const {
 
 bool SettingsWindowFinderWin::IsLikelySettingsWindow(HWND hwnd) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!::IsWindow(hwnd) || !::IsWindowVisible(hwnd)) {
+  if (!::IsWindow(hwnd) || !::IsWindowVisible(hwnd) ||
+      gfx::IsWindowCloaked(hwnd)) {
     return false;
   }
 
@@ -195,8 +210,8 @@ bool SettingsWindowFinderWin::IsLikelySettingsWindow(HWND hwnd) const {
 
   // First check via PKEY_AppUserModel_ID.
   Microsoft::WRL::ComPtr<IPropertyStore> prop_store;
-  if (FAILED(::SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&prop_store))) &&
-      prop_store) {
+  if (FAILED(::SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&prop_store))) ||
+      !prop_store) {
     return false;
   }
 
@@ -227,10 +242,6 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
                                           LONG idChild,
                                           DWORD dwEventThread,
                                           DWORD dwmsEventTime) {
-  if (!hwnd || idObject != OBJID_WINDOW) {
-    return;
-  }
-
   SettingsWindowFinderWin* finder = GetGlobalFinderInstance().get();
   if (!finder) {
     return;
@@ -240,25 +251,45 @@ SettingsWindowFinderWin::WinEventCallback(HWINEVENTHOOK hWinEventHook,
   // the message pump of the thread that called SetWinEventHook.
   DCHECK_CALLED_ON_VALID_SEQUENCE(finder->sequence_checker_);
 
+  finder->HandleWinEvent(event, hwnd, idObject);
+}
+
+void SettingsWindowFinderWin::HandleWinEvent(DWORD event,
+                                             HWND hwnd,
+                                             LONG idObject) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!hwnd || idObject != OBJID_WINDOW) {
+    return;
+  }
+
   if (event == EVENT_OBJECT_LOCATIONCHANGE) {
-    if (hwnd == finder->observed_hwnd_ && finder->on_resized_) {
-      finder->on_resized_.Run();
+    if (hwnd == observed_hwnd_ && on_resized_) {
+      on_resized_.Run();
     }
     return;
   }
 
-  if (!finder->on_found_) {
+  if (event != EVENT_OBJECT_CREATE && event != EVENT_OBJECT_SHOW &&
+      event != EVENT_OBJECT_UNCLOAKED) {
     return;
   }
 
-  HWND root_hwnd = ::GetAncestor(hwnd, GA_ROOT);
-  if (!finder->IsLikelySettingsWindow(root_hwnd)) {
+  if (!on_found_) {
+    return;
+  }
+
+  HWND root_hwnd = GetRootWindow(hwnd);
+  if (!IsLikelySettingsWindow(root_hwnd)) {
     return;
   }
 
   // Copy the callback and stop the finder BEFORE executing the callback.
   // This prevents use-after-free if the callback destroys the finder.
-  WindowFoundCallback callback = std::move(finder->on_found_);
-  finder->Stop();
+  WindowFoundCallback callback = std::move(on_found_);
+  Stop();
   std::move(callback).Run(root_hwnd);
+}
+
+HWND SettingsWindowFinderWin::GetRootWindow(HWND hwnd) const {
+  return ::GetAncestor(hwnd, GA_ROOT);
 }

@@ -113,10 +113,22 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   virtual void CloseSettingsWindow();
   virtual bool IsValidSettingsProcess(HWND hwnd) const;
 
+  // Low-level Win32 window probes backing the predicates above. Virtual for
+  // testing.
+  virtual bool IsWindowAlive(HWND hwnd) const;
+  virtual bool IsWindowOnScreen(HWND hwnd) const;
+  virtual bool IsWindowCloaked(HWND hwnd) const;
+  // Screen bounds of the latched Settings window, or nullopt when they are
+  // unavailable or empty. Virtual for testing.
+  virtual std::optional<gfx::Rect> GetSettingsWindowScreenRect() const;
+  // Overlay forwarding. Virtual for testing, so tests can observe when the
+  // guidance arrow is shown or hidden.
+  virtual void ShowOverlayArrow(const gfx::Point& start, const gfx::Point& end);
+  virtual void HideOverlayArrow();
+
   // Called on the UI sequence with the result of the Settings launch posted
   // by LaunchSettings(). A failed launch tears the flow down immediately with
   // Outcome::kSettingsLaunchFailed instead of waiting for the finder timeout.
-  // Protected so test subclasses that stub LaunchSettings() can drive it.
   void OnLaunchSettingsResult(bool succeeded);
 
  private:

@@ -192,7 +192,24 @@ class TestVisualGuidedSetterControllerWin
     return dpi_compatible_;
   }
 
+  void ShowOverlayArrow(const gfx::Point& start,
+                        const gfx::Point& end) override {
+    ++show_overlay_count_;
+  }
+  void HideOverlayArrow() override { ++hide_overlay_count_; }
+  std::optional<gfx::Rect> GetSettingsWindowScreenRect() const override {
+    return gfx::Rect(1000, 300, 800, 600);
+  }
+  int show_overlay_count() const { return show_overlay_count_; }
+  int hide_overlay_count() const { return hide_overlay_count_; }
+  void clear_overlay_counts() {
+    show_overlay_count_ = 0;
+    hide_overlay_count_ = 0;
+  }
+
  private:
+  int show_overlay_count_ = 0;
+  int hide_overlay_count_ = 0;
   std::optional<gfx::Rect> anchor_rect_;
 
   bool settings_window_valid_ = true;
@@ -204,6 +221,50 @@ class TestVisualGuidedSetterControllerWin
   std::vector<HWND> applied_z_orders_;
   base::OnceClosure run_loop_quit_closure_;
   mutable raw_ptr<TestSettingsWindowFinderWin> test_finder_ = nullptr;
+};
+
+// Routes the window-state predicates back to the REAL implementations and
+// fakes the low-level Win32 probes underneath.
+class WindowStateTestControllerWin
+    : public TestVisualGuidedSetterControllerWin {
+ public:
+  explicit WindowStateTestControllerWin(views::Widget* parent_widget)
+      : TestVisualGuidedSetterControllerWin(parent_widget) {}
+
+  bool IsSettingsWindowAlive() const override {
+    return VisualGuidedSetterControllerWin::IsSettingsWindowAlive();
+  }
+
+  bool IsSettingsWindowValid() const override {
+    return VisualGuidedSetterControllerWin::IsSettingsWindowValid();
+  }
+
+  bool IsSettingsWindowClosed() const override {
+    return VisualGuidedSetterControllerWin::IsSettingsWindowClosed();
+  }
+
+  // Fake probes.
+  void set_settings_probe_hwnd(HWND hwnd) { settings_probe_hwnd_ = hwnd; }
+  void set_settings_alive(bool value) { settings_alive_ = value; }
+  void set_settings_on_screen(bool value) { settings_on_screen_ = value; }
+  void set_settings_cloaked(bool value) { settings_cloaked_ = value; }
+  bool IsWindowAlive(HWND hwnd) const override {
+    return hwnd == settings_probe_hwnd_ ? settings_alive_ : true;
+  }
+  bool IsWindowOnScreen(HWND hwnd) const override {
+    return hwnd == settings_probe_hwnd_ ? settings_on_screen_ : true;
+  }
+  bool IsWindowCloaked(HWND hwnd) const override {
+    return hwnd == settings_probe_hwnd_ ? settings_cloaked_ : false;
+  }
+  bool settings_window_closed() const { return IsSettingsWindowClosed(); }
+  bool settings_window_valid() const { return IsSettingsWindowValid(); }
+
+ private:
+  HWND settings_probe_hwnd_ = nullptr;
+  bool settings_alive_ = true;
+  bool settings_on_screen_ = true;
+  bool settings_cloaked_ = false;
 };
 
 }  // namespace
@@ -241,6 +302,15 @@ class VisualGuidedSetterControllerWinTest : public ChromeViewsTestBase {
     profile_.reset();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
+  }
+
+  std::unique_ptr<WindowStateTestControllerWin> MakeWindowStateController() {
+    auto controller =
+        std::make_unique<WindowStateTestControllerWin>(widget_.get());
+    controller->SetWebContents(web_contents_.get());
+    controller->SetAnchorRect(gfx::Rect(400, 300, 600, 400));
+    controller->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
+    return controller;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -684,5 +754,46 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(controller_->applied_rects().size(), 0u);
 
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, RealValidityPredicateCloakAware) {
+  auto controller = MakeWindowStateController();
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  controller->set_settings_probe_hwnd(fake_hwnd);
+  // Nothing latched yet: not valid.
+  EXPECT_FALSE(controller->settings_window_valid());
+  EXPECT_FALSE(controller->settings_window_closed());
+
+  controller->Start();
+  controller->test_finder()->TriggerFound(fake_hwnd);
+
+  // Latched, alive, on screen, not cloaked: valid.
+  EXPECT_TRUE(controller->settings_window_valid());
+  EXPECT_FALSE(controller->settings_window_closed());
+
+  // Destroyed window: invalid and closed.
+  controller->set_settings_alive(false);
+  EXPECT_FALSE(controller->settings_window_valid());
+  EXPECT_TRUE(controller->settings_window_closed());
+  controller->set_settings_alive(true);
+
+  // Hidden (WS_VISIBLE cleared): invalid.
+  controller->set_settings_on_screen(false);
+  EXPECT_FALSE(controller->settings_window_valid());
+  controller->set_settings_on_screen(true);
+
+  // DWM-cloaked: invalid.
+  controller->set_settings_cloaked(true);
+  EXPECT_FALSE(controller->settings_window_valid());
+
+  controller->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OverlayNotShownBeforeSettingsWindowFound) {
+  controller_->Start();
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
   controller_->Stop();
 }
