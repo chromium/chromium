@@ -489,13 +489,24 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
 std::string AppServiceInstanceRegistryHelper::GetAppId(
     const aura::Window* window) const {
   for (Profile* profile : controller_->GetProfileList()) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    std::string app_id = proxy->InstanceRegistry().GetShelfId(window).app_id;
+    std::string app_id = GetShelfId(profile, window).app_id;
     if (!app_id.empty()) {
       return app_id;
     }
   }
   return std::string();
+}
+
+ash::ShelfID AppServiceInstanceRegistryHelper::GetShelfId(
+    Profile* profile,
+    const aura::Window* window) const {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  ash::ShelfID shelf_id;
+  proxy->InstanceRegistry().ForInstancesWithWindow(
+      window, [&shelf_id](const apps::InstanceUpdate& update) {
+        shelf_id = ash::ShelfID(update.AppId(), update.LaunchId());
+      });
+  return shelf_id;
 }
 
 std::string AppServiceInstanceRegistryHelper::GetAppId(

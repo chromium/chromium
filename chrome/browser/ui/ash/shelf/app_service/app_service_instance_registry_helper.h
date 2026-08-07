@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "components/services/app_service/public/cpp/instance.h"
 
+class Profile;
+
 namespace aura {
 class Window;
 }
@@ -95,6 +97,12 @@ class AppServiceInstanceRegistryHelper {
   // Returns an app id for `window` in InstanceRegistry. If there is no `window`
   // in InstanceRegistry, returns an empty string.
   std::string GetAppId(const aura::Window* window) const;
+
+  // Returns the shelf id for the `window`.
+  //
+  // Note: This interface is used for the standalone window, or the ash Chrome
+  // browser tab window, which has one instance only.
+  ash::ShelfID GetShelfId(Profile* profile, const aura::Window* window) const;
 
  private:
   // Returns an app id to represent |contents| in InstanceRegistry. If there is

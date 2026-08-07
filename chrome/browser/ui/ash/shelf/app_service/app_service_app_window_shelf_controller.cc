@@ -137,7 +137,8 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
   // Deactivates the running app windows in InstanceRegistry for the inactive
   // user, and activates the app windows for the active user.
   for (aura::Window* window : window_list_) {
-    ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(window);
+    ash::ShelfID shelf_id =
+        app_service_instance_helper_->GetShelfId(owner()->profile(), window);
     if (!shelf_id.IsNull()) {
       RegisterWindow(window, shelf_id);
     } else {
@@ -656,8 +657,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
   // If the window exists in InstanceRegistry, get the shelf id from
   // InstanceRegistry.
   for (Profile* profile : profile_list_) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    shelf_id = proxy->InstanceRegistry().GetShelfId(window);
+    shelf_id = app_service_instance_helper_->GetShelfId(profile, window);
     if (!shelf_id.IsNull()) {
       break;
     }

@@ -84,7 +84,6 @@ if (is_chromeos) {
     ]
     deps = [
       ":macros",
-      "//ash/public/cpp",
       "//content/public/browser",
       "//skia",
       "//ui/aura",

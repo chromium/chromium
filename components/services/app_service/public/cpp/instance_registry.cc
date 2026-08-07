@@ -121,15 +121,6 @@ InstanceState InstanceRegistry::GetState(const aura::Window* window) const {
   return state;
 }
 
-ash::ShelfID InstanceRegistry::GetShelfId(const aura::Window* window) const {
-  ash::ShelfID shelf_id;
-  ForInstancesWithWindow(
-      window, [&shelf_id](const apps::InstanceUpdate& update) {
-        shelf_id = ash::ShelfID(update.AppId(), update.LaunchId());
-      });
-  return shelf_id;
-}
-
 bool InstanceRegistry::Exists(const aura::Window* window) const {
   bool found = false;
   ForInstancesWithWindow(

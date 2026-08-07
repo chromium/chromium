@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -125,15 +124,6 @@ class InstanceRegistry {
   // called, since `window` might have multiple instances, and the InstanceState
   // returned in these cases will be arbitrary.
   InstanceState GetState(const aura::Window* window) const;
-
-  // Returns the shelf id for the `window`.
-  //
-  // Note: This interface is used for the standalone window, or the ash Chrome
-  // browser tab window, which has one instance only. For Lacros windows which
-  // might have multiple instances for tabs, this interface should not be
-  // called, since `window` might have multiple instances, and the ShelfID
-  // returned in these cases will be arbitrary.
-  ash::ShelfID GetShelfId(const aura::Window* window) const;
 
   // Return true if there is an instance for the `window`.
   bool Exists(const aura::Window* window) const;
