@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
@@ -12,6 +12,7 @@ import type {SkillsClient, SkillsHost} from './skills/skills_types.js';
 import type {InterfaceDef, InterfaceDefMethods, ReplaceProperties} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
 import type {ErrorCodec, PendingReceiver, PendingRemote, TransferableException} from './transport/post_message_transport.js';
+import type {ZeroStateSuggestionsClient, ZeroStateSuggestionsHost} from './zero_state_suggestions/zero_state_suggestions_types.js';
 
 export type {
   ActorClient,
@@ -21,6 +22,8 @@ export type {
   ExperimentalTriggeringClient,
   SkillsClient,
   SkillsHost,
+  ZeroStateSuggestionsClient,
+  ZeroStateSuggestionsHost,
 };
 
 /*
@@ -48,6 +51,7 @@ export const WebClientHostDef = defInterface({
         skillsReceiver?: PendingReceiver<SkillsClient>,
         experimentalTriggeringReceiver?: PendingReceiver<
                                           ExperimentalTriggeringClient>,
+        zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
       }>(),
       histogram: {name: 'WebClientCreated', id: 1},
     },
@@ -451,17 +455,7 @@ export const WebClientHostDef = defInterface({
       name: 'maybeRefreshUserStatus',
       histogram: {id: 58},
     },
-    {
-      name: 'getZeroStateSuggestionsAndSubscribe',
-      request: defMessage<{
-        hasActiveSubscription: boolean,
-        options: ZeroStateSuggestionsOptions,
-      }>(),
-      response: defMessage<{
-        suggestions?: ZeroStateSuggestionsV2,
-      }>(),
-      histogram: {id: 55},
-    },
+
     {
       name: 'subscribeToPageMetadata',
       request: defMessage<{
@@ -685,13 +679,7 @@ export const WebClientDef = defInterface({
         tabData: TabDataPrivate,
       }>(),
     },
-    {
-      name: 'zeroStateSuggestionsChanged',
-      request: defMessage<{
-        suggestions: ZeroStateSuggestionsV2,
-        options: ZeroStateSuggestionsOptions,
-      }>(),
-    },
+
     {
       name: 'pageMetadataChanged',
       request: defMessage<{
@@ -872,7 +860,7 @@ export const RECORDED_REQUEST_IDS = {
   SubscribeToPinCandidates: 52,
   // Do not reuse deleted request ID: 53,
   GetZeroStateSuggestionsForFocusedTab: 54,
-  GetZeroStateSuggestionsAndSubscribe: 55,
+  // Do not reuse deleted request ID: 55,
   SetClosedCaptioningSetting: 56,
   DropScrollToHighlight: 57,
   MaybeRefreshUserStatus: 58,

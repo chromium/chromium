@@ -780,14 +780,11 @@ void GlicInstanceImpl::CreateTab(
                                  /*success=*/true, created_tab, source_tab);
 }
 
-void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
-    bool has_active_subscription,
-    const mojom::ZeroStateSuggestionsOptions& options,
-    mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-        callback) {
-  zero_state_suggestions_manager_->ObserveZeroStateSuggestions(
-      has_active_subscription, options.is_first_run, options.supported_tools,
-      std::move(callback));
+void GlicInstanceImpl::CreateZeroStateSuggestionsHandler(
+    mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver) {
+  if (zero_state_suggestions_manager_) {
+    zero_state_suggestions_manager_->Bind(std::move(receiver));
+  }
 }
 
 void GlicInstanceImpl::PrepareForOpen() {

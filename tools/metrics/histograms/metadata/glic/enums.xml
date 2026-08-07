@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="SubscribeToPinCandidates"/>
   <int value="53" label="(Obsolete) UnsubscribeFromPinCandidates"/>
   <int value="54" label="GetZeroStateSuggestionsForFocusedTab"/>
-  <int value="55" label="GetZeroStateSuggestionsAndSubscribe"/>
+  <int value="55" label="(Obsolete) GetZeroStateSuggestionsAndSubscribe"/>
   <int value="56" label="SetClosedCaptioningSetting"/>
   <int value="57" label="DropScrollToHighlight"/>
   <int value="58" label="MaybeRefreshUserStatus"/>

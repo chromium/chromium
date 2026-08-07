@@ -644,18 +644,6 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
   observers_.Notify(&Observer::WebUiStateChanged, primary_webui_state_);
 }
 
-void Host::NotifyZeroStateSuggestion(
-    mojom::ZeroStateSuggestionsV2Ptr suggestions,
-    mojom::ZeroStateSuggestionsOptions options) {
-  if (auto* client = GetPrimaryWebClient()) {
-    auto opt = mojom::ZeroStateSuggestionsOptions::New();
-    opt->is_first_run = std::move(options.is_first_run);
-    opt->supported_tools = std::move(options.supported_tools);
-    client->NotifyZeroStateSuggestionsChanged(std::move(suggestions),
-                                              std::move(opt));
-  }
-}
-
 void Host::NotifyInstanceActivationChanged(bool is_active) {
   if (auto* client = GetPrimaryWebClient()) {
     client->NotifyInstanceActivationChanged(is_active);

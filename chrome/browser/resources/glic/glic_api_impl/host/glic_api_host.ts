@@ -9,7 +9,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from '../../browser_proxy.js';
-import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, ExperimentalTriggeringClientReceiver, SkillsClientReceiver, SkillsHandlerRemote, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, ExperimentalTriggeringClientReceiver, SkillsClientReceiver, SkillsHandlerRemote, WebClientHandlerRemote, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
@@ -28,9 +28,11 @@ import {SkillsClientDef, SkillsHostDef} from '../skills/skills_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 import type {InterfaceDef, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageReceiver, PostMessageRemote, PostMessageRequestReceiver, PostMessageRequestSender, PostMessageRouter} from '../transport/post_message_transport.js';
 import {createBidirectionalPostMessageTransport} from '../transport/post_message_transport.js';
+import {ZeroStateSuggestionsHostMessageHandler} from '../zero_state_suggestions/zero_state_suggestions_host.js';
+import {ZeroStateSuggestionsHostDef} from '../zero_state_suggestions/zero_state_suggestions_types.js';
 
 import {ERROR_CODEC, getHostRequestHistogramInfo, MAX_REQUEST_ID, WebClientDef, WebClientHostDef} from './../request_types.js';
-import type {ActorClient, ActorHost, SkillsClient, SkillsHost, WebClient, WebClientHost} from './../request_types.js';
+import type {ActorClient, ActorHost, SkillsClient, SkillsHost, WebClient, WebClientHost, ZeroStateSuggestionsHost} from './../request_types.js';
 import {urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
 import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
@@ -221,6 +223,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   annotationHandler?: AnnotationHandlerRemote;
   skillsHandler?: SkillsHandlerRemote;
 
+  zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
   private isSubscribedToZoomLevel = false;
   private experimentalTriggeringUpdatesHandler =
       new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
@@ -285,6 +288,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     skillsReceiver?: PendingReceiver<SkillsClient>,
     experimentalTriggeringReceiver?: PendingReceiver<
                                       ExperimentalTriggeringClient>,
+    zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
   } {
     this.panelIsActive = initialState.panelIsActive;
 
@@ -337,12 +341,30 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.handler.createExperimentalTriggeringClient(
         experimentalTriggeringClientReceiver.$.bindNewPipeAndPassRemote());
 
+    let zeroStateSuggestionsRemote: PendingRemote<ZeroStateSuggestionsHost>|
+        undefined;
+    if (initialState.enableZeroStateSuggestions) {
+      this.zeroStateSuggestionsHandler =
+          new ZeroStateSuggestionsHandlerRemote();
+      this.handler.createZeroStateSuggestionsHandler(
+          this.zeroStateSuggestionsHandler.$.bindNewPipeAndPassReceiver());
+      const zeroStateSuggestionsHostMessageHandler =
+          new ZeroStateSuggestionsHostMessageHandler(
+              this.zeroStateSuggestionsHandler, this.communicator.router);
+      const {remote: zeroStateSuggestionsRemoteVal} =
+          this.communicator.router.newPipeWithReceiver(
+              zeroStateSuggestionsHostMessageHandler,
+              ZeroStateSuggestionsHostDef);
+      zeroStateSuggestionsRemote = zeroStateSuggestionsRemoteVal;
+    }
+
     return {
       actorRemote,
       actorReceiver,
       skillsRemote,
       skillsReceiver,
       experimentalTriggeringReceiver,
+      zeroStateSuggestionsRemote,
     };
   }
 

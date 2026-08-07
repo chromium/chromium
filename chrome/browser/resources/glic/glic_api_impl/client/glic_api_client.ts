@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
@@ -12,6 +12,7 @@ import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {assertNever} from '../transport/messaging.js';
 import {createBidirectionalPostMessageTransport} from '../transport/post_message_transport.js';
 import type {PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
 import {ERROR_CODEC, ErrorWithReasonImpl, newTransferableException, WebClientDef, WebClientHostDef, WebClientPinCandidatesObserverDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
@@ -96,12 +97,6 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
     this.host.getPanelState?.().assignAndSignal(payload.panelState);
   }
 
-  zeroStateSuggestionsChanged(payload: {
-    suggestions: ZeroStateSuggestionsV2,
-    options: ZeroStateSuggestionsOptions,
-  }): void {
-    this.host.currentZeroStateObserver?.assignAndSignal(payload.suggestions);
-  }
 
   canAttachStateChanged(payload: {canAttach: boolean}): void {
     this.host.canAttachPanelValue.assignAndSignal(payload.canAttach);
@@ -292,6 +287,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   readonly skillsClient: GlicBrowserHostSkills;
   readonly experimentalTriggeringClient =
       new GlicBrowserHostExperimentalTriggering();
+  readonly suggestionsClient: GlicBrowserHostZeroStateSuggestions;
+
   private chromeVersion?: ChromeVersion;
   private platform?: Platform;
   private formFactor?: FormFactor;
@@ -335,12 +332,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   pinCandidates: PinCandidatesObservable|undefined;
   captureRegionObservable?: CaptureRegionObservable;
 
-  private currentZeroStateSuggestionOptions: ZeroStateSuggestionsOptions = {
-    isFirstRun: false,
-    supportedTools: [],
-  };
-  currentZeroStateObserver =
-      ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>();
   private hostCapabilities: Set<HostCapability> = new Set();
   readonly additionalContextSubject = new Subject<AdditionalContext>();
   pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
@@ -372,6 +363,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.actorClient = new GlicBrowserHostActor(this);
     this.annotationClient = new GlicBrowserHostAnnotation(this);
     this.skillsClient = new GlicBrowserHostSkills();
+    this.suggestionsClient = new GlicBrowserHostZeroStateSuggestions(this);
 
     this.getTabByIdObservableSet =
         new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
@@ -386,6 +378,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       this.actorClient,
       this.annotationClient,
       this.skillsClient,
+      this.suggestionsClient,
     ]);
     type UnimplementedApis = Exclude<keyof GlicBrowserHost, keyof typeof proxy>;
     assertNever<UnimplementedApis>();
@@ -409,6 +402,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.experimentalTriggeringClient.initialize(
         this.router, response.experimentalTriggeringReceiver, this.webClient,
         this.clientRemote);
+    this.suggestionsClient.initialize(
+        response.initialState, response.zeroStateSuggestionsRemote);
+
     const state = response.initialState;
     this.geminiEnterpriseSettings.assignAndSignal(
         state.geminiEnterpriseSettings ?? undefined);
@@ -469,7 +465,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
-      this.getZeroStateSuggestions = undefined;
     }
 
     if (!state.enableDefaultTabContextSettingFeature) {
@@ -947,36 +942,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       };
     }
     return zeroStateResult.suggestions;
-  }
-
-  private async zeroStateActiveSubscriptionStateChanged(
-      options: ZeroStateSuggestionsOptions, hasActiveSubscription: boolean) {
-    if (options !== this.currentZeroStateSuggestionOptions) {
-      // Dont send out of date updates.
-      return;
-    }
-    const zeroStateResult = await this.clientRemote.requestWithResponse(
-        'getZeroStateSuggestionsAndSubscribe', {
-          hasActiveSubscription: hasActiveSubscription,
-          options: options,
-        });
-    if (zeroStateResult.suggestions) {
-      this.currentZeroStateObserver?.assignAndSignal(
-          zeroStateResult.suggestions);
-    }
-  }
-
-  getZeroStateSuggestions?(options?: ZeroStateSuggestionsOptions):
-      ObservableValueImpl<ZeroStateSuggestionsV2> {
-    options = options ?? {
-      isFirstRun: false,
-      supportedTools: [],
-    };
-    this.currentZeroStateSuggestionOptions = options;
-    this.currentZeroStateObserver =
-        ObservableValueImpl.withNoValue<ZeroStateSuggestionsV2>(
-            this.zeroStateActiveSubscriptionStateChanged.bind(this, options));
-    return this.currentZeroStateObserver;
   }
 
 

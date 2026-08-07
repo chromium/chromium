@@ -5,12 +5,12 @@
 // This file handles messages from the browser, sending messages to the client.
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, FileUploadPolicyState, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, FileUploadPolicyState, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, WebClientInterface} from '../../glic.mojom-webui.js';
 import type {WebClient} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PostMessageRemote} from '../transport/post_message_transport.js';
 
-import {additionalContextToClient, fileUploadPolicyStateToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, tabDataToClient, timeDeltaFromClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
+import {additionalContextToClient, fileUploadPolicyStateToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, tabDataToClient, timeDeltaFromClient, webClientModeToMojo} from './conversions.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {PanelOpenState} from './types.js';
 
@@ -206,15 +206,6 @@ export class WebClientImpl implements WebClientInterface {
         {tabData: tabDataToClient(tabData, extras)}, extras.transfers);
   }
 
-
-  notifyZeroStateSuggestionsChanged(
-      suggestions: ZeroStateSuggestionsV2Mojo,
-      options: ZeroStateSuggestionsOptionsMojo): void {
-    this.sender.requestNoResponse('zeroStateSuggestionsChanged', {
-      suggestions: zeroStateSuggestionsToClient(suggestions),
-      options: options,
-    });
-  }
 
   notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):
       void {

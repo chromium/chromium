@@ -103,11 +103,8 @@ class Host : public GlicSharingManagerProvider {
         glic::mojom::WebClientHandler::
             GetZeroStateSuggestionsForFocusedTabCallback callback) = 0;
 
-    virtual void GetZeroStateSuggestionsAndSubscribe(
-        bool has_active_subscription,
-        const mojom::ZeroStateSuggestionsOptions& options,
-        mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-            callback) = 0;
+    virtual void CreateZeroStateSuggestionsHandler(
+        mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver) = 0;
 
     virtual void RegisterConversation(
         glic::mojom::ConversationInfoPtr info,
@@ -320,10 +317,6 @@ class Host : public GlicSharingManagerProvider {
   const mojom::WebUiState& GetPrimaryWebUiState() const {
     return primary_webui_state_;
   }
-
-  // Informs the host that the Zero State Suggestions have changed.
-  void NotifyZeroStateSuggestion(mojom::ZeroStateSuggestionsV2Ptr suggestions,
-                                 mojom::ZeroStateSuggestionsOptions options);
 
   void NotifyInstanceActivationChanged(bool is_active);
   void OnActuatingChanged(bool actuating);

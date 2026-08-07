@@ -13,6 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace glic {
 class CachingZeroStateSuggestionsManager;
@@ -22,13 +25,14 @@ class GlicInstanceImpl;
 class Host;
 
 // A class for managing sending zero state suggestions through the mojo api.
-class GlicZeroStateSuggestionsManager {
+class GlicZeroStateSuggestionsManager
+    : public mojom::ZeroStateSuggestionsHandler {
  public:
   GlicZeroStateSuggestionsManager(
       GlicSharingManagerInternal* sharing_manager,
       GlicInstanceImpl* glic_instance,
       ContextualCueingService* contextual_cueing_service);
-  virtual ~GlicZeroStateSuggestionsManager();
+  ~GlicZeroStateSuggestionsManager() override;
 
   // Callback to send zero state suggestions to the webui on tab changes.
   void NotifyZeroStateSuggestionsOnFocusedTabDataChanged(
@@ -49,28 +53,25 @@ class GlicZeroStateSuggestionsManager {
       const std::vector<std::string>& supported_tools,
       const TabDataChange& data);
 
-  // This handles calls from the webui to return a suggestion, and begin to
-  // notify the webui of changes to the zero state suggestsions.
-  void ObserveZeroStateSuggestions(
-      bool is_notifying,
-      bool is_first_run,
-      const std::vector<std::string>& supported_tools,
-      glic::mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-          callback);
+  void Bind(mojo::PendingReceiver<mojom::ZeroStateSuggestionsHandler> receiver);
+
+  // mojom::ZeroStateSuggestionsHandler implementation.
+  void GetZeroStateSuggestionsAndSubscribe(
+      mojo::PendingRemote<mojom::ZeroStateSuggestionsClient> client,
+      mojom::ZeroStateSuggestionsOptionsPtr options,
+      mojom::ZeroStateSuggestionsHandler::
+          GetZeroStateSuggestionsAndSubscribeCallback callback) override;
 
   void Reset();
 
  private:
-  bool WasAutoOpenedForPdf();
   void FilterTabs(std::vector<raw_ptr<content::WebContents>>& tabs);
 
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
   void OnZeroStateSuggestionsFetched(
-      mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
-          callback,
+      GetZeroStateSuggestionsAndSubscribeCallback callback,
       std::vector<std::string> returned_suggestions);
-
   // A helper function to route NotifyZeroStateSuggestions callbacks.
   void OnZeroStateSuggestionsNotify(
       bool is_first_run,
@@ -106,6 +107,9 @@ class GlicZeroStateSuggestionsManager {
       current_zero_state_suggestions_pinned_tab_data_change_subscription_;
 
   bool pause_pinned_subscription_updates_ = false;
+
+  mojo::Receiver<mojom::ZeroStateSuggestionsHandler> receiver_{this};
+  mojo::Remote<mojom::ZeroStateSuggestionsClient> client_remote_;
 
   base::WeakPtrFactory<GlicZeroStateSuggestionsManager> weak_ptr_factory_{this};
 };

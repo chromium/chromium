@@ -54,10 +54,6 @@ class GlicWebClientAccess {
   // Informs the web client that an actor task list row was clicked.
   virtual void NotifyActorTaskListRowClicked(int32_t task_id) = 0;
 
-  virtual void NotifyZeroStateSuggestionsChanged(
-      mojom::ZeroStateSuggestionsV2Ptr suggestions,
-      mojom::ZeroStateSuggestionsOptionsPtr options) = 0;
-
   // Informs the web client that the browser wants to invoke Glic.
   virtual void Invoke(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback) = 0;
