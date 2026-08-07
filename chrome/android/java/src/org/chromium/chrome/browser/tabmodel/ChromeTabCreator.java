@@ -376,7 +376,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             // Check if the tab is being created asynchronously.
             int assignedTabId = IntentHandler.getTabId(intent);
             boolean isReparenting = isReparenting(assignedTabId);
-            AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(assignedTabId);
+            AsyncTabParams asyncParams =
+                    mAsyncTabParamsManager.getAsyncTabParams().get(assignedTabId);
             if ((type == TabLaunchType.FROM_REPARENTING
                             || type == TabLaunchType.FROM_REPARENTING_BACKGROUND)
                     && asyncParams == null) {
@@ -394,6 +395,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @TabCreationState int creationState = TabCreationState.LIVE_IN_FOREGROUND;
             if (isReparenting) {
                 TabReparentingParams params = (TabReparentingParams) asyncParams;
+                assert params != null;
                 tab = params.getTabToReparent();
 
                 assert intent != null;
@@ -527,6 +529,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 creationState = TabCreationState.LIVE_IN_BACKGROUND;
             }
             mTabModel.addTab(tab, position, type, creationState);
+            mAsyncTabParamsManager.remove(assignedTabId);
             return tab;
         }
     }
