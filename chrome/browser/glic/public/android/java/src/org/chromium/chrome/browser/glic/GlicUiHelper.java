@@ -41,12 +41,23 @@ public class GlicUiHelper {
                         composition -> {
                             lottieDrawable.setComposition(composition);
                             lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
-                            lottieDrawable.playAnimation();
                         });
 
         LayerDrawable layerDrawable =
                 new LayerDrawable(new Drawable[] {lottieDrawable, sparkIcon}) {
                     private @Nullable ColorStateList mTintList;
+                    private @Nullable Integer mCurrentColor;
+
+                    @Override
+                    public boolean setVisible(boolean visible, boolean restart) {
+                        boolean changed = super.setVisible(visible, restart);
+                        if (visible) {
+                            lottieDrawable.resumeAnimation();
+                        } else {
+                            lottieDrawable.pauseAnimation();
+                        }
+                        return changed;
+                    }
 
                     @Override
                     public void setTintList(@Nullable ColorStateList tint) {
@@ -74,6 +85,8 @@ public class GlicUiHelper {
                             int color =
                                     mTintList.getColorForState(
                                             getState(), mTintList.getDefaultColor());
+                            if (mCurrentColor != null && mCurrentColor == color) return false;
+                            mCurrentColor = color;
                             lottieDrawable.addValueCallback(
                                     new KeyPath("**"),
                                     LottieProperty.COLOR_FILTER,
@@ -85,6 +98,9 @@ public class GlicUiHelper {
                         return false;
                     }
                 };
+
+        layerDrawable.setVisible(false, false);
+
         float density = context.getResources().getDisplayMetrics().density;
         // Adjust sizes of the spark and spinner.
         int sparkInset = Math.round(2 * density);
