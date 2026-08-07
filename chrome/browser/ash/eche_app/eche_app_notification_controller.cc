@@ -8,16 +8,17 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
@@ -56,28 +57,20 @@ EcheAppNotificationController::EcheAppNotificationController(
 EcheAppNotificationController::~EcheAppNotificationController() = default;
 
 void EcheAppNotificationController::LaunchSettings() {
-  auto* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
-  if (!user) {
-    // TODO(crbug.com/447287122): Check if conceptually this can be nullptr.
-    return;
-  }
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
   // TODO(crbug.com/40785967): Wait for UX confirm.
   ash::SettingsAppManager::Get()->Open(
-      *user,
+      user,
       {.sub_page = chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2});
 }
 
 void EcheAppNotificationController::LaunchNetworkSettings() {
-  auto* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_.get());
-  if (!user) {
-    // TODO(crbug.com/447287122): Check if conceptually this can be nullptr.
-    return;
-  }
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
   // TODO(crbug.com/40785967): Wait for UX confirm.
   ash::SettingsAppManager::Get()->Open(
-      *user, {.sub_page = chromeos::settings::mojom::kNetworkSectionPath});
+      user, {.sub_page = chromeos::settings::mojom::kNetworkSectionPath});
 }
 
 void EcheAppNotificationController::LaunchTryAgain() {
@@ -167,29 +160,32 @@ void EcheAppNotificationController::ShowScreenLockNotification(
 
 void EcheAppNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  notification = std::make_unique<message_center::Notification>(
+      CreateUserScopedNotificationId(notification->id(), user.username_hash()),
+      *notification);
+  notification->set_profile_id(user.GetAccountId().GetUserEmail());
   notification->SetSystemPriority();
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
-      /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void EcheAppNotificationController::CloseNotification(
     const std::string& notification_id) {
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, notification_id);
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  message_center::MessageCenter::Get()->RemoveNotification(
+      CreateUserScopedNotificationId(notification_id, user.username_hash()),
+      /*by_user=*/false);
 }
 
 void EcheAppNotificationController::
     CloseConnectionOrLaunchErrorNotifications() {
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kEcheAppRetryConnectionNotifierId);
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kEcheAppInactivityNotifierId);
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT,
-      kEcheAppFromWebWithoutButtonNotifierId);
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kEcheAppNetworkSettingNotifierId);
+  CloseNotification(kEcheAppRetryConnectionNotifierId);
+  CloseNotification(kEcheAppInactivityNotifierId);
+  CloseNotification(kEcheAppFromWebWithoutButtonNotifierId);
+  CloseNotification(kEcheAppNetworkSettingNotifierId);
 }
 
 }  // namespace eche_app

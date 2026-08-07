@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/ash/experiences/system_web_apps/types",
+  "+ui/message_center/message_center.h",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
@@ -13,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/ash/secure_channel",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/web_applications",
   "+chrome/common/channel_info.h",
@@ -23,7 +23,7 @@ specific_include_rules = {
   ".*test(_.*)?\\.(cc|h)": [
     "+chrome/test/base",
   ],
-  "eche_app_notification_controller\\.cc": [
-    "+ui/message_center/message_center.h",
+  "eche_app_manager_factory_unittest\\.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   ],
 }
