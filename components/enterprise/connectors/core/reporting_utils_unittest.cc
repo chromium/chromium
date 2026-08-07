@@ -546,39 +546,4 @@ TEST(ReportingUtilsTest, TestUrlMatchingForOptInEventReturnsFalse) {
   EXPECT_FALSE(IsUrlMatched(url_matcher.get(), GURL("gmail.com")));
 }
 
-TEST(ReportingUtilsTest, TestAddReferrerChainToEvent) {
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
-  referrer_chain.Add(test::MakeReferrerChainEntry());
-  base::DictValue event;
-  AddReferrerChainToEvent(referrer_chain, event);
-  EXPECT_EQ(event.size(), 1u);
-  EXPECT_EQ(event.FindList(kKeyReferrers)->size(), 1u);
-}
-
-TEST(ReportingUtilsTest, TestEmptyReferrerChainAdded) {
-  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-      referrer_chain;
-  base::DictValue event;
-  AddReferrerChainToEvent(referrer_chain, event);
-  EXPECT_EQ(event.size(), 1u);
-  EXPECT_TRUE(event.contains(kKeyReferrers));
-  EXPECT_TRUE(event.FindList(kKeyReferrers)->empty());
-}
-
-TEST(ReportingUtilsTest, TestAddFrameUrlChainToEvent) {
-  google::protobuf::RepeatedPtrField<std::string> frame_url_chain;
-  *frame_url_chain.Add() = "https://frame1.com/";
-  *frame_url_chain.Add() = "https://frame2.com/";
-
-  base::DictValue event;
-  AddFrameUrlChainToEvent(frame_url_chain, event);
-
-  const base::ListValue* iframe_urls = event.FindList(kKeyIframeUrls);
-  ASSERT_TRUE(iframe_urls);
-  ASSERT_EQ(iframe_urls->size(), 2u);
-  EXPECT_EQ((*iframe_urls)[0].GetString(), "https://frame1.com/");
-  EXPECT_EQ((*iframe_urls)[1].GetString(), "https://frame2.com/");
-}
-
 }  // namespace enterprise_connectors

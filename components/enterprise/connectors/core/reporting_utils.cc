@@ -87,20 +87,6 @@ ProtoEventResult GetEventResult(EventResult event_result) {
   }
 }
 
-std::string ActionFromVerdictType(
-    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
-  switch (verdict_type) {
-    case safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS:
-      return "BLOCK";
-    case safe_browsing::RTLookupResponse::ThreatInfo::WARN:
-      return "WARN";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SAFE:
-      return "REPORT_ONLY";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS:
-    case safe_browsing::RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:
-      return "ACTION_UNKNOWN";
-  }
-}
 
 proto::TriggeredRuleInfo::Action ActionProtoFromVerdictType(
     safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
@@ -446,36 +432,6 @@ proto::TriggeredRuleInfo ConvertMatchedUrlNavigationRuleToTriggeredRuleInfo(
   triggered_rule_info.set_has_watermarking(
       navigation_rule.has_watermark_message());
   return triggered_rule_info;
-}
-
-void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
-    const safe_browsing::RTLookupResponse& response,
-    base::DictValue& event) {
-  base::ListValue triggered_rule_info;
-
-  for (const safe_browsing::RTLookupResponse::ThreatInfo& threat_info :
-       response.threat_info()) {
-    base::DictValue triggered_rule;
-    triggered_rule.Set(kKeyTriggeredRuleName,
-                       threat_info.matched_url_navigation_rule().rule_name());
-    int rule_id = 0;
-    if (base::StringToInt(threat_info.matched_url_navigation_rule().rule_id(),
-                          &rule_id)) {
-      triggered_rule.Set(kKeyTriggeredRuleId, rule_id);
-    }
-    triggered_rule.Set(
-        kKeyUrlCategory,
-        threat_info.matched_url_navigation_rule().matched_url_category());
-    triggered_rule.Set(kKeyAction,
-                       ActionFromVerdictType(threat_info.verdict_type()));
-
-    if (threat_info.matched_url_navigation_rule().has_watermark_message()) {
-      triggered_rule.Set(kKeyHasWatermarking, true);
-    }
-
-    triggered_rule_info.Append(std::move(triggered_rule));
-  }
-  event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
 }
 
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
@@ -878,34 +834,6 @@ std::vector<std::string> GetLocalIpAddresses() {
     ip_addresses.push_back(network_interface.address.ToString());
   }
   return ip_addresses;
-}
-
-void AddReferrerChainToEvent(
-    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>&
-        referrer_chain,
-    base::DictValue& event) {
-  base::ListValue referrers;
-  for (const auto& referrer : referrer_chain) {
-    if (!referrer.url().empty() || !referrer.ip_addresses().empty()) {
-      base::DictValue referrer_dict;
-      referrer_dict.Set("url", referrer.url());
-      if (referrer.ip_addresses().size() > 0) {
-        referrer_dict.Set("ip", referrer.ip_addresses()[0]);
-      }
-      referrers.Append(std::move(referrer_dict));
-    }
-  }
-  event.Set(kKeyReferrers, std::move(referrers));
-}
-
-void AddFrameUrlChainToEvent(
-    const google::protobuf::RepeatedPtrField<std::string>& frame_url_chain,
-    base::DictValue& event) {
-  base::ListValue iframe_urls;
-  for (const auto& frame_url : frame_url_chain) {
-    iframe_urls.Append(frame_url);
-  }
-  event.Set(kKeyIframeUrls, std::move(iframe_urls));
 }
 
 void MaybeTruncateLongUrls(proto::Event& event_variant) {
