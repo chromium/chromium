@@ -46,6 +46,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
@@ -64,6 +66,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Mock private VerticalTabListCoordinator mMockTabListCoordinator;
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
 
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private VerticalTabRailCollapseController mCollapseController;
     private VerticalTabsSideUiCoordinator mCoordinator;
     private ActivityController<Activity> mActivityController;
@@ -95,11 +98,15 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 new VerticalTabRailCollapseController(
                         mMockTabListCoordinator::setRailCollapseState);
         when(mMockTabListCoordinator.getCollapseController()).thenReturn(mCollapseController);
+        mBrowserControlsVisibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(
+                        ObservableSuppliers.alwaysFalse());
 
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
                         mActivity,
                         mMockSideUiCoordinator,
+                        mBrowserControlsVisibilityDelegate,
                         mMockTabListCoordinator,
                         mIsVerticalTabsActiveSupplier);
     }
@@ -170,10 +177,35 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
         mCoordinator.destroy();
         verify(mMockSideUiCoordinator).removeObserver(mCoordinator);
         verify(mMockTabListCoordinator).destroy();
         assertFalse(mIsVerticalTabsActiveSupplier.get());
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testBrowserControlsVisibility_whenVisibleAndDisabled() {
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+
+        // Set visible -> browser controls should be locked to SHOWN.
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        assertEquals(BrowserControlsState.SHOWN, (int) mBrowserControlsVisibilityDelegate.get());
+
+        // Calling setVisible(false) -> browser controls should return to BOTH.
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+    }
+
+    @Test
+    @SmallTest
+    public void testBrowserControlsVisibility_destroyWithoutBeingVisible() {
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
+        mCoordinator.destroy();
+        assertEquals(BrowserControlsState.BOTH, (int) mBrowserControlsVisibilityDelegate.get());
     }
 
     @Test

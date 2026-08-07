@@ -77,9 +77,8 @@ public class TopControlsLockCoordinator {
 
     /** Set the {@link SideUiStateProvider} instance. */
     public void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
-        mSideUiStateProvider = sideUiStateProvider;
-        mSideUiStateProvider.addObserver(mSideUiObserver);
-        updateLock();
+        // TODO(crbug.com/542055382): Remove the rest of SideUiState code. The corresponding logic
+        // was implemented using BrowserStateBrowserControlsVisibilityDelegate in Vertical Tabs.
     }
 
     /** Get the token holder used to block scrolling updates. */

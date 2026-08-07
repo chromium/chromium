@@ -234,7 +234,7 @@ public class TopControlsLockCoordinatorTest {
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(specs);
         coordinator.setSideUiStateProvider(mSideUiStateProvider);
 
-        verify(mTopControlsStacker).setScrollingDisabled(true);
-        verify(mTopControlsStacker).requestLayerUpdatePost(false);
+        verify(mTopControlsStacker).setScrollingDisabled(false);
+        verify(mTopControlsStacker, never()).requestLayerUpdatePost(anyBoolean());
     }
 }

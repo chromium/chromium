@@ -2391,6 +2391,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new VerticalTabsSideUiCoordinator(
                             mActivity,
                             mSideUiCoordinator,
+                            mBrowserControlsManager.getBrowserVisibilityDelegate(),
                             new VerticalTabListCoordinator(
                                     mActivity,
                                     assumeNonNull(mTabModelSelectorSupplier.get()),
