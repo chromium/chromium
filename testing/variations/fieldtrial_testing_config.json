@@ -6216,6 +6216,42 @@
             ]
         }
     ],
+    "ClankBgRefreshConfigLaunch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_15m_prestable_clank_20260803",
+                    "params": {
+                        "feed_close_refresh_delay": "15m"
+                    },
+                    "enable_features": [
+                        "InterestFeedV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_10m_prestable_clank_20260803",
+                    "params": {
+                        "feed_close_refresh_delay": "10m"
+                    },
+                    "enable_features": [
+                        "InterestFeedV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_20m_prestable_clank_20260803",
+                    "params": {
+                        "feed_close_refresh_delay": "20m"
+                    },
+                    "enable_features": [
+                        "InterestFeedV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankDefaultSearchApi": [
         {
             "platforms": [
