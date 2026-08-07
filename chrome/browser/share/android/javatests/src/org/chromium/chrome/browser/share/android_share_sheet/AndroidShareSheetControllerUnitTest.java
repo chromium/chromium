@@ -60,6 +60,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -118,6 +119,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock UserPrefsJni mMockUserPrefsJni;
     @Mock FaviconHelperJni mMockFaviconHelperJni;
     @Mock DomDistillerUrlUtilsJni mMockDomDistillerUrlUtilsJni;
+    @Mock DataProtectionBridge.Natives mMockDataProtectionBridgeNatives;
     @Mock BottomSheetController mBottomSheetController;
     @Mock TabModelSelector mTabModelSelector;
     @Mock Tab mTab;
@@ -168,6 +170,9 @@ public class AndroidShareSheetControllerUnitTest {
         doAnswer(invocation -> new GURL(invocation.getArgument(0)))
                 .when(mMockDomDistillerUrlUtilsJni)
                 .getOriginalUrlFromDistillerUrl(anyString());
+
+        DataProtectionBridge.setInstanceForTesting(mMockDataProtectionBridgeNatives);
+        doReturn(true).when(mMockDataProtectionBridgeNatives).isScreenshotAllowed(any());
 
         doReturn(true).when(mTabGroupSharingController).isAvailableForTab(any());
 

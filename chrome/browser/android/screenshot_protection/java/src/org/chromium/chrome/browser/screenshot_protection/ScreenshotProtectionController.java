@@ -141,21 +141,40 @@ public class ScreenshotProtectionController
         mTabModelSelector.addObserver(this);
     }
 
-    /** Returns true iff screenshots are blocked by the controller. Public for testing. */
-    public boolean isScreenshotBlocked() {
-        TabModel currentModel = mTabModelSelector.getCurrentModel();
-        if (currentModel.isIncognito() && !ChromeFeatureList.sIncognitoScreenshot.isEnabled()) {
+    /**
+     * Returns true if this tab should not allow screenshots for any reason.
+     *
+     * @param tab The {@link Tab} to check.
+     * @return True if screenshot protection is enabled for the tab.
+     */
+    public static boolean isScreenshotBlocked(@Nullable Tab tab) {
+        if (tab == null) {
+            return false;
+        }
+        if (shouldBlockIncognito(tab.isIncognito())) {
             return true;
         }
-        if (mHasEnterpriseScreenshotRules) {
-            if (mLayoutStateProvider != null
-                    && (mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)
-                            || mLayoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE))) {
-                return true;
-            }
-            return mActiveTabBlocked;
+        return !DataProtectionBridge.isScreenshotAllowed(tab);
+    }
+
+    /** Returns true iff screenshots are blocked by the controller. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isScreenshotBlocked() {
+        if (shouldBlockIncognito(mTabModelSelector.getCurrentModel().isIncognito())) {
+            return true;
         }
-        return false;
+        return mHasEnterpriseScreenshotRules && (shouldBlockByLayout() || mActiveTabBlocked);
+    }
+
+    private static boolean shouldBlockIncognito(boolean isIncognito) {
+        return isIncognito && !ChromeFeatureList.sIncognitoScreenshot.isEnabled();
+    }
+
+    private boolean shouldBlockByLayout() {
+        return mHasEnterpriseScreenshotRules
+                && mLayoutStateProvider != null
+                && (mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)
+                        || mLayoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE));
     }
 
     private void maybeClearActiveTabCallback() {
