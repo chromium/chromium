@@ -17,6 +17,8 @@ class TestURLLoaderFactory;
 
 namespace signin {
 
+struct DevicePreview;
+
 // In tests, we dynamically build the URL to represent the same appended params.
 std::string GetTestStatsUrl();
 std::string GetTestPreviewsUrl();
@@ -36,12 +38,12 @@ void MockSuccessfulStatsFetch(
 // Mocks a successful response from the previews endpoint.
 void MockSuccessfulPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
-    const std::vector<std::string>& domains = {});
+    const std::vector<DevicePreview>& devices = {});
 
 // Mocks successful responses for both stats and previews endpoints.
 void MockSuccessfulFetch(network::TestURLLoaderFactory* test_url_loader_factory,
                          const DataTypeCounts& counts = {},
-                         const std::vector<std::string>& domains = {});
+                         const std::vector<DevicePreview>& devices = {});
 
 // Mocks a failed response from the stats endpoint.
 void MockFailedStatsFetch(
@@ -58,7 +60,7 @@ void MockFailedPreviewsFetch(
 void SimulateSuccessfulFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     const DataTypeCounts& counts = {},
-    const std::vector<std::string>& domains = {});
+    const std::vector<DevicePreview>& devices = {});
 
 }  // namespace signin
 

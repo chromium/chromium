@@ -21,6 +21,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,11 +59,22 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
+  std::vector<DevicePreview> expected_devices = {
+      {.cache_guid = "device_1",
+       .last_updated = syncer::ProtoTimeToTime(123456789),
+       .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+       .form_factor =
+           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP},
+      {.cache_guid = "device_2",
+       .last_updated = syncer::ProtoTimeToTime(987654321),
+       .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_LINUX,
+       .form_factor =
+           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}};
+
   MockSuccessfulStatsFetch(
       &test_url_loader_factory_,
       {.bookmark_count = 10, .password_count = 20, .history_count = 30});
-  MockSuccessfulPreviewsFetch(&test_url_loader_factory_,
-                              {"google.com", "yahoo.com"});
+  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, expected_devices);
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
@@ -78,9 +90,7 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
   EXPECT_EQ(20U, result_data->counts[syncer::PASSWORDS]);
   EXPECT_EQ(30U, result_data->counts[syncer::HISTORY]);
-  ASSERT_EQ(2U, result_data->password_domains.size());
-  EXPECT_EQ("google.com", result_data->password_domains[0]);
-  EXPECT_EQ("yahoo.com", result_data->password_domains[1]);
+  EXPECT_EQ(result_data->devices, expected_devices);
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
@@ -120,7 +130,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
   EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
   EXPECT_EQ(20U, result_data->counts[syncer::PASSWORDS]);
   EXPECT_EQ(30U, result_data->counts[syncer::HISTORY]);
-  EXPECT_TRUE(result_data->password_domains.empty());
+  EXPECT_TRUE(result_data->devices.empty());
 
   // Verify that no previews request was even initiated (0 pending requests).
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
@@ -157,7 +167,7 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   EXPECT_EQ(0U, result_data->counts[syncer::BOOKMARKS]);
   EXPECT_EQ(0U, result_data->counts[syncer::PASSWORDS]);
   EXPECT_EQ(0U, result_data->counts[syncer::HISTORY]);
-  EXPECT_TRUE(result_data->password_domains.empty());
+  EXPECT_TRUE(result_data->devices.empty());
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
@@ -201,7 +211,13 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
-  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, {"google.com"});
+  MockSuccessfulPreviewsFetch(
+      &test_url_loader_factory_,
+      {{.cache_guid = "device_1",
+        .last_updated = syncer::ProtoTimeToTime(123456789),
+        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}});
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
@@ -215,15 +231,13 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_TRUE(result_data->counts.empty());
-  ASSERT_EQ(1U, result_data->password_domains.size());
-  EXPECT_EQ("google.com", result_data->password_domains[0]);
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("device_1", result_data->devices[0].cache_guid);
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kStatisticsEmptyResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kStatisticsHasResult, 0);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kEntityPreviewHasResult, 1);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
@@ -250,7 +264,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(5U, result_data->counts[syncer::BOOKMARKS]);
-  EXPECT_TRUE(result_data->password_domains.empty());
+  EXPECT_TRUE(result_data->devices.empty());
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
@@ -258,8 +272,6 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
                                       FetchState::kStatisticsHasResult, 1);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kEntityPreviewEmptyResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kEntityPreviewHasResult, 0);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
@@ -270,7 +282,13 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   test_url_loader_factory_.AddResponse(GetTestStatsUrl(), "{ invalid json }");
-  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, {"yahoo.com"});
+  MockSuccessfulPreviewsFetch(
+      &test_url_loader_factory_,
+      {{.cache_guid = "device_1",
+        .last_updated = syncer::ProtoTimeToTime(123456789),
+        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}});
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
@@ -284,8 +302,8 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_TRUE(result_data->counts.empty());
-  ASSERT_EQ(1U, result_data->password_domains.size());
-  EXPECT_EQ("yahoo.com", result_data->password_domains[0]);
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("device_1", result_data->devices[0].cache_guid);
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
@@ -304,7 +322,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
 
   MockSuccessfulStatsFetch(&test_url_loader_factory_, {.password_count = 10});
   test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(),
-                                       "{ invalid json }");
+                                       "invalid json string");
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
@@ -318,7 +336,7 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
   EXPECT_EQ(10U, result_data->counts[syncer::PASSWORDS]);
-  EXPECT_TRUE(result_data->password_domains.empty());
+  EXPECT_TRUE(result_data->devices.empty());
 
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kRequested, 1);
@@ -359,6 +377,101 @@ TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithoutResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidCacheGuid) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_);
+
+  std::string response_json = R"({
+    "entitiesPreviews": [
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1
+          }
+        }
+      },
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": 12345,
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1
+          }
+        }
+      },
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "valid_device_guid",
+            "lastUpdatedTimestamp": "123456789",
+            "osType": 1,
+            "deviceFormFactor": 1
+          }
+        }
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(), response_json);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("valid_device_guid", result_data->devices[0].cache_guid);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidFormFactorOrOsType) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_);
+
+  std::string response_json = R"({
+    "entitiesPreviews": [
+      {
+        "specificsPreview": {
+          "deviceInfoPreview": {
+            "cacheGuid": "device_1",
+            "lastUpdatedTimestamp": "123456789"
+          }
+        }
+      }
+    ]
+  })";
+  test_url_loader_factory_.AddResponse(GetTestPreviewsUrl(), response_json);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+  fetcher->Start();
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  ASSERT_EQ(1U, result_data->devices.size());
+  EXPECT_EQ("device_1", result_data->devices[0].cache_guid);
+  EXPECT_EQ(sync_pb::SyncEnums_OsType_OS_TYPE_UNSPECIFIED,
+            result_data->devices[0].os_type);
+  EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED,
+            result_data->devices[0].form_factor);
 }
 
 }  // namespace signin

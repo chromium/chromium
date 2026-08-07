@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -104,9 +105,9 @@ bool ParseStatsResponse(const std::string& response_body,
   return true;
 }
 
-// Parses the response from the previews endpoint. Returns true if the
-// response format is as expected (or if the data is properly structured
-// but empty).
+// Parses the response from the previews endpoint (ProtoJSON format). Returns
+// true if the response format is as expected (or if the data is properly
+// structured but empty).
 bool ParsePreviewsResponse(const std::string& response_body,
                            AccountPreviewData& data) {
   std::optional<base::Value> value =
@@ -120,26 +121,54 @@ bool ParsePreviewsResponse(const std::string& response_body,
     // An empty valid result is still considered a success.
     return true;
   }
-  data.password_domains.clear();
+
+  data.devices.clear();
   for (const auto& item : *list) {
     if (!item.is_dict()) {
       continue;
     }
-    const auto& item_dict = item.GetDict();
-    const auto* specifics = item_dict.FindDict("specifics");
-    if (!specifics) {
+    const auto* specifics_preview = item.GetDict().FindDict("specificsPreview");
+    if (!specifics_preview) {
       continue;
     }
-    const auto* password_preview = specifics->FindDict("passwordPreview");
-    if (!password_preview) {
+    const auto* device_info_preview =
+        specifics_preview->FindDict("deviceInfoPreview");
+    if (!device_info_preview) {
       continue;
     }
-    const std::string* url = password_preview->FindString("url");
-    const std::string* domain =
-        url ? url : password_preview->FindString("hashedUrl");
-    if (domain) {
-      data.password_domains.push_back(*domain);
+
+    const std::string* cache_guid =
+        device_info_preview->FindString("cacheGuid");
+    if (!cache_guid) {
+      continue;
     }
+
+    DevicePreview device;
+    device.cache_guid = *cache_guid;
+
+    // ProtoJSON serializes uint64/int64 values as strings (or numbers).
+    int64_t timestamp = 0;
+    if (const std::string* ts_str =
+            device_info_preview->FindString("lastUpdatedTimestamp")) {
+      base::StringToInt64(*ts_str, &timestamp);
+    } else if (std::optional<double> ts_double =
+                   device_info_preview->FindDouble("lastUpdatedTimestamp")) {
+      timestamp = static_cast<int64_t>(*ts_double);
+    }
+    device.last_updated = syncer::ProtoTimeToTime(timestamp);
+
+    int os_type_int = device_info_preview->FindInt("osType").value_or(0);
+    device.os_type = static_cast<sync_pb::SyncEnums_OsType>(os_type_int);
+
+    int form_factor_int =
+        device_info_preview->FindInt("deviceFormFactor").value_or(0);
+    device.form_factor =
+        static_cast<sync_pb::SyncEnums_DeviceFormFactor>(form_factor_int);
+
+    // TODO(crbug.com/532420460): filter out current device and remove non
+    // chrome devices.
+
+    data.devices.push_back(std::move(device));
   }
   return true;
 }
@@ -157,6 +186,7 @@ std::string_view GetBaseUrl(version_info::Channel channel) {
 
 // The list of data types to fetch statistics for. This list explicitly requests
 // only the data types currently used by metrics.
+// static
 GURL AccountPreviewDataFetcher::GetStatsUrlForChannel(
     version_info::Channel channel) {
   GURL url(
@@ -170,6 +200,7 @@ GURL AccountPreviewDataFetcher::GetStatsUrlForChannel(
   return url;
 }
 
+// static
 GURL AccountPreviewDataFetcher::GetPreviewsUrlForChannel(
     version_info::Channel channel) {
   // Requesting only DEVICE_INFO.

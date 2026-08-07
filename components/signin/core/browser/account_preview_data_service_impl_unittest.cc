@@ -31,6 +31,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/time.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -137,7 +139,16 @@ TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {
   MockSuccessfulFetch(
       &test_url_loader_factory_,
       {.bookmark_count = 10, .password_count = 20, .history_count = 30},
-      {"google.com", "yahoo.com"});
+      {{.cache_guid = "device_1",
+        .last_updated = syncer::ProtoTimeToTime(123456789),
+        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP},
+       {.cache_guid = "device_2",
+        .last_updated = syncer::ProtoTimeToTime(987654321),
+        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_LINUX,
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}});
 
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
@@ -152,9 +163,18 @@ TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {
   EXPECT_EQ(10U, data->counts[syncer::BOOKMARKS]);
   EXPECT_EQ(20U, data->counts[syncer::PASSWORDS]);
   EXPECT_EQ(30U, data->counts[syncer::HISTORY]);
-  ASSERT_EQ(2U, data->password_domains.size());
-  EXPECT_EQ("google.com", data->password_domains[0]);
-  EXPECT_EQ("yahoo.com", data->password_domains[1]);
+  ASSERT_EQ(2U, data->devices.size());
+  EXPECT_EQ("device_1", data->devices[0].cache_guid);
+  EXPECT_EQ(syncer::ProtoTimeToTime(123456789), data->devices[0].last_updated);
+  EXPECT_EQ(sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+            data->devices[0].os_type);
+  EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+            data->devices[0].form_factor);
+  EXPECT_EQ("device_2", data->devices[1].cache_guid);
+  EXPECT_EQ(syncer::ProtoTimeToTime(987654321), data->devices[1].last_updated);
+  EXPECT_EQ(sync_pb::SyncEnums_OsType_OS_TYPE_LINUX, data->devices[1].os_type);
+  EXPECT_EQ(sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+            data->devices[1].form_factor);
 }
 
 TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
@@ -526,11 +546,14 @@ TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
   // Assert: No active fetcher was started.
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
 
-  // Mock successful fetch for when we go online.
   MockSuccessfulFetch(
       &test_url_loader_factory_,
       {.bookmark_count = 5, .password_count = 10, .history_count = 15},
-      {"example.com"});
+      {{.cache_guid = "device_1",
+        .last_updated = syncer::ProtoTimeToTime(123456789),
+        .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_WINDOWS,
+        .form_factor =
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP}});
 
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
