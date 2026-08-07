@@ -63,7 +63,9 @@ IN_PROC_BROWSER_TEST_F(TrackedElementManagerBrowsertest, CheckElementsExist) {
                                ASSERT_NE(nullptr, dom_el);
                                bounds = dom_el->GetScreenBounds();
                                secondary_id = dom_el->secondary_identifier();
-                             })),
+                             }),
+                   WaitForElementCount(
+                       UserEducationInternalsUI::kMenuItemElementId, 8U)),
       Do([&bounds, &target_menu_item] {
         const auto menu_items =
             ui::ElementTracker::GetElementTracker()

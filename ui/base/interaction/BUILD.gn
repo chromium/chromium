@@ -49,6 +49,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "element_state_observers.cc",
+    "element_state_observers.h",
     "element_test_util.cc",
     "element_test_util.h",
     "expect_call_in_scope.h",

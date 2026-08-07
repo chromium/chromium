@@ -791,6 +791,104 @@ TEST_F(InteractiveTestTest, EnsurePresentFails) {
   });
 }
 
+TEST_F(InteractiveTestTest, WaitForElementCount_FromBelow) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1);
+
+  // These elements should be irrelevant.
+  TestElement e4(kTestId1, kTestContext2);
+  TestElement e5(kTestId2, kTestContext1);
+  e4.Show();
+  e5.Show();
+
+  bool expect_done = false;
+
+  QueueActions([&e1] { e1.Show(); }, [&e2] { e2.Show(); }, [&e2] { e2.Hide(); },
+               [&e2] { e2.Show(); },
+               [&e3, &expect_done] {
+                 expect_done = true;
+                 e3.Show();
+               });
+
+  RunTestSequenceInContext(kTestContext1, WaitForElementCount(kTestId1, 3U),
+                           Check([&expect_done] { return expect_done; }));
+}
+
+TEST_F(InteractiveTestTest, WaitForElementCount_FromAbove) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+
+  // These elements should be irrelevant.
+  TestElement e4(kTestId1, kTestContext2);
+  TestElement e5(kTestId2, kTestContext1);
+  e4.Show();
+  e5.Show();
+
+  bool expect_done = false;
+
+  QueueActions([&e1] { e1.Hide(); }, [&e1] { e1.Show(); }, [&e2] { e2.Hide(); },
+               [&e1, &expect_done] {
+                 expect_done = true;
+                 e1.Hide();
+               });
+
+  RunTestSequenceInContext(kTestContext1, WaitForElementCount(kTestId1, 1U),
+                           Check([&expect_done] { return expect_done; }));
+}
+
+TEST_F(InteractiveTestTest, WaitForElementCount_InAnyContext_FromBelow) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext2);
+  TestElement e3(kTestId1, kTestContext2);
+
+  // This element should be irrelevant.
+  TestElement e4(kTestId2, kTestContext1);
+  e4.Show();
+
+  bool expect_done = false;
+
+  QueueActions([&e1] { e1.Show(); }, [&e2] { e2.Show(); }, [&e2] { e2.Hide(); },
+               [&e2] { e2.Show(); },
+               [&e3, &expect_done] {
+                 expect_done = true;
+                 e3.Show();
+               });
+
+  RunTestSequenceInContext(kTestContext1,
+                           InAnyContext(WaitForElementCount(kTestId1, 3U)),
+                           Check([&expect_done] { return expect_done; }));
+}
+
+TEST_F(InteractiveTestTest, WaitForElementCount_InAnyContext_FromAbove) {
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext2);
+  TestElement e3(kTestId1, kTestContext2);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+
+  // This element should be irrelevant.
+  TestElement e4(kTestId2, kTestContext1);
+  e4.Show();
+
+  bool expect_done = false;
+
+  QueueActions([&e2] { e2.Hide(); }, [&e2] { e2.Show(); }, [&e1] { e1.Hide(); },
+               [&e2, &expect_done] {
+                 expect_done = true;
+                 e2.Hide();
+               });
+
+  RunTestSequenceInContext(kTestContext1,
+                           InAnyContext(WaitForElementCount(kTestId1, 1U)),
+                           Check([&expect_done] { return expect_done; }));
+}
+
 TEST_F(InteractiveTestTest, NameElementWithPointer) {
   UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
 
