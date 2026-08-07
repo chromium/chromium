@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_event_log/device_event_log.h"
@@ -55,8 +56,7 @@ class FidoMakeCredentialTaskTest : public testing::Test {
   std::unique_ptr<MakeCredentialTask> CreateMakeCredentialTask(
       FidoDevice* device) {
     PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
-    PublicKeyCredentialUserEntity user(
-        fido_parsing_utils::Materialize(test_data::kUserId));
+    PublicKeyCredentialUserEntity user(base::ToVector(test_data::kUserId));
     return std::make_unique<MakeCredentialTask>(
         device,
         CtapMakeCredentialRequest(
@@ -202,8 +202,7 @@ TEST_F(FidoMakeCredentialTaskTest, EnforceClientPinWhenUserVerificationSet) {
       CtapRequestCommand::kAuthenticatorMakeCredential, std::nullopt);
 
   PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
-  PublicKeyCredentialUserEntity user(
-      fido_parsing_utils::Materialize(test_data::kUserId));
+  PublicKeyCredentialUserEntity user(base::ToVector(test_data::kUserId));
   auto request = CtapMakeCredentialRequest(
       test_data::kClientDataJson, std::move(rp), std::move(user),
       PublicKeyCredentialParams(

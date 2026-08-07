@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/to_array.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -106,8 +107,8 @@ AuthenticatorData::AuthenticatorData(
     std::optional<AttestedCredentialData> data,
     std::optional<cbor::Value> extensions)
     : flags_(flags),
-      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
-      counter_(fido_parsing_utils::Materialize(counter)),
+      application_parameter_(base::ToArray(rp_id_hash)),
+      counter_(base::ToArray(counter)),
       attested_data_(std::move(data)),
       extensions_(std::move(extensions)) {
   ValidateAuthenticatorDataStateOrCrash();
@@ -128,7 +129,7 @@ AuthenticatorData::AuthenticatorData(
                                     backup_state,
                                     attested_credential_data.has_value(),
                                     extensions.has_value())),
-      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
+      application_parameter_(base::ToArray(rp_id_hash)),
       counter_(std::array<uint8_t, kSignCounterLength>{
           static_cast<uint8_t>(sign_counter >> 24),
           static_cast<uint8_t>(sign_counter >> 16),

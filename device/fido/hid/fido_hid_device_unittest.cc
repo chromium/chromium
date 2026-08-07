@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -102,7 +103,7 @@ std::vector<uint8_t> CreateMockInitResponse(
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> channel_id,
     base::span<const uint8_t> payload = base::span<const uint8_t>()) {
-  auto init_response = fido_parsing_utils::Materialize(kInitResponsePrefix);
+  auto init_response = base::ToVector(kInitResponsePrefix);
   fido_parsing_utils::Append(&init_response, nonce);
   fido_parsing_utils::Append(&init_response, channel_id);
   fido_parsing_utils::Append(&init_response, payload);
@@ -113,7 +114,7 @@ std::vector<uint8_t> CreateMockInitResponse(
 // Returns HID keep alive message encoded into HID packet format.
 std::vector<uint8_t> GetKeepAliveHidMessage(
     base::span<const uint8_t> channel_id) {
-  auto response = fido_parsing_utils::Materialize(channel_id);
+  auto response = base::ToVector(channel_id);
   fido_parsing_utils::Append(&response, kMockKeepAliveResponseSuffix);
   response.resize(64);
   return response;
@@ -123,7 +124,7 @@ std::vector<uint8_t> GetKeepAliveHidMessage(
 std::vector<uint8_t> CreateMockResponseWithChannelId(
     base::span<const uint8_t> channel_id,
     base::span<const uint8_t> response_buffer) {
-  auto response = fido_parsing_utils::Materialize(channel_id);
+  auto response = base::ToVector(channel_id);
   fido_parsing_utils::Append(&response, response_buffer);
   response.resize(64);
   return response;
@@ -131,7 +132,7 @@ std::vector<uint8_t> CreateMockResponseWithChannelId(
 
 // Returns a APDU encoded U2F version request for testing.
 std::vector<uint8_t> GetMockDeviceRequest() {
-  return fido_parsing_utils::Materialize(kMockU2fRequest);
+  return base::ToVector(kMockU2fRequest);
 }
 
 device::mojom::HidDeviceInfoPtr TestHidDevice() {

@@ -9,13 +9,13 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
 
 namespace device {
@@ -301,9 +301,7 @@ LargeBlobArrayFragment LargeBlobArrayWriter::Pop(size_t length) {
   length = std::min(length, bytes_.size() - offset_);
 
   LargeBlobArrayFragment fragment{
-      fido_parsing_utils::Materialize(
-          base::span(bytes_).subspan(offset_, length)),
-      offset_};
+      base::ToVector(base::span(bytes_).subspan(offset_, length)), offset_};
   offset_ += length;
   return fragment;
 }

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -55,17 +56,6 @@ void RedactPath(cbor::Value* cbor, base::span<const cbor::Value> path) {
 
 }  // namespace
 
-std::vector<uint8_t> Materialize(base::span<const uint8_t> span) {
-  return std::vector<uint8_t>(span.begin(), span.end());
-}
-
-std::optional<std::vector<uint8_t>> MaterializeOrNull(
-    std::optional<base::span<const uint8_t>> span) {
-  if (span)
-    return Materialize(*span);
-  return std::nullopt;
-}
-
 void Append(std::vector<uint8_t>* target, base::span<const uint8_t> in_values) {
   CHECK(AreSpansDisjoint(*target, in_values));
   target->insert(target->end(), in_values.begin(), in_values.end());
@@ -74,7 +64,7 @@ void Append(std::vector<uint8_t>* target, base::span<const uint8_t> in_values) {
 std::vector<uint8_t> Extract(base::span<const uint8_t> span,
                              size_t pos,
                              size_t length) {
-  return Materialize(ExtractSpan(span, pos, length));
+  return base::ToVector(ExtractSpan(span, pos, length));
 }
 
 base::span<const uint8_t> ExtractSpan(base::span<const uint8_t> span,
@@ -86,7 +76,7 @@ base::span<const uint8_t> ExtractSpan(base::span<const uint8_t> span,
 }
 
 std::vector<uint8_t> ExtractSuffix(base::span<const uint8_t> span, size_t pos) {
-  return Materialize(ExtractSuffixSpan(span, pos));
+  return base::ToVector(ExtractSuffixSpan(span, pos));
 }
 
 base::span<const uint8_t> ExtractSuffixSpan(base::span<const uint8_t> span,

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -22,8 +23,7 @@ namespace device {
 namespace {
 
 void SendCommand(VirtualU2fDevice* device, base::span<const uint8_t> command) {
-  device->DeviceTransact(fido_parsing_utils::Materialize(command),
-                         base::DoNothing());
+  device->DeviceTransact(base::ToVector(command), base::DoNothing());
 }
 
 }  // namespace

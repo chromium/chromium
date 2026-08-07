@@ -37,23 +37,6 @@ struct RangeLess {
   using is_transparent = void;
 };
 
-// Returns a materialized copy of |span|, that is, a vector with the same
-// elements.
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::vector<uint8_t> Materialize(base::span<const uint8_t> span);
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::optional<std::vector<uint8_t>> MaterializeOrNull(
-    std::optional<base::span<const uint8_t>> span);
-
-// Returns a materialized copy of the static |span|, that is, an array with the
-// same elements.
-template <size_t N>
-std::array<uint8_t, N> Materialize(base::span<const uint8_t, N> span) {
-  std::array<uint8_t, N> array;
-  std::ranges::copy(span, array.begin());
-  return array;
-}
-
 // Appends |in_values| to the end of |target|. The underlying container for
 // |in_values| should *not* be |target|.
 COMPONENT_EXPORT(DEVICE_FIDO)

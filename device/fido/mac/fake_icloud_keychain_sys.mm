@@ -9,11 +9,11 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_parsing_utils.h"
 
 // Fake subclass to simulate a largeBlob registration output.
 
@@ -172,9 +172,8 @@ void FakeSystemInterface::SetMakeCredentialResult(
     base::span<const uint8_t> credential_id) {
   CHECK(!make_credential_error_code_);
   make_credential_attestation_object_bytes_ =
-      fido_parsing_utils::Materialize(attestation_object_bytes);
-  make_credential_credential_id_ =
-      fido_parsing_utils::Materialize(credential_id);
+      base::ToVector(attestation_object_bytes);
+  make_credential_credential_id_ = base::ToVector(credential_id);
 }
 
 void FakeSystemInterface::SetMakeCredentialError(int code) {
@@ -192,11 +191,10 @@ void FakeSystemInterface::SetGetAssertionResult(
     base::span<const uint8_t> signature,
     base::span<const uint8_t> user_id,
     base::span<const uint8_t> credential_id) {
-  get_assertion_authenticator_data_ =
-      fido_parsing_utils::Materialize(authenticator_data);
-  get_assertion_signature_ = fido_parsing_utils::Materialize(signature);
-  get_assertion_user_id_ = fido_parsing_utils::Materialize(user_id);
-  get_assertion_credential_id_ = fido_parsing_utils::Materialize(credential_id);
+  get_assertion_authenticator_data_ = base::ToVector(authenticator_data);
+  get_assertion_signature_ = base::ToVector(signature);
+  get_assertion_user_id_ = base::ToVector(user_id);
+  get_assertion_credential_id_ = base::ToVector(credential_id);
 }
 
 void FakeSystemInterface::SetGetAssertionError(int code, std::string msg) {

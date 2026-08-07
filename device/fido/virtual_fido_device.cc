@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_array.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -18,7 +20,6 @@
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
@@ -256,8 +257,7 @@ VirtualFidoDevice::RegistrationData::RegistrationData(
     base::span<const uint8_t, kRpIdHashLength> application_parameter,
     std::optional<uint32_t> counter)
     : private_key(std::move(private_key)),
-      application_parameter(
-          fido_parsing_utils::Materialize(application_parameter)),
+      application_parameter(base::ToArray(application_parameter)),
       counter(counter) {}
 VirtualFidoDevice::RegistrationData::RegistrationData(RegistrationData&& data) =
     default;
@@ -317,7 +317,7 @@ bool VirtualFidoDevice::State::InjectRegistration(
     RegistrationData registration) {
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations.emplace(
-      fido_parsing_utils::Materialize(credential_id), std::move(registration));
+      base::ToVector(credential_id), std::move(registration));
   return was_inserted;
 }
 
@@ -358,7 +358,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
 
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations.emplace(
-      fido_parsing_utils::Materialize(credential_id), std::move(registration));
+      base::ToVector(credential_id), std::move(registration));
   return was_inserted;
 }
 
@@ -378,7 +378,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     std::optional<std::string> user_display_name) {
   return InjectResidentKey(
       credential_id, PublicKeyCredentialRpEntity(std::move(relying_party_id)),
-      PublicKeyCredentialUserEntity(fido_parsing_utils::Materialize(user_id),
+      PublicKeyCredentialUserEntity(base::ToVector(user_id),
                                     std::move(user_name),
                                     std::move(user_display_name)));
 }
@@ -466,7 +466,7 @@ std::string VirtualFidoDevice::GetId() const {
 
 // static
 std::vector<uint8_t> VirtualFidoDevice::GetAttestationKey() {
-  return fido_parsing_utils::Materialize(kAttestationKey);
+  return base::ToVector(kAttestationKey);
 }
 
 std::optional<std::vector<uint8_t>>
@@ -559,8 +559,7 @@ void VirtualFidoDevice::StoreNewKey(
   // Store the registration. Because the key handle is the hashed public key we
   // just generated, no way this should already be registered.
   auto result = mutable_state()->registrations.emplace(
-      fido_parsing_utils::Materialize(key_handle),
-      std::move(registration_data));
+      base::ToVector(key_handle), std::move(registration_data));
   DCHECK(result.second);
   mutable_state()->NotifyCredentialCreated(
       std::make_pair(key_handle, &result.first->second));

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/strings/string_util_win.h"
@@ -190,7 +191,7 @@ bool FakeWinWebAuthnApi::InjectNonDiscoverableCredential(
     const std::string& rp_id) {
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations_.insert(
-      {fido_parsing_utils::Materialize(credential_id),
+      {base::ToVector(credential_id),
        RegistrationData(VirtualFidoDevice::PrivateKey::FreshP256Key(),
                         crypto::hash::Sha256(rp_id),
                         /*counter=*/0)});
@@ -211,9 +212,8 @@ bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
   registration.provider_name = std::move(provider_name);
 
   bool was_inserted;
-  std::tie(std::ignore, was_inserted) =
-      registrations_.insert({fido_parsing_utils::Materialize(credential_id),
-                             std::move(registration)});
+  std::tie(std::ignore, was_inserted) = registrations_.insert(
+      {base::ToVector(credential_id), std::move(registration)});
   return was_inserted;
 }
 
@@ -281,22 +281,21 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   for (size_t i = 0; i < options->pExcludeCredentialList->cCredentials; ++i) {
     PWEBAUTHN_CREDENTIAL_EX exclude_credential =
         UNSAFE_TODO(options->pExcludeCredentialList->ppCredentials[i]);
-    std::vector<uint8_t> credential_id =
-        fido_parsing_utils::Materialize(UNSAFE_TODO(
-            base::span(exclude_credential->pbId, exclude_credential->cbId)));
+    std::vector<uint8_t> credential_id = base::ToVector(UNSAFE_TODO(
+        base::span(exclude_credential->pbId, exclude_credential->cbId)));
     if (registrations_.contains(credential_id)) {
       return NTE_EXISTS;
     }
   }
 
   std::unique_ptr<PublicKey> public_key = private_key->GetPublicKey();
-  std::vector<uint8_t> credential_id = fido_parsing_utils::Materialize(
-      crypto::SHA256Hash(public_key->cose_key_bytes));
+  std::vector<uint8_t> credential_id =
+      base::ToVector(crypto::SHA256Hash(public_key->cose_key_bytes));
   std::string rp_id = base::WideToUTF8(rp->pwszId);
   std::array<uint8_t, crypto::kSHA256Length> rp_id_hash =
       crypto::hash::Sha256(rp_id);
-  std::vector<uint8_t> user_id = fido_parsing_utils::Materialize(
-      UNSAFE_TODO(base::span(user->pbId, user->cbId)));
+  std::vector<uint8_t> user_id =
+      base::ToVector(UNSAFE_TODO(base::span(user->pbId, user->cbId)));
 
   RegistrationData registration(std::move(private_key), std::move(rp_id_hash),
                                 /*counter=*/1);
@@ -462,7 +461,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
   DCHECK(!credential_id.empty());
 
   auto result = std::make_unique<WebAuthnAssertionEx>();
-  result->credential_id = fido_parsing_utils::Materialize(credential_id);
+  result->credential_id = base::ToVector(credential_id);
   bool performed_uv =
       /*user_verified=*/options->dwUserVerificationRequirement !=
       WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;

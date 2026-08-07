@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -85,18 +86,17 @@ constexpr uint8_t kCertificates[] = {
 TEST(PackedAttestationStatementTest, CBOR) {
   EXPECT_THAT(
       *cbor::Writer::Write(AsCBOR(PackedAttestationStatement(
-          CoseAlgorithmIdentifier::kEs256,
-          fido_parsing_utils::Materialize(kSignature),
-          {fido_parsing_utils::Materialize(kCertificates)}))),
+          CoseAlgorithmIdentifier::kEs256, base::ToVector(kSignature),
+          {base::ToVector(kCertificates)}))),
       testing::ElementsAreArray(test_data::kPackedAttestationStatementCBOR));
 }
 
 TEST(PackedAttestationStatementTest, CBOR_NoCerts) {
-  EXPECT_THAT(*cbor::Writer::Write(AsCBOR(PackedAttestationStatement(
-                  CoseAlgorithmIdentifier::kEs256,
-                  fido_parsing_utils::Materialize(kSignature), {}))),
-              testing::ElementsAreArray(
-                  test_data::kPackedAttestationStatementCBORNoCerts));
+  EXPECT_THAT(
+      *cbor::Writer::Write(AsCBOR(PackedAttestationStatement(
+          CoseAlgorithmIdentifier::kEs256, base::ToVector(kSignature), {}))),
+      testing::ElementsAreArray(
+          test_data::kPackedAttestationStatementCBORNoCerts));
 }
 
 TEST(OpaqueAttestationStatementTest, GetLeafCertificate) {

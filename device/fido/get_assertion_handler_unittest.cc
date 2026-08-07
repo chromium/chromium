@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -150,7 +151,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
                                     test_data::kClientDataJson);
     request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey,
-        fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle))};
+        base::ToVector(test_data::kU2fSignKeyHandle))};
     return CreateGetAssertionHandlerWithRequest(std::move(request));
   }
 
@@ -159,8 +160,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
                                     test_data::kClientDataJson);
     request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey,
-        fido_parsing_utils::Materialize(
-            test_data::kTestGetAssertionCredentialId))};
+        base::ToVector(test_data::kTestGetAssertionCredentialId))};
     return CreateGetAssertionHandlerWithRequest(std::move(request));
   }
 
@@ -430,7 +430,7 @@ TEST_F(FidoGetAssertionHandlerTest,
                                          test_data::kClientDataJson);
   request.allow_list = {PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle))};
+      base::ToVector(test_data::kU2fSignKeyHandle))};
   request.user_verification = UserVerificationRequirement::kRequired;
   auto request_handler =
       CreateGetAssertionHandlerWithRequest(std::move(request));
@@ -470,8 +470,7 @@ TEST_F(FidoGetAssertionHandlerTest, InvalidCredential) {
   CtapGetAssertionRequest request(test_data::kRelyingPartyId,
                                   test_data::kClientDataJson);
   request.allow_list = {PublicKeyCredentialDescriptor(
-      CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha))};
+      CredentialType::kPublicKey, base::ToVector(test_data::kKeyHandleAlpha))};
   auto request_handler =
       CreateGetAssertionHandlerWithRequest(std::move(request));
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -703,8 +702,7 @@ TEST_F(FidoGetAssertionHandlerTest, PinUvAuthTokenPreTouchFailure) {
                                   test_data::kClientDataJson);
   request.allow_list = {PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(
-          test_data::kTestGetAssertionCredentialId))};
+      base::ToVector(test_data::kTestGetAssertionCredentialId))};
   request.user_verification = UserVerificationRequirement::kRequired;
   auto request_handler =
       CreateGetAssertionHandlerWithRequest(std::move(request));
@@ -788,12 +786,12 @@ TEST_F(FidoGetAssertionHandlerTest, CtapRequestUsesPreselectedAccount) {
       test_data::kTestGetAssertionResponseWithUserEntity, base::TimeDelta(),
       GetAssertionRequestWithAllowlist(/*empty_list=*/false));
 
-  PublicKeyCredentialUserEntity user_entity(
-      fido_parsing_utils::Materialize(test_data::kUserId), test_data::kUsername,
-      test_data::kUserDisplayName);
+  PublicKeyCredentialUserEntity user_entity(base::ToVector(test_data::kUserId),
+                                            test_data::kUsername,
+                                            test_data::kUserDisplayName);
   DiscoverableCredentialMetadata preselected_account(
       AuthenticatorType::kOther, test_data::kRelyingPartyId,
-      fido_parsing_utils::Materialize(test_data::kTestGetAssertionCredentialId),
+      base::ToVector(test_data::kTestGetAssertionCredentialId),
       std::move(user_entity),
       /*provider_name=*/std::nullopt);
   request_handler->PreselectAccount(std::move(preselected_account));
@@ -820,12 +818,12 @@ TEST_F(FidoGetAssertionHandlerTest,
       test_data::kTestGetAssertionResponseWithUserEntity, base::TimeDelta(),
       GetAssertionRequestWithAllowlist(/*empty_list=*/true));
 
-  PublicKeyCredentialUserEntity user_entity(
-      fido_parsing_utils::Materialize(test_data::kUserId), test_data::kUsername,
-      test_data::kUserDisplayName);
+  PublicKeyCredentialUserEntity user_entity(base::ToVector(test_data::kUserId),
+                                            test_data::kUsername,
+                                            test_data::kUserDisplayName);
   DiscoverableCredentialMetadata preselected_account(
       AuthenticatorType::kEnclave, test_data::kRelyingPartyId,
-      fido_parsing_utils::Materialize(test_data::kTestGetAssertionCredentialId),
+      base::ToVector(test_data::kTestGetAssertionCredentialId),
       std::move(user_entity),
       /*provider_name=*/std::nullopt);
   request_handler->PreselectAccount(std::move(preselected_account));
@@ -863,8 +861,7 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
                                     test_data::kClientDataJson);
     request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey,
-        fido_parsing_utils::Materialize(
-            test_data::kTestGetAssertionCredentialId))};
+        base::ToVector(test_data::kTestGetAssertionCredentialId))};
     auto handler = std::make_unique<GetAssertionRequestHandler>(
         &fido_discovery_factory,
         std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
@@ -890,8 +887,7 @@ TEST_F(FidoGetAssertionHandlerTest, CrossDeviceFallbackUrl_Usb) {
                                          test_data::kClientDataJson);
   request.allow_list = {PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(
-          test_data::kTestGetAssertionCredentialId))};
+      base::ToVector(test_data::kTestGetAssertionCredentialId))};
   request.cross_device_fallback_url = "https://example.com/fallback";
 
   auto request_handler =
@@ -916,8 +912,7 @@ TEST_F(FidoGetAssertionHandlerTest, CrossDeviceFallbackUrl_Hybrid) {
                                          test_data::kClientDataJson);
   request.allow_list = {PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(
-          test_data::kTestGetAssertionCredentialId))};
+      base::ToVector(test_data::kTestGetAssertionCredentialId))};
   request.cross_device_fallback_url = "https://example.com/fallback";
 
   auto request_handler =

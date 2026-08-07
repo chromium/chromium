@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -461,8 +462,7 @@ constexpr std::array<uint8_t, kAaguidLength> kTestDeviceAaguid = {
 
 std::vector<uint8_t> GetTestAttestedCredentialDataBytes() {
   // Combine kTestAttestedCredentialDataPrefix and kTestECPublicKeyCOSE.
-  auto test_attested_data =
-      fido_parsing_utils::Materialize(kTestAttestedCredentialDataPrefix);
+  auto test_attested_data = base::ToVector(kTestAttestedCredentialDataPrefix);
   fido_parsing_utils::Append(&test_attested_data,
                              test_data::kTestECPublicKeyCOSE);
   return test_attested_data;
@@ -470,16 +470,14 @@ std::vector<uint8_t> GetTestAttestedCredentialDataBytes() {
 
 std::vector<uint8_t> GetTestAuthenticatorDataBytes() {
   // Build the test authenticator data.
-  auto test_authenticator_data =
-      fido_parsing_utils::Materialize(kTestAuthenticatorDataPrefix);
+  auto test_authenticator_data = base::ToVector(kTestAuthenticatorDataPrefix);
   auto test_attested_data = GetTestAttestedCredentialDataBytes();
   fido_parsing_utils::Append(&test_authenticator_data, test_attested_data);
   return test_authenticator_data;
 }
 
 std::vector<uint8_t> GetTestAttestationObjectBytes() {
-  auto test_authenticator_object =
-      fido_parsing_utils::Materialize(kFormatFidoU2fCBOR);
+  auto test_authenticator_object = base::ToVector(kFormatFidoU2fCBOR);
   fido_parsing_utils::Append(&test_authenticator_object, kAttStmtCBOR);
   fido_parsing_utils::Append(&test_authenticator_object,
                              test_data::kU2fAttestationStatementCBOR);
@@ -491,19 +489,19 @@ std::vector<uint8_t> GetTestAttestationObjectBytes() {
 }
 
 std::vector<uint8_t> GetTestSignResponse() {
-  return fido_parsing_utils::Materialize(test_data::kTestU2fSignResponse);
+  return base::ToVector(test_data::kTestU2fSignResponse);
 }
 
 // Get a subset of the response for testing error handling.
 std::vector<uint8_t> GetTestCorruptedSignResponse(size_t length) {
   DCHECK_LE(length, std::size(test_data::kTestU2fSignResponse));
-  return fido_parsing_utils::Materialize(fido_parsing_utils::ExtractSpan(
+  return base::ToVector(fido_parsing_utils::ExtractSpan(
       test_data::kTestU2fSignResponse, 0, length));
 }
 
 // Return a key handle used for GetAssertion request.
 std::vector<uint8_t> GetTestCredentialRawIdBytes() {
-  return fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle);
+  return base::ToVector(test_data::kU2fSignKeyHandle);
 }
 
 // DecodeCBOR parses a CBOR structure, ignoring the first byte of |in|, which is
@@ -967,8 +965,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
       kTestDeviceAaguid,
       std::array<uint8_t, kCredentialIdLengthLength>{
           {0x00, 0x10}} /* credential_id_length */,
-      fido_parsing_utils::Materialize(
-          test_data::kCtap2MakeCredentialCredentialId),
+      base::ToVector(test_data::kCtap2MakeCredentialCredentialId),
       std::make_unique<PublicKey>(
           static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
           kCoseEncodedPublicKey, std::nullopt));
@@ -978,11 +975,11 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
 
   cbor::Value::MapValue attestation_map;
   attestation_map.emplace("alg", -7);
-  attestation_map.emplace("sig", fido_parsing_utils::Materialize(
-                                     test_data::kCtap2MakeCredentialSignature));
+  attestation_map.emplace(
+      "sig", base::ToVector(test_data::kCtap2MakeCredentialSignature));
   cbor::Value::ArrayValue certificate_chain;
-  certificate_chain.emplace_back(fido_parsing_utils::Materialize(
-      test_data::kCtap2MakeCredentialCertificate));
+  certificate_chain.emplace_back(
+      base::ToVector(test_data::kCtap2MakeCredentialCertificate));
   attestation_map.emplace("x5c", std::move(certificate_chain));
   AuthenticatorMakeCredentialResponse response(
       FidoTransportProtocol::kUsbHumanInterfaceDevice,

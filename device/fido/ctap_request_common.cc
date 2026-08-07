@@ -4,9 +4,10 @@
 
 #include "device/fido/ctap_request_common.h"
 
+#include "base/containers/to_array.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
 
 namespace device {
@@ -16,9 +17,9 @@ HMACSecret::HMACSecret(
     base::span<const uint8_t> in_encrypted_salts,
     base::span<const uint8_t> in_salts_auth,
     std::optional<PINUVAuthProtocol> in_pin_protocol)
-    : public_key_x962(fido_parsing_utils::Materialize(in_public_key_x962)),
-      encrypted_salts(fido_parsing_utils::Materialize(in_encrypted_salts)),
-      salts_auth(fido_parsing_utils::Materialize(in_salts_auth)),
+    : public_key_x962(base::ToArray(in_public_key_x962)),
+      encrypted_salts(base::ToVector(in_encrypted_salts)),
+      salts_auth(base::ToVector(in_salts_auth)),
       pin_protocol(in_pin_protocol) {}
 
 HMACSecret::HMACSecret(const HMACSecret&) = default;

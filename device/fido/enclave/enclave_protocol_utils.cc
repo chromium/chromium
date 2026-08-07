@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -324,8 +325,7 @@ ParseGetAssertionResponse(cbor::Value response_value,
   }
 
   response->credential = PublicKeyCredentialDescriptor(
-      CredentialType::kPublicKey,
-      fido_parsing_utils::Materialize(credential_id));
+      CredentialType::kPublicKey, base::ToVector(credential_id));
   response->hmac_secret = std::move(prf_results);
 
   const std::vector<uint8_t>* updated_encrypted_passkey =

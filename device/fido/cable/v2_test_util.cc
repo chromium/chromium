@@ -13,6 +13,8 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_array.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -484,9 +486,8 @@ class TestPlatform : public authenticator::Platform {
       base::span<const uint8_t, kAdvertSize> payload) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &TestPlatform::DoSendBLEAdvert, weak_factory_.GetWeakPtr(),
-            device::fido_parsing_utils::Materialize<payload.size()>(payload)));
+        base::BindOnce(&TestPlatform::DoSendBLEAdvert,
+                       weak_factory_.GetWeakPtr(), base::ToArray(payload)));
     return std::make_unique<DummyBLEAdvert>();
   }
 
@@ -657,8 +658,8 @@ class LateLinkingDevice : public authenticator::Transaction {
             qr_secret,
             {},
             device::cablev2::DerivedValueType::kEIDKey)),
-        peer_identity_(device::fido_parsing_utils::Materialize(peer_identity)),
-        secret_(fido_parsing_utils::Materialize(qr_secret)) {
+        peer_identity_(base::ToArray(peer_identity)),
+        secret_(base::ToVector(qr_secret)) {
     websocket_client_ = std::make_unique<device::cablev2::WebSocketAdapter>(
         base::BindOnce(&LateLinkingDevice::OnTunnelReady,
                        base::Unretained(this)),
@@ -882,7 +883,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
             qr_secret,
             {},
             device::cablev2::DerivedValueType::kEIDKey)),
-        secret_(fido_parsing_utils::Materialize(qr_secret)) {
+        secret_(base::ToVector(qr_secret)) {
     websocket_client_ = std::make_unique<device::cablev2::WebSocketAdapter>(
         base::BindOnce(&HandshakeErrorDevice::OnTunnelReady,
                        base::Unretained(this)),

@@ -9,6 +9,8 @@
 #include <variant>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_array.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -28,7 +30,6 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
@@ -287,9 +288,9 @@ class TunnelTransport : public Transport {
             base::span<const uint8_t>(),
             device::cablev2::DerivedValueType::kEIDKey)),
         network_context_factory_(std::move(network_context_factory)),
-        peer_identity_(device::fido_parsing_utils::Materialize(peer_identity)),
+        peer_identity_(base::ToArray(peer_identity)),
         generate_pairing_data_(std::move(generate_pairing_data)),
-        secret_(fido_parsing_utils::Materialize(secret)),
+        secret_(base::ToVector(secret)),
         features_(std::move(features)) {
     DCHECK_EQ(state_, State::kNone);
     state_ = State::kConnecting;
@@ -311,13 +312,13 @@ class TunnelTransport : public Transport {
       base::span<const uint8_t, 16> tunnel_id,
       bssl::UniquePtr<EC_KEY> local_identity)
       : platform_(platform),
-        tunnel_id_(fido_parsing_utils::Materialize(tunnel_id)),
+        tunnel_id_(base::ToArray(tunnel_id)),
         eid_key_(device::cablev2::Derive<kEIDKeySize>(
             secret,
             client_nonce,
             device::cablev2::DerivedValueType::kEIDKey)),
         network_context_factory_(network_context_factory),
-        secret_(fido_parsing_utils::Materialize(secret)),
+        secret_(base::ToVector(secret)),
         features_({Feature::kCTAP}),
         local_identity_(std::move(local_identity)) {
     DCHECK_EQ(state_, State::kNone);
@@ -1236,7 +1237,7 @@ class PairingDataGenerator {
   PairingDataGenerator(base::span<const uint8_t, kRootSecretSize> root_secret,
                        const std::string& name,
                        std::optional<std::vector<uint8_t>> contact_id)
-      : root_secret_(fido_parsing_utils::Materialize(root_secret)),
+      : root_secret_(base::ToArray(root_secret)),
         name_(name),
         contact_id_(std::move(contact_id)) {}
 

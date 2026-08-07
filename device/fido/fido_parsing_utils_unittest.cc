@@ -80,45 +80,6 @@ TEST(U2fParsingUtils, RangeLess) {
   EXPECT_FALSE(RangeLess()(kOneTwoThreeFour, kOneTwoThreeFour));
 }
 
-TEST(U2fParsingUtils, Materialize) {
-  const std::vector<uint8_t> empty;
-  EXPECT_THAT(Materialize(empty), ::testing::IsEmpty());
-  EXPECT_THAT(Materialize(base::span<const uint8_t>()), ::testing::IsEmpty());
-
-  EXPECT_THAT(Materialize(base::span<const uint8_t>(kOne)),
-              ::testing::ElementsAreArray(kOne));
-  EXPECT_THAT(Materialize(base::span<const uint8_t>(kOneTwoThree)),
-              ::testing::ElementsAreArray(kOneTwoThree));
-
-  static_assert(std::is_same<std::vector<uint8_t>,
-                             decltype(Materialize(
-                                 base::span<const uint8_t>(kOne)))>::value,
-                "Materialize with a dynamic span should yield a std::vector.");
-}
-
-TEST(U2fParsingUtils, StaticMaterialize) {
-  std::array<uint8_t, 0> empty;
-  EXPECT_THAT(Materialize(empty), ::testing::IsEmpty());
-  EXPECT_THAT(Materialize(base::span<const uint8_t, 0>()),
-              ::testing::IsEmpty());
-
-  EXPECT_THAT(Materialize(base::span(kOne)), ::testing::ElementsAreArray(kOne));
-  EXPECT_THAT(Materialize(base::span(kOneTwoThree)),
-              ::testing::ElementsAreArray(kOneTwoThree));
-
-  static_assert(std::is_same<std::array<uint8_t, 1>,
-                             decltype(Materialize(base::span(kOne)))>::value,
-                "Materialize with a static span should yield a std::array.");
-}
-
-TEST(U2fParsingUtils, MaterializeOrNull) {
-  auto result = MaterializeOrNull(kOneTwoThree);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(*result, ::testing::ElementsAreArray(kOneTwoThree));
-
-  EXPECT_EQ(MaterializeOrNull(std::nullopt), std::nullopt);
-}
-
 TEST(U2fParsingUtils, Append) {
   std::vector<uint8_t> target;
 

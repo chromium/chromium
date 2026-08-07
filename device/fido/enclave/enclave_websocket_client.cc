@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -114,7 +115,7 @@ void EnclaveWebSocketClient::Write(base::span<const uint8_t> data) {
   }
 
   if (state_ != State::kOpen) {
-    pending_write_data_ = fido_parsing_utils::Materialize(data);
+    pending_write_data_ = base::ToVector(data);
     return;
   }
 

@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/containers/to_array.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,7 +21,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
@@ -145,8 +145,7 @@ FidoTunnelDevice::FidoTunnelDevice(
 
   QRInfo& info = std::get<QRInfo>(info_);
   info.pairing_callback = std::move(pairing_callback);
-  info.local_identity_seed =
-      fido_parsing_utils::Materialize(local_identity_seed);
+  info.local_identity_seed = base::ToArray(local_identity_seed);
   info.tunnel_server_domain = components.tunnel_server_domain;
 
   info.psk =

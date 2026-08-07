@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_make_credential_response.h"
@@ -38,8 +39,7 @@ CtapMakeCredentialRequest CreateRegisterRequestWithRegisteredKeys(
     std::vector<PublicKeyCredentialDescriptor> registered_keys,
     bool is_individual_attestation = false) {
   PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
-  PublicKeyCredentialUserEntity user(
-      fido_parsing_utils::Materialize(test_data::kUserId));
+  PublicKeyCredentialUserEntity user(base::ToVector(test_data::kUserId));
 
   CtapMakeCredentialRequest request(
       test_data::kClientDataJson, std::move(rp), std::move(user),
@@ -153,10 +153,10 @@ TEST_F(U2fRegisterOperationTest, TestRegistrationWithExclusionList) {
   auto request = CreateRegisterRequestWithRegisteredKeys(
       {PublicKeyCredentialDescriptor(
            CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha)),
+           base::ToVector(test_data::kKeyHandleAlpha)),
        PublicKeyCredentialDescriptor(
            CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(test_data::kKeyHandleBeta))});
+           base::ToVector(test_data::kKeyHandleBeta))});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -201,13 +201,12 @@ TEST_F(U2fRegisterOperationTest, TestRegistrationWithDuplicateHandle) {
   auto request = CreateRegisterRequestWithRegisteredKeys(
       {PublicKeyCredentialDescriptor(
            CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha)),
+           base::ToVector(test_data::kKeyHandleAlpha)),
+       PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
+                                     base::ToVector(test_data::kKeyHandleBeta)),
        PublicKeyCredentialDescriptor(
            CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(test_data::kKeyHandleBeta)),
-       PublicKeyCredentialDescriptor(
-           CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(test_data::kKeyHandleGamma))});
+           base::ToVector(test_data::kKeyHandleGamma))});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));

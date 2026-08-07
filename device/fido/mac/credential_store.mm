@@ -17,6 +17,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,7 +26,6 @@
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/random.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/touch_id_context.h"
 
@@ -640,8 +640,7 @@ bool TouchIdCredentialStore::DeleteCredentialById(
 bool TouchIdCredentialStore::UpdateCredential(
     base::span<uint8_t> credential_id_span,
     const std::string& username) {
-  std::vector<uint8_t> credential_id =
-      fido_parsing_utils::Materialize(credential_id_span);
+  std::vector<uint8_t> credential_id = base::ToVector(credential_id_span);
 
   std::optional<std::list<Credential>> credentials = FindCredentialsImpl(
       /*rp_id=*/std::nullopt, {credential_id});

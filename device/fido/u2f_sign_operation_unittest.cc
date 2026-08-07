@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_array.h"
+#include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -66,8 +68,8 @@ class U2fSignOperationTest : public ::testing::Test {
 };
 
 TEST_F(U2fSignOperationTest, SignSuccess) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(testing::Return("device"));
@@ -95,8 +97,7 @@ TEST_F(U2fSignOperationTest, SignSuccess) {
 
 TEST_F(U2fSignOperationTest, SignSuccessWithFakeDevice) {
   static const uint8_t kCredentialId[] = {1, 2, 3, 4};
-  auto request =
-      CreateSignRequest({fido_parsing_utils::Materialize(kCredentialId)});
+  auto request = CreateSignRequest({base::ToVector(kCredentialId)});
 
   auto device = std::make_unique<VirtualU2fDevice>();
   ASSERT_TRUE(device->mutable_state()->InjectRegistration(
@@ -124,8 +125,8 @@ TEST_F(U2fSignOperationTest, SignSuccessWithFakeDevice) {
 }
 
 TEST_F(U2fSignOperationTest, DelayedSuccess) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   // Simulates a device that times out waiting for user touch once before
   // responding successfully.
@@ -157,10 +158,10 @@ TEST_F(U2fSignOperationTest, DelayedSuccess) {
 TEST_F(U2fSignOperationTest, MultipleHandles) {
   // Two wrong keys followed by a correct key ensuring the wrong keys will be
   // tested first.
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha),
-       fido_parsing_utils::Materialize(test_data::kKeyHandleBeta),
-       fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kKeyHandleAlpha),
+                         base::ToVector(test_data::kKeyHandleBeta),
+                         base::ToVector(test_data::kU2fSignKeyHandle)});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -192,9 +193,9 @@ TEST_F(U2fSignOperationTest, MultipleHandles) {
 TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
   // One wrong key that responds with key handle length followed by a correct
   // key.
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha),
-       fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kKeyHandleAlpha),
+                         base::ToVector(test_data::kU2fSignKeyHandle)});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -225,9 +226,8 @@ TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
 // Test that Fake U2F registration is invoked when no credentials in the allowed
 // list are recognized by the device.
 TEST_F(U2fSignOperationTest, FakeEnroll) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kKeyHandleAlpha),
-       fido_parsing_utils::Materialize(test_data::kKeyHandleBeta)});
+  auto request = CreateSignRequest({base::ToVector(test_data::kKeyHandleAlpha),
+                                    base::ToVector(test_data::kKeyHandleBeta)});
 
   auto device = std::make_unique<MockFidoDevice>();
   device->ExpectWinkedAtLeastOnce();
@@ -256,8 +256,8 @@ TEST_F(U2fSignOperationTest, FakeEnroll) {
 // credentials are valid for the authenticator and user presence is not
 // obtained.
 TEST_F(U2fSignOperationTest, DelayedFakeEnrollment) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   // Simulates a device that times out waiting for user presence during fake
   // enrollment.
@@ -288,8 +288,8 @@ TEST_F(U2fSignOperationTest, DelayedFakeEnrollment) {
 // Tests that request is dropped gracefully if device returns error on all
 // requests (including fake enrollment).
 TEST_F(U2fSignOperationTest, FakeEnrollErroringOut) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   // Simulates a device that errors out on all requests (including the sign
   // request and fake registration attempt). The device should then be abandoned
@@ -317,8 +317,8 @@ TEST_F(U2fSignOperationTest, FakeEnrollErroringOut) {
 // Tests the scenario where device returns success response, but the response is
 // unparse-able.
 TEST_F(U2fSignOperationTest, SignWithCorruptedResponse) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -339,12 +339,11 @@ TEST_F(U2fSignOperationTest, SignWithCorruptedResponse) {
 }
 
 TEST_F(U2fSignOperationTest, AlternativeApplicationParameter) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
   request.app_id = test_data::kAppId;
   request.alternative_application_parameter =
-      fido_parsing_utils::Materialize(base::span<const uint8_t, 32>(
-          test_data::kAlternativeApplicationParameter));
+      base::ToArray(test_data::kAlternativeApplicationParameter);
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -374,12 +373,11 @@ TEST_F(U2fSignOperationTest, AlternativeApplicationParameter) {
 
 // This is a regression test in response to https://crbug.com/833398.
 TEST_F(U2fSignOperationTest, AlternativeApplicationParameterRejection) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
   request.app_id = test_data::kAppId;
   request.alternative_application_parameter =
-      fido_parsing_utils::Materialize(base::span<const uint8_t, 32>(
-          test_data::kAlternativeApplicationParameter));
+      base::ToArray(test_data::kAlternativeApplicationParameter);
 
   auto device = std::make_unique<MockFidoDevice>();
   EXPECT_CALL(*device, GetId()).WillRepeatedly(::testing::Return("device"));
@@ -412,8 +410,8 @@ TEST_F(U2fSignOperationTest, AlternativeApplicationParameterRejection) {
 
 // Tests that Chrome will retry if a low level error happens.
 TEST_F(U2fSignOperationTest, LowLevelErrorRetries) {
-  auto request = CreateSignRequest(
-      {fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)});
+  auto request =
+      CreateSignRequest({base::ToVector(test_data::kU2fSignKeyHandle)});
 
   // Simulates a device that throws a low level error before responding
   // successfully.

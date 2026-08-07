@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
@@ -179,12 +180,12 @@ void FakeSigningCallback(
     base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
         callback) {
   base::span<const uint8_t> message_span = to_be_signed;
-  EXPECT_EQ(fido_parsing_utils::Materialize(message_span.first(32u)),
-            fido_parsing_utils::Materialize(kHandshakeHash));
+  EXPECT_EQ(base::ToVector(message_span.first(32u)),
+            base::ToVector(kHandshakeHash));
 
   enclave::ClientSignature ret;
-  ret.device_id = fido_parsing_utils::Materialize(kDeviceId);
-  ret.signature = fido_parsing_utils::Materialize(kSignature);
+  ret.device_id = base::ToVector(kDeviceId);
+  ret.signature = base::ToVector(kSignature);
   ret.key_type = enclave::ClientKeyType::kHardware;
   std::move(callback).Run(std::move(ret));
 }
@@ -239,8 +240,8 @@ class EnclaveProtocolUtilsTest : public testing::Test {
   ~EnclaveProtocolUtilsTest() override = default;
 
   void SetUp() override {
-    device_id_ = fido_parsing_utils::Materialize(kDeviceId);
-    user_id_ = fido_parsing_utils::Materialize(kUserId);
+    device_id_ = base::ToVector(kDeviceId);
+    user_id_ = base::ToVector(kUserId);
   }
 
   // This checks the outer map values of a request, which are common to all

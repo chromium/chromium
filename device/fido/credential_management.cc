@@ -6,9 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_array.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
 #include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
@@ -321,7 +321,7 @@ std::optional<EnumerateCredentialsResponse> EnumerateCredentialsResponse::Parse(
     if (!sized_large_blob_span) {
       return std::nullopt;
     }
-    large_blob_key = fido_parsing_utils::Materialize(*sized_large_blob_span);
+    large_blob_key = base::ToArray(*sized_large_blob_span);
   }
 
   size_t credential_count = 0;

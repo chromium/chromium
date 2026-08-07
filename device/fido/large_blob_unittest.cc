@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,49 +37,45 @@ const std::array<uint8_t, 45> kValidLargeBlobArray = {
 
 TEST_F(FidoLargeBlobTest, VerifyLargeBlobArrayIntegrityValid) {
   std::vector<uint8_t> large_blob_array =
-      fido_parsing_utils::Materialize(kValidEmptyLargeBlobArray);
+      base::ToVector(kValidEmptyLargeBlobArray);
   EXPECT_TRUE(VerifyLargeBlobArrayIntegrity(large_blob_array));
 }
 
 TEST_F(FidoLargeBlobTest, VerifyLargeBlobArrayIntegrityInvalid) {
   std::vector<uint8_t> large_blob_array =
-      fido_parsing_utils::Materialize(kValidEmptyLargeBlobArray);
+      base::ToVector(kValidEmptyLargeBlobArray);
   large_blob_array[0] += 1;
   EXPECT_FALSE(VerifyLargeBlobArrayIntegrity(large_blob_array));
 
-  large_blob_array = fido_parsing_utils::Materialize(kValidEmptyLargeBlobArray);
+  large_blob_array = base::ToVector(kValidEmptyLargeBlobArray);
   large_blob_array.erase(large_blob_array.begin());
   EXPECT_FALSE(VerifyLargeBlobArrayIntegrity(large_blob_array));
 }
 
 TEST_F(FidoLargeBlobTest, LargeBlobArrayReader_MaterializeEmpty) {
   LargeBlobArrayReader large_blob_array_reader;
-  large_blob_array_reader.Append(
-      fido_parsing_utils::Materialize(kValidEmptyLargeBlobArray));
+  large_blob_array_reader.Append(base::ToVector(kValidEmptyLargeBlobArray));
   EXPECT_EQ(0u, large_blob_array_reader.Materialize()->size());
 }
 
 TEST_F(FidoLargeBlobTest, LargeBlobArrayReader_MaterializeInvalidCbor) {
   LargeBlobArrayReader large_blob_array_reader;
-  large_blob_array_reader.Append(
-      fido_parsing_utils::Materialize(kInvalidLargeBlobArray));
+  large_blob_array_reader.Append(base::ToVector(kInvalidLargeBlobArray));
   EXPECT_FALSE(large_blob_array_reader.Materialize());
 }
 
 TEST_F(FidoLargeBlobTest, LargeBlobArrayReader_MaterializeInvalidHash) {
   std::vector<uint8_t> large_blob_array =
-      fido_parsing_utils::Materialize(kValidEmptyLargeBlobArray);
+      base::ToVector(kValidEmptyLargeBlobArray);
   large_blob_array[0] += 1;
   LargeBlobArrayReader large_blob_array_reader;
-  large_blob_array_reader.Append(
-      fido_parsing_utils::Materialize(large_blob_array));
+  large_blob_array_reader.Append(base::ToVector(large_blob_array));
   EXPECT_FALSE(large_blob_array_reader.Materialize());
 }
 
 TEST_F(FidoLargeBlobTest, LargeBlobArrayReader_MaterializeValid) {
   LargeBlobArrayReader large_blob_array_reader;
-  large_blob_array_reader.Append(
-      fido_parsing_utils::Materialize(kValidLargeBlobArray));
+  large_blob_array_reader.Append(base::ToVector(kValidLargeBlobArray));
   cbor::Value::ArrayValue vector = *large_blob_array_reader.Materialize();
   EXPECT_EQ(2u, vector.size());
 }
@@ -93,8 +90,7 @@ TEST_F(FidoLargeBlobTest, LargeBlobArrayWriter_PopUnevenly) {
   ASSERT_NE(0u, kValidLargeBlobArray.size() % fragment_size);
 
   LargeBlobArrayWriter large_blob_array_writer({});
-  std::vector<uint8_t> large_blob_array =
-      fido_parsing_utils::Materialize(kValidLargeBlobArray);
+  std::vector<uint8_t> large_blob_array = base::ToVector(kValidLargeBlobArray);
   large_blob_array_writer.set_bytes_for_testing(large_blob_array);
   std::vector<uint8_t> reconstructed;
   EXPECT_TRUE(large_blob_array_writer.has_remaining_fragments());
@@ -121,8 +117,7 @@ TEST_F(FidoLargeBlobTest, LargeBlobArrayFragments_PopEvenly) {
   ASSERT_EQ(0u, kValidLargeBlobArray.size() % fragment_size);
 
   LargeBlobArrayWriter large_blob_array_writer({});
-  std::vector<uint8_t> large_blob_array =
-      fido_parsing_utils::Materialize(kValidLargeBlobArray);
+  std::vector<uint8_t> large_blob_array = base::ToVector(kValidLargeBlobArray);
   large_blob_array_writer.set_bytes_for_testing(large_blob_array);
   std::vector<uint8_t> reconstructed;
   EXPECT_TRUE(large_blob_array_writer.has_remaining_fragments());

@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/to_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/fido_parsing_utils.h"
 
 namespace device {
 
@@ -34,7 +34,7 @@ AuthenticatorGetInfoResponse::AuthenticatorGetInfoResponse(
     base::span<const uint8_t, kAaguidLength> in_aaguid)
     : versions(std::move(in_versions)),
       ctap2_versions(std::move(in_ctap2_versions)),
-      aaguid(fido_parsing_utils::Materialize(in_aaguid)) {
+      aaguid(base::ToArray(in_aaguid)) {
   DCHECK_NE(versions.contains(ProtocolVersion::kCtap2), ctap2_versions.empty());
 }
 

@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/containers/to_array.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -32,7 +33,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -784,8 +784,8 @@ std::optional<cbor::Value> DecodePaddedCBORMap(
 
 Crypter::Crypter(base::span<const uint8_t, 32> read_key,
                  base::span<const uint8_t, 32> write_key)
-    : read_key_(fido_parsing_utils::Materialize(read_key)),
-      write_key_(fido_parsing_utils::Materialize(write_key)) {}
+    : read_key_(base::ToArray(read_key)),
+      write_key_(base::ToArray(write_key)) {}
 
 Crypter::~Crypter() = default;
 
@@ -879,11 +879,10 @@ HandshakeInitiator::HandshakeInitiator(
     : local_identity_(identity_seed ? ECKeyFromSeed(*identity_seed) : nullptr) {
   DCHECK(peer_identity.has_value() ^ static_cast<bool>(local_identity_));
   if (peer_identity) {
-    peer_identity_ =
-        fido_parsing_utils::Materialize<kP256X962Length>(*peer_identity);
+    peer_identity_ = base::ToArray(*peer_identity);
   }
   if (psk) {
-    psk_ = fido_parsing_utils::Materialize(*psk);
+    psk_ = base::ToArray(*psk);
   }
 }
 

@@ -8,10 +8,10 @@
 #include <limits>
 #include <utility>
 
+#include "base/containers/to_array.h"
 #include "base/feature_list.h"
 #include "crypto/hash.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
@@ -80,7 +80,7 @@ std::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
 
   CtapGetAssertionRequest request(rp_id_it->second.GetString(),
                                   /*client_data_json=*/std::string());
-  request.client_data_hash = fido_parsing_utils::Materialize(client_data_hash);
+  request.client_data_hash = base::ToArray(client_data_hash);
 
   const auto allow_list_it = request_map.find(cbor::Value(3));
   if (allow_list_it != request_map.end()) {

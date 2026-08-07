@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_discovery.h"
 
+#include "base/containers/to_array.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,7 +21,6 @@
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public/features.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
@@ -133,8 +133,7 @@ void Discovery::GetDiscoveryData(const BluetoothDevice* device) {
 }
 
 void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
-  const std::array<uint8_t, kAdvertSize> advert_array =
-      fido_parsing_utils::Materialize<kAdvertSize>(advert);
+  const std::array<uint8_t, kAdvertSize> advert_array = base::ToArray(advert);
 
   if (device_committed_) {
     // A device has already been accepted. Ignore other adverts.
@@ -231,12 +230,13 @@ std::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
     return std::nullopt;
   }
 
-  UnpairedKeys ret;
   static_assert(kQRKeySize == kQRSeedSize + kQRSecretSize);
-  ret.local_identity_seed = fido_parsing_utils::Materialize(
-      qr_generator_key->subspan<0, kQRSeedSize>());
-  ret.qr_secret = fido_parsing_utils::Materialize(
-      qr_generator_key->subspan<kQRSeedSize, kQRSecretSize>());
+  UnpairedKeys ret{
+      .local_identity_seed =
+          base::ToArray(qr_generator_key->subspan<0, kQRSeedSize>()),
+      .qr_secret = base::ToArray(
+          qr_generator_key->subspan<kQRSeedSize, kQRSecretSize>()),
+  };
   ret.eid_key = Derive<ret.eid_key.size()>(
       ret.qr_secret, base::span<const uint8_t>(), DerivedValueType::kEIDKey);
   return ret;

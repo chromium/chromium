@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
@@ -201,7 +202,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   if (!signature.empty()) {
     cbor::Value::MapValue attestation_map;
     attestation_map.emplace("alg", -7);
-    attestation_map.emplace("sig", fido_parsing_utils::Materialize(signature));
+    attestation_map.emplace("sig", base::ToVector(signature));
 
     if (attestation_certificate) {
       cbor::Value::ArrayValue certificate_chain;
@@ -1809,8 +1810,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
     if (include_credential) {
       assertion.credential = PublicKeyCredentialDescriptor(
-          CredentialType::kPublicKey,
-          fido_parsing_utils::Materialize(registration.first));
+          CredentialType::kPublicKey, base::ToVector(registration.first));
     }
 
     if (registration.second->is_resident &&
@@ -2930,9 +2930,8 @@ AttestedCredentialData VirtualCtap2Device::ConstructAttestedCredentialData(
        !mutable_state()->non_zero_aaguid_with_self_attestation)) {
     aaguid = kZeroAaguid;
   }
-  return AttestedCredentialData(aaguid, sha256_length,
-                                fido_parsing_utils::Materialize(key_handle),
-                                std::move(public_key));
+  return AttestedCredentialData(
+      aaguid, sha256_length, base::ToVector(key_handle), std::move(public_key));
 }
 
 size_t VirtualCtap2Device::remaining_resident_credentials() const {

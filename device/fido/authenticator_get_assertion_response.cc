@@ -7,10 +7,10 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "components/cbor/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 
 namespace device {
@@ -51,8 +51,7 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
   AuthenticatorData authenticator_data(relying_party_id_hash, flags, counter,
                                        std::nullopt);
 
-  auto signature =
-      fido_parsing_utils::Materialize(u2f_data.subspan(kSignatureIndex));
+  auto signature = base::ToVector(u2f_data.subspan(kSignatureIndex));
 
   bssl::UniquePtr<ECDSA_SIG> parsed_sig(
       ECDSA_SIG_from_bytes(signature.data(), signature.size()));
@@ -65,7 +64,7 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
   AuthenticatorGetAssertionResponse response(
       std::move(authenticator_data), std::move(signature), transport_used);
   response.credential = PublicKeyCredentialDescriptor(
-      CredentialType::kPublicKey, fido_parsing_utils::Materialize(key_handle));
+      CredentialType::kPublicKey, base::ToVector(key_handle));
   return std::move(response);
 }
 
