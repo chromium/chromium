@@ -32,19 +32,39 @@
 
 #include <limits>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/features.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace blink {
 
 namespace {
 
-TEST(TextCodecUtf8Test, DecodeAscii) {
+class TextCodecUtf8Test : public testing::TestWithParam<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        base::features::kUtfConversionAsciiFastPath, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, TextCodecUtf8Test, testing::Bool());
+
+TEST_P(TextCodecUtf8Test, DecodeAscii) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -59,7 +79,7 @@ TEST(TextCodecUtf8Test, DecodeAscii) {
   }
 }
 
-TEST(TextCodecUtf8Test, DecodeChineseCharacters) {
+TEST_P(TextCodecUtf8Test, DecodeChineseCharacters) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -76,7 +96,7 @@ TEST(TextCodecUtf8Test, DecodeChineseCharacters) {
   EXPECT_EQ(0x5b57U, result[1]);
 }
 
-TEST(TextCodecUtf8Test, Decode0xFF) {
+TEST_P(TextCodecUtf8Test, Decode0xFF) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -89,7 +109,7 @@ TEST(TextCodecUtf8Test, Decode0xFF) {
   EXPECT_EQ(0xFFFDU, result[0]);
 }
 
-TEST(TextCodecUtf8Test, DecodeOverflow) {
+TEST_P(TextCodecUtf8Test, DecodeOverflow) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -107,7 +127,7 @@ TEST(TextCodecUtf8Test, DecodeOverflow) {
       "");
 }
 
-TEST(TextCodecUtf8Test, DecodeMultiplePartialsAfterError) {
+TEST_P(TextCodecUtf8Test, DecodeMultiplePartialsAfterError) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
@@ -136,6 +156,85 @@ TEST(TextCodecUtf8Test, DecodeMultiplePartialsAfterError) {
     EXPECT_TRUE(saw_error);
   }
 }
+
+void DecodeFastPathMatchesLegacy(std::string_view input, bool stop_on_error) {
+  TextEncoding encoding("UTF-8");
+  auto input_span = base::as_bytes(base::span(input));
+
+  String out_fast;
+  bool saw_error_fast = false;
+  {
+    base::test::ScopedFeatureList features(
+        base::features::kUtfConversionAsciiFastPath);
+    std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
+    out_fast = codec->Decode(input_span, FlushBehavior::kDataEof, stop_on_error,
+                             saw_error_fast);
+  }
+
+  String out_legacy;
+  bool saw_error_legacy = false;
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(base::features::kUtfConversionAsciiFastPath);
+    std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
+    out_legacy = codec->Decode(input_span, FlushBehavior::kDataEof,
+                               stop_on_error, saw_error_legacy);
+  }
+
+  EXPECT_EQ(saw_error_fast, saw_error_legacy);
+  EXPECT_EQ(out_fast, out_legacy);
+  EXPECT_EQ(out_fast.Is8Bit(), out_legacy.Is8Bit());
+}
+FUZZ_TEST(TextCodecUtf8FuzzTest, DecodeFastPathMatchesLegacy);
+
+void DecodeStreamingFastPathMatchesLegacy(
+    const std::vector<std::string>& chunks,
+    bool stop_on_error) {
+  TextEncoding encoding("UTF-8");
+
+  std::vector<String> outputs_fast;
+  std::vector<bool> errors_fast;
+  {
+    base::test::ScopedFeatureList features(
+        base::features::kUtfConversionAsciiFastPath);
+    std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
+    for (size_t i = 0; i < chunks.size(); ++i) {
+      bool saw_error = false;
+      const bool is_last = (i + 1 == chunks.size());
+      FlushBehavior flush =
+          is_last ? FlushBehavior::kDataEof : FlushBehavior::kDoNotFlush;
+      String out = codec->Decode(base::as_bytes(base::span(chunks[i])), flush,
+                                 stop_on_error, saw_error);
+      outputs_fast.push_back(out);
+      errors_fast.push_back(saw_error);
+    }
+  }
+
+  std::vector<String> outputs_legacy;
+  std::vector<bool> errors_legacy;
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(base::features::kUtfConversionAsciiFastPath);
+    std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
+    for (size_t i = 0; i < chunks.size(); ++i) {
+      bool saw_error = false;
+      const bool is_last = (i + 1 == chunks.size());
+      FlushBehavior flush =
+          is_last ? FlushBehavior::kDataEof : FlushBehavior::kDoNotFlush;
+      String out = codec->Decode(base::as_bytes(base::span(chunks[i])), flush,
+                                 stop_on_error, saw_error);
+      outputs_legacy.push_back(out);
+      errors_legacy.push_back(saw_error);
+    }
+  }
+
+  EXPECT_EQ(errors_fast, errors_legacy);
+  EXPECT_EQ(outputs_fast, outputs_legacy);
+  for (size_t i = 0; i < outputs_fast.size(); ++i) {
+    EXPECT_EQ(outputs_fast[i].Is8Bit(), outputs_legacy[i].Is8Bit());
+  }
+}
+FUZZ_TEST(TextCodecUtf8FuzzTest, DecodeStreamingFastPathMatchesLegacy);
 
 }  // namespace
 

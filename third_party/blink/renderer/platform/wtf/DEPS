@@ -4,6 +4,8 @@ include_rules = [
     "+base/apple/bridging.h",
     "+base/apple/scoped_cftyperef.h",
     "+base/apple/foundation_util.h",
+    "+base/feature_list.h",
+    "+base/features.h",
     "+base/functional/identity.h",
     "+base/i18n/string_search.h",
     "+base/numerics",
@@ -29,5 +31,9 @@ specific_include_rules = {
   "hash_(map|set)_test\\.cc": [
     # Refers to base containers to test compatibility.
     "+base/containers",
+  ],
+  ".*_test\\.cc": [
+    "+base/test",
+    "+third_party/fuzztest",
   ],
 }

@@ -319,6 +319,10 @@ component("wtf") {
 
 test("wtf_unittests") {
   deps = [ ":wtf_unittests_sources" ]
+  fuzztests = [
+    "TextCodecUtf8FuzzTest.DecodeFastPathMatchesLegacy",
+    "TextCodecUtf8FuzzTest.DecodeStreamingFastPathMatchesLegacy",
+  ]
 }
 
 test("wtf_perf_tests") {
@@ -433,6 +437,7 @@ source_set("wtf_unittests_sources") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

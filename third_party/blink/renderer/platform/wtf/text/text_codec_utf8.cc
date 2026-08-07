@@ -31,12 +31,16 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_util.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 
 namespace blink {
@@ -358,6 +362,8 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              bool stop_on_error,
                              bool& saw_error) {
   const bool do_flush = flush != FlushBehavior::kDoNotFlush;
+  const bool fast_ascii_range_copy =
+      base::FeatureList::IsEnabled(base::features::kUtfConversionAsciiFastPath);
 
   // Each input byte might turn into a character.
   // That includes all bytes in the partial-sequence buffer because
@@ -392,26 +398,36 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
     while (!source.empty()) {
       if (IsAscii(source[0])) {
         // Fast path for ASCII. Most UTF-8 text will be ASCII.
-        if (IsAlignedToMachineWord(source.data())) {
-          while (source.data() < aligned_end) {
-            MachineWord chunk =
-                *reinterpret_cast_ptr<const MachineWord*>(source.data());
-            if (!IsAllAscii<LChar>(chunk)) {
-              break;
-            }
-            CopyAsciiMachineWord(
-                chunk, destination.take_first<sizeof(MachineWord)>().data());
-            source.take_first<sizeof(MachineWord)>();
-          }
+        if (fast_ascii_range_copy) {
+          size_t ascii_len = base::FindFirstNonASCII(
+              base::as_string_view(base::as_chars(source)));
+          destination.take_first(ascii_len).copy_from(
+              source.take_first(ascii_len));
           if (source.empty()) {
             break;
           }
-          if (!IsAscii(source[0])) {
-            continue;
+        } else {
+          if (IsAlignedToMachineWord(source.data())) {
+            while (source.data() < aligned_end) {
+              MachineWord chunk =
+                  *reinterpret_cast_ptr<const MachineWord*>(source.data());
+              if (!IsAllAscii<LChar>(chunk)) {
+                break;
+              }
+              CopyAsciiMachineWord(
+                  chunk, destination.take_first<sizeof(MachineWord)>().data());
+              source.take_first<sizeof(MachineWord)>();
+            }
+            if (source.empty()) {
+              break;
+            }
+            if (!IsAscii(source[0])) {
+              continue;
+            }
           }
+          destination.take_first<1u>()[0] = source.take_first_elem();
+          continue;
         }
-        destination.take_first<1u>()[0] = source.take_first_elem();
-        continue;
       }
       size_t count = kNonAsciiSequenceLength[source[0]];
       int character;
@@ -450,11 +466,8 @@ upConvertTo16Bit:
   // Copy the already converted characters
   const size_t characters_converted =
       static_cast<size_t>(destination.data() - buffer.Span().data());
-  auto dest16_converted = destination16.take_first(characters_converted);
-  auto converted8_span = buffer.Span().first(characters_converted);
-  for (size_t i = 0; i < converted8_span.size(); ++i) {
-    dest16_converted[i] = converted8_span[i];
-  }
+  StringImpl::CopyChars(destination16.take_first(characters_converted),
+                        buffer.Span().first(characters_converted));
 
   do {
     if (partial_sequence_size_) {
@@ -475,28 +488,39 @@ upConvertTo16Bit:
     while (!source.empty()) {
       if (IsAscii(source[0])) {
         // Fast path for ASCII. Most UTF-8 text will be ASCII.
-        if (IsAlignedToMachineWord(source.data())) {
-          while (source.data() < aligned_end) {
-            MachineWord chunk =
-                *reinterpret_cast_ptr<const MachineWord*>(source.data());
-            if (!IsAllAscii<LChar>(chunk)) {
-              break;
-            }
-            // SAFETY: `take_first<sizeof(MachineWord)>()` ensures sufficient
-            // size.
-            UNSAFE_BUFFERS(CopyAsciiMachineWord(
-                chunk, destination16.take_first<sizeof(MachineWord)>().data()));
-            source.take_first<sizeof(MachineWord)>();
-          }
+        if (fast_ascii_range_copy) {
+          size_t ascii_len = base::FindFirstNonASCII(
+              base::as_string_view(base::as_chars(source)));
+          StringImpl::CopyChars(destination16.take_first(ascii_len),
+                                source.take_first(ascii_len));
           if (source.empty()) {
             break;
           }
-          if (!IsAscii(source[0])) {
-            continue;
+        } else {
+          if (IsAlignedToMachineWord(source.data())) {
+            while (source.data() < aligned_end) {
+              MachineWord chunk =
+                  *reinterpret_cast_ptr<const MachineWord*>(source.data());
+              if (!IsAllAscii<LChar>(chunk)) {
+                break;
+              }
+              // SAFETY: `take_first<sizeof(MachineWord)>()` ensures sufficient
+              // size.
+              UNSAFE_BUFFERS(CopyAsciiMachineWord(
+                  chunk,
+                  destination16.take_first<sizeof(MachineWord)>().data()));
+              source.take_first<sizeof(MachineWord)>();
+            }
+            if (source.empty()) {
+              break;
+            }
+            if (!IsAscii(source[0])) {
+              continue;
+            }
           }
+          destination16.take_first<1u>()[0] = source.take_first_elem();
+          continue;
         }
-        destination16.take_first<1u>()[0] = source.take_first_elem();
-        continue;
       }
       size_t count = kNonAsciiSequenceLength[source[0]];
       int character;
