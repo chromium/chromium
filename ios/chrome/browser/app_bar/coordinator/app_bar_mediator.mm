@@ -892,6 +892,22 @@ inline LayoutStateAssistantPassKey PassKey() {
   return NO;
 }
 
+// Returns YES if the primary identity is in an unverified state requiring
+// re-authentication / managing account approval.
+- (BOOL)isPrimaryIdentityUnverified {
+  if (!_authenticationService ||
+      !_authenticationService->HasPrimaryIdentity() || !_identityManager) {
+    return NO;
+  }
+  CoreAccountId accountId =
+      _identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (accountId.empty()) {
+    return NO;
+  }
+  return _identityManager->HasAccountWithRefreshTokenInPersistentErrorState(
+      accountId);
+}
+
 // Returns YES if Gemini is eligible to be shown in the App Bar.
 - (BOOL)isGeminiEligible {
   if (!IsPageActionMenuEnabled() || [self isEEAOrJapan] || !_geminiService) {
@@ -901,11 +917,14 @@ inline LayoutStateAssistantPassKey PassKey() {
   bool geminiAllowed = _geminiService->IsProfileEligibleForGemini();
   if (!geminiAllowed && _authenticationService &&
       gemini::GeminiAllowedByPolicy(_prefService)) {
-    if (!_authenticationService->HasPrimaryIdentity()) {
-      // If the profile is ineligible, it might be just because the user is
-      // signed out. We still want to show the Gemini button (disabled) for
-      // signed-out users to encourage sign-in, unless a local enterprise
-      // policy explicitly disables it or sign-in is disabled.
+    BOOL isSignedOut = !_authenticationService->HasPrimaryIdentity();
+    BOOL isUnverified = [self isPrimaryIdentityUnverified];
+    if (isSignedOut || isUnverified) {
+      // If the profile is ineligible, it might be because the user is
+      // signed out or in an unverified sign-in state. We still want to show
+      // the Gemini button (disabled) for these users to encourage
+      // sign-in/verification, unless a local enterprise policy explicitly
+      // disables it or sign-in is disabled.
       geminiAllowed = _authenticationService->SigninEnabled();
     } else if (net::NetworkChangeNotifier::IsOffline() && _identityManager) {
       // Optimistically allow signed-in users when offline, unless their
@@ -986,8 +1005,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   UIImage* avatar = nil;
   switch (state) {
     case AppBarAssistantButtonState::kAsk:
-      enabled = _geminiBrowserAgent &&
-                _geminiBrowserAgent->IsGeminiAvailableForActiveWebState();
+      enabled = (_geminiBrowserAgent &&
+                 _geminiBrowserAgent->IsGeminiAvailableForActiveWebState()) ||
+                [self isPrimaryIdentityUnverified];
       highlighted = enabled && _geminiBrowserAgent &&
                     _geminiBrowserAgent->is_floaty_invoked();
       break;
