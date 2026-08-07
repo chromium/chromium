@@ -96,4 +96,7 @@ interface Page {
 
   // Called by the browser when focus changes within the active tab.
   SetFocus(bool is_focused);
+
+  // Clears autocomplete results and resets active query ID in WebUI.
+  ClearAutocompleteMatches();
 };

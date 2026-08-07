@@ -139,6 +139,8 @@ class OmniboxPopupPresenterBase
 
   views::Widget* get_widget_for_testing() { return widget_.get(); }
 
+  views::Widget* GetWidget() const { return widget_.get(); }
+
   void set_widget_for_testing(std::unique_ptr<views::Widget> widget) {
     widget_ = std::move(widget);
   }
@@ -162,6 +164,9 @@ class OmniboxPopupPresenterBase
   // Returns true if a permission prompt is showing or being dismissed,
   // which should prevent out-of-focus activation events from hiding the popup.
   bool IsPermissionPromptPreventingClose() const;
+
+  // Returns true if the presenter is currently deactivating.
+  virtual bool IsDeactivating() const;
 
  protected:
   inline static constexpr std::string_view kWebUIPopupMetricPrefix =
@@ -213,8 +218,6 @@ class OmniboxPopupPresenterBase
                                              bool is_first_show);
 
   LocationBar* location_bar() const { return location_bar_.get(); }
-
-  views::Widget* GetWidget() const { return widget_.get(); }
 
   OmniboxController* controller() const { return controller_.get(); }
 

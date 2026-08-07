@@ -62,6 +62,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   // OmniboxPopupView:
   bool IsOpen() const override;
 
+  LocationBar* location_bar() const { return location_bar_; }
+
  protected:
   OmniboxPopupViewWebUI(OmniboxView* omnibox_view,
                         OmniboxController* controller,

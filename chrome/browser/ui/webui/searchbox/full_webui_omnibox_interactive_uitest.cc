@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base64.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,12 +14,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -35,7 +40,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
@@ -63,6 +71,37 @@ class FullWebUIOmniboxInteractiveTestBase
   ~FullWebUIOmniboxInteractiveTestBase() override = default;
 
  protected:
+  auto WaitForBrowserActive() {
+    return Do([this]() {
+      views::Widget* widget =
+          BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+      if (!widget->IsActive()) {
+        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        class WidgetActivationWaiter : public views::WidgetObserver {
+         public:
+          WidgetActivationWaiter(views::Widget* widget,
+                                 base::OnceClosure quit_closure)
+              : quit_closure_(std::move(quit_closure)) {
+            observation_.Observe(widget);
+          }
+          void OnWidgetActivationChanged(views::Widget* widget,
+                                         bool active) override {
+            if (active) {
+              std::move(quit_closure_).Run();
+            }
+          }
+
+         private:
+          base::OnceClosure quit_closure_;
+          base::ScopedObservation<views::Widget, views::WidgetObserver>
+              observation_{this};
+        };
+        WidgetActivationWaiter waiter(widget, run_loop.QuitClosure());
+        run_loop.Run();
+      }
+    });
+  }
+
   auto GetActivePopupWebView() {
     return base::BindLambdaForTesting([&]() -> views::View* {
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
@@ -100,7 +139,9 @@ class FullWebUIOmniboxInteractiveTestBase
                const fullText = '%s';
                for (let i = 0; i < fullText.length; i++) {
                  el.value = fullText.substring(0, i + 1);
+                 el.setSelectionRange(i + 1, i + 1);
                  el.dispatchEvent(new Event('input'));
+                 document.dispatchEvent(new Event('selectionchange'));
                }
              })",
                                                              text.c_str()))),
@@ -228,7 +269,7 @@ class FullWebUIOmniboxInteractiveTestBase
 
   auto OpenInitialTabAndFocusOmnibox(ui::ElementIdentifier tab_id,
                                      const GURL& url) {
-    return Steps(AddInstrumentedTab(tab_id, url),
+    return Steps(WaitForBrowserActive(), AddInstrumentedTab(tab_id, url),
                  WaitForWebContentsReady(tab_id),
                  WaitForPopupTransitionLockout(), Do([this]() {
                    if (auto* popup_view = BrowserWindow::FromBrowser(browser())
@@ -301,23 +342,6 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, HighlightAndSwitchTab) {
       CheckWebUIInputFocus(true));
 }
 
-// Verifies that clicking outside on the webpage body closes the WebUI
-// suggestions dropdown.
-IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       ClickOutsideClosesDropdown) {
-  RunTestSequence(
-      // Open Tab 1 and focus Omnibox to open WebUI popup with suggestions.
-      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      InputWebUIText("a"),
-      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
-                   "suggestion-1"),
-      // Click on the webpage body to blur the Omnibox.
-      ClickWebPageBody(kTab1),
-      // Verify dropdown matches list closed.
-      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
-                           "(el) => el && !el.dropdownIsVisible"));
-}
-
 // Verifies that clicking outside on the webpage body while an active user draft
 // exists keeps the popup open while shifting focus to the webpage.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
@@ -327,6 +351,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ActiveUnfocusedDraft) {
       InputWebUIText("ffffff"),
       // Click on the webpage body of Tab 1 to blur the Omnibox.
       ClickWebPageBody(kTab1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
       // Verify popup remains open, but focus shifts to the webpage.
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
       CheckWebUIInputFocus(false),
@@ -622,9 +648,31 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, OnPaste) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      PasteWebUIText("example.com"), WaitForWebUIInputValue("example.com"),
-      CheckWebUIInputFocus(true),
+      ClearWebUIText(), PasteWebUIText("example.com"),
+      WaitForWebUIInputValue("example.com"), CheckWebUIInputFocus(true),
       Do([&]() { histogram_tester.ExpectBucketCount("Omnibox.Paste", 1, 1); }));
+}
+
+// Verifies that clicking on the webpage content area closes the popup.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       ClickWebpageClosesPopup) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      ClearWebUIText(), ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)));
+}
+
+// Verifies that clicking the location bar keeps the popup open.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       ClickLocationBarKeepsPopupOpen) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -800,7 +848,6 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
   style_applied.where = kContextButton;
   style_applied.test_function =
       "(el) => el && window.getComputedStyle(el).borderRadius === \"100px\"";
-
   RunTestSequence(
       SetAimEligibleResponse(),
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),

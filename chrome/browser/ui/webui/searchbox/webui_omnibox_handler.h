@@ -59,6 +59,14 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                      bool delay_upload,
                      searchbox::mojom::TabAttachmentSource source,
                      AddTabContextCallback) override;
+  void QueryAutocomplete(int32_t query_id,
+                         const std::u16string& input,
+                         bool prevent_inline_autocomplete,
+                         uint32_t cursor_position,
+                         omnibox::SuggestInventory suggest_inventory,
+                         bool is_on_focus,
+                         const std::string& keyword,
+                         searchbox::mojom::InputMethod input_method) override;
 
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step);

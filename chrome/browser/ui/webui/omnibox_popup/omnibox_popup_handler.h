@@ -67,6 +67,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      bool show_full_url,
                      bool query_zps);
   void SetFocus(bool is_focused);
+  void ClearAutocompleteMatches();
 
   const gfx::Range& latest_selection() const { return latest_selection_; }
   bool show_full_url() const { return show_full_url_; }

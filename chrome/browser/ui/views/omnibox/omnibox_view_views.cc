@@ -57,10 +57,13 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -119,6 +122,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
@@ -134,6 +138,7 @@
 #include "ui/views/button_drag_utils.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -1606,9 +1611,6 @@ void OmniboxViewViews::OnFocus() {
 void OmniboxViewViews::OnBlur() {
   views::Textfield::OnBlur();
 
-  // Save the user's existing selection to restore it later.
-  saved_selection_for_focus_change_ = GetSelectedRange();
-
   // If focus is transferring to a WebUI popup widget (e.g., Full Popup or AIM
   // Popup), treat this as a logical focus transfer rather than a true blur.
   // Keep the edit model's focus state active, and skip all reversion/blurring.
@@ -1618,6 +1620,9 @@ void OmniboxViewViews::OnBlur() {
           OmniboxPopupState::kAim) {
     return;
   }
+
+  // Save the user's existing selection to restore it later.
+  saved_selection_for_focus_change_ = GetSelectedRange();
 
   // If the view is showing text that's not user-text, revert the text to the
   // permanent display text. This usually occurs if Steady State Elisions is on
