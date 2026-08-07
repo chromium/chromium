@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_value_converters.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -235,6 +237,28 @@ bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
   if (!path)
     return false;
   value_ = *path;
+  return true;
+}
+
+template <>
+PrefMember<base::i18n::LanguageTag>::Internal::Internal()
+    : value_(base::i18n::GetKnownLanguageTag("und")) {}
+
+template <>
+void PrefMember<base::i18n::LanguageTag>::UpdatePref(
+    const base::i18n::LanguageTag& value) {
+  prefs()->SetLanguageTag(pref_name(), value);
+}
+
+template <>
+bool PrefMember<base::i18n::LanguageTag>::Internal::UpdateValueInternal(
+    const base::Value& value) const {
+  std::optional<base::i18n::LanguageTag> tag =
+      base::i18n::ValueToLanguageTag(value);
+  if (!tag) {
+    return false;
+  }
+  value_ = *tag;
   return true;
 }
 

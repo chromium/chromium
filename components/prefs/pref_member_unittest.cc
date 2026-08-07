@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -347,4 +348,25 @@ TEST_F(PrefMemberTest, MoveToSequence) {
 
   helper->FetchValue();
   EXPECT_TRUE(helper->value());
+}
+
+TEST_F(PrefMemberTest, InitGetAndSetLanguageTagPrefMember) {
+  TestingPrefServiceSimple prefs;
+  constexpr char kLanguageTagPref[] = "language_tag";
+  constexpr base::i18n::LanguageTag default_tag =
+      base::i18n::GetKnownLanguageTag("en");
+  constexpr base::i18n::LanguageTag new_tag =
+      base::i18n::GetKnownLanguageTag("es");
+
+  prefs.registry()->RegisterLanguageTagPref(kLanguageTagPref, default_tag);
+
+  LanguageTagPrefMember member;
+  member.Init(kLanguageTagPref, &prefs);
+  EXPECT_EQ(default_tag, member.GetValue());
+
+  prefs.SetLanguageTag(kLanguageTagPref, new_tag);
+  EXPECT_EQ(new_tag, member.GetValue());
+
+  member.SetValue(default_tag);
+  EXPECT_EQ(default_tag, prefs.GetLanguageTag(kLanguageTagPref));
 }
