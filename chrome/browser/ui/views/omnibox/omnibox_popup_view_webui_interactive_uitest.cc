@@ -407,8 +407,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, MAYBE_TabSwitchNoSavedSt
   }));
 }
 
+// TODO(crbug.com/542637306): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DeactivationClearsPopupState DISABLED_DeactivationClearsPopupState
+#else
+#define MAYBE_DeactivationClearsPopupState DeactivationClearsPopupState
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
-                       DeactivationClearsPopupState) {
+                       MAYBE_DeactivationClearsPopupState) {
   // Focus the location bar to ensure the Omnibox has active focus and the popup
   // is open.
   location_bar()->FocusLocation(/*is_user_initiated=*/true,
