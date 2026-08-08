@@ -24,8 +24,8 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/vertical_tab_item_ai_indicator_margin_vertical"
-        android:layout_marginBottom="@dimen/vertical_tab_item_ai_indicator_margin_vertical"
+        android:layout_marginTop="@dimen/vertical_tab_item_corner_radius"
+        android:layout_marginBottom="@dimen/vertical_tab_item_corner_radius"
         android:background="@drawable/vertical_tab_ai_indicator_background"
         android:importantForAccessibility="no"
         android:visibility="gone" />
