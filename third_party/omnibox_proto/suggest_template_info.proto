@@ -15,6 +15,9 @@ package omnibox;
 
 import "answer_data.proto";
 import "chrome_searchbox_stats.proto";
+import "input_source.proto";
+import "input_type.proto";
+import "model_mode.proto";
 import "suggest_inventory.proto";
 import "tool_mode.proto";
 
@@ -136,7 +139,7 @@ message SuggestTemplateInfo {
 
   // This sends information about what the Fusebox action does. For example,
   // it might preselect a tool, a model or something else.
-  // Next ID: 3
+  // Next ID: 10
   message FuseboxAction {
     // Which tool gets preselected when the user clicks on the suggestion.
     optional ToolMode preselected_tool = 1;
@@ -144,6 +147,57 @@ message SuggestTemplateInfo {
     // The inventory of suggestions to show when the user clicks on the
     // suggestion.
     optional SuggestInventory preferred_inventory = 2;
+
+    // Preselect Gemini model mode
+    optional ModelMode preselected_model = 3;
+
+    // Picker/Input source to trigger immediately on chip / suggestion click
+    // (e.g., tab picker, image picker, file picker).
+    optional InputSource preselected_input_source = 4;
+
+    // Force a specific modality (e.g. Voice, Lens, Search Live)
+    optional InputType preselected_input_type = 5;
+
+    message TabAttachment {
+      optional int32 tab_id = 1;
+      optional string title = 2;
+      optional string url = 3;
+    }
+    // Add a specific tab as context to the composebox.
+    optional TabAttachment tab_attachment = 6;
+
+    // This changes what the suggestion text (query) does on click.
+    enum QueryActionOverride {
+      // Default implicit behavior: submits the query immediately.
+      QUERY_ACTION_DEFAULT = 0;
+
+      // Opens the searchbox with the provided query.
+      QUERY_ACTION_PASTE = 1;
+
+      // Opens the searchbox and displays the suggestion query text as
+      // placeholder hint.
+      QUERY_ACTION_HINT = 2;
+    }
+    optional QueryActionOverride query_action_override = 7;
+
+    // This changes which searchbox opens on click.
+    enum SearchboxOverride {
+      // Unspecified means no searchbox is open on click.
+      SEARCHBOX_OVERRIDE_UNSPECIFIED = 0;
+
+      // Opens the realbox.
+      SEARCHBOX_OVERRIDE_REALBOX = 1;
+
+      // Opens the composebox.
+      SEARCHBOX_OVERRIDE_COMPOSEBOX = 2;
+    }
+    optional SearchboxOverride searchbox_override = 8;
+
+    enum TutorialId {
+      TUTORIAL_ID_UNSPECIFIED = 0;
+    }
+    // Trigger a specific user tutorial overlay.
+    optional TutorialId tutorial_id = 9;
   }
 
   optional FuseboxAction fusebox_action = 8;
