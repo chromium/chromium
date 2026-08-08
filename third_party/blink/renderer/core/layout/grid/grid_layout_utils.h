@@ -183,6 +183,13 @@ LayoutUnit GetLogicalBaseline(const LogicalBoxFragment& baseline_fragment,
                               FontBaseline font_baseline,
                               bool is_last_baseline);
 
+// Returns an item's baseline extra margin: its baseline-side margin plus the
+// surrounding subgrid's edge margin.
+LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
+                                     const SubgriddedItemData& subgridded_item,
+                                     GridTrackSizingDirection track_direction,
+                                     WritingMode writing_mode);
+
 // Updates `layout_data` with a baseline value on the appropriate track for the
 // given item, based on its baseline-sharing group (major → start-most track,
 // minor → end-most track).
@@ -200,6 +207,18 @@ void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
                        LayoutUnit extra_margin,
                        GridLayoutData& layout_data,
                        GridItemData& item);
+
+// Builds the baseline fragment for a measured item, derives its extra margin,
+// and stores its baseline via `StoreItemBaseline`. Returns early for items
+// that aren't baseline aligned.
+void MeasureAndStoreItemBaseline(const LayoutResult& result,
+                                 GridItemData& item,
+                                 const SubgriddedItemData& subgridded_item,
+                                 const ConstraintSpace& space,
+                                 GridTrackSizingDirection track_direction,
+                                 FontBaseline font_baseline,
+                                 WritingMode writing_mode,
+                                 GridLayoutData& layout_data);
 
 // Computes the baseline offset for aligning a grid item within its
 // baseline-sharing group. Returns the offset needed to align the item's

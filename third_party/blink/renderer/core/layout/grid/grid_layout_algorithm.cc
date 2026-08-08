@@ -548,27 +548,6 @@ LayoutUnit Baseline(const GridItemData& grid_item,
   return GetTrackBaseline(grid_item, layout_data, track_direction);
 }
 
-LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
-                                     const SubgriddedItemData& subgridded_item,
-                                     GridTrackSizingDirection track_direction,
-                                     WritingMode writing_mode) {
-  const auto& track_collection = (track_direction == kForColumns)
-                                     ? subgridded_item.Columns(writing_mode)
-                                     : subgridded_item.Rows(writing_mode);
-  const auto& [begin_set_index, end_set_index] =
-      subgridded_item->SetIndices(track_collection.Direction());
-
-  const LayoutUnit extra_margin =
-      (subgridded_item->BaselineGroup(track_direction) == BaselineGroup::kMajor)
-          ? track_collection.StartExtraMargin(begin_set_index)
-          : track_collection.EndExtraMargin(end_set_index);
-
-  return extra_margin +
-         (subgridded_item->IsLastBaselineSpecified(track_direction)
-              ? margins.block_end
-              : margins.block_start);
-}
-
 LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
                                       const GridItemData& subgrid_data,
                                       const ConstraintSpace& space) {
@@ -1049,28 +1028,9 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const auto* result =
         LayoutGridItemForMeasure(grid_item, space, sizing_constraint);
 
-    const auto baseline_writing_direction =
-        grid_item.BaselineWritingDirection(track_direction);
-    const LogicalBoxFragment baseline_fragment(
-        baseline_writing_direction,
-        To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
-
-    const bool has_synthesized_baseline =
-        !baseline_fragment.FirstBaseline().has_value();
-    grid_item.SetAlignmentFallback(track_direction, has_synthesized_baseline);
-
-    if (!grid_item.IsBaselineAligned(track_direction)) {
-      continue;
-    }
-
-    const LayoutUnit extra_margin = GetExtraMarginForBaseline(
-        ComputeMarginsFor(space, grid_item.node.Style(),
-                          baseline_writing_direction),
-        subgridded_item, track_direction, writing_mode);
-
-    StoreItemBaseline(baseline_fragment, track_direction,
-                      grid_item.parent_grid_font_baseline, extra_margin,
-                      layout_data, grid_item);
+    MeasureAndStoreItemBaseline(
+        *result, grid_item, subgridded_item, space, track_direction,
+        grid_item.parent_grid_font_baseline, writing_mode, layout_data);
   }
 }
 
