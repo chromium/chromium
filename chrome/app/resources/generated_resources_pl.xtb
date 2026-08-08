@@ -2049,6 +2049,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2598710988533271874">Dostępna jest nowa wersja Chrome</translation>
 <translation id="2599048253926156421">Nazwa użytkownika została skopiowana do schowka</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Wyłączono 1 niebezpieczne rozszerzenie}few{Wyłączono {NUM_SITES} niebezpieczne rozszerzenia}many{Wyłączono {NUM_SITES} niebezpiecznych rozszerzeń}other{Wyłączono {NUM_SITES} niebezpiecznego rozszerzenia}}</translation>
+<translation id="2603121359676416582">Na tej stronie</translation>
 <translation id="2604129989323098489">Strony zwykle proszą o informacje o wyświetlaczach, aby inteligentnie rozmieszczać otwierane okna. Przydaje się to np. przy wyświetlaniu dokumentów czy treści pełnoekranowych obok siebie.</translation>
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
 <translation id="2604805099836652105">Formularz adresu (<ph name="ADDRESS_LABEL" />) został wypełniony.</translation>
@@ -2961,6 +2962,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3285329711156774325">Wyszukaj umiejętności</translation>
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="328571385944182268">Zapisywać Twoje hasła?</translation>
+<translation id="3285969135399641759">Opanuj nową umiejętność</translation>
 <translation id="3289668031376215426">Automatyczne wstawianie wielkich liter</translation>
 <translation id="3289856944988573801">Jeśli chcesz sprawdzić aktualizacje, użyj Ethernetu lub Wi-Fi.</translation>
 <translation id="3290249595466894471">Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, żeby pomóc w wykrywaniu nowych zagrożeń.</translation>
@@ -6360,6 +6362,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5939719276406088041">Nie można utworzyć skrótu</translation>
 <translation id="5939723110967488589">Wybierz przyciski widoczne na pasku narzędzi</translation>
 <translation id="594048410531370124">Nierozpoznany klawisz. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Uzyskaj poradę</translation>
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google.}few{{PASSWORD_COUNT} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{{PASSWORD_COUNT} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{{PASSWORD_COUNT} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="594221546068848596">Przeszukaj stronę narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

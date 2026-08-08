@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Ünvan və axtarış paneli</translation>
 <translation id="2826760142808435982">Bağlantı şifrələnib və <ph name="CIPHER" /> işlədərək doğrulanıb və açar mübadiləsi olaraq <ph name="KX" /> işlədir.</translation>
 <translation id="2828797285817981634">Hazırda hərəkət sensorlarına icazə verilir</translation>
-<translation id="2835170189407361413">Formanı təmizləyin</translation>
 <translation id="2835907903001172712">Brauzer icmalı</translation>
 <translation id="2837891525090413132">Klaviaturanı kilidləmək və istifadə etmək istəyə bilər</translation>
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
@@ -3292,7 +3291,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6679354743514146922">Chrome brauzeri <ph name="APP_NAME" /> tətbiqində parolu doldurmağa çalışır.</translation>
 <translation id="668132230070712111">Video Google Diskdə yadda saxlanıldı</translation>
 <translation id="6681790815630918386">CVC yadda saxlandı</translation>
-<translation id="6686570026048064255">Pix kod aşkarlamasını söndürmək üçün <ph name="BEGIN_LINK1" />Chrome ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="6687230248707087982">Zərf (sadə)</translation>
 <translation id="6687335167692595844">Şrift ölçüsü üzrə sorğu göndərildi</translation>
 <translation id="6688743156324860098">Güncəlləmə…</translation>
@@ -4433,6 +4431,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8708134712139312373">Saytlar Bluetooth cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="8710842507289500830">Şrift üslubu</translation>
 <translation id="8712637175834984815">Anladım</translation>
+<translation id="8715198179991802709">Chrome indicə daxil olmağa çalışdığınız veb-saytı işarələdi. 1 dəqiqəlik sorğuda iştirak edərək bu xəbərdarlıqları təkmilləşdirməyimizə kömək edin.</translation>
 <translation id="8718314106902482036">Ödəniş tamamlanmadı</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, təklif edilən axtarış</translation>
 <translation id="8719528812645237045">Yuxarıdan çoxsaylı deşik açın</translation>

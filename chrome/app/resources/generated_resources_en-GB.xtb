@@ -2068,6 +2068,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2598710988533271874">New Chrome available</translation>
 <translation id="2599048253926156421">Username copied to clipboard</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Turned off 1 unsafe extension}other{Turned off {NUM_SITES} unsafe extensions}}</translation>
+<translation id="2603121359676416582">For this page</translation>
 <translation id="2604129989323098489">Sites usually ask for information about your displays so that they can open and place windows intelligently, like showing documents or full-screen content side by side</translation>
 <translation id="2604255671529671813">Network connection error</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> address form filled.</translation>
@@ -2982,6 +2983,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3285329711156774325">Search skills</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="328571385944182268">Save your passwords?</translation>
+<translation id="3285969135399641759">Learn a new skill</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
 <translation id="3289856944988573801">To check for updates, please use Ethernet or Wi-Fi.</translation>
 <translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
@@ -6388,6 +6390,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5939719276406088041">Can't create shortcut</translation>
 <translation id="5939723110967488589">Choose which buttons show in the toolbar</translation>
 <translation id="594048410531370124">Unrecognised key. Press any key to <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Get advice</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account.}other{{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
 <translation id="594221546068848596">Search page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

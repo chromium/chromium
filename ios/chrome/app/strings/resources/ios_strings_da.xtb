@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder.</translation>
 <translation id="2424805048070062787">Fortsæt med denne fane</translation>
 <translation id="2426805022920575512">Vælg en anden konto</translation>
+<translation id="2428543302546523788">Vis links, når Læsetilstand er aktiveret</translation>
 <translation id="243275146591958220">Annuller download</translation>
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for at browse i inkognito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Hvad kan jeg gøre med Gemini i Chrome?</translation>
 <translation id="2473876017985765807">Du har allerede gemt en adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Du kan indstille en påmindelse om at vende tilbage til denne side senere</translation>
+<translation id="2476554421818031422">Du hjælper med at gøre Forbedret autofyld bedre</translation>
 <translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2484459871750294497">Hvordan aktiverer jeg denne funktion?</translation>
@@ -2068,6 +2070,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Skjul indtil videre</translation>
 <translation id="7825973332242257878">Fanegrupper</translation>
+<translation id="7828344837949522075">Vis forslag?</translation>
 <translation id="7839994177130598711">Dine familiemedlemmer kan nu benytte dit brugernavn og din adgangskode, når de bruger Google Adgangs­kode­admin­istrator til at logge ind på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Søg efter kopieret tekst</translation>
 <translation id="7841418003178675048">Vælg, hvilke kort du vil se på siden Ny fane.</translation>

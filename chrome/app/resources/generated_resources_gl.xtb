@@ -2055,6 +2055,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2598710988533271874">Nova versión de Chrome dispoñible</translation>
 <translation id="2599048253926156421">Copiouse o nome do usuario no portapapeis</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Desactivouse 1 extensión non segura}other{Desactiváronse {NUM_SITES} extensións non seguras}}</translation>
+<translation id="2603121359676416582">Para esta páxina</translation>
 <translation id="2604129989323098489">Os sitios adoitan pedir información acerca das túas pantallas para poder abrir e colocar ventás de xeito intelixente (por exemplo, para mostrar documentos ou contido en pantalla completa en paralelo)</translation>
 <translation id="2604255671529671813">Produciuse un erro de conexión de rede</translation>
 <translation id="2604805099836652105">Formulario de enderezo de <ph name="ADDRESS_LABEL" /> cuberto.</translation>
@@ -2969,6 +2970,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3285329711156774325">Busca habilidades</translation>
 <translation id="3285500645985761267">Permitir que os sitios relacionados vexan a túa actividade no grupo</translation>
 <translation id="328571385944182268">Queres gardar os teus contrasinais?</translation>
+<translation id="3285969135399641759">Aprende unha nova habilidade</translation>
 <translation id="3289668031376215426">Usar maiúsculas automaticamente</translation>
 <translation id="3289856944988573801">Para consultar se hai actualizacións, utiliza unha Ethernet ou unha wifi.</translation>
 <translation id="3290249595466894471">Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas</translation>
@@ -6376,6 +6378,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5939719276406088041">Non se puido crear o atallo</translation>
 <translation id="5939723110967488589">Escolle que botóns se mostran na barra de ferramentas</translation>
 <translation id="594048410531370124">Non se recoñeceu a tecla. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Recibir consellos</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Hai 1 contrasinal gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.}other{Hai {PASSWORD_COUNT} contrasinais gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
 <translation id="594221546068848596">Buscar na páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -7561,7 +7564,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6863496016067551393">Sitios nos que se permite o uso de todas as extensións</translation>
 <translation id="686366188661646310">Queres eliminar o contrasinal?</translation>
 <translation id="6863925886424789941">O Coliseo</translation>
-<translation id="6865313869410766144">Autocompletar datos do formulario</translation>
+<translation id="6865313869410766144">Datos para autocompletar formularios</translation>
 <translation id="6865708901122695652">Rexistros de eventos WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Mínimo</translation>
 <translation id="686664946474413495">Temperatura da cor</translation>

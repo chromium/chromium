@@ -2055,6 +2055,7 @@
 <translation id="2598710988533271874">有新版 Chrome 可安裝</translation>
 <translation id="2599048253926156421">使用者名稱已複製到剪貼簿</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{已關閉 1 個不安全的擴充功能}other{已關閉 {NUM_SITES} 個不安全的擴充功能}}</translation>
+<translation id="2603121359676416582">針對這個頁面</translation>
 <translation id="2604129989323098489">網站通常會要求你提供螢幕的相關資訊，以便視情況開啟視窗並調整視窗位置，例如並排顯示文件或全螢幕內容</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
 <translation id="2604805099836652105">已填寫<ph name="ADDRESS_LABEL" />地址表單。</translation>
@@ -2966,6 +2967,7 @@
 <translation id="3285329711156774325">搜尋技能</translation>
 <translation id="3285500645985761267">允許相關網站查看你在群組中的活動</translation>
 <translation id="328571385944182268">要儲存密碼嗎？</translation>
+<translation id="3285969135399641759">學習新技能</translation>
 <translation id="3289668031376215426">自動大寫</translation>
 <translation id="3289856944988573801">如要檢查更新，請使用乙太網路或 Wi-Fi。</translation>
 <translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
@@ -6364,6 +6366,7 @@
 <translation id="5939719276406088041">無法建立捷徑</translation>
 <translation id="5939723110967488589">選擇工具列要顯示的按鈕</translation>
 <translation id="594048410531370124">無法辨識的按鍵。按下任意鍵即可<ph name="RESPONSE" />。</translation>
+<translation id="5940614040566393493">取得建議</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {PASSWORD_COUNT} 組密碼只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="594221546068848596">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 搜尋網頁</translation>
@@ -7221,7 +7224,7 @@
 <translation id="6619243162837544323">網路狀態</translation>
 <translation id="6619801788773578757">新增 Kiosk 應用程式</translation>
 <translation id="6619990499523117484">確認你的 PIN 碼</translation>
-<translation id="6621282332208609777">向 Google 提問或輸入網址</translation>
+<translation id="6621282332208609777">問問 Google 或輸入網址</translation>
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>

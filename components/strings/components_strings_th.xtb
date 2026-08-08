@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
 <translation id="2826760142808435982">การเชื่อมต่อถูกเข้ารหัสและรับรองความถูกต้องโดยใช้ <ph name="CIPHER" /> และใช้ <ph name="KX" /> เป็นกลไกการแลกเปลี่ยนคีย์</translation>
 <translation id="2828797285817981634">อนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวในตอนนี้</translation>
-<translation id="2835170189407361413">ล้างฟอร์ม</translation>
 <translation id="2835907903001172712">ภาพรวมของเบราว์เซอร์</translation>
 <translation id="2837891525090413132">ขอล็อกและใช้แป้นพิมพ์ของคุณได้</translation>
 <translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922">เบราว์เซอร์ Chrome กำลังพยายามป้อนรหัสผ่านของคุณใน <ph name="APP_NAME" /></translation>
 <translation id="668132230070712111">บันทึกวิดีโอไปยัง Google ไดรฟ์แล้ว</translation>
 <translation id="6681790815630918386">บันทึก CVC แล้ว</translation>
-<translation id="6686570026048064255">หากต้องการปิดการตรวจหาโค้ด Pix ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่า Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ซอง (ธรรมดา)</translation>
 <translation id="6687335167692595844">ขอขนาดแบบอักษรแล้ว</translation>
 <translation id="6688743156324860098">อัปเดต…</translation>
@@ -4438,6 +4436,7 @@
 <translation id="8708134712139312373">สามารถขอเชื่อมต่อกับอุปกรณ์บลูทูธได้</translation>
 <translation id="8710842507289500830">รูปแบบตัวอักษร</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
+<translation id="8715198179991802709">Chrome เพิ่งแจ้งเตือนเกี่ยวกับเว็บไซต์ที่คุณพยายามเข้าชม ช่วยเราปรับปรุงคำเตือนเหล่านี้โดยตอบแบบสำรวจซึ่งใช้เวลาเพียง 1 นาที</translation>
 <translation id="8718314106902482036">การชำระเงินไม่เสร็จสมบูรณ์</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, คำแนะนำการค้นหา</translation>
 <translation id="8719528812645237045">เจาะรูด้านบนหลายรู</translation>

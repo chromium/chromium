@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">پلاستیک</translation>
 <translation id="2027707238798802149">کارت دردسترس نیست</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />بررسی پروکسی و دیوار آتش<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">‏این نمونه از Chrome با پرچم‌های خط فرمانی که به‌صورت دستی تنظیم شده‌اند درحال اجرا است. توجه داشته باشید که پرچم‌های خط فرمان ممکن است هر زمان تغییر کنند و پشتیبانی نمی‌شوند.</translation>
 <translation id="2033900728810589426">میان‌بر نباید با کلیدواژه ارائه‌دهنده جستجوی پیش‌فرض که <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
 <translation id="2036514476578229158">‏درخواست کرده‌اید از این سایت بازدید کنید. والدینتان می‌توانند در Family Link پاسخ دهند.</translation>
@@ -1062,7 +1063,6 @@
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
 <translation id="2828797285817981634">حسگرهای حرکتی فعلاً مجاز هستند</translation>
-<translation id="2835170189407361413">پاک کردن فرم</translation>
 <translation id="2835907903001172712">نمای کلی مرورگر</translation>
 <translation id="2837891525090413132">می‌تواند برای قفل کردن و استفاده از صفحه‌کلید درخواست دهد</translation>
 <translation id="2839032553903800133">اعلان‌ها مسدود شدند</translation>
@@ -3296,7 +3296,6 @@
 <translation id="6679354743514146922">‏مرورگر Chrome می‌خواهد گذرواژه‌تان را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="668132230070712111">‏ویدیو در Google Drive ذخیره شد.</translation>
 <translation id="6681790815630918386">کد تأیید کارت ذخیره شد</translation>
-<translation id="6686570026048064255">‏برای خاموش کردن شناسایی کد Pix، به <ph name="BEGIN_LINK1" />«تنظیمات Chrome»<ph name="END_LINK1" /> بروید</translation>
 <translation id="6687230248707087982">پاکت (ساده)</translation>
 <translation id="6687335167692595844">اندازه قلم درخواست شد</translation>
 <translation id="6688743156324860098">به‌روزرسانی…</translation>
@@ -4438,6 +4437,7 @@
 <translation id="8708134712139312373">می‌تواند برای اتصال به دستگاه‌های بلوتوث درخواست دهد</translation>
 <translation id="8710842507289500830">سبک قلم</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
+<translation id="8715198179991802709">‏‫Chrome به‌تازگی وب‌سایتی را که می‌خواستید بازدید کنید پرچم‌گذاری کرد. با تکمیل این نظرسنجی ۱-دقیقه‌ای به ما کمک کنید این هشدارها را بهبود ببخشیم.</translation>
 <translation id="8718314106902482036">پرداخت کامل نشد</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، پیشنهاد جستجو</translation>
 <translation id="8719528812645237045">چند سوراخ در بالا</translation>

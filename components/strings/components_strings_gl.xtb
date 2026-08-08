@@ -1062,7 +1062,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2824775600643448204">Barra de enderezos e de busca</translation>
 <translation id="2826760142808435982">A conexión cífrase e autentícase con <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
 <translation id="2828797285817981634">Permiso concedido para usar os sensores por agora</translation>
-<translation id="2835170189407361413">Borrar formulario</translation>
 <translation id="2835907903001172712">Vista xeral do navegador</translation>
 <translation id="2837891525090413132">Pode pedir permiso para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
@@ -3296,7 +3295,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6679354743514146922">O navegador Chrome está tentando completar o teu contrasinal en <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Gardouse o vídeo en Google Drive</translation>
 <translation id="6681790815630918386">CVC gardado</translation>
-<translation id="6686570026048064255">Para desactivar a detección de código de Pix, vai á <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sobre (normal)</translation>
 <translation id="6687335167692595844">Tamaño do tipo de letra solicitado</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -4437,6 +4435,7 @@ Detalles adicionais:
 <translation id="8708134712139312373">Pode pedirche permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo do tipo de letra</translation>
 <translation id="8712637175834984815">De acordo</translation>
+<translation id="8715198179991802709">Chrome acaba de marcar un sitio web que estabas tentando visitar. Dedica un minutiño a cubrir esta enquisa para axudarnos a mellorar estas advertencias.</translation>
 <translation id="8718314106902482036">Non se completou o pago</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suxestión de busca</translation>
 <translation id="8719528812645237045">Varias perforacións na parte superior</translation>

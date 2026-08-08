@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">ঠিকনা আৰু সন্ধানৰ বাৰ</translation>
 <translation id="2826760142808435982">এই সংযোগটো এনক্ৰিপ্ট কৰিবলৈ তথা সেইটোৰ বিশ্বাসযোগ্যতাৰ সত্যাপন কৰিবলৈ <ph name="CIPHER" /> ব্যৱহাৰ কৰা হৈছে আৰু সেইটোৱে <ph name="KX" />ক সলনা সলনিৰ মুখ্য উপায় হিচাপে ব্যৱহাৰ কৰে।</translation>
 <translation id="2828797285817981634">বৰ্তমান ম’শ্বন ছেন্সৰৰ অনুমতি দিয়া হৈছে</translation>
-<translation id="2835170189407361413">ফর্ম মচক</translation>
 <translation id="2835907903001172712">ব্ৰাউজাৰৰ ৰূপৰেখা</translation>
 <translation id="2837891525090413132">আপোনাৰ কীব’ৰ্ড লক আৰু ব্যৱহাৰ কৰিবলৈ ক’ব পাৰে</translation>
 <translation id="2839032553903800133">জাননীসমূহ অৱৰোধ কৰা হৈছে</translation>
@@ -3291,7 +3290,6 @@
 <translation id="6679354743514146922">Chrome ব্ৰাউজাৰে <ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ড পূৰ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="668132230070712111">ভিডিঅ’ Google Driveত ছেভ কৰা হৈছে</translation>
 <translation id="6681790815630918386">CVC ছেভ কৰা হৈছে</translation>
-<translation id="6686570026048064255">Pix ক’ড চিনাক্তকৰণ অফ কৰিবলৈ, <ph name="BEGIN_LINK1" />Chromeৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="6687230248707087982">এনভেল’প (উকা)</translation>
 <translation id="6687335167692595844">ফ’ণ্টৰ আকাৰ অনুৰোধ কৰা হৈছে</translation>
 <translation id="6688743156324860098">আপডে’ট কৰক…</translation>
@@ -4432,6 +4430,7 @@
 <translation id="8708134712139312373">ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="8710842507289500830">ফ’ণ্টৰ শৈলী</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
+<translation id="8715198179991802709">আপুনি চাবলৈ চেষ্টা কৰা এটা ৱেবছাইট Chromeএ এইমাত্ৰ ফ্লেগ কৰিছে। ১ মিনিটৰ এটা সমীক্ষাত অংশগ্ৰহণ কৰি আমাক এই সকীয়নিসমূহ উন্নত কৰাত সহায় কৰক।</translation>
 <translation id="8718314106902482036">পৰিশোধ সম্পূৰ্ণ কৰা নহ’ল</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, সন্ধানৰ পৰামৰ্শ</translation>
 <translation id="8719528812645237045">ওপৰৰ অংশত একাধিক পাঞ্চ কৰক</translation>

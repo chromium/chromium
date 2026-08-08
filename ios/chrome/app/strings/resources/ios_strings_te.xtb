@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">మీరు దీన్ని తొలగించినట్లయితే, అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు, ఇంకా ఇది అన్ని పరికరాల నుండి తొలగించబడుతుంది.</translation>
 <translation id="2424805048070062787">ఈ ట్యాబ్‌తో కొనసాగించండి</translation>
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
+<translation id="2428543302546523788">రీడింగ్ మోడ్ ఆన్ అయిన తర్వాత లింక్‌లను చూడండి</translation>
 <translation id="243275146591958220">డౌన్‌లోడ్‌ను రద్దు చేయండి</translation>
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
 <translation id="2434918313224755415">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి ఎడమ వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chromeలో Geminiతో నేను ఏమి చేయగలను?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" />లో మీరు ఇప్పటికే పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="247430852844518481">ఈ పేజీని తర్వాత మళ్ళీ సందర్శించడానికి మీరు రిమైండర్‌ను సెట్ చేయవచ్చు</translation>
+<translation id="2476554421818031422">మెరుగైన ఆటోఫిల్‌ను మరింత ఇంప్రూవ్ చేయడంలో మీరు సాయం చేస్తున్నారు</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2484459871750294497">నేను ఈ ఫీచర్‌ను ఎలా ఎనేబుల్ చేయగలను?</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">డౌన్‌లోడ్‌లు</translation>
 <translation id="7815852444315004084">ప్రస్తుతానికి దాచండి</translation>
 <translation id="7825973332242257878">ట్యాబ్ గ్రూప్‌లు</translation>
+<translation id="7828344837949522075">సూచనను చూడండి</translation>
 <translation id="7839994177130598711">మీ ఫ్యామిలీ మెంబర్‌లు, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="7841180087127694526">కాపీ చేసిన టెక్స్ట్ కోసం సెర్చ్ చేయండి</translation>
 <translation id="7841418003178675048">మీ కొత్త ట్యాబ్ పేజీలో మీకు ఏ కార్డ్స్ కనిపించాలో ఎంచుకోండి.</translation>

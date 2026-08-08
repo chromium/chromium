@@ -1062,7 +1062,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2824775600643448204">Adresse- og søkefelt</translation>
 <translation id="2826760142808435982">Tilkoblingen er kryptert ved hjelp av <ph name="CIPHER" />, og bruker <ph name="KX" /> som mekanisme for nøkkelutveksling.</translation>
 <translation id="2828797285817981634">Bevegelsessensorer er tillatt for øyeblikket</translation>
-<translation id="2835170189407361413">Slett skjemaet</translation>
 <translation id="2835907903001172712">Nettleseroversikt</translation>
 <translation id="2837891525090413132">Kan be om å få låse og bruke tastaturet</translation>
 <translation id="2839032553903800133">Varsler er blokkert</translation>
@@ -3296,7 +3295,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6679354743514146922">Chrome-nettleseren prøver å fylle ut passordet ditt på <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videoen er lagret i Google Disk</translation>
 <translation id="6681790815630918386">Verifiseringskoden er lagret</translation>
-<translation id="6686570026048064255">For å slå av gjenkjenning av Pix-koder, gå til <ph name="BEGIN_LINK1" />Chrome-innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Konvolutt (vanlig)</translation>
 <translation id="6687335167692595844">Forespurt skriftstørrelse</translation>
 <translation id="6688743156324860098">Oppdater …</translation>
@@ -4437,6 +4435,7 @@ Mer informasjon:
 <translation id="8708134712139312373">Kan be om å få koble til Bluetooth-enheter</translation>
 <translation id="8710842507289500830">Skriftstil</translation>
 <translation id="8712637175834984815">Skjønner</translation>
+<translation id="8715198179991802709">Chrome har nettopp flagget et nettsted du prøvde å besøke. Hjelp oss med å forbedre disse advarslene ved å svare på en undersøkelse. Det tar ett minutt.</translation>
 <translation id="8718314106902482036">Betalingen er ikke fullført</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, søkeforslag</translation>
 <translation id="8719528812645237045">Flere hull topp</translation>

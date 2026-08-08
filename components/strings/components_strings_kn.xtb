@@ -1061,7 +1061,6 @@
 <translation id="2824775600643448204">ವಿಳಾಸ ಹಾಗೂ ಹುಡುಕಾಟ ಪಟ್ಟಿ</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ಬಳಸಿಕೊಂಡು ಸಂಪರ್ಕವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ದೃಢೀಕರಿಸಲಾಗಿದೆ ಮತ್ತು <ph name="KX" /> ಅನ್ನು ಕೀ ವಿನಿಮಯ ಯಾಂತ್ರಿಕತೆಯಂತೆ ಬಳಸುತ್ತದೆ.</translation>
 <translation id="2828797285817981634">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಸದ್ಯಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
-<translation id="2835170189407361413">ಫಾರ್ಮ್ ತೆರವುಗೊಳಿಸು</translation>
 <translation id="2835907903001172712">ಬ್ರೌಸರ್ ಅವಲೋಕನ</translation>
 <translation id="2837891525090413132">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="2839032553903800133">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -3292,7 +3291,6 @@
 <translation id="6679354743514146922">Chrome <ph name="APP_NAME" /> ಬ್ರೌಸರ್‌ ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತುಂಬಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="668132230070712111">ವೀಡಿಯೊವನ್ನು Google Drive ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6681790815630918386">CVC ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="6686570026048064255">Pix ಕೋಡ್ ಪತ್ತೆಹಚ್ಚುವಿಕೆಯನ್ನು ಆಫ್ ಮಾಡಲು, <ph name="BEGIN_LINK1" />Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ಎನ್ವಲಪ್ (ಖಾಲಿ)</translation>
 <translation id="6687335167692595844">ವಿನಂತಿಸಲಾದ ಫಾಂಟ್ ಗಾತ್ರ</translation>
 <translation id="6688743156324860098">ಅಪ್‌ಡೇಟ್ ಮಾಡಿ…</translation>
@@ -4434,6 +4432,7 @@
 <translation id="8708134712139312373">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="8710842507289500830">ಫಾಂಟ್ ಶೈಲಿ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
+<translation id="8715198179991802709">ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು Chrome ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದೆ. 1-ನಿಮಿಷದ ಸಮೀಕ್ಷೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳುವ ಮೂಲಕ ಈ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ.</translation>
 <translation id="8718314106902482036">ಪಾವತಿ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ಹುಡುಕಾಟ ಸಲಹೆ</translation>
 <translation id="8719528812645237045">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಅನೇಕ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>

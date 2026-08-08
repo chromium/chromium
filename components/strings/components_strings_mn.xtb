@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Хаяг ба хайлтын цонх</translation>
 <translation id="2826760142808435982">Энэхүү холболтыг <ph name="CIPHER" /> ашиглаж шифрлэж таниулсан бөгөөд энэ нь түлхүүр солилцох  механизмын дагуу <ph name="KX" />-ыг ашигладаг.</translation>
 <translation id="2828797285817981634">Одоогоор хөдөлгөөн мэдрэгчийг зөвшөөрсөн</translation>
-<translation id="2835170189407361413">Маягтыг цэвэрлэх</translation>
 <translation id="2835907903001172712">Хөтчийн тойм</translation>
 <translation id="2837891525090413132">Таны гарыг түгжиж, ашиглахыг хүсэх боломжтой</translation>
 <translation id="2839032553903800133">Мэдэгдлийг хориглосон</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome хөтөч таны нууц үгийг <ph name="APP_NAME" /> дээр бөглөхөөр оролдож байна.</translation>
 <translation id="668132230070712111">Видеог Google Драйвт хадгалсан</translation>
 <translation id="6681790815630918386">Карт баталгаажуулалтын кодыг хадгалсан</translation>
-<translation id="6686570026048064255">Pix код илрүүлэхийг унтраахын тулд <ph name="BEGIN_LINK1" />Chrome-н тохиргоо<ph name="END_LINK1" /> руу очно уу</translation>
 <translation id="6687230248707087982">Дугтуй (энгийн)</translation>
 <translation id="6687335167692595844">Фонтын хэмжээг шаардсан</translation>
 <translation id="6688743156324860098">Шинэчлэх…</translation>

@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će se izbrisati sa svih uređaja.</translation>
 <translation id="2424805048070062787">Nastavite s ovom karticom</translation>
 <translation id="2426805022920575512">Odaberi drugi račun</translation>
+<translation id="2428543302546523788">Prikaži veze nakon uključivanja prozora za čitanje</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
 <translation id="2434405374328098816">Već ste spremili zaporku za korisničko ime <ph name="USERNAME" /> na web-lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Da biste pregledavali u anonimnom načinu, pomaknite se ulijevo.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Što mi omogućuje Gemini u Chromeu?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Možete postaviti podsjetnik da kasnije ponovo posjetite ovu stranicu</translation>
+<translation id="2476554421818031422">Pomažete unaprijediti poboljšano automatsko popunjavanje</translation>
 <translation id="2479148705183875116">Otvori Postavke</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2484459871750294497">Kako mogu omogućiti ovu značajku?</translation>
@@ -2068,6 +2070,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="78146569776629510">Preuzimanja</translation>
 <translation id="7815852444315004084">Zasad sakrij</translation>
 <translation id="7825973332242257878">Grupe kartica</translation>
+<translation id="7828344837949522075">Prikaži prijedlog</translation>
 <translation id="7839994177130598711">Članovi obitelji sada mogu koristiti vaše korisničko ime i zaporku kad upotrebljavaju Google upravitelj zaporki za prijavu na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Pretražite tekst koji ste kopirali</translation>
 <translation id="7841418003178675048">Odaberite koje će se kartice prikazivati na novoj kartici preglednika.</translation>

@@ -116,6 +116,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1414919006379339073">Fechar janela atual</translation>
 <translation id="1416550906796893042">Versão da aplicação</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Gerir motores de pesquisa</translation>
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1437543266176261764">Em execução na app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
@@ -1986,6 +1987,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8995521496079646922">As apps que escolheu vão ser usadas por predefinição. Se uma app ainda não estiver neste dispositivo, vai ser transferida em breve.</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>
 <translation id="8998837250940831980">Não foi possível minimizar o separador. Tente mais tarde.</translation>
+<translation id="9000089900434778519">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>
 <translation id="9001604755921395912">Abrir separador anónimo Chrome</translation>
 <translation id="9010094279589497751">Abra rapidamente o Gemini sempre que precisar</translation>
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>

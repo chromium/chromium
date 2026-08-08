@@ -2058,6 +2058,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2598710988533271874">Yeni Chrome əlçatandır</translation>
 <translation id="2599048253926156421">İstifadəçi adı mübadilə buferinə kopyalandı</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 təhlükəli artırma deaktiv edildi}other{{NUM_SITES} təhlükəli artırma deaktiv edildi}}</translation>
+<translation id="2603121359676416582">Bu səhifə üçün</translation>
 <translation id="2604129989323098489">Saytlar adətən sənədləri və ya tam ekran məzmununu yan-yana göstərmək kimi pəncərələri aça və yerləşdirməyə imkan vermək üçün ekranlarınız haqqında məlumat tələb edir.</translation>
 <translation id="2604255671529671813">Şəbəkə bağlantı xətası</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> ünvan forması dolduruldu.</translation>
@@ -2972,6 +2973,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3285329711156774325">Bacarıqları axtarın</translation>
 <translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
 <translation id="328571385944182268">Parollar yadda saxlanılsın?</translation>
+<translation id="3285969135399641759">Yeni bacarıq öyrənin</translation>
 <translation id="3289668031376215426">Avto-kapitalizasiya</translation>
 <translation id="3289856944988573801">Güncəlləşmələri yoxlamaq üçün Ethernet və ya Wi-Fi istifadə edin.</translation>
 <translation id="3290249595466894471">Həmçinin yeni təhlükələri aşkarlamaqda kömək məqsədilə səhifə, endirmə, artırma fəaliyyətindən ibarət kiçik nümunə göndərir</translation>
@@ -6376,6 +6378,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5939719276406088041">Qısayol yaratmaq olmur</translation>
 <translation id="5939723110967488589">Alətlər panelində hansı düymələrin göstərildiyini seçin</translation>
 <translation id="594048410531370124">Tanınmayan düymə. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
+<translation id="5940614040566393493">Məsləhət alın</translation>
 <translation id="5941711191222866238">Minimallaşdırın</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 parol yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{{PASSWORD_COUNT} parol yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
 <translation id="594221546068848596">Səhifəni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə axtarın</translation>

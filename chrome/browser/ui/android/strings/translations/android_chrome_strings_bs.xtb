@@ -116,6 +116,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1414919006379339073">Zatvori trenutni prozor</translation>
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1432581352905426595">Upravljaj pretraživačima</translation>
 <translation id="1435593198351412143">Automatski otvaraj PDF-ove</translation>
 <translation id="1437543266176261764">Pokrenuto u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizirajte praćene proizvode u Oznakama</translation>
@@ -1537,6 +1538,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7182520625618447753">Promijenite položaj trake za adresu u gornji ili donji dio za prilagođeno iskustvo pregledanja.</translation>
 <translation id="7183517696921903380">Tabela filtera aplikacija je otvorena.</translation>
 <translation id="7186568385131859684">Upravljajte načinom na koji se historija pregledanja koristi s drugim podacima na Googleovim uslugama</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Zatvaranje zakačene kartice ponovnim pritiskom na ^W}one{Zatvaranje zakačenih kartica ponovnim pritiskom na ^W}few{Zatvaranje zakačenih kartica ponovnim pritiskom na ^W}other{Zatvaranje zakačenih kartica ponovnim pritiskom na ^W}}</translation>
 <translation id="7190921792980745354">Blokirati kontakt <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Trebate je odmah promijeniti}one{Trebate ih odmah promijeniti}few{Trebate ih odmah promijeniti}other{Trebate ih odmah promijeniti}}</translation>
@@ -1985,6 +1987,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8995521496079646922">Aplikacije koje ste odabrali će se koristiti prema zadanim postavkama. Ako neka aplikacija još uvijek nije na uređaju, preuzet će se uskoro.</translation>
 <translation id="8996847606757455498">Odaberite drugog pružaoca</translation>
 <translation id="8998837250940831980">Minimiziranje kartice nije uspjelo. Pokušajte ponovo kasnije.</translation>
+<translation id="9000089900434778519">Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati historiju pretraživanja.</translation>
 <translation id="9001604755921395912">Otvori na anon. kartici Chromea</translation>
 <translation id="9010094279589497751">Brzo otvorite Gemini kada ga trebate</translation>
 <translation id="9012585441087414258">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Ako stranica uradi nešto sumnjivo, URL-ovi i dijelovi sadržaja stranice se šalju na Sigurno pregledanje na Googleu.</translation>

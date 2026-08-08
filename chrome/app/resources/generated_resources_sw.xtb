@@ -2067,6 +2067,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2598710988533271874">Chrome mpya inapatikana</translation>
 <translation id="2599048253926156421">Jina la mtumiaji limenakiliwa kwenye ubao wa kunakili</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Tumezima kiendelezi 1 kisicho salama}other{Tumezima viendelezi {NUM_SITES} visivyo salama}}</translation>
+<translation id="2603121359676416582">Kwa ukurasa huu</translation>
 <translation id="2604129989323098489">Tovuti huhitaji maelezo kuhusu skrini zako ili ziweze kufungua na kuweka madirisha kwa umahiri, kama vile kuonyesha hati au maudhui ya skrini nzima upande kwa upande</translation>
 <translation id="2604255671529671813">Hitilafu ya muunganisho wa mtandao</translation>
 <translation id="2604805099836652105">Fomu ya anwani ya <ph name="ADDRESS_LABEL" /> imejazwa.</translation>
@@ -2981,6 +2982,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3285329711156774325">Tafuta ujuzi</translation>
 <translation id="3285500645985761267">Ruhusu tovuti zinazohusiana kuona shughuli zako kwenye kikundi</translation>
 <translation id="328571385944182268">Ungependa kuhifadhi manenosiri yako?</translation>
+<translation id="3285969135399641759">Jifunze ujuzi mpya</translation>
 <translation id="3289668031376215426">Kuweka herufi kubwa kiotomatiki</translation>
 <translation id="3289856944988573801">Ili kuangalia sasisho, tafadhali tumia Ethernet au Wi-Fi.</translation>
 <translation id="3290249595466894471">Hutuma pia sampuli ndogo ya kurasa, vipakuliwa, shughuli za viendelezi na maelezo ya mfumo ili kusaidia kugundua matukio mapya hatari</translation>
@@ -6385,6 +6387,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5939719276406088041">Imeshindwa kuweka njia ya mkato</translation>
 <translation id="5939723110967488589">Chagua vitufe vinavyoonyeshwa kwenye upau wa vidhibiti</translation>
 <translation id="594048410531370124">Kitufe hicho hakitambuliki. Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Pata ushauri</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Umehifadhi nenosiri 1 kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, lihifadhi kwenye Akaunti yako ya Google.}other{Umehifadhi manenosiri {PASSWORD_COUNT} kwenye kifaa hiki pekee. Ili uyatumie kwenye vifaa vyako vingine, yahifadhi kwenye Akaunti yako ya Google.}}</translation>
 <translation id="594221546068848596">Tafuta Ukurasa ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

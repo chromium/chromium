@@ -1971,7 +1971,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2520644704042891903">Esperando conector disponible...</translation>
 <translation id="2521427645491031107">La sincronización de aplicaciones se establece en los ajustes del dispositivo</translation>
 <translation id="2521835766824839541">pista anterior</translation>
-<translation id="2522757085249311407">Permite que los dispositivos Bluetooth cercanos detecten este dispositivo y se conecten a él.</translation>
+<translation id="2522757085249311407">Permitir que los dispositivos Bluetooth cercanos detecten este dispositivo y se conecten a él.</translation>
 <translation id="2523184218357549926">Envía las URLs de las páginas que visitas a Google</translation>
 <translation id="2524093372979370955">Se inhabilitarán las notificaciones de todos los nuevos periféricos USB del sistema. ¿Seguro que quieres continuar?</translation>
 <translation id="252513908494776481">Preguntar sobre esta pestaña</translation>
@@ -2056,6 +2056,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2598710988533271874">Nuevo Chrome disponible</translation>
 <translation id="2599048253926156421">Nombre de usuario copiado en el portapapeles</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Se ha desactivado 1 extensión no segura}other{Se han desactivado {NUM_SITES} extensiones no seguras}}</translation>
+<translation id="2603121359676416582">Para esta página</translation>
 <translation id="2604129989323098489">Los sitios suelen solicitar información sobre tus pantallas para poder abrir y colocar las ventanas de forma inteligente, por ejemplo, para mostrar en paralelo documentos o contenido en pantalla completa</translation>
 <translation id="2604255671529671813">No se ha podido establecer conexión con la red</translation>
 <translation id="2604805099836652105">Formulario de dirección de <ph name="ADDRESS_LABEL" /> rellenado.</translation>
@@ -2970,6 +2971,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3285329711156774325">Buscar habilidades</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
+<translation id="3285969135399641759">Adquirir una nueva habilidad</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, actividad de extensiones e información del sistema para ayudar a detectar nuevas amenazas.</translation>
@@ -6373,6 +6375,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5939719276406088041">No se puede crear el acceso directo</translation>
 <translation id="5939723110967488589">Elige qué botones quieres que se muestren en la barra de herramientas</translation>
 <translation id="594048410531370124">Tecla no reconocida. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Recibir consejos</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 contraseña está guardada solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google.}other{{PASSWORD_COUNT} contraseñas están guardadas solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google.}}</translation>
 <translation id="594221546068848596">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

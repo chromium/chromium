@@ -1062,7 +1062,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2824775600643448204">Adres- en soekbalk</translation>
 <translation id="2826760142808435982">Die verbinding is geënkripteer en gestaaf deur <ph name="CIPHER" /> te gebruik, en gebruik <ph name="KX" /> as die sleuteluitruilmeganisme.</translation>
 <translation id="2828797285817981634">Bewegingsensors word vir nou toegelaat</translation>
-<translation id="2835170189407361413">Maak vorm skoon</translation>
 <translation id="2835907903001172712">Blaaieroorsig</translation>
 <translation id="2837891525090413132">Kan vra om jou sleutelbord te sluit en te gebruik</translation>
 <translation id="2839032553903800133">Kennisgewings is geblokkeer</translation>
@@ -3296,7 +3295,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6679354743514146922">Chrome-blaaier probeer om jou wagwoord op <ph name="APP_NAME" /> in te vul.</translation>
 <translation id="668132230070712111">Video is in Google Drive gestoor</translation>
 <translation id="6681790815630918386">CVC gestoor</translation>
-<translation id="6686570026048064255">Gaan na <ph name="BEGIN_LINK1" />Chrome-instellings<ph name="END_LINK1" /> toe om Pix-kodebespeuring af te skakel</translation>
 <translation id="6687230248707087982">Koevert (gewoon)</translation>
 <translation id="6687335167692595844">Lettertipegrootte versoek</translation>
 <translation id="6688743156324860098">Dateer op …</translation>
@@ -4437,6 +4435,7 @@ Bykomende besonderhede:
 <translation id="8708134712139312373">Kan vra om aan Bluetooth-toestelle te koppel</translation>
 <translation id="8710842507289500830">Lettertipestyl</translation>
 <translation id="8712637175834984815">Het dit</translation>
+<translation id="8715198179991802709">Chrome het sopas ’n webwerf wat jy probeer besoek het, gevlag. Help ons om hierdie waarskuwings te verbeter deur ’n opname van 1 minuut te voltooi.</translation>
 <translation id="8718314106902482036">Betaling is nie voltooi nie</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, soekvoorstel</translation>
 <translation id="8719528812645237045">Veelvuldige pons bo</translation>

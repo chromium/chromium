@@ -2055,6 +2055,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2598710988533271874">Yeni Chrome kullanılabilir</translation>
 <translation id="2599048253926156421">Kullanıcı adı panoya kopyalandı</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Güvenli olmayan 1 uzantı devre dışı bırakıldı}other{Güvenli olmayan {NUM_SITES} uzantı devre dışı bırakıldı}}</translation>
+<translation id="2603121359676416582">Bu sayfa için</translation>
 <translation id="2604129989323098489">Siteler, pencereleri akıllıca açıp yerleştirebilmek için (ör. dokümanları veya tam ekran içerikleri yan yana göstermek) genellikle ekranlarınız hakkında bilgi ister</translation>
 <translation id="2604255671529671813">Ağ bağlantısı hatası</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> adres formu dolduruldu.</translation>
@@ -2760,7 +2761,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderilemedi}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderilemedi}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Yardım</translation>
 <translation id="3118748462829336648">Yan Paneli Aç</translation>
-<translation id="3119743309973425629">Metin imlecinin yanıp sönme hızı</translation>
+<translation id="3119743309973425629">Metin imlecinin yanıp sönme oranı</translation>
 <translation id="3119948370277171654">Hangi içeriği/URL'yi yayınlıyordunuz?</translation>
 <translation id="3120204271988747891">Siteler, yerel ağınızdaki diğer cihazlara erişmek için izin isteyebilir</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2967,6 +2968,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3285329711156774325">Daha başarılı arama için</translation>
 <translation id="3285500645985761267">İlgili sitelerin gruptaki etkinliğimi görmesine izin ver</translation>
 <translation id="328571385944182268">Şifreleriniz kaydedilsin mi?</translation>
+<translation id="3285969135399641759">Yeni bir beceri edinin</translation>
 <translation id="3289668031376215426">Otomatik büyük harf yap</translation>
 <translation id="3289856944988573801">Güncellemeleri kontrol etmek için lütfen Ethernet veya Kablosuz kullanın.</translation>
 <translation id="3290249595466894471">Ayrıca yeni tehditlerin keşfedilmesine yardımcı olmak için sayfalar, indirmeler, uzantı etkinliği ve sistem bilgilerinden küçük bir örnek gönderir.</translation>
@@ -6373,6 +6375,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5939719276406088041">Kısayol oluşturulamıyor</translation>
 <translation id="5939723110967488589">Araç çubuğunda gösterilecek düğmeleri seçin</translation>
 <translation id="594048410531370124">Tuş tanınamadı. <ph name="RESPONSE" /> için herhangi bir tuşa basın.</translation>
+<translation id="5940614040566393493">Tavsiye alma</translation>
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 şifre yalnızca bu cihazda kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin.}other{{PASSWORD_COUNT} şifre yalnızca bu cihazda kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin.}}</translation>
 <translation id="594221546068848596">Sayfada <ph name="VISUAL_SEARCH_PROVIDER" /> ile arama yap</translation>

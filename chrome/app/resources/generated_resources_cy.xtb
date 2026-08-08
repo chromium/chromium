@@ -2068,6 +2068,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2598710988533271874">Chrome newydd ar gael</translation>
 <translation id="2599048253926156421">Mae'r enw defnyddiwr wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 estyniad anniogel wedi'i ddiffodd}zero{{NUM_SITES} estyniad anniogel wedi'u diffodd}two{{NUM_SITES} estyniad anniogel wedi'u diffodd}few{{NUM_SITES} estyniad anniogel wedi'u diffodd}many{{NUM_SITES} estyniad anniogel wedi'u diffodd}other{{NUM_SITES} estyniad anniogel wedi'u diffodd}}</translation>
+<translation id="2603121359676416582">Ar gyfer y dudalen hon</translation>
 <translation id="2604129989323098489">Mae gwefannau fel arfer yn gofyn am wybodaeth am eich sgriniau fel y gallant agor a gosod ffenestri yn ddeallus, fel dangos dogfennau neu gynnwys sgrîn lawn ochr yn ochr</translation>
 <translation id="2604255671529671813">Bu gwall cysylltiad rhwydwaith</translation>
 <translation id="2604805099836652105">Ffurflen cyfeiriad <ph name="ADDRESS_LABEL" /> wedi'i llenwi.</translation>
@@ -2982,6 +2983,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3285329711156774325">Chwilio sgiliau</translation>
 <translation id="3285500645985761267">Caniatáu i wefannau cysylltiedig weld eich gweithgarwch yn y grŵp</translation>
 <translation id="328571385944182268">Cadw eich cyfrineiriau?</translation>
+<translation id="3285969135399641759">Dysgu sgil newydd</translation>
 <translation id="3289668031376215426">Priflythrennu awtomatig</translation>
 <translation id="3289856944988573801">I weld a oes unrhyw ddiweddariadau, defnyddiwch yr Ether-rwyd neu Wi-Fi.</translation>
 <translation id="3290249595466894471">Hefyd yn anfon sampl fach o dudalennau, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i helpu i ddarganfod bygythiadau newydd</translation>
@@ -6388,6 +6390,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5939719276406088041">Methu â chreu llwybr byr</translation>
 <translation id="5939723110967488589">Dewis pa fotymau sy'n dangos yn y bar offer</translation>
 <translation id="594048410531370124">Bysell heb ei chydnabod. Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Cael cyngor</translation>
 <translation id="5941711191222866238">Lleihau</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Mae 1 cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google.}zero{Mae {PASSWORD_COUNT} cyfrinair yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}two{Mae {PASSWORD_COUNT} gyfrinair yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}few{Mae {PASSWORD_COUNT} chyfrinair yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}many{Mae {PASSWORD_COUNT} chyfrinair yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}other{Mae {PASSWORD_COUNT} cyfrinair yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}}</translation>
 <translation id="594221546068848596">Chwilio tudalen gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -1062,7 +1062,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2824775600643448204">Address bar at bar sa paghahanap</translation>
 <translation id="2826760142808435982">Ine-encrypt at pinapatotoo ang koneksyon gamit ang <ph name="CIPHER" /> at ginagamit ang <ph name="KX" /> bilang key exchange mechanism.</translation>
 <translation id="2828797285817981634">Pinapayagan sa ngayon ang mga sensor ng paggalaw</translation>
-<translation id="2835170189407361413">I-clear ang form</translation>
 <translation id="2835907903001172712">Pangkalahatang-ideya ng browser</translation>
 <translation id="2837891525090413132">Puwedeng hilinging i-lock at gamitin ang iyong keyboard</translation>
 <translation id="2839032553903800133">Naka-block ang mga notification</translation>
@@ -3296,7 +3295,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6679354743514146922">Sinusubukan ng Chrome browser ilagay ang iyong password sa <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Na-save ang video sa Google Drive</translation>
 <translation id="6681790815630918386">Na-save ang CVC</translation>
-<translation id="6686570026048064255">Para ma-off ang pagtukoy ng Pix code, pumunta sa <ph name="BEGIN_LINK1" />mga setting ng Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (Plain)</translation>
 <translation id="6687335167692595844">Hiniling na laki ng font</translation>
 <translation id="6688743156324860098">I-update…</translation>
@@ -4438,6 +4436,7 @@ Mga karagdagang detalye:
 <translation id="8708134712139312373">Puwedeng hilinging kumonekta sa mga Bluetooth device</translation>
 <translation id="8710842507289500830">Istilo ng font</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
+<translation id="8715198179991802709">Na-flag lang ng Chrome ang isang website na sinusubukan mong bisitahin. Tulungan kaming pahusayin ang mga babalang ito sa pamamagitan ng pagsagot sa 1 minutong survey.</translation>
 <translation id="8718314106902482036">Hindi nakumpleto ang pagbabayad</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suhestyon sa paghahanap</translation>
 <translation id="8719528812645237045">Multiple punch top</translation>

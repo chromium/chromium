@@ -568,7 +568,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1975584088563498795">Buzón de correo 10</translation>
 <translation id="1978555033938440688">Versión de firmware</translation>
 <translation id="1979156660928743046">Información sobre el contenido multimedia</translation>
-<translation id="1980625250417123895">Haz una lluvia de ideas conmigo</translation>
+<translation id="1980625250417123895">Explora ideas conmigo</translation>
 <translation id="1987486584747170374">Tus búsquedas, las mejores coincidencias y el contenido de las páginas se envían a Google. No lo usarán revisores humanos para mejorar la IA. Tu organización puede cambiar esta configuración en cualquier momento.</translation>
 <translation id="1988881251331415125">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Prueba a permitir las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
@@ -1062,7 +1062,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda </translation>
 <translation id="2826760142808435982">La conexión se ha encriptado y autenticado con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio clave.</translation>
 <translation id="2828797285817981634">Sensores de movimiento permitidos por ahora</translation>
-<translation id="2835170189407361413">Eliminar formulario</translation>
 <translation id="2835907903001172712">Vista general del navegador</translation>
 <translation id="2837891525090413132">Puede solicitar permiso para bloquear y usar tu teclado</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
@@ -1980,7 +1979,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
 <translation id="4377869186417956230">Cambiar a todas las tarjetas de fidelización de esta opción de menú.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
-<translation id="4378221908737133050">Haz una lista de comprobación para limpiar a fondo mi casa</translation>
+<translation id="4378221908737133050">Haz una lista para limpiar a fondo mi casa</translation>
 <translation id="4381997246130185847">Puedes seguir donde lo dejaste o crear nuevos grupos de pestañas en cualquier momento</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de ahora, guarda tus archivos en el almacenamiento en la nube</translation>
@@ -2343,7 +2342,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Consulta las políticas del administrador</translation>
 <translation id="5024171724744627792">Paga más rápido si tu tarjeta está guardada. La información de la tarjeta se cifra en tu cuenta de Google.</translation>
-<translation id="5026121202864677765">Escribe mi carta de presentación</translation>
+<translation id="5026121202864677765">Escríbeme una carta de presentación</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Se necesita un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. El administrador de TI debe comprobar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> quiere usar la cámara y el micrófono</translation>
@@ -3219,7 +3218,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6517596291481585650">Advertencia: Esta política no se ha combinado como lista tal como se especifica en la política porque no es una lista.</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6519885440226079262">Puede solicitar permiso para el seguimiento de manos</translation>
-<translation id="6520031894252870394">Haz una lluvia de ideas de regalos únicos</translation>
+<translation id="6520031894252870394">Explora ideas de regalos únicos</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> se ha unido al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6524830701589638230">Botón Gestionar la configuración de accesibilidad: actívalo para personalizar las herramientas de accesibilidad en la configuración de Chrome</translation>
@@ -3296,7 +3295,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6679354743514146922">El navegador Chrome está intentando rellenar tu contraseña en <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vídeo guardado en Google Drive</translation>
 <translation id="6681790815630918386">CVC guardado</translation>
-<translation id="6686570026048064255">Para desactivar la detección de códigos de Pix, ve a <ph name="BEGIN_LINK1" />Configuración de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Sobre (simple)</translation>
 <translation id="6687335167692595844">Tamaño de fuente solicitado</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -4438,6 +4436,7 @@ Más información:
 <translation id="8708134712139312373">Puede solicitar permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo de la fuente</translation>
 <translation id="8712637175834984815">Entendido</translation>
+<translation id="8715198179991802709">Chrome acaba de marcar un sitio web al que intentabas acceder. Para ayudarnos a mejorar estas advertencias, responde a una encuesta de 1 minuto.</translation>
 <translation id="8718314106902482036">El pago no se ha completado</translation>
 <translation id="8719263113926255150">Sugerencia de búsqueda: <ph name="ENTITY" />, <ph name="DESCRIPTION" /></translation>
 <translation id="8719528812645237045">Perforado múltiple en la parte superior</translation>

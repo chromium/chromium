@@ -1062,7 +1062,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2824775600643448204">Osoite- ja hakupalkki</translation>
 <translation id="2826760142808435982">Yhteys on salattu ja todennettu <ph name="CIPHER" />:n avulla ja se käyttää menetelmää <ph name="KX" /> avainvaihtomekanismina.</translation>
 <translation id="2828797285817981634">Liiketunnistimet sallittu toistaiseksi</translation>
-<translation id="2835170189407361413">Tyhjennä lomake</translation>
 <translation id="2835907903001172712">Selaimen yleiskatsaus</translation>
 <translation id="2837891525090413132">Voi pyytää lupaa lukitukseen ja näppäimistön käyttöön</translation>
 <translation id="2839032553903800133">Ilmoitukset estetty</translation>
@@ -3297,7 +3296,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6679354743514146922">Chrome-selain yrittää täyttää salasanasi: <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video tallennettu Google Driveen</translation>
 <translation id="6681790815630918386">CVC tallennettu</translation>
-<translation id="6686570026048064255">Voit laittaa Pix-koodin tunnistuksen pois päältä <ph name="BEGIN_LINK1" />Chrome-asetuksista<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Kirjekuori (tavallinen)</translation>
 <translation id="6687335167692595844">Fonttikokoa pyydetty</translation>
 <translation id="6688743156324860098">Päivitä…</translation>

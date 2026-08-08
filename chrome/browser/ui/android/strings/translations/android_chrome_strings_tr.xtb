@@ -116,6 +116,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1414919006379339073">Geçerli pencereyi kapat</translation>
 <translation id="1416550906796893042">Uygulama sürümü</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1435593198351412143">PDF'leri otomatik olarak aç</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> uygulamasında çalışıyor</translation>
 <translation id="1448440926884431741">Takip edilen ürünlerinizi yer işaretlerinde düzenleyin</translation>
@@ -1537,6 +1538,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7182520625618447753">Özelleştirilmiş bir göz atma deneyimi için adres çubuğunuzun konumunu yukarıda veya aşağıda olacak şekilde değiştirin</translation>
 <translation id="7183517696921903380">Uygulama filtreleme sayfası açıldı.</translation>
 <translation id="7186568385131859684">Tarama geçmişinizin Google hizmetlerinde diğer verilerinizle nasıl kullanıldığını kontrol edin</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Sabit sekmeyi kapatmak için tekrar ^W tuşuna basın}other{Sabit sekmeleri kapatmak için tekrar ^W tuşlarına basın}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> engellensin mi?</translation>
 <translation id="7191430249889272776">Sekme arka planda açıldı.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bu şifreyi hemen değiştirmelisiniz}other{Bu şifreleri hemen değiştirmelisiniz}}</translation>
@@ -1985,6 +1987,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8995521496079646922">Seçtiğiniz uygulamalar varsayılan olarak kullanılır. Cihazda yüklü olmayan uygulamalar kısa süre içinde indirilir.</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
 <translation id="8998837250940831980">Sekme küçültülemedi. Daha sonra tekrar deneyin.</translation>
+<translation id="9000089900434778519">Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama motorunuzun talimatlarını (varsa) inceleyin.</translation>
 <translation id="9001604755921395912">Gizli Chrome sekmesinde aç</translation>
 <translation id="9010094279589497751">İhtiyacınız olduğunda Gemini'ı hızlıca açın</translation>
 <translation id="9012585441087414258">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir sayfa şüpheli işlem gerçekleştirirse URL'ler ve sayfa içeriğinin bir kısmı Google Güvenli Tarama'ya gönderilir.</translation>

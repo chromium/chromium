@@ -116,6 +116,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1414919006379339073">Cerrar ventana actual</translation>
 <translation id="1416550906796893042">Versión de la aplicación</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Gestionar buscadores</translation>
 <translation id="1435593198351412143">Abrir PDFs automáticamente</translation>
 <translation id="1437543266176261764">Se está ejecutando en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiza los productos que sigues en Marcadores</translation>
@@ -1537,6 +1538,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7182520625618447753">Cambia la posición de la barra de direcciones a la parte de arriba o abajo para personalizar tu experiencia de navegación</translation>
 <translation id="7183517696921903380">La hoja de filtros de aplicaciones está abierta.</translation>
 <translation id="7186568385131859684">Controla cómo se usa el historial de navegación con tus otros datos en los servicios de Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Vuelve a pulsar ^W para cerrar la pestaña fija}other{Vuelve a pulsar ^W para cerrar las pestañas fijas}}</translation>
 <translation id="7190921792980745354">¿Bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Deberías cambiarla de inmediato}other{Deberías cambiarlas de inmediato}}</translation>
@@ -1985,6 +1987,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8995521496079646922">Las aplicaciones que has elegido se usarán de forma predeterminada. Si una aplicación no está ya en este dispositivo, se descargará en breve.</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998837250940831980">No se ha podido minimizar la pestaña. Inténtalo de nuevo más tarde.</translation>
+<translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="9001604755921395912">Abrir pestaña Incógnito Chrome</translation>
 <translation id="9010094279589497751">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="9012585441087414258">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Si una página hace algo sospechoso, las URLs y los fragmentos de contenido de la página se envían a Navegación segura de Google.</translation>

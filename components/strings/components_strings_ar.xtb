@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">شريط العناوين والبحث</translation>
 <translation id="2826760142808435982">تم ترميز الاتصال ومصادقته باستخدام <ph name="CIPHER" />، ويستخدم <ph name="KX" /> كآلية التبادل الرئيسية.</translation>
 <translation id="2828797285817981634">تم السماح باستخدام أدوات استشعار الحركة في الوقت الحالي</translation>
-<translation id="2835170189407361413">محو النموذج</translation>
 <translation id="2835907903001172712">نظرة عامة على المتصفِّح</translation>
 <translation id="2837891525090413132">بإمكان الموقع الإلكتروني طلب قفل لوحة المفاتيح واستخدامها</translation>
 <translation id="2839032553903800133">تم حظر الإشعارات.</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">‏يحاول متصفِّح Chrome إدخال كلمة مرورك على <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">‏تم حفظ الفيديو في Google Drive</translation>
 <translation id="6681790815630918386">‏تم حفظ رمز CVC للتحقّق من البطاقة</translation>
-<translation id="6686570026048064255">‏لإيقاف ميزة "رصد رمز Pix"، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ظرف (عادي)</translation>
 <translation id="6687335167692595844">حجم الخط المطلوب</translation>
 <translation id="6688743156324860098">تعديل…</translation>
@@ -4441,6 +4439,7 @@
 <translation id="8708134712139312373">السماح للموقع الإلكتروني بطلب الاتصال بأجهزة تتضمّن بلوتوث</translation>
 <translation id="8710842507289500830">شكل الخط</translation>
 <translation id="8712637175834984815">حسنًا</translation>
+<translation id="8715198179991802709">‏أبلَغ Chrome للتو عن موقع إلكتروني حاولت زيارته. يُرجى مساعدتنا في تحسين هذه التحذيرات من خلال المشاركة في استطلاع يستغرق دقيقة واحدة.</translation>
 <translation id="8718314106902482036">لم تكتمل عملية الدفع</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، اقتراح البحث</translation>
 <translation id="8719528812645237045">عمل عدة ثقوب بالأعلى</translation>

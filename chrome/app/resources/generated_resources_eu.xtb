@@ -2054,6 +2054,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2598710988533271874">Chrome berria erabilgarri</translation>
 <translation id="2599048253926156421">Kopiatu da erabiltzaile-izena arbelean</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Segurua ez den luzapen bat desaktibatu da}other{Seguruak ez diren {NUM_SITES} luzapen desaktibatu dira}}</translation>
+<translation id="2603121359676416582">Orri honetarako</translation>
 <translation id="2604129989323098489">Webguneek pantailei buruzko informazioa eskatu ohi dute leihoak modu adimentsuan ireki eta kokatu ahal izateko (adibidez, dokumentuak edo pantaila osoko edukia alboz albo erakusteko)</translation>
 <translation id="2604255671529671813">Sareko konexioaren errorea</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> helbidearen inprimakia bete da.</translation>
@@ -2966,6 +2967,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3285329711156774325">Bilatu gaitasunak</translation>
 <translation id="3285500645985761267">Eman taldean egiten dituzun jarduerak ikusteko baimena erlazionatutako webguneei</translation>
 <translation id="328571385944182268">Pasahitzak gorde nahi dituzu?</translation>
+<translation id="3285969135399641759">Ikasi trebetasun berri bat</translation>
 <translation id="3289668031376215426">Maiuskula automatikoak</translation>
 <translation id="3289856944988573801">Eguneratzeak bilatzeko, erabili Ethernet- edo wifi-konexioa.</translation>
 <translation id="3290249595466894471">Gainera, orrien, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitu ahal izateko.</translation>
@@ -6368,6 +6370,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5939719276406088041">Ezin da sortu lasterbidea</translation>
 <translation id="5939723110967488589">Aukeratu zein botoi erakutsi behar diren tresna-barran</translation>
 <translation id="594048410531370124">Ez da ezagutzen tekla. Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Lortu aholkuak</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan.}other{{PASSWORD_COUNT} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}}</translation>
 <translation id="594221546068848596">Bilatu orria <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>

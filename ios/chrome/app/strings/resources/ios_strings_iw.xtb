@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">אם הקבוצה תימחק, כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים.</translation>
 <translation id="2424805048070062787">המשך הגלישה בכרטיסייה הזו</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
+<translation id="2428543302546523788">הצגת קישורים כשמצב הקריאה מופעל</translation>
 <translation id="243275146591958220">ביטול ההורדה</translation>
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">כדי לגלוש במצב פרטי, אפשר לגלול שמאלה.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">‏מה אפשר לעשות עם Gemini ב-Chrome?</translation>
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">אפשר להגדיר תזכורת כדי לחזור לדף הזה מאוחר יותר</translation>
+<translation id="2476554421818031422">בעזרתך המילוי האוטומטי המשופר נעשה טוב עוד יותר</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2484459871750294497">איך אפשר להפעיל את התכונה הזו?</translation>
@@ -2063,6 +2065,7 @@
 <translation id="78146569776629510">הורדות</translation>
 <translation id="7815852444315004084">להסתיר בינתיים</translation>
 <translation id="7825973332242257878">קבוצות של כרטיסיות</translation>
+<translation id="7828344837949522075">הצגת הצעות</translation>
 <translation id="7839994177130598711">‏עכשיו החברים בקבוצה המשפחתית יכולים להשתמש בשם המשתמש ובסיסמה שלך כשהם משתמשים במנהל הסיסמאות של Google כדי להיכנס אל <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">חיפוש טקסט שהועתק</translation>
 <translation id="7841418003178675048">אפשר לבחור אילו כרטיסים יופיעו בדף 'כרטיסייה חדשה'.</translation>

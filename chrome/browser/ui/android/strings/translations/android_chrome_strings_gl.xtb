@@ -116,6 +116,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1414919006379339073">Pechar ventá actual</translation>
 <translation id="1416550906796893042">Versión da aplicación</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Xestionar motores de busca</translation>
 <translation id="1435593198351412143">Abrir PDF automaticamente</translation>
 <translation id="1437543266176261764">Executándose en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiza os produtos dos que fagas un seguimento en Marcadores</translation>
@@ -1438,7 +1439,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6858893072923394368">Engadir páxina…</translation>
 <translation id="6864459304226931083">Descargar imaxe</translation>
 <translation id="686490460830618322">Folla para filtrar por aplicación</translation>
-<translation id="6865313869410766144">Autocompletar datos do formulario</translation>
+<translation id="6865313869410766144">Datos para autocompletar formularios</translation>
 <translation id="6867400383614725881">Nova pestana de incógnito</translation>
 <translation id="686899695320434745">Os enderezos non se encriptan coa túa frase de acceso. Deste xeito, poderás usalos noutros servizos de Google.</translation>
 <translation id="6870625088374152862">Iniciaches sesión como <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1537,6 +1538,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7182520625618447753">Cambia a posición da barra de enderezos á parte superior ou á inferior para desfrutar dunha experiencia de navegación personalizada</translation>
 <translation id="7183517696921903380">A folla para filtrar por aplicación está aberta.</translation>
 <translation id="7186568385131859684">Controla como se utiliza o historial de navegación xunto con outros datos nos servizos de Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Preme ^W de novo para pechar a pestana fixada}other{Preme ^W de novo para pechar as pestanas fixadas}}</translation>
 <translation id="7190921792980745354">Queres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Recomendámosche que o cambies agora}other{Recomendámosche que os cambies agora}}</translation>
@@ -1985,6 +1987,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8995521496079646922">As aplicacións que escolliches usaranse de forma predeterminada. Se hai algunha que non estea instalada neste dispositivo, descargarase en breve.</translation>
 <translation id="8996847606757455498">Escoller outro provedor</translation>
 <translation id="8998837250940831980">Non se puido minimizar a pestana. Téntao de novo máis tarde.</translation>
+<translation id="9000089900434778519">O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre rapidamente Gemini cando o necesites</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>

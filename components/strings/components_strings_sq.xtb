@@ -1062,7 +1062,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2824775600643448204">Shiriti i adresës dhe i kërkimit</translation>
 <translation id="2826760142808435982">Lidhja është e enkriptuar dhe e vërtetuar me <ph name="CIPHER" /> dhe përdor <ph name="KX" /> si mekanizëm kryesor shkëmbimi.</translation>
 <translation id="2828797285817981634">Sensorët e lëvizjes lejohen për momentin</translation>
-<translation id="2835170189407361413">Pastro formularin</translation>
 <translation id="2835907903001172712">Përmbledhjen e shfletuesit</translation>
 <translation id="2837891525090413132">Mund të kërkojë për të kyçur dhe përdorur tastierën tënde</translation>
 <translation id="2839032553903800133">Njoftimet janë bllokuar</translation>
@@ -3295,7 +3294,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6679354743514146922">Shfletuesi Chrome po përpiqet të plotësojë fjalëkalimin tënd në <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videoja u ruajt te "Disku i Google"</translation>
 <translation id="6681790815630918386">Kodi CVC u ruajt</translation>
-<translation id="6686570026048064255">Për të çaktivizuar zbulimin e kodit Pix, shko te <ph name="BEGIN_LINK1" />"Cilësimet" e Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Zarf (i thjeshtë)</translation>
 <translation id="6687335167692595844">Kërkohet madhësia e fontit</translation>
 <translation id="6688743156324860098">Përditëso…</translation>
@@ -3322,7 +3320,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="671076103358959139">Tokeni i regjistrimit:</translation>
 <translation id="6711464428925977395">Ka një gabim me serverin përfaqësues ose adresa është e pasaktë.</translation>
 <translation id="6711700233707023861">Vargu i varianteve u kopjua te kujtesa e fragmenteve</translation>
-<translation id="6712343563085762261">U lëviz lart</translation>
+<translation id="6712343563085762261">U zhvendos lart</translation>
 <translation id="6716039223770814796">Krahaso "<ph name="COMPARE_SET_NAME" />" · <ph name="ITEMS" /> artikuj</translation>
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6717692133381953670">Skeda u dërgua nga <ph name="DEVICE_NAME" /></translation>
@@ -4282,7 +4280,7 @@ Detaje shtesë:
 <translation id="8398446215576328011">Rivendos politikat e zbatuara</translation>
 <translation id="8398790343843005537">Gjej telefonin tënd</translation>
 <translation id="8402442052798347631">Sulmuesit në sajtin që u përpoqe të vizitoje mund të të mashtrojnë që të instalosh një softuer të dëmshëm që ndikon në mënyrën se si ti shfleton, p.sh. duke ndryshuar faqen kryesore ose duke të shfaqur reklama shtesë në sajtet që ti viziton. Chrome rekomandon shumë të kthehesh aty ku je i sigurt për të shmangur dëmtimet. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="8404028426624581035">U lëviz poshtë</translation>
+<translation id="8404028426624581035">U zhvendos poshtë</translation>
 <translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="8405621913275228683">Skanimi humbi për shkak të një gabimi të panjohur</translation>
 <translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>
@@ -4436,6 +4434,7 @@ Detaje shtesë:
 <translation id="8708134712139312373">Mund të kërkojë të lidhet me pajisjet me Bluetooth</translation>
 <translation id="8710842507289500830">Stili i fontit</translation>
 <translation id="8712637175834984815">E kuptova</translation>
+<translation id="8715198179991802709">Chrome sapo raportoi një uebsajt që po përpiqeshe të vizitoje. Na ndihmo t'i përmirësojmë këto paralajmërime duke plotësuar një anketë 1-minutëshe.</translation>
 <translation id="8718314106902482036">Pagesa nuk përfundoi</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugjerim kërkimi</translation>
 <translation id="8719528812645237045">Shumë shpime lart</translation>

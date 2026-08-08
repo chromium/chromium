@@ -1062,7 +1062,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2824775600643448204">Panel s adresou a vyhľadávací panel</translation>
 <translation id="2826760142808435982">Pripojenie je šifrované pomocou štandardu <ph name="CIPHER" /> a používa mechanizmus výmeny kľúčov <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Senzory pohybu sú zatiaľ povolené</translation>
-<translation id="2835170189407361413">Vymazať formulár</translation>
 <translation id="2835907903001172712">Prehľad prehliadača.</translation>
 <translation id="2837891525090413132">Môže požiadať o uzamknutie a používanie klávesnice</translation>
 <translation id="2839032553903800133">Upozornenia sú zablokované</translation>
@@ -3291,7 +3290,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6679354743514146922">Prehliadač Chrome sa pokúša doplniť heslo v aplikácii <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video bolo uložené na Disk Google</translation>
 <translation id="6681790815630918386">Overovací kód karty bol uložený</translation>
-<translation id="6686570026048064255">Ak chcete vypnúť rozpoznávanie kódu Pix, prejdite do <ph name="BEGIN_LINK1" />nastavení Chromu<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Obálka (kancelárska)</translation>
 <translation id="6687335167692595844">Bola vyžiadaná veľkosť písma</translation>
 <translation id="6688743156324860098">Aktualizovať…</translation>
@@ -4434,6 +4432,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8708134712139312373">Môže žiadať o povolenie pripájať sa k zariadeniam s rozhraním Bluetooth</translation>
 <translation id="8710842507289500830">Štýl písma</translation>
 <translation id="8712637175834984815">Dobre</translation>
+<translation id="8715198179991802709">Chrome práve nahlásil web, ktorý ste sa pokúšali navštíviť. Vyplnením minútového prieskumu nám pomôžete tieto upozornenia zlepšiť.</translation>
 <translation id="8718314106902482036">Platba nebola dokončená</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, návrh vyhľadávania</translation>
 <translation id="8719528812645237045">Viacero dierok hore</translation>

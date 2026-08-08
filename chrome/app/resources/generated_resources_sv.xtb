@@ -2068,6 +2068,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2598710988533271874">Nya Chrome är tillgängligt</translation>
 <translation id="2599048253926156421">Användarnamnet har kopierats till urklipp</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 osäkert tillägg har inaktiverats}other{{NUM_SITES} osäkra tillägg har inaktiverats}}</translation>
+<translation id="2603121359676416582">För den här sidan</translation>
 <translation id="2604129989323098489">Webbplatser begär vanligtvis information om dina skärmar så att de kan öppna och placera fönster på ett smart sätt, t.ex. genom att visa dokument eller innehåll i helskärmsläge sida vid sida</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" />adressformuläret har fyllts i.</translation>
@@ -2982,6 +2983,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3285329711156774325">Sök efter färdigheter</translation>
 <translation id="3285500645985761267">Tillåt att relaterade webbplatser ser din aktivitet i gruppen</translation>
 <translation id="328571385944182268">Vill du spara lösenorden?</translation>
+<translation id="3285969135399641759">Lär dig en ny färdighet</translation>
 <translation id="3289668031376215426">Automatiska versaler</translation>
 <translation id="3289856944988573801">Använd Ethernet eller wifi om du vill söka efter uppdateringar.</translation>
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
@@ -6388,6 +6390,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5939719276406088041">Det gick inte att skapa genvägen</translation>
 <translation id="5939723110967488589">Välja vilka knappar som visas i verktygsfältet</translation>
 <translation id="594048410531370124">Tangenten känns inte igen. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Få råd</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.}other{{PASSWORD_COUNT} lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.}}</translation>
 <translation id="594221546068848596">Sök på sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

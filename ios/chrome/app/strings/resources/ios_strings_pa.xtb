@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">ਜੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਮਿਟਾਉਂਦੇ ਹੋ, ਤਾਂ ਹਰ ਕੋਈ "<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਇਸ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2424805048070062787">ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2426805022920575512">ਕੋਈ ਹੋਰ ਖਾਤਾ ਚੁਣੋ</translation>
+<translation id="2428543302546523788">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਚਾਲੂ ਹੋਣ 'ਤੇ ਲਿੰਕ ਦਿਖਾਓ</translation>
 <translation id="243275146591958220">ਡਾਊਨਲੋਡ ਰੱਦ ਕਰੋ</translation>
 <translation id="2434405374328098816">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ "<ph name="USERNAME" />" ਲਈ <ph name="WEBSITE" /> 'ਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਹੈ</translation>
 <translation id="2434918313224755415">ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">ਮੇਰੇ ਵੱਲੋਂ Chrome ਵਿੱਚ Gemini ਨਾਲ ਕੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ?</translation>
 <translation id="2473876017985765807">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ <ph name="WEBSITE" /> ਲਈ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਹੈ</translation>
 <translation id="247430852844518481">ਤੁਸੀਂ ਇਸ ਪੰਨੇ 'ਤੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਜਾਣ ਲਈ ਰਿਮਾਈਂਡਰ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="2476554421818031422">ਤੁਸੀਂ ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2484459871750294497">ਮੈਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਕਿਵੇਂ ਚਾਲੂ ਕਰਾਂ?</translation>
@@ -2068,6 +2070,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="78146569776629510">ਡਾਊਨਲੋਡ</translation>
 <translation id="7815852444315004084">ਫ਼ਿਲਹਾਲ ਲੁਕਾਓ</translation>
 <translation id="7825973332242257878">ਟੈਬ ਗਰੁੱਪ</translation>
+<translation id="7828344837949522075">ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="7839994177130598711">ਤੁਹਾਡੇ ਪਰਿਵਾਰਕ ਮੈਂਬਰਾਂ ਵੱਲੋਂ ਹੁਣ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਤੁਹਾਡੇ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="7841180087127694526">ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਖੋਜੋ</translation>
 <translation id="7841418003178675048">ਚੁਣੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਕਿਹੜੇ ਕਾਰਡ ਦੇਖਣੇ ਹਨ।</translation>

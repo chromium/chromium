@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Мекенжайы және іздеу жолағы</translation>
 <translation id="2826760142808435982">Байланыс <ph name="CIPHER" /> көмегімен шифрланды және аутентификацияланды, сонымен қатар кілт ауыстыру механизмі ретінде <ph name="KX" /> пайдаланады.</translation>
 <translation id="2828797285817981634">Қозғалыс датчиктеріне әзірше рұқсат берілген</translation>
-<translation id="2835170189407361413">Нысанды тазарту</translation>
 <translation id="2835907903001172712">Браузер туралы жалпы ақпарат</translation>
 <translation id="2837891525090413132">Пернетақтаны құлыптауға және пайдалануға рұқсат сұрай алады.</translation>
 <translation id="2839032553903800133">Хабарландырулар бөгелді.</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922">Chrome браузері <ph name="APP_NAME" /> қолданбасындағы құпия сөзіңізді толтырғалы жатыр.</translation>
 <translation id="668132230070712111">Бейне Google Drive-қа сақталды</translation>
 <translation id="6681790815630918386">CVC сақталды</translation>
-<translation id="6686570026048064255">Pix кодын анықтау функциясын өшіру үшін <ph name="BEGIN_LINK1" />Chrome параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="6687230248707087982">Хатқалта (қарапайым)</translation>
 <translation id="6687335167692595844">Қаріп өлшемі сұралды</translation>
 <translation id="6688743156324860098">Жаңарту…</translation>
@@ -4436,6 +4434,7 @@
 <translation id="8708134712139312373">Bluetooth құрылғыларына қосылуға рұқсат сұрай алады</translation>
 <translation id="8710842507289500830">Қаріп стилі</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
+<translation id="8715198179991802709">Chrome сіз кіргіңіз келген веб-сайтты белгіледі. 1 минуттық сауалнамаға жауап беру арқылы бізге осы ескертулерді жақсартуға көмектесіңіз.</translation>
 <translation id="8718314106902482036">Төлем аяқталмады</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, іздеу ұсынысы</translation>
 <translation id="8719528812645237045">Жоғарғы жағын бірнеше рет тесу</translation>

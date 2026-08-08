@@ -2055,6 +2055,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2598710988533271874">Pieejama jauna Chrome versija</translation>
 <translation id="2599048253926156421">Lietotājvārds ir kopēts starpliktuvē</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Tika izslēgts 1 nedrošs paplašinājums}zero{Tika izslēgti {NUM_SITES} nedroši paplašinājumi}one{Tika izslēgts {NUM_SITES} nedrošs paplašinājums}other{Tika izslēgti {NUM_SITES} nedroši paplašinājumi}}</translation>
+<translation id="2603121359676416582">Šai lapai</translation>
 <translation id="2604129989323098489">Vietnēs parasti tiek lūgta informācija par displejiem, lai varētu atvērt un viedi izvietot logus, piemēram, rādīt dokumentus vai pilnekrāna saturu līdzās.</translation>
 <translation id="2604255671529671813">Tīkla savienojuma kļūda</translation>
 <translation id="2604805099836652105">Aizpildīts adreses lauks: <ph name="ADDRESS_LABEL" />.</translation>
@@ -2967,6 +2968,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3285329711156774325">Meklējiet prasmes</translation>
 <translation id="3285500645985761267">Atļaut saistīto vietņu īpašniekiem skatīt jūsu darbības grupā</translation>
 <translation id="328571385944182268">Vai saglabāt jūsu paroles?</translation>
+<translation id="3285969135399641759">Apgūt jaunu prasmi</translation>
 <translation id="3289668031376215426">Automātisks lielo burtu lietojums</translation>
 <translation id="3289856944988573801">Lai pārbaudītu, vai ir pieejami atjauninājumi, lūdzu, izmantojiet tīklu Ethernet vai Wi-Fi.</translation>
 <translation id="3290249595466894471">Lai palīdzētu atklāt jaunus draudus, tiek nosūtīti arī nelieli datu paraugi, kas ietver lapas, lejupielādes, paplašinājumu aktivitāti un sistēmas informāciju.</translation>
@@ -6370,6 +6372,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5939719276406088041">Nevar izveidot saīsni</translation>
 <translation id="5939723110967488589">Izvēlieties, kuras pogas tiek rādītas rīkjoslā.</translation>
 <translation id="594048410531370124">Taustiņš nav atpazīts. Nospiediet jebkuru taustiņu, lai <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Saņemt padomu</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Viena parole ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šo paroli citās ierīcēs, saglabājiet to savā Google kontā.}zero{{PASSWORD_COUNT} paroles ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}one{{PASSWORD_COUNT} parole ir saglabāta tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}other{{PASSWORD_COUNT} paroles ir saglabātas tikai šajā ierīcē. Lai varētu izmantot šīs paroles citās ierīcēs, saglabājiet tās savā Google kontā.}}</translation>
 <translation id="594221546068848596">Meklēt lapā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

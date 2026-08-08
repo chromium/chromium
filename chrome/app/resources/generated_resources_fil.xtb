@@ -2068,6 +2068,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2598710988533271874">May bagong Chrome na available</translation>
 <translation id="2599048253926156421">Nakopya ang username sa clipboard</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Na-off ang 1 hindi ligtas na extension}one{Na-off ang {NUM_SITES} hindi ligtas na extension}other{Na-off ang {NUM_SITES} na hindi ligtas na extension}}</translation>
+<translation id="2603121359676416582">Para sa page na ito</translation>
 <translation id="2604129989323098489">Karaniwang nanghihingi ang mga site ng impormasyon tungkol sa iyong mga display para mahusay na makapagbukas at makapaglagay ng mga window ang mga ito, tulad ng pagpapakita ng mga dokumento o full-screen na content nang magkatabi</translation>
 <translation id="2604255671529671813">Error sa koneksyon ng network</translation>
 <translation id="2604805099836652105">Napunan ang <ph name="ADDRESS_LABEL" /> address form.</translation>
@@ -2982,6 +2983,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3285329711156774325">Maghanap ng mga skill</translation>
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
 <translation id="328571385944182268">I-save ang iyong mga password?</translation>
+<translation id="3285969135399641759">Matuto ng bagong skill</translation>
 <translation id="3289668031376215426">Auto-capitalization</translation>
 <translation id="3289856944988573801">Upang tumingin ng mga update, mangyaring gumamit ng Ethernet o Wi-Fi.</translation>
 <translation id="3290249595466894471">Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta</translation>
@@ -6388,6 +6390,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5939719276406088041">Hindi makagawa ng shortcut</translation>
 <translation id="5939723110967488589">Piliin ang mga button na ipapakita sa toolbar</translation>
 <translation id="594048410531370124">Hindi kilalang key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Makakuha ng payo</translation>
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Mase-save ang 1 password sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang {PASSWORD_COUNT} password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {PASSWORD_COUNT} na password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="594221546068848596">Hanapin ang page gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -2066,6 +2066,7 @@
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
 <translation id="2599048253926156421">שם המשתמש הועתק ללוח</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{הושבת תוסף לא בטוח אחד}one{הושבתו {NUM_SITES} תוספים לא בטוחים}two{הושבתו {NUM_SITES} תוספים לא בטוחים}other{הושבתו {NUM_SITES} תוספים לא בטוחים}}</translation>
+<translation id="2603121359676416582">לגבי הדף הזה</translation>
 <translation id="2604129989323098489">לרוב, אתרים מבקשים מידע על המסכים שלך כדי לפתוח ולמקם חלונות בצורה חכמה, למשל להציג מסמכים או תוכן במסך מלא אחד לצד השני</translation>
 <translation id="2604255671529671813">שגיאת חיבור רשת</translation>
 <translation id="2604805099836652105">מילאת את הטופס של הכתובת ב<ph name="ADDRESS_LABEL" />.</translation>
@@ -2980,6 +2981,7 @@
 <translation id="3285329711156774325">כאן אפשר לחפש מיומנויות</translation>
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="328571385944182268">לשמור את הסיסמאות?</translation>
+<translation id="3285969135399641759">איך ללמוד מיומנות חדשה</translation>
 <translation id="3289668031376215426">אותיות רישיות באופן אוטומטי</translation>
 <translation id="3289856944988573801">‏כדי לבדוק אם יש עדכונים, צריך להשתמש באתרנט או ב-Wi-Fi.</translation>
 <translation id="3290249595466894471">בנוסף, נשלחת דגימה קטנה שכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת כדי לאתר איומים חדשים</translation>
@@ -6385,6 +6387,7 @@
 <translation id="5939719276406088041">לא ניתן ליצור קיצור דרך</translation>
 <translation id="5939723110967488589">בחירת הכפתורים שיוצגו בסרגל הכלים</translation>
 <translation id="594048410531370124">מתג לא מזוהה. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">אני רוצה להתייעץ</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏סיסמה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google.}one{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}two{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}other{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}}</translation>
 <translation id="594221546068848596">חיפוש בדף באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

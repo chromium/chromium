@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
 <translation id="2424805048070062787">Vazhdo me këtë skedë</translation>
 <translation id="2426805022920575512">Zgjidh llogari tjetër</translation>
+<translation id="2428543302546523788">Shfaq lidhjet pasi të jetë aktivizuar modaliteti i leximit</translation>
 <translation id="243275146591958220">Anulo shkarkimin</translation>
 <translation id="2434405374328098816">Ke ruajtur tashmë një fjalëkalim për "<ph name="USERNAME" />" në <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">Mund të lëvizësh majtas për të shfletuar në modalitetin "I fshehtë".</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Çfarë mund të bëj me Gemini në Chrome?</translation>
 <translation id="2473876017985765807">Ke ruajtur tashmë një fjalëkalim për <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Mund të caktosh një alarm rikujtues për ta vizituar përsëri këtë faqe më vonë</translation>
+<translation id="2476554421818031422">Po ndihmon në përmirësimin e plotësimit automatik të përmirësuar</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2484459871750294497">Si ta aktivizoj këtë veçori?</translation>
@@ -2068,6 +2070,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="78146569776629510">Shkarkimet</translation>
 <translation id="7815852444315004084">Fshih për momentin</translation>
 <translation id="7825973332242257878">Grupet e skedave</translation>
+<translation id="7828344837949522075">Shfaq sugjerimin</translation>
 <translation id="7839994177130598711">Anëtarët e familjes mund të përdorin tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdorin "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Kërko për tekstin e kopjuar</translation>
 <translation id="7841418003178675048">Zgjidh se cilat karta do të shikosh në faqen e skedës së re.</translation>

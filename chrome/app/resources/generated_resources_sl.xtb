@@ -2067,6 +2067,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2598710988533271874">Na voljo je novi Chrome</translation>
 <translation id="2599048253926156421">Uporabniško ime je bilo kopirano v odložišče.</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Izklopljena je 1 razširitev, ki ni varna}one{Izklopljena je {NUM_SITES} razširitev, ki ni varna}two{Izklopljeni sta {NUM_SITES} razširitvi, ki nista varni}few{Izklopljene so {NUM_SITES} razširitve, ki niso varne}other{Izklopljenih je {NUM_SITES} razširitev, ki niso varne}}</translation>
+<translation id="2603121359676416582">Za to stran</translation>
 <translation id="2604129989323098489">Spletna mesta običajno zahtevajo podatke o vaših zaslonih, da lahko inteligentno odpirajo in postavljajo okna, na primer prikazujejo dokumente ali celozaslonsko vsebino drugo ob drugi.</translation>
 <translation id="2604255671529671813">Napaka v omrežni povezavi</translation>
 <translation id="2604805099836652105">Obrazec za naslov <ph name="ADDRESS_LABEL" /> je izpolnjen.</translation>
@@ -2981,6 +2982,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3285329711156774325">Veščine iskanja</translation>
 <translation id="3285500645985761267">Sorodnim spletnim mestom dovolite ogled vaše dejavnosti v skupini</translation>
 <translation id="328571385944182268">Želite shranjevati gesla?</translation>
+<translation id="3285969135399641759">Osvojite novo veščino</translation>
 <translation id="3289668031376215426">Samodejna uporaba velikih začetnic</translation>
 <translation id="3289856944988573801">Če želite preveriti, ali so na voljo posodobitve, uporabite ethernet ali Wi-Fi.</translation>
 <translation id="3290249595466894471">Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj.</translation>
@@ -6388,6 +6390,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5939719276406088041">Bližnjice ni mogoče ustvariti.</translation>
 <translation id="5939723110967488589">Izberite gumbe, ki bodo prikazani v orodni vrstici</translation>
 <translation id="594048410531370124">Neprepoznana tipka. Pritisnite poljubno tipko, če želite <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Pridobite nasvet</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google.}one{{PASSWORD_COUNT} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}two{{PASSWORD_COUNT} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}few{{PASSWORD_COUNT} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}other{{PASSWORD_COUNT} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}}</translation>
 <translation id="594221546068848596">Išči po strani s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

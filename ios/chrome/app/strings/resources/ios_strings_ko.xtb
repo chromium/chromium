@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">삭제하면 모든 사용자가 "<ph name="GROUP_NAME" />" 탭 그룹의 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="2424805048070062787">이 탭으로 계속</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
+<translation id="2428543302546523788">읽기 모드가 켜져 있을 때 링크를 표시합니다.</translation>
 <translation id="243275146591958220">다운로드 취소</translation>
 <translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2434918313224755415">왼쪽으로 스크롤하여 시크릿 모드에서 탐색할 수 있습니다.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chrome의 Gemini로 어떤 작업을 할 수 있어?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="247430852844518481">나중에 이 페이지를 다시 방문하도록 알림을 설정할 수 있습니다.</translation>
+<translation id="2476554421818031422">향상된 자동 완성 기능을 개선하는 데 참여하고 있습니다</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2484459871750294497">이 기능을 사용 설정하는 방법</translation>
@@ -2068,6 +2070,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="78146569776629510">다운로드</translation>
 <translation id="7815852444315004084">지금 숨기기</translation>
 <translation id="7825973332242257878">탭 그룹</translation>
+<translation id="7828344837949522075">추천 표시</translation>
 <translation id="7839994177130598711">이제 가족 구성원이 Google 비밀번호 관리자를 사용하여 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />에 로그인할 때 내 사용자 이름과 비밀번호를 사용할 수 있습니다</translation>
 <translation id="7841180087127694526">복사한 텍스트 검색</translation>
 <translation id="7841418003178675048">새 탭 페이지에 표시할 카드를 선택하세요</translation>

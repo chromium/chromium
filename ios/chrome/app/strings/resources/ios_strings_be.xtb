@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Калі вы выдаліце яе, усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />" і яна будзе выдалена з усіх прылад.</translation>
 <translation id="2424805048070062787">Працягнуць працу з гэтай укладкай</translation>
 <translation id="2426805022920575512">Выбраць іншы ўліковы запіс</translation>
+<translation id="2428543302546523788">Паказваць спасылкі пасля ўключэння рэжыму чытання</translation>
 <translation id="243275146591958220">Скасаваць спампоўку</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Каб праглядаць сайты ў рэжыме інкогніта, прагартайце экран улева.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Што можна рабіць з дапамогай Gemini ў Chrome?</translation>
 <translation id="2473876017985765807">Вы ўжо захавалі пароль для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Задайце напамін, каб зайсці на гэту старонку пазней</translation>
+<translation id="2476554421818031422">Вы дапамагаеце ўдасканальваць палепшанае аўтазапаўненне</translation>
 <translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2484459871750294497">Як уключыць гэту функцыю?</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">Спампоўкі</translation>
 <translation id="7815852444315004084">Схаваць гэтым разам</translation>
 <translation id="7825973332242257878">Групы ўкладак</translation>
+<translation id="7828344837949522075">Паказаць прапанову</translation>
 <translation id="7839994177130598711">Цяпер удзельнікі вашай сямейнай групы могуць уваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з вашым імем карыстальніка і паролем, якія захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="7841180087127694526">Шукаць скапіраваны тэкст</translation>
 <translation id="7841418003178675048">Выберыце, якія карткі будуць паказвацца ў новай укладцы.</translation>

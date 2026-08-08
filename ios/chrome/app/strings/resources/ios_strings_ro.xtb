@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" />, iar acesta va fi șters de pe toate dispozitivele.</translation>
 <translation id="2424805048070062787">Continuă cu această filă</translation>
 <translation id="2426805022920575512">Alege alt cont</translation>
+<translation id="2428543302546523788">Afișează linkurile după activarea modului de lectură</translation>
 <translation id="243275146591958220">Anulează descărcarea</translation>
 <translation id="2434405374328098816">Ai salvat deja o parolă pentru <ph name="USERNAME" /> la <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Poți derula spre stânga pentru a naviga în modul incognito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Ce pot face cu Gemini în Chrome?</translation>
 <translation id="2473876017985765807">Ai salvat deja o parolă pentru <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Poți seta un memento pentru a reveni la această pagină mai târziu</translation>
+<translation id="2476554421818031422">Contribui la îmbunătățirea completării automate îmbunătățite</translation>
 <translation id="2479148705183875116">Accesează Setările</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2484459871750294497">Cum activez această funcție?</translation>
@@ -2068,6 +2070,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="78146569776629510">Descărcări</translation>
 <translation id="7815852444315004084">Ascunde momentan</translation>
 <translation id="7825973332242257878">Grupuri de file</translation>
+<translation id="7828344837949522075">Afișează sugestia</translation>
 <translation id="7839994177130598711">Membrii familiei îți pot folosi acum numele de utilizator și parola când folosesc Managerul de parole Google pentru a se conecta la <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Caută textul copiat</translation>
 <translation id="7841418003178675048">Alege ce carduri vezi în pagina Filă nouă.</translation>

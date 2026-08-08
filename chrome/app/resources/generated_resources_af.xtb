@@ -2068,6 +2068,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2598710988533271874">Nuwe Chrome is beskikbaar</translation>
 <translation id="2599048253926156421">Gebruikernaam is na knipbord gekopieer</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 onveilige uitbreiding is afgeskakel}other{{NUM_SITES} onveilige uitbreidings is afgeskakel}}</translation>
+<translation id="2603121359676416582">Vir hierdie bladsy</translation>
 <translation id="2604129989323098489">Werwe vra gewoonlik vir inligting oor jou skerms sodat hulle vensters intelligent kan oopmaak en plaas, soos om dokumente of volskerminhoud langs mekaar te wys.</translation>
 <translation id="2604255671529671813">Netwerkverbinding-fout</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" />-adresvorm is ingevul.</translation>
@@ -2982,6 +2983,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3285329711156774325">Soek na vaardighede</translation>
 <translation id="3285500645985761267">Laat verwante werwe toe om jou aktiwiteit in die groep te sien</translation>
 <translation id="328571385944182268">Stoor jou wagwoorde?</translation>
+<translation id="3285969135399641759">Leer ’n nuwe vaardigheid</translation>
 <translation id="3289668031376215426">Outohoofletters</translation>
 <translation id="3289856944988573801">Gebruik asseblief Ethernet of Wi-Fi om te kyk of daar opdaterings is.</translation>
 <translation id="3290249595466894471">Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek</translation>
@@ -6389,6 +6391,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5939719276406088041">Kan nie kortpad skep nie</translation>
 <translation id="5939723110967488589">Kies watter knoppies in die nutsbalk wys</translation>
 <translation id="594048410531370124">Sleutel nie herken nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Kry raad</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening om dit op jou ander toestelle te gebruik.}other{{PASSWORD_COUNT} wagwoorde word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="594221546068848596">Deursoek bladsy met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

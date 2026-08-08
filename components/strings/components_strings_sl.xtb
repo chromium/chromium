@@ -1062,7 +1062,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2824775600643448204">Naslovna in iskalna vrstica</translation>
 <translation id="2826760142808435982">Za šifriranje in preverjanje pristnosti povezave se uporablja <ph name="CIPHER" />, kot mehanizem za izmenjavo ključev pa <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Tipala gibanja so za zdaj dovoljena</translation>
-<translation id="2835170189407361413">Počisti obrazec</translation>
 <translation id="2835907903001172712">Pregled brskalnika</translation>
 <translation id="2837891525090413132">Lahko zahteva zaklepanje in uporabo tipkovnice</translation>
 <translation id="2839032553903800133">Obvestila so blokirana</translation>
@@ -3296,7 +3295,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6679354743514146922">Brskalnik Chrome poskuša izpolniti vaše geslo v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videoposnetek je shranjen v Google Drive</translation>
 <translation id="6681790815630918386">Koda CVC je shranjena</translation>
-<translation id="6686570026048064255">Zaznavanje kode Pix lahko izklopite v <ph name="BEGIN_LINK1" />nastavitvah za Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Envelope (Plain)</translation>
 <translation id="6687335167692595844">Zahtevana je velikost besedila</translation>
 <translation id="6688743156324860098">Posodobi …</translation>
@@ -4438,6 +4436,7 @@ Dodatne podrobnosti:
 <translation id="8708134712139312373">Lahko zahteva vzpostavitev povezave z napravami Bluetooth.</translation>
 <translation id="8710842507289500830">Slog pisave</translation>
 <translation id="8712637175834984815">Razumem</translation>
+<translation id="8715198179991802709">Chrome je pravkar označil spletno mesto, ki ste ga poskušali obiskati. Izpolnite enominutno anketo in nam pomagajte izboljšati ta opozorila.</translation>
 <translation id="8718314106902482036">Plačilo ni končano</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, predlog iskanja</translation>
 <translation id="8719528812645237045">Večkratno luknjanje zgoraj</translation>

@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">地址和搜索栏</translation>
 <translation id="2826760142808435982">该连接使用 <ph name="CIPHER" /> 进行加密和身份验证，并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="2828797285817981634">目前允许使用移动传感器</translation>
-<translation id="2835170189407361413">清除表单</translation>
 <translation id="2835907903001172712">浏览器概览</translation>
 <translation id="2837891525090413132">可以请求锁定和使用您的键盘</translation>
 <translation id="2839032553903800133">已阻止显示通知</translation>
@@ -3291,7 +3290,6 @@
 <translation id="6679354743514146922">Chrome 浏览器正尝试在 <ph name="APP_NAME" /> 上填充您的密码。</translation>
 <translation id="668132230070712111">视频已保存到 Google 云端硬盘</translation>
 <translation id="6681790815630918386">已保存银行卡验证码 (CVC)</translation>
-<translation id="6686570026048064255">如需关闭 Pix 代码检测，请前往 <ph name="BEGIN_LINK1" />Chrome 设置<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">信封（普通）</translation>
 <translation id="6687335167692595844">请求的字号</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4434,6 +4432,7 @@
 <translation id="8708134712139312373">可以询问能否连接到蓝牙设备</translation>
 <translation id="8710842507289500830">字体样式</translation>
 <translation id="8712637175834984815">知道了</translation>
+<translation id="8715198179991802709">Chrome 刚刚标记了您尝试访问的一个网站。请花 1 分钟时间填写调查问卷，帮助我们改进这些警告。</translation>
 <translation id="8718314106902482036">未能完成付款</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />，<ph name="DESCRIPTION" />，搜索建议</translation>
 <translation id="8719528812645237045">多孔（顶部）</translation>

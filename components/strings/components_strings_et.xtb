@@ -1062,7 +1062,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2824775600643448204">Aadressi- ja otsinguriba</translation>
 <translation id="2826760142808435982">Ühendus on krüptitud ja autenditud üksusega <ph name="CIPHER" /> ning kasutab peamise vahetusmehhanismina üksust <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Liikumisandurid on praegu lubatud</translation>
-<translation id="2835170189407361413">Tühjenda vorm</translation>
 <translation id="2835907903001172712">Brauseri ülevaade</translation>
 <translation id="2837891525090413132">Võib küsida teie klaviatuuri lukustamist ja kasutamist</translation>
 <translation id="2839032553903800133">Märguanded on blokeeritud</translation>
@@ -3296,7 +3295,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6679354743514146922">Chrome'i brauser proovib täita teie parooli rakenduses <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video salvestati Google Drive’i</translation>
 <translation id="6681790815630918386">CVC on salvestatud</translation>
-<translation id="6686570026048064255">Pixi koodi tuvastamise väljalülitamiseks avage <ph name="BEGIN_LINK1" />Chrome'i seaded<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Ümbrik (tavaline)</translation>
 <translation id="6687335167692595844">Fondi taotletud suurus</translation>
 <translation id="6688743156324860098">Värskendage …</translation>
@@ -4438,6 +4436,7 @@ Lisateave:
 <translation id="8708134712139312373">Saab küsida luba Bluetooth-seadmetega ühenduse loomiseks</translation>
 <translation id="8710842507289500830">Fondi stiil</translation>
 <translation id="8712637175834984815">Selge</translation>
+<translation id="8715198179991802709">Chrome märkis äsja veebisaidi, mida proovisite külastada. Aidake meil neid hoiatusi täiustada, vastates 1-minutilisele küsitlusele.</translation>
 <translation id="8718314106902482036">Makset ei viidud lõpule</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, otsingusoovitus</translation>
 <translation id="8719528812645237045">Mitu auku ülal</translation>

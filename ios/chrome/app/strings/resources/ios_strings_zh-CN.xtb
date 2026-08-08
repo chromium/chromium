@@ -442,7 +442,7 @@
 <translation id="2367025302166767427">填写信息时遇到问题</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
 <translation id="2371303771137626249">新建</translation>
-<translation id="2375947780110007467">Google 会使用共享标签页的内容和网址。系统会在新对话中共享当前标签页。你可以随时更改此设置。</translation>
+<translation id="2375947780110007467">Google 会使用共享标签页的内容和网址。开启新对话将共享当前标签页。你可以随时更改此设置。</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隐藏无痕式标签页</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="2424805048070062787">继续使用此标签页</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
+<translation id="2428543302546523788">在阅读模式开启时显示链接</translation>
 <translation id="243275146591958220">取消下载</translation>
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2434918313224755415">向左滚动即可在无痕模式下浏览内容。</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">我可以使用 Chrome 中的 Gemini 做些什么？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="247430852844518481">您可以设置提醒，以便日后再次访问此页面</translation>
+<translation id="2476554421818031422">您正在帮助改进增强型自动填充功能</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何启用此功能？</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">下载内容</translation>
 <translation id="7815852444315004084">暂时隐藏</translation>
 <translation id="7825973332242257878">标签页分组</translation>
+<translation id="7828344837949522075">显示建议</translation>
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="7841180087127694526">搜索复制的文字</translation>
 <translation id="7841418003178675048">选择要在新标签页上显示的卡片。</translation>

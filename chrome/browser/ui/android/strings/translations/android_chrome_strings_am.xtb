@@ -116,6 +116,7 @@
 <translation id="1414919006379339073">የአሁኑን መስኮት ዝጋ</translation>
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
 <translation id="1430915738399379752">አትም</translation>
+<translation id="1432581352905426595">የፍለጋ ፕሮግራሞችን ያቀናብሩ</translation>
 <translation id="1435593198351412143">PDFዎችን በራስ-ሰር ክፈት</translation>
 <translation id="1437543266176261764">በ<ph name="APP_NAME" /> በመሄድ ላይ</translation>
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="7182520625618447753">ብጁ ለተደረገ የአሰሳ ተሞክሮ የአድራሻ አሞሌዎን ቦታ ወደ ላይ ወይም ታች ይቀይሩ</translation>
 <translation id="7183517696921903380">የመተግበሪያ ማጣሪያ ሉህ ተከፍቷል።</translation>
 <translation id="7186568385131859684">በመላ የGoogle አገልግሎቶች ውስጥ ከሌላ ውሂብዎ ጋር የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{የተሰካውን ትር ለመዝጋት ^Wን እንደገና ይጫኑ}one{የተሰካውን ትር ለመዝጋት ^Wን እንደገና ይጫኑ}other{የተሰኩትን ትሮች ለመዝጋት ^Wን እንደገና ይጫኑ}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> ይታገድ?</translation>
 <translation id="7191430249889272776">ትር ጀርባ ላይ ተከፍቷል።</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{ይህን አሁን መለወጥ አለብዎት}one{ይህን አሁን መለወጥ አለብዎት}other{እነዚህን አሁን መለወጥ አለብዎት}}</translation>
@@ -1985,6 +1987,7 @@
 <translation id="8995521496079646922">የሚመርጧቸው መተግበሪያዎች በነባሪ ጥቅም ላይ ይውላሉ። መተግበሪያ ቀድሞውኑ በዚህ መሣሪያ ላይ ካልሆነ በቅርቡ ይወርዳል።</translation>
 <translation id="8996847606757455498">ሌላ አቅራቢ ይምረጡ</translation>
 <translation id="8998837250940831980">ትርን ማሳነስ አልተቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="9001604755921395912">ማንነት በማያሳውቅ የChrome ትር ክፈት</translation>
 <translation id="9010094279589497751">Geminiን በሚፈልጉት ጊዜ በፍጥነት ይክፈቱት</translation>
 <translation id="9012585441087414258">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። አንድ ገጽ አጠራጣሪ የሆነ ነገር ካደረገ የገፁ ይዘት ዩአርኤሎች እና ቢቶች ወደ የGoogle ጥንቃቄ አሰሳ ይላካሉ።</translation>

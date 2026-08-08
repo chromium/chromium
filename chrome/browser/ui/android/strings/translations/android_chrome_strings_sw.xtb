@@ -116,6 +116,7 @@ Kwa mipangilio zaidi inayotumia data ili kuboresha hali yako ya utumiaji wa Chro
 <translation id="1414919006379339073">Funga dirisha la sasa</translation>
 <translation id="1416550906796893042">Toleo la programu</translation>
 <translation id="1430915738399379752">Chapisha</translation>
+<translation id="1432581352905426595">Dhibiti mitambo ya kutafuta</translation>
 <translation id="1435593198351412143">Kufungua PDF kitomatiki</translation>
 <translation id="1437543266176261764">Inatumika kwenye programu ya <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Panga bidhaa unazofuatilia kwenye Alamisho</translation>
@@ -1537,6 +1538,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7182520625618447753">Badilisha nafasi ya sehemu yako ya anwani iwe juu au chini ili uvinjari upendavyo</translation>
 <translation id="7183517696921903380">Laha ya kichujio cha programu imefunguliwa.</translation>
 <translation id="7186568385131859684">Dhibiti jinsi historia ya kuvinjari inavyotumika na data yako nyingine kwenye huduma za Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Bonyeza ^W tena ili ufunge kichupo kilichobandikwa}other{Bonyeza ^W tena ili ufunge vichupo vilivyobandikwa}}</translation>
 <translation id="7190921792980745354">Ungependa kumzuia <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Kichupo kimefunguliwa chini chini.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Unapaswa kulibadilisha sasa}other{Unapaswa kuyabadilisha sasa}}</translation>
@@ -1985,6 +1987,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8995521496079646922">Programu ulizochagua zitatumika kwa chaguomsingi. Programu itapakuliwa baada ya muda mfupi iwapo haipo kwenye kifaa hiki.</translation>
 <translation id="8996847606757455498">Chagua mtoa huduma mwingine</translation>
 <translation id="8998837250940831980">Imeshindwa kupunguza kichupo. Jaribu tena baadaye.</translation>
+<translation id="9000089900434778519">Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="9001604755921395912">Fungua katika kichupo cha Faraghani cha Chrome</translation>
 <translation id="9010094279589497751">Fungua Gemini kwa haraka wakati unaihitaji</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>

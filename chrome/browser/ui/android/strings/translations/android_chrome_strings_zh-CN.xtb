@@ -116,6 +116,7 @@
 <translation id="1414919006379339073">关闭当前窗口</translation>
 <translation id="1416550906796893042">应用版本</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1435593198351412143">自动打开 PDF 文件</translation>
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
@@ -1535,6 +1536,7 @@
 <translation id="7182520625618447753">您可以将地址栏移至顶部或底部，获享个性化浏览体验</translation>
 <translation id="7183517696921903380">应用过滤器工作表已打开。</translation>
 <translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{再次按 ^W 才能关闭固定标签页}other{再次按 ^W 才能关闭固定标签页}}</translation>
 <translation id="7190921792980745354">要屏蔽<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{您应立即更改这个密码}other{您应立即更改这些密码}}</translation>
@@ -1983,6 +1985,7 @@
 <translation id="8995521496079646922">系统将默认使用您选择的应用。如果此设备上尚未安装某个应用，系统会很快下载该应用。</translation>
 <translation id="8996847606757455498">另选一个提供商</translation>
 <translation id="8998837250940831980">无法将标签页最小化。请稍后再试。</translation>
+<translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9001604755921395912">在 Chrome 无痕式标签页中打开</translation>
 <translation id="9010094279589497751">随时随需快速打开 Gemini</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>

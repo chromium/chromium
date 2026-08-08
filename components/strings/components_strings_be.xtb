@@ -1063,7 +1063,6 @@
 <translation id="2824775600643448204">Адрасны радок і панэль пошуку</translation>
 <translation id="2826760142808435982">Падключэнне зашыфравана і аўтэнтыфікавана з дапамогай <ph name="CIPHER" />, механізм абмену ключамі – <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Выкарыстанне датчыкаў руху зараз дазволена</translation>
-<translation id="2835170189407361413">Ачысціць форму</translation>
 <translation id="2835907903001172712">Агляд браўзера.</translation>
 <translation id="2837891525090413132">Можа запытаць дазвол на блакіроўку і выкарыстанне клавіятуры</translation>
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922">Браўзер Chrome спрабуе ўвесці ваш пароль у праграме "<ph name="APP_NAME" />".</translation>
 <translation id="668132230070712111">Відэа захавана на Google Дыску</translation>
 <translation id="6681790815630918386">Код CVC захаваны</translation>
-<translation id="6686570026048064255">Каб выключыць выяўленне кода Pix, перайдзіце ў <ph name="BEGIN_LINK1" />налады Кашалька<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Звычайны канверт</translation>
 <translation id="6687335167692595844">Запытаны памер шрыфту</translation>
 <translation id="6688743156324860098">Абнавіць…</translation>
@@ -4437,6 +4435,7 @@
 <translation id="8708134712139312373">Сайт можа запытваць дазвол на падключэнне да прылад з Bluetooth</translation>
 <translation id="8710842507289500830">Стыль шрыфту</translation>
 <translation id="8712637175834984815">Зразумела</translation>
+<translation id="8715198179991802709">Chrome пазначыў вэб-сайт, які вы спрабавалі наведаць. Прайдзіце апытанне, каб дапамагчы нам палепшыць гэтыя папярэджанні. Гэта зойме адну хвіліну.</translation>
 <translation id="8718314106902482036">Аплата не завершана</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, прапанова пошуку</translation>
 <translation id="8719528812645237045">Некалькі дзірак зверху</translation>

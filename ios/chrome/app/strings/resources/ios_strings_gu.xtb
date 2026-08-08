@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">જો તમે તેને ડિલીટ કરશો, તો દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="2424805048070062787">આ ટૅબ સાથે ચાલુ રાખો</translation>
 <translation id="2426805022920575512">બીજું એકાઉન્ટ પસંદ કરો</translation>
+<translation id="2428543302546523788">વાંચન મોડ ચાલુ હોય ત્યારે લિંક બતાવો</translation>
 <translation id="243275146591958220">ડાઉનલોડ રદ કરો</translation>
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2434918313224755415">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે ડાબી તરફ સ્ક્રોલ કરી શકો છો.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">હું Gemini in Chrome વડે શું કરી શકું?</translation>
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="247430852844518481">પછીથી આ પેજની ફરી મુલાકાત લેવા માટે તમે રિમાઇન્ડર સેટ કરી શકો છો</translation>
+<translation id="2476554421818031422">તમે ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને વધુ સારી બનાવવામાં મદદ કરી રહ્યાં છો</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2484459871750294497">હું આ સુવિધા કેવી રીતે ચાલુ કરું?</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">ડાઉનલોડ</translation>
 <translation id="7815852444315004084">હાલ પૂરતું છુપાવો</translation>
 <translation id="7825973332242257878">ટૅબના ગ્રૂપ</translation>
+<translation id="7828344837949522075">સૂચન બતાવીએ?</translation>
 <translation id="7839994177130598711"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />માં સાઇન ઇન કરવા માટે જ્યારે કુટુંબના સભ્યો Google Password Managerનો ઉપયોગ કરે, ત્યારે તેઓ હવેથી તમારું વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="7841180087127694526">કૉપિ કરેલી ટેક્સ્ટ શોધો</translation>
 <translation id="7841418003178675048">તમારા નવા ટૅબના પેજ પર તમારે કયા કાર્ડ જોવા છે તે પસંદ કરો.</translation>

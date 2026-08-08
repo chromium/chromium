@@ -116,6 +116,7 @@
 <translation id="1414919006379339073">Đóng cửa sổ hiện tại</translation>
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
 <translation id="1430915738399379752">In</translation>
+<translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
 <translation id="1435593198351412143">Tự động mở tệp PDF</translation>
 <translation id="1437543266176261764">Chạy trong <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
@@ -1537,6 +1538,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7182520625618447753">Chuyển thanh địa chỉ lên trên cùng hoặc xuống dưới cùng để có trải nghiệm duyệt web phù hợp với nhu cầu riêng</translation>
 <translation id="7183517696921903380">Đã mở bảng lọc theo ứng dụng.</translation>
 <translation id="7186568385131859684">Kiểm soát cách Google sử dụng nhật ký duyệt web cùng với các dữ liệu khác của bạn trên các dịch vụ của Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Nhấn ^W lần nữa để đóng thẻ được ghim}other{Nhấn ^W lần nữa để đóng các thẻ được ghim}}</translation>
 <translation id="7190921792980745354">Chặn <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Bạn nên thay đổi ngay mật khẩu này}other{Bạn nên thay đổi ngay những mật khẩu này}}</translation>
@@ -1985,6 +1987,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8995521496079646922">Các ứng dụng bạn chọn sẽ được sử dụng theo mặc định. Nếu chưa có trên thiết bị này thì ứng dụng sẽ được tải xuống trong giây lát.</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998837250940831980">Không thể thu nhỏ thẻ. Hãy thử lại sau.</translation>
+<translation id="9000089900434778519">Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="9001604755921395912">Mở trong thẻ Chrome ẩn danh</translation>
 <translation id="9010094279589497751">Nhanh chóng mở Gemini khi bạn cần</translation>
 <translation id="9012585441087414258">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Nếu một trang có hoạt động đáng ngờ, thì URL và một phần nội dung của trang sẽ được gửi tới dịch vụ Duyệt web An toàn của Google.</translation>

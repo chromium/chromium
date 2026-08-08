@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">വിലാസവും തിരയൽ ബാറും</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ഉപയോഗിച്ച് കണക്ഷൻ എൻക്രിപ്‌റ്റുചെയ്‌ത് പ്രാമാണീകരിക്കുന്നു, ഒപ്പം പ്രധാന എക്‌സേഞ്ച് മെക്കാനിസമായി <ph name="KX" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="2828797285817981634">മോഷൻ സെൻസറുകൾക്ക് ഇപ്പോൾ അനുമതിയുണ്ട്</translation>
-<translation id="2835170189407361413">ഫോം മായ്‌ക്കുക</translation>
 <translation id="2835907903001172712">ബ്രൗസർ അവലോകനം</translation>
 <translation id="2837891525090413132">ലോക്ക് ചെയ്യാനും കീബോർഡ് ഉപയോഗിക്കാനും ആവശ്യപ്പെടാം</translation>
 <translation id="2839032553903800133">അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922"><ph name="APP_NAME" /> എന്നതിലെ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ശ്രമിക്കുന്നു.</translation>
 <translation id="668132230070712111">Google Drive-ലേക്ക് വീഡിയോ സംരക്ഷിച്ചു</translation>
 <translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
-<translation id="6686570026048064255">Pix കോഡ് കണ്ടെത്തൽ ഓഫാക്കാൻ, <ph name="BEGIN_LINK1" />Chrome ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="6687230248707087982">എൻവലപ്പ് (പ്ലെയിൻ)</translation>
 <translation id="6687335167692595844">അഭ്യർത്ഥിച്ച ഫോണ്ട് വലുപ്പം</translation>
 <translation id="6688743156324860098">അപ്ഡേറ്റ് ചെയ്യുക…</translation>
@@ -4435,6 +4433,7 @@
 <translation id="8708134712139312373">Bluetooth ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="8710842507289500830">ഫോണ്ട് സ്‌റ്റൈൽ</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
+<translation id="8715198179991802709">നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിച്ച ഒരു വെബ്‌സൈറ്റ് Chrome ഇപ്പോൾ ഫ്ലാഗ് ചെയ്തു. ഒരു മിനിറ്റുള്ള സർവേയിൽ പങ്കെടുത്ത് ഈ മുന്നറിയിപ്പുകൾ മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കുക.</translation>
 <translation id="8718314106902482036">പേയ്‌മെന്റ് പൂർത്തിയായിട്ടില്ല</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, തിരയൽ നിർദ്ദേശം</translation>
 <translation id="8719528812645237045">മുകളിൽ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>

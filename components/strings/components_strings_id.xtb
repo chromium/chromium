@@ -1063,7 +1063,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2824775600643448204">Bilah penelusuran dan alamat</translation>
 <translation id="2826760142808435982">Sambungan dienkripsi dan diautentikasi menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2828797285817981634">Sensor gerakan diizinkan saat ini</translation>
-<translation id="2835170189407361413">Hapus formulir</translation>
 <translation id="2835907903001172712">Ringkasan browser</translation>
 <translation id="2837891525090413132">Dapat meminta untuk mengunci dan menggunakan keyboard Anda</translation>
 <translation id="2839032553903800133">Notifikasi diblokir</translation>
@@ -3296,7 +3295,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6679354743514146922">Browser Chrome mencoba mengisi sandi Anda di <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video disimpan ke Google Drive</translation>
 <translation id="6681790815630918386">CVC disimpan</translation>
-<translation id="6686570026048064255">Untuk menonaktifkan deteksi kode Pix, buka <ph name="BEGIN_LINK1" />setelan Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Amplop (Polos)</translation>
 <translation id="6687335167692595844">Ukuran font diminta</translation>
 <translation id="6688743156324860098">Perbarui…</translation>
@@ -4211,7 +4209,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8282292167096638950">Hapus surat izin mengemudi</translation>
 <translation id="828282277746732142">Simpan IBAN di Google Wallet</translation>
 <translation id="8282947398454257691">Mengetahui pengenal perangkat unik Anda</translation>
-<translation id="8283946103133796868">Hitungkan IPK skala bobot saya</translation>
+<translation id="8283946103133796868">Hitungkan IPK berbobot saya</translation>
 <translation id="8284769179630993263">Kelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="828558778104922222">Foto hilang karena error yang tidak diketahui</translation>
 <translation id="8286036467436129157">Login</translation>
@@ -4434,6 +4432,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8708134712139312373">Dapat meminta untuk terhubung ke perangkat Bluetooth</translation>
 <translation id="8710842507289500830">Gaya font</translation>
 <translation id="8712637175834984815">Mengerti</translation>
+<translation id="8715198179991802709">Chrome baru saja menandai situs yang Anda coba buka. Bantu kami meningkatkan kualitas peringatan ini dengan mengikuti survei 1 menit.</translation>
 <translation id="8718314106902482036">Pembayaran belum selesai</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, saran penelusuran</translation>
 <translation id="8719528812645237045">Beberapa lubang di atas</translation>

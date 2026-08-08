@@ -116,6 +116,7 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1414919006379339073">Jelenlegi ablak bezárása</translation>
 <translation id="1416550906796893042">Alkalmazás verziószáma</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
+<translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1435593198351412143">PDF-fájlok automatikus megnyitása</translation>
 <translation id="1437543266176261764">Itt fut: <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">A nyomon követett termékeket a Könyvjelzők között rendszerezheti</translation>
@@ -1537,6 +1538,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7182520625618447753">A személyre szabott böngészési élmény érdekében módosíthatja a címsáv pozícióját: felülre vagy alulra is helyezheti.</translation>
 <translation id="7183517696921903380">Az alkalmazásszűrő lap meg van nyitva.</translation>
 <translation id="7186568385131859684">Annak vezérlése, hogy a böngészési előzmények hogyan használhatók az Ön egyéb adataival a Google-szolgáltatásokban</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{A rögzített lap bezárásához nyomja meg újra ezt: ^W}other{A rögzített lapok bezárásához nyomja meg újra ezt: ^W}}</translation>
 <translation id="7190921792980745354">Letiltja a következőt: <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">A lap megnyílt a háttérben.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Azonnal módosítsa}other{Azonnal módosítsa őket}}</translation>
@@ -1985,6 +1987,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8995521496079646922">Alapértelmezés szerint a kiválasztott alkalmazások lesznek használva. Ha valamelyik alkalmazás még nincs az eszközön, hamarosan letöltődik.</translation>
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>
 <translation id="8998837250940831980">Nem sikerült kis méretűre állítani a lapot. Próbálkozzon újra később.</translation>
+<translation id="9000089900434778519">Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="9001604755921395912">Megnyitás Chrome inkognitó lapon</translation>
 <translation id="9010094279589497751">Gyorsan megnyithatja a Geminit, amikor szüksége van rá</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>

@@ -2063,6 +2063,7 @@
 <translation id="2598710988533271874">አዲስ Chrome ይገኛል</translation>
 <translation id="2599048253926156421">የተጠቃሚው ስም ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 ደኅንነቱ ያልተጠበቀ ቅጥያ ጠፍቷል}one{{NUM_SITES} ደኅንነቱ ያልተጠበቀ ቅጥያ ጠፍቷል}other{{NUM_SITES} ደኅንነታቸው ያልተጠበቀ ቅጥያዎች ጠፍተዋል}}</translation>
+<translation id="2603121359676416582">ለዚህ ገጽ</translation>
 <translation id="2604129989323098489">መስኮቶችን በብልሃት ለመክፈት እና ለማስቀመጥ ጣቢያዎች ብዙ ጊዜ ሰነዶችን ወይም የሙሉ መስኮት ማሳያ ይዘትን ጎን ለጎን እንደማሳየት ያሉ የእርስዎ ማሳያዎች መረጃን ይጠይቃሉ</translation>
 <translation id="2604255671529671813">የአውታረ መረብ ግንኙነት ስህተት</translation>
 <translation id="2604805099836652105">የ<ph name="ADDRESS_LABEL" /> አድራሻ ቅጽ ተሞልቷል።</translation>
@@ -2977,6 +2978,7 @@
 <translation id="3285329711156774325">ችሎታዎችን ይፈልጉ</translation>
 <translation id="3285500645985761267">ተዛማጅ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ እንዲመለከቱ ይፍቀዱ</translation>
 <translation id="328571385944182268">የእርስዎን የይለፍ ቃላት ይቀመጡ?</translation>
+<translation id="3285969135399641759">አዲስ ክህሎት ይማሩ</translation>
 <translation id="3289668031376215426">ራስ-ሰር ዓቢይ ሆሄ ማድረጊያ</translation>
 <translation id="3289856944988573801">ዝማኔዎች ካሉ ለማየት እባክዎ Ethernet ወይም Wi-Fi ይጠቀሙ።</translation>
 <translation id="3290249595466894471">አዲስ ስጋቶችን ፈልጎ ለማግኘት እንዲያግዝ በተጨማሪም የገጾች፣ ውርዶች፣ የቅጥያ እንቅስቃሴ እና የሥርዓት መረጃ ትንሽ ናሙና ይልካል</translation>
@@ -6381,6 +6383,7 @@
 <translation id="5939719276406088041">አቋራጮችን መፍጠር አልተቻለም</translation>
 <translation id="5939723110967488589">በመሣሪያ አሞሌው ውስጥ አዝራሮች ምን እንደሚያሳዩ ይምረጡ</translation>
 <translation id="594048410531370124">ያልታወቀ ቁልፍ። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
+<translation id="5940614040566393493">ምክር ያግኙ</translation>
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}one{{PASSWORD_COUNT} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}other{{PASSWORD_COUNT} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="594221546068848596">ገጹን በ<ph name="VISUAL_SEARCH_PROVIDER" /> ይፈልጉ</translation>

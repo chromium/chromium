@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">ଯଦି ଆପଣ ଏହାକୁ ଡିଲିଟ କରନ୍ତି, ତେବେ ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="2424805048070062787">ଏହି ଟାବ ମାଧ୍ୟମରେ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2426805022920575512">ଅନ୍ୟ ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ</translation>
+<translation id="2428543302546523788">ରିଡିଂ ମୋଡ ଚାଲୁ ଥିବା ବେଳେ ଲିଙ୍କଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="243275146591958220">ଡାଉନଲୋଡ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2434405374328098816">ଆପଣ <ph name="WEBSITE" />ରେ "<ph name="USERNAME" />" ପାଇଁ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="2434918313224755415">ଇନକଗ୍ନିଟୋରେ ବ୍ରାଉଜ କରିବାକୁ ଆପଣ ବାମକୁ ସ୍ୱାଇପ କରିପାରିବେ।</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chromeରେ Gemini ମାଧ୍ୟମରେ ମୁଁ କଣ କରିପାରିବି?</translation>
 <translation id="2473876017985765807">ଆପଣ <ph name="WEBSITE" /> ପାଇଁ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="247430852844518481">ପରେ ଏହି ପୃଷ୍ଠାକୁ ପୁଣି ଭିଜିଟ କରିବା ପାଇଁ ଆପଣ ଏକ ରିମାଇଣ୍ଡର ସେଟ କରିପାରିବେ</translation>
+<translation id="2476554421818031422">ଆପଣ ଉନ୍ନତ ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରୁଛନ୍ତି</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2484459871750294497">ମୁଁ ଏହି ଫିଚରକୁ କିପରି ସକ୍ଷମ କରିବି?</translation>
@@ -2068,6 +2070,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="78146569776629510">ଡାଉନଲୋଡ</translation>
 <translation id="7815852444315004084">ବର୍ତ୍ତମାନ ପାଇଁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="7825973332242257878">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ</translation>
+<translation id="7828344837949522075">ପରାମର୍ଶ ଦେଖାନ୍ତୁ</translation>
 <translation id="7839994177130598711"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟମାନେ Google Password Manager ବ୍ୟବହାର କଲେ ସେମାନେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="7841180087127694526">କପି କରାଯାଇଥିବା ଟେକ୍ସଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7841418003178675048">ଆପଣଙ୍କ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଆପଣ କେଉଁ କାର୍ଡଗୁଡ଼ିକ ଦେଖୁଛନ୍ତି ତାହା ବାଛନ୍ତୁ।</translation>

@@ -116,6 +116,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="1414919006379339073">Aizvērt pašreizējo logu</translation>
 <translation id="1416550906796893042">Lietojumprogrammas versija</translation>
 <translation id="1430915738399379752">Drukāt</translation>
+<translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1435593198351412143">Automātiska PDF failu atvēršana</translation>
 <translation id="1437543266176261764">Darbojas pārlūkā <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
@@ -1537,6 +1538,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7182520625618447753">Mainiet adreses joslas pozīciju uz augšdaļu vai apakšdaļu, lai pielāgotu pārlūkošanas saskarni savai gaumei un vajadzībām.</translation>
 <translation id="7183517696921903380">Lietotņu filtra lapa ir atvērta.</translation>
 <translation id="7186568385131859684">Varat kontrolēt, kā Google pakalpojumos tiek izmantota pārlūkošanas vēsture un citi jūsu dati</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Lai aizvērtu piesprausto cilni, vēlreiz nospiediet īsinājumtaustiņu ^W.}zero{Lai aizvērtu piespraustās cilnes, vēlreiz nospiediet īsinājumtaustiņu ^W.}one{Lai aizvērtu piespraustās cilnes, vēlreiz nospiediet īsinājumtaustiņu ^W.}other{Lai aizvērtu piespraustās cilnes, vēlreiz nospiediet īsinājumtaustiņu ^W.}}</translation>
 <translation id="7190921792980745354">Vai bloķēt lietotāju <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Nekavējoties nomainiet to.}zero{Nekavējoties nomainiet tās.}one{Nekavējoties nomainiet tās.}other{Nekavējoties nomainiet tās.}}</translation>
@@ -1985,6 +1987,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8995521496079646922">Pēc noklusējuma tiks izmantotas jūsu izvēlētās lietotnes. Ja kādas lietotnes vēl nav šajā ierīcē, tā drīzumā tiks lejupielādēta.</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998837250940831980">Nevarēja minimizēt cilni. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="9000089900434778519">Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama.</translation>
 <translation id="9001604755921395912">Atvērt Chrome inkognito cilnē</translation>
 <translation id="9010094279589497751">Ātri atveriet Gemini, kad tas ir nepieciešams.</translation>
 <translation id="9012585441087414258">Tiek nodrošināta aizsardzība pret zināmām bīstamām vietnēm, lejupielādēm un paplašinājumiem. Ja lapas darbība ir aizdomīga, funkcijai “Google droša pārlūkošana” tiek nosūtīti vietrāži URL un lapas satura fragmenti.</translation>

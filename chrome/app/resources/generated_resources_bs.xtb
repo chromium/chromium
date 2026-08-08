@@ -2065,6 +2065,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime kopirano u međumemoriju</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Isključena je 1 nesigurna ekstenzija}one{Isključena je {NUM_SITES} nesigurna ekstenzija}few{Isključene su {NUM_SITES} nesigurne ekstenzije}other{Isključeno je {NUM_SITES} nesigurnih ekstenzija}}</translation>
+<translation id="2603121359676416582">Za ovu stranicu</translation>
 <translation id="2604129989323098489">Web lokacije obično traže informacije o vašim ekranima da mogu otvarati i postavljati prozore na pametan način, kao što je prikazivanje dokumenata ili sadržaja cijelog ekrana jednog pored drugog</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2604805099836652105">Polje obrasca adrese za <ph name="ADDRESS_LABEL" /> je ispunjeno.</translation>
@@ -2979,6 +2980,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3285329711156774325">Pretražite vještine</translation>
 <translation id="3285500645985761267">Dozvolite srodnim web lokacijama da vide vašu aktivnost u grupi</translation>
 <translation id="328571385944182268">Sačuvati vaše lozinke?</translation>
+<translation id="3285969135399641759">Naučite novu vještinu</translation>
 <translation id="3289668031376215426">Automatsko veliko slovo</translation>
 <translation id="3289856944988573801">Da provjerite ima li ažuriranja, koristite Ethernet ili WiFi.</translation>
 <translation id="3290249595466894471">Također šalje mali uzorak stranica, preuzimanja, aktivnosti ekstenzija i informacija o sistemu radi lakšeg otkrivanja novih prijetnji</translation>
@@ -6385,6 +6387,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5939719276406088041">Nije moguće kreirati prečicu</translation>
 <translation id="5939723110967488589">Odaberite koja će se dugmad prikazivati na alatnoj traci</translation>
 <translation id="594048410531370124">Tipka nije prepoznata. Pritisnite bilo koju tipku da <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Dobijte savjet</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 lozinka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu.}one{{PASSWORD_COUNT} lozinka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}few{{PASSWORD_COUNT} lozinke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}other{{PASSWORD_COUNT} lozinki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}}</translation>
 <translation id="594221546068848596">Pretražite stranicu pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

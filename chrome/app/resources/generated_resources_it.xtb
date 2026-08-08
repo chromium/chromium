@@ -2054,6 +2054,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2598710988533271874">Nuovo Chrome disponibile</translation>
 <translation id="2599048253926156421">Nome utente copiato negli appunti</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 estensione non sicura disattivata}other{{NUM_SITES} estensioni non sicure disattivate}}</translation>
+<translation id="2603121359676416582">Per questa pagina</translation>
 <translation id="2604129989323098489">Generalmente i siti chiedono informazioni sui tuoi schermi per poter aprire e posizionare le finestre in modo intelligente, ad esempio per mostrare documenti o contenuti a schermo intero affiancati</translation>
 <translation id="2604255671529671813">Errore di connessione alla rete</translation>
 <translation id="2604805099836652105">Modulo per l'indirizzo <ph name="ADDRESS_LABEL" /> compilato.</translation>
@@ -2968,6 +2969,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3285329711156774325">Cerca skill</translation>
 <translation id="3285500645985761267">Consenti ai siti correlati di vedere le tue attività nel gruppo</translation>
 <translation id="328571385944182268">Vuoi salvare le password?</translation>
+<translation id="3285969135399641759">Impara una nuova skill</translation>
 <translation id="3289668031376215426">Maiuscole automatiche</translation>
 <translation id="3289856944988573801">Per verificare la disponibilità di aggiornamenti, utilizza una rete Ethernet o Wi-Fi.</translation>
 <translation id="3290249595466894471">Invia anche un numero ridotto di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce</translation>
@@ -6371,6 +6373,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5939719276406088041">Impossibile creare la scorciatoia</translation>
 <translation id="5939723110967488589">Scegli i pulsanti da mostrare nella barra degli strumenti</translation>
 <translation id="594048410531370124">Tasto non riconosciuto. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Ricevi consigli</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 password è salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo Account Google.}other{{PASSWORD_COUNT} password sono salvate solo su questo dispositivo. Per usarle sugli altri dispositivi, salvale nel tuo Account Google.}}</translation>
 <translation id="594221546068848596">Pagina di ricerca con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

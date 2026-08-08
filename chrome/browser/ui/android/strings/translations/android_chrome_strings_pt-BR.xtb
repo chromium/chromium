@@ -116,6 +116,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1414919006379339073">Fechar a janela atual</translation>
 <translation id="1416550906796893042">Versão do aplicativo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1435593198351412143">Abrir PDFs automaticamente</translation>
 <translation id="1437543266176261764">Em execução no app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize seus produtos monitorados nos favoritos</translation>
@@ -1987,6 +1988,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Os que não estiverem no dispositivo serão baixados em breve.</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998837250940831980">Não foi possível minimizar a guia. Tente de novo mais tarde.</translation>
+<translation id="9000089900434778519">Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="9001604755921395912">Abrir em guia anônima do Chrome</translation>
 <translation id="9010094279589497751">Abra o Gemini rapidamente quando precisar</translation>
 <translation id="9012585441087414258">Protege contra extensões, sites e downloads perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página serão enviados ao recurso Navegação segura do Google.</translation>

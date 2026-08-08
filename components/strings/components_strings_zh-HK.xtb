@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2828797285817981634">目前允許使用動作感應器</translation>
-<translation id="2835170189407361413">清除表格</translation>
 <translation id="2835907903001172712">瀏覽器概覽</translation>
 <translation id="2837891525090413132">可以要求鎖定並使用你的鍵盤</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922">Chrome 瀏覽器正在嘗試在「<ph name="APP_NAME" />」填入密碼。</translation>
 <translation id="668132230070712111">影片已儲存至「Google 雲端硬碟」</translation>
 <translation id="6681790815630918386">已儲存 CVC</translation>
-<translation id="6686570026048064255">如要關閉 Pix 代碼偵測，請前往 <ph name="BEGIN_LINK1" />Chrome 設定<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">信封 (普通紙)</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4437,6 +4435,7 @@
 <translation id="8708134712139312373">可要求連接藍牙裝置</translation>
 <translation id="8710842507289500830">字型樣式</translation>
 <translation id="8712637175834984815">我知道了</translation>
+<translation id="8715198179991802709">Chrome 剛剛標示你嘗試瀏覽的網站。請花 1 分鐘填寫問卷，協助改善這類警告訊息。</translation>
 <translation id="8718314106902482036">未完成付款程序</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />，<ph name="DESCRIPTION" />，搜尋建議</translation>
 <translation id="8719528812645237045">多孔 (頂端)</translation>

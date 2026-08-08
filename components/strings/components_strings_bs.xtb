@@ -592,7 +592,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2027465737841872819">Plastika</translation>
 <translation id="2027707238798802149">Kartica nije dostupna</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Provjeriti proksi server i firewall<ph name="END_LINK" /></translation>
-<translation id="2033550997390154638">Ova instanca Chromea izvodi se s ručno postavljenim oznakama naredbenog retka. Napominjemo da se oznake naredbenog retka mogu promijeniti u bilo kojem trenutku i nisu podržane.</translation>
+<translation id="2033550997390154638">Ova instanca Chromea se pokreće s ručno postavljenim oznakama komandne linije. Napominjemo da se oznake komandne linije mogu promijeniti bilo kada i da nisu podržane.</translation>
 <translation id="2033900728810589426">Prečica ne može biti ista kao zadana ključna riječ pružaoca usluge pretraživanja koja je definirana pravilima <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Ipak sačuvaj</translation>
 <translation id="2036514476578229158">Pitao/la si da posjetiš ovu web lokaciju. Roditelji mogu odgovoriti u Family Linku.</translation>
@@ -1062,7 +1062,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
 <translation id="2828797285817981634">Senzori kretanja su sada dozvoljeni</translation>
-<translation id="2835170189407361413">Obriši polja obrasca</translation>
 <translation id="2835907903001172712">pregled preglednika</translation>
 <translation id="2837891525090413132">Može zatražiti da zaključa i koristi vašu tastaturu</translation>
 <translation id="2839032553903800133">Obavještenja su blokirana</translation>
@@ -3296,7 +3295,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6679354743514146922">Preglednik Chrome pokušava popuniti vašu lozinku u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videozapis je sačuvan na Google Disk</translation>
 <translation id="6681790815630918386">CVC je sačuvan</translation>
-<translation id="6686570026048064255">Da isključite otkrivanje Pix koda, idite u <ph name="BEGIN_LINK1" />postavke Chromea<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Koverta (obična)</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6688743156324860098">Ažuriranje…</translation>
@@ -4108,7 +4106,7 @@ Dodatni detalji:
 <translation id="8079591184016291275">Naziv događaja</translation>
 <translation id="8079976827192572403">Opasna web lokacija</translation>
 <translation id="8086971161893892807">Nedovršena verzija</translation>
-<translation id="8087558780672230449">Učitavanje aplikacije <ph name="APP_ORIGIN" /> za obradu plaćanja kod trgovca <ph name="MERCHANT_ORIGIN" /></translation>
+<translation id="8087558780672230449">Učitavanje aplikacije <ph name="APP_ORIGIN" /> za obradu plaćanja kod trgovca <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Prikazivanje članka nije uspjelo.</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>
 <translation id="8091372947890762290">Aktivacija je na čekanju na serveru</translation>
@@ -4438,6 +4436,7 @@ Dodatni detalji:
 <translation id="8708134712139312373">Može tražiti da se poveže s Bluetooth uređajima</translation>
 <translation id="8710842507289500830">Stil fonta</translation>
 <translation id="8712637175834984815">Razumijem</translation>
+<translation id="8715198179991802709">Chrome je upravo prijavio web lokaciju koju ste pokušavali posjetiti. Pomozite nam da poboljšamo ova upozorenja popunjavanjem 1-minutne ankete.</translation>
 <translation id="8718314106902482036">Plaćanje nije završeno</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, prijedlog za pretraživanje</translation>
 <translation id="8719528812645237045">Višestruko bušenje na gornjoj strani</translation>

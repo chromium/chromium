@@ -116,6 +116,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1414919006379339073">Loka núverandi glugga</translation>
 <translation id="1416550906796893042">Útgáfa forrits</translation>
 <translation id="1430915738399379752">Prenta</translation>
+<translation id="1432581352905426595">Stjórna leitarvélum</translation>
 <translation id="1435593198351412143">Opna PDF-skrár sjálfkrafa</translation>
 <translation id="1437543266176261764">Keyrt í <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
@@ -1537,6 +1538,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7182520625618447753">Sérstilltu vafraupplifun þína með því að færa veffangastikuna efst eða neðst</translation>
 <translation id="7183517696921903380">Síublað forrita er opið.</translation>
 <translation id="7186568385131859684">Stjórnaðu því hvernig vafraferillinn er notaður með öðrum gögnum úr Google-þjónustum</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Ýttu aftur á ^W til að loka festa flipanum}one{Ýttu aftur á „^W“ til að loka festu flipunum}other{Ýttu aftur á „^W“ til að loka festu flipunum}}</translation>
 <translation id="7190921792980745354">Setja <ph name="MEMBER_FULL_NAME" /> á bannlista?</translation>
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Þú ættir að breyta því strax}one{Þú ættir að breyta þeim strax}other{Þú ættir að breyta þeim strax}}</translation>
@@ -1985,6 +1987,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8995521496079646922">Forritin sem þú velur verða notuð sjálfkrafa. Ef forrit er ekki þegar í tækinu verður það sótt innan skamms.</translation>
 <translation id="8996847606757455498">Velja aðra veitu</translation>
 <translation id="8998837250940831980">Ekki tókst að minnka flipa. Reyndu aftur síðar.</translation>
+<translation id="9000089900434778519">Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="9001604755921395912">Opna í huliðsflipa í Chrome</translation>
 <translation id="9010094279589497751">Opnaðu Gemini þegar þú þarft á því að halda</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>

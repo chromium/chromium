@@ -2055,6 +2055,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2598710988533271874">K dispozici je nový Chrome</translation>
 <translation id="2599048253926156421">Uživatelské jméno bylo zkopírováno do schránky</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Bylo vypnuto 1 nebezpečné rozšíření}few{Byla vypnuta {NUM_SITES} nebezpečná rozšíření}many{Bylo vypnuto {NUM_SITES} nebezpečného rozšíření}other{Bylo vypnuto {NUM_SITES} nebezpečných rozšíření}}</translation>
+<translation id="2603121359676416582">Pro tuto stránku</translation>
 <translation id="2604129989323098489">Weby obvykle žádají informace o obrazovkách, aby mohly inteligentně otevírat a umisťovat okna, například zobrazit dokumenty nebo obsah na celou obrazovku vedle sebe</translation>
 <translation id="2604255671529671813">Chyba připojení k síti</translation>
 <translation id="2604805099836652105">Byl vyplněn formulář pro tuto adresu: <ph name="ADDRESS_LABEL" />.</translation>
@@ -2967,6 +2968,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3285329711156774325">Vyhledat dovednosti</translation>
 <translation id="3285500645985761267">Povolit souvisejícím webům sledovat vaši aktivitu ve skupině</translation>
 <translation id="328571385944182268">Ukládat hesla?</translation>
+<translation id="3285969135399641759">Naučte se něco nového</translation>
 <translation id="3289668031376215426">Velká písmena automaticky</translation>
 <translation id="3289856944988573801">Chcete-li zkontrolovat dostupnost aktualizací, použijte síť Ethernet nebo Wi-Fi.</translation>
 <translation id="3290249595466894471">Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby</translation>
@@ -6368,6 +6370,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5939719276406088041">Zkratku nelze vytvořit</translation>
 <translation id="5939723110967488589">Vyberte, která tlačítka se zobrazí na panelu nástrojů</translation>
 <translation id="594048410531370124">Nerozpoznaná klávesa. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
+<translation id="5940614040566393493">Nechte si poradit</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 heslo je uloženo jen na tomto zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.}few{{PASSWORD_COUNT} hesla jsou uložena jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{{PASSWORD_COUNT} hesla je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{{PASSWORD_COUNT} hesel je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
 <translation id="594221546068848596">Prohledat stránku pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

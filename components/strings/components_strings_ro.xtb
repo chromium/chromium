@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Cardul nu este disponibil</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />să verifici proxy-ul și firewallul;<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Această instanță de Chrome rulează cu funcții experimentale în linia de comandă setate manual. Reține că funcțiile experimentale în linia de comandă se pot modifica oricând și nu sunt acceptate.</translation>
 <translation id="2033900728810589426">Comanda rapidă nu poate fi identică cu cuvântul cheie prestabilit al furnizorului de căutare, definit de <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2036514476578229158">Ai solicitat să accesezi acest site. Părinții tăi pot răspunde în Family Link.</translation>
@@ -1061,7 +1062,6 @@
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
 <translation id="2826760142808435982">Conexiunea este criptată și autentificată utilizând <ph name="CIPHER" /> și folosește <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
 <translation id="2828797285817981634">Folosirea senzorilor de mișcare este permisă momentan</translation>
-<translation id="2835170189407361413">Golește formularul</translation>
 <translation id="2835907903001172712">prezentarea generală a browserului,</translation>
 <translation id="2837891525090413132">Poate solicita blocarea și folosirea tastaturii</translation>
 <translation id="2839032553903800133">Notificările au fost blocate</translation>
@@ -2068,7 +2068,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4543072026714825470">Pentru a plăti mai rapid data viitoare, salvează cardul și adresa de facturare în Contul Google</translation>
 <translation id="4546730006268514143">Transferul a expirat</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{Creat acum o zi}few{Creat acum {NUM_DAYS} zile}other{Creat acum {NUM_DAYS} de zile}}</translation>
-<translation id="4550087677305533997">Pasager</translation>
+<translation id="4550087677305533997">Persoană pasageră</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Folosești blocarea ecranului pentru a completa parolele</translation>
 <translation id="4558551763791394412">Dezactivează extensiile.</translation>
@@ -3295,7 +3295,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6679354743514146922">Browserul Chrome încearcă să completeze parola în <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videoclipul a fost salvat în Google Drive</translation>
 <translation id="6681790815630918386">CVC a fost salvat</translation>
-<translation id="6686570026048064255">Pentru a dezactiva detectarea codului Pix, accesează <ph name="BEGIN_LINK1" />setările Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Plic (simplu)</translation>
 <translation id="6687335167692595844">Dimensiunea fontului solicitată</translation>
 <translation id="6688743156324860098">Actualizează…</translation>
@@ -4438,6 +4437,7 @@ Detalii suplimentare:
 <translation id="8708134712139312373">Poate solicita permisiunea de a se conecta la dispozitive Bluetooth</translation>
 <translation id="8710842507289500830">Stilul fontului</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
+<translation id="8715198179991802709">Chrome tocmai a semnalat un site pe care încercai să-l accesezi. Ajută-ne să îmbunătățim aceste avertismente, răspunzând la un sondaj de un minut.</translation>
 <translation id="8718314106902482036">Plata nu a fost finalizată</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestie de căutare</translation>
 <translation id="8719528812645237045">Perforare multiplă în partea de sus</translation>

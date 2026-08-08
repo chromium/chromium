@@ -2065,6 +2065,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2598710988533271874">En ny Chrome-versjon er tilgjengelig</translation>
 <translation id="2599048253926156421">Brukernavnet er kopiert til utklippstavlen</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Slo av 1 utrygg utvidelse}other{Slo av {NUM_SITES} utrygge utvidelser}}</translation>
+<translation id="2603121359676416582">For denne siden</translation>
 <translation id="2604129989323098489">Nettsteder ber vanligvis om informasjon om skjermene dine for å kunne åpne og plassere vinduer på en intelligent måte, for eksempel for å vise dokumenter eller innhold i fullskjerm side om side</translation>
 <translation id="2604255671529671813">Tilkoblingsfeil</translation>
 <translation id="2604805099836652105">Adresseskjemaet for <ph name="ADDRESS_LABEL" /> er fylt ut.</translation>
@@ -2979,6 +2980,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3285329711156774325">Søkeferdigheter</translation>
 <translation id="3285500645985761267">Tillat relaterte nettsteder å se aktiviteten din i gruppen</translation>
 <translation id="328571385944182268">Vil du lagre passordene dine?</translation>
+<translation id="3285969135399641759">Lær deg en ny ferdighet</translation>
 <translation id="3289668031376215426">Automatisk stor forbokstav</translation>
 <translation id="3289856944988573801">For å sjekke etter oppdateringer, kan du bruke Ethernet eller Wifi.</translation>
 <translation id="3290249595466894471">Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler</translation>
@@ -6380,6 +6382,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5939719276406088041">Kan ikke opprette snarvei</translation>
 <translation id="5939723110967488589">Velg hvilke knapper som skal vises på verktøylinjen</translation>
 <translation id="594048410531370124">Tasten ble ikke gjenkjent. Trykk på en tast for å <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Få råd</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din.}other{{PASSWORD_COUNT} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
 <translation id="594221546068848596">Søk på siden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

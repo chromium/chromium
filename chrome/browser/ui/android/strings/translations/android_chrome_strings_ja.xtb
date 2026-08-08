@@ -116,6 +116,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1414919006379339073">現在のウィンドウを閉じる</translation>
 <translation id="1416550906796893042">アプリケーションのバージョン</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1432581352905426595">検索エンジンを管理</translation>
 <translation id="1435593198351412143">PDF を自動的に開く</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> で実行中</translation>
 <translation id="1448440926884431741">ブックマークでトラッキングしている商品を整理できます</translation>
@@ -1537,6 +1538,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7182520625618447753">アドレスバーの位置を上または下に変更して、ブラウジング環境をカスタマイズできます</translation>
 <translation id="7183517696921903380">アプリのフィルタシートが開いています。</translation>
 <translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{固定タブを閉じるには、もう一度 ^W キーを押してください}other{固定タブを閉じるには、もう一度 ^W キーを押してください}}</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> さんをブロックしますか？</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{今すぐ変更してください}other{今すぐ変更してください}}</translation>
@@ -1985,6 +1987,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8995521496079646922">選択したアプリがデフォルトで使用されます。アプリがまだこのデバイスにインストールされていない場合は、まもなくダウンロードされます。</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998837250940831980">タブを最小化できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="9000089900434778519">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="9001604755921395912">シークレット モードの Chrome タブで開く</translation>
 <translation id="9010094279589497751">必要なときに Gemini をすばやく開くことができます</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>

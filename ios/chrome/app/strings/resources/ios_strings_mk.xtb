@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ако ја избришете, сите веднаш ќе го изгубат пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите уреди.</translation>
 <translation id="2424805048070062787">Продолжете со картичкава</translation>
 <translation id="2426805022920575512">Изберете друга сметка</translation>
+<translation id="2428543302546523788">Прикажувај линкови кога е вклучен „Режимот за читање“</translation>
 <translation id="243275146591958220">Откажи го преземањето</translation>
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Може да лизгате налево за да прелистувате во „Инкогнито“.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Што може да правам со Gemini во Chrome?</translation>
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Може да поставите потсетник за да ја отворите страницава подоцна</translation>
+<translation id="2476554421818031422">Помагате да се подобри „Подобрено автоматско пополнување“</translation>
 <translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2484459871750294497">Како да ја овозможам функцијава?</translation>
@@ -2068,6 +2070,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="78146569776629510">Преземања</translation>
 <translation id="7815852444315004084">Скриј засега</translation>
 <translation id="7825973332242257878">Групи картички</translation>
+<translation id="7828344837949522075">Прикажувај предлог</translation>
 <translation id="7839994177130598711">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Пребарајте го копираниот текст</translation>
 <translation id="7841418003178675048">Изберете кои картички да се гледаат на вашата страница во нова картичка.</translation>

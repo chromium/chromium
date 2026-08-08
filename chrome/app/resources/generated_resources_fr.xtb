@@ -2055,6 +2055,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2598710988533271874">Nouvelle version de Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 extension non sécurisée désactivée}one{{NUM_SITES} extension non sécurisée désactivée}other{{NUM_SITES} extensions non sécurisées désactivées}}</translation>
+<translation id="2603121359676416582">Pour cette page</translation>
 <translation id="2604129989323098489">Les sites demandent généralement des informations concernant vos écrans afin de pouvoir ouvrir et placer intelligemment les fenêtres, par exemple pour afficher des documents ou des contenus en plein écran côte à côte</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2604805099836652105">Formulaire d'adresse <ph name="ADDRESS_LABEL" /> rempli.</translation>
@@ -2967,6 +2968,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3285329711156774325">Rechercher des compétences</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
 <translation id="328571385944182268">Enregistrer vos mots de passe ?</translation>
+<translation id="3285969135399641759">Apprendre quelque chose de nouveau</translation>
 <translation id="3289668031376215426">Majuscules automatiques</translation>
 <translation id="3289856944988573801">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Un petit échantillon de pages, de téléchargements, d'informations système et d'activité des extensions est aussi envoyé afin d'identifier de nouvelles menaces</translation>
@@ -6372,6 +6374,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5939719276406088041">Impossible de créer un raccourci</translation>
 <translation id="5939723110967488589">Choisir les boutons à afficher dans la barre d'outils</translation>
 <translation id="594048410531370124">Touche non reconnue. Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Obtenir des conseils</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{PASSWORD_COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{PASSWORD_COUNT} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="594221546068848596">Rechercher sur une page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

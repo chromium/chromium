@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Трака за адресу и претрагу</translation>
 <translation id="2826760142808435982">Веза је шифрована и њена аутентичност је потврђена помоћу <ph name="CIPHER" /> и користи <ph name="KX" /> као механизам за размену шифара.</translation>
 <translation id="2828797285817981634">За сада су сензори покрета дозвољени</translation>
-<translation id="2835170189407361413">Обриши образац</translation>
 <translation id="2835907903001172712">Преглед прегледача</translation>
 <translation id="2837891525090413132">Може да тражи да закључа и користи тастатуру</translation>
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
@@ -3295,7 +3294,6 @@
 <translation id="6679354743514146922">Chrome прегледач покушава да унесе лозинку у <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Видео је сачуван на Google диску</translation>
 <translation id="6681790815630918386">CVC је сачуван</translation>
-<translation id="6686570026048064255">Да бисте искључили откривање Pix кода, идите у <ph name="BEGIN_LINK1" />Подешавања Chrome-а<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Коверта (обична)</translation>
 <translation id="6687335167692595844">Затражена је величина фонта</translation>
 <translation id="6688743156324860098">Ажурирајте…</translation>

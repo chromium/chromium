@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">If you delete it, everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices.</translation>
 <translation id="2424805048070062787">Continue with this tab</translation>
 <translation id="2426805022920575512">Choose another account</translation>
+<translation id="2428543302546523788">Show links when reading mode is on</translation>
 <translation id="243275146591958220">Cancel download</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">You can scroll left to browse in Incognito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">What can I do with Gemini in Chrome?</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">You can set a reminder to revisit this page later</translation>
+<translation id="2476554421818031422">You're helping improve enhanced autofill</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">How do I enable this feature?</translation>
@@ -2068,6 +2070,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7815852444315004084">Hide for now</translation>
 <translation id="7825973332242257878">Tab groups</translation>
+<translation id="7828344837949522075">Show suggestion</translation>
 <translation id="7839994177130598711">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Search for copied text</translation>
 <translation id="7841418003178675048">Choose what cards you see on your new tab page.</translation>

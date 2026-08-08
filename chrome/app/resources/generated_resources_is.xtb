@@ -2068,6 +2068,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2598710988533271874">Ný útgáfa af Chrome er tiltæk</translation>
 <translation id="2599048253926156421">Notandanafn afritað á klippiborð</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Slökkt var á einni ótraustri viðbót}one{Slökkt var á {NUM_SITES} ótraustri viðbót}other{Slökkt var á {NUM_SITES} ótraustum viðbótum}}</translation>
+<translation id="2603121359676416582">Fyrir þessa síðu</translation>
 <translation id="2604129989323098489">Vefsvæði biðja venjulega um upplýsingar um skjáina þína svo þau geti opnað og staðsett glugga á snjallan hátt, t.d. sýnt skjöl eða efni á öllum skjánum hlið við hlið.</translation>
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2604805099836652105">Eyðublað fyllt út fyrir heimilisfang „<ph name="ADDRESS_LABEL" />“.</translation>
@@ -2982,6 +2983,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3285329711156774325">Leita að færni</translation>
 <translation id="3285500645985761267">Leyfa tengdum vefsvæðum að sjá virkni þína í hópnum</translation>
 <translation id="328571385944182268">Vista aðgangsorðin þín?</translation>
+<translation id="3285969135399641759">Lærðu nýja færni</translation>
 <translation id="3289668031376215426">Sjálfvirkir hástafir</translation>
 <translation id="3289856944988573801">Notaðu Ethernet-tengingu eða Wi-Fi til að leita að uppfærslum.</translation>
 <translation id="3290249595466894471">Sendir einnig lítið brot af síðum, niðurhali, virkni viðbóta og kerfisupplýsingar til að auðvelda leit að nýjum ógnum</translation>
@@ -6388,6 +6390,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5939719276406088041">Ekki er hægt að búa til flýtileið</translation>
 <translation id="5939723110967488589">Veldu hnappana sem birtast á tækjastikunni</translation>
 <translation id="594048410531370124">Óþekktur lykill. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Fáðu ráð</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Eitt aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum.}one{{PASSWORD_COUNT} aðgangsorð er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}other{{PASSWORD_COUNT} aðgangsorð eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}}</translation>
 <translation id="594221546068848596">Leita á síðu með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

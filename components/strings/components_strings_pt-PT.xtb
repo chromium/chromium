@@ -1062,7 +1062,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
 <translation id="2828797285817981634">Sensores de movimento permitidos por agora</translation>
-<translation id="2835170189407361413">Limpar formulário</translation>
 <translation id="2835907903001172712">Vista geral do navegador</translation>
 <translation id="2837891525090413132">Pode pedir para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
@@ -3296,7 +3295,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6679354743514146922">O navegador Chrome está a tentar preencher a sua palavra-passe na app <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vídeo guardado no Google Drive</translation>
 <translation id="6681790815630918386">CVC guardado</translation>
-<translation id="6686570026048064255">Para desativar a deteção de códigos Pix, aceda às <ph name="BEGIN_LINK1" />definições do Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (simples)</translation>
 <translation id="6687335167692595844">Tamanho da letra solicitado</translation>
 <translation id="6688743156324860098">Atualizar…</translation>

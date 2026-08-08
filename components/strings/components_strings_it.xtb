@@ -592,6 +592,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2027465737841872819">Plastica</translation>
 <translation id="2027707238798802149">Carta non disponibile</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controllare il proxy e firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Questa istanza di Chrome è in esecuzione con flag della riga di comando impostati manualmente. Tieni presente che i flag della riga di comando possono cambiare in qualsiasi momento e non sono supportati.</translation>
 <translation id="2033900728810589426">La scorciatoia non può essere uguale alla parola chiave del provider di ricerca predefinito definita da <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="2036514476578229158">Hai chiesto di poter visitare questo sito. I tuoi genitori possono rispondere in Family Link.</translation>
@@ -1061,7 +1062,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2824775600643448204">Barra degli indirizzi e di ricerca</translation>
 <translation id="2826760142808435982">La connessione è stata criptata e autenticata utilizzando <ph name="CIPHER" /> e <ph name="KX" /> come meccanismo di scambio delle chiavi.</translation>
 <translation id="2828797285817981634">Sensori di movimento consentiti per ora</translation>
-<translation id="2835170189407361413">Cancella modulo</translation>
 <translation id="2835907903001172712">Panoramica del browser</translation>
 <translation id="2837891525090413132">Può chiedere di bloccare e usare la tastiera</translation>
 <translation id="2839032553903800133">Notifiche bloccate</translation>
@@ -3291,7 +3291,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6679354743514146922">Il browser Chrome sta cercando di inserire la password su <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video salvato su Google Drive</translation>
 <translation id="6681790815630918386">CVC salvato</translation>
-<translation id="6686570026048064255">Per disattivare il rilevamento del codice Pix, vai alle <ph name="BEGIN_LINK1" />Impostazioni di Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Busta (normale)</translation>
 <translation id="6687335167692595844">Dimensioni carattere richieste</translation>
 <translation id="6688743156324860098">Aggiorna…</translation>
@@ -4433,6 +4432,7 @@ Ulteriori dettagli:
 <translation id="8708134712139312373">Può chiedere di connettersi ai dispositivi Bluetooth</translation>
 <translation id="8710842507289500830">Stile carattere</translation>
 <translation id="8712637175834984815">Ok</translation>
+<translation id="8715198179991802709">Chrome ha appena segnalato un sito web che stavi cercando di visitare. Aiutaci a migliorare questi avvisi partecipando a un sondaggio di 1 minuto.</translation>
 <translation id="8718314106902482036">Pagamento non completato</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suggerimento di ricerca</translation>
 <translation id="8719528812645237045">Perforatura multipla in alto</translation>

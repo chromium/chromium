@@ -1062,7 +1062,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2824775600643448204">Adreso ir paieškos juosta</translation>
 <translation id="2826760142808435982">Ryšys užšifruotas ir tapatybė nustatyta naudojant <ph name="CIPHER" />. <ph name="KX" /> naudojamas kaip pagrindinis mainų mechanizmas.</translation>
 <translation id="2828797285817981634">Kol kas leidžiama naudoti judesio jutiklius</translation>
-<translation id="2835170189407361413">Valyti formą</translation>
 <translation id="2835907903001172712">Naršyklės apžvalga</translation>
 <translation id="2837891525090413132">Gali paprašyti užrakinti ir naudoti klaviatūrą</translation>
 <translation id="2839032553903800133">Pranešimai užblokuoti</translation>
@@ -3297,7 +3296,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6679354743514146922">„Chrome“ naršyklė bando užpildyti jūsų slaptažodį programoje „<ph name="APP_NAME" />“.</translation>
 <translation id="668132230070712111">Vaizdo įrašas išsaugotas „Google“ diske</translation>
 <translation id="6681790815630918386">CVC išsaugotas</translation>
-<translation id="6686570026048064255">Jei norite išjungti „Pix“ kodo aptikimą, eikite į <ph name="BEGIN_LINK1" />„Chrome“ nustatymus<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Vokas (paprastas)</translation>
 <translation id="6687335167692595844">Reikia nurodyti šrifto dydį</translation>
 <translation id="6688743156324860098">Atnaujinti…</translation>
@@ -4440,6 +4438,7 @@ Papildoma išsami informacija:
 <translation id="8708134712139312373">Gali būti prašoma prisijungti prie „Bluetooth“ įrenginių</translation>
 <translation id="8710842507289500830">Šrifto stilius</translation>
 <translation id="8712637175834984815">Supratau</translation>
+<translation id="8715198179991802709">„Chrome“ ką tik pažymėjo svetainę, kurioje bandėte apsilankyti. Padėkite mums tobulinti šiuos įspėjimus – dalyvaukite vienos minutės trukmės apklausoje.</translation>
 <translation id="8718314106902482036">Mokėjimas neužbaigtas</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, paieškos pasiūlymas</translation>
 <translation id="8719528812645237045">Kelios skylės viršuje</translation>

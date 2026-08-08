@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">ਪਤਾ ਅਤੇ ਖੋਜ ਬਾਰ</translation>
 <translation id="2826760142808435982">ਕਨੈਕਸ਼ਨ <ph name="CIPHER" /> ਵਰਤਦੇ ਹੋਏ ਐਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ <ph name="KX" /> ਨੂੰ ਮੁੱਖ ਐਕਸਚੇਂਜ ਬਣਤਰ ਦੇ ਤੌਰ 'ਤੇ ਵਰਤਦਾ ਹੈ।</translation>
 <translation id="2828797285817981634">ਫ਼ਿਲਹਾਲ ਮੋਸ਼ਨ ਸੈਂਸਰਾਂ ਦੀ ਆਗਿਆ ਹੈ</translation>
-<translation id="2835170189407361413">ਫ਼ਾਰਮ ਹਟਾਓ</translation>
 <translation id="2835907903001172712">ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਰੂਪ-ਰੇਖਾ</translation>
 <translation id="2837891525090413132">ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਨੂੰ ਲਾਕ ਕਰਨ ਅਤੇ ਵਰਤਣ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ</translation>
 <translation id="2839032553903800133">ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -3292,7 +3291,6 @@
 <translation id="6679354743514146922">Chrome ਬ੍ਰਾਊਜ਼ਰ <ph name="APP_NAME" /> 'ਤੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਭਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="668132230070712111">ਵੀਡੀਓ ਨੂੰ Google Drive ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6681790815630918386">CVC ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="6686570026048064255">Pix ਕੋਡ ਖੋਜ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK1" />Chrome ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="6687230248707087982">ਐਨਵਲੋਪ (ਪਲੇਨ)</translation>
 <translation id="6687335167692595844">ਫ਼ੌਂਟ ਆਕਾਰ ਲਈ ਬੇਨਤੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="6688743156324860098">ਅੱਪਡੇਟ ਕਰੋ…</translation>
@@ -4433,6 +4431,7 @@
 <translation id="8708134712139312373">ਸਾਈਟ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="8710842507289500830">ਫ਼ੌਂਟ ਸ਼ੈਲੀ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
+<translation id="8715198179991802709">Chrome ਨੇ ਹੁਣੇ ਉਸ ਵੈੱਬਸਾਈਟ ਨੂੰ ਫਲੈਗ ਕੀਤਾ ਹੈ, ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਸੀ। 1-ਮਿੰਟ ਦਾ ਸਰਵੇਖਣ ਕਰ ਕੇ ਇਨ੍ਹਾਂ ਚਿਤਾਵਨੀਆਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ।</translation>
 <translation id="8718314106902482036">ਭੁਗਤਾਨ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ਖੋਜ ਸੁਝਾਅ</translation>
 <translation id="8719528812645237045">ਉੱਪਰ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>

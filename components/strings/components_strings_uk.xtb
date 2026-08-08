@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Адресний і пошуковий рядок</translation>
 <translation id="2826760142808435982">З’єднання зашифровано й автентифіковано з використанням шифру <ph name="CIPHER" /> і використовує механізм обміну ключами <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Використання датчиків руху й освітлення тимчасово дозволено</translation>
-<translation id="2835170189407361413">Очистити форму</translation>
 <translation id="2835907903001172712">Огляд вебпереглядача</translation>
 <translation id="2837891525090413132">Може запитувати дозвіл блокувати й використовувати клавіатуру</translation>
 <translation id="2839032553903800133">Сповіщення заблоковано</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Вебпереглядач Chrome намагається автоматично заповнити пароль на сайті <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Відео збережено на Google Диску</translation>
 <translation id="6681790815630918386">Код CVC збережено</translation>
-<translation id="6686570026048064255">Щоб вимкнути визначення коду Pix, перейдіть у <ph name="BEGIN_LINK1" />налаштування Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Конверт (звичайний папір)</translation>
 <translation id="6687335167692595844">Запит на розмір шрифту</translation>
 <translation id="6688743156324860098">Оновити…</translation>
@@ -4439,6 +4437,7 @@
 <translation id="8708134712139312373">Може просити дозвіл підключатися до пристроїв із Bluetooth</translation>
 <translation id="8710842507289500830">Стиль шрифту</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715198179991802709">Вебпереглядач Chrome щойно позначив сайт, який ви намагалися відвідати. Допоможіть нам покращити ці попередження, пройшовши 1-хвилинне опитування.</translation>
 <translation id="8718314106902482036">Оплату не завершено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, пропозиція пошуку</translation>
 <translation id="8719528812645237045">Пробити кілька отворів угорі</translation>

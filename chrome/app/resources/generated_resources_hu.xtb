@@ -2066,6 +2066,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2598710988533271874">Rendelkezésre áll az új Chrome</translation>
 <translation id="2599048253926156421">Felhasználónév vágólapra másolva</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 nem biztonságos bővítmény kikapcsolva}other{{NUM_SITES} nem biztonságos bővítmény kikapcsolva}}</translation>
+<translation id="2603121359676416582">Ezen az oldalon</translation>
 <translation id="2604129989323098489">A webhelyek általában azért kérnek információkat a képernyőkről, hogy intelligens módon nyithassanak meg és helyezhessenek el ablakokat (például a dokumentumok vagy teljes képernyős tartalmak egymás melletti megjelenítésekor).</translation>
 <translation id="2604255671529671813">Hálózati kapcsolati hiba</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> címet tartalmazó űrlap kitöltve.</translation>
@@ -2980,6 +2981,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3285329711156774325">Kissé berozsdásodott</translation>
 <translation id="3285500645985761267">A csoportban végzett tevékenységei megtekintésének engedélyezése a kapcsolódó webhelyek számára</translation>
 <translation id="328571385944182268">Szeretné menteni a jelszavait?</translation>
+<translation id="3285969135399641759">Új készség elsajátítása</translation>
 <translation id="3289668031376215426">Automatikus nagy kezdőbetű</translation>
 <translation id="3289856944988573801">Kérjük, frissítések kereséséhez Ethernetet vagy Wi-Fit használjon.</translation>
 <translation id="3290249595466894471">Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket.</translation>
@@ -6386,6 +6388,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5939719276406088041">Nem sikerült létrehozni a parancsikont</translation>
 <translation id="5939723110967488589">Kiválaszthatja az eszköztáron megjelenő gombokat</translation>
 <translation id="594048410531370124">Ismeretlen billentyű. Nyomja le bármelyik billentyűt <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Tanács kérése</translation>
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 jelszót csak erre az eszközre ment a rendszer. Ha szeretné más eszközökön is használni, mentse Google-fiókjába.}other{{PASSWORD_COUNT} jelszó csak ezen az eszközön kerül mentésre. Ha a többi eszközén is használni szeretné őket, mentse őket a Google-fiókjába.}}</translation>
 <translation id="594221546068848596">Keresés az oldalon a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

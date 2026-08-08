@@ -1062,7 +1062,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2824775600643448204">Adresna traka i traka za pretraživanje</translation>
 <translation id="2826760142808435982">Veza je kriptirana i autentificirana šifrom <ph name="CIPHER" />, a <ph name="KX" /> služi za mehanizam razmjene ključeva.</translation>
 <translation id="2828797285817981634">Senzori kretanja zasad su dopušteni</translation>
-<translation id="2835170189407361413">Obriši obrazac</translation>
 <translation id="2835907903001172712">Pregled preglednika</translation>
 <translation id="2837891525090413132">Može tražiti zaključavanje i korištenje tipkovnice</translation>
 <translation id="2839032553903800133">Obavijesti blokirane</translation>
@@ -3295,7 +3294,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6679354743514146922">Preglednik Chrome pokušava popuniti vašu zaporku u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Videozapis je spremljen na Google disk</translation>
 <translation id="6681790815630918386">CVC je spremljen</translation>
-<translation id="6686570026048064255">Da biste isključili otkrivanje Pix koda, otvorite <ph name="BEGIN_LINK1" />postavke Chromea<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Omotnica (obično)</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6688743156324860098">Ažurirajte…</translation>
@@ -4438,6 +4436,7 @@ Dodatne pojedinosti:
 <translation id="8708134712139312373">Može tražiti dopuštenje za povezivanje s Bluetooth uređajima</translation>
 <translation id="8710842507289500830">Stil fonta</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
+<translation id="8715198179991802709">Chrome je upravo označio web-lokaciju koju ste pokušali posjetiti. Pomozite nam da poboljšamo ta upozorenja ispunjavanjem jednominutne ankete.</translation>
 <translation id="8718314106902482036">Plaćanje nije dovršeno</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, prijedlog za pretraživanje</translation>
 <translation id="8719528812645237045">Višestruko bušenje pri vrhu</translation>

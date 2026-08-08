@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">Пластика</translation>
 <translation id="2027707238798802149">Картичката не е достапна</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Да ги проверите проксито и заштитниот ѕид<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Овој примерок на Chrome се извршува со рачно поставени ознаки во редот за наредби. Имајте предвид дека ознаките во редот за наредби може да се променат кога било и не се поддржани.</translation>
 <translation id="2033900728810589426">Кратенката не може да биде иста со клучниот збор на стандардниот оператор за пребарување дефиниран од <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Сепак зачувај</translation>
 <translation id="2036514476578229158">Побара да го посетиш сајтов. Твоите родители може да одговорат во Family Link.</translation>
@@ -1061,7 +1062,6 @@
 <translation id="2824775600643448204">Лента за адреса и за пребарување</translation>
 <translation id="2826760142808435982">Поврзувањето е шифрирано и автентицирано со употреба на <ph name="CIPHER" /> и користи <ph name="KX" /> како клучен механизам за размена.</translation>
 <translation id="2828797285817981634">Сензорите за движење се дозволени засега</translation>
-<translation id="2835170189407361413">Исчисти формулар</translation>
 <translation id="2835907903001172712">Преглед на прелистувачот</translation>
 <translation id="2837891525090413132">Може да побара да ја заклучи и користи тастатурата</translation>
 <translation id="2839032553903800133">Известувањата се блокирани</translation>
@@ -3295,7 +3295,6 @@
 <translation id="6679354743514146922">Прелистувачот Chrome се обидува да ја пополни вашата лозинка на <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Видеото е зачувано во Google Drive</translation>
 <translation id="6681790815630918386">CVC е зачуван</translation>
-<translation id="6686570026048064255">За да го исклучите откривањето Pix-код, одете во <ph name="BEGIN_LINK1" />поставките за Wallet<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Коверт (обичен)</translation>
 <translation id="6687335167692595844">Побарана е големина на фонтот</translation>
 <translation id="6688743156324860098">Ажурирајте…</translation>
@@ -4436,6 +4435,7 @@
 <translation id="8708134712139312373">Може да прашува за да се поврзува со уреди со Bluetooth</translation>
 <translation id="8710842507289500830">Стил на фонтот</translation>
 <translation id="8712637175834984815">Сфатив</translation>
+<translation id="8715198179991802709">Chrome тукушто означи вебсајт што се обидувавте да го посетите. Помогнете ни да ги подобриме предупредувањава така што ќе пополните анкета што ќе ви одземе 1 минута.</translation>
 <translation id="8718314106902482036">Плаќањето не е завршено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предлог за пребарување</translation>
 <translation id="8719528812645237045">Повеќе дупки горе</translation>

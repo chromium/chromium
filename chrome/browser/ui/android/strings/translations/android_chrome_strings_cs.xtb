@@ -116,6 +116,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1414919006379339073">Zavřít aktuální okno</translation>
 <translation id="1416550906796893042">Verze aplikace</translation>
 <translation id="1430915738399379752">Tisk</translation>
+<translation id="1432581352905426595">Spravovat vyhledávače</translation>
 <translation id="1435593198351412143">Soubory PDF automaticky otevřít</translation>
 <translation id="1437543266176261764">Spuštěno v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Sledované produkty můžete třídit v záložkách</translation>
@@ -1537,6 +1538,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7182520625618447753">Prostředí při procházení si můžete přizpůsobit přesunutím adresního řádku nahoru nebo dolů.</translation>
 <translation id="7183517696921903380">Panel filtrování podle aplikace je otevřený.</translation>
 <translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Připnutou kartu zavřete opětovným stisknutím ^W}few{Připnuté karty zavřete opětovným stisknutím ^W}many{Připnuté karty zavřete opětovným stisknutím ^W}other{Připnuté karty zavřete opětovným stisknutím ^W}}</translation>
 <translation id="7190921792980745354">Blokovat uživatele <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Karta je otevřena na pozadí.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Měli byste ho hned změnit}few{Měli byste je hned změnit}many{Měli byste je hned změnit}other{Měli byste je hned změnit}}</translation>
@@ -1985,6 +1987,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8995521496079646922">Aplikace, které vyberete, se budou používat jako výchozí. Pokud aplikace v tomto zařízení ještě není, brzy se stáhne.</translation>
 <translation id="8996847606757455498">Vybrat jiného poskytovatele</translation>
 <translation id="8998837250940831980">Kartu se nepodařilo minimalizovat. Zkuste to později.</translation>
+<translation id="9000089900434778519">Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici)</translation>
 <translation id="9001604755921395912">Otevřít na anonymní kartě v Chromu</translation>
 <translation id="9010094279589497751">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>

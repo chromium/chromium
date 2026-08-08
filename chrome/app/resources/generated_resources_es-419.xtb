@@ -2055,6 +2055,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2598710988533271874">Nueva versión de Chrome disponible</translation>
 <translation id="2599048253926156421">Se copió el nombre de usuario en el portapapeles</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Se desactivó 1 extensión no segura}other{Se desactivaron {NUM_SITES} extensiones no seguras}}</translation>
+<translation id="2603121359676416582">Para esta página</translation>
 <translation id="2604129989323098489">Por lo general, los sitios solicitan información sobre tus pantallas para abrir y ubicar ventanas de manera inteligente, como mostrar documentos o contenido en pantalla completa en paralelo.</translation>
 <translation id="2604255671529671813">Error de conexión de red</translation>
 <translation id="2604805099836652105">Se completó el formulario de dirección <ph name="ADDRESS_LABEL" />.</translation>
@@ -2760,7 +2761,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3117791853215125017">{COUNT,plural, =1{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Ayuda</translation>
 <translation id="3118748462829336648">Abrir el panel lateral</translation>
-<translation id="3119743309973425629">Velocidad de parpadeo del cursor de texto</translation>
+<translation id="3119743309973425629">Frecuencia de parpadeo del cursor de texto</translation>
 <translation id="3119948370277171654">¿Qué contenido o URL estabas transmitiendo?</translation>
 <translation id="3120204271988747891">Los sitios pueden solicitar acceso a otros dispositivos de tu red local</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2969,6 +2970,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3285329711156774325">Buscar habilidades</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
+<translation id="3285969135399641759">Aprender una nueva destreza</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas.</translation>
@@ -6375,6 +6377,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5939719276406088041">No se puede crear el acceso directo.</translation>
 <translation id="5939723110967488589">Elige qué botones mostrar en la barra de herramientas</translation>
 <translation id="594048410531370124">No se reconoce el interruptor. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Obtén asesoramiento</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 contraseña se guarda solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google.}other{{PASSWORD_COUNT} contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu Cuenta de Google.}}</translation>
 <translation id="594221546068848596">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -7044,7 +7047,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
 <translation id="6473315466413288899">Selecciona una opción</translation>
 <translation id="6474021817475285003">Ver más en el Calendario de Google</translation>
-<translation id="6474401088838630457">Pregúntale a Gemini más sobre esto</translation>
+<translation id="6474401088838630457">Preguntarle a Gemini más sobre esto</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6476482583633999078">Velocidad de habla</translation>

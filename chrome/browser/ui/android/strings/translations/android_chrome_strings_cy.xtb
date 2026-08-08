@@ -116,6 +116,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1414919006379339073">Cau'r ffenestr bresennol</translation>
 <translation id="1416550906796893042">Fersiwn yr ap</translation>
 <translation id="1430915738399379752">Argraffu</translation>
+<translation id="1432581352905426595">Rheoli peiriannau chwilio</translation>
 <translation id="1435593198351412143">Agor ffeiliau PDF yn awtomatig</translation>
 <translation id="1437543266176261764">Yn rhedeg yn <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
@@ -1538,6 +1539,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7182520625618447753">Newidiwch leoliad eich bar cyfeiriad i'r brig neu'r gwaelod i gael profiad sydd wedi'i bersonoleiddio</translation>
 <translation id="7183517696921903380">Mae taflen hidlo ap ar agor.</translation>
 <translation id="7186568385131859684">Rheoli sut mae hanes pori yn cael ei ddefnyddio gyda'ch data eraill ar draws gwasanaethau Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Pwyswch ^W eto i gau'r tab wedi'i binio}zero{Pwyswch ^W eto i gau'r tabaiu wedi'u pinio}two{Pwyswch ^W eto i gau'r tabaiu wedi'u pinio}few{Pwyswch ^W eto i gau'r tabaiu wedi'u pinio}many{Pwyswch ^W eto i gau'r tabaiu wedi'u pinio}other{Pwyswch ^W eto i gau'r tabaiu wedi'u pinio}}</translation>
 <translation id="7190921792980745354">Rhwystro <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Mae tab wedi'i agor yn y cefndir.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Dylech newid hwn nawr}zero{Dylech newid y rhain nawr}two{Dylech newid y rhain nawr}few{Dylech newid y rhain nawr}many{Dylech newid y rhain nawr}other{Dylech newid y rhain nawr}}</translation>
@@ -1986,6 +1988,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8995521496079646922">Bydd yr apiau a ddewisoch yn cael eu defnyddio yn ddiofyn. Os nad yw ap eisoes ar y ddyfais hon, bydd yn cael ei lawrlwytho cyn bo hir.</translation>
 <translation id="8996847606757455498">Dewiswch ddarparwr arall</translation>
 <translation id="8998837250940831980">Methu â lleihau'r tab. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="9000089900434778519"><ph name="DSE_NAME" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="9001604755921395912">Agor mewn tab Anhysbys Chrome</translation>
 <translation id="9010094279589497751">Agor Gemini yn gyflym pan fydd ei angen arnoch</translation>
 <translation id="9012585441087414258">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Os yw tudalen yn gwneud rhywbeth amheus, anfonir cyfeiriadau URL a darnau o gynnwys tudalen i Bori'n Ddiogel gyda Google.</translation>

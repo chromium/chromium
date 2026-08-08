@@ -1062,7 +1062,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2824775600643448204">Bar cyfeiriad a chwilio</translation>
 <translation id="2826760142808435982">Mae'r cysylltiad wedi'i amgryptio a'i ddilysu gan ddefnyddio <ph name="CIPHER" /> ac yn defnyddio <ph name="KX" /> fel y mecanwaith cyfnewid allweddau.</translation>
 <translation id="2828797285817981634">Caniateir synwyryddion symudiad am y tro</translation>
-<translation id="2835170189407361413">Clirio ffurflen</translation>
 <translation id="2835907903001172712">Trosolwg o'r porwr</translation>
 <translation id="2837891525090413132">Yn gallu gofyn am gloi a defnyddio'ch bysellfwrdd</translation>
 <translation id="2839032553903800133">Rhwystrwyd hysbysiadau</translation>
@@ -3296,7 +3295,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6679354743514146922">Mae'r porwr Chrome yn ceisio llenwi'ch cyfrinair ar <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Fideo wedi'i gadw i Google Drive</translation>
 <translation id="6681790815630918386">CVC wedi'i gadw</translation>
-<translation id="6686570026048064255">I ddiffodd canfod cod Pix, ewch i'r <ph name="BEGIN_LINK1" />Gosodiadau Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Amlen (Plaen)</translation>
 <translation id="6687335167692595844">Maint ffont a geisiwyd</translation>
 <translation id="6688743156324860098">Diweddaru…</translation>
@@ -4437,6 +4435,7 @@ Manylion ychwanegol:
 <translation id="8708134712139312373">Yn gallu gofyn am gysylltu â dyfeisiau Bluetooth</translation>
 <translation id="8710842507289500830">Steil ffont</translation>
 <translation id="8712637175834984815">Iawn</translation>
+<translation id="8715198179991802709">Mae Chrome newydd fflagio gwefan roeddech yn ceisio ymweld â hi. Helpwch ni i wella'r rhybuddion hyn trwy gymryd arolwg 1 funud.</translation>
 <translation id="8718314106902482036">Nid yw'r taliad wedi'i gwblhau</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, awgrym chwilio</translation>
 <translation id="8719528812645237045">Mwy nag un twll ar y brig</translation>

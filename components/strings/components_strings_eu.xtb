@@ -592,6 +592,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2027465737841872819">Plastikoa</translation>
 <translation id="2027707238798802149">Txartela ez dago erabilgarri</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxya eta suebakia egiaztatu<ph name="END_LINK" />.</translation>
+<translation id="2033550997390154638">Chrome-ren instantzia hau eskuz ezarritako agindu-lerroen eginbide esperimentalekin exekutatzen ari da. Kontuan izan agindu-lerroen eginbide esperimentalak edonoiz alda daitezkeela eta ez direla onartzen.</translation>
 <translation id="2033900728810589426">Lasterbidea ezin da bat etorri <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gidalerroak definitutako bilaketa-hornitzaile lehenetsiaren gako-hitzarekin: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Gorde, halere</translation>
 <translation id="2036514476578229158">Webgune hau bisitatzeko baimena eskatu duzu. Zure gurasoek Family Link-en erantzun dezakete.</translation>
@@ -1061,7 +1062,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2824775600643448204">Helbide- eta bilaketa-barra</translation>
 <translation id="2826760142808435982">Konexioa <ph name="CIPHER" /> bidez enkriptatuta eta autentifikatuta dago eta <ph name="KX" /> erabiltzen du gako-trukaketarako mekanismo gisa.</translation>
 <translation id="2828797285817981634">Oraingoz, eman da mugimendu-sentsoreak erabiltzeko baimena</translation>
-<translation id="2835170189407361413">Garbitu inprimakia</translation>
 <translation id="2835907903001172712">arakatzailearen informazio orokorra</translation>
 <translation id="2837891525090413132">Teklatua blokeatzeko eta erabiltzeko baimena eska dezake</translation>
 <translation id="2839032553903800133">Jakinarazpenak blokeatuta daude</translation>
@@ -3290,7 +3290,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6679354743514146922">Chrome arakatzailea <ph name="APP_NAME" /> aplikazioko pasahitza betetzen saiatzen ari da.</translation>
 <translation id="668132230070712111">Gorde da bideoa Google Drive-n</translation>
 <translation id="6681790815630918386">CVCa gorde da</translation>
-<translation id="6686570026048064255">Pix-eko kodeak hautemateko eginbidea desaktibatzeko, joan <ph name="BEGIN_LINK1" />Chrome-eko ezarpenetara<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Gutun-azala (arrunta)</translation>
 <translation id="6687335167692595844">Eskatutako letra-tamaina</translation>
 <translation id="6688743156324860098">Eguneratu…</translation>
@@ -4431,6 +4430,7 @@ Xehetasun gehiago:
 <translation id="8708134712139312373">Bluetooth bidezko gailuetara konektatzea eska dezake</translation>
 <translation id="8710842507289500830">Letra-estiloa</translation>
 <translation id="8712637175834984815">Ados</translation>
+<translation id="8715198179991802709">Chrome-k bisitatu nahi zenuen webgune bat markatu du. Lagun iezaguzu abisu hauek hobetzen minutu bateko inkesta bati erantzunez.</translation>
 <translation id="8718314106902482036">Ez da ordaindu</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, bilaketa-iradokizuna</translation>
 <translation id="8719528812645237045">Hainbat zulo goian</translation>

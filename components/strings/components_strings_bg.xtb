@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Лента за адреси и за търсене</translation>
 <translation id="2826760142808435982">Връзката е шифрована и удостоверена посредством <ph name="CIPHER" /> и използва <ph name="KX" /> като механизъм за обмен на ключове.</translation>
 <translation id="2828797285817981634">Засега използването на сензорите за движение е разрешено</translation>
-<translation id="2835170189407361413">Изчистване на формуляра</translation>
 <translation id="2835907903001172712">Обща информация за браузърите.</translation>
 <translation id="2837891525090413132">Може да поиска да заключи и използва клавиатурата ви</translation>
 <translation id="2839032553903800133">Известията са блокирани</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Браузърът Chrome се опитва да попълни паролата ви за <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Видеоклипът е запазен в Google Диск</translation>
 <translation id="6681790815630918386">Кодът за проверка е запазен</translation>
-<translation id="6686570026048064255">За да изключите разпознаването на кода за Pix, отворете <ph name="BEGIN_LINK1" />настройките на Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Плик (обикновен)</translation>
 <translation id="6687335167692595844">Размерът на шрифта е заявен</translation>
 <translation id="6688743156324860098">Актуализира се…</translation>
@@ -4438,6 +4436,7 @@
 <translation id="8708134712139312373">Може да поиска разрешение да се свързва с устройства с Bluetooth</translation>
 <translation id="8710842507289500830">Стил на шрифта</translation>
 <translation id="8712637175834984815">Разбрах</translation>
+<translation id="8715198179991802709">Chrome току-що сигнализира за уебсайт, който се опитвахте да посетите. Помогнете ни да подобрим тези предупреждения, като попълните едноминутна анкета.</translation>
 <translation id="8718314106902482036">Плащането не е завършено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предложение за търсене</translation>
 <translation id="8719528812645237045">Няколко перфорации в горната част</translation>

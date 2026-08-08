@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continuar con esta pestana</translation>
 <translation id="2426805022920575512">Escoller outra conta</translation>
+<translation id="2428543302546523788">Mostra as ligazóns cando o modo de lectura estea activado</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Podes desprazarte cara á esquerda para navegar no modo de incógnito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Que podo facer con Gemini en Chrome?</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Podes definir un recordatorio para volver visitar esta páxina máis tarde</translation>
+<translation id="2476554421818031422">Estás axudando a mellorar a función de autocompletar mellorada</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2484459871750294497">Como podo activar esta función?</translation>
@@ -2068,6 +2070,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="78146569776629510">Descargas</translation>
 <translation id="7815852444315004084">Ocultar por agora</translation>
 <translation id="7825973332242257878">Grupos de pestanas</translation>
+<translation id="7828344837949522075">Mostrar suxestión</translation>
 <translation id="7839994177130598711">Os membros da túa familia agora poden usar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usan o xestor de contrasinais de Google.</translation>
 <translation id="7841180087127694526">Buscar texto copiado</translation>
 <translation id="7841418003178675048">Selecciona que cartas queres que se mostren na páxina Nova pestana.</translation>

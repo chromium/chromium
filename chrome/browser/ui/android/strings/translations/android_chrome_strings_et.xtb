@@ -116,6 +116,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1414919006379339073">Sulgege aktiivne aken</translation>
 <translation id="1416550906796893042">Rakenduse versioon</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1432581352905426595">Halda otsingumootoreid</translation>
 <translation id="1435593198351412143">PDF-id avatakse automaatselt</translation>
 <translation id="1437543266176261764">Käitatakse rakenduses <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Korrastage jälgitavaid tooteid teenusega Bookmarks</translation>
@@ -1537,6 +1538,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7182520625618447753">Kohandatud sirvimiskogemuse saamiseks võite vahetada aadressiriba asukohta, et kuvada see üleval või all.</translation>
 <translation id="7183517696921903380">Rakenduse alusel filtreerimise leht on avatud.</translation>
 <translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Kinnitatud vahelehe sulgemiseks vajutage uuesti klahvikombinatsiooni ^W.}other{Kinnitatud vahelehtede sulgemiseks vajutage uuesti klahvikombinatsiooni ^W.}}</translation>
 <translation id="7190921792980745354">Kas blokeerida <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Taustal on avatud vaheleht.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Peaksite seda kohe muutma}other{Peaksite neid kohe muutma}}</translation>
@@ -1985,6 +1987,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8995521496079646922">Teie valitud rakendusi kasutatakse vaikimisi. Kui rakendust selles seadmes veel pole, laaditakse see peagi alla.</translation>
 <translation id="8996847606757455498">Valige teine teenusepakkuja</translation>
 <translation id="8998837250940831980">Vahelehe minimeerimine ei õnnestunud. Proovige hiljem uuesti.</translation>
+<translation id="9000089900434778519">Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="9001604755921395912">Ava Chrome'i inkognito vahelehel</translation>
 <translation id="9010094279589497751">Avage Gemini kiiresti just siis, kui seda vajate.</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>

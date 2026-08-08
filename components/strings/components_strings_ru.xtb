@@ -193,6 +193,7 @@
 <translation id="132301787627749051">Поиск по изображению из буфера обмена</translation>
 <translation id="1323433172918577554">Развернуть</translation>
 <translation id="1330449323196174374">Фальцовка левой четверти</translation>
+<translation id="1330952240988133220">Безопасно храните Redress Number в Google Кошельке</translation>
 <translation id="133173645041092770">Закрыть сайт</translation>
 <translation id="1333745675627230582">Играть в Chrome Dino</translation>
 <translation id="1333989956347591814">Ваши действия <ph name="BEGIN_EMPHASIS" />могут быть видны<ph name="END_EMPHASIS" />:
@@ -341,6 +342,7 @@
 <translation id="1569487616857761740">Укажите дату окончания срока действия</translation>
 <translation id="1569694109004336106">Google Chrome пытается включить Windows Hello, чтобы указывать пароли.</translation>
 <translation id="1569905000953679183">Получение правила установки расширений</translation>
+<translation id="1572383686781055412">Безопасно обновляйте номер KTN</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" />"</translation>
 <translation id="1574714699824202614">Подтверждение способа оплаты</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
@@ -397,6 +399,7 @@
 <translation id="1658918301167915956">устройства Bluetooth</translation>
 <translation id="1662550410081243962">Сохранять и автоматически подставлять платежные данные</translation>
 <translation id="1662980953334786797">В том же порядке</translation>
+<translation id="1663578299724791827">Безопасно храните номер KTN</translation>
 <translation id="1663943134801823270">Это карты и адреса, указанные в Chrome. Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Фотополимер для флексопечати</translation>
 <translation id="1667730174533834274">подтвердить вашу личность, прежде чем позволить менять настройки</translation>
@@ -404,6 +407,7 @@
 <translation id="1670861525135254448">Сохранить данные о транспортном средстве?</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Начиная с короткого края</translation>
+<translation id="1683083957814090281">Безопасно обновляйте данные о транспортном средстве</translation>
 <translation id="168693727862418163">Такое значение правила не предусмотрено и будет проигнорировано.</translation>
 <translation id="168841957122794586">Сертификат сервера содержит ненадежный криптографический ключ.</translation>
 <translation id="1688718429648938412">Сохраните карту постоянного клиента в Кошельке</translation>
@@ -868,6 +872,7 @@
 <translation id="2469153820345007638">В порядке от 1 до N</translation>
 <translation id="24699311393038040">Бумага (с покрытием)</translation>
 <translation id="2471632709106952369">Сравнительные таблицы</translation>
+<translation id="2472396075297339227">Безопасно храните номер известного пассажира (KTN) в Google Кошельке</translation>
 <translation id="2477607419416067650">Другие данные в аккаунте Google</translation>
 <translation id="247903268499247848">Использовать датчики движения и освещенности запрещено</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
@@ -926,6 +931,7 @@
 <translation id="2553352788023127673">Чтобы удалить историю Поиска и пароли, перейдите в их настройки</translation>
 <translation id="2553853292994445426">Проверьте параметры безопасных DNS-серверов. Возможно, к настроенному вами DNS-серверу невозможно подключиться.</translation>
 <translation id="2555855727505718984">Информация для автозаполнения форм не будет храниться на этом устройстве.</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Отменить изменения</translation>
 <translation id="2559566667529177711">Многослойный материал</translation>
 <translation id="2570734079541893434">Настройки</translation>
@@ -1062,7 +1068,6 @@
 <translation id="2824775600643448204">Адресная строка и строка поиска</translation>
 <translation id="2826760142808435982">Соединение зашифровано и проверено с помощью <ph name="CIPHER" />. В качестве механизма обмена ключами используется <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Использовать датчики движения пока разрешено</translation>
-<translation id="2835170189407361413">Очистить форму</translation>
 <translation id="2835907903001172712">Общие сведения о браузере</translation>
 <translation id="2837891525090413132">Может запрашивать разрешение на блокировку клавиатуры и ее использование</translation>
 <translation id="2839032553903800133">Уведомления заблокированы</translation>
@@ -1325,6 +1330,7 @@
 <translation id="3273738040255912340">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Экран для сохранения кода IBAN открыт полностью.</translation>
 <translation id="327455571215090823">Умное автозаполнение с защитой личных данных</translation>
+<translation id="3280440382387335343">Безопасно обновляйте паспортные данные в Google Кошельке</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
@@ -1333,7 +1339,7 @@
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
 <translation id="3299098170013242198">Windows Hello используется, чтобы указывать пароли</translation>
-<translation id="3299197721044635447">Не удалось вставить содержимое за пределами управляемого контекста Chrome из-за правил вашей организации.</translation>
+<translation id="3299197721044635447">Не удалось вставить содержимое за пределами управляемого контекста Chrome. Это не разрешено правилами вашей организации.</translation>
 <translation id="3299720788264079132">Что-то пошло не так при использовании функции "<ph name="FEATURE_NAME" />".</translation>
 <translation id="3303176609391916566">30 x 42 дюйма</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
@@ -1465,6 +1471,7 @@
 <translation id="3543597750097719865">Подпись ECDSA X9.62 с SHA-512</translation>
 <translation id="3543935938072367282">Оплачивайте покупки быстрее с помощью автозаполнения</translation>
 <translation id="3547442767634383572">Общие сведения о рабочем профиле.</translation>
+<translation id="3547673868874844776">Безопасно храните сведения удостоверения личности</translation>
 <translation id="3547746132308051926">20 x 24 дюйма</translation>
 <translation id="3549904448933807997">Информация о браузерах и профилях (в том числе личных и рабочих)</translation>
 <translation id="3552155506104542239">Внимание! Это правило противоречит правилу <ph name="POLICY_NAME" /> и не влияет на приложения Android. В остальном оно работает, как задумано.</translation>
@@ -1673,6 +1680,7 @@
 <translation id="388632593194507180">Соединение отслеживается</translation>
 <translation id="3886948180919384617">Укладчик 3</translation>
 <translation id="3890664840433101773">Добавление адреса электронной почты</translation>
+<translation id="3892626428170730309">Безопасно храните паспортные данные</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Срок действия карты истек</translation>
 <translation id="390391808978419508">Превышено время ожидания</translation>
@@ -1828,6 +1836,7 @@
 <translation id="4153858337812834972">Недавние вкладки</translation>
 <translation id="4154277373259957087">Теперь Chrome будет заполнять платежные данные только после подтверждения личности. Чтобы изменить это, перейдите в <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">На основе персонального ИИ в Gemini. <ph name="BEGIN_LINK" />Изменить настройки<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Безопасно обновляйте данные водительского удостоверения</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4165422751765527461">Откроется статья Справочного центра в новой вкладке</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
@@ -1842,6 +1851,7 @@
 <translation id="4176463684765177261">Отключено</translation>
 <translation id="4178863275556660738">Оплата не только картой</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Безопасно обновляйте Redress Number</translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
 <translation id="4190446002599583608">Поиск в истории браузера с помощью ИИ</translation>
 <translation id="4191334393248735295">Длина</translation>
@@ -1883,6 +1893,7 @@
 <translation id="4231448684371260244">8 x 13 дюймов</translation>
 <translation id="4234996384188431444">Платите через Pix в Google Chrome, не переключаясь между приложениями</translation>
 <translation id="4238607350028440048">Помоги мне подготовиться к собеседованию. Задавай вопросы как настоящий менеджер по найму.</translation>
+<translation id="4239215166147486528">Безопасно храните данные водительского удостоверения в Google Кошельке</translation>
 <translation id="4239799716689808527">Этикетки</translation>
 <translation id="424063167283213501">Сохранить номер известного пассажира (Known Traveler Number)?</translation>
 <translation id="4241830393007970744">На этом сайте злоумышленники могут обманом заставить вас установить ПО или раскрыть личную информацию, например пароль, номер телефона или данные кредитной карты.</translation>
@@ -1995,6 +2006,7 @@
 <translation id="4407758156081352648">В целях безопасности ваша организация запретила повторно использовать пароли в Chrome. Мы шифруем пароли, чтобы защищать конфиденциальность пользователей.</translation>
 <translation id="4409271659088619928">Ваша поисковая система – <ph name="DSE" />. Инструкции, как удалить историю поиска, есть в ее справочных материалах (если такая функция поддерживается).</translation>
 <translation id="4409556632583862731">Новая цепочка</translation>
+<translation id="4410614037742891410">Безопасно обновляйте сведения удостоверения личности в Google Кошельке</translation>
 <translation id="4412074349188076601">Установка ВМ в этой конфигурации допустима, однако это невозможно сделать, так как для данной архитектуры отсутствует необходимый образ.</translation>
 <translation id="4412377069090572315">Отзывы</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
@@ -2208,9 +2220,11 @@
 <translation id="4800132727771399293">Проверьте срок действия и CVC-код, а затем повторите попытку</translation>
 <translation id="4800546479758254481">Дано разрешение на использование дополненной реальности</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">Безопасно обновляйте сведения удостоверения личности</translation>
 <translation id="4807098396393229769">Имя владельца</translation>
 <translation id="4809079943450490359">Инструкции от администратора вашего устройства:</translation>
 <translation id="4811450222531576619">Сведения об источнике и теме</translation>
+<translation id="4811696127853690432">Безопасно храните данные транспортного средства в Google Кошельке</translation>
 <translation id="4811918461974803225">Логотипы Google Pay и Affirm</translation>
 <translation id="4813512666221746211">Ошибка сети</translation>
 <translation id="4814114628197290459">Удаление кода IBAN</translation>
@@ -2340,11 +2354,13 @@
 <translation id="5020862932518041900">Когда вы выбираете или игнорируете подсказки, Chrome адаптируется, чтобы показывать только полезную вам информацию.</translation>
 <translation id="5021500396464456616">Обратитесь к пользователю, который прислал эту ссылку.</translation>
 <translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
+<translation id="502229363433123770">Безопасно храните Redress Number</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
 <translation id="5024171724744627792">Так вы сможете оплачивать покупки быстрее. Реквизиты карты хранятся в аккаунте Google в зашифрованном виде.</translation>
 <translation id="5026121202864677765">Напиши сопроводительное письмо для меня</translation>
 <translation id="5030338702439866405">Кем выдан</translation>
 <translation id="503069730517007720">Необходимый корневой сертификат для программы "<ph name="SOFTWARE_NAME" />" не установлен. Чтобы устранить проблему, попросите системного администратора ознакомиться с инструкциями по настройке программы "<ph name="SOFTWARE_NAME" />". <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Безопасно храните номер KTN в Google Кошельке</translation>
 <translation id="503498442187459473">Сайт <ph name="HOST" /> запрашивает доступ к камере и микрофону</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Размер шрифта</translation>
@@ -2721,6 +2737,7 @@
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5651323159439184939">Автоподатчик</translation>
+<translation id="5653681867130739344">Безопасно обновляйте сведения удостоверения личности в Google Кошельке</translation>
 <translation id="5654927323611874862">Идентификатор загруженного отчета о сбое:</translation>
 <translation id="5654965123204121933">URL должен содержать строку <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" />.</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
@@ -2833,6 +2850,7 @@
 <translation id="5866898949289125849">Вы просматриваете страницу инструментов разработчика</translation>
 <translation id="5869405914158311789">Не удается получить доступ к сайту</translation>
 <translation id="5869522115854928033">Сохраненные пароли</translation>
+<translation id="5872115357279348603">Безопасно обновляйте номер KTN в Google Кошельке</translation>
 <translation id="5872215789867188990">Группа вкладок "<ph name="GROUP_TITLE" />" больше не доступна.</translation>
 <translation id="5872692522325383488">Код IBAN сохранен</translation>
 <translation id="5879989559903563723">Недоступно в гостевом режиме</translation>
@@ -2856,6 +2874,7 @@
 <translation id="5914185423510719251">Сохраните номер KTN в Google Кошельке</translation>
 <translation id="5914465277418006379">Пользователь <ph name="MEMBER_FIRST_NAME" /> добавил эту вкладку.</translation>
 <translation id="59174027418879706">Включено</translation>
+<translation id="5917538780499455803">Безопасно храните сведения удостоверения личности</translation>
 <translation id="5918847752193018339">Сохраняя CVC-коды, вы сможете быстрее оплачивать покупки. <ph name="LINK_BEGIN" />Удалить сохраненные защитные коды<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Включено</translation>
@@ -3162,6 +3181,7 @@
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Убедитесь, что все важные рабочие или личные данные хранятся где-то ещё.</translation>
+<translation id="6422648598133086441">Безопасно обновляйте данные о транспортном средстве в Google Кошельке</translation>
 <translation id="6425092077175753609">Material design</translation>
 <translation id="6427730057873428458">Фальцовка калиткой в два сгиба</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3295,7 +3315,6 @@
 <translation id="6679354743514146922">Chrome пытается подставить пароль для приложения "<ph name="APP_NAME" />".</translation>
 <translation id="668132230070712111">Видео сохранено на Google Диске</translation>
 <translation id="6681790815630918386">CVC-код сохранен</translation>
-<translation id="6686570026048064255">Чтобы отключить распознавание кода Pix, перейдите в <ph name="BEGIN_LINK1" />настройки Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Конверт (обычный)</translation>
 <translation id="6687335167692595844">Размер шрифта запрошен</translation>
 <translation id="6688743156324860098">Изменить</translation>
@@ -3336,6 +3355,7 @@
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6743841972744298686">Настройки синхронизации</translation>
 <translation id="6745212570062463886">Автозаполнение имени и адреса электронной почты из аккаунта Google</translation>
+<translation id="674580074662200768">Безопасно обновляйте паспортные данные</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Значение правила</translation>
 <translation id="6753434778807740853">Удалить запись "<ph name="ENTRY_VOICEOVER" />"</translation>
@@ -3495,6 +3515,7 @@
 <translation id="7023765275461720661">Связать аккаунты и оплатить через сервис "<ph name="BNPL_ISSUER_NAME" />"?</translation>
 <translation id="7030164307377592766">изменить настройки автоматического ввода платежных данных</translation>
 <translation id="7031110846419387930">Информация о вашем браузере, ОС, устройстве, установленном ПО, файлах и IP-адресах.</translation>
+<translation id="7031356333130415891">Безопасно обновляйте сведения удостоверения личности</translation>
 <translation id="7031646650991750659">Приложения, установленные из Google Play.</translation>
 <translation id="7035705295266423040">Банку нужно убедиться, что это действительно вы</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в настройки конфиденциальности аккаунта Google.</translation>
@@ -3619,6 +3640,7 @@
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Чтобы удалить эти данные, перейдите в их настройки.</translation>
+<translation id="7253051586755429279">Безопасно обновляйте Redress Number в Google Кошельке</translation>
 <translation id="7255540419660272073">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
@@ -3983,6 +4005,7 @@
 <translation id="7860345425589240791">Введите новый срок действия карты, а также CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
 <translation id="7862185352068345852">Закрыть сайт?</translation>
 <translation id="7862306158978555061">показать конфиденциальную информацию</translation>
+<translation id="7863122976993412643">Безопасно храните данные водительского удостоверения</translation>
 <translation id="7865448901209910068">Лучшая скорость</translation>
 <translation id="7865482168955081228">Экран с ошибкой покупки в рассрочку закрыт.</translation>
 <translation id="7869655448736341731">Все</translation>
@@ -4031,6 +4054,7 @@
 <translation id="7943893128817522649">Разрешено отправлять запрос на автоматическое скачивание нескольких файлов</translation>
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
+<translation id="7947964969544524438">Безопасно храните номер известного пассажира (KTN)</translation>
 <translation id="7948579849190819732">Текущая вкладка</translation>
 <translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>
 <translation id="7951415247503192394">(32 бит)</translation>
@@ -4133,7 +4157,7 @@
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137185688006450980">Сравни варианты медицинских полисов</translation>
 <translation id="8138591088112729119">На основе персонального ИИ</translation>
-<translation id="814071672416123670">Не удалось скопировать контент из-за правил вашей организации.</translation>
+<translation id="814071672416123670">Не удалось скопировать контент. Это не разрешено правилами вашей организации.</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Создано 1 месяц назад}one{Создано {NUM_MONTHS} месяц назад}few{Создано {NUM_MONTHS} месяца назад}many{Создано {NUM_MONTHS} месяцев назад}other{Создано {NUM_MONTHS} месяца назад}}</translation>
 <translation id="8147389370274164212"><ph name="SEARCH_ENGINE_NAME" />, используется по умолчанию. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
@@ -4229,6 +4253,7 @@
 <translation id="8297545700510100061">Файлы cookie и другие данные сайтов используются, чтобы хранить информацию о вас, в том числе для входа в систему и персонализации рекламы. Для управления файлами cookie перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
 <translation id="8298399736867690281">Карта сохранена только на этом устройстве</translation>
+<translation id="8300302621078931927">Безопасно храните сведения удостоверение личности в Google Кошельке</translation>
 <translation id="8301894345671534559">Введите код</translation>
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="830868413617744215">Бета</translation>
@@ -4437,6 +4462,9 @@
 <translation id="8708134712139312373">Разрешено отправлять запрос на подключение к устройствам Bluetooth</translation>
 <translation id="8710842507289500830">Стиль шрифта</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715198179991802709">Chrome пометил сайт, который вы пытались открыть. Помогите нам улучшить эти предупреждения, пройдя короткий опрос.</translation>
+<translation id="8716983145825913456">Безопасно храните данные о транспортном средстве</translation>
+<translation id="8717177139469452440">Безопасно храните паспортные данные в Google Кошельке</translation>
 <translation id="8718314106902482036">Не удалось обработать платеж</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, подсказка</translation>
 <translation id="8719528812645237045">Несколько отверстий сверху</translation>
@@ -4538,6 +4566,7 @@
 <translation id="888169490072887292">Найди рестораны с детским меню, подходящие для семейного отдыха</translation>
 <translation id="8883863364960302898">Папка Google Диска</translation>
 <translation id="8884537526797090108">Не удается записать видео конфиденциального контента</translation>
+<translation id="8889525327610245418">Безопасно обновляйте данные водительского удостоверения в Google Кошельке</translation>
 <translation id="8891031436559779793">Если на одном из сайтов цена снизится, вы получите оповещение</translation>
 <translation id="8891727572606052622">Недопустимый режим работы прокси-сервера.</translation>
 <translation id="8894794286471754040">Начиная с длинного края</translation>
@@ -4774,6 +4803,7 @@
 <translation id="978750072783101994">После того как вы сохраните эту карту в Google Кошельке, ее реквизиты будут заполняться автоматически при покупках в Chromium.</translation>
 <translation id="979107176848483472">Вашим браузером и профилем управляет <ph name="DOMAIN" />.</translation>
 <translation id="981121421437150478">Офлайн</translation>
+<translation id="98237783946365638">Безопасно храните сведения удостоверения личности в Google Кошельке</translation>
 <translation id="983587187183716432">Кнопка "<ph name="AI_ENGINE_NAME" />". Нажмите Ввод, чтобы задать вопрос сервису "<ph name="AI_ENGINE_NAME" />".</translation>
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="985199708454569384">&lt;p&gt;Эта ошибка возникает, если дата и время на компьютере или мобильном устройстве установлены неправильно.&lt;/p&gt;

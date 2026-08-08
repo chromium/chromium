@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum.</translation>
 <translation id="2424805048070062787">Halda áfram á þessum flipa</translation>
 <translation id="2426805022920575512">Velja annan reikning</translation>
+<translation id="2428543302546523788">Sýna tengla þegar kveikt er á lesstillingu</translation>
 <translation id="243275146591958220">Hætta við niðurhal</translation>
 <translation id="2434405374328098816">Þú hefur þegar vistað aðgangsorð fyrir „<ph name="USERNAME" />“ á <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">Þú getur skoðað í huliðsstillingu með því að strjúka til vinstri.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Hvað get ég gert með Gemini í Chrome?</translation>
 <translation id="2473876017985765807">Þú hefur þegar vistað aðgangsorð fyrir <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Þú getur stillt áminningu um að skoða þessa síðu aftur síðar</translation>
+<translation id="2476554421818031422">Þú ert að hjálpa okkur að bæta ítarlega sjálfvirka útfyllingu</translation>
 <translation id="2479148705183875116">Opna stillingar</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2484459871750294497">Hvernig kveiki ég á þessum eiginleika?</translation>
@@ -2068,6 +2070,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="78146569776629510">Niðurhal</translation>
 <translation id="7815852444315004084">Fela í bili</translation>
 <translation id="7825973332242257878">Flipahópar</translation>
+<translation id="7828344837949522075">Sýna tillögu</translation>
 <translation id="7839994177130598711">Fjölskyldumeðlimir þínir geta nú notað þitt notandanafn og aðgangsorð þegar þeir nota Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Finna afritaðan texta</translation>
 <translation id="7841418003178675048">Veldu hvaða spjöld þú sérð á nýju flipasíðunni þinni.</translation>

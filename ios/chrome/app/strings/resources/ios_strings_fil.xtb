@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Kung ide-delete mo ito, mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device.</translation>
 <translation id="2424805048070062787">Magpatuloy sa tab na ito</translation>
 <translation id="2426805022920575512">Pumili ng ibang account</translation>
+<translation id="2428543302546523788">Magpakita ng mga link kapag naka-on ang reading mode</translation>
 <translation id="243275146591958220">Kanselahin ang pag-download</translation>
 <translation id="2434405374328098816">May na-save ka nang password para sa "<ph name="USERNAME" />" sa <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puwede kang mag-scroll pakaliwa para mag-browse sa Incognito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Ano ang magagawa ko sa Gemini sa Chrome?</translation>
 <translation id="2473876017985765807">May na-save ka nang password para sa <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Puwede kang magtakda ng paalalang bisitahin ulit ang page na ito sa ibang pagkakataon</translation>
+<translation id="2476554421818031422">Tumutulong kang pahusayin ang pinahusay na autofill</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2484459871750294497">Paano ko ie-enable ang feature na ito?</translation>
@@ -2068,6 +2070,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="78146569776629510">Mga Download</translation>
 <translation id="7815852444315004084">I-hide Sa Ngayon</translation>
 <translation id="7825973332242257878">Mga grupo ng tab</translation>
+<translation id="7828344837949522075">Magpakita ng suhestyon</translation>
 <translation id="7839994177130598711">Magagamit na ng mga miyembro ng pamilya mo ang iyong username at password kapag ginamit nila ang Google Password Manager para mag-sign in sa <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Maghanap para sa kinopyang text</translation>
 <translation id="7841418003178675048">Piliin kung anong mga card ang makikita mo sa iyong page ng bagong tab.</translation>

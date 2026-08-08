@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“ ir ji bus ištrinta iš visų įrenginių.</translation>
 <translation id="2424805048070062787">Tęsti naudojant šį skirtuką</translation>
 <translation id="2426805022920575512">Pasirinkti kitą paskyrą</translation>
+<translation id="2428543302546523788">Rodyti nuorodas, kai įjungtas skaitymo režimas</translation>
 <translation id="243275146591958220">Atšaukti atsisiuntimą</translation>
 <translation id="2434405374328098816">Jau išsaugojote <ph name="USERNAME" /> slaptažodį svetainėje <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Naršydami inkognito režimu galite perbraukti kairėn.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Ką galiu daryti su „Gemini“ naršyklėje „Chrome“?</translation>
 <translation id="2473876017985765807">Jau išsaugojote svetainės <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="247430852844518481">Galite nustatyti priminimą, kad vėliau galėtumėte dar kartą apsilankyti šiame puslapyje</translation>
+<translation id="2476554421818031422">Padedate tobulinti išmanųjį automatinį pildymą</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2484459871750294497">Kaip įgalinti šią funkciją?</translation>
@@ -2068,6 +2070,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="78146569776629510">Atsisiuntimai</translation>
 <translation id="7815852444315004084">Slėpti dabar</translation>
 <translation id="7825973332242257878">Skirtukų grupės</translation>
+<translation id="7828344837949522075">Rodyti pasiūlymą</translation>
 <translation id="7839994177130598711">Šeimos grupės nariai dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Ieškoti nukopijuoto teksto</translation>
 <translation id="7841418003178675048">Pasirinkite, kokias korteles norite matyti naujo skirtuko puslapyje.</translation>

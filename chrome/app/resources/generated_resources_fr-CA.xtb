@@ -2056,6 +2056,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2598710988533271874">Nouveau Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 extension dangereuse désactivée}one{{NUM_SITES} extension dangereuse désactivée}other{{NUM_SITES} extensions dangereuses désactivées}}</translation>
+<translation id="2603121359676416582">Pour cette page</translation>
 <translation id="2604129989323098489">Les sites demandent généralement à accéder à des renseignements sur vos écrans pour pouvoir ouvrir et positionner des fenêtres intelligemment, comme afficher des documents ou du contenu en mode plein écran côte à côte.</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2604805099836652105">Le formulaire d'adresse <ph name="ADDRESS_LABEL" /> a été rempli.</translation>
@@ -2971,6 +2972,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3285329711156774325">Recherchez des compétences</translation>
 <translation id="3285500645985761267">Autoriser les sites connexes à voir votre activité dans le groupe</translation>
 <translation id="328571385944182268">Enregistrer vos mots de passe?</translation>
+<translation id="3285969135399641759">Acquérez une nouvelle compétence</translation>
 <translation id="3289668031376215426">Majuscules automatiques</translation>
 <translation id="3289856944988573801">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet ou Wi-Fi.</translation>
 <translation id="3290249595466894471">Il transmet également un petit échantillon de pages, de téléchargements, de l'activité des extensions et de données système afin de cerner les nouvelles menaces</translation>
@@ -6375,6 +6377,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5939719276406088041">Impossible de créer le raccourci</translation>
 <translation id="5939723110967488589">Choisissez les boutons à afficher dans la barre d'outils</translation>
 <translation id="594048410531370124">Touche non reconnue. Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Obtenez des conseils</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{{PASSWORD_COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{{PASSWORD_COUNT} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="594221546068848596">Rechercher la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

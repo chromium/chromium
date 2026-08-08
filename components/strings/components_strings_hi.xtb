@@ -1063,7 +1063,6 @@
 <translation id="2824775600643448204">पता और सर्च बार</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> का इस्तेमाल करके कनेक्शन को एन्क्रिप्ट (सुरक्षित) किया गया है और उसकी पुष्टि की गई है. साथ ही, यह मुख्य एक्सचेंज तकनीक के रूप में <ph name="KX" /> का इस्तेमाल करता है.</translation>
 <translation id="2828797285817981634">मोशन सेंसर को फ़िलहाल अनुमति मिल गई है</translation>
-<translation id="2835170189407361413">फ़ॉर्म साफ़ करें</translation>
 <translation id="2835907903001172712">ब्राउज़र के बारे में खास जानकारी</translation>
 <translation id="2837891525090413132">साइट, कीबोर्ड को लॉक करने और उससे मिले इनपुट का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="2839032553903800133">सूचनाएं ब्लॉक की गईं</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome ब्राउज़र, <ph name="APP_NAME" /> पर आपका पासवर्ड भरने की कोशिश कर रहा है.</translation>
 <translation id="668132230070712111">वीडियो को Google Drive में सेव किया गया</translation>
 <translation id="6681790815630918386">सीवीसी सेव किया गया</translation>
-<translation id="6686570026048064255">Pix कोड का पता लगाने की सुविधा बंद करने के लिए, <ph name="BEGIN_LINK1" />Chrome की सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="6687230248707087982">एन्वेलप (प्लेन)</translation>
 <translation id="6687335167692595844">फ़ॉन्ट साइज़ का अनुरोध किया गया</translation>
 <translation id="6688743156324860098">अपडेट करें…</translation>

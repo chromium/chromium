@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">მისამართი და ძიების ზოლი</translation>
 <translation id="2826760142808435982">კავშირი დაშიფრულია და ავთენტიფიცირებულია <ph name="CIPHER" />-ის გამოყენებით, იგი იყენებს <ph name="KX" />-ს, როგორც კოდის გაცვლის მექანიზმს.</translation>
 <translation id="2828797285817981634">მოძრაობის სენსორები ამჟამად დაშვებულია</translation>
-<translation id="2835170189407361413">ფორმის გასუფთავება</translation>
 <translation id="2835907903001172712">ბრაუზერის მიმოხილვა</translation>
 <translation id="2837891525090413132">შეიძლება მოითხოვოს დაბლოკვა და თქვენი კლავიატურის გამოყენება</translation>
 <translation id="2839032553903800133">შეტყობინებები დაბლოკილია</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome ბრაუზერი ცდილობს, შეავსოს თქვენი პაროლი <ph name="APP_NAME" />-ში.</translation>
 <translation id="668132230070712111">ვიდეო შენახულია Google Drive-ში</translation>
 <translation id="6681790815630918386">CVC შეინახა</translation>
-<translation id="6686570026048064255">Pix-ის კოდის ამოცნობის გამოსართავად გადადით <ph name="BEGIN_LINK1" />Chrome-ის პარამეტრებში<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">კონვერტი (უბრალო)</translation>
 <translation id="6687335167692595844">შრიფტის ზომა მოთხოვნილია</translation>
 <translation id="6688743156324860098">განახლება…</translation>
@@ -4437,6 +4435,7 @@
 <translation id="8708134712139312373">შეუძლია Bluetooth მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="8710842507289500830">შრიფტის სტილი</translation>
 <translation id="8712637175834984815">კარგი</translation>
+<translation id="8715198179991802709">Chrome-მა ახლახან დროშით მონიშნა ვებსაიტი, რომლის მონახულებასაც ცდილობდით. მიიღეთ მონაწილეობა 1-წუთიან გამოკითხვაში, რომ დაგვეხმაროთ ამ გაფრთხილებების გაუმჯობესებაში.</translation>
 <translation id="8718314106902482036">გადახდა დასრულებული არ არის</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ძიების შეთავაზება</translation>
 <translation id="8719528812645237045">მრავალად გახვრეტა ზემოთ</translation>

@@ -1062,7 +1062,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
 <translation id="2826760142808435982">La conexión se encriptó y autenticó con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio de claves.</translation>
 <translation id="2828797285817981634">Se permiten los sensores de movimiento por ahora</translation>
-<translation id="2835170189407361413">Eliminar formulario</translation>
 <translation id="2835907903001172712">Vista general del navegador</translation>
 <translation id="2837891525090413132">Puede solicitar permiso para bloquear y usar el teclado</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
@@ -1262,7 +1261,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
           que no necesitas usar un servidor proxy:
           <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Saber en qué momento estás usando activamente este dispositivo</translation>
-<translation id="3181307292207270140">Tengo ganas de ir a una cafetería acogedora donde pueda desconectarme un poco, leer y, tal vez, trabajar un poco. ¿Puedes encontrar lugares cercanos que sean conocidos por ser tranquilos, cómodos y que tengan una conexión Wi-Fi confiable?</translation>
+<translation id="3181307292207270140">Tengo ganas de ir a una cafetería agradable donde pueda desconectarme un poco, leer y, tal vez, trabajar un rato. ¿Puedes encontrar lugares cercanos que sean conocidos por ser tranquilos, cómodos y que tengan una conexión Wi-Fi confiable?</translation>
 <translation id="3181543705317761806">Obtén respuestas potenciadas por IA con contexto de la Web.</translation>
 <translation id="3182185041786697613">¿Quieres guardar el código de seguridad?</translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
@@ -1527,7 +1526,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL debe contener entre 1 y 2 URLs.</translation>
 <translation id="3647400963805615193">Botón para descartar la sugerencia de Chrome, presiona Intro para descartarla, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="3648667207586409316">¿Qué puedo hacer para ayudar a disminuir el estrés?</translation>
+<translation id="3648667207586409316">¿Qué puedo hacer para disminuir el estrés?</translation>
 <translation id="3650584904733503804">Validación correcta</translation>
 <translation id="3650594806107685466">Para ayudar a proteger tu tarjeta, ingresa el CVC que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3655241534245626312">Ir a la configuración de permisos</translation>
@@ -2441,7 +2440,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5191315092027169558"><ph name="DOMAIN" /> administra tu perfil</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quiere descargar varios archivos</translation>
 <translation id="519528950056409240">Permitir que la Billetera comparta datos</translation>
-<translation id="5197384040493814274">¿Qué sugerencias me pueden ayudar a promocionar mi marca? Incluye consejos sobre cómo puedo optimizar mi sitio web</translation>
+<translation id="5197384040493814274">¿Me das sugerencias de cómo promocionar mi marca? Incluye consejos sobre cómo puedo optimizar mi sitio web</translation>
 <translation id="5200063972779787617">Guarda la dirección en la cuenta</translation>
 <translation id="5201306358585911203">Una página incorporada en esta página dice</translation>
 <translation id="5203716867500274632">El administrador habilitó la sincronización de los siguientes elementos entre tus sesiones anteriores y actuales en todos tus dispositivos ChromeOS:</translation>
@@ -2499,7 +2498,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5286195392366054103">Esta política tiene más de <ph name="MAX_URL_PATTERNS_LIMIT" /> patrones de URL. Solo se usarán los primeros <ph name="MAX_URL_PATTERNS_LIMIT" /> patrones de URL.</translation>
 <translation id="5288108484102287882">La validación de los valores de la política generó advertencias</translation>
 <translation id="5289384342738547352">Control de varios documentos</translation>
-<translation id="5293160437421672778">Encuentra restaurantes aptos para familias que acepten reservas. Debe tener un menú infantil y un ambiente informal</translation>
+<translation id="5293160437421672778">Encuentra restaurantes aptos para familias que acepten reservas. Deben tener un menú infantil y un ambiente informal</translation>
 <translation id="5298618990685278995">un primer borrador</translation>
 <translation id="5299298092464848405">Error al analizar la política</translation>
 <translation id="5300062471671636390">Ocultar la lista de dispositivos para transmitir</translation>
@@ -3297,7 +3296,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6679354743514146922">El navegador Chrome está intentando completar tu contraseña en <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Se guardó el video en Google Drive</translation>
 <translation id="6681790815630918386">Se guardó el CVC</translation>
-<translation id="6686570026048064255">Para desactivar la detección de códigos Pix, ve a la <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sobre (liso)</translation>
 <translation id="6687335167692595844">Se necesita el tamaño de la fuente</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -3755,7 +3753,7 @@ Detalles adicionales:
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="748138892655239008">Restricciones básicas del certificado</translation>
 <translation id="7481603210197454575">Sobre italiano</translation>
-<translation id="7482823403440483089">Autocompletado mejorado</translation>
+<translation id="7482823403440483089">Autocompletar mejorado</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, presiona Tab y, luego, Intro para descartar la sugerencia de Chrome.</translation>
 <translation id="7485870689360869515">No se encontró ningún dato.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
@@ -4440,6 +4438,7 @@ Detalles adicionales:
 <translation id="8708134712139312373">Puede solicitar permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="8710842507289500830">Estilo de la fuente</translation>
 <translation id="8712637175834984815">Entendido</translation>
+<translation id="8715198179991802709">Chrome acaba de marcar un sitio web que intentabas visitar. Responde esta encuesta de 1 minuto para ayudarnos a mejorar estas advertencias.</translation>
 <translation id="8718314106902482036">No se completó el pago</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugerencia de búsqueda</translation>
 <translation id="8719528812645237045">Perforaciones múltiples en la parte superior</translation>
@@ -4517,7 +4516,7 @@ Detalles adicionales:
 <translation id="8842351563145134519">La lista de formas de pago disponibles que se debe tocar para completar está abierta a media altura.</translation>
 <translation id="884264119367021077">Dirección de envío</translation>
 <translation id="8843516219908676469">Chrome comprende mejor los formularios y puede autocompletarlos más rápido</translation>
-<translation id="8845586173202501576">Crea un cronograma de estudio de 7 días para mi próximo examen usando la técnica Pomodoro y la repetición espaciada. No quiero estudiar todo el día antes del examen, así que asegúrate de que el día anterior incluya un repaso ligero y tiempo para dormir</translation>
+<translation id="8845586173202501576">Crea un cronograma de estudio de 7 días para mi próximo examen usando la técnica Pomodoro y la repetición espaciada. El día anterior al examen no quiero pasármelo estudiando, así que asegúrate de que ese día incluya solo un repaso ligero y tiempo para dormir</translation>
 <translation id="8849032795302265570">Administra fácilmente cómo navegan tus empleados por la Web</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">No se ha encontrado ningún mecanismo de revocación.</translation>

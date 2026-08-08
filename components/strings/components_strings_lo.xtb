@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">ພລາສຕິກ</translation>
 <translation id="2027707238798802149">ບັດບໍ່ພ້ອມນຳໃຊ້</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງພຣັອກຊີ ແລະ ໄຟຣ໌ວໍ<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">ອິນສະແຕນຂອງ Chrome ນີ້ກຳລັງເຮັດວຽກໂດຍມີການຕັ້ງຄ່າທຸງແຖວຄຳສັ່ງດ້ວຍຕົນເອງ. ກະລຸນາຮັບຊາບວ່າທຸງແຖວຄຳສັ່ງອາດມີການປ່ຽນແປງໄດ້ທຸກເວລາ ແລະ ບໍ່ໄດ້ຮັບການສະໜັບສະໜູນ.</translation>
 <translation id="2033900728810589426">ທາງລັດຕ້ອງບໍ່ຄືກັບຄີເວີດຂອງຜູ້ໃຫ້ບໍລິການການຊອກຫາເລີ່ມຕົ້ນທີ່ກຳນົດໂດຍ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ຢືນຢັນການບັນທຶກ</translation>
 <translation id="2036514476578229158">ທ່ານໄດ້ຂໍເຂົ້າເບິ່ງເວັບໄຊນີ້. ຜູ້ປົກຄອງຂອງທ່ານສາມາດຕອບກັບໃນ Family Link.</translation>
@@ -1061,7 +1062,6 @@
 <translation id="2824775600643448204">ແຖບ​ທີ່​ຢູ່​ ແລະ​ຄົ້ນ​ຫາ</translation>
 <translation id="2826760142808435982">ການເຊື່ອມຕໍ່ມີລະຫັດ ແລະໄດ້ຮັບຮອງແລ້ວດ້ວຍການໃຊ້ <ph name="CIPHER" /> ແລະໃຊ້ <ph name="KX" /> ເປັນກົນໄກແລກປ່ຽນປຸ່ມ.</translation>
 <translation id="2828797285817981634">ອະນຸຍາດໃຫ້ໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວໄດ້ໃນຕອນນີ້</translation>
-<translation id="2835170189407361413">ລຶບແບບຟອມ</translation>
 <translation id="2835907903001172712">ພາບຮວມຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="2837891525090413132">ສາມາດຂໍລັອກ ແລະ ໃຊ້ແປ້ນພິມຂອງທ່ານໄດ້</translation>
 <translation id="2839032553903800133">ບລັອກການແຈ້ງເຕືອນ</translation>
@@ -3295,7 +3295,6 @@
 <translation id="6679354743514146922">ໂປຣແກຣມທ່ອງເວັບ Chrome ກຳລັງພະຍາຍາມຕື່ມລະຫັດຜ່ານຂອງທ່ານໃນ <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">ບັນທຶກວິດີໂອໃສ່ໃນ Google Drive ແລ້ວ</translation>
 <translation id="6681790815630918386">ບັນທຶກ CVC ແລ້ວ</translation>
-<translation id="6686570026048064255">ເພື່ອປິດໃຊ້ການກວດຫາລະຫັດ Pix, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ຊອງ (ທຳມະດາ)</translation>
 <translation id="6687335167692595844">ຂໍຂະໜາດຟອນແລ້ວ</translation>
 <translation id="6688743156324860098">ອັບເດດ…</translation>

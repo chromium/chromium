@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ако я изтриете, всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства.</translation>
 <translation id="2424805048070062787">Продължаване с този раздел</translation>
 <translation id="2426805022920575512">Избиране на друг профил</translation>
+<translation id="2428543302546523788">Показване на връзките, когато режимът на четене е включен</translation>
 <translation id="243275146591958220">Анулиране на изтеглянето</translation>
 <translation id="2434405374328098816">Вече запазихте парола за <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Можете да превъртите наляво, за да сърфирате в режим „инкогнито“.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Какво мога да правя с Gemini в Chrome?</translation>
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Можете да зададете напомняне, за да посетите отново тази страница по-късно</translation>
+<translation id="2476554421818031422">Помагате за подобряването на подобреното автоматично попълване</translation>
 <translation id="2479148705183875116">Към настройките</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484459871750294497">Как да активирам тази функция?</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">Изтегляния</translation>
 <translation id="7815852444315004084">Скриване засега</translation>
 <translation id="7825973332242257878">Групи раздели</translation>
+<translation id="7828344837949522075">Показване на предложението</translation>
 <translation id="7839994177130598711">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Търсене на копирания текст</translation>
 <translation id="7841418003178675048">Изберете картите, които да виждате в новия раздел в браузъра.</translation>

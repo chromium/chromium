@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ezabatzen baduzu, berehala galduko dute denek "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta gailu guztietatik ezabatuko da.</translation>
 <translation id="2424805048070062787">Egin aurrera fitxa honekin</translation>
 <translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
+<translation id="2428543302546523788">Erakutsi estekak irakurtzeko modua aktibatuta dagoenean</translation>
 <translation id="243275146591958220">Utzi deskargatzeari</translation>
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2434918313224755415">Ezkutuko moduan arakatzeko, hatza ezkerrera pasa dezakezu.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Zer egin dezaket Chrome-ko Gemini-rekin?</translation>
 <translation id="2473876017985765807">Gordeta daukazu jada <ph name="WEBSITE" /> webguneari dagokion pasahitza</translation>
 <translation id="247430852844518481">Geroago orri honetara itzultzeko gogorarazpen bat ezar dezakezu</translation>
+<translation id="2476554421818031422">Betetze automatiko hobetua hobetzen laguntzen ari zara</translation>
 <translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2484459871750294497">Nola gaitzen da eginbide hau?</translation>
@@ -2068,6 +2070,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="78146569776629510">Deskargak</translation>
 <translation id="7815852444315004084">Ezkutatu oraingoz</translation>
 <translation id="7825973332242257878">Fitxa taldeak</translation>
+<translation id="7828344837949522075">Erakutsi iradokizuna</translation>
 <translation id="7839994177130598711">Orain, zure familiako kideek zure erabiltzaile-izena eta pasahitza erabil ditzakete <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabiltenean.</translation>
 <translation id="7841180087127694526">Bilatu kopiatu duzun testua</translation>
 <translation id="7841418003178675048">Aukeratu zer txartel ikusten dituzun fitxa berriaren orrian.</translation>

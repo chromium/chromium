@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et ce dernier sera supprimé de tous les appareils.</translation>
 <translation id="2424805048070062787">Continuer avec cet onglet</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
+<translation id="2428543302546523788">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="243275146591958220">Annuler le téléchargement</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Vous pouvez faire défiler l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Que puis-je faire avec Gemini dans Chrome?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour le site <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Vous pouvez créer un rappel pour revenir à cette page plus tard</translation>
+<translation id="2476554421818031422">Vous contribuez à améliorer le remplissage automatique amélioré</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">Comment activer cette fonctionnalité?</translation>
@@ -2068,6 +2070,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="78146569776629510">Téléchargements</translation>
 <translation id="7815852444315004084">Masquer pour le moment</translation>
 <translation id="7825973332242257878">Groupes d'onglets</translation>
+<translation id="7828344837949522075">Afficher la suggestion</translation>
 <translation id="7839994177130598711">Les membres de votre famille peuvent désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'ils utilisent le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Rechercher le texte copié</translation>
 <translation id="7841418003178675048">Choisissez quelles cartes s'affichent sur la page de votre nouvel onglet.</translation>

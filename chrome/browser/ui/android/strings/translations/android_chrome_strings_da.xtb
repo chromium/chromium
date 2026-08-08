@@ -116,6 +116,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1414919006379339073">Luk det aktuelle vindue</translation>
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1435593198351412143">Åbn PDF-filer automatisk</translation>
 <translation id="1437543266176261764">Kører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser de produkter, du holder øje med, i Bogmærker</translation>
@@ -1537,6 +1538,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7182520625618447753">Flyt din adresselinje til toppen eller bunden for at få en tilpasset browseroplevelse</translation>
 <translation id="7183517696921903380">Oversigten over filtrering efter app er åben.</translation>
 <translation id="7186568385131859684">Administrer, hvordan browserhistorik bruges sammen med dine øvrige data i Google-tjenester</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Tryk på ^W igen for at lukke den fastgjorte fane}one{Tryk på ^W igen for at lukke den fastgjorte fane}other{Tryk på ^W igen for at lukke de fastgjorte faner}}</translation>
 <translation id="7190921792980745354">Vil du blokere <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bør ændre adgangskoden med det samme}one{Du bør ændre adgangskoden med det samme}other{Du bør ændre adgangskoderne med det samme}}</translation>
@@ -1985,6 +1987,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8995521496079646922">De apps, du har valgt, bruges som standard. Hvis en app ikke allerede er på denne enhed, downloades den snart.</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998837250940831980">Fanen kunne ikke minimeres. Prøv igen senere.</translation>
+<translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="9001604755921395912">Åbn i inkognito i Chrome</translation>
 <translation id="9010094279589497751">Åbn hurtigt Gemini, når du har brug for det</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>

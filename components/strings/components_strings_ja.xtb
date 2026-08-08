@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2828797285817981634">モーション センサーの使用を一時的に許可しました</translation>
-<translation id="2835170189407361413">フォームをクリア</translation>
 <translation id="2835907903001172712">ブラウザの概要</translation>
 <translation id="2837891525090413132">キーボードのロックと使用を要求できます</translation>
 <translation id="2839032553903800133">通知をブロック中</translation>
@@ -2343,7 +2342,7 @@
 <translation id="5021557570875267742">Chrome で価格をトラッキング</translation>
 <translation id="5023310440958281426">管理者のポリシーを確認してください</translation>
 <translation id="5024171724744627792">カードを保存するとすばやくお支払いできます。カード情報は Google アカウントで暗号化されます。</translation>
-<translation id="5026121202864677765">志望動機書を作成して</translation>
+<translation id="5026121202864677765">カバーレターを作成して</translation>
 <translation id="5030338702439866405">発行元</translation>
 <translation id="503069730517007720">「<ph name="SOFTWARE_NAME" />」のルート証明書が必要ですが、インストールされていません。IT 管理者に、「<ph name="SOFTWARE_NAME" />」の設定手順を確認したうえでこの問題を修正するよう依頼してください。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="503498442187459473"><ph name="HOST" /> から、カメラとマイクの使用許可を求められています</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome ブラウザが <ph name="APP_NAME" /> でパスワードを入力しようとしています。</translation>
 <translation id="668132230070712111">動画を Google ドライブに保存しました</translation>
 <translation id="6681790815630918386">CVC 保存済み</translation>
-<translation id="6686570026048064255">Pix コードの検出をオフにするには、<ph name="BEGIN_LINK1" />Chrome の設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="6687230248707087982">封筒（無地）</translation>
 <translation id="6687335167692595844">リクエストされたフォントサイズ</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4439,6 +4437,7 @@
 <translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>
 <translation id="8710842507289500830">フォント スタイル</translation>
 <translation id="8712637175834984815">理解しました</translation>
+<translation id="8715198179991802709">Chrome で、アクセスしようとしたウェブサイトが危険と判断されました。これらの警告を改善するため、1 分間のアンケートにご協力ください。</translation>
 <translation id="8718314106902482036">支払い処理を完了できませんでした</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />、<ph name="DESCRIPTION" />、検索候補</translation>
 <translation id="8719528812645237045">多穴パンチ（上）</translation>

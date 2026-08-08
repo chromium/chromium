@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">Barre d'adresse et de recherche</translation>
 <translation id="2826760142808435982">La connexion est chiffrée et authentifiée avec la clé <ph name="CIPHER" />. La méthode d'échange de clés utilisée est <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Les capteurs de mouvement sont autorisés pour le moment</translation>
-<translation id="2835170189407361413">Effacer le contenu du formulaire</translation>
 <translation id="2835907903001172712">Aperçu du navigateur</translation>
 <translation id="2837891525090413132">Peut demander de verrouiller et d'utiliser votre clavier</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
@@ -3296,7 +3295,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6679354743514146922">Le navigateur Chrome tente de remplir votre mot de passe sur <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vidéo enregistrée dans Google Disque</translation>
 <translation id="6681790815630918386">Code CVC enregistré</translation>
-<translation id="6686570026048064255">Pour désactiver la détection du code Pix, accédez aux <ph name="BEGIN_LINK1" />paramètres Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Enveloppe (ordinaire)</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6688743156324860098">Mettre à jour…</translation>
@@ -4437,6 +4435,7 @@ Détails supplémentaires :
 <translation id="8708134712139312373">Les sites peuvent demander à se connecter à des appareils Bluetooth</translation>
 <translation id="8710842507289500830">Style de police</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715198179991802709">Chrome vient de signaler un site Web que vous tentiez de visiter. Aidez-nous à améliorer ces avertissements en répondant à un sondage d'une minute.</translation>
 <translation id="8718314106902482036">Paiement incomplet</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suggestion de recherche</translation>
 <translation id="8719528812645237045">Multiple perforation en haut</translation>

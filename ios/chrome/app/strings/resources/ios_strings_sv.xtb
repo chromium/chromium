@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den tas bort från alla enheter.</translation>
 <translation id="2424805048070062787">Fortsätt med den här fliken</translation>
 <translation id="2426805022920575512">Välj ett annat konto</translation>
+<translation id="2428543302546523788">Visa länkar när läsläget är aktiverat</translation>
 <translation id="243275146591958220">Avbryt nedladdning</translation>
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan scrolla åt vänster för att surfa inkognito.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Vad kan jag göra med Gemini i Chrome?</translation>
 <translation id="2473876017985765807">Du har redan sparat ett lösenord för <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Du kan ställa in en påminnelse om att besöka den här sidan senare</translation>
+<translation id="2476554421818031422">Du hjälper till att göra förbättrad autofyll bättre</translation>
 <translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2484459871750294497">Hur aktiverar jag den här funktionen?</translation>
@@ -2068,6 +2070,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="78146569776629510">Nedladdningar</translation>
 <translation id="7815852444315004084">Dölj för tillfället</translation>
 <translation id="7825973332242257878">Flikgrupper</translation>
+<translation id="7828344837949522075">Visa förslag</translation>
 <translation id="7839994177130598711">Dina familjemedlemmar kan nu använda ditt användarnamn och lösenord när de loggar in på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> med Google Lösenordshantering.</translation>
 <translation id="7841180087127694526">Sök efter kopierad text</translation>
 <translation id="7841418003178675048">Välj vilka kort som visas på sidan Ny flik.</translation>

@@ -116,6 +116,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1414919006379339073">Uždaryti dabartinį langą</translation>
 <translation id="1416550906796893042">Programos versija</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
+<translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
 <translation id="1435593198351412143">Automatinis PDF failų atidarymas</translation>
 <translation id="1437543266176261764">Vykdoma programoje „<ph name="APP_NAME" />“</translation>
 <translation id="1448440926884431741">Tvarkykite stebimus produktus Žymėse</translation>
@@ -1537,6 +1538,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7182520625618447753">Perjunkite adreso juostos poziciją į viršutinę arba apatinę, kad galėtumėte naudotis tinkintomis naršymo funkcijomis</translation>
 <translation id="7183517696921903380">Programos filtro lapas atidarytas.</translation>
 <translation id="7186568385131859684">Valdykite, kaip naršymo istorija naudojama su kitais duomenimis „Google“ paslaugose</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Dar kartą paspauskite ^W, kad uždarytumėte prisegtą skirtuką}one{Dar kartą paspauskite ^W, kad uždarytumėte prisegtus skirtukus}few{Dar kartą paspauskite ^W, kad uždarytumėte prisegtus skirtukus}many{Dar kartą paspauskite ^W, kad uždarytumėte prisegtus skirtukus}other{Dar kartą paspauskite ^W, kad uždarytumėte prisegtus skirtukus}}</translation>
 <translation id="7190921792980745354">Blokuoti <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Skirtuko lapas atidarytas fone.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Turėtumėte pakeisti jį dabar}one{Turėtumėte pakeisti juos dabar}few{Turėtumėte pakeisti juos dabar}many{Turėtumėte pakeisti juos dabar}other{Turėtumėte pakeisti juos dabar}}</translation>
@@ -1985,6 +1987,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8995521496079646922">Pasirinktos programos bus naudojamos pagal numatytuosius nustatymus. Jei programos dar nėra šiame įrenginyje, ji netrukus bus atsisiųsta.</translation>
 <translation id="8996847606757455498">Pasirinkti kitą teikėją</translation>
 <translation id="8998837250940831980">Nepavyko sumažinti skirtuko. Vėliau bandykite dar kartą.</translation>
+<translation id="9000089900434778519">Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
 <translation id="9001604755921395912">Atidaryti „Chrome“ inkognito skirtuką</translation>
 <translation id="9010094279589497751">Greitai atidarykite „Gemini“, kai tik jo prireikia</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>

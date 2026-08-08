@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />" i ona će se izbrisati sa svih uređaja.</translation>
 <translation id="2424805048070062787">Nastavi s ovom karticom</translation>
 <translation id="2426805022920575512">Odaberite drugi račun</translation>
+<translation id="2428543302546523788">Prikaz linkova kada je način rada za čitanje uključen</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za korisnika "<ph name="USERNAME" />" na web lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Možete kliznuti ulijevo da pregledate u anonimnom načinu rada.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Šta mogu raditi putem Geminija u Chromeu?</translation>
 <translation id="2473876017985765807">Već ste sačuvali lozinku za <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Možete postaviti podsjetnik da ponovo posjetite ovu stranicu kasnije</translation>
+<translation id="2476554421818031422">Pomažete nam da unaprijedimo poboljšano automatsko popunjavanje</translation>
 <translation id="2479148705183875116">Idi u postavke</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2484459871750294497">Kako omogućiti ovu funkciju?</translation>
@@ -2068,6 +2070,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="78146569776629510">Preuzimanja</translation>
 <translation id="7815852444315004084">Sakrij za sada</translation>
 <translation id="7825973332242257878">Grupe kartica</translation>
+<translation id="7828344837949522075">Prikaži prijedlog</translation>
 <translation id="7839994177130598711">Članovi porodice sada mogu koristiti vaše korisničko ime i lozinku kada koriste Google upravitelj lozinki da se prijave na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Pretraži kopirani tekst</translation>
 <translation id="7841418003178675048">Odaberite koje kartice će se prikazivati na stranici nove kartice.</translation>
@@ -2334,7 +2337,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="8643403533759285912">Izbriši grupu</translation>
 <translation id="8647280737650867362">Zaustavljanje praćenja cijene nije uspjelo.</translation>
 <translation id="8654802032646794042">Otkaži</translation>
-<translation id="8655861111558401309">Odaberite Izbriši podatke o pregledanju</translation>
+<translation id="8655861111558401309">Odaberite opciju Izbriši podatke o pregledanju</translation>
 <translation id="8659875081143553823">Samo trenutak</translation>
 <translation id="8660600697590740984">Slika koja je kopirana u Objektivu</translation>
 <translation id="866266761389616183">Oh, ne!</translation>

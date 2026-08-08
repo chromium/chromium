@@ -592,6 +592,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Kart kullanılamıyor</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy'yi ve güvenlik duvarını kontrol etme<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Bu Chrome örneği, manuel olarak ayarlanan komut satırı işaretleriyle çalışıyor. Komut satırı işaretlerinin herhangi bir zamanda değişebileceğini ve desteklenmediğini unutmayın.</translation>
 <translation id="2033900728810589426">Kısayol, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tarafından tanımlanan varsayılan arama sağlayıcı anahtar kelimesiyle aynı olamaz: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Yine de kaydet</translation>
 <translation id="2036514476578229158">Bu siteyi ziyaret etme isteğinde bulundunuz. Anne veya babanız bu isteğe Family Link'te yanıt verebilir.</translation>
@@ -1061,7 +1062,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2824775600643448204">Adres ve arama çubuğu</translation>
 <translation id="2826760142808435982">Bağlantı <ph name="CIPHER" /> kullanılarak şifrelenmiş ve kimliği doğrulanmıştır. Anahtar değişim mekanizması olarak <ph name="KX" /> kullanılır.</translation>
 <translation id="2828797285817981634">Şu an için hareket sensörlerine izin veriliyor</translation>
-<translation id="2835170189407361413">Formu temizle</translation>
 <translation id="2835907903001172712">Tarayıcıyla ilgili genel bilgiler</translation>
 <translation id="2837891525090413132">Klavyenizi kilitlemek ve kullanmak için izin isteyebilir</translation>
 <translation id="2839032553903800133">Bildirimler engellendi</translation>
@@ -3295,7 +3295,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6679354743514146922">Chrome tarayıcı, <ph name="APP_NAME" /> adresinde şifrenizi doldurmaya çalışıyor.</translation>
 <translation id="668132230070712111">Video, Google Drive'a kaydedildi</translation>
 <translation id="6681790815630918386">CVC kaydedildi</translation>
-<translation id="6686570026048064255">Pix kodu algılamayı devre dışı bırakmak için <ph name="BEGIN_LINK1" />Chrome Ayarları<ph name="END_LINK1" />'na gidin.</translation>
 <translation id="6687230248707087982">Zarf (Düz)</translation>
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
 <translation id="6688743156324860098">Güncelle…</translation>
@@ -4438,6 +4437,7 @@ Ek ayrıntılar:
 <translation id="8708134712139312373">Bluetooth cihazlarına bağlanmak isteyebilir</translation>
 <translation id="8710842507289500830">Yazı tipi stili</translation>
 <translation id="8712637175834984815">Anladım</translation>
+<translation id="8715198179991802709">Chrome, ziyaret etmeye çalıştığınız bir web sitesini işaretledi. 1 dakikalık ankete katılarak bu uyarıları iyileştirmemize yardımcı olun.</translation>
 <translation id="8718314106902482036">Ödeme işlemi tamamlanmadı</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, arama önerisi</translation>
 <translation id="8719528812645237045">Üstte çoklu delik</translation>

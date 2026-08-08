@@ -1062,7 +1062,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Czujniki ruchu są na razie dozwolone</translation>
-<translation id="2835170189407361413">Wyczyść formularz</translation>
 <translation id="2835907903001172712">Ogólne informacje o przeglądarce</translation>
 <translation id="2837891525090413132">Może poprosić o zablokowanie i używanie klawiatury</translation>
 <translation id="2839032553903800133">Powiadomienia blokowane</translation>
@@ -3296,7 +3295,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6679354743514146922">Przeglądarka Chrome próbuje uzupełnić hasło na stronie <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Film został zapisany na Dysku Google</translation>
 <translation id="6681790815630918386">Kod CVC został zapisany</translation>
-<translation id="6686570026048064255">Aby wyłączyć wykrywanie kodu Pix, otwórz <ph name="BEGIN_LINK1" />Ustawienia Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Koperta (zwykła)</translation>
 <translation id="6687335167692595844">Zażądano rozmiaru czcionki</translation>
 <translation id="6688743156324860098">Zmień…</translation>
@@ -4438,6 +4436,7 @@ Dodatkowe informacje:
 <translation id="8708134712139312373">Może prosić o zgodę na połączenie z urządzeniami Bluetooth</translation>
 <translation id="8710842507289500830">Styl czcionki</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715198179991802709">Chrome właśnie oznaczył witrynę, którą próbujesz otworzyć. Pomóż nam ulepszyć te ostrzeżenia. W tym celu wypełnij 1-minutową ankietę.</translation>
 <translation id="8718314106902482036">Płatność nie została zrealizowana</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestia wyszukiwania</translation>
 <translation id="8719528812645237045">Wiele otworów u góry</translation>

@@ -193,6 +193,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="132301787627749051">Tìm kiếm hình ảnh trong bảng nhớ tạm</translation>
 <translation id="1323433172918577554">Xem thêm</translation>
 <translation id="1330449323196174374">Gấp dạng cửa bên trái</translation>
+<translation id="1330952240988133220">Lưu mã số Redress Number một cách an toàn vào Google Wallet</translation>
 <translation id="133173645041092770">Đóng trang web</translation>
 <translation id="1333745675627230582">Chơi Trò chơi khủng long trên Chrome</translation>
 <translation id="1333989956347591814">Hoạt động của bạn <ph name="BEGIN_EMPHASIS" />có thể vẫn hiển thị<ph name="END_EMPHASIS" /> với:
@@ -341,6 +342,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1569487616857761740">Nhập ngày hết hạn</translation>
 <translation id="1569694109004336106">Google Chrome đang cố gắng bật Windows Hello để điền mật khẩu.</translation>
 <translation id="1569905000953679183">Tìm nạp chính sách cài đặt tiện ích</translation>
+<translation id="1572383686781055412">Cập nhật KTN (mã số Known Traveler Number) một cách an toàn</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> inch</translation>
 <translation id="1574714699824202614">Đang xác minh phương thức thanh toán</translation>
 <translation id="1576277203042721907">Thông tin mua sắm chi tiết</translation>
@@ -397,6 +399,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1658918301167915956">thiết bị Bluetooth</translation>
 <translation id="1662550410081243962">Lưu và điền phương thức thanh toán</translation>
 <translation id="1662980953334786797">Thứ tự giống hệt</translation>
+<translation id="1663578299724791827">Lưu KTN (mã số Known Traveler Number) một cách an toàn</translation>
 <translation id="1663943134801823270">Thẻ và địa chỉ từ Chrome. Bạn có thể quản lý thẻ và địa chỉ trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Khuôn in Flexo bằng Photopolymer</translation>
 <translation id="1667730174533834274">xác minh danh tính của bạn trước khi thay đổi chế độ cài đặt</translation>
@@ -404,6 +407,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1670861525135254448">Lưu thông tin xe</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Cạnh ngắn trước</translation>
+<translation id="1683083957814090281">Cập nhật thông tin xe một cách an toàn</translation>
 <translation id="168693727862418163">Giá trị chính sách này không xác thực được dựa vào giản đồ và sẽ bị bỏ qua.</translation>
 <translation id="168841957122794586">Chứng chỉ máy chủ chứa khóa mật mã yếu.</translation>
 <translation id="1688718429648938412">Lưu thẻ khách hàng thân thiết vào Wallet</translation>
@@ -868,6 +872,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2469153820345007638">Thứ tự từ 1 đến N</translation>
 <translation id="24699311393038040">Giấy (Tráng bóng)</translation>
 <translation id="2471632709106952369">Bảng so sánh</translation>
+<translation id="2472396075297339227">Lưu mã số Known Traveler Number một cách an toàn vào Google Wallet</translation>
 <translation id="2477607419416067650">Dữ liệu khác trên Google</translation>
 <translation id="247903268499247848">Đã từ chối cấp quyền sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
@@ -926,6 +931,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2553352788023127673">Bạn có thể xoá nhật ký tìm kiếm và mật khẩu trong phần cài đặt quản lý tương ứng</translation>
 <translation id="2553853292994445426">Hãy kiểm tra các tùy chọn cài đặt về DNS bảo mật. Có thể bạn đã định cấu hình một máy chủ DNS bảo mật không kết nối được.</translation>
 <translation id="2555855727505718984">Tính năng tự động điền sẽ không thể dùng thông tin này trên thiết bị này để giúp điền vào biểu mẫu</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Hoàn tác chỉnh sửa</translation>
 <translation id="2559566667529177711">Nhiều lớp</translation>
 <translation id="2570734079541893434">Quản lý chế độ cài đặt</translation>
@@ -1062,7 +1068,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2824775600643448204">Thanh địa chỉ và tìm kiếm</translation>
 <translation id="2826760142808435982">Kết nối được mã hóa và xác thực bằng <ph name="CIPHER" /> đồng thời sử dụng <ph name="KX" /> làm cơ chế trao đổi chính.</translation>
 <translation id="2828797285817981634">Đã cho phép sử dụng cảm biến chuyển động vào lần này</translation>
-<translation id="2835170189407361413">Xóa biểu mẫu</translation>
 <translation id="2835907903001172712">Thông tin tổng quan về trình duyệt</translation>
 <translation id="2837891525090413132">Có thể yêu cầu khoá và sử dụng bàn phím</translation>
 <translation id="2839032553903800133">Đã chặn thông báo</translation>
@@ -1326,6 +1331,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3273738040255912340">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Lưu IBAN đã mở trên toàn màn hình.</translation>
 <translation id="327455571215090823">Tính năng tự động điền thông minh hơn, đảm bảo riêng tư</translation>
+<translation id="3280440382387335343">Cập nhật thông tin hộ chiếu một cách an toàn trong Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="3286372614333682499">dọc</translation>
@@ -1466,6 +1472,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3543597750097719865">Chữ ký X9.62 ECDSA với SHA-512</translation>
 <translation id="3543935938072367282">Thanh toán nhanh hơn nhờ tính năng tự động điền</translation>
 <translation id="3547442767634383572">Tổng quan về hồ sơ công việc</translation>
+<translation id="3547673868874844776">Lưu thẻ căn cước một cách an toàn</translation>
 <translation id="3547746132308051926">20 x 24 inch</translation>
 <translation id="3549904448933807997">Thông tin về trình duyệt và hồ sơ (bao gồm cả hồ sơ cá nhân và hồ sơ công việc)</translation>
 <translation id="3552155506104542239">Cảnh báo: Chính sách này xung đột với <ph name="POLICY_NAME" /> và sẽ không có hiệu lực với ứng dụng Android. Trong các trường hợp khác, chính sách này sẽ hoạt động như dự kiến.</translation>
@@ -1674,6 +1681,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="388632593194507180">Hoạt động giám sát đã phát hiện</translation>
 <translation id="3886948180919384617">Khay xếp chồng 3</translation>
 <translation id="3890664840433101773">Thêm email</translation>
+<translation id="3892626428170730309">Lưu thông tin hộ chiếu một cách an toàn</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Thẻ đã hết hạn</translation>
 <translation id="390391808978419508">Đã hết thời gian mở</translation>
@@ -1829,6 +1837,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4153858337812834972">Các thẻ gần đây nhất</translation>
 <translation id="4154277373259957087">Từ giờ trở đi, Chrome sẽ xác minh danh tính của bạn trước khi điền phương thức thanh toán. Bạn có thể cập nhật lựa chọn này bất cứ lúc nào trong phần <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">Dựa trên Trí thông minh cá nhân của Gemini. <ph name="BEGIN_LINK" />Quản lý chế độ cài đặt<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Cập nhật thông tin giấy phép lái xe một cách an toàn</translation>
 <translation id="4159784952369912983">Tím</translation>
 <translation id="4165422751765527461">Mở bài viết trên Trung tâm trợ giúp trong thẻ mới</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
@@ -1843,6 +1852,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4178863275556660738">Thanh toán bằng các phương thức không dùng thẻ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Cập nhật mã số Redress Number một cách an toàn</translation>
 <translation id="4186035307311647330">Bỏ theo dõi giá</translation>
 <translation id="4190446002599583608">Tính năng tìm thông tin trong nhật ký, do AI hỗ trợ</translation>
 <translation id="4191334393248735295">Độ dài</translation>
@@ -1884,6 +1894,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4231448684371260244">8 x 13 inch</translation>
 <translation id="4234996384188431444">Thanh toán bằng Pix mà không cần chuyển đổi ứng dụng trong Google Chrome</translation>
 <translation id="4238607350028440048">Giúp tôi luyện tập cho buổi phỏng vấn bằng cách đóng vai nhà quản lý tuyển dụng và đặt câu hỏi cho tôi</translation>
+<translation id="4239215166147486528">Lưu thông tin giấy phép lái xe một cách an toàn vào Google Wallet</translation>
 <translation id="4239799716689808527">Nhãn</translation>
 <translation id="424063167283213501">Lưu mã số Known Traveler Number</translation>
 <translation id="4241830393007970744">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng.</translation>
@@ -1996,6 +2007,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4407758156081352648">Nhằm duy trì tính bảo mật, tổ chức của bạn không cho phép sử dụng lại mật khẩu trong Chrome. Mật khẩu trong Chrome được mã hoá để bảo vệ quyền riêng tư của người dùng.</translation>
 <translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm này.</translation>
 <translation id="4409556632583862731">Chuỗi mới</translation>
+<translation id="4410614037742891410">Cập nhật thẻ căn cước một cách an toàn trong Google Wallet</translation>
 <translation id="4412074349188076601">Cấu hình này được đánh dấu là dễ dàng cài đặt, nhưng vì không có hình ảnh nào được cung cấp cho cấu trúc này nên bạn không thể cài đặt cấu hình này.</translation>
 <translation id="4412377069090572315">Nhận xét của mọi người</translation>
 <translation id="4414515549596849729">cookie và dữ liệu trang web</translation>
@@ -2209,9 +2221,11 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4800132727771399293">Kiểm tra ngày hết hạn và CVC của bạn rồi thử lại</translation>
 <translation id="4800546479758254481">Cho phép sử dụng thực tế tăng cường</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">Cập nhật thẻ căn cước một cách an toàn</translation>
 <translation id="4807098396393229769">Tên trên thẻ</translation>
 <translation id="4809079943450490359">Hướng dẫn từ quản trị viên thiết bị:</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
+<translation id="4811696127853690432">Lưu thông tin xe một cách an toàn vào Google Wallet</translation>
 <translation id="4811918461974803225">Biểu trưng của Google Pay, Affirm</translation>
 <translation id="4813512666221746211">Lỗi mạng</translation>
 <translation id="4814114628197290459">Xoá số IBAN</translation>
@@ -2341,11 +2355,13 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5020862932518041900">Nếu bạn chọn hoặc bỏ qua một đề xuất, Chrome sẽ điều chỉnh để đảm bảo bạn chỉ thấy những nội dung phù hợp với mình</translation>
 <translation id="5021500396464456616">Liên hệ với người đã gửi đường liên kết này</translation>
 <translation id="5021557570875267742">Theo dõi giá bằng Chrome</translation>
+<translation id="502229363433123770">Lưu mã số Redress Number một cách an toàn</translation>
 <translation id="5023310440958281426">Kiểm tra chính sách của quản trị viên của bạn</translation>
 <translation id="5024171724744627792">Thanh toán nhanh hơn khi bạn lưu thẻ. Thông tin chi tiết về thẻ được mã hoá trong Tài khoản Google của bạn.</translation>
 <translation id="5026121202864677765">Viết thư xin việc cho tôi</translation>
 <translation id="5030338702439866405">Cấp bởi</translation>
 <translation id="503069730517007720">Cần có chứng chỉ gốc cho "<ph name="SOFTWARE_NAME" />" nhưng chứng chỉ này chưa được cài đặt. Hãy yêu cầu quản trị viên CNTT của bạn xem hướng dẫn cấu hình cho "<ph name="SOFTWARE_NAME" />" để khắc phục sự cố này. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Lưu KTN (mã số Known Traveler Number) một cách an toàn vào Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> muốn sử dụng camera và micrô</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Cỡ chữ</translation>
@@ -2722,6 +2738,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5649053991847567735">Tự động tải xuống</translation>
 <translation id="5651323159439184939">Tiếp giấy kiểu Tractor Feed</translation>
+<translation id="5653681867130739344">Cập nhật thẻ căn cước một cách an toàn trong Google Wallet</translation>
 <translation id="5654927323611874862">Mã báo cáo sự cố đã tải lên:</translation>
 <translation id="5654965123204121933">URL không có chuỗi thay thế bắt buộc <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -2834,6 +2851,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5866898949289125849">Bạn đang xem trang công cụ dành cho nhà phát triển</translation>
 <translation id="5869405914158311789">Không thể truy cập trang web này</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
+<translation id="5872115357279348603">Cập nhật KTN (mã số Known Traveler Number) một cách an toàn trong Google Wallet</translation>
 <translation id="5872215789867188990">Nhóm thẻ "<ph name="GROUP_TITLE" />" không còn hoạt động</translation>
 <translation id="5872692522325383488">Đã lưu IBAN</translation>
 <translation id="5879989559903563723">Không được phép ở Chế độ khách</translation>
@@ -2857,6 +2875,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5914185423510719251">Lưu KTN (Mã số hành khách đã biết) vào Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> đã thêm thẻ này</translation>
 <translation id="59174027418879706">Đã bật</translation>
+<translation id="5917538780499455803">Lưu thẻ căn cước một cách an toàn</translation>
 <translation id="5918847752193018339">Bạn sẽ thanh toán nhanh hơn khi lưu mã CVC. <ph name="LINK_BEGIN" />Xoá mã bảo mật đã lưu<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Đang bật</translation>
@@ -3163,6 +3182,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6415778972515849510">Chromium có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Đảm bảo rằng mọi dữ liệu quan trọng của doanh nghiệp hoặc cá nhân đều được lưu trữ bên ngoài.</translation>
+<translation id="6422648598133086441">Cập nhật thông tin xe một cách an toàn trong Google Wallet</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Gấp dạng cửa</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3296,7 +3316,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6679354743514146922">Trình duyệt Chrome đang cố gắng điền mật khẩu của bạn vào <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Đã lưu video vào Google Drive</translation>
 <translation id="6681790815630918386">Đã lưu CVC</translation>
-<translation id="6686570026048064255">Để tắt tính năng phát hiện mã Pix, hãy chuyển đến <ph name="BEGIN_LINK1" />phần cài đặt của Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Phong bì (Thường)</translation>
 <translation id="6687335167692595844">Cỡ chữ đã yêu cầu</translation>
 <translation id="6688743156324860098">Cập nhật…</translation>
@@ -3337,6 +3356,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="674375294223700098">Lỗi chứng chỉ máy chủ không xác định.</translation>
 <translation id="6743841972744298686">Cài đặt cách đồng bộ hoá</translation>
 <translation id="6745212570062463886">Tự động điền tên và địa chỉ email từ Tài khoản Google của bạn</translation>
+<translation id="674580074662200768">Cập nhật thông tin hộ chiếu một cách an toàn</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Giá trị chính sách</translation>
 <translation id="6753434778807740853">Xoá mục <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3496,6 +3516,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7023765275461720661">Liên kết tài khoản và thanh toán bằng <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán</translation>
 <translation id="7031110846419387930">Thông tin về trình duyệt, hệ điều hành, thiết bị, phần mềm đã cài đặt, tệp và địa chỉ IP</translation>
+<translation id="7031356333130415891">Cập nhật thẻ căn cước một cách an toàn</translation>
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
 <translation id="7035705295266423040">Ngân hàng muốn xác minh danh tính của bạn</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý chế độ cài đặt về quyền riêng tư của Tài khoản Google của bạn</translation>
@@ -3620,6 +3641,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Để xoá dữ liệu này, hãy chuyển đến phần cài đặt quản lý tương ứng</translation>
+<translation id="7253051586755429279">Cập nhật mã số Redress Number một cách an toàn trong Google Wallet</translation>
 <translation id="7255540419660272073">Nút Không thích, nhấn phím Enter để mở biểu mẫu gửi phản hồi chi tiết về lý do bạn không thích, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Khay sau</translation>
 <translation id="725866823122871198">Không thể thiết lập kết nối riêng tư với <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vì ngày và giờ (<ph name="DATE_AND_TIME" />) trên máy tính của bạn không đúng.</translation>
@@ -3984,6 +4006,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7860345425589240791">Nhập ngày hết hạn mới và CVC trên <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Rời khỏi trang web?</translation>
 <translation id="7862306158978555061">hiện thông tin nhạy cảm</translation>
+<translation id="7863122976993412643">Lưu thông tin giấy phép lái xe một cách an toàn</translation>
 <translation id="7865448901209910068">Tốc độ tốt nhất</translation>
 <translation id="7865482168955081228">Màn hình báo lỗi khi Mua trước trả sau đã đóng.</translation>
 <translation id="7869655448736341731">Bất kỳ</translation>
@@ -4032,6 +4055,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7943893128817522649">Trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="7947285636476623132">Kiểm tra năm hết hạn của bạn và thử lại</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tìm hiểu về các tính năng của Chrome</translation>
+<translation id="7947964969544524438">Lưu mã số Known Traveler Number một cách an toàn</translation>
 <translation id="7948579849190819732">Thẻ hiện tại</translation>
 <translation id="7950027195171824198">Quản lý các lựa chọn ưu tiên về cookie trong phần Cài đặt của Chrome</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
@@ -4230,6 +4254,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8297545700510100061">Cookie và dữ liệu trang web khác được dùng để ghi nhớ bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hoá quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi mà bạn đang sử dụng (<ph name="WIFI_NAME" />) có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">Thẻ chỉ được lưu trên thiết bị</translation>
+<translation id="8300302621078931927">Lưu thẻ căn cước một cách an toàn vào Google Wallet</translation>
 <translation id="8301894345671534559">Nhập mã</translation>
 <translation id="830498451218851433">Gấp đôi</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -4439,6 +4464,9 @@ Thông tin chi tiết bổ sung:
 <translation id="8708134712139312373">Trang web có thể yêu cầu kết nối với thiết bị Bluetooth</translation>
 <translation id="8710842507289500830">Kiểu phông chữ</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
+<translation id="8715198179991802709">Chrome vừa gắn cờ một trang web mà bạn đã cố gắng truy cập. Hãy giúp chúng tôi cải thiện những cảnh báo này bằng cách làm bài khảo sát kéo dài 1 phút.</translation>
+<translation id="8716983145825913456">Lưu thông tin xe một cách an toàn</translation>
+<translation id="8717177139469452440">Lưu thông tin hộ chiếu một cách an toàn vào Google Wallet</translation>
 <translation id="8718314106902482036">Thanh toán chưa hoàn tất</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, đề xuất tìm kiếm</translation>
 <translation id="8719528812645237045">Đục nhiều lỗ trên cùng</translation>
@@ -4540,6 +4568,7 @@ Thông tin chi tiết bổ sung:
 <translation id="888169490072887292">Tìm nhà hàng phù hợp với gia đình và có thực đơn cho trẻ em</translation>
 <translation id="8883863364960302898">Thư mục Google Drive</translation>
 <translation id="8884537526797090108">Không thể ghi nội dung bí mật</translation>
+<translation id="8889525327610245418">Cập nhật thông tin giấy phép lái xe một cách an toàn trong Google Wallet</translation>
 <translation id="8891031436559779793">Bạn sẽ nhận được thông báo nếu giá giảm trên bất cứ trang web nào.</translation>
 <translation id="8891727572606052622">Chế độ proxy không hợp lệ.</translation>
 <translation id="8894794286471754040">Cạnh dài trước</translation>
@@ -4776,6 +4805,7 @@ Thông tin chi tiết bổ sung:
 <translation id="978750072783101994">Tự động điền thông tin thẻ này cho các giao dịch mua trong Chromium khi thẻ được lưu trong Google Wallet</translation>
 <translation id="979107176848483472">Trình duyệt và hồ sơ của bạn đều do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
+<translation id="98237783946365638">Lưu thẻ căn cước một cách an toàn vào Google Wallet</translation>
 <translation id="983587187183716432">Nút <ph name="AI_ENGINE_NAME" />, nhấn phím Enter để hỏi <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="985199708454569384">&lt;p&gt;Bạn sẽ gặp lỗi này nếu ngày và giờ trên máy tính hoặc thiết bị di động không chính xác.&lt;/p&gt;

@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Če jo izbrišete, bodo vsi takoj izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh naprav.</translation>
 <translation id="2424805048070062787">Nadaljuj s tem zavihkom</translation>
 <translation id="2426805022920575512">Izberi drug račun</translation>
+<translation id="2428543302546523788">Prikaz povezav, ko je način za branje vklopljen</translation>
 <translation id="243275146591958220">Prekliči prenos</translation>
 <translation id="2434405374328098816">Na <ph name="WEBSITE" /> ste že shranili geslo za »<ph name="USERNAME" />«.</translation>
 <translation id="2434918313224755415">Za brskanje v anonimnem načinu lahko povlečete levo.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Kaj lahko počnem z Geminijem v Chromu?</translation>
 <translation id="2473876017985765807">Geslo za <ph name="WEBSITE" /> ste že shranili.</translation>
 <translation id="247430852844518481">Nastavite lahko opomnik, da se pozneje znova vrnete na to stran</translation>
+<translation id="2476554421818031422">Pomagate izboljšati izboljšano samodejno izpolnjevanje</translation>
 <translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2484459871750294497">Kako omogočim to funkcijo?</translation>
@@ -2068,6 +2070,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="78146569776629510">Prenosi</translation>
 <translation id="7815852444315004084">Zaenkrat skrij</translation>
 <translation id="7825973332242257878">Skupine zavihkov</translation>
+<translation id="7828344837949522075">Prikaz predloga</translation>
 <translation id="7839994177130598711">Družinski člani lahko zdaj uporabijo vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Iskanje besedila, ki ste ga kopirali</translation>
 <translation id="7841418003178675048">Izberite, katere kartice naj bodo prikazane na strani »Nov zavihek«.</translation>

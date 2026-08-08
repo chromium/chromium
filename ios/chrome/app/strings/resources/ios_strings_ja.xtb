@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">削除すると、全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
 <translation id="2424805048070062787">このタブを続行</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
+<translation id="2428543302546523788">リーディング モードがオンのときにリンクを表示します</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2434918313224755415">左にスクロールすると、シークレット モードでブラウジングできます。</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Gemini in Chrome で何ができる？</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> のパスワードは保存済みです</translation>
 <translation id="247430852844518481">後でこのページに再度アクセスするようリマインダーを設定できます</translation>
+<translation id="2476554421818031422">高精度の自動入力の改善にご協力いただいています</translation>
 <translation id="2479148705183875116">設定に移動</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">この機能を有効にするには</translation>
@@ -2068,6 +2070,7 @@
 <translation id="78146569776629510">ダウンロード</translation>
 <translation id="7815852444315004084">今は表示しない</translation>
 <translation id="7825973332242257878">タブグループ</translation>
+<translation id="7828344837949522075">提案を表示</translation>
 <translation id="7839994177130598711">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。</translation>
 <translation id="7841180087127694526">コピーしたテキストを検索</translation>
 <translation id="7841418003178675048">新しいタブページに表示するカードを選択してください。</translation>

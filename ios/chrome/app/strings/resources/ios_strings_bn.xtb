@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">আপনি এটি মুছে দিলে, সকলেই, "<ph name="GROUP_NAME" />" ট্যাব গ্রুপে অ্যাক্সেস হারাবেন এবং এটি সব ডিভাইস থেকে মুছে দেওয়া হবে।</translation>
 <translation id="2424805048070062787">এই ট্যাবে চালিয়ে যান</translation>
 <translation id="2426805022920575512">অন্য একটি অ্যাকাউন্ট বেছে নিন</translation>
+<translation id="2428543302546523788">রিডিং মোড চালু থাকলে লিঙ্ক দেখুন</translation>
 <translation id="243275146591958220">ডাউনলোড বাতিল করুন</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2434918313224755415">আপনি 'ছদ্মবেশী' মোডে ব্রাউজ করার জন্য বাঁদিকে স্ক্রল করতে পারবেন।</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Chrome-এ Gemini ব্যবহার করে আমি কী কী করতে পারি?</translation>
 <translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="247430852844518481">আপনি এই পৃষ্ঠা পরে আবার দেখার জন্য রিমাইন্ডার সেট করতে পারবেন</translation>
+<translation id="2476554421818031422">আপনি 'উন্নত অটোফিল'-কে আরও উন্নত করতে সাহায্য করছেন</translation>
 <translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2484459871750294497">এই ফিচার আমি কীভাবে চালু করব?</translation>
@@ -2069,6 +2071,7 @@
 <translation id="78146569776629510">ডাউনলোড</translation>
 <translation id="7815852444315004084">এখনকার মতো লুকান</translation>
 <translation id="7825973332242257878">ট্যাব গ্রুপ</translation>
+<translation id="7828344837949522075">সাজেশন দেখুন</translation>
 <translation id="7839994177130598711">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় আপনার পরিবারের সদস্যরা এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="7841180087127694526">কপি করা টেক্সট সার্চ করুন</translation>
 <translation id="7841418003178675048">আপনার নতুন ট্যাব পৃষ্ঠায় কী কার্ড দেখবেন তা বেছে নিন।</translation>

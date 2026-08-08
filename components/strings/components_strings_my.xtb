@@ -1067,7 +1067,6 @@
 <translation id="2824775600643448204">လိပ်စာ နှင့် ရှာဖွေရေး ဘား</translation>
 <translation id="2826760142808435982">ချိတ်ဆက်မှုကို လုံခြုံအောင် ပြုလုပ်ထားပြီး စစ်မှန်ကြောင်းအတည်ပြုရာ၌ <ph name="CIPHER" /> နှင့် <ph name="KX" /> ကိုကီးပြောင်းလဲမှု စက်ယန္တရားအဖြစ် အသုံးပြုထားပါသည်။</translation>
 <translation id="2828797285817981634">လှုပ်ရှားမှု အာရုံခံစနစ်များကို လောလောဆယ် ခွင့်ပြုထားသည်</translation>
-<translation id="2835170189407361413">ပုံစံ ရှင်းမည်</translation>
 <translation id="2835907903001172712">ဘရောင်ဇာ အနှစ်ချုပ်</translation>
 <translation id="2837891525090413132">လော့ခ်ချရန်နှင့် ကီးဘုတ်ကိုသုံးရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="2839032553903800133">အကြောင်းကြားချက်များ ပိတ်ထားသည်</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome ဘရောင်ဇာသည် <ph name="APP_NAME" /> တွင် သင့်စကားဝှက်ကိုဖြည့်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="668132230070712111">ဗီဒီယိုကို Google Drive တွင် သိမ်းလိုက်သည်</translation>
 <translation id="6681790815630918386">CVC သိမ်းလိုက်သည်</translation>
-<translation id="6686570026048064255">Pix ကုဒ်ဖော်ခြင်းကို ပိတ်ရန်အတွက် <ph name="BEGIN_LINK1" />Chrome ဆက်တင်များ<ph name="END_LINK1" /> သို့ သွားပါ</translation>
 <translation id="6687230248707087982">စာအိတ် (အလွတ်)</translation>
 <translation id="6687335167692595844">ဖောင့်အရွယ်အစား တောင်းဆိုထားသည်</translation>
 <translation id="6688743156324860098">အပ်ဒိတ်လုပ်ရန်…</translation>
@@ -4439,6 +4437,7 @@
 <translation id="8708134712139312373">ဘလူးတုသ်သုံးစက်များနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="8710842507289500830">ဖောင့် ပုံစံ</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
+<translation id="8715198179991802709">Chrome သည် သင်ဝင်ကြည့်ရန် ကြိုးစားနေသော ဝဘ်ဆိုက်ကို အလံပြလိုက်သည်။ ၁-မိနစ်စစ်တမ်း ဖြေဆိုခြင်းဖြင့် ဤသတိပေးချက်များ ပိုကောင်းအောင် ကူညီပါ။</translation>
 <translation id="8718314106902482036">ငွေပေးချေမှု ပြီးမြောက်ခြင်းမရှိပါ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />၊ <ph name="DESCRIPTION" />၊ ရှာဖွေမှု အကြံပြုချက်</translation>
 <translation id="8719528812645237045">ထိပ်တွင် အများအပြားဖောက်ရန်</translation>

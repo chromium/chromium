@@ -2055,6 +2055,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2598710988533271874">Este disponibilă o nouă versiune Chrome</translation>
 <translation id="2599048253926156421">Numele de utilizator a fost copiat în clipboard</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Ai dezactivat o extensie nesigură}few{Ai dezactivat {NUM_SITES} extensii nesigure}other{Ai dezactivat {NUM_SITES} de extensii nesigure}}</translation>
+<translation id="2603121359676416582">Pentru această pagină</translation>
 <translation id="2604129989323098489">Site-urile solicită de obicei informații despre ecranele tale, astfel încât să poată deschide și plasa ferestre în mod inteligent, cum ar fi afișând alăturat documente sau conținut pe ecran complet</translation>
 <translation id="2604255671529671813">Eroare de conectare la rețea</translation>
 <translation id="2604805099836652105">Formularul pentru adresa <ph name="ADDRESS_LABEL" /> a fost completat.</translation>
@@ -2968,6 +2969,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3285329711156774325">Caută abilități</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
 <translation id="328571385944182268">Salvezi parolele?</translation>
+<translation id="3285969135399641759">Învață o abilitate nouă</translation>
 <translation id="3289668031376215426">Scriere automată cu majuscule</translation>
 <translation id="3289856944988573801">Pentru a verifica dacă există actualizări, utilizați Ethernet sau Wi-Fi.</translation>
 <translation id="3290249595466894471">În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări</translation>
@@ -6372,6 +6374,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5939719276406088041">Nu se poate crea comanda rapidă</translation>
 <translation id="5939723110967488589">Alege ce butoane se afișează în bara de instrumente</translation>
 <translation id="594048410531370124">Tasta nu a fost recunoscută. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
+<translation id="5940614040566393493">Primește sfaturi</translation>
 <translation id="5941711191222866238">Minimizează</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{O parolă se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, salveaz-o în Contul Google.}few{{PASSWORD_COUNT} parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}other{{PASSWORD_COUNT} de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}}</translation>
 <translation id="594221546068848596">Pagină de căutare cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

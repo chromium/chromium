@@ -193,6 +193,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="132301787627749051">Pesquisar uma imagem na área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="1330449323196174374">Dobra janela à esquerda</translation>
+<translation id="1330952240988133220">Salvar número de retificação com segurança na Carteira do Google</translation>
 <translation id="133173645041092770">Fechar site</translation>
 <translation id="1333745675627230582">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="1333989956347591814">É possível que sua atividade <ph name="BEGIN_EMPHASIS" />ainda esteja visível<ph name="END_EMPHASIS" /> para:
@@ -341,6 +342,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1569694109004336106">O Google Chrome está tentando ativar o Windows Hello para preencher senhas.</translation>
 <translation id="1569905000953679183">Busca da política de instalação de extensão</translation>
+<translation id="1572383686781055412">Atualizar número de identificação do passageiro (KTN) com segurança</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.</translation>
 <translation id="1574714699824202614">Verificando a forma de pagamento</translation>
 <translation id="1576277203042721907">Insights de compras</translation>
@@ -397,6 +399,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Salvar e preencher as formas de pagamento</translation>
 <translation id="1662980953334786797">Mesmo pedido</translation>
+<translation id="1663578299724791827">Salvar número de identificação do passageiro (KTN) com segurança</translation>
 <translation id="1663943134801823270">As informações dos cartões e os endereços foram acessadas pelo Chrome. É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
 <translation id="1667730174533834274">confirmar sua identidade antes de mudar configurações</translation>
@@ -404,6 +407,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1670861525135254448">Salvar veículo</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Borda menor primeiro</translation>
+<translation id="1683083957814090281">Atualizar veículo com segurança</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
 <translation id="1688718429648938412">Salvar o cartão fidelidade na Carteira</translation>
@@ -868,6 +872,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2469153820345007638">Ordem 1 a N</translation>
 <translation id="24699311393038040">Papel (revestido)</translation>
 <translation id="2471632709106952369">Tabelas de comparação</translation>
+<translation id="2472396075297339227">Salvar número de identificação do passageiro (KTN) com segurança na Carteira do Google</translation>
 <translation id="2477607419416067650">Outros dados do Google</translation>
 <translation id="247903268499247848">Sensores de movimento e luz não permitidos</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
@@ -926,6 +931,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2553352788023127673">O histórico de pesquisa e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="2553853292994445426">Verifique suas configurações de DNS seguro. Você pode ter configurado um servidor DNS seguro em que as conexões estão falhando.</translation>
 <translation id="2555855727505718984">O preenchimento automático não terá essas informações neste dispositivo para completar formulários</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2559566667529177711">Multicamadas</translation>
 <translation id="2570734079541893434">Gerenciar configurações</translation>
@@ -1062,7 +1068,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2824775600643448204">Barra de endereço e de pesquisa</translation>
 <translation id="2826760142808435982">A conexão foi criptografada e autenticada utilizando <ph name="CIPHER" /> e usa <ph name="KX" /> como o mecanismo de troca de chave.</translation>
 <translation id="2828797285817981634">Sensores de movimento permitidos no momento</translation>
-<translation id="2835170189407361413">Limpar formulário</translation>
 <translation id="2835907903001172712">A visão geral do navegador</translation>
 <translation id="2837891525090413132">Pode pedir para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">Notificações bloqueadas</translation>
@@ -1326,6 +1331,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3273738040255912340">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Página "Salvar IBAN" aberta no tamanho máximo.</translation>
 <translation id="327455571215090823">Preenchimento automático mais inteligente e privado</translation>
+<translation id="3280440382387335343">Atualizar passaporte com segurança na Carteira do Google</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda abrir este arquivo em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes arquivos em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Sua organização, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -1466,6 +1472,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3543597750097719865">Assinatura X9.62 ECDSA com SHA-512</translation>
 <translation id="3543935938072367282">Finalize compras mais rápido com o preenchimento automático</translation>
 <translation id="3547442767634383572">Visão geral do perfil de trabalho</translation>
+<translation id="3547673868874844776">Salvar documento de identidade com segurança</translation>
 <translation id="3547746132308051926">20 x 24 pol.</translation>
 <translation id="3549904448933807997">Informações de navegadores e perfis (incluindo perfis pessoais e de trabalho)</translation>
 <translation id="3552155506104542239">Aviso: esta política está em conflito com a <ph name="POLICY_NAME" /> e não afetará apps Android. Em outros apps a política vai funcionar conforme o esperado.</translation>
@@ -1674,6 +1681,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="388632593194507180">Monitoramento detectado</translation>
 <translation id="3886948180919384617">Empilhador 3</translation>
 <translation id="3890664840433101773">Adicionar e-mail</translation>
+<translation id="3892626428170730309">Salvar passaporte com segurança</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="390391808978419508">O tempo de abertura expirou</translation>
@@ -1829,6 +1837,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4153858337812834972">Guias mais recentes</translation>
 <translation id="4154277373259957087">O Chrome vai confirmar sua identidade antes de preencher as formas de pagamento. Você pode atualizar isso a qualquer momento nas <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">Com a tecnologia da Inteligência Personalizada do Gemini. <ph name="BEGIN_LINK" />Gerenciar configurações<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Atualizar carteira de habilitação com segurança</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165422751765527461">Abre um artigo da Central de Ajuda em uma nova guia</translation>
 <translation id="4165986682804962316">Configurações de sites</translation>
@@ -1843,6 +1852,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4178863275556660738">Pague com formas de pagamento que não sejam por cartão</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Atualizar número de retificação com segurança</translation>
 <translation id="4186035307311647330">Não acompanhar preço</translation>
 <translation id="4190446002599583608">Pesquisa no histórico com tecnologia de IA</translation>
 <translation id="4191334393248735295">Duração</translation>
@@ -1884,6 +1894,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4231448684371260244">20 x 33 cm</translation>
 <translation id="4234996384188431444">Pague com Pix no Google Chrome sem trocar de app</translation>
 <translation id="4238607350028440048">Me ajude na preparação para uma entrevista fazendo perguntas como se você fosse o gerente de contratação</translation>
+<translation id="4239215166147486528">Salvar carteira de habilitação com segurança na Carteira do Google</translation>
 <translation id="4239799716689808527">Rótulos</translation>
 <translation id="424063167283213501">Salvar número do programa de passageiro conhecido (KTN)</translation>
 <translation id="4241830393007970744">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito.</translation>
@@ -1996,6 +2007,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4407758156081352648">Por segurança, sua organização não permite que senhas sejam reutilizadas no Chrome. As senhas no Chrome são criptografadas para proteger a privacidade do usuário.</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="4409556632583862731">Nova conversa</translation>
+<translation id="4410614037742891410">Atualizar documento de identificação com segurança na Carteira do Google</translation>
 <translation id="4412074349188076601">Esta configuração foi marcada como instalável, mas nenhuma imagem foi fornecida para essa arquitetura. Por isso, ela não pode ser instalada.</translation>
 <translation id="4412377069090572315">O que estão dizendo</translation>
 <translation id="4414515549596849729">cookies e dados de sites</translation>
@@ -2209,9 +2221,11 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4800132727771399293">Verifique sua data de validade e seu CVC e tente novamente</translation>
 <translation id="4800546479758254481">RA permitida</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">Atualizar documento de identidade com segurança</translation>
 <translation id="4807098396393229769">Nome no cartão</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
+<translation id="4811696127853690432">Salvar veículo com segurança na Carteira do Google</translation>
 <translation id="4811918461974803225">Logotipo do Google Pay e da Affirm</translation>
 <translation id="4813512666221746211">Erro na rede</translation>
 <translation id="4814114628197290459">Excluir IBAN</translation>
@@ -2341,11 +2355,13 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5020862932518041900">Se você selecionar ou ignorar uma sugestão, o Chrome vai se adaptar para mostrar apenas o que é relevante para você</translation>
 <translation id="5021500396464456616">Entre em contato com a pessoa que enviou o link</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
+<translation id="502229363433123770">Salvar número de retificação com segurança</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
 <translation id="5024171724744627792">Salve seu cartão para pagar mais rápido. Os detalhes dele são criptografados na sua Conta do Google.</translation>
 <translation id="5026121202864677765">Escreva minha carta de apresentação</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Salvar número de identificação do passageiro (KTN) com segurança na Carteira do Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> quer usar sua câmera e seu microfone</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Tamanho da fonte</translation>
@@ -2722,6 +2738,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5651323159439184939">Alimentação com trator</translation>
+<translation id="5653681867130739344">Atualizar documento de identidade com segurança na Carteira do Google</translation>
 <translation id="5654927323611874862">Código do relatório de erros enviado:</translation>
 <translation id="5654965123204121933">O URL não inclui a string de substituição <ph name="SEARCH_TERMS_REPLACEMENT" /> necessária: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -2834,6 +2851,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>
 <translation id="5869405914158311789">Não é possível acessar esse site</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
+<translation id="5872115357279348603">Atualizar número de identificação do passageiro (KTN) com segurança na Carteira do Google</translation>
 <translation id="5872215789867188990">O grupo de guias "<ph name="GROUP_TITLE" />" não está mais disponível</translation>
 <translation id="5872692522325383488">IBAN salvo</translation>
 <translation id="5879989559903563723">Não permitido no modo convidado</translation>
@@ -2857,6 +2875,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5914185423510719251">Salvar número de identificação do passageiro (KTN, na sigla em inglês) na Carteira do Google</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> adicionou esta guia</translation>
 <translation id="59174027418879706">Ativado</translation>
+<translation id="5917538780499455803">Salvar documento de identificação com segurança</translation>
 <translation id="5918847752193018339">Finalize suas compras mais rápido ao salvar os CVCs. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ativado</translation>
@@ -3163,6 +3182,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6415778972515849510">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Verifique se todos os dados pessoais ou empresariais importantes estão armazenados externamente.</translation>
+<translation id="6422648598133086441">Atualizar veículo com segurança na Carteira do Google</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Dobra janela</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3296,7 +3316,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6679354743514146922">O navegador Chrome está tentando preencher sua senha em <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vídeo salvo no Google Drive</translation>
 <translation id="6681790815630918386">CVC salvo</translation>
-<translation id="6686570026048064255">Para desativar a detecção de código Pix, acesse as <ph name="BEGIN_LINK1" />configurações do Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (simples)</translation>
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
@@ -3337,6 +3356,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
 <translation id="6743841972744298686">Configurações de sincronização</translation>
 <translation id="6745212570062463886">Preencha automaticamente seu nome e endereço de e-mail da Conta do Google</translation>
+<translation id="674580074662200768">Atualizar passaporte com segurança</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6753434778807740853">Excluir a entrada <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3496,6 +3516,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="7023765275461720661">Vincular a conta e pagar com <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">modificar as configurações para preenchimento de formas de pagamento</translation>
 <translation id="7031110846419387930">Informações sobre seu navegador, SO, dispositivo, softwares instalados, arquivos e endereços IP</translation>
+<translation id="7031356333130415891">Atualizar documento de identificação com segurança</translation>
 <translation id="7031646650991750659">quais apps do Google Play estão instalados.</translation>
 <translation id="7035705295266423040">O banco precisa confirmar sua identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar as configurações de privacidade da sua Conta do Google</translation>
@@ -3620,6 +3641,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 Mais detalhes:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Para excluir esses dados, acesse as configurações de gerenciamento</translation>
+<translation id="7253051586755429279">Atualizar número de retificação com segurança na Carteira do Google</translation>
 <translation id="7255540419660272073">Botão "Não gostei": pressione Enter para abrir um formulário e enviar um feedback detalhado sobre o motivo de você não ter gostado de <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bandeja traseira</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
@@ -3984,6 +4006,7 @@ Mais detalhes:
 <translation id="7860345425589240791">Insira a nova data de validade e o CVC que ficam na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Sair do site?</translation>
 <translation id="7862306158978555061">mostrar informações sensíveis</translation>
+<translation id="7863122976993412643">Salvar carteira de habilitação com segurança</translation>
 <translation id="7865448901209910068">Melhor velocidade</translation>
 <translation id="7865482168955081228">A tela de erro da opção Compre Agora, Pague Depois foi fechada.</translation>
 <translation id="7869655448736341731">Qualquer fim</translation>
@@ -4032,6 +4055,7 @@ Mais detalhes:
 <translation id="7943893128817522649">Pode pedir para fazer o download automático de vários arquivos</translation>
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para saber mais sobre os recursos do Chrome</translation>
+<translation id="7947964969544524438">Salvar número de identificação do passageiro (KTN) com segurança</translation>
 <translation id="7948579849190819732">Guia atual</translation>
 <translation id="7950027195171824198">Gerencie suas preferências de cookies nas configurações do Chrome</translation>
 <translation id="7951415247503192394">32 bits</translation>
@@ -4230,6 +4254,7 @@ Mais detalhes:
 <translation id="8297545700510100061">Os cookies e outros dados do site são usados para lembrar de você, por exemplo, para conectar sua conta ou personalizar anúncios. Se quiser gerenciar os cookies de todos os sites, acesse <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">Cartão salvo somente no dispositivo</translation>
+<translation id="8300302621078931927">Salvar documento de identificação com segurança na Carteira do Google</translation>
 <translation id="8301894345671534559">Inserir código</translation>
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -4440,6 +4465,8 @@ Mais detalhes:
 <translation id="8710842507289500830">Estilo da fonte</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8715198179991802709">O Chrome acabou de sinalizar um site que você estava tentando acessar. Responda a essa pesquisa de um minuto e ajude a melhorar esses avisos.</translation>
+<translation id="8716983145825913456">Salvar veículo com segurança</translation>
+<translation id="8717177139469452440">Salvar passaporte com segurança na Carteira do Google</translation>
 <translation id="8718314106902482036">Pagamento não concluído</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestão de pesquisa</translation>
 <translation id="8719528812645237045">Perfuração múltipla na parte superior</translation>
@@ -4541,6 +4568,7 @@ Mais detalhes:
 <translation id="888169490072887292">Encontre restaurantes com ambiente familiar e cardápio infantil</translation>
 <translation id="8883863364960302898">Pasta do Google Drive</translation>
 <translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
+<translation id="8889525327610245418">Atualizar carteira de habilitação com segurança na Carteira do Google</translation>
 <translation id="8891031436559779793">Você vai receber notificações se houver uma redução no preço em algum site.</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8894794286471754040">Borda grande primeiro</translation>
@@ -4778,6 +4806,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="978750072783101994">Os dados deste cartão serão preenchidos automaticamente para compras feitas no Chromium quando ele for salvo na Carteira do Google</translation>
 <translation id="979107176848483472">Seu navegador e seu perfil são gerenciados por <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">Off-line</translation>
+<translation id="98237783946365638">Salvar documento de identidade com segurança na Carteira do Google</translation>
 <translation id="983587187183716432">Botão <ph name="AI_ENGINE_NAME" />. Pressione Enter para perguntar ao <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Formas de pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Esse erro será exibido se a data e a hora do computador ou dispositivo móvel estiverem incorretas.&lt;/p&gt;

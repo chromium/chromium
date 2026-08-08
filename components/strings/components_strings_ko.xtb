@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">주소창 및 검색창</translation>
 <translation id="2826760142808435982">이 연결은 <ph name="CIPHER" />을(를) 사용하여 암호화되고 인증되며 <ph name="KX" />을(를) 키 교환 매커니즘으로 사용합니다.</translation>
 <translation id="2828797285817981634">현재 움직임 감지 센서가 허용되어 있습니다</translation>
-<translation id="2835170189407361413">서식 지우기</translation>
 <translation id="2835907903001172712">브라우저 개요</translation>
 <translation id="2837891525090413132">키보드 잠금 및 사용을 요청할 수 있음</translation>
 <translation id="2839032553903800133">알림 차단됨</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome 브라우저가 <ph name="APP_NAME" />에서 비밀번호를 입력하려고 합니다.</translation>
 <translation id="668132230070712111">동영상이 Google Drive에 저장됨</translation>
 <translation id="6681790815630918386">CVC 저장됨</translation>
-<translation id="6686570026048064255">Pix 코드 감지를 사용 중지하려면 <ph name="BEGIN_LINK1" />Chrome 설정<ph name="END_LINK1" />으로 이동하세요</translation>
 <translation id="6687230248707087982">봉투(일반)</translation>
 <translation id="6687335167692595844">글꼴 크기 요청됨</translation>
 <translation id="6688743156324860098">업데이트…</translation>
@@ -4437,6 +4435,7 @@
 <translation id="8708134712139312373">블루투스 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="8710842507289500830">글꼴 스타일</translation>
 <translation id="8712637175834984815">확인</translation>
+<translation id="8715198179991802709">Chrome에서 방금 방문하려고 한 웹사이트를 신고했습니다. 1분 정도 소요되는 설문조사에 참여하여 이러한 경고를 개선하는 데 도움을 주세요.</translation>
 <translation id="8718314106902482036">결제가 완료되지 않음</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, 추천 검색어</translation>
 <translation id="8719528812645237045">상단 다공 펀칭</translation>

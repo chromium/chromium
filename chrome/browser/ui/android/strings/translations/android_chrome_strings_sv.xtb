@@ -116,6 +116,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1414919006379339073">Stäng aktuellt fönster</translation>
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1432581352905426595">Hantera sökmotorer</translation>
 <translation id="1435593198351412143">Öppna PDF-filer automatiskt</translation>
 <translation id="1437543266176261764">Körs i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisera bevakade produkter under Bokmärken</translation>
@@ -1538,6 +1539,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7182520625618447753">Anpassa surfupplevelsen genom att flytta adressfältet överst eller nederst på skärmen</translation>
 <translation id="7183517696921903380">Arbetsbladet för appfilter har öppnats.</translation>
 <translation id="7186568385131859684">Styr hur webbhistoriken används tillsammans med din andra data i Googles tjänster</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Tryck på ^W igen för att stänga den fästa fliken}other{Tryck på ^W igen för att stänga de fästa flikarna}}</translation>
 <translation id="7190921792980745354">Vill du blockera <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bör ändra detta nu}other{Du bör ändra dessa nu}}</translation>
@@ -1986,6 +1988,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8995521496079646922">Apparna du valde används som standard. Om en app inte redan finns på enheten laddas den ned inom kort.</translation>
 <translation id="8996847606757455498">Välj en annan leverantör</translation>
 <translation id="8998837250940831980">Det gick inte att minimera fliken. Försök igen senare.</translation>
+<translation id="9000089900434778519">Din sökmotor är <ph name="DSE_NAME" />. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="9001604755921395912">Öppna i Chrome-inkognitoflik</translation>
 <translation id="9010094279589497751">Öppna Gemini snabbt när du behöver den</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>

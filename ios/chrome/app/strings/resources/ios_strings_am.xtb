@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">ከሰረዙት ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ከሁሉም መሣሪያዎች ይሰረዛል።</translation>
 <translation id="2424805048070062787">በዚህ ትር ላይ ይቀጥሉ</translation>
 <translation id="2426805022920575512">ሌላ መለያ ይምረጡ</translation>
+<translation id="2428543302546523788">የንባብ ሁነታ በርቶ ሳለ አገናኞችን አሳይ</translation>
 <translation id="243275146591958220">ማውረድ ይቅር</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2434918313224755415">ማንነት የማያሳውቅ ውስጥ ለማሰስ ወደ ግራ ማሸብለል ይችላሉ።</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">በGemini በChrome ውስጥ ምን ማድረግ እችላለሁ?</translation>
 <translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
 <translation id="247430852844518481">ይህን ገፅ በኋላ እንደገና ለመጎብኘት አስታዋሽ ማቀናበር ይችላሉ</translation>
+<translation id="2476554421818031422">የተሻሻለ ራስ-ሙላን ለማሻሻል እያገዙ ነው</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2484459871750294497">እንዴት ይሄን ባህሪ ላንቃው?</translation>
@@ -2068,6 +2070,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="78146569776629510">ውርዶች</translation>
 <translation id="7815852444315004084">ለአሁን ደብቅ</translation>
 <translation id="7825973332242257878">የትር ቡድኖች</translation>
+<translation id="7828344837949522075">የአስተያየት ጥቆማ አሳይ</translation>
 <translation id="7839994177130598711">የእርስዎ የቤተሰብ አባላት አሁን ወደ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> በመለያ ለመግባት Google የይለፍ ቃል አስተዳዳሪን ሲጠቀሙ አሁን የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላሉ።</translation>
 <translation id="7841180087127694526">የቀዱትን ጽሁፍ ይፈልጉ</translation>
 <translation id="7841418003178675048">በአዲሱ የትር ገፅዎ ላይ የትኛዎቹ ካርዶች እንደሚታዩ ይምረጡ።</translation>

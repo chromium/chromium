@@ -194,6 +194,7 @@
 <translation id="132301787627749051">ស្វែងរក​រូបភាព​ឃ្លីបបត</translation>
 <translation id="1323433172918577554">បង្ហាញច្រើនទៀត​</translation>
 <translation id="1330449323196174374">បត់ភ្ជិត​ផ្ទាំង​ខាងឆ្វេង</translation>
+<translation id="1330952240988133220">រក្សាទុកលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="133173645041092770">បិទ​គេហទំព័រ</translation>
 <translation id="1333745675627230582">លេង​ហ្គេមដាយណូស័រ Chrome</translation>
 <translation id="1333989956347591814">សកម្មភាពរបស់អ្នក<ph name="BEGIN_EMPHASIS" />នៅតែអាចមើលឃើញ<ph name="END_EMPHASIS" />ដោយ៖
@@ -342,6 +343,7 @@
 <translation id="1569487616857761740">បញ្ចូលកាល​បរិច្ឆេទ​ផុត​កំណត់</translation>
 <translation id="1569694109004336106">Google Chrome កំពុងព្យាយាម​បើក Windows Hello ដើម្បីបំពេញ​ពាក្យសម្ងាត់។</translation>
 <translation id="1569905000953679183">ការទាញយក​គោលការណ៍​ដំឡើង​កម្មវិធីបន្ថែម</translation>
+<translation id="1572383686781055412">ធ្វើបច្ចុប្បន្នភាព KTN ដោយសុវត្ថិភាព</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">កំពុង​ផ្ទៀងផ្ទាត់​វិធី​បង់ប្រាក់</translation>
 <translation id="1576277203042721907">ស្ថិតិទិញទំនិញ</translation>
@@ -398,6 +400,7 @@
 <translation id="1658918301167915956">ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="1662550410081243962">រក្សាទុក និងបំពេញ​វិធីបង់ប្រាក់</translation>
 <translation id="1662980953334786797">លំដាប់​ដូចគ្នា</translation>
+<translation id="1663578299724791827">រក្សាទុក KTN ដោយសុវត្ថិភាព</translation>
 <translation id="1663943134801823270">បណ្ណ និងអាសយដ្ឋានគឺបានមកពី Chrome ។ អ្នកអាចគ្រប់គ្រងពួកវាបាននៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="1664389769577564606">ប៉ូលីមែរសំយោគ Flexo</translation>
 <translation id="1667730174533834274">ផ្ទៀងផ្ទាត់​ថាជាអ្នក មុនពេល​អ្នក​ប្ដូរការកំណត់​បាន</translation>
@@ -405,6 +408,7 @@
 <translation id="1670861525135254448">រក្សាទុក​ព័ត៌មានយានជំនិះ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">គែមខ្លី​មុនគេ</translation>
+<translation id="1683083957814090281">ធ្វើបច្ចុប្បន្នភាពយានជំនិះដោយសុវត្ថិភាព</translation>
 <translation id="168693727862418163">តម្លៃគោលការណ៍នេះមិនត្រូវនឹងគំនូស​តាងរបស់វាទេ ហើយនឹងមិនត្រូវបានអើពើទេ។</translation>
 <translation id="168841957122794586">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេផ្ទុកសោគ្រីបខ្សោយ។</translation>
 <translation id="1688718429648938412">រក្សាទុក​កាតសមាជិក​ទៅក្នុង Wallet</translation>
@@ -871,6 +875,7 @@
 <translation id="2469153820345007638">លំដាប់លំដោយ 1-to-N</translation>
 <translation id="24699311393038040">ក្រដាស (ស្រោប)</translation>
 <translation id="2471632709106952369">តារាងប្រៀបធៀប</translation>
+<translation id="2472396075297339227">រក្សាទុកលេខអ្នកដំណើរដែលស្គាល់ដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="2477607419416067650">ទិន្នន័យ Google ផ្សេង​ទៀត</translation>
 <translation id="247903268499247848">មិនអនុញ្ញាតឱ្យប្រើសេនស័រចាប់ចលនា និងពន្លឺទេ</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
@@ -929,6 +934,7 @@
 <translation id="2553352788023127673">អាចលុប​ប្រវត្តិ​ស្វែងរក និង​ពាក្យ​សម្ងាត់​នៅក្នុង​ការកំណត់​ការគ្រប់គ្រង​របស់​ពួកវាបាន</translation>
 <translation id="2553853292994445426">ពិនិត្យការកំណត់ DNS សុវត្ថិភាពរបស់អ្នក។ អ្នកប្រហែលជាបាន​កំណត់រចនាសម្ព័ន្ធម៉ាស៊ីនមេ DNS សុវត្ថិភាព ដែលមានបញ្ហាក្នុងការតភ្ជាប់។</translation>
 <translation id="2555855727505718984">ការបំពេញ​ស្វ័យប្រវត្តិ​នឹងមិន​មានព័ត៌មាននេះ​នៅលើ​ឧបករណ៍នេះ ដើម្បីជួយ​បំពេញ​ទម្រង់​បែបបទ​ឡើយ</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">បកក្រោយការកែប្រែ</translation>
 <translation id="2559566667529177711">ច្រើនស្រទាប់</translation>
 <translation id="2570734079541893434">គ្រប់គ្រង​ការកំណត់</translation>
@@ -1065,7 +1071,6 @@
 <translation id="2824775600643448204">អាសយដ្ឋាន និងរបាស្វែងរក</translation>
 <translation id="2826760142808435982">ការភ្ជាប់ត្រូវបានអ៊ីនគ្រីប និងសម្គាល់អត្តសញ្ញាណ ដោយប្រើ <ph name="CIPHER" /> និងប្រើ <ph name="KX" /> ជាយន្តការផ្តោះប្តូរសោ។</translation>
 <translation id="2828797285817981634">អនុញ្ញាតឱ្យប្រើសេនស័រចាប់ចលនាឥឡូវនេះ</translation>
-<translation id="2835170189407361413">ជម្រះបែបបទ</translation>
 <translation id="2835907903001172712">ទិដ្ឋភាពរួមនៃ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត</translation>
 <translation id="2837891525090413132">អាចស្នើឱ្យ​ចាក់សោ និង​ប្រើក្ដារចុច​របស់អ្នក</translation>
 <translation id="2839032553903800133">បាន​ទប់ស្កាត់​ការជូនដំណឹង</translation>
@@ -1329,6 +1334,7 @@
 <translation id="3273738040255912340">អ្នកគ្រប់គ្រង​របស់អ្នក​អាចធ្វើ​ការផ្លាស់ប្ដូរ​ចំពោះ​កម្រងព័ត៌មាន និង​កម្មវិធីរុករក​តាម​អ៊ីនធឺណិត​របស់អ្នក​ពីចម្ងាយ វិភាគ​ព័ត៌មាន​អំពី​កម្មវិធីរុករក​តាម​អ៊ីនធឺណិត​តាមរយៈ​ការរាយការណ៍ និង​បំពេញ​កិច្ចការ​ដែលចាំបាច់​ផ្សេងទៀត។ សកម្មភាព​នៅលើឧបករណ៍នេះ​ក៏អាចត្រូវបាន​គ្រប់គ្រងនៅក្រៅ Chromium ផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">"រក្សាទុក IBAN" ត្រូវ​បានបើក​ពេញអេក្រង់។</translation>
 <translation id="327455571215090823">ការបំពេញ​ស្វ័យប្រវត្តិ​កាន់តែ​ឆ្លាតវៃ​ដែលរក្សា​ជាឯកជន</translation>
+<translation id="3280440382387335343">ធ្វើបច្ចុប្បន្នភាពលិខិតឆ្លងដែនដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​នេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​ទាំងនេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="3282085321714087552">ស្ថាប័នរបស់អ្នក <ph name="ENROLLMENT_DOMAIN" /> បានបញ្ជូនព័ត៌មានមួយចំនួនទៅគេហទំព័រខាងក្រោមដូចជា ការកំណត់ ឬគោលការណ៍ជាដើម។</translation>
 <translation id="3286372614333682499">បញ្ឈរ​</translation>
@@ -1469,6 +1475,7 @@
 <translation id="3543597750097719865">ហត្ថលេខា X9.62 ECDSA ជាមួយ SHA-512</translation>
 <translation id="3543935938072367282">បង់ប្រាក់​ចេញបាន​កាន់តែរហ័ស​ដោយប្រើ​ការបំពេញ​ស្វ័យប្រវត្តិ</translation>
 <translation id="3547442767634383572">ទិដ្ឋភាព​រួមនៃកម្រងព័ត៌មានការងារ</translation>
+<translation id="3547673868874844776">រក្សាទុកអត្តសញ្ញាណប័ណ្ណដោយសុវត្ថិភាព</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
 <translation id="3549904448933807997">ព័ត៌មាន​អំពី​កម្មវិធីរុករកតាមអ៊ីនធឺណិត និង​កម្រងព័ត៌មាន (រួមទាំង​កម្រងព័ត៌មានការងារ និង​ផ្ទាល់ខ្លួន)</translation>
 <translation id="3552155506104542239">សូមប្រុងប្រយ័ត្ន៖ គោលការណ៍នេះ​ផ្ទុយគ្នានឹង <ph name="POLICY_NAME" /> ហើយនឹង​មិនមាន​ឥទ្ធិពលលើ​កម្មវិធី Android ទេ។ បើមិន​ដូច្នោះទេ គោលការណ៍នេះ​កំពុង​ដំណើរការ​ដូចការរំពឹងទុក។</translation>
@@ -1677,6 +1684,7 @@
 <translation id="388632593194507180">បានរកឃើញ​ការឃ្លាំមើល</translation>
 <translation id="3886948180919384617">ទម្រគំនរទី 3</translation>
 <translation id="3890664840433101773">បញ្ចូល​អ៊ីមែល</translation>
+<translation id="3892626428170730309">រក្សាទុកលិខិតឆ្លងដែនដោយសុវត្ថិភាព</translation>
 <translation id="3897092660631435901">ម៉ឺនុយ</translation>
 <translation id="3901925938762663762">កាតនេះផុតកំណត់។</translation>
 <translation id="390391808978419508">ការបើក​អស់ម៉ោងហើយ</translation>
@@ -1832,6 +1840,7 @@
 <translation id="4153858337812834972">ផ្ទាំង​ថ្មីៗបំផុត</translation>
 <translation id="4154277373259957087">ឥឡូវនេះ Chrome នឹង​ផ្ទៀងផ្ទាត់​ថាជាអ្នក មុននឹងបំពេញ​វិធីបង់ប្រាក់។ អ្នកអាច​ធ្វើបច្ចុប្បន្នភាពលក្ខណៈនេះបានគ្រប់ពេល​នៅក្នុង<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />។</translation>
 <translation id="4157273919218514718">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ <ph name="BEGIN_LINK" />គ្រប់គ្រង​ការកំណត់<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">ធ្វើបច្ចុប្បន្នភាពបណ្ណ​បើកបរដោយសុវត្ថិភាព</translation>
 <translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4165422751765527461">បើក​អត្ថបទមជ្ឈមណ្ឌល​ជំនួយ​នៅក្នុង​ផ្ទាំងថ្មី</translation>
 <translation id="4165986682804962316">ការកំណត់គេហទំព័រ</translation>
@@ -1846,6 +1855,7 @@
 <translation id="4176463684765177261">បានបិទដំណើរការ</translation>
 <translation id="4178863275556660738">បង់ប្រាក់​តាម​វិធីបង់ប្រាក់​ដែលមិន​ប្រើកាត</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">ធ្វើបច្ចុប្បន្នភាពលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាព</translation>
 <translation id="4186035307311647330">ឈប់​តាមដាន​តម្លៃ</translation>
 <translation id="4190446002599583608">ការស្វែងរកក្នុងប្រវត្តិ ដែលដំណើរការដោយ AI</translation>
 <translation id="4191334393248735295">ប្រវែង</translation>
@@ -1887,6 +1897,7 @@
 <translation id="4231448684371260244">8 x 13 អ៊ីង</translation>
 <translation id="4234996384188431444">ទូទាត់តាម Pix ដោយមិនប្ដូរកម្មវិធីនៅក្នុង Google Chrome</translation>
 <translation id="4238607350028440048">ជួយខ្ញុំក្នុងការហាត់សម្ភាសន៍ដោយសួរសំណួរមកខ្ញុំ ដោយអ្នកប្រៀបដូចជាអ្នកគ្រប់គ្រងផ្នែកជ្រើសរើសបុគ្គលិក</translation>
+<translation id="4239215166147486528">រក្សាទុក​បណ្ណ​បើកបរដោយសុវត្ថិភាព​នៅក្នុង Google Wallet</translation>
 <translation id="4239799716689808527">ស្លាក</translation>
 <translation id="424063167283213501">រក្សាទុក​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="4241830393007970744">អ្នកវាយប្រហារ​នៅលើ​គេហទំព័រ​ដែលអ្នកបានសាកល្បងចូលមើល អាចបញ្ឆោតអ្នក​ឱ្យដំឡើង​កម្មវិធី ឬ​បង្ហាញអ្វីៗ ដូចជា​ពាក្យសម្ងាត់ លេខទូរសព្ទ ឬ​លេខកាតឥណទាន​របស់អ្នក​ជាដើម។</translation>
@@ -1999,6 +2010,7 @@
 <translation id="4407758156081352648">ដើម្បីរក្សាសុវត្ថិភាព ស្ថាប័នរបស់អ្នកមិនអនុញ្ញាតឱ្យប្រើពាក្យ​សម្ងាត់ឡើងវិញនៅក្នុង Chrome ទេ។ ពាក្យ​សម្ងាត់នៅក្នុង Chrome ត្រូវបានអ៊ីនគ្រីប ដើម្បីការពារឯកជនភាពរបស់អ្នកប្រើប្រាស់។</translation>
 <translation id="4409271659088619928">ម៉ាស៊ីន​ស្វែងរករបស់អ្នកគឺ <ph name="DSE" />។ មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
 <translation id="4409556632583862731">កម្រងសារ​ថ្មី</translation>
+<translation id="4410614037742891410">ធ្វើបច្ចុប្បន្នភាពកាតសម្គាល់ខ្លួនដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="4412074349188076601">ការកំណត់​រចនាសម្ព័ន្ធ​នេះ​ត្រូ​វបាន​សម្គាល់ថា​អាច​ដំឡើង​បាន ប៉ុន្តែ​មិនមាន​រូបភាពដែល​ត្រូវ​បាន​ផ្ដល់​ឱ្យ​សម្រាប់​ស្ថាបត្យកម្ម​នេះ​ទេ ដូច្នេះ​​មិន​អាច​ដំឡើង​វា​បាន​ទេ។</translation>
 <translation id="4412377069090572315">អ្វីដែលគេកំពុងនិយាយ</translation>
 <translation id="4414515549596849729">ទិន្នន័យ​គេហទំព័រ និងខូគី</translation>
@@ -2213,9 +2225,11 @@
 <translation id="4800132727771399293">ពិនិត្យកាលបរិចេ្ឆទផុតកំណត់ និងលេខកូដ CVC ហើយព្យាយាមម្តងទៀត</translation>
 <translation id="4800546479758254481">បាន​អនុញ្ញាត​ឱ្យប្រើ AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">ធ្វើបច្ចុប្បន្នភាពអត្តសញ្ញាណប័ណ្ណដោយសុវត្ថិភាព</translation>
 <translation id="4807098396393229769">ឈ្មោះនៅលើកាត</translation>
 <translation id="4809079943450490359">ការណែនាំពីអ្នកគ្រប់គ្រងឧបករណ៍របស់អ្នក៖</translation>
 <translation id="4811450222531576619">ស្វែងយល់​អំពី​ប្រភព និង​ប្រធានបទ​របស់ទំព័រ​នេះ</translation>
+<translation id="4811696127853690432">រក្សាទុកយានជំនិះដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="4811918461974803225">Google Pay, និមិត្តសញ្ញា Affirm</translation>
 <translation id="4813512666221746211">កំហុសឆ្គងបណ្តាញ</translation>
 <translation id="4814114628197290459">លុប IBAN</translation>
@@ -2345,11 +2359,13 @@
 <translation id="5020862932518041900">ប្រសិនបើ​អ្នកជ្រើសរើស ឬ​មិនអើពើនឹង​ការណែនាំទេ Chrome នឹង​កែសម្រួល ដើម្បី​ធានាថា​អ្នកមើលឃើញ​តែអ្វីដែល​ពាក់ព័ន្ធនឹង​អ្នកប៉ុណ្ណោះ</translation>
 <translation id="5021500396464456616">សូម​ទាក់ទង​ទៅអ្នកដែលបានផ្ញើ​តំណនេះ</translation>
 <translation id="5021557570875267742">តាមដាន​តម្លៃ​ដោយប្រើ Chrome</translation>
+<translation id="502229363433123770">រក្សាទុកលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាព</translation>
 <translation id="5023310440958281426">ពិនិត្យគោលការណ៍អ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5024171724744627792">បង់​ប្រាក់​លឿនជាងមុន នៅពេលកាតរបស់អ្នកត្រូវបានរក្សាទុក។ ព័ត៌មានលម្អិតអំពីកាតត្រូវបានអ៊ីនគ្រីបនៅក្នុងគណនី Google របស់អ្នក។</translation>
 <translation id="5026121202864677765">សរសេរលិខិតណែនាំខ្លួនរបស់ខ្ញុំ</translation>
 <translation id="5030338702439866405">ចេញដោយ</translation>
 <translation id="503069730517007720">តម្រូវឱ្យមានវិញ្ញាបនបត្រគោលសម្រាប់ "<ph name="SOFTWARE_NAME" />" ប៉ុន្តែមិនចាំបាច់ដំឡើងទេ។ អ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកគួរតែមើលការណែនាំអំពីការកំណត់រចនាសម្ព័ន្ធសម្រាប់ "<ph name="SOFTWARE_NAME" />" ដើម្បីដោះស្រាយបញ្ហានេះ។ <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">រក្សាទុក KTN ដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ចង់ប្រើកាមេរ៉ា និងមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">ទំហំពុម្ពអក្សរ</translation>
@@ -2726,6 +2742,7 @@
 <translation id="5648166631817621825">7 ថ្ងៃមុន</translation>
 <translation id="5649053991847567735">ទាញយកស្វ័យប្រវត្តិ</translation>
 <translation id="5651323159439184939">ចោះរន្ធសងខាង</translation>
+<translation id="5653681867130739344">ធ្វើបច្ចុប្បន្នភាពអត្តសញ្ញាណប័ណ្ណដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="5654927323611874862">លេខសម្គាល់របាយការណ៍អំពីការគាំងដែលបានបង្ហោះ៖</translation>
 <translation id="5654965123204121933">URL មិនរួមបញ្ចូលជួរអក្សរជំនួសដែលបានតម្រូវ <ph name="SEARCH_TERMS_REPLACEMENT" />៖ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">អ៊ីម៉េល</translation>
@@ -2838,6 +2855,7 @@
 <translation id="5866898949289125849">អ្នកកំពុងមើល​ទំព័រឧបករណ៍​របស់​អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="5869405914158311789">គេហទំព័រនេះមិនអាចចូលបានទេ</translation>
 <translation id="5869522115854928033">ពាក្យសម្ងាត់ដែលបានរក្សាទុក</translation>
+<translation id="5872115357279348603">ធ្វើបច្ចុប្បន្នភាព KTN ដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="5872215789867188990">មិនអាចប្រើក្រុមផ្ទាំង "<ph name="GROUP_TITLE" />" បានទៀតទេ</translation>
 <translation id="5872692522325383488">បាន​រក្សាទុក IBAN</translation>
 <translation id="5879989559903563723">មិន​ត្រូវ​បាន​អនុញ្ញាត​នៅ​ក្នុង​មុខងារភ្ញៀវ​ទេ</translation>
@@ -2861,6 +2879,7 @@
 <translation id="5914185423510719251">រក្សាទុក KTN នៅក្នុង Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> បានបញ្ចូល​ផ្ទាំងនេះ</translation>
 <translation id="59174027418879706">បានបើកដំណើរការ</translation>
+<translation id="5917538780499455803">រក្សាទុកកាតសម្គាល់ខ្លួនដោយសុវត្ថិភាព</translation>
 <translation id="5918847752193018339">បង់ប្រាក់ចេញ​បានកាន់តែរហ័ស នៅពេល​រក្សាទុក CVC របស់អ្នក។ <ph name="LINK_BEGIN" />លុប​លេខកូដ​សុវត្ថិភាព​ដែលបានរក្សាទុក<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">បើក</translation>
@@ -3167,6 +3186,7 @@
 <translation id="6415778972515849510">Chromium អាច​ជួយ​អ្នក​ក្នុងការការពារ​គណនី Google និង​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​។</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ត្រូវ​ប្រាកដថា ទិន្នន័យ​ផ្ទាល់ខ្លួន ឬ​អាជីវកម្ម​សំខាន់​ត្រូវបាន​រក្សាទុក​នៅ​ខាងក្រៅ។</translation>
+<translation id="6422648598133086441">ធ្វើបច្ចុប្បន្នភាពយានជំនិះដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="6425092077175753609">សម្ភារៈ</translation>
 <translation id="6427730057873428458">បត់ជា​ផ្ទាំងៗមានសណ្ឋានជាទ្វារ</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3300,7 +3320,6 @@
 <translation id="6679354743514146922">កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome កំពុងព្យាយាមបំពេញពាក្យ​សម្ងាត់របស់អ្នកនៅលើ <ph name="APP_NAME" />។</translation>
 <translation id="668132230070712111">បានរក្សាទុក​វីដេអូ​ទៅ Google ថាស</translation>
 <translation id="6681790815630918386">បានរក្សាទុក CVC</translation>
-<translation id="6686570026048064255">ដើម្បីបិទ​ការចាប់ដឹង​កូដ Pix សូមចូល​ទៅកាន់ <ph name="BEGIN_LINK1" />"ការ​កំណត់ Chrome"<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ស្រោមសំបុត្រ (ធម្មតា)</translation>
 <translation id="6687335167692595844">បានស្នើសុំ​ទំហំពុម្ពអក្សរ</translation>
 <translation id="6688743156324860098">ធ្វើបច្ចុប្បន្នភាព…</translation>
@@ -3341,6 +3360,7 @@
 <translation id="674375294223700098">កំហុសឆ្គងវិញ្ញាបនប័ត្រម៉ាស៊ីនមេមិនស្គាល់។</translation>
 <translation id="6743841972744298686">ការកំណត់ការធ្វើសមកាលកម្ម</translation>
 <translation id="6745212570062463886">បំពេញ​ឈ្មោះ និង​អាសយដ្ឋានអ៊ីមែល​របស់អ្នក​ពី​គណនី Google របស់អ្នក​ដោយ​ស្វ័យប្រវត្តិ</translation>
+<translation id="674580074662200768">ធ្វើបច្ចុប្បន្នភាពលិខិតឆ្លងដែនដោយសុវត្ថិភាព</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">តម្លៃគោលការណ៍</translation>
 <translation id="6753434778807740853">លុបធាតុ <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3500,6 +3520,7 @@
 <translation id="7023765275461720661">ភ្ជាប់​គណនី រួច​បង់ប្រាក់​តាមរយៈ <ph name="BNPL_ISSUER_NAME" /> ឬ?</translation>
 <translation id="7030164307377592766">កែប្រែ​ការកំណត់​សម្រាប់​ការបំពេញ​វិធីបង់ប្រាក់</translation>
 <translation id="7031110846419387930">ព័ត៌មាន​អំពី​កម្មវិធីរុករក​តាម​អ៊ីនធឺណិត ប្រព័ន្ធ​ប្រតិបត្តិការ ឧបករណ៍ កម្មវិធី​ដែលបាន​ដំឡើង ឯកសារ និង​អាសយដ្ឋាន IP របស់អ្នក</translation>
+<translation id="7031356333130415891">ធ្វើបច្ចុប្បន្នភាពកាតសម្គាល់ខ្លួនដោយសុវត្ថិភាព</translation>
 <translation id="7031646650991750659">ថាតើកម្មវិធី Google Play ណាខ្លះដែលអ្នកបានដំឡើង</translation>
 <translation id="7035705295266423040">ធនាគាររបស់អ្នកចង់ផ្ទៀងផ្ទាត់ថាពិតជាអ្នក</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីគ្រប់គ្រង​ការកំណត់​ឯកជនភាព​គណនី Google របស់អ្នក</translation>
@@ -3623,6 +3644,7 @@
 ព័ត៌មាន​លម្អិត​បន្ថែម៖
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">ដើម្បីលុប​ទិន្នន័យនេះ សូម​ចូលទៅកាន់​ការកំណត់​ការគ្រប់គ្រង​របស់វា</translation>
+<translation id="7253051586755429279">ធ្វើបច្ចុប្បន្នភាពលេខប៉ះប៉ូវកំហុសដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="7255540419660272073">ប៊ូតុង​ឱ្យមេដៃ​ចុះ, ចុច Enter ដើម្បីបើក​ទម្រង់​បែបបទ​សម្រាប់​ដាក់បញ្ជូន​មតិកែលម្អ​លម្អិត​អំពី​មូលហេតុ​ដែលអ្នក​មិនចូលចិត្ត, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">ទម្រ​ខាងក្រោយ</translation>
 <translation id="725866823122871198">ការភ្ជាប់ឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងកុំព្យូទ័ររបស់អ្នក (<ph name="DATE_AND_TIME" />)មិនត្រឹមត្រូវ។</translation>
@@ -3988,6 +4010,7 @@
 <translation id="7860345425589240791">បញ្ចូលកាលបរិច្ឆេទ​ផុត​កំណត់​ថ្មី​ និង​ CVC របស់​អ្នកដែលស្ថិត​នៅ<ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">ចាកចេញពី​ទំព័រ?</translation>
 <translation id="7862306158978555061">បង្ហាញ​ព័ត៌មានរសើប</translation>
+<translation id="7863122976993412643">រក្សាទុកបណ្ណ​បើកបរដោយសុវត្ថិភាព</translation>
 <translation id="7865448901209910068">ល្បឿន​ល្អបំផុត</translation>
 <translation id="7865482168955081228">អេក្រង់​បញ្ហា "ទិញឥឡូវនេះ ទូទាត់ពេលក្រោយ" ត្រូវបានបិទ។</translation>
 <translation id="7869655448736341731">មួយណាក៏បាន</translation>
@@ -4036,6 +4059,7 @@
 <translation id="7943893128817522649">អាច​ស្នើសុំទាញយក​ឯកសារច្រើន​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="7947285636476623132">ពិនិត្យមើល​ឆ្នាំផុត​កំណត់​របស់អ្នក​ រួច​ព្យាយាម​ម្តង​ទៀត​</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​ស្វែងយល់អំពី​មុខងារ Chrome</translation>
+<translation id="7947964969544524438">រក្សាទុកលេខអ្នកដំណើរដែលស្គាល់ដោយសុវត្ថិភាព</translation>
 <translation id="7948579849190819732">ផ្ទាំង​បច្ចុប្បន្ន</translation>
 <translation id="7950027195171824198">គ្រប់គ្រងចំណូលចិត្តខូគីរបស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="7951415247503192394">(32-ប៊ីត)</translation>
@@ -4235,6 +4259,7 @@
 <translation id="8297545700510100061">ខូគី និងទិន្នន័យគេហទំព័រផ្សេងទៀតត្រូវបានប្រើ ដើម្បីចងចាំអ្នក ឧទាហរណ៍ ដើម្បីនាំអ្នកចូលគណនី ឬដើម្បីកំណត់​ការផ្សាយ​ពាណិជ្ជកម្ម​ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ដើម្បី​គ្រប់គ្រង​ខូគី​សម្រាប់​គេហទំព័រ​ទាំងអស់ សូម​មើល<ph name="SETTINGS" />។</translation>
 <translation id="8298115750975731693">Wi-Fi ដែលអ្នកកំពុងប្រើ (<ph name="WIFI_NAME" />) អាចតម្រូវឲ្យអ្នកទៅកាន់ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />។</translation>
 <translation id="8298399736867690281">កាត​ត្រូវបាន​រក្សាទុក​នៅលើ​ឧបករណ៍​តែប៉ុណ្ណោះ</translation>
+<translation id="8300302621078931927">រក្សាទុកកាតសម្គាល់ខ្លួនដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="8301894345671534559">បញ្ចូល​​​កូដ</translation>
 <translation id="830498451218851433">បត់​ពាក់កណ្ដាល</translation>
 <translation id="830868413617744215">បែតា</translation>
@@ -4443,6 +4468,9 @@
 <translation id="8708134712139312373">អាចស្នើសុំ​ភ្ជាប់ជាមួយ​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="8710842507289500830">រចនាប័ទ្ម​ពុម្ពអក្សរ</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
+<translation id="8715198179991802709">Chrome ទើបតែបានរាយការណ៍គេហទំព័រដែលអ្នកកំពុងព្យាយាមចូលមើល។ ជួយយើងក្នុងការកែលម្អសារប្រុងប្រយ័ត្នទាំងនេះដោយចូលរួមការស្ទង់មតិរយៈពេល 1 នាទី។</translation>
+<translation id="8716983145825913456">រក្សាទុកយានជំនិះដោយសុវត្ថិភាព</translation>
+<translation id="8717177139469452440">រក្សាទុកលិខិតឆ្លងដែនដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="8718314106902482036">ការបង់ប្រាក់​មិនទាន់​បញ្ចប់​ទេ</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, ការស្វែងរកដែលបានណែនាំ​</translation>
 <translation id="8719528812645237045">ចោះ​ច្រើនរន្ធ​ខាងលើ</translation>
@@ -4544,6 +4572,7 @@
 <translation id="888169490072887292">ស្វែងរកភោជនីយដ្ឋានដែលស័ក្ដិសមសម្រាប់គ្រួសារដែលមានម៉ឺនុយសម្រាប់កុមារ</translation>
 <translation id="8883863364960302898">ថត Google ថាស</translation>
 <translation id="8884537526797090108">មិនអាចថតខ្លឹមសារសម្ងាត់បានទេ</translation>
+<translation id="8889525327610245418">ធ្វើបច្ចុប្បន្នភាព​បណ្ណ​បើកបរដោយសុវត្ថិភាព​នៅក្នុង Google Wallet</translation>
 <translation id="8891031436559779793">អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង ប្រសិនបើ​តម្លៃធ្លាក់ចុះ​នៅលើ​គេហទំព័រ​ណាមួយ។</translation>
 <translation id="8891727572606052622">របៀបប្រូកស៊ីគ្មានសុពលភាព។</translation>
 <translation id="8894794286471754040">គែមវែង​មុនគេ</translation>
@@ -4779,6 +4808,7 @@
 <translation id="978750072783101994">បំពេញ​កាតនេះ​ដោយ​ស្វ័យប្រវត្តិ​សម្រាប់​ការទិញ​ដែលបាន​ធ្វើឡើង​នៅក្នុង Chromium នៅពេល​ដែលវា​ត្រូវបាន​រក្សាទុក​នៅក្នុង Google Wallet</translation>
 <translation id="979107176848483472">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត និង​កម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">ក្រៅបណ្តាញ</translation>
+<translation id="98237783946365638">រក្សាទុកអត្តសញ្ញាណប័ណ្ណដោយសុវត្ថិភាពនៅក្នុង Google Wallet</translation>
 <translation id="983587187183716432">ប៊ូតុង<ph name="AI_ENGINE_NAME" />, ចុច Enter ដើម្បីសួរ<ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>
 <translation id="985199708454569384">&lt;p&gt;អ្នកនឹង​មើលឃើញ​បញ្ហានេះ ប្រសិនបើ​ម៉ោង និង​កាលបរិច្ឆេទ​របស់ឧបករណ៍​ចល័ត ឬ​កុំព្យូទ័រ​របស់អ្នក​មិនត្រឹមត្រូវ។&lt;/p&gt;

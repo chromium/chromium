@@ -116,6 +116,7 @@
 <translation id="1414919006379339073">關閉目前的視窗</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1435593198351412143">自動開啟 PDF</translation>
 <translation id="1437543266176261764">正在 <ph name="APP_NAME" /> 中執行</translation>
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
@@ -1537,6 +1538,7 @@
 <translation id="7182520625618447753">將網址列的位置改為頁頂或頁底，自訂瀏覽體驗</translation>
 <translation id="7183517696921903380">應用程式篩選器工作表開咗。</translation>
 <translation id="7186568385131859684">控制瀏覽記錄和其他資料在各項 Google 服務中配合使用的方式</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{再按 ^W 即可關閉固定分頁}other{再按 ^W 即可關閉固定分頁}}</translation>
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{你應立即更改密碼}other{你應立即更改密碼}}</translation>
@@ -1985,6 +1987,7 @@
 <translation id="8995521496079646922">根據預設，系統將使用你所選的應用程式。如果裝置沒有該應用程式，就會隨即下載。</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998837250940831980">無法將分頁縮到最小，請稍後再試。</translation>
+<translation id="9000089900434778519">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="9001604755921395912">在 Chrome 無痕式分頁中開啟</translation>
 <translation id="9010094279589497751">需要時快速開啟 Gemini</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>

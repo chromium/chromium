@@ -2054,6 +2054,7 @@
 <translation id="2598710988533271874">新しい Chrome をご利用いただけます</translation>
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 個の安全でない拡張機能をオフにしました}other{{NUM_SITES} 個の安全でない拡張機能をオフにしました}}</translation>
+<translation id="2603121359676416582">このページに対する操作</translation>
 <translation id="2604129989323098489">サイトは通常、ウィンドウをインテリジェントに開いて配置できるように（ドキュメントや全画面コンテンツを並べて表示するなど）、ディスプレイに関する情報をリクエストします</translation>
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> の住所フォームを入力しました。</translation>
@@ -2966,6 +2967,7 @@
 <translation id="3285329711156774325">スキルを検索</translation>
 <translation id="3285500645985761267">関連サイトにグループ内のアクティビティの確認を許可する</translation>
 <translation id="328571385944182268">パスワードを保存しますか？</translation>
+<translation id="3285969135399641759">新しいスキルを習得</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
@@ -4379,7 +4381,7 @@
 <translation id="4362459470237309049">「.」キーを使用してマウスボタンを離す</translation>
 <translation id="4362871358537270439">サイドパネルに他のデバイスのタブを表示</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
-<translation id="4364129298304269786">著作権で保護されたコンテンツを再生するために、サイトでコンテンツ保護サービスが使用される場合があります</translation>
+<translation id="4364129298304269786">サイトがコンテンツ保護サービスを使用して、著作権保護コンテンツを再生する場合があります</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{ITEM_COUNT} 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
@@ -6368,6 +6370,7 @@
 <translation id="5939719276406088041">ショートカットの作成はできません</translation>
 <translation id="5939723110967488589">ツールバーに表示するボタンを選択してください</translation>
 <translation id="594048410531370124">認識できないキーです。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
+<translation id="5940614040566393493">アドバイスを求める</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{PASSWORD_COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> でページを検索</translation>

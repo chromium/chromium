@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">في حال حذف المجموعة، سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة.</translation>
 <translation id="2424805048070062787">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="2426805022920575512">اختيار حساب آخر</translation>
+<translation id="2428543302546523788">عرض الروابط عندما يكون "وضع القراءة" مفعَّلاً</translation>
 <translation id="243275146591958220">إلغاء التنزيل</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">يمكنك الانتقال لليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">‏كيف يمكنني الاستفادة من "Gemini في Chrome"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="247430852844518481">يمكنك ضبط تذكير للرجوع إلى هذه الصفحة لاحقًا</translation>
+<translation id="2476554421818031422">نتلقّى مساعدة منك في تطوير ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2484459871750294497">كيف يمكنني تفعيل هذه الميزة؟</translation>
@@ -2066,6 +2068,7 @@
 <translation id="78146569776629510">عمليات التنزيل</translation>
 <translation id="7815852444315004084">إخفاء الآن</translation>
 <translation id="7825973332242257878">مجموعات علامات التبويب</translation>
+<translation id="7828344837949522075">عرض الاقتراح</translation>
 <translation id="7839994177130598711">‏يمكن لأفراد عائلتك حاليًا استخدام اسم المستخدم وكلمة المرور عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">البحث عن النص الذي نسخته</translation>
 <translation id="7841418003178675048">يمكنك اختيار البطاقات التي تظهر لك في صفحة "علامة تبويب جديدة".</translation>

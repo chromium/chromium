@@ -1062,7 +1062,6 @@
 <translation id="2824775600643448204">ලිපිනය සහ සෙවීම් බාර් එක</translation>
 <translation id="2826760142808435982">සම්බන්ධතාවය සංකේතනය කර <ph name="CIPHER" /> භාවිතයෙන් සත්‍යාපනය කර ඇති අතර කේත හුවමාරු ක්‍රමවේදය ලෙස <ph name="KX" /> භාවිතා කරයි.</translation>
 <translation id="2828797285817981634">චලන සංවේදකවලට දැනට ඉඩ දී ඇත</translation>
-<translation id="2835170189407361413">පෝර්මය හිස් කරන්න</translation>
 <translation id="2835907903001172712">බ්‍රවුසර දළ විශ්ලේෂණය</translation>
 <translation id="2837891525090413132">ඔබේ යතුරු පුවරුව අගුළු දමා භාවිතා කිරීමට විමසා සිටිය හැක</translation>
 <translation id="2839032553903800133">දැනුම්දීම් අවහිර කර ඇත</translation>
@@ -3296,7 +3295,6 @@
 <translation id="6679354743514146922">Chrome බ්‍රවුසරය <ph name="APP_NAME" /> හි ඔබේ මුරපදය පිරවීමට උත්සාහ කරයි.</translation>
 <translation id="668132230070712111">වීඩියෝව Google Drive වෙත සුරකින ලදි</translation>
 <translation id="6681790815630918386">CVC සුරැකිණි</translation>
-<translation id="6686570026048064255">Pix කේත අනාවරණය ක්‍රියාවිරහිත කිරීමට, <ph name="BEGIN_LINK1" />Chrome සැකසීම්<ph name="END_LINK1" /> වෙත යන්න</translation>
 <translation id="6687230248707087982">ලියුම් කවරය (පැහැදිලි)</translation>
 <translation id="6687335167692595844">අකුරු ප්‍රමාණය ඉල්ලුවා</translation>
 <translation id="6688743156324860098">යාවත්කාලීන කරන්න…</translation>
@@ -4437,6 +4435,7 @@
 <translation id="8708134712139312373">බ්ලූටූත් උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="8710842507289500830">ෆොන්ට විලාසය</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
+<translation id="8715198179991802709">ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියක් Chrome දැන් සලකුණු කර ඇත. මිනිත්තු 1ක සමීක්ෂණයක් කිරීමෙන් මෙම අනතුරු ඇඟවීම් වැඩි දියුණු කිරීමට අපට උදවු කරන්න.</translation>
 <translation id="8718314106902482036">ගෙවීම අවසන් නොකරන ලදී</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, සෙවීම් යෝජනාව</translation>
 <translation id="8719528812645237045">ඉහළට ඇනීම් බොහොමයක්</translation>

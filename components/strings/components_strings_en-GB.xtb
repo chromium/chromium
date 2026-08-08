@@ -1062,7 +1062,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2828797285817981634">Motion sensors allowed for now</translation>
-<translation id="2835170189407361413">Clear form</translation>
 <translation id="2835907903001172712">Browser overview</translation>
 <translation id="2837891525090413132">Can ask to lock and use your keyboard</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
@@ -3296,7 +3295,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6679354743514146922">Chrome browser is trying to fill your password on <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video saved to Google Drive</translation>
 <translation id="6681790815630918386">CVC saved</translation>
-<translation id="6686570026048064255">To turn off Pix code detection, go to <ph name="BEGIN_LINK1" />Chrome settings<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (plain)</translation>
 <translation id="6687335167692595844">Font size requested</translation>
 <translation id="6688743156324860098">Update…</translation>
@@ -4438,6 +4436,7 @@ Additional details:
 <translation id="8708134712139312373">Can ask to connect to Bluetooth devices</translation>
 <translation id="8710842507289500830">Font style</translation>
 <translation id="8712637175834984815">Got it</translation>
+<translation id="8715198179991802709">Chrome just flagged a website that you were trying to visit. Help us improve these warnings by taking a 1-minute survey.</translation>
 <translation id="8718314106902482036">Payment not completed</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, search suggestion</translation>
 <translation id="8719528812645237045">Multiple punch top</translation>

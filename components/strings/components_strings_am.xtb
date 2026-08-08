@@ -592,6 +592,7 @@
 <translation id="2027465737841872819">ፕላስቲክ</translation>
 <translation id="2027707238798802149">ካርድ አይገኝም</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ወኪሉን እና ኬላውን መፈተሽ<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">ይህ የChrome አጋጣሚ በእጅ የተቀናበሩ የትዕዛዝ መስመር ጥቆማዎች ጋር እየሄደ ነው። የትዕዛዝ መስመር ጠቁሞች በማንኛውም ጊዜ ሊለወጡ እንደሚችሉ እና እንደማይደገፉ ልብ ይበሉ።</translation>
 <translation id="2033900728810589426">አቋራጭ በ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />፡- <ph name="SHORTCUT_NAME" /> ከተገለጸው ነባሪ የፍለጋ አቅራቢ ቁልፍ ቃል ጋር ተመሳሳይ ሊሆን አይችልም።</translation>
 <translation id="2034971124472263449">ቢሆንም አስቀምጥ</translation>
 <translation id="2036514476578229158">ይህን ጣቢያ ለመጎብኘት ጠይቀዋል። የእርስዎ ወላጆች በFamily Link ውስጥ ምላሽ መስጠት ይችላሉ።</translation>
@@ -1061,7 +1062,6 @@
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
 <translation id="2826760142808435982">ግንኙነቱ የተመሰጠረ እና <ph name="CIPHER" />ን በመጠቀም የተረጋገጠ ነው፣ እና <ph name="KX" />ን እንደ የቁልፍ መቀያየሪያ ስልት ይጠቀምበታል።</translation>
 <translation id="2828797285817981634">የእንቅስቃሴ ዳሳሾች አሁን ላይ ተፈቅደዋል</translation>
-<translation id="2835170189407361413">ቅጽ አጽዳ</translation>
 <translation id="2835907903001172712">የአሳሽ አጠቃላይ ዕይታ</translation>
 <translation id="2837891525090413132">የእርስዎን ቁልፍ ሰሌዳ ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
@@ -3294,7 +3294,6 @@
 <translation id="6679354743514146922">Chrome አሳሽ የይለፍ ቃልዎን በ<ph name="APP_NAME" /> ላይ ለመሙላት እየሞከረ ነው።</translation>
 <translation id="668132230070712111">ቪድዮ ወደ Google Drive ተቀምጧል</translation>
 <translation id="6681790815630918386">ካርድ ማረጋገጫ ኮድ ተቀምጧል</translation>
-<translation id="6686570026048064255">የPix ኮድ ማወቅን ለማጥፋት ወደ <ph name="BEGIN_LINK1" />Chrome ቅንብሮች<ph name="END_LINK1" /> ይሂዱ</translation>
 <translation id="6687230248707087982">ፖስታ (ምንም የሌለበት)</translation>
 <translation id="6687335167692595844">የቅርጸ-ቁምፊ መጠን ተጠይቋል</translation>
 <translation id="6688743156324860098">አዘምን…</translation>
@@ -4437,6 +4436,7 @@
 <translation id="8708134712139312373">ከብሉቱዝ መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="8710842507289500830">የቅርጸ-ቁምፊ ቅጥ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
+<translation id="8715198179991802709">Chrome እርስዎ ለመጎብኘት እየሞከሩ የነበረውን ድር ጣቢያ ጠቁሟል። የ1 ደቂቃ የዳሰሳ ጥናት በመውሰድ እነዚህን ማስጠንቀቂያዎች እንድናሻሽል ያግዙን።</translation>
 <translation id="8718314106902482036">ክፍያ አልተጠናቀቀም</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />፣ <ph name="DESCRIPTION" />፣ የፍለጋ ጥቆማ ሐሳብ</translation>
 <translation id="8719528812645237045">በርካታ ብስ ከላይ</translation>

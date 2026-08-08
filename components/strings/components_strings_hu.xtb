@@ -592,6 +592,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2027465737841872819">Műanyag</translation>
 <translation id="2027707238798802149">A kártya nem áll rendelkezésre</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />A proxy és a tűzfal ellenőrzése<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">A Chrome ezen példánya manuálisan beállított parancssori kapcsolókkal fut. Vegye figyelembe, hogy a parancssori kapcsolók bármikor változhatnak, és nem támogatottak.</translation>
 <translation id="2033900728810589426">A gyorsparancs nem egyezhet meg a(z) <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> által meghatározott alapértelmezett keresési szolgáltató kulcszavával: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
 <translation id="2036514476578229158">A webhely felkeresését kérelmezted. Szüleid a Family Linkben reagálhatnak rá.</translation>
@@ -1061,7 +1062,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2824775600643448204">Cím- és keresősáv</translation>
 <translation id="2826760142808435982">A kapcsolat <ph name="KX" /> algoritmust használ kulcscserélő mechanizmusként, kódolása pedig <ph name="CIPHER" /> használatával történt.</translation>
 <translation id="2828797285817981634">A mozgásérzékelők használata jelenleg engedélyezve van</translation>
-<translation id="2835170189407361413">Űrlap törlése</translation>
 <translation id="2835907903001172712">Böngésző áttekintése</translation>
 <translation id="2837891525090413132">Kérheti a billentyűzet zárolását és használatát</translation>
 <translation id="2839032553903800133">Értesítések letiltva</translation>
@@ -3292,7 +3292,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6679354743514146922">A Chrome böngésző megpróbálja kitölteni a jelszavát itt: <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">A videó mentve a Google Drive-ra</translation>
 <translation id="6681790815630918386">CVC mentve</translation>
-<translation id="6686570026048064255">A Pix-kód észlelésének kikapcsolásához nyissa meg a <ph name="BEGIN_LINK1" />Chrome-beállításokat<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Boríték (sima)</translation>
 <translation id="6687335167692595844">Kért betűméret</translation>
 <translation id="6688743156324860098">Frissítés…</translation>
@@ -4435,6 +4434,7 @@ További részletek:
 <translation id="8708134712139312373">Engedélyt kérhet a Bluetooth-eszközökhöz való csatlakozásra</translation>
 <translation id="8710842507289500830">Betűstílus</translation>
 <translation id="8712637175834984815">Értem</translation>
+<translation id="8715198179991802709">A Chrome megjelölt egy webhelyet, amelyet Ön fel szeretett volna keresni. Segítsen nekünk a figyelmeztetések továbbfejlesztésében: ehhez töltse ki ezt az egy perces felmérést.</translation>
 <translation id="8718314106902482036">A fizetés nem fejeződött be</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, keresési javaslat</translation>
 <translation id="8719528812645237045">Több lyuk felül</translation>

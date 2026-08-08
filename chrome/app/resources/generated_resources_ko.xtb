@@ -2069,6 +2069,7 @@
 <translation id="2598710988533271874">새로운 Chrome 사용 가능</translation>
 <translation id="2599048253926156421">사용자 이름이 클립보드에 복사됨</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{안전하지 않은 확장 프로그램 1개를 사용 중지함}other{안전하지 않은 확장 프로그램 {NUM_SITES}개를 사용 중지함}}</translation>
+<translation id="2603121359676416582">이 페이지에서</translation>
 <translation id="2604129989323098489">일반적으로 사이트에서는 문서 또는 전체 화면 콘텐츠를 나란히 표시하는 등 창을 지능적으로 열고 배치하기 위해 디스플레이에 관한 정보를 요청합니다.</translation>
 <translation id="2604255671529671813">네트워크 연결 오류</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> 주소 양식이 입력되었습니다.</translation>
@@ -2983,6 +2984,7 @@
 <translation id="3285329711156774325">역량 검색</translation>
 <translation id="3285500645985761267">관련 사이트에서 내 그룹 활동을 볼 수 있도록 허용</translation>
 <translation id="328571385944182268">비밀번호를 저장하시겠습니까?</translation>
+<translation id="3285969135399641759">새 스킬 배우기</translation>
 <translation id="3289668031376215426">자동 대문자화</translation>
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
@@ -6387,6 +6389,7 @@
 <translation id="5939719276406088041">바로가기를 만들 수 없음</translation>
 <translation id="5939723110967488589">툴바에 표시할 버튼을 선택하세요</translation>
 <translation id="594048410531370124">알 수 없는 키입니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
+<translation id="5940614040566393493">조언 얻기</translation>
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}other{비밀번호 {PASSWORD_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 검색</translation>

@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Když skupinu karet <ph name="GROUP_NAME" /> smažete, všichni k ní okamžitě ztratí přístup a smaže se ze všech zařízení.</translation>
 <translation id="2424805048070062787">Pokračovat s touto kartou</translation>
 <translation id="2426805022920575512">Vybrat jiný účet</translation>
+<translation id="2428543302546523788">Při zapnutém režimu čtení zobrazovat odkazy</translation>
 <translation id="243275146591958220">Zrušit stahování</translation>
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2434918313224755415">Posunutím doleva si web můžete prohlížet v anonymním režimu.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Co můžu s Gemini v Chromu dělat?</translation>
 <translation id="2473876017985765807">Pro web <ph name="WEBSITE" /> jste již heslo uložili</translation>
 <translation id="247430852844518481">Můžete si nastavit připomenutí, že se na tuhle stránku máte později vrátit</translation>
+<translation id="2476554421818031422">Pomáháte vylepšené automatické vyplňování zlepšovat</translation>
 <translation id="2479148705183875116">Přejít do nastavení</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2484459871750294497">Jak tuto funkci aktivuji?</translation>
@@ -2068,6 +2070,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="78146569776629510">Stahování</translation>
 <translation id="7815852444315004084">Prozatím skrýt</translation>
 <translation id="7825973332242257878">Skupiny karet</translation>
+<translation id="7828344837949522075">Zobrazit návrh</translation>
 <translation id="7839994177130598711">Členové vaší rodiny teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google mohou používat vaše uživatelské jméno a heslo.</translation>
 <translation id="7841180087127694526">Vyhledat zkopírovaný text</translation>
 <translation id="7841418003178675048">Vyberte, které karty chcete zobrazovat na stránce Nová karta.</translation>

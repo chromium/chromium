@@ -678,6 +678,7 @@
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium предупреждает<ph name="END_LINK" /> о небезопасных сайтах и файлах в интернете</translation>
 <translation id="8295827201165805317">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="8296236834352487533">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру в приложении Chromium для iOS.</translation>
+<translation id="8310603974518734211">QR-код для входа в Chromium с аккаунтом <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Ошибка при запуске: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша организация задала настройки, согласно которым браузер Chromium закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Сохранить как изображение</translation>

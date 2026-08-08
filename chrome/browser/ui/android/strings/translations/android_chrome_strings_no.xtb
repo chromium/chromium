@@ -116,6 +116,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1414919006379339073">Lukke gjeldende vindu</translation>
 <translation id="1416550906796893042">Programversjon</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1435593198351412143">Åpne PDF-filer automatisk</translation>
 <translation id="1437543266176261764">Kjører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
@@ -1537,6 +1538,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7182520625618447753">Flytt adressefeltet til toppen eller bunnen for å tilpasse surfeopplevelsen</translation>
 <translation id="7183517696921903380">Arket for appfiltrering er åpnet.</translation>
 <translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Trykk på ^W igjen for å lukke den festede fanen}other{Trykk på ^W igjen for å lukke de festede fanene}}</translation>
 <translation id="7190921792980745354">Vil du blokkere <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">En fane ble åpnet i bakgrunnen.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Du bør endre det nå}other{Du bør endre dem nå}}</translation>
@@ -1985,6 +1987,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8995521496079646922">Appene du har valgt, brukes som standard. Hvis noen av appene ikke allerede finnes på enheten, blir de lastet ned om kort tid.</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
 <translation id="8998837250940831980">Kunne ikke minimere fanen. Prøv igjen senere.</translation>
+<translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="9001604755921395912">Åpne på Chrome-inkognitofane</translation>
 <translation id="9010094279589497751">Åpne Gemini raskt når du trenger det</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>

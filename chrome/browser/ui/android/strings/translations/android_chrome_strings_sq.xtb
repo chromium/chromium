@@ -116,6 +116,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1414919006379339073">Mbyll dritaren aktuale</translation>
 <translation id="1416550906796893042">Versioni i aplikacionit</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1435593198351412143">Hap automatikisht skedarët PDF</translation>
 <translation id="1437543266176261764">Po ekzekutohet në <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
@@ -1537,6 +1538,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7182520625618447753">Ndërroje pozicionin e shiritit të adresave në krye ose në fund për një përvojë të personalizuar shfletimi</translation>
 <translation id="7183517696921903380">Fleta e filtrit të aplikacioneve është hapur.</translation>
 <translation id="7186568385131859684">Kontrollo se si përdoret historiku i shfletimit me të dhënat e tua të tjera nëpër shërbimet e Google</translation>
+<translation id="7189516830800112767">{NUM_TABS,plural, =1{Shtyp përsëri ^W për të mbyllur skedën e gozhduar}other{Shtyp përsëri ^W për të mbyllur skedat e gozhduara}}</translation>
 <translation id="7190921792980745354">Të bllokohet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Skeda u hap në sfond.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Duhet ta ndryshosh këtë tani}other{Duhet t'i ndryshosh këto tani}}</translation>
@@ -1985,6 +1987,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8995521496079646922">Aplikacionet që ke zgjedhur do të përdoren si parazgjedhje. Nëse një aplikacion nuk është tashmë në këtë pajisje, ai do të shkarkohet së shpejti.</translation>
 <translation id="8996847606757455498">Zgjidh një ofrues tjetër</translation>
 <translation id="8998837250940831980">Skeda nuk mund të minimizohej. Provo përsëri më vonë.</translation>
+<translation id="9000089900434778519">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="9001604755921395912">Hape në skedë "të fshehtë" në Chrome</translation>
 <translation id="9010094279589497751">Hap me shpejtësi Gemini kur të të nevojitet</translation>
 <translation id="9012585441087414258">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Nëse një faqe bën diçka të dyshimtë, URL-të dhe pjesët e përmbajtjes së faqes dërgohen te "Shfletimi i sigurt i Google".</translation>

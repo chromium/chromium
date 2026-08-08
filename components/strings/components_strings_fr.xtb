@@ -592,6 +592,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2027465737841872819">Plastique</translation>
 <translation id="2027707238798802149">Carte non disponible</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Vérifier le proxy et le pare-feu<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Cette instance de Chrome s'exécute avec des flags de ligne de commande définis manuellement. Notez que les flags de ligne de commande peuvent changer à tout moment et ne sont pas pris en charge.</translation>
 <translation id="2033900728810589426">Le raccourci ne peut pas être identique au mot clé du moteur de recherche par défaut défini par <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> : <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2036514476578229158">Tu as demandé à consulter ce site. Tes parents peuvent répondre dans Family Link.</translation>
@@ -1061,7 +1062,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2824775600643448204">Barre d'adresse et de recherche</translation>
 <translation id="2826760142808435982">La connexion est chiffrée et authentifiée avec la clé <ph name="CIPHER" />. La méthode d'échange de clés utilisée est <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Capteurs de mouvement autorisés pour le moment</translation>
-<translation id="2835170189407361413">Effacer le formulaire</translation>
 <translation id="2835907903001172712">Aperçu du navigateur</translation>
 <translation id="2837891525090413132">Peut demander à verrouiller et utiliser votre clavier</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
@@ -3295,7 +3295,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6679354743514146922">Le navigateur Chrome tente de saisir votre mot de passe sur <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vidéo enregistrée dans Google Drive</translation>
 <translation id="6681790815630918386">Code CVC enregistré</translation>
-<translation id="6686570026048064255">Pour désactiver la détection des codes Pix, accédez aux <ph name="BEGIN_LINK1" />paramètres de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Enveloppe (ordinaire)</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6688743156324860098">Mettre à jour…</translation>
@@ -4438,6 +4437,7 @@ Informations supplémentaires :
 <translation id="8708134712139312373">Peut demander à se connecter à des appareils Bluetooth</translation>
 <translation id="8710842507289500830">Style de police</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715198179991802709">Chrome vient de signaler un site Web que vous essayiez de consulter. Aidez-nous à améliorer ces avertissements en répondant à une enquête d'une minute.</translation>
 <translation id="8718314106902482036">Paiement non finalisé</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suggestion de recherche</translation>
 <translation id="8719528812645237045">Multiple perforation en haut</translation>

@@ -454,6 +454,7 @@
 <translation id="2422174748424038845">Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest.</translation>
 <translation id="2424805048070062787">Jätka selle vahelehega</translation>
 <translation id="2426805022920575512">Vali muu konto</translation>
+<translation id="2428543302546523788">Kui lugemisrežiim on sisse lülitatud, kuvatakse lingid.</translation>
 <translation id="243275146591958220">Tühista allalaadimine</translation>
 <translation id="2434405374328098816">Olete kasutaja „<ph name="USERNAME" />“ jaoks parooli saidil <ph name="WEBSITE" /> juba salvestanud.</translation>
 <translation id="2434918313224755415">Inkognito režiimis sirvimiseks võite kerida vasakule.</translation>
@@ -468,6 +469,7 @@
 <translation id="2470654816840674524">Mida saan Geminiga Chrome'is teha?</translation>
 <translation id="2473876017985765807">Salvestasite saidi <ph name="WEBSITE" /> jaoks juba parooli</translation>
 <translation id="247430852844518481">Saate määrata meeldetuletuse selle lehe hiljem külastamiseks</translation>
+<translation id="2476554421818031422">Aitate täiustatud automaattäidet veelgi paremaks muuta</translation>
 <translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2484459871750294497">Kuidas saan selle funktsiooni lubada?</translation>
@@ -2068,6 +2070,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="78146569776629510">Allalaadimised</translation>
 <translation id="7815852444315004084">Peida praeguseks</translation>
 <translation id="7825973332242257878">Vahelehegrupid</translation>
+<translation id="7828344837949522075">Kuva soovitus</translation>
 <translation id="7839994177130598711">Teie pereliikmed saavad nüüd kasutada teie kasutajanime ja parooli, kui nad kasutavad saidile <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sisselogimiseks Google'i paroolihaldurit.</translation>
 <translation id="7841180087127694526">Otsi kopeeritud teksti</translation>
 <translation id="7841418003178675048">Valige, milliseid kaarte näete oma uuel vahekaardil.</translation>

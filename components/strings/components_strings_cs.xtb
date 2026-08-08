@@ -592,6 +592,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Karta není k dispozici</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Zkontrolovat proxy server a firewall<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Tato instance Chromu běží s ručně nastavenými příznaky příkazového řádku. Upozorňujeme, že příznaky příkazového řádku se mohou kdykoli změnit a neposkytujeme k nim podporu.</translation>
 <translation id="2033900728810589426">Zkratka nesmí být stejná jako klíčové slovo výchozího poskytovatele vyhledávání definované v zásadě <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Přesto uložit</translation>
 <translation id="2036514476578229158">Chceš navštívit web, ale je třeba povolení. Rodiče mohou odpovědět v aplikaci Family Link.</translation>
@@ -1061,7 +1062,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2824775600643448204">Adresní a vyhledávací řádek</translation>
 <translation id="2826760142808435982">Připojení je šifrováno a ověřeno pomocí šifry <ph name="CIPHER" /> a jako mechanismus výměny klíčů používá <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Senzory pohybu jsou pro tentokrát povoleny</translation>
-<translation id="2835170189407361413">Vymazat formulář</translation>
 <translation id="2835907903001172712">Přehled prohlížeče</translation>
 <translation id="2837891525090413132">Může žádat o zamknutí a používání klávesnice</translation>
 <translation id="2839032553903800133">Byla zablokována oznámení</translation>
@@ -3290,7 +3290,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6679354743514146922">Prohlížeč Chrome se pokouší vyplnit vaše heslo na webu <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Video se uložilo na Disk Google</translation>
 <translation id="6681790815630918386">Kód CVC byl uložen</translation>
-<translation id="6686570026048064255">Pokud chcete vypnout detekci kódů Pix, přejděte do <ph name="BEGIN_LINK1" />nastavení Chromu<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Obálka (obyčejná)</translation>
 <translation id="6687335167692595844">Požadována velikost písma</translation>
 <translation id="6688743156324860098">Aktualizovat…</translation>
@@ -4432,6 +4431,7 @@ Další podrobnosti:
 <translation id="8708134712139312373">Může žádat o připojení k zařízením Bluetooth</translation>
 <translation id="8710842507289500830">Styl písma</translation>
 <translation id="8712637175834984815">Hotovo</translation>
+<translation id="8715198179991802709">Chrome právě označil web, který jste se pokoušeli navštívit. Zúčastněte se tohoto jednominutového průzkumu a pomozte nám tak tato varování zlepšit.</translation>
 <translation id="8718314106902482036">Platba nebyla dokončena</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, návrh vyhledávacího dotazu</translation>
 <translation id="8719528812645237045">Několik otvorů nahoře</translation>

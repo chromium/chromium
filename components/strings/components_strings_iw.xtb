@@ -591,6 +591,7 @@
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">הכרטיס לא זמין</translation>
 <translation id="2032962459168915086">‏<ph name="BEGIN_LINK" />לבדוק את שרת ה-Proxy ואת חומת האש<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">‏המופע הזה של Chrome פועל עם תכונות ניסיוניות בשורת הפקודה שהוגדרו באופן ידני. חשוב לדעת שהתכונות הניסיונות האלה יכולות להשתנות בכל רגע והן לא נתמכות.</translation>
 <translation id="2033900728810589426">קיצור הדרך לא יכול להיות זהה למילת המפתח של ספק החיפוש שהוגדרה כברירת המחדל על ידי <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />:‏ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">אני בכל זאת רוצה לשמור</translation>
 <translation id="2036514476578229158">‏ביקשת לבקר באתר הזה. להורים שלך יש אפשרות להגיב ב-Family Link.</translation>
@@ -1060,7 +1061,6 @@
 <translation id="2824775600643448204">שורת חיפוש וכתובות אתרים</translation>
 <translation id="2826760142808435982">החיבור מוצפן ומאומת באמצעות <ph name="CIPHER" /> ומשתמש ב-<ph name="KX" /> כמנגנון להחלפת מפתחות.</translation>
 <translation id="2828797285817981634">יש הרשאה זמנית להשתמש בחיישני התנועה</translation>
-<translation id="2835170189407361413">ניקוי הטופס</translation>
 <translation id="2835907903001172712">סקירה כללית של הדפדפן</translation>
 <translation id="2837891525090413132">אתרים יכולים לבקש לנעול את המקלדת ולהשתמש בה</translation>
 <translation id="2839032553903800133">ההודעות חסומות</translation>
@@ -3297,7 +3297,6 @@ Del</translation>
 <translation id="6679354743514146922">‏דפדפן Chrome מנסה למלא את הסיסמה שלך ב-<ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">‏הסרטון נשמר ב-Google Drive</translation>
 <translation id="6681790815630918386">‏קוד האימות (CVC) נשמר</translation>
-<translation id="6686570026048064255">‏כדי להשבית את הזיהוי של קוד Pix, צריך לעבור <ph name="BEGIN_LINK1" />להגדרות של Chrome‏<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (Plain)</translation>
 <translation id="6687335167692595844">גודל הגופן שהתבקש</translation>
 <translation id="6688743156324860098">עדכון…</translation>
@@ -4439,6 +4438,7 @@ Del</translation>
 <translation id="8708134712139312373">‏האתר יכול לבקש הרשאה להתחבר למכשירי Bluetooth</translation>
 <translation id="8710842507289500830">סגנון גופן</translation>
 <translation id="8712637175834984815">הבנתי</translation>
+<translation id="8715198179991802709">‏‫Chrome התריע על אתר שניסית להיכנס אליו. הסקר הקצר הזה יעזור לנו לשפר את האזהרות האלה.</translation>
 <translation id="8718314106902482036">התשלום לא הושלם</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, הצעת חיפוש</translation>
 <translation id="8719528812645237045">ניקובים מרובים בחלק העליון</translation>

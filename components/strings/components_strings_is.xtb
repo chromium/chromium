@@ -592,6 +592,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kort ekki tiltækt</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn og eldvegginn<ph name="END_LINK" /></translation>
+<translation id="2033550997390154638">Þetta tilvik af Chrome er keyrt með skipanalínuflögg sem stillt eru handvirkt. Athugaðu að skipanalínuflögg geta breyst hvenær sem er og eru ekki studd.</translation>
 <translation id="2033900728810589426">Flýtileiðin má ekki vera sú sama og sjálfgefið leitarorð leitarþjónustu sem skilgreint er af <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Vista samt</translation>
 <translation id="2036514476578229158">Þú baðst um að opna þetta vefsvæði. Foreldrar þínir geta svarað í Family Link.</translation>
@@ -1061,7 +1062,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2824775600643448204">Veffanga- og leitarstika</translation>
 <translation id="2826760142808435982">Tengingin er dulkóðuð og sannvottuð með <ph name="CIPHER" /> og <ph name="KX" /> er notað sem aðferð til að skiptast á lyklum.</translation>
 <translation id="2828797285817981634">Hreyfiskynjarar leyfðir eins og er</translation>
-<translation id="2835170189407361413">Hreinsa eyðublað</translation>
 <translation id="2835907903001172712">Yfirlit yfir vafra</translation>
 <translation id="2837891525090413132">Getur beðið um að læsa og nota lyklaborðið</translation>
 <translation id="2839032553903800133">Tilkynningar útilokaðar</translation>
@@ -3295,7 +3295,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6679354743514146922">Chrome-vafri er að reyna að fylla út aðgangsorðið þitt í <ph name="APP_NAME" />.</translation>
 <translation id="668132230070712111">Vídeó vistað á Google Drive</translation>
 <translation id="6681790815630918386">CVC-númer vistað</translation>
-<translation id="6686570026048064255">Opnaðu <ph name="BEGIN_LINK1" />stillingar Chrome<ph name="END_LINK1" /> til að slökkva á Pix-kóðagreiningu</translation>
 <translation id="6687230248707087982">Umslag (venjulegt)</translation>
 <translation id="6687335167692595844">Beðið um leturstærð</translation>
 <translation id="6688743156324860098">Uppfæra…</translation>
@@ -4436,6 +4435,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8708134712139312373">Getur beðið um að tengjast Bluetooth-tækjum</translation>
 <translation id="8710842507289500830">Leturstíll</translation>
 <translation id="8712637175834984815">Ég skil</translation>
+<translation id="8715198179991802709">Chrome var rétt í þessu að flagga vefsvæði sem þú reyndir að opna. Taktu þátt í örstuttri könnun til að hjálpa okkur að bæta þessar viðvaranir.</translation>
 <translation id="8718314106902482036">Greiðslu ekki lokið</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, leitartillaga</translation>
 <translation id="8719528812645237045">Mörg göt efst</translation>
