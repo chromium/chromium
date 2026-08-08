@@ -5,7 +5,7 @@
 #include "ash/quick_pair/message_stream/message_stream.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -83,11 +83,8 @@ void MessageStream::ReceiveDataSuccess(int buffer_size,
     return;
   }
 
-  std::vector<uint8_t> message_bytes(buffer_size);
-  for (int i = 0; i < buffer_size; i++) {
-    char* c = UNSAFE_TODO(io_buffer->data() + i);
-    message_bytes[i] = static_cast<uint8_t>(*c);
-  }
+  std::vector<uint8_t> message_bytes =
+      base::ToVector(io_buffer->first(static_cast<size_t>(buffer_size)));
 
   quick_pair_process::ParseMessageStreamMessages(
       std::move(message_bytes),

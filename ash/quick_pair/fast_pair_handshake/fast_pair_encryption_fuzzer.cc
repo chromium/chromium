@@ -13,8 +13,9 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/ash/services/quick_pair/fast_pair_decryption.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -125,8 +126,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                             POINT_CONVERSION_UNCOMPRESSED, buffer.data(),
                             kKeySize, /*ctx=*/nullptr));
   // Function expects a string which is missing the first type byte.
-  std::string anti_spoofing_key(UNSAFE_TODO(buffer.data() + 1),
-                                UNSAFE_TODO(buffer.data() + kKeySize));
+  std::string anti_spoofing_key(
+      base::as_string_view(base::span(buffer).subspan<1>()));
   DCHECK(anti_spoofing_key.length() == kKeySize - 1);
 
   GenerateKeysWithEcdhKeyAgreement(anti_spoofing_key);

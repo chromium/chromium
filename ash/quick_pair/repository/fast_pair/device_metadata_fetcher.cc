@@ -10,7 +10,7 @@
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/unauthenticated_http_fetcher.h"
 #include "base/base64.h"
-#include "base/compiler_specific.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/cross_device/logging/logging.h"
 #include "google_apis/google_api_keys.h"
@@ -85,7 +85,8 @@ void DeviceMetadataFetcher::LookupDeviceId(int id,
 void DeviceMetadataFetcher::LookupHexDeviceId(
     const std::string& hex_id,
     GetObservedDeviceCallback callback) {
-  int id = UNSAFE_TODO(std::strtol(hex_id.c_str(), nullptr, 16));
+  int id;
+  base::HexStringToInt(hex_id, &id);
   LookupDeviceId(id, std::move(callback));
 }
 
