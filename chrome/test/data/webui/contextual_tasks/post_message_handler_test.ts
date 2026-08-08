@@ -112,11 +112,16 @@ suite('PostMessageHandlerTest', () => {
     let callbackCalled = false;
     let receivedRect: any = null;
     let receivedOccluders: any = null;
-    postMessageHandler.setInputPlateBoundsUpdateCallback((rect, occluders) => {
-      callbackCalled = true;
-      receivedRect = rect;
-      receivedOccluders = occluders;
-    });
+    let receivedViewportWidth: number|undefined;
+    let receivedViewportHeight: number|undefined;
+    postMessageHandler.setInputPlateBoundsUpdateCallback(
+        (rect, occluders, viewportWidth, viewportHeight) => {
+          callbackCalled = true;
+          receivedRect = rect;
+          receivedOccluders = occluders;
+          receivedViewportWidth = viewportWidth;
+          receivedViewportHeight = viewportHeight;
+        });
 
     const rect = {
       top: 10,
@@ -131,6 +136,8 @@ suite('PostMessageHandlerTest', () => {
       'type': 'input-plate-bounds-update',
       'bounds-rect': rect,
       'occluders': occluders,
+      'viewportWidth': 800,
+      'viewportHeight': 600,
     };
 
     simulateMessage(message, TARGET_ORIGIN);
@@ -139,6 +146,8 @@ suite('PostMessageHandlerTest', () => {
     assertTrue(callbackCalled, 'Callback should be called');
     assertDeepEquals(rect, receivedRect, 'Rect should match');
     assertDeepEquals(occluders, receivedOccluders, 'Occluders should match');
+    assertEquals(800, receivedViewportWidth, 'Viewport width should match');
+    assertEquals(600, receivedViewportHeight, 'Viewport height should match');
   });
 
   test('handles input state update message', async function() {

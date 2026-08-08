@@ -292,6 +292,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         reflect: true,
       },
       onboardingTooltipShowing_: {type: Boolean},
+      guestWidth_: {type: Number},
     };
   }
 
@@ -368,6 +369,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // of the composebox are not visible to the user, and therefore not clickable.
   protected accessor occluders_: Rect[]|null = null;
   protected accessor composeboxHovered_: boolean = false;
+  protected accessor guestWidth_: number = 0;
 
   protected accessor friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -1177,7 +1179,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     }
   }
 
-  private onInputPlateBoundsUpdate_(inputRect?: Rect, occluders?: Rect[]) {
+  private onInputPlateBoundsUpdate_(
+      inputRect?: Rect, occluders?: Rect[], _viewportWidth?: number,
+      _viewportHeight?: number) {
+    // <if expr="is_android">
+    if (_viewportWidth !== undefined && _viewportWidth > 0) {
+      this.guestWidth_ = _viewportWidth;
+    }
+    // </if>
+
     if (inputRect !== undefined) {
       const composebox = this.composebox_!;
       const currentHeight = composebox.offsetHeight;
@@ -1320,13 +1330,19 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // the composebox is relative to the viewport, adjust the bounds to be
     // relative to the viewport.
     const frameRect = this.$.threadFrame.getBoundingClientRect();
+    let scale = 1.0;
+    // <if expr="is_android">
+    scale = (this.guestWidth_ && this.guestWidth_ > 0) ?
+        (frameRect.width / this.guestWidth_) :
+        1.0;
+    // </if>
     const relativeRect = {
-      top: frameRect.top + this.forcedComposeboxBounds_.top,
-      left: frameRect.left + this.forcedComposeboxBounds_.left,
-      width: this.forcedComposeboxBounds_.width,
-      height: this.forcedComposeboxBounds_.height,
-      right: frameRect.left + this.forcedComposeboxBounds_.right,
-      bottom: frameRect.top + this.forcedComposeboxBounds_.bottom,
+      top: frameRect.top + (this.forcedComposeboxBounds_.top * scale),
+      left: frameRect.left + (this.forcedComposeboxBounds_.left * scale),
+      width: this.forcedComposeboxBounds_.width * scale,
+      height: this.forcedComposeboxBounds_.height * scale,
+      right: frameRect.left + (this.forcedComposeboxBounds_.right * scale),
+      bottom: frameRect.top + (this.forcedComposeboxBounds_.bottom * scale),
     };
 
     // Do not set height, since the expanding of the composebox is dynamic.
@@ -1335,6 +1351,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     const style: string[] = [
       `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
                                          // container.
+      // <if expr="is_android">
+      `--composebox-max-width: ${relativeRect.width}px;`,
+      `--composebox-width: ${relativeRect.width}px;`,
+      // </if>
       `position: ${this.inNlm_ ? 'fixed' : 'absolute'};`,
       `bottom: ${this.offsetHeight - relativeRect.bottom}px;`,
       `left: ${relativeRect.left}px;`,
@@ -1383,6 +1403,21 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         this.getComposeboxBoundsRelativeToThreadFrame_();
 
     const frameRect = this.$.threadFrame.getBoundingClientRect();
+    let scale = 1.0;
+    // <if expr="is_android">
+    scale = (this.guestWidth_ && this.guestWidth_ > 0) ?
+        (frameRect.width / this.guestWidth_) :
+        1.0;
+    // </if>
+    const scaledBounds = composeboxBounds ? {
+      top: composeboxBounds.top * scale,
+      left: composeboxBounds.left * scale,
+      width: composeboxBounds.width * scale,
+      height: composeboxBounds.height * scale,
+      right: composeboxBounds.right * scale,
+      bottom: composeboxBounds.bottom * scale,
+    } :
+                                            null;
 
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
@@ -1391,10 +1426,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     const borderRadius =
         roundedClipPathEnabled ? COMPOSEBOX_BORDER_RADIUS_PX : 0;
 
-    const result =
-        getNonOccludedClipPath(
-            composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
-            frameRect.width, frameRect.height, borderRadius) +
+    const result = getNonOccludedClipPath(
+                       scaledBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX,
+                       frameRect.width, frameRect.height, borderRadius) +
         'z-index: 100;';
     return result;
   }
