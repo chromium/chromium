@@ -57,6 +57,7 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
+                android:maxEms="2"
                 android:textAppearance="@style/TextAppearance.TextSmall.Primary"
                 android:background="@drawable/modern_toolbar_input_field_background"
                 android:inputType="number"
