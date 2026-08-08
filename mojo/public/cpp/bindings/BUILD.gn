@@ -52,6 +52,8 @@ component("bindings_base") {
     "connection_group_ref.cc",
     "connection_group_ref.h",
     "deprecated_interface_types_forward.h",
+    "deserialization_error.cc",
+    "deserialization_error.h",
     "disconnect_reason.h",
     "enum_traits.h",
     "enum_utils.h",

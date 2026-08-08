@@ -8,12 +8,34 @@
 #include <concepts>
 #include <type_traits>
 
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 
 namespace mojo {
 namespace internal {
+
+template <typename Traits, typename DataView, typename UserType>
+concept HasErrorRead = requires(DataView data_view, UserType* output) {
+  { Traits::Read(data_view, output).error() };
+};
+
+template <typename Traits, typename DataView, typename UserType>
+bool CallTraitsRead(DataView data_view, UserType* output) {
+  static_assert(sizeof(Traits), "Traits must be a complete type.");
+  if constexpr (HasErrorRead<Traits, DataView, UserType>) {
+    auto result = Traits::Read(data_view, output);
+    if (!result.has_value()) {
+      AddDeserializationError(result.error());
+      return false;
+    }
+    return true;
+  } else {
+    return Traits::Read(data_view, output);
+  }
+}
 
 template <typename Traits, typename UserType>
 bool CallIsNullIfExists(const UserType& input) {

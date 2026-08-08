@@ -7,11 +7,14 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {
@@ -76,10 +79,29 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
 
   base::OnceCallback<void(std::string_view)> GetBadMessageCallback();
 
+  const Message* message() const { return message_; }
+
+  static constexpr size_t kMaxErrorTraceEntries = 4;
+
+  void AddError(const DeserializationError& error) {
+    if (error_trace_count_ < error_trace_.size()) {
+      error_trace_[error_trace_count_++] = error;
+    }
+  }
+
+  base::span<const DeserializationError> error_trace() const {
+    return base::span(error_trace_).first(error_trace_count_);
+  }
+
  private:
   raw_ptr<MessageDispatchContext> outer_context_;
   raw_ptr<Message> message_;
+  std::array<DeserializationError, kMaxErrorTraceEntries> error_trace_;
+  uint8_t error_trace_count_ = 0;
 };
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void AddDeserializationError(const DeserializationError& error);
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 size_t ComputeSerializedMessageSize(size_t payload_size,

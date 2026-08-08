@@ -57,18 +57,30 @@ namespace mojo {
 //      temporary value in the event that it cannot return a readily
 //      serializable reference to some existing object.
 //
-//   2. A static Read() method to set the contents of a |T| instance from a
+//   2. A static Read() method to set the contents of a `T` instance from a
 //      DataViewType.
 //
 //        static bool Read(DataViewType data, T* output);
 //
 //      The generated DataViewType provides a convenient, inexpensive view of a
-//      serialized struct's field data. The caller guarantees that
-//      |!data.is_null()|.
+//      serialized struct's field data. Mojo guarantees that `!data.is_null()`.
 //
 //      Returning false indicates invalid incoming data and causes the message
 //      pipe receiving it to be disconnected. Therefore, you can do custom
-//      validation for |T| in this method.
+//      validation for `T` in this method.
+//
+//      To provide additional context for validation errors, `Read()` methods
+//      can have the following signature instead:
+//
+//        static base::expected<void, DeserializationError> Read(
+//            DataViewType data, T* output);
+//
+//      Returning `base::unexpected(DeserializationError())` will add a
+//      trace entry with the `base::Location` of the `return` statement;
+//      optionally, `DeserializationError::CustomCode(...)` will include a
+//      32-bit signed integer alongside the location. Up to four trace entries
+//      will be stored in crash keys (`mojo-bad-message-trace-1` through
+//      `mojo-bad-message-trace-4`) before invoking the bad message callback.
 //
 //   3. [Optional] A static IsNull() method indicating whether a given |T|
 //      instance is null:

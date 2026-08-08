@@ -45,7 +45,7 @@ struct Serializer<StringDataView, MaybeConstUserType> {
     if (!input) {
       return CallSetToNullIfExists<Traits>(output);
     }
-    return Traits::Read(StringDataView(input, message), output);
+    return CallTraitsRead<Traits>(StringDataView(input, message), output);
   }
 };
 

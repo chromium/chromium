@@ -7,6 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,11 +21,14 @@
 #include "mojo/public/interfaces/bindings/tests/struct_with_traits.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom-blink.h"
 #include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
 namespace test {
 namespace {
+
+using ::testing::HasSubstr;
 
 template <typename T>
 void DoExpectResult(const T& expected,
@@ -548,6 +553,192 @@ TEST_F(StructTraitsTest, EchoUnionWithTraits) {
 TEST_F(StructTraitsTest, DefaultValueOfEnumWithTraits) {
   auto container = EnumWithTraitsContainer::New();
   EXPECT_EQ(EnumWithTraitsImpl::CUSTOM_VALUE_1, container->f_field);
+}
+
+struct ExpectedTestType {
+  int value = 0;
+};
+
+}  // namespace test
+
+template <>
+struct StructTraits<test::TrivialStructWithTraitsDataView,
+                    test::ExpectedTestType> {
+  static int32_t value(const test::ExpectedTestType& input) {
+    return input.value;
+  }
+
+  static base::expected<void, DeserializationError> Read(
+      test::TrivialStructWithTraitsDataView data,
+      test::ExpectedTestType* out) {
+    if (data.value() == 0) {
+      return base::unexpected(DeserializationError());
+    }
+    if (data.value() < 0) {
+      return base::unexpected(DeserializationError::CustomCode(data.value()));
+    }
+    out->value = data.value();
+    return base::ok();
+  }
+};
+
+namespace test {
+
+TEST_F(StructTraitsTest, ReadReturnsExpected) {
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    TrivialStructWithTraitsImpl input;
+    input.value = 10;
+    Message serialized = TrivialStructWithTraits::SerializeAsMessage(&input);
+    ExpectedTestType out;
+    EXPECT_TRUE(TrivialStructWithTraits::DeserializeFromMessage(
+        std::move(serialized), &out));
+    EXPECT_EQ(10, out.value);
+    EXPECT_TRUE(dispatch_context.error_trace().empty());
+  }
+
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    TrivialStructWithTraitsImpl input;
+    input.value = 0;
+    Message serialized = TrivialStructWithTraits::SerializeAsMessage(&input);
+    ExpectedTestType out;
+    EXPECT_FALSE(TrivialStructWithTraits::DeserializeFromMessage(
+        std::move(serialized), &out));
+    ASSERT_EQ(1u, dispatch_context.error_trace().size());
+    EXPECT_FALSE(dispatch_context.error_trace()[0].custom_code().has_value());
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(),
+                HasSubstr("struct_traits_unittest.cc"));
+  }
+
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    TrivialStructWithTraitsImpl input;
+    input.value = -42;
+    Message serialized = TrivialStructWithTraits::SerializeAsMessage(&input);
+    ExpectedTestType out;
+    EXPECT_FALSE(TrivialStructWithTraits::DeserializeFromMessage(
+        std::move(serialized), &out));
+    ASSERT_EQ(1u, dispatch_context.error_trace().size());
+    EXPECT_EQ(-42, dispatch_context.error_trace()[0].custom_code());
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(),
+                HasSubstr("struct_traits_unittest.cc"));
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(), HasSubstr("-42"));
+  }
+}
+
+TEST_F(StructTraitsTest, DeserializationErrorTraceLimit) {
+  Message message;
+  mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+  for (int i = 0; i < 5; ++i) {
+    dispatch_context.AddError(DeserializationError::CustomCode(i));
+  }
+
+  // Adding an error past the first four should be ignored.
+  EXPECT_EQ(4u, dispatch_context.error_trace().size());
+
+  EXPECT_EQ(0u, dispatch_context.error_trace()[0].custom_code());
+  EXPECT_EQ(1u, dispatch_context.error_trace()[1].custom_code());
+  EXPECT_EQ(2u, dispatch_context.error_trace()[2].custom_code());
+  EXPECT_EQ(3u, dispatch_context.error_trace()[3].custom_code());
+
+  for (const auto& error : dispatch_context.error_trace()) {
+    EXPECT_THAT(error.ToString(), HasSubstr("struct_traits_unittest.cc"));
+  }
+}
+
+struct ExpectedUnionTestType {
+  int32_t value = 0;
+};
+
+}  // namespace test
+
+template <>
+struct UnionTraits<test::UnionWithTraitsDataView, test::ExpectedUnionTestType> {
+  static test::UnionWithTraitsDataView::Tag GetTag(
+      const test::ExpectedUnionTestType& input) {
+    return test::UnionWithTraitsDataView::Tag::kFInt32;
+  }
+
+  static int32_t f_int32(const test::ExpectedUnionTestType& input) {
+    return input.value;
+  }
+
+  static const test::NestedStructWithTraitsImpl& f_struct(
+      const test::ExpectedUnionTestType& input) {
+    NOTREACHED();
+  }
+
+  static base::expected<void, DeserializationError> Read(
+      test::UnionWithTraitsDataView data,
+      test::ExpectedUnionTestType* out) {
+    if (data.tag() != test::UnionWithTraitsDataView::Tag::kFInt32) {
+      return base::unexpected(DeserializationError());
+    }
+    if (data.f_int32() < 0) {
+      return base::unexpected(DeserializationError::CustomCode(data.f_int32()));
+    }
+    out->value = data.f_int32();
+    return base::ok();
+  }
+};
+
+namespace test {
+
+TEST_F(StructTraitsTest, UnionReadReturnsExpected) {
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    std::unique_ptr<UnionWithTraitsBase> input =
+        std::make_unique<UnionWithTraitsInt32>(10);
+    Message serialized = UnionWithTraits::SerializeAsMessage(&input);
+    ExpectedUnionTestType out;
+    EXPECT_TRUE(
+        UnionWithTraits::DeserializeFromMessage(std::move(serialized), &out));
+    EXPECT_EQ(10, out.value);
+    EXPECT_TRUE(dispatch_context.error_trace().empty());
+  }
+
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    std::unique_ptr<UnionWithTraitsBase> input =
+        std::make_unique<UnionWithTraitsStruct>(123);
+    Message serialized = UnionWithTraits::SerializeAsMessage(&input);
+    ExpectedUnionTestType out;
+    EXPECT_FALSE(
+        UnionWithTraits::DeserializeFromMessage(std::move(serialized), &out));
+    ASSERT_EQ(1u, dispatch_context.error_trace().size());
+    EXPECT_FALSE(dispatch_context.error_trace()[0].custom_code().has_value());
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(),
+                HasSubstr("struct_traits_unittest.cc"));
+  }
+
+  {
+    Message message;
+    mojo::internal::MessageDispatchContext dispatch_context(&message);
+
+    std::unique_ptr<UnionWithTraitsBase> input =
+        std::make_unique<UnionWithTraitsInt32>(-42);
+    Message serialized = UnionWithTraits::SerializeAsMessage(&input);
+    ExpectedUnionTestType out;
+    EXPECT_FALSE(
+        UnionWithTraits::DeserializeFromMessage(std::move(serialized), &out));
+    ASSERT_EQ(1u, dispatch_context.error_trace().size());
+    EXPECT_EQ(-42, dispatch_context.error_trace()[0].custom_code());
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(),
+                HasSubstr("struct_traits_unittest.cc"));
+    EXPECT_THAT(dispatch_context.error_trace()[0].ToString(), HasSubstr("-42"));
+  }
 }
 
 }  // namespace test
