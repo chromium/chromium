@@ -28,6 +28,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     loadTimeData.overrideValues({
       isFuseboxEnabled: true,
       searchboxVoiceSearch: true,
+      searchboxLensSearch: true,
       searchboxShowComposeEntrypoint: true,
       ntpRealboxDynamicAiModeButton: true,
       composeboxContextDragAndDropEnabled: true,
@@ -167,6 +168,22 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
     await whenOpenComposebox;
   });
+
+  test('respects isFuseboxEnabled false', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      isFuseboxEnabled: false,
+      searchboxVoiceSearch: true,
+      searchboxLensSearch: true,
+    });
+    const element = document.createElement('omnibox-everywhere-omnibox');
+    document.body.appendChild(element);
+    await microtasksFinished();
+
+    assertFalse(!!element.shadowRoot.querySelector('#context'));
+    assertFalse(!!element.shadowRoot.querySelector('#lensSearchButton'));
+    assertTrue(!!element.shadowRoot.querySelector('#voiceSearchButton'));
+  });
 });
 
 suite('OmniboxEverywhereComposeboxTest', () => {
@@ -296,7 +313,7 @@ suite('OmniboxEverywhereAppTest', () => {
     window.webkitSpeechRecognition = MockSpeechRecognition;
 
     loadTimeData.overrideValues({
-      ntpRealboxNextEnabled: true,
+      isFuseboxEnabled: true,
       searchboxVoiceSearch: true,
       searchboxLensSearch: true,
       omniboxPopupDebugEnabled: false,

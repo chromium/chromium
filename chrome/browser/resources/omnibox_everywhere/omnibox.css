@@ -211,15 +211,14 @@ cr-searchbox-input::part(searchbox-input) {
       var(--cr-searchbox-icon-width) + var(--cr-compose-button-width));
 }
 
-:host([is-fusebox-enabled])
-    cr-searchbox-input::part(searchbox-input)::placeholder {
+cr-searchbox-input::part(searchbox-input)::placeholder {
   color: var(--cr-composebox-input-placeholder-color,
       var(--color-composebox-type-ahead));
   font-weight: 400;
 }
 
-:host([is-fusebox-enabled])
-    cr-searchbox-input::part(searchbox-input):focus::placeholder {
+/* cr-searchbox-input hides placeholder on focus by default; override here. */
+cr-searchbox-input::part(searchbox-input):focus::placeholder {
   visibility: visible;
 }
 

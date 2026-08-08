@@ -54,6 +54,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         </cr-searchbox-dropdown>
       </div>
       <div id="bottomControls">
+        ${this.isFuseboxEnabled ? html`
         <div class="contextualEntrypointContainer
                     contextualEntrypointContainerCompact">
           <cr-composebox-file-inputs id="fileInputs" @file-change="${
@@ -86,6 +87,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
             </div>
           </cr-composebox-file-inputs>
         </div>
+        ` : ''}
         <div id="actionButtons">
           ${
               this.showVoiceAndLensButtons_(
@@ -99,7 +101,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           </div>
           ` :
               ''}
-          ${
+          ${this.isFuseboxEnabled &&
               this.showVoiceAndLensButtons_(
                   this.searchboxLensSearchEnabled_) ?
               html`
