@@ -174,9 +174,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // Synchronously retrieves a single module script from existing module map
   // entry.
   // Note: returns nullptr if the module map entry doesn't exist, or
-  // is still "fetching" (except for CSS modules, which may return a
-  // pre-created module with an empty CSSStyleSheet before the fetch
-  // completes).
+  // is still "fetching".
   // ModuleType indicates the resource type of the module script, e.g.
   // JavaScript, JSON, or CSS. This is used as part of the module map cache key
   // alongside the URL, so both are needed to retrieve the correct module. See

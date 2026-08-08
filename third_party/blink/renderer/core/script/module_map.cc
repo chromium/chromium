@@ -4,17 +4,13 @@
 
 #include "third_party/blink/renderer/core/script/module_map.h"
 
-#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_client.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_registry.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
-#include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -36,12 +32,8 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   // Notify fetched |m_moduleScript| to the client asynchronously.
   void AddClient(SingleModuleClient*, ModuleImportPhase);
 
-  // Sets the entry's module script without updating the fetching state.
-  // Currently used for the pre-created stylesheet for CSS modules.
+  // Set a module script that has been created outside of a fetch context.
   void SetModuleScript(ModuleScript*);
-
-  // Sets the entry's module script and updates fetching state.
-  void SetModuleScriptAndFinish(ModuleScript*);
 
   // This is only to be used from ModuleRecordResolver implementations.
   ModuleScript* GetModuleScript() const;
@@ -111,10 +103,6 @@ void ModuleMap::Entry::SetModuleScript(ModuleScript* module_script) {
   CHECK(clients_.empty());
   CHECK(!module_script_);
   module_script_ = module_script;
-}
-
-void ModuleMap::Entry::SetModuleScriptAndFinish(ModuleScript* module_script) {
-  SetModuleScript(module_script);
   is_fetching_ = false;
 }
 
@@ -155,27 +143,6 @@ void ModuleMap::FetchSingleModuleScript(
   if (result.is_new_entry) {
     entry = MakeGarbageCollected<Entry>(this);
 
-    // For CSS modules, pre-create an empty CSSStyleSheet wrapped in a
-    // ValueWrapperSyntheticModuleScript so the sheet is available
-    // immediately via GetFetchedModuleScript before the fetch completes.
-    if (request.GetExpectedModuleType() == ModuleType::kCSS) {
-      ScriptState* script_state = modulator_->GetScriptState();
-      CHECK(script_state && script_state->ContextIsValid());
-
-      // `ContainerNode::NotifyNodeInsertedInternal` forbids script to execute
-      // set during parsing. This is generally correct, but we need to allow UA
-      // script execution temporarily here to create the CSS module script.
-      ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      ModuleScriptCreationParams empty_params(
-          request.Url(), request.Url(), ScriptSourceLocationType::kExternalFile,
-          ResolvedModuleType::kCSS, ParkableString(String("").Impl()),
-          /*cache_handler=*/nullptr, network::mojom::ReferrerPolicy::kDefault,
-          /*source_map_url=*/String());
-      entry->SetModuleScript(
-          ValueWrapperSyntheticModuleScript::
-              CreateCSSWrapperSyntheticModuleScript(empty_params, modulator_));
-    }
-
     // Steps 4-9 loads a new single module script.
     // Delegates to ModuleScriptLoader via Modulator.
     ModuleScriptLoader::Fetch(request, fetch_client_settings_object_fetcher,
@@ -205,7 +172,7 @@ void ModuleMap::AddEntry(const KURL& url,
                          ModuleType type,
                          ModuleScript* script) {
   Entry* entry = MakeGarbageCollected<Entry>(this);
-  entry->SetModuleScriptAndFinish(script);
+  entry->SetModuleScript(script);
 
   // TODO(crbug.com/448174611) - what should happen with duplicate entries?
   map_.insert(std::make_pair(url, type), entry);

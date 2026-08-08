@@ -11,7 +11,6 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -37,6 +36,7 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   ScriptState* script_state = settings_object->GetScriptState();
   ScriptState::Scope scope(script_state);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
   DCHECK(context_window)
       << "Attempted to create a CSS Module in non-document context";
@@ -49,43 +49,15 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   CSSStyleSheet* style_sheet = CSSStyleSheet::Create(
       *context_window->document(), params.BaseURL(), init, ASSERT_NO_EXCEPTION);
   style_sheet->SetIsForCSSModuleScript();
+  style_sheet->replaceSync(params.GetSourceText().ToString(),
+                           ASSERT_NO_EXCEPTION);
 
   v8::Local<v8::Value> v8_value_stylesheet =
       ToV8Traits<CSSStyleSheet>::ToV8(script_state, style_sheet);
 
-  ValueWrapperSyntheticModuleScript* module_script =
-      ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
-          v8_value_stylesheet, settings_object, params.SourceURL(), NullUrl(),
-          ScriptFetchOptions());
-
-  const String& source_text = params.GetSourceText().ToString();
-  if (source_text.empty()) {
-    return module_script;
-  }
-  return UpdateCSSModuleScript(module_script, source_text, settings_object);
-}
-
-ValueWrapperSyntheticModuleScript*
-ValueWrapperSyntheticModuleScript::UpdateCSSModuleScript(
-    ValueWrapperSyntheticModuleScript* module_script,
-    const String& source_text,
-    Modulator* settings_object) {
-  CHECK(settings_object->HasValidContext());
-  ScriptState* script_state = settings_object->GetScriptState();
-  ScriptState::Scope scope(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::HandleScope handle_scope(isolate);
-
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kCreateCSSModuleScript);
-
-  CSSStyleSheet* style_sheet =
-      V8CSSStyleSheet::ToWrappable(isolate, module_script->GetExport(isolate));
-  CHECK(style_sheet);
-
-  style_sheet->replaceSync(source_text, ASSERT_NO_EXCEPTION);
-
-  return module_script;
+  return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
+      v8_value_stylesheet, settings_object, params.SourceURL(), NullUrl(),
+      ScriptFetchOptions());
 }
 
 ValueWrapperSyntheticModuleScript*
