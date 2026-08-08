@@ -68,6 +68,7 @@ source_set("omnibox_everywhere") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "//chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager_unittest.cc",
     "omnibox_everywhere_controller_unittest.cc",
     "omnibox_everywhere_ui_manager_unittest.cc",
   ]
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/background/omnibox_everywhere",
     "//chrome/browser/ui/omnibox",
     "//chrome/test:test_support",
     "//chrome/test/views",

@@ -10,13 +10,19 @@ source_set("omnibox_everywhere") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/status_icons",
     "//components/prefs",
   ]
 
   deps = [
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",
     "//chrome/common",
+    "//components/keep_alive_registry",
+    "//ui/base",
   ]
 }

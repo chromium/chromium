@@ -18,12 +18,16 @@ class Profile;
 
 namespace omnibox_everywhere {
 
+class OmniboxEverywhereBackgroundModeManager;
+
 // The source of the Omnibox Everywhere invocation.
 enum class InvocationSource {
   // Triggered by a global system hotkey registration.
   kGlobalHotkey,
   // Triggered by the profile picker.
   kProfilePicker,
+  // Triggered from the status tray/menu bar icon.
+  kStatusTrayIcon,
 };
 
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
@@ -69,7 +73,9 @@ class OmniboxEverywhereController
                       const std::string& command_id) override;
 
  private:
+  void OnStatusIconClicked();
   void OnProfilePicked(Profile* new_profile);
+  void InvokeForActiveBrowserProfile(InvocationSource source);
 
   // Resolves the target profile for the Omnibox Everywhere invocation.
   // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
@@ -81,6 +87,8 @@ class OmniboxEverywhereController
 
   BooleanPrefMember hotkey_pref_member_;
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
+  std::unique_ptr<OmniboxEverywhereBackgroundModeManager>
+      background_mode_manager_;
   raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
   base::WeakPtrFactory<OmniboxEverywhereController> weak_factory_{this};
 };

@@ -7414,6 +7414,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Label for a button that guides the user to composebox's context menu using a suggestion like label.">
         Ask about your tabs
       </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP" desc="Tooltip text for the Omnibox Everywhere status tray icon." translateable="false">
+        Omnibox Everywhere
+      </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_EXIT" desc="Label for the exit item in the Omnibox Everywhere status tray context menu." translateable="false">
+        Exit
+      </message>
 
 
       <!-- NTP -->

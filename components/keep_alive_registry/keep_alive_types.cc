@@ -92,6 +92,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "SESSION_DATA_DELETER";
     case KeepAliveOrigin::UMA_LOG:
       return out << "UMA_LOG";
+    case KeepAliveOrigin::OMNIBOX_EVERYWHERE:
+      return out << "OMNIBOX_EVERYWHERE";
   }
 
   NOTREACHED() << static_cast<int>(origin);
