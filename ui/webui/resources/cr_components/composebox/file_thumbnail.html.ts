@@ -133,6 +133,16 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               <img is="cr-auto-img" class="img-thumbnail"
                 auto-src="${this.file.thumbnailUrl}"
                 aria-label="${this.file.name}">
+            ` : this.isVideo_() && this.file.objectUrl ? html`
+              <video class="img-thumbnail"
+                src="${this.file.objectUrl}#t=0.001"
+                preload="metadata"
+                muted
+                playsinline
+                disablepictureinpicture
+                disableremoteplayback
+                aria-label="${this.file.name}">
+              </video>
             ` : html`
             <img class="img-thumbnail"
               src="${this.file.objectUrl || this.file.dataUrl}"

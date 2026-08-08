@@ -469,6 +469,9 @@ content::WebUIDataSource* ContextualTasksUI::RegisterWebUIDataSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
       "child-src 'self' https://*.google.com;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::MediaSrc,
+      "media-src blob: data: 'self';");
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   source->AddResourcePaths(kGuestViewSharedResources);
