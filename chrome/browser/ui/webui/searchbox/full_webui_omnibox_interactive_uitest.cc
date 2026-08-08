@@ -702,6 +702,60 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+// Verifies that opening a suggestion in a new foreground tab via Alt+Enter
+// leaves the Omnibox on the new tab unfocused and the popup closed.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       AltEnterOpensForegroundTabUnfocusedOmnibox) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      InstrumentNextTab(kTab2),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_ALT_DOWN),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+
+// Verifies that opening a suggestion in a background tab via Alt+Shift+Enter
+// and subsequently switching to it leaves the Omnibox unfocused and the popup
+// closed on the new tab.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       AltShiftEnterOpensBackgroundTabUnfocusedOmnibox) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      InstrumentNextTab(kTab2),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN,
+                   ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN),
+      WaitForWebContentsReady(kTab2),
+      // Switch to the newly opened background tab (index 2).
+      SelectTab(kTabStripElementId, 2), WaitForPopupTransitionLockout(),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+
+// Verifies that opening a New Tab Page focuses the WebUI Omnibox popup by
+// default even when the previous tab had web contents focused.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       NewTabPageOpensWithOmniboxFocused) {
+  RunTestSequence(
+      // Tab 1 with web contents focused.
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
+      WaitForOmniboxFocus(false),
+      // Open a New Tab Page (Tab 2).
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      CheckWebUIInputFocus(true));
+}
+
 class FullWebUIOmniboxAimInteractiveTestBase
     : public FullWebUIOmniboxInteractiveTestBase {
  public:
