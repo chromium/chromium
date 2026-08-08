@@ -22,7 +22,6 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/aim_user_agent_tab_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
@@ -147,10 +146,6 @@ std::unique_ptr<content::WebContents> CreateWebContents(
       browser_window->GetProfile());
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
-  if (contextual_tasks::IsContextualTasksUIEnabled()) {
-    contextual_tasks::AimUserAgentTabHelper::CreateForWebContents(
-        web_contents.get());
-  }
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
 
   // Add the side panel params to the url being loaded into the WebContents.

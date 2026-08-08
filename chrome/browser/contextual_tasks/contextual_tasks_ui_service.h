@@ -295,11 +295,6 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   virtual bool IsAiUrl(const GURL& url);
 
-  // Returns whether the contextual tasks side panel is open and the given
-  // WebContents is inside the side panel.
-  virtual bool IsSidePanelOpenAndRequestInSidePanel(
-      content::WebContents* web_contents);
-
   // Returns whether the provided task ID is for a task that should show the
   // error page on load.
   virtual bool IsPendingErrorPage(const base::Uuid& task_id);

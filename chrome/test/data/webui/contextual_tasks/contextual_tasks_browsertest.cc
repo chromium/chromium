@@ -54,8 +54,6 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
         .WillByDefault(testing::Return(true));
     ON_CALL(*aim_eligibility_service, IsCobrowseEligible())
         .WillByDefault(testing::Return(true));
-    ON_CALL(*aim_eligibility_service, IsAimUrl(testing::_, testing::_))
-        .WillByDefault(testing::Return(true));
     return aim_eligibility_service;
   }
 
