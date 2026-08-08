@@ -393,7 +393,6 @@ def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):
     query_file.close()
     _RunTraceProcessor(
         trace_processor_path,
-        '--allow-sql-file-access',
         '-q',
         query_file.name,
         proto_file,
