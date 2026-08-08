@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
@@ -493,24 +494,31 @@ bool JingleMessageFromStruct(const IqStanzaStruct& stanza,
   }
 
   std::visit(
-      absl::Overload{[&](const SessionInitiateStruct& arg) {
-                       message->SetPayload(SessionInitiateFromStruct(arg));
-                       message->initiator =
-                           JabberIdStructToSignalingAddress(arg.initiator).id();
-                     },
-                     [&](const SessionAcceptStruct& arg) {
-                       message->SetPayload(SessionAcceptFromStruct(arg));
-                     },
-                     [&](const SessionInfoStruct& arg) {
-                       message->SetPayload(SessionInfoFromStruct(arg));
-                     },
-                     [&](const TransportInfoStruct& arg) {
-                       message->SetPayload(TransportInfoFromStruct(arg));
-                     },
-                     [&](const SessionTerminateStruct& arg) {
-                       message->SetPayload(SessionTerminateFromStruct(arg));
-                     },
-                     [](std::monostate) { NOTREACHED(); }},
+      absl::Overload{
+          [&](const SessionInitiateStruct& arg) {
+            auto initiate = SessionInitiateFromStruct(arg);
+            message->description = std::make_unique<ContentDescription>(
+                initiate.authentication.value_or(JingleAuthentication()));
+            message->SetPayload(std::move(initiate));
+            message->initiator =
+                JabberIdStructToSignalingAddress(arg.initiator).id();
+          },
+          [&](const SessionAcceptStruct& arg) {
+            auto accept = SessionAcceptFromStruct(arg);
+            message->description = std::make_unique<ContentDescription>(
+                accept.authentication.value_or(JingleAuthentication()));
+            message->SetPayload(std::move(accept));
+          },
+          [&](const SessionInfoStruct& arg) {
+            message->SetPayload(SessionInfoFromStruct(arg));
+          },
+          [&](const TransportInfoStruct& arg) {
+            message->SetPayload(TransportInfoFromStruct(arg));
+          },
+          [&](const SessionTerminateStruct& arg) {
+            message->SetPayload(SessionTerminateFromStruct(arg));
+          },
+          [](std::monostate) { NOTREACHED(); }},
       jingle_struct->action);
 
   return true;

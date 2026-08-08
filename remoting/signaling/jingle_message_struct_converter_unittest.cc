@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -446,6 +447,35 @@ TEST(JingleMessageStructConverterTest, ConvertMissingHeaders) {
   stanza.sender.local_part.clear();
   EXPECT_FALSE(JingleMessageFromStruct(stanza, &message, &error));
   EXPECT_EQ(error, "Missing signaling address");
+}
+
+TEST(JingleMessageStructConverterTest,
+     InboundContentDescriptionInitialization) {
+  internal::IqStanzaStruct stanza;
+  stanza.id = "test_id";
+  stanza.sender.local_part = "from";
+  stanza.receiver.local_part = "to";
+
+  internal::JingleMessageStruct jingle_struct;
+  jingle_struct.session_id = "test_sid";
+
+  internal::SessionInitiateStruct initiate_struct;
+  internal::AuthenticationStruct auth_struct;
+  auth_struct.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
+  auth_struct.supported_methods.push_back(
+      AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
+  auth_struct.spake_message = "test";
+  initiate_struct.authentication = auth_struct;
+  initiate_struct.initiator.local_part = "from";
+  jingle_struct.action = initiate_struct;
+  stanza.payload = jingle_struct;
+
+  JingleMessage message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromStruct(stanza, &message, &error));
+  ASSERT_TRUE(message.description);
+  EXPECT_EQ(message.description->authentication().method,
+            AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
 }
 
 }  // namespace
