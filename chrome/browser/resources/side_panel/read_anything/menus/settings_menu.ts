@@ -273,10 +273,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
     }
     optionIDs.push(SettingsOption.LINKS);
-
-    if (chrome.readingMode.imagesFeatureEnabled) {
-      optionIDs.push(SettingsOption.IMAGES);
-    }
+    optionIDs.push(SettingsOption.IMAGES);
 
     if (this.isImmersiveMode) {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);

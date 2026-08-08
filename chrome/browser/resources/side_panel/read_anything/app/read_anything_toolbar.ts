@@ -268,17 +268,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
 
-    // Only add the button to the toolbar if the feature is enabled.
-    if (chrome.readingMode.imagesFeatureEnabled) {
-      this.textStyleToggles_.push({
-        id: IMAGES_TOGGLE_BUTTON_ID,
-        icon: chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
-                                                 IMAGES_DISABLED_ICON,
-        title: chrome.readingMode.imagesEnabled ?
-            loadTimeData.getString('disableImagesLabel') :
-            loadTimeData.getString('enableImagesLabel'),
-      });
-    }
+    this.textStyleToggles_.push({
+      id: IMAGES_TOGGLE_BUTTON_ID,
+      icon: chrome.readingMode.imagesEnabled ? IMAGES_ENABLED_ICON :
+                                               IMAGES_DISABLED_ICON,
+      title: chrome.readingMode.imagesEnabled ?
+          loadTimeData.getString('disableImagesLabel') :
+          loadTimeData.getString('enableImagesLabel'),
+    });
   }
 
   override connectedCallback() {

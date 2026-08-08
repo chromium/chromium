@@ -112,13 +112,6 @@ void AddContentNodesToVector(const ui::AXNode* node,
                              std::vector<ui::AXNodeID>* content_node_ids) {
   const auto& role = node->GetRole();
   if (std::ranges::contains(kContentRoles, role)) {
-    // TODO(crbug.com/40922922): Remove when flag is no longer necessary. Skip
-    // these roles if the flag is not enabled.
-    if (!features::IsReadAnythingImagesViaAlgorithmEnabled() &&
-        (role == ax::mojom::Role::kFigcaption ||
-         role == ax::mojom::Role::kImage)) {
-      return;
-    }
     content_node_ids->emplace_back(node->id());
     return;
   }

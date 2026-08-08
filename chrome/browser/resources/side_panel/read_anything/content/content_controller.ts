@@ -776,10 +776,6 @@ export class ContentController {
   }
 
   loadImages() {
-    if (!chrome.readingMode.imagesFeatureEnabled) {
-      return;
-    }
-
     this.nodeStore_.fetchImages();
   }
 
@@ -1029,10 +1025,6 @@ export class ContentController {
   }
 
   private updateImagesForAxTree_(shadowRoot: ParentNode): boolean {
-    if (!chrome.readingMode.imagesFeatureEnabled) {
-      return false;
-    }
-
     const imagesEnabled = chrome.readingMode.imagesEnabled;
     if (imagesEnabled) {
       this.nodeStore_.clearHiddenImageNodes();
@@ -1052,9 +1044,7 @@ export class ContentController {
       return false;
     }
 
-    // If chrome.readingMode.imagesFeatureEnabled is disabled, hide images also.
-    const imagesEnabled = chrome.readingMode.imagesEnabled &&
-        chrome.readingMode.imagesFeatureEnabled;
+    const imagesEnabled = chrome.readingMode.imagesEnabled;
     // We look for 'img' tags (standard HTML) and 'figure' tags like screen2x.
     const images = container.querySelectorAll<HTMLElement>('img, figure');
 

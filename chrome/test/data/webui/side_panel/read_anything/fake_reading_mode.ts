@@ -95,7 +95,6 @@ export class FakeReadingMode {
   // method.
   distillationTypeReadability: number = 1;
 
-  imagesFeatureEnabled: boolean = false;
   documentUrl: string = 'https://www.google.com';
   htmlIds: Map<number, string> = new Map();
 

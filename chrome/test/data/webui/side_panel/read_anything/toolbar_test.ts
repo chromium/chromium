@@ -545,21 +545,11 @@ suite('Toolbar', () => {
     let menuButton: CrIconButtonElement;
 
     async function getImageButton() {
-      chrome.readingMode.imagesFeatureEnabled = true;
       await createToolbar();
       const imageButton = getButton(IMAGES_TOGGLE_BUTTON_ID);
       assertTrue(!!imageButton);
       menuButton = imageButton;
     }
-
-    test('does not show with flag disabled', async () => {
-      chrome.readingMode.imagesFeatureEnabled = false;
-      await createToolbar();
-
-      const imageButton = getButton(IMAGES_TOGGLE_BUTTON_ID);
-
-      assertFalse(!!imageButton);
-    });
 
     test('by default images are off and button is enabled', async () => {
       await getImageButton();

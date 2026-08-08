@@ -461,12 +461,6 @@ bool IsHatsReadingModeSurveyEnabled() {
   return base::FeatureList::IsEnabled(::features::kHatsReadingModeSurvey);
 }
 
-BASE_FEATURE(kReadAnythingImagesViaAlgorithm, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAnythingImagesViaAlgorithmEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kReadAnythingImagesViaAlgorithm);
-}
-
 bool IsReadAnythingDocsIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
       ax::mojom::features::kReadAnythingDocsIntegration);

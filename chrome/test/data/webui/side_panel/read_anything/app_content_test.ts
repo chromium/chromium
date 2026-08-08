@@ -773,7 +773,6 @@ suite('AppContent', () => {
     });
 
     test('shows images when enabled', async () => {
-      readingMode.imagesFeatureEnabled = true;
       app.updateContent();
       await microtasksFinished();
       assertTrue(contentController.hasContent());
@@ -790,7 +789,6 @@ suite('AppContent', () => {
     });
 
     test('hides images when disabled', async () => {
-      readingMode.imagesFeatureEnabled = true;
       const expectedHtml =
           '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
           '" class="downloaded-image" lang="en-us" style="display: none;"></canvas>' +
@@ -800,22 +798,6 @@ suite('AppContent', () => {
       assertTrue(contentController.hasContent());
 
       readingMode.imagesEnabled = false;
-      emitEvent(app, ToolbarEvent.IMAGES);
-      await microtasksFinished();
-
-      assertEquals(expectedHtml, app.$.container.innerHTML);
-    });
-
-    test('does not show images when feature flag disabled', async () => {
-      readingMode.imagesFeatureEnabled = false;
-      const expectedHtml =
-          '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
-          '" class="downloaded-image" lang="en-us" style="display: none;"></canvas>' +
-          textNodeContent + '</div>';
-      app.updateContent();
-      await microtasksFinished();
-
-      readingMode.imagesEnabled = true;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
@@ -856,8 +838,6 @@ suite('AppContent', () => {
       });
 
       test('shows figures and captions when enabled', async () => {
-        readingMode.imagesFeatureEnabled = true;
-
         const expectedHtml =
             '<figure dir="ltr" lang="en-us" style=""><canvas dir=' +
             '"ltr" alt="" class="downloaded-image" lang="en-us" style="">' +
@@ -875,26 +855,6 @@ suite('AppContent', () => {
       });
 
       test('hides figures and captions when disabled', async () => {
-        readingMode.imagesFeatureEnabled = true;
-
-        const expectedHtml = '<figure dir="ltr" lang="en-us" style="display:' +
-            ' none;"><canvas dir="ltr" alt="" class="downloaded-image" lang=' +
-            '"en-us" style="display: none;"></canvas><figcaption dir="ltr"' +
-            ' lang="en-us">' + caption + '</figcaption></figure>';
-        app.updateContent();
-        await microtasksFinished();
-        assertTrue(contentController.hasContent());
-
-        readingMode.imagesEnabled = false;
-        emitEvent(app, ToolbarEvent.IMAGES);
-        await microtasksFinished();
-
-        assertEquals(expectedHtml, app.$.container.innerHTML);
-      });
-
-      test('does not show figures or captions when flag disabled', async () => {
-        readingMode.imagesFeatureEnabled = false;
-
         const expectedHtml = '<figure dir="ltr" lang="en-us" style="display:' +
             ' none;"><canvas dir="ltr" alt="" class="downloaded-image" lang=' +
             '"en-us" style="display: none;"></canvas><figcaption dir="ltr"' +
@@ -920,8 +880,6 @@ suite('AppContent', () => {
     });
 
     test('shows and hides images when toggled', async () => {
-      readingMode.imagesFeatureEnabled = true;
-
       readingMode.htmlContent = '<img src="foo.png">;';
 
       app.updateContent();
@@ -944,30 +902,10 @@ suite('AppContent', () => {
       assertEquals('none', img.style.display);
     });
 
-    test(
-        'does not show images when images feature flag is disabled',
-        async () => {
-          readingMode.imagesFeatureEnabled = false;
-          readingMode.htmlContent = '<img src="foo.png">;';
-          app.updateContent();
-          await microtasksFinished();
-
-          const img = app.$.container.querySelector('img')!;
-
-          readingMode.imagesEnabled = true;
-          emitEvent(app, ToolbarEvent.IMAGES);
-          await microtasksFinished();
-
-          assertTrue(!!img);
-          assertEquals('none', img.style.display);
-        });
-
     suite('figure with caption', () => {
       const caption = 'That\'s ancient history';
 
       test('shows figures and captions when enabled', async () => {
-        readingMode.imagesFeatureEnabled = true;
-
         readingMode.htmlContent = '<figure><img src="foo.png"><figcaption>' +
             caption + '</figcaption></figure>';
 
@@ -988,26 +926,6 @@ suite('AppContent', () => {
 
         // Verify toggle off.
         readingMode.imagesEnabled = false;
-        emitEvent(app, ToolbarEvent.IMAGES);
-        await microtasksFinished();
-        assertEquals(
-            'none', figure.style.display);  // figcaption will also be hidden if
-                                            // it's parent is hidden.
-      });
-
-      test('does not show figures or captions when flag disabled', async () => {
-        readingMode.imagesFeatureEnabled = false;
-
-        readingMode.htmlContent = '<figure><img src="foo.png"><figcaption>' +
-            caption + '</figcaption></figure>';
-
-        app.updateContent();
-        await microtasksFinished();
-        assertTrue(contentController.hasContent());
-
-        const figure = app.$.container.querySelector('figure')!;
-
-        readingMode.imagesEnabled = true;
         emitEvent(app, ToolbarEvent.IMAGES);
         await microtasksFinished();
         assertEquals(

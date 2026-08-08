@@ -48,7 +48,6 @@ declare namespace chrome {
     let fontSize: number;
     let linksEnabled: boolean;
     let imagesEnabled: boolean;
-    let imagesFeatureEnabled: boolean;
     // The numerical enum value of these styles, not the actual value used to
     // style the app.
     let lineSpacing: number;

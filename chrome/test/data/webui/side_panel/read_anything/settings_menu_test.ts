@@ -32,7 +32,6 @@ suite('SettingsMenuElement', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.imagesFeatureEnabled = true;
     chrome.readingMode.isLineFocusEnabled = true;
     metrics = mockMetrics();
 
@@ -447,7 +446,6 @@ suite('SettingsMenuElement', () => {
 
   test('only first toggle has separator', async () => {
     chrome.readingMode.isReadabilityEnabled = true;
-    chrome.readingMode.imagesFeatureEnabled = true;
     settingsMenu.isImmersiveMode = true;
     settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
     await microtasksFinished();

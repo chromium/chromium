@@ -564,9 +564,7 @@ void ReadAnythingAppController::OnStringAttributeChanged(
     ax::mojom::StringAttribute attr,
     const std::string& old_value,
     const std::string& new_value) {
-  // Return early when the images flag is disabled to avoid potential crashes.
-  if (!features::IsReadAnythingImagesViaAlgorithmEnabled() ||
-      attr != ax::mojom::StringAttribute::kUrl) {
+  if (attr != ax::mojom::StringAttribute::kUrl) {
     return;
   }
 
@@ -1435,8 +1433,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
       .SetProperty("imagesEnabled", &ReadAnythingAppController::ImagesEnabled)
-      .SetProperty("imagesFeatureEnabled",
-                   &ReadAnythingAppController::ImagesFeatureEnabled)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetProperty("standardLineSpacing",
@@ -1757,10 +1753,6 @@ bool ReadAnythingAppController::LinksEnabled() const {
 
 bool ReadAnythingAppController::ImagesEnabled() const {
   return model_.images_enabled();
-}
-
-bool ReadAnythingAppController::ImagesFeatureEnabled() const {
-  return features::IsReadAnythingImagesViaAlgorithmEnabled();
 }
 
 bool ReadAnythingAppController::IsPhraseHighlightingEnabled() const {
@@ -2342,12 +2334,10 @@ std::vector<std::string> ReadAnythingAppController::GetAllFonts() const {
 }
 
 void ReadAnythingAppController::RequestImageData(ui::AXNodeID node_id) const {
-  if (features::IsReadAnythingImagesViaAlgorithmEnabled()) {
-    DUMP_WILL_BE_CHECK(model_.GetAXNode(node_id));
-    auto target_tree_id = model_.active_tree_id();
-    CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
-    page_handler_->OnImageDataRequested(target_tree_id, node_id);
-  }
+  DUMP_WILL_BE_CHECK(model_.GetAXNode(node_id));
+  auto target_tree_id = model_.active_tree_id();
+  CHECK_NE(target_tree_id, ui::AXTreeIDUnknown());
+  page_handler_->OnImageDataRequested(target_tree_id, node_id);
 }
 
 void ReadAnythingAppController::OnImageDataDownloaded(

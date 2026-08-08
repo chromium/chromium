@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -25,9 +24,8 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIUntrustedReadAnythingSidePanelHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingImagesViaAlgorithm},
-        {features::kReadAnythingReadAloudPhraseHighlighting,
-         ax::mojom::features::kReadAnythingDocsIntegration});
+        {}, {features::kReadAnythingReadAloudPhraseHighlighting,
+             ax::mojom::features::kReadAnythingDocsIntegration});
   }
 
   void RunSidePanelTest(const std::string& file, const std::string& trigger) {

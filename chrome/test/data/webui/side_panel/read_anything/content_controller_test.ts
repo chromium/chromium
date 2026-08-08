@@ -373,7 +373,6 @@ suite('ContentController', () => {
       const imgId1 = 89;
       const imgId2 = 88;
       const textId = 90;
-      readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.rootId = rootId;
 
       readingMode.getHtmlTag = (id) => {
@@ -635,6 +634,7 @@ suite('ContentController', () => {
     });
 
     test('builds an image as a <canvas> tag', () => {
+      const rootId = readingMode.rootId;
       const altText = 'how it\'s done done done';
       chrome.readingMode.imagesEnabled = true;
       readingMode.getHtmlTag = () => 'img';
@@ -645,12 +645,11 @@ suite('ContentController', () => {
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
-      assertTrue(nodeStore.hasImagesToFetch());
-      nodeStore.fetchImages();
       assertArrayEquals([rootId], readingMode.fetchedImages);
     });
 
     test('builds a video as a <canvas> tag', () => {
+      const rootId = readingMode.rootId;
       const altText = 'Huntrx';
       chrome.readingMode.imagesEnabled = true;
       readingMode.getHtmlTag = () => 'video';
@@ -661,8 +660,6 @@ suite('ContentController', () => {
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
-      assertTrue(nodeStore.hasImagesToFetch());
-      nodeStore.fetchImages();
       assertArrayEquals([rootId], readingMode.fetchedImages);
     });
 
@@ -1003,17 +1000,7 @@ suite('ContentController', () => {
   });
 
   suite('loadImages', () => {
-    test('does nothing if images feature is disabled', () => {
-      chrome.readingMode.imagesFeatureEnabled = false;
-      nodeStore.addImageToFetch(12);
-
-      contentController.loadImages();
-
-      assertEquals(0, readingMode.fetchedImages.length);
-    });
-
-    test('fetches images if feature is enabled', () => {
-      chrome.readingMode.imagesFeatureEnabled = true;
+    test('fetches images', () => {
       const imageId = 33;
       nodeStore.addImageToFetch(imageId);
 
@@ -1107,7 +1094,6 @@ suite('ContentController', () => {
     });
 
     test('hides images and associated text nodes when disabled', async () => {
-      chrome.readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.imagesEnabled = false;
       contentController.setState(ContentType.HAS_CONTENT);
 
@@ -1122,7 +1108,6 @@ suite('ContentController', () => {
     });
 
     test('shows images and clears hidden nodes when enabled', async () => {
-      chrome.readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.imagesEnabled = true;
       nodeStore.hideImageNode(textId);
       canvas.style.display = 'none';
@@ -1140,7 +1125,6 @@ suite('ContentController', () => {
     });
 
     test('notifies of content change with readability', async () => {
-      chrome.readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.imagesEnabled = false;
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeReadability;
@@ -1165,7 +1149,6 @@ suite('ContentController', () => {
       figure.appendChild(captionElement);
       containerElement.appendChild(figure);
 
-      chrome.readingMode.imagesFeatureEnabled = true;
       chrome.readingMode.imagesEnabled = true;
       contentController.setState(ContentType.HAS_CONTENT);
 
@@ -1452,7 +1435,6 @@ suite('ContentController', () => {
 
   suite('hidden images empty state', () => {
     setup(() => {
-      readingMode.imagesFeatureEnabled = true;
       readingMode.rootId = 1;
       readingMode.getHtmlTag = (id) => id === 1 ? 'img' : '';
       readingMode.getChildren = (id) => id === 1 ? [] : [];
