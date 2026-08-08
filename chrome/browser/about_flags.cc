@@ -4670,8 +4670,7 @@ const FeatureEntry::Choice kOnDeviceWebSpeechSmallExpertModelChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "OnDeviceWebSpeech,OnDeviceWebSpeechSmallExpertModel,"
-     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend,"
-     "OnDeviceModelGpuProgramCache,OnDeviceModelGpuWeightCache"}};
+     "OptimizationGuideManifestBroker,OnDeviceModelLitertLmBackend"}};
 
 const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
     {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};
