@@ -130,15 +130,16 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         assert bookmarkBarSwitch != null;
         bookmarkBarSwitch.setManagedPreferenceDelegate(
                 new ChromeManagedPreferenceDelegate(getProfile()) {
-                    // If true, the helper methods in ManagedPreferencesUtils will disable the
-                    // switch and show the "managed by your organization"
-                    // text with the business icon.
+                    // If true, helper methods in ManagedPreferencesUtils will disable the switch
+                    // and display the text "Managed by your organization" with the business icon.
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(
                                 getProfile());
                     }
 
+                    // If true, helper methods in ManagedPreferencesUtils will display the text
+                    // "Recommended by your organization" with the business icon.
                     @Override
                     public @Nullable Boolean isPreferenceRecommendation(Preference preference) {
                         if (!BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(getProfile())) {
@@ -146,9 +147,19 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                             return null;
                         }
 
-                        // Return true if the user's setting matches the recommendation, which
-                        // shows the icon & text. Return false if it doesn't match, which hides
-                        // the icon & text.
+                        // On tablets, we use device-specific SharedPreferences. This requires
+                        // special treatment for enterprise policies; which are UserPrefs bound. If
+                        // a user has set a SharedPreference value, we must compare that value to
+                        // the UserPrefs policy's recommended value directly.
+                        if (BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar()) {
+                            return BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(
+                                            getProfile())
+                                    == BookmarkBarUtils.getUserPrefsShowBookmarkBarRecommendedValue(
+                                            getProfile());
+                        }
+
+                        // In the user has not set a SharedPreferences value (which is always the
+                        // case on Desktop), we can simply follow the standard UserPrefs flow.
                         return BookmarkBarUtils.isUserPrefsShowBookmarkBarFollowingRecommendation(
                                 getProfile());
                     }
@@ -223,9 +234,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 .setOnPreferenceChangeListener(
                         (pref, newValue) -> {
                             BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    getProfile(),
-                                    (boolean) newValue,
-                                    /* fromKeyboardShortcut= */ false);
+                                    (boolean) newValue, /* fromKeyboardShortcut= */ false);
                             return true;
                         });
     }

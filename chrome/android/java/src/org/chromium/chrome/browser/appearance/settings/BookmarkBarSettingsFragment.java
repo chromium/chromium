@@ -165,9 +165,7 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
             mBookmarkBarPref.setOnPreferenceChangeListener(
                     (pref, newValue) -> {
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                getProfile(),
-                                (boolean) newValue,
-                                /* fromKeyboardShortcut= */ false);
+                                (boolean) newValue, /* fromKeyboardShortcut= */ false);
                         return true;
                     });
         }

@@ -170,9 +170,7 @@ public class TabbedRootUiCoordinatorTest {
 
                     // Enable the bookmark bar setting for the test.
                     BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                            activity.getProfileProviderSupplier().get().getOriginalProfile(),
-                            true,
-                            /* fromKeyboardShortcut= */ false);
+                            true, /* fromKeyboardShortcut= */ false);
                     testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
                 });
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -57,7 +58,6 @@ import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -493,7 +493,7 @@ public class BookmarkBarMediatorTest {
         when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
         when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
 
-        org.junit.Assert.assertFalse(
+        assertFalse(
                 "ACTION_DOWN for primary click should not be consumed so tooltips can work",
                 touchListener.onTouch(placeholderView, downEvent));
     }
@@ -809,7 +809,9 @@ public class BookmarkBarMediatorTest {
 
         mMediator.toggleBookmarksBar();
 
-        verify(mPrefService).setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), eq(false));
+        assertFalse(
+                ContextUtils.getAppSharedPreferences()
+                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, true));
     }
 
     @Test

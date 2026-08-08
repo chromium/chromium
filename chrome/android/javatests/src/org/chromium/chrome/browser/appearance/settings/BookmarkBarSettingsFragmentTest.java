@@ -171,7 +171,7 @@ public class BookmarkBarSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                            mProfile, true, /* fromKeyboardShortcut= */ false);
+                            true, /* fromKeyboardShortcut= */ false);
                 });
         launchSettings();
 
@@ -200,7 +200,7 @@ public class BookmarkBarSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                            mProfile, true, /* fromKeyboardShortcut= */ false);
+                            true, /* fromKeyboardShortcut= */ false);
                 });
         launchSettings();
 
@@ -212,13 +212,13 @@ public class BookmarkBarSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                mProfile, false, /* fromKeyboardShortcut= */ true));
+                                false, /* fromKeyboardShortcut= */ true));
         Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                mProfile, true, /* fromKeyboardShortcut= */ false));
+                                true, /* fromKeyboardShortcut= */ false));
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
     }
 

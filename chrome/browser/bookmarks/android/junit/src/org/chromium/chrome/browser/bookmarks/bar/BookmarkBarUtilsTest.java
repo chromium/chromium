@@ -105,7 +105,7 @@ public class BookmarkBarUtilsTest {
 
             when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR))
                     .thenReturn(mHasRecommendation);
-            when(mPrefService.isRecommendedPreference(Pref.SHOW_BOOKMARK_BAR))
+            when(mPrefService.isFollowingRecommendation(Pref.SHOW_BOOKMARK_BAR))
                     .thenReturn(mIsFromRecommendation);
         }
     }
@@ -202,7 +202,7 @@ public class BookmarkBarUtilsTest {
         // Sets the shadow SharedPref (a simple hashmap in memory) to disabled and mSetting (pref
         // service simulation) variable to false.
         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                mProfile, /* enabled= */ false, /* fromKeyboardShortcut= */ false);
+                /* enabled= */ false, /* fromKeyboardShortcut= */ false);
 
         // Simulates the policy configuration.
         new BookmarkBarPolicyBuilder()
@@ -216,11 +216,35 @@ public class BookmarkBarUtilsTest {
                 "Should be false when user overrides recommendation to off.",
                 BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
 
-        // Case 5: No policies, user preference is on.
+        // Case 5: Recommended policy exists (toggle off) and user has not set a preference.
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        mSetting.set(false); // mock mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)
+        new BookmarkBarPolicyBuilder()
+                .setManaged(/* isManaged= */ false, /* value= */ false)
+                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ true)
+                .build();
+        assertFalse(
+                "Should be false when value is from recommendation (off).",
+                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+
+        // Case 6: Recommended policy exists (toggle off) but user has overridden it to on.
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                /* enabled= */ true, /* fromKeyboardShortcut= */ false);
+
+        new BookmarkBarPolicyBuilder()
+                .setManaged(/* isManaged= */ false, /* value= */ false)
+                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ false)
+                .build();
+
+        assertTrue(
+                "Should be true when user overrides recommendation to on.",
+                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+
+        // Case 7: No policies, user preference is on.
 
         // Write true to both the shadow SharedPref and mSettings (our PrefService mock).
         BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                mProfile, /* enabled= */ true, /* fromKeyboardShortcut= */ false);
+                /* enabled= */ true, /* fromKeyboardShortcut= */ false);
 
         // Resets configurations and applies default (all false).
         new BookmarkBarPolicyBuilder().build();
@@ -230,7 +254,7 @@ public class BookmarkBarUtilsTest {
                 "Should be true when user pref is on and no policies exist.",
                 BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
 
-        // Case 6: No policies, no user preference, default is off.
+        // Case 8: No policies, no user preference, default is off.
 
         // Grabs the shadow SharedPref and wipes it clean, simulating the fresh install state where
         // the user has no preference saved.
@@ -395,7 +419,7 @@ public class BookmarkBarUtilsTest {
 
                             // Case: feature allowed explicit device pref
                             BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    mProfile, true, /* fromKeyboardShortcut= */ false);
+                                    true, /* fromKeyboardShortcut= */ false);
                             assertTrue(
                                     BookmarkBarUtils.isBookmarkBarVisible(
                                             activity, mProfile, false));
@@ -412,7 +436,7 @@ public class BookmarkBarUtilsTest {
                         activity -> {
                             BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
                             BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                    mProfile, true, /* fromKeyboardShortcut= */ false);
+                                    true, /* fromKeyboardShortcut= */ false);
 
                             // Case: XR full space mode is enabled.
                             assertFalse(
@@ -527,8 +551,7 @@ public class BookmarkBarUtilsTest {
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_IN_SETTINGS)
                         .build();
 
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                mProfile, true, /* fromKeyboardShortcut= */ true);
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ true);
         assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
@@ -540,8 +563,7 @@ public class BookmarkBarUtilsTest {
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT)
                         .build();
 
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                mProfile, false, /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false, /* fromKeyboardShortcut= */ false);
         assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
         assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 

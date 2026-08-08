@@ -189,10 +189,7 @@ public class ToolbarTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testControlContainerTopMarginOnTablet() {
         // Enable the bookmark bar setting for the test.
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
-                true,
-                /* fromKeyboardShortcut= */ false);
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ false);
         testControlContainerTopMargin(/* expectBookmarkBar= */ true);
     }
 
