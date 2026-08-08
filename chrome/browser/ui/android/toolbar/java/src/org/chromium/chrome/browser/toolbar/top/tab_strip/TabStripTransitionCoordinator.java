@@ -242,11 +242,17 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                 };
         controlContainerView().addOnLayoutChangeListener(mOnLayoutChangedListener);
 
+        // Wrap the callback in makeCancelable so that if the coordinator is destroyed before the
+        // delegate becomes available, the callback is canceled and will not run on a destroyed
+        // instance.
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                (delegate) -> {
-                    updateTabStripTransitionThreshold();
-                    delegate.setFadeTransitionThresholdChangedCallback(this::updateTabStripTransitionThreshold);
-                });
+                mCallbackController.makeCancelable(
+                        (delegate) -> {
+                            updateTabStripTransitionThreshold();
+                            delegate.setFadeTransitionThresholdChangedCallback(
+                                    mCallbackController.makeCancelable(
+                                            this::updateTabStripTransitionThreshold));
+                        }));
 
         AppHeaderState appHeaderState = null;
         if (mDesktopWindowStateManager != null) {
@@ -324,10 +330,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
-        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
-                (delegate) -> {
-                    delegate.setFadeTransitionThresholdChangedCallback(null);
-                });
+        TabStripTransitionDelegate delegate = mTabStripTransitionDelegateSupplier.get();
+        if (delegate != null) {
+            delegate.setFadeTransitionThresholdChangedCallback(null);
+        }
         mCallbackController.destroy();
         mHeightTransitionHandler.destroy();
     }
