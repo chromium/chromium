@@ -1449,6 +1449,46 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testOnTintChanged_GlicActionChip() {
+        var focusedTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mToolbarTablet.getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        /* isActivityFocused= */ true);
+
+        var unfocusedTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mToolbarTablet.getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        /* isActivityFocused= */ false);
+
+        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
+        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
+
+        // 1. Show the Glic action chip and set initial focused tint.
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ true, mockClickListener, mockLongClickListener);
+        ImageView glicChip = (ImageView) mToolbarTablet.getGlicActionChipView();
+        assertNotNull("Glic action chip should be inflated and non-null.", glicChip);
+
+        // Apply focused activity tint first.
+        mToolbarTablet.onTintChanged(focusedTint, focusedTint, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                "Glic action chip should initially have the focused tint.",
+                focusedTint.getDefaultColor(),
+                glicChip.getImageTintList().getDefaultColor());
+
+        // 2. Simulate activity losing focus / tint update.
+        mToolbarTablet.onTintChanged(focusedTint, unfocusedTint, BrandedColorScheme.APP_DEFAULT);
+
+        // Verify the Glic action chip receives the unfocused activity tint.
+        assertEquals(
+                "Glic action chip tint is incorrect when activity is unfocused.",
+                unfocusedTint.getDefaultColor(),
+                glicChip.getImageTintList().getDefaultColor());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testSetGlicActionChipVisibility_invokesOnWidthConsumerVisibilityChanged() {
         View.OnClickListener mockClickListener = mock(View.OnClickListener.class);

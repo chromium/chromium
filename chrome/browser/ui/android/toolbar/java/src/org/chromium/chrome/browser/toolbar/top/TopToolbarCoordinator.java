@@ -1239,14 +1239,11 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     /** Returns whether the Glic button should be shown on the toolbar. */
     public boolean shouldShowGlicToolbarButton() {
         if (!(mToolbarLayout instanceof ToolbarTablet)) return false;
-        if (mIsVerticalTabsActiveSupplier == null
-                || mIsGlicPinnedSupplier == null
-                || mIncognitoStateProvider == null) {
+        if (mIsVerticalTabsActiveSupplier == null || mIsGlicPinnedSupplier == null) {
             return false;
         }
         return Boolean.TRUE.equals(mIsVerticalTabsActiveSupplier.get())
-                && Boolean.TRUE.equals(mIsGlicPinnedSupplier.get())
-                && !mIncognitoStateProvider.isIncognitoSelected();
+                && Boolean.TRUE.equals(mIsGlicPinnedSupplier.get());
     }
 
     /**

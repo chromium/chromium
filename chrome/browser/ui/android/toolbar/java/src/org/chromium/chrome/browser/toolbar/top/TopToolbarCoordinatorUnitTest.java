@@ -252,21 +252,25 @@ public class TopToolbarCoordinatorUnitTest {
         inOrder.verify(mToolbarLayout)
                 .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
-        // 5. Repeat the combinations above with Incognito = true. Glic should remain hidden.
+        // In Incognito mode, button visibility should still reflect VT active and pinned state.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
 
+        // VT active = false, pinned = true -> Glic chip hidden.
         incognitoStateProvider.setIncognitoStateForTesting(true);
         inOrder.verify(mToolbarLayout)
                 .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
+        // VT active = true, pinned = true -> Glic chip visible.
         isVerticalTabActiveSupplier.set(true);
         inOrder.verify(mToolbarLayout)
-                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
+                .setGlicActionChipVisibility(eq(true), any(), eq(mGlicLongClickListener));
 
+        // VT active = true, pinned = false -> Glic chip hidden.
         isGlicPinnedSupplier.set(false);
         inOrder.verify(mToolbarLayout)
                 .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
+        // VT active = false, pinned = false -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(false);
         inOrder.verify(mToolbarLayout)
                 .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
@@ -343,10 +347,10 @@ public class TopToolbarCoordinatorUnitTest {
         // Verify that the long-press event was delegated to mGlicLongClickListener.
         verify(mGlicLongClickListener).onLongClick(mockView);
 
-        // In incognito mode -> false.
+        // In incognito mode, button should still show if VT is active and Glic is pinned.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         incognitoStateProvider.setIncognitoStateForTesting(true);
-        assertFalse(mCoordinator.shouldShowGlicToolbarButton());
+        assertTrue(mCoordinator.shouldShowGlicToolbarButton());
 
         // Test getGlicActionChipView.
         when(mToolbarLayout.getGlicActionChipView()).thenReturn(mGlicActionChipView);

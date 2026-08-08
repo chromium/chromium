@@ -293,6 +293,9 @@ public class ToolbarTablet extends ToolbarLayout {
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
             ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
         }
+        if (mGlicActionChip != null) {
+            ImageViewCompat.setImageTintList(mGlicActionChip, activityFocusTint);
+        }
     }
 
     @Override

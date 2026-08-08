@@ -167,7 +167,6 @@ import org.chromium.chrome.browser.open_in_app.TabbedOpenInAppEntryPoint;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
@@ -457,6 +456,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         public void destroy() {
             if (mLayoutStateProvider != null && mGestureNavLayoutObserver != null) {
                 mLayoutStateProvider.removeObserver(mGestureNavLayoutObserver);
+            }
+            if (mPrefChangeRegistrar != null) {
+                mPrefChangeRegistrar.destroy();
+                mPrefChangeRegistrar = null;
             }
             super.destroy();
             swapToTab(null);
@@ -2492,12 +2495,31 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         // Set up vertical tabs + pinned Glic visibility interaction.
-        if (profile != null && GlicEnabling.isEnabledForProfile(profile)) {
-            mIsGlicPinnedSupplier.set(GlicUtils.isButtonPinnedToTabStrip(profile));
-            mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
-            mPrefChangeRegistrar.addObserver(
-                    GlicPrefNames.GLIC_PINNED_TO_TABSTRIP,
-                    () -> mIsGlicPinnedSupplier.set(GlicUtils.isButtonPinnedToTabStrip(profile)));
+        if (profile != null && profile.isNativeInitialized()) {
+            Profile originalProfile = profile.getOriginalProfile();
+            // Need to pass originalProfile here for the glic button to show in incognito at all.
+            if (originalProfile != null
+                    && originalProfile.isNativeInitialized()
+                    && GlicEnabling.isEnabledForProfile(originalProfile)) {
+
+                mIsGlicPinnedSupplier.set(GlicUtils.isButtonPinnedToTabStrip(originalProfile));
+
+                if (mPrefChangeRegistrar != null) {
+                    mPrefChangeRegistrar.destroy();
+                    mPrefChangeRegistrar = null;
+                }
+
+                // Register PrefChangeRegistrar using the current profile (regular or incognito).
+                mPrefChangeRegistrar = new PrefChangeRegistrar(UserPrefs.get(profile));
+                mPrefChangeRegistrar.addObserver(
+                        GlicPrefNames.GLIC_PINNED_TO_TABSTRIP,
+                        () -> {
+                            if (profile.isNativeInitialized()) {
+                                mIsGlicPinnedSupplier.set(
+                                        GlicUtils.isButtonPinnedToTabStrip(profile));
+                            }
+                        });
+            }
         }
 
         var toolbar = assumeNonNull(getToolbarManagerSupplier().get()).getTopToolbarCoordinator();
@@ -2506,6 +2528,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mIsGlicPinnedSupplier,
                 mIncognitoStateProvider,
                 anchorView -> {
+                    if (profile == null) return false;
                     ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
 
                     if (mGlicButtonContextMenuCoordinator == null) {
@@ -2514,7 +2537,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         mActivity, TabStripLayoutType.VERTICAL);
                     }
 
-                    // Build and show the "Unpin" context menu for the VT toolbar Gemini button.
+                    // Build and show the "Unpin" context menu for the VT toolbar Gemini button. Use
+                    // getOriginalProfile() here so unpinning in Incognito updates the main profile
+                    // PrefService.
                     mGlicButtonContextMenuCoordinator.showMenu(
                             rectProvider,
                             mActivity,
@@ -2981,6 +3006,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public boolean toggleGlic(boolean preventClose, @GlicInvocationSource int invocationSource) {
         Profile profile =
                 mTabModelSelectorSupplier.asNonNull().get().getCurrentModel().getProfile();
+
+        // Handle Incognito click. Show the snackbar and return early.
+        if (profile != null && profile.isOffTheRecord()) {
+            GlicHelper.showNotAvailableInIncognitoSnackbar(mActivity);
+            return false;
+        }
+
         if (profile == null || !GlicEnabling.isEnabledForProfile(profile)) {
             return false;
         }
