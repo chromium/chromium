@@ -11,7 +11,7 @@ import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chr
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
-import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -38,6 +38,7 @@ suite('NewTabPageActionChipsTest', () => {
         fuseboxAction: {
           preselectedTool: ToolMode.kUnspecified,
           preferredInventory: null,
+          preselectedModel: ModelMode.kUnspecified,
         },
       },
       suggestion: 'Suggestion for recent tab',
@@ -56,6 +57,7 @@ suite('NewTabPageActionChipsTest', () => {
         fuseboxAction: {
           preselectedTool: ToolMode.kImageGen,
           preferredInventory: null,
+          preselectedModel: ModelMode.kUnspecified,
         },
       },
       suggestion: 'Suggestion for image',
@@ -69,6 +71,7 @@ suite('NewTabPageActionChipsTest', () => {
         fuseboxAction: {
           preselectedTool: ToolMode.kDeepSearch,
           preferredInventory: null,
+          preselectedModel: ModelMode.kUnspecified,
         },
       },
       suggestion: 'Suggestion for deep search',
@@ -78,10 +81,12 @@ suite('NewTabPageActionChipsTest', () => {
 
   // A helper type to make suggestTemplateInfo.fuseboxAction optional for test
   // definitions.
+  type TestFuseboxAction =
+      Partial<ActionChip['suggestTemplateInfo']['fuseboxAction']>;
   type TestActionChip = Omit<ActionChip, 'suggestTemplateInfo'>&{
     suggestTemplateInfo:
         Omit<ActionChip['suggestTemplateInfo'], 'fuseboxAction'>& {
-          fuseboxAction?: ActionChip['suggestTemplateInfo']['fuseboxAction'],
+          fuseboxAction?: TestFuseboxAction,
         },
   };
 
@@ -110,7 +115,13 @@ suite('NewTabPageActionChipsTest', () => {
           ...chip,
           suggestTemplateInfo: {
             ...chip.suggestTemplateInfo,
-            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? null,
+            fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ? {
+              preselectedTool: ToolMode.kUnspecified,
+              preferredInventory: null,
+              preselectedModel: ModelMode.kUnspecified,
+              ...chip.suggestTemplateInfo.fuseboxAction,
+            } :
+                                                                    null,
           },
         }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {

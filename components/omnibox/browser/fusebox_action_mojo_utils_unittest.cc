@@ -25,6 +25,7 @@ TEST(FuseboxActionMojoUtilsTest, ConvertsAllProtoFieldsToMojo) {
   EXPECT_EQ(mojo_action->preselected_tool, omnibox::TOOL_MODE_CANVAS);
   EXPECT_EQ(mojo_action->preferred_inventory,
             omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
+  EXPECT_FALSE(mojo_action->preselected_model);
 }
 
 TEST(FuseboxActionMojoUtilsTest, DebugPrintFuseboxAction) {
@@ -39,6 +40,7 @@ TEST(FuseboxActionMojoUtilsTest, DebugPrintFuseboxAction) {
             "FuseboxAction{\n"
             "  preselected_tool: 2,\n"
             "  preferred_inventory: 0,\n"
+            "  preselected_model: null,\n"
             "}");
 }
 

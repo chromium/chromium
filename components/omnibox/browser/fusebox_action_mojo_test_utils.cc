@@ -29,6 +29,12 @@ void PrintImpl(const FuseboxAction& action, int indent, std::ostream* os) {
   } else {
     *os << ind << "  preferred_inventory: null,\n";
   }
+  if (action.preselected_model) {
+    *os << ind << "  preselected_model: "
+        << static_cast<int>(*action.preselected_model) << ",\n";
+  } else {
+    *os << ind << "  preselected_model: null,\n";
+  }
   *os << ind << "}";
 }
 

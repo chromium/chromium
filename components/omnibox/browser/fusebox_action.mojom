@@ -11,4 +11,5 @@ import "components/omnibox/composebox/composebox_query.mojom";
 struct FuseboxAction {
   composebox_query.mojom.ToolMode? preselected_tool;
   searchbox.mojom.SuggestInventory? preferred_inventory;
+  composebox_query.mojom.ModelMode? preselected_model;
 };
