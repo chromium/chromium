@@ -7,7 +7,7 @@
 <translation id="1013852467930342108">Gemini Live ist eine neue Funktion von Gemini in Chrome</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
-<translation id="1018804590490383958">Scannen und automatisch ausfüllen</translation>
+<translation id="1018804590490383958">Scannen und automatisch einfügen</translation>
 <translation id="1019990162050689579">Aktivitäten in Gemini-Apps</translation>
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Passwortmanager öffnen</translation>
@@ -372,7 +372,7 @@
 <translation id="2165110345209765380">Suche mit KI-Modus abgeschlossen.</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2180338296831857171">Adressen löschen</translation>
-<translation id="218350106843433823">Passwörter und Passkeys automatisch eintragen</translation>
+<translation id="218350106843433823">Passwörter und Passkeys automatisch einfügen</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tippe auf <ph name="BEGIN_BOLD" />In Downloads speichern<ph name="END_BOLD" /></translation>
@@ -414,7 +414,7 @@
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2306265833370324042">Details für <ph name="SEARCH_ENGINE_NAME" /> anzeigen</translation>
 <translation id="2309265394777270359">Tab schließen</translation>
-<translation id="2310789833878085574">Speichern und automatisch ausfüllen</translation>
+<translation id="2310789833878085574">Speichern und automatisch einfügen</translation>
 <translation id="2311077293164383652">Angepinnten Tab schließen</translation>
 <translation id="2316129865977710310">Nein, danke</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
@@ -475,7 +475,7 @@
 <translation id="2512709994717613803">Level <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="251837347827266434">Du wirst abgemeldet, Tabs werden geschlossen und Browserdaten gelöscht</translation>
-<translation id="2520787026086861736">Wenn du die Funktion deaktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />Autom. ausfüllen &amp; Passwörter<ph name="END_LINK" /></translation>
+<translation id="2520787026086861736">Wenn du die Funktion deaktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />Autofill &amp; Passwörter<ph name="END_LINK" /></translation>
 <translation id="2523295204312809179">Wenn du eine Tabgruppe schließt, wird sie automatisch hier gespeichert</translation>
 <translation id="2524699375503213836">Daten aus Safari importieren</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
@@ -807,7 +807,7 @@
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
 <translation id="372115889256123713">im Cache gespeicherte Dateien</translation>
 <translation id="3725081662140949903">Wenn du verhindern möchtest, dass andere Personen dein Passwort verwenden, öffne die <ph name="APP" /> App und ändere es</translation>
-<translation id="372676576864368480"><ph name="LAST_DIGITS" /> als Endziffern der Kartennummer automatisch ausfüllen</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> als Endziffern der Kartennummer automatisch einfügen</translation>
 <translation id="3738428049780661523">Erstellt: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Aufnahmen</translation>
 <translation id="3743545564993953213">Diese Website versucht, die App „Verknüpfungen“ zu öffnen.</translation>
@@ -900,7 +900,7 @@
 <translation id="4007463141047732631">Gruppe bearbeiten</translation>
 <translation id="4011489366247192265">Ausgangssprache</translation>
 <translation id="4017599800655151880">Miniaturansicht</translation>
-<translation id="4018440314314549819">Gespeicherte Passwörter automatisch eintragen</translation>
+<translation id="4018440314314549819">Gespeicherte Passwörter automatisch einfügen</translation>
 <translation id="4021447724486050609">Browser aktualisieren</translation>
 <translation id="4021931095789478915">${url} zur Leseliste hinzufügen</translation>
 <translation id="4028871427853484857">Im Konto speichern…</translation>
@@ -1146,7 +1146,7 @@
 <translation id="4854068532375923088">Gemini die Verwendung deiner Kamera erlauben</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4861953997778766866">Jeder kann Änderungen an deinen freigegebenen Tabgruppen vornehmen</translation>
-<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch eintragen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
+<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch einfügen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="4867608294647017606">Bild aus Suche entfernen</translation>
 <translation id="4869146460927742717">Position der Adressleiste</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
@@ -1455,7 +1455,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="5859715514067755465">Weiter</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
-<translation id="5868644772996939262">Passwörter und Passkeys automatisch eintragen</translation>
+<translation id="5868644772996939262">Passwörter und Passkeys automatisch einfügen</translation>
 <translation id="5873179562631407582">Geöffnete Tabs gedrückt halten</translation>
 <translation id="5887400589839399685">Karte gespeichert</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
@@ -1574,7 +1574,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6240601837375010619">Reisepass speichern</translation>
 <translation id="6241132809279377987">Mehr Funktionen für dein iPhone über Google-Apps</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
-<translation id="6251835855431997163">Automatisch ausfüllen mit <ph name="VALUE" /></translation>
+<translation id="6251835855431997163"><ph name="VALUE" /> automatisch einfügen</translation>
 <translation id="6253686838150111720">In <ph name="URL" /> anmelden</translation>
 <translation id="6254066287920239840">Links in der App statt im Browser öffnen.</translation>
 <translation id="6259928806013786178">Lesemodus konnte nicht aktiviert werden</translation>
@@ -1592,7 +1592,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Position der Adressleiste auswählen</translation>
 <translation id="6307241780749477694">Bestätige deine Identität, damit du auf alle deine Passwörter auf diesem Gerät zugreifen kannst</translation>
-<translation id="6307792728709337290">Du kannst deine Karte in deinem Google-Konto speichern, um sie bei diesem und zukünftigen Käufen in Chrome automatisch ausfüllen zu lassen.</translation>
+<translation id="6307792728709337290">Du kannst deine Karte in deinem Google-Konto speichern, um die Karteninformationen bei diesem und zukünftigen Käufen in Chrome automatisch einzufügen.</translation>
 <translation id="6316141353357700666">Wähle das gewünschte Passwort aus der angezeigten Liste aus.</translation>
 <translation id="6321526113093607004">Zu Lesezeichen hinzufügen</translation>
 <translation id="6327249202318869726">Gemini ist für dein Konto deaktiviert. Weitere Informationen erhältst du von deinem Administrator.</translation>
@@ -1737,7 +1737,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Geändert: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Erhaltene Tabs</translation>
-<translation id="6722638373100589752">Wenn du deine Informationen automatisch ausfüllen lassen möchtest, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
+<translation id="6722638373100589752">Wenn deine Informationen automatisch eingefügt werden sollen, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
 <translation id="6723740634201835758">Im Google-Konto</translation>
 <translation id="6724024423419410528">Farben</translation>
 <translation id="672735642903863329">Auf allen deinen Geräten auf Lesezeichen, Passwörter und andere Daten zugreifen.</translation>
@@ -1836,7 +1836,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7035825883570480307">Benachrichtigungen aktivieren?</translation>
 <translation id="7039345315346323556">Zuletzt verwendet</translation>
 <translation id="704692552158601232">Standard-Browser-App</translation>
-<translation id="7055240621761583113">Passwort automatisch ausfüllen</translation>
+<translation id="7055240621761583113">Passwort automatisch einfügen</translation>
 <translation id="7057567173736333354">Bild beschreiben</translation>
 <translation id="7063811929043357292">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -1987,7 +1987,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
-<translation id="7603308509262646847"><ph name="NAME" /> als Karteninhaber automatisch ausfüllen</translation>
+<translation id="7603308509262646847"><ph name="NAME" /> als Karteninhaber automatisch einfügen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisierung funktioniert nicht</translation>
 <translation id="7606639338662398635">Tabgruppen</translation>
@@ -2017,7 +2017,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7696316012653762532">Optionen zum Übersetzen der Seite</translation>
 <translation id="7700527812567437847">Mit Google Lens anhand von Bildschirminhalt suchen</translation>
 <translation id="7701040980221191251">Keine Einträge</translation>
-<translation id="7702428539671224160">Zahlungsinformationen auf <ph name="URL" /> automatisch ausfüllen</translation>
+<translation id="7702428539671224160">Zahlungsinformationen auf <ph name="URL" /> automatisch einfügen</translation>
 <translation id="7708994397325774423">Auf alle deine Passwörter zugreifen</translation>
 <translation id="7711440461521638739">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="7712361583414030698">Offlineversion wird angezeigt</translation>
@@ -2032,7 +2032,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7744192722284567281">Bei Datenpanne gefunden</translation>
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
 <translation id="7757015014239760147">Kein Nutzername ••••••••</translation>
-<translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch ausfüllen</translation>
+<translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch einfügen</translation>
 <translation id="7758789811447313947">Violettes Design</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7765158879357617694">Verschieben</translation>
@@ -2115,7 +2115,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8007106936382123905">{count,plural, =1{1 erledigte Aufgabe}other{# erledigte Aufgaben}}</translation>
 <translation id="8010488806779226127">Entdecke Funktionen, die dich beim Surfen unterstützen</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
-<translation id="8014007212279733632">Identität bestätigen, um vertrauliche Daten automatisch ausfüllen zu lassen</translation>
+<translation id="8014007212279733632">Identität bestätigen, um vertrauliche Daten automatisch einzufügen</translation>
 <translation id="8015826420689927262">Anhang löschen</translation>
 <translation id="8017015647846870183">Aus dem Google Passwortmanager, einschließlich Passwörter und Passkeys</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
@@ -2291,7 +2291,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8569721750632860947">Welche URL möchtest du deiner Leseliste hinzufügen?</translation>
 <translation id="8571019948162152515">„<ph name="FILENAME" />“ löschen?</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
-<translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch ausfüllen</translation>
+<translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch einfügen</translation>
 <translation id="8582026929965253036">Mit Gemini live gehen</translation>
 <translation id="8587001564479545614">Wiederherstellungs‑PIN erstellen</translation>
 <translation id="8588404856427128947">Aus</translation>
@@ -2481,7 +2481,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="9152637745605628097">Du kannst Designs und Farben auswählen oder ein Bild hochladen</translation>
 <translation id="9159628751968616911">Webseite senden</translation>
 <translation id="9162412286847966593">Die Daten und Aufzeichnungen deiner Organisation werden nicht zur Verbesserung generativer KI-Modelle verwendet. <ph name="BEGIN_LINK" />Datenschutz und Gemini<ph name="END_LINK" /></translation>
-<translation id="9162432979321511934">Aktiviere die Option zum automatischen Eintragen von Passwörtern</translation>
+<translation id="9162432979321511934">Aktiviere die Option zum automatischen Einfügen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>
 <translation id="9179151630575358778">Blendet dieses Element aus</translation>
 <translation id="9183563643084679152">Du hast einen QR-Code gescannt, um dich in Chrome anzumelden. Du erhältst die Passwörter, Lesezeichen und mehr aus diesem Konto.</translation>

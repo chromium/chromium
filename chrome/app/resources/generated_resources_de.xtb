@@ -2594,7 +2594,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="2990313168615879645">Google-Konto hinzufügen</translation>
 <translation id="2990375978470734995">Damit diese Änderung wirksam wird, musst du das externe Zubehör wieder anschließen.</translation>
-<translation id="2990500505358145117">Tastenkombination für erweitertes automatisches Ausfüllen bearbeiten</translation>
+<translation id="2990500505358145117">Tastenkombination für erweitertes Autofill bearbeiten</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
 <translation id="2992754757708650257">Website verlassen und Aufgabe beenden?</translation>
@@ -2932,7 +2932,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3247649647204519958">Hier kannst du die Erweiterungsberechtigungen für die aktuelle Website ansehen und verwalten</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nimm dir einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
-<translation id="3248957351402065497">Benutzerdefinierte Tastenkombination für erweitertes automatisches Ausfüllen</translation>
+<translation id="3248957351402065497">Benutzerdefinierte Tastenkombination für erweitertes Autofill</translation>
 <translation id="3249558306861350254">Klicke in den Windows-Einstellungen auf <ph name="BEGIN_BOLD" />Als Standard festlegen<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Kompetenz verwalten</translation>
 <translation id="3251119461199395237">Dateisynchronisierung</translation>
@@ -3737,7 +3737,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3827548509471720579">Helligkeit des Displays</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
 <translation id="3828029223314399057">In Lesezeichen suchen</translation>
-<translation id="3828454092958722155">Tastenkombination für erweitertes automatisches Ausfüllen löschen</translation>
+<translation id="3828454092958722155">Tastenkombination für erweitertes Autofill löschen</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Hohe Arbeitsspeichernutzung – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB-Netzwerkfreigabe</translation>
 <translation id="3830470485672984938">Anderen Passkey verwenden</translation>
@@ -7172,7 +7172,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6544134392255015460">Ein-/Aus-Taste für Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="6545665334409411530">Wiederholungsrate</translation>
 <translation id="6547354035488017500">Gib mindestens 512 MB Speicherplatz frei oder dein Gerät reagiert nicht mehr. Lösche Dateien aus dem Gerätespeicher, um Speicherplatz freizugeben.</translation>
-<translation id="6548240707386871455">Tastenkombination für erweitertes automatisches Ausfüllen</translation>
+<translation id="6548240707386871455">Tastenkombination für erweitertes Autofill</translation>
 <translation id="654871471440386944">Tastaturnavigation aktivieren?</translation>
 <translation id="6548945820758901244">Seitenleiste der Google Suche öffnen</translation>
 <translation id="6549038875972762904">Einrichtung wiederholen</translation>
@@ -7201,7 +7201,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6564343790052433242">Damit du einen Passkey für <ph name="APP_NAME" /> erstellen kannst, muss der Google Passwortmanager aktiviert sein</translation>
 <translation id="6565899972286925956">Kreativität ohne Grenzen</translation>
 <translation id="6566648465417201421">Geschlossene geteilte Ansicht wieder öffnen</translation>
-<translation id="656679903990115526">Scanne diesen QR-Code mit deinem Smartphone, um deine Passwörter zu speichern und automatisch ausfüllen zu lassen, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
+<translation id="656679903990115526">Scanne diesen QR-Code mit deinem Smartphone, um deine Passwörter zu speichern und automatisch einzufügen, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
 <translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>

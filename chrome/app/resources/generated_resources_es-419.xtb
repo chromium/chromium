@@ -2771,7 +2771,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3117791853215125017">{COUNT,plural, =1{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Ayuda</translation>
 <translation id="3118748462829336648">Abrir el panel lateral</translation>
-<translation id="3119743309973425629">Velocidad de parpadeo del cursor de texto</translation>
+<translation id="3119743309973425629">Frecuencia de parpadeo del cursor de texto</translation>
 <translation id="3119948370277171654">¿Qué contenido o URL estabas transmitiendo?</translation>
 <translation id="3120204271988747891">Los sitios pueden solicitar acceso a otros dispositivos de tu red local</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2845,7 +2845,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3179982752812949580">Fuente del texto</translation>
 <translation id="31806439105337256">Mostrar las pestañas verticalmente</translation>
 <translation id="3180990259147710757">Mover la mandíbula a la izquierda</translation>
-<translation id="3181307292207270140">Tengo ganas de ir a una cafetería acogedora donde pueda desconectarme un poco, leer y, tal vez, trabajar un poco. ¿Puedes encontrar lugares cercanos que sean conocidos por ser tranquilos, cómodos y que tengan una conexión Wi-Fi confiable?</translation>
+<translation id="3181307292207270140">Tengo ganas de ir a una cafetería agradable donde pueda desconectarme un poco, leer y, tal vez, trabajar un rato. ¿Puedes encontrar lugares cercanos que sean conocidos por ser tranquilos, cómodos y que tengan una conexión Wi-Fi confiable?</translation>
 <translation id="3181825792072797598">Activar la sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y tu dispositivo de sitios peligrosos)</translation>
 <translation id="3182749001423093222">Corrector ortográfico</translation>
@@ -3456,7 +3456,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3647654707956482440">No se pudo usar este vínculo. Para intentarlo nuevamente, verifica que no haya errores ortográficos o usa otro vínculo.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se detectó <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3648667207586409316">¿Qué puedo hacer para ayudar a disminuir el estrés?</translation>
+<translation id="3648667207586409316">¿Qué puedo hacer para disminuir el estrés?</translation>
 <translation id="3650845953328929506">La carga del registro está pendiente.</translation>
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
 <translation id="3652181838577940678">Encuentra los botones del lápiz</translation>
@@ -5515,7 +5515,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5195074424945754995">Las URLs que coincidan con estas reglas no se abrirán en otro navegador, y pueden abrirse en <ph name="BROWSER_NAME" /> o <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="5196790039230503600">Usa el gesto y, luego, mueve la cabeza para mostrar dónde quieres soltar el elemento. Vuelve a usar el gesto para soltarlo.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5197384040493814274">¿Qué sugerencias me pueden ayudar a promocionar mi marca? Incluye consejos sobre cómo puedo optimizar mi sitio web</translation>
+<translation id="5197384040493814274">¿Me das sugerencias de cómo promocionar mi marca? Incluye consejos sobre cómo puedo optimizar mi sitio web</translation>
 <translation id="5199729219167945352">Experimentos</translation>
 <translation id="5200191131577845078">Se permiten notificaciones de <ph name="DOMAIN" /></translation>
 <translation id="5200680225062692606">Touch ID está bloqueado. Para continuar, ingresa tu contraseña.</translation>
@@ -5628,7 +5628,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5290322819358431297">Autocompleta tus contraseñas</translation>
 <translation id="52912272896845572">Archivo de clave privada no válido</translation>
 <translation id="5293043095535566171">¿Quieres activar el acceso a la ubicación?</translation>
-<translation id="5293160437421672778">Encuentra restaurantes aptos para familias que acepten reservas. Debe tener un menú infantil y un ambiente informal</translation>
+<translation id="5293160437421672778">Encuentra restaurantes aptos para familias que acepten reservas. Deben tener un menú infantil y un ambiente informal</translation>
 <translation id="5293170712604732402">Restablecer la configuración a los valores predeterminados originales</translation>
 <translation id="5294068591166433464">Si un sitio intenta robar tu contraseña, o si descargas un archivo dañino, es posible que Chrome también envíe las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="5294618183559481278">Tu <ph name="DEVICE_TYPE" /> utiliza un sensor integrado para detectar personas que estén frente a tu dispositivo. Toda la información se procesa automáticamente en tu dispositivo y, luego, se borra. Los datos de sensores nunca se envían a Google. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -10178,7 +10178,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8841884135319684422">Finalizar tarea</translation>
 <translation id="8842594465773264717">Borrar esta huella dactilar</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
-<translation id="8845586173202501576">Crea un cronograma de estudio de 7 días para mi próximo examen usando la técnica Pomodoro y la repetición espaciada. No quiero estudiar todo el día antes del examen, así que asegúrate de que el día anterior incluya un repaso ligero y tiempo para dormir</translation>
+<translation id="8845586173202501576">Crea un cronograma de estudio de 7 días para mi próximo examen usando la técnica Pomodoro y la repetición espaciada. El día anterior al examen no quiero pasármelo estudiando, así que asegúrate de que ese día incluya solo un repaso ligero y tiempo para dormir</translation>
 <translation id="8846132060409673887">Leer el fabricante y el modelo de esta computadora</translation>
 <translation id="8846239054091760429">Audio mono, startup, Subtitulado instantáneo y más</translation>
 <translation id="8847988622838149491">USB</translation>

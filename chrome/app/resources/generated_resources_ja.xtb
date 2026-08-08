@@ -4410,7 +4410,7 @@
 <translation id="4362459470237309049">「.」キーを使用してマウスボタンを離す</translation>
 <translation id="4362871358537270439">サイドパネルに他のデバイスのタブを表示</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
-<translation id="4364129298304269786">著作権で保護されたコンテンツを再生するために、サイトでコンテンツ保護サービスが使用される場合があります</translation>
+<translation id="4364129298304269786">サイトがコンテンツ保護サービスを使用して、著作権保護コンテンツを再生する場合があります</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{ITEM_COUNT} 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
