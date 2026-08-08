@@ -1536,7 +1536,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Realizouse unha gravación da pantalla</translation>
 <translation id="5314489738835854379">Retroceder polas ventás</translation>
-<translation id="5316716239522500219">Replicar monitores</translation>
+<translation id="5316716239522500219">Duplicar monitores</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319712128756744240">Vincular dispositivo novo</translation>
 <translation id="5322611492012084517">Non puidemos atopar o teu teléfono</translation>
@@ -1775,7 +1775,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="601304062528754300">Destaca o elemento seguinte no andel</translation>
 <translation id="6015573907265691211">Marcar como finalizada</translation>
 <translation id="6016551720757758985">Confirmar o powerwash para volver á versión anterior</translation>
-<translation id="6018164090099858612">Saíndo do modo de proxección</translation>
+<translation id="6018164090099858612">Saíndo do modo de duplicación</translation>
 <translation id="6019566113895157499">Atallos de teclado</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6020147141355393792">Configurar a visualización das notificacións e das aplicacións do teu teléfono</translation>
@@ -2072,7 +2072,7 @@ Nova instalación</translation>
 <translation id="6797493596609571643">Produciuse un erro.</translation>
 <translation id="6797745268063125932">Manter activada</translation>
 <translation id="6802687695197837794">Desta forma, terán acceso <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara e ao micrófono</translation>
-<translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
+<translation id="6803622936009808957">Non se puideron duplicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
 <translation id="6809556495807506746">Os controis non están dispoñibles</translation>
 <translation id="6812232930908427253">Non se puido gardar o escritorio. Hai demasiadas ventás ou pestanas.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>

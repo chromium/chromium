@@ -3733,7 +3733,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3748706263662799310">Informar dun erro</translation>
 <translation id="3749724428455457489">Máis información sobre os anuncios suxeridos do sitio</translation>
 <translation id="3752115502500640407">Compartir unha copia do teu contrasinal de <ph name="WEBSITE" /></translation>
-<translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
+<translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas as partes</translation>
 <translation id="3753142252662437130">Filtros de cores</translation>
 <translation id="3753412199586870466">Abrir panel lateral</translation>
 <translation id="3753585830134123417">Ventás co tamaño cambiado á esquerda</translation>
@@ -5827,7 +5827,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5308989548591363504">Buscar software malicioso</translation>
 <translation id="5309641450810523897">Código de incidencia do servizo de asistencia</translation>
 <translation id="5311304534597152726">Iniciando sesión como</translation>
-<translation id="5312746996236433535">proxectar a pantalla</translation>
+<translation id="5312746996236433535">duplicar a pantalla</translation>
 <translation id="5313967007315987356">Engadir sitio</translation>
 <translation id="5315738755890845852">Hai unha chave de máis: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Gardar</translation>
@@ -7852,7 +7852,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6863496016067551393">Sitios nos que se permite o uso de todas as extensións</translation>
 <translation id="686366188661646310">Queres eliminar o contrasinal?</translation>
 <translation id="6863925886424789941">O Coliseo</translation>
-<translation id="6865313869410766144">Autocompletar datos do formulario</translation>
+<translation id="6865313869410766144">Datos para autocompletar formularios</translation>
 <translation id="6865708901122695652">Rexistros de eventos WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Mínimo</translation>
 <translation id="686664946474413495">Temperatura da cor</translation>
@@ -8185,7 +8185,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7109543803214225826">Quitouse o atallo</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="7111822978084196600">Asigna un nome a esta ventá</translation>
-<translation id="7113314569799918830">Gemini en Chrome estase espallando a cada vez máis lugares, pero non está dispoñible en todas partes.</translation>
+<translation id="7113314569799918830">Gemini en Chrome estase espallando a cada vez máis lugares, pero non está dispoñible en todas as partes.</translation>
 <translation id="7113502843173351041">Coñecer o teu enderezo de correo electrónico</translation>
 <translation id="7115361495406486998">Non hai ningún contacto co que se poida establecer conexión</translation>
 <translation id="7117228822971127758">Téntao de novo máis tarde</translation>
@@ -9350,7 +9350,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7982578888426609524">Modificacións máis recentes deste grupo</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7982878511129296052">Desactivando...</translation>
-<translation id="7984068253310542383">Proxectar <ph name="DISPLAY_NAME" /></translation>
+<translation id="7984068253310542383">Duplicar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985528042147759910">Queres permitir que os accesorios externos accedan á memoria?</translation>
 <translation id="7986295104073916105">Ler e cambiar a configuración dos contrasinais gardados</translation>
 <translation id="7986764869610100215">Esta opción permite compartir os dispositivos USB con convidados de forma permanente. Iso significa que un dispositivo tentará conectarse automaticamente co convidado co estea compartido. Cando se desconecta o dispositivo de xeito manual, esta permanencia desaparece. Se se desactiva a función por completo, restablécese toda a permanencia. Seguro que queres continuar?</translation>

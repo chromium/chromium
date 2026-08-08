@@ -91,7 +91,7 @@
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
-<translation id="1151858212483238980">Du kannst in Google Wallet gespeicherte Karten automatisch ausfüllen lassen</translation>
+<translation id="1151858212483238980">In Google Wallet gespeicherte Karteninformaitonen können automatisch eingefügt werden</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Du siehst dir eine lokale oder freigegebene Datei an</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> hat die Verbindung unerwartet geschlossen.</translation>
@@ -130,13 +130,13 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1201895884277373915">Mehr von dieser Website</translation>
 <translation id="1204184165594298176">{0,plural, =1{Datei kann nicht kopiert werden}other{<ph name="FILE_COUNT" /> Dateien können nicht kopiert werden}}</translation>
 <translation id="120509973613679868">Geschäftsreisen</translation>
-<translation id="1205344127823614428">Du kannst in Google Wallet gespeicherte Karten automatisch ausfüllen lassen.</translation>
+<translation id="1205344127823614428">In Google Wallet gespeicherte Karteninformationen können automatisch eingefügt werden.</translation>
 <translation id="120587177308723209">Fantasy Sport</translation>
 <translation id="1206967143813997005">Erste Signatur ungültig</translation>
 <translation id="1209206284964581585">Vorerst ausblenden</translation>
 <translation id="121201262018556460">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat jedoch ein Zertifikat mit einem schwachen Schlüssel übermittelt. Ein Hacker könnte den privaten Schlüssel geknackt haben, sodass es sich möglicherweise nicht um den erwarteten Server handelt, sondern du stattdessen mit einem Hacker kommunizierst.</translation>
 <translation id="1212527389003717329">Download gestartet. Wenn du ihn sehen möchtest, halte |<ph name="ACCELERATOR" />| gedrückt.</translation>
-<translation id="1215738931000958575">In deinem Google-Konto gespeicherte Informationen verwenden, um Passwörter, Passkeys, Adressen, Zahlungsmethoden und andere Daten automatisch einfügen zu lassen</translation>
+<translation id="1215738931000958575">In deinem Google-Konto gespeicherte Informationen verwenden, um Passwörter, Passkeys, Adressen, Zahlungsmethoden und andere Daten automatisch einzufügen</translation>
 <translation id="1216257595811043403">Tabs automatisch teilen</translation>
 <translation id="1219129156119358924">Systemsicherheit</translation>
 <translation id="1219134100826635117">Dein Administrator hat diese Aktion blockiert</translation>
@@ -266,7 +266,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1406812885827747674">Dieses Mal erlauben</translation>
 <translation id="14070772729708640">Dateien wurden erfolgreich in „<ph name="FOLDER_NAME" />“ bei <ph name="CLOUD_PROVIDER" /> hochgeladen</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
-<translation id="1408696301184924537">Wenn du diese IBAN beim nächsten Mal automatisch ausfüllen lassen möchtest, speichere sie in deinem Google-Konto</translation>
+<translation id="1408696301184924537">Wenn diese IBAN beim nächsten Mal automatisch eingefügt werden soll, speichere sie in deinem Google-Konto</translation>
 <translation id="1408787208417187241">Drei Heftklammern oben</translation>
 <translation id="1410306713026702438"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> von <ph name="NUM_MATCHES_IN_GROUP" /> in der Gruppe „<ph name="GROUP_HEADER" />“.</translation>
 <translation id="1410365862999780287">Andere Personen, die dieses Gerät verwenden, können deine Aktivitäten nicht sehen, sodass du privat surfen kannst. Dies hat keine Auswirkungen darauf, wie Daten durch von dir besuchte Websites und den von ihnen genutzten Diensten, einschließlich Google, erhoben werden. Downloads, Lesezeichen und Webseiten auf deiner Leseliste werden gespeichert.</translation>
@@ -847,11 +847,11 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301064673700597535">Qualifizierte Zertifikatsanweisungen</translation>
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
-<translation id="2302571905116831849">Kundenkarte automatisch ausfüllen</translation>
+<translation id="2302571905116831849">Kundenkarte automatisch einfügen</translation>
 <translation id="230286397113210245">Button „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
 <translation id="2303437270440428119">OpenDocument-Tabelle</translation>
 <translation id="2306124309679506798">Immersive Nutzung zulassen?</translation>
-<translation id="2310789833878085574">Speichern und automatisch ausfüllen</translation>
+<translation id="2310789833878085574">Speichern und automatisch einfügen</translation>
 <translation id="2312234273148520048">Würzmittel und Dressings</translation>
 <translation id="2316087952091171402">Weniger als <ph name="UPPER_ESTIMATE" />. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
 <translation id="2316090909467242775">Wiederherstellungspasswort probieren</translation>
@@ -861,15 +861,15 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2320564945062300737">Gesichtspflegeprodukte</translation>
 <translation id="2321291402658100099">Informationen verwalten</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 Fenster}other{# Fenster}}</translation>
-<translation id="232390861414237658">Diese Karte bei Käufen in Chrome automatisch ausfüllen, wenn sie für die Verwendung mit Google Pay gespeichert wurde</translation>
-<translation id="2326283484705860548">Es können jetzt mehr Informationen aus Google Wallet automatisch ausgefüllt werden</translation>
+<translation id="232390861414237658">Informationen dieser Karte bei Käufen in Chrome automatisch einfügen, wenn sie für die Verwendung mit Google Pay gespeichert wurde</translation>
+<translation id="2326283484705860548">Es können jetzt mehr Informationen aus Google Wallet automatisch eingefügt werden</translation>
 <translation id="2328651992442742497">Zugelassen (Standardeinstellung)</translation>
 <translation id="2328955282645810595">Bau- und Elektrowerkzeuge</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
 <translation id="2334327033751265975">Deine geteilten Tabgruppen sind wieder verfügbar</translation>
 <translation id="2337852623177822836">Einstellung wird von deinem Administrator gesteuert</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> möchte eine Kopplung durchführen</translation>
-<translation id="2344529975040861103">Du kannst diese Karte automatisch ausfüllen lassen, weil dein Konto mit Google Pay verknüpft ist</translation>
+<translation id="2344529975040861103">Diese Karteninformationen können automatisch eingefügt werden, weil dein Konto mit Google Pay verknüpft ist</translation>
 <translation id="2346319942568447007">Von dir kopiertes Bild</translation>
 <translation id="2347764072711098973">Mit Affirm, Zip oder Klarna in Raten bezahlen</translation>
 <translation id="2348509731468399833">Preis-Tracking gestoppt.</translation>
@@ -1046,7 +1046,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2595719060046994702">Dieses Gerät und dieses Konto werden nicht von einem Unternehmen oder einer anderen Organisation verwaltet.</translation>
 <translation id="2596415276201385844">Zum Aufbau einer sicheren Verbindung muss die Uhrzeit richtig eingestellt sein. Der Grund hierfür ist, dass Websites sich mithilfe von Zertifikaten identifizieren, die nur für einen bestimmten Zeitraum gelten. Da die Uhrzeit deines Geräts falsch ist, kann Chrome diese Zertifikate nicht bestätigen.</translation>
 <translation id="2597378329261239068">Dieses Dokument ist passwortgeschützt. Gib ein Passwort ein.</translation>
-<translation id="2600083925285092409">Diese Karte bei Käufen in Chromium automatisch ausfüllen, wenn sie für die Verwendung mit Google Pay gespeichert wurde</translation>
+<translation id="2600083925285092409">Informationen dieser Karte bei Käufen in Chromium automatisch einfügen, wenn sie für die Verwendung mit Google Pay gespeichert wurde</translation>
 <translation id="2602283642570832995">Diese Aktion verstößt möglicherweise gegen die Richtlinien von <ph name="DOMAIN" /></translation>
 <translation id="2605979593348332811">Phonetischer Name</translation>
 <translation id="2606760465469169465">Automatische Bestätigung</translation>
@@ -1287,7 +1287,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2995121550202354573">Für alle Gastprofile verwenden</translation>
 <translation id="2995517112308048736">Dateigröße:</translation>
 <translation id="299990983510665749">Wagen mit Fließheck</translation>
-<translation id="3001783404098700732">Wenn du eine gespeicherte Zahlungsmethode für das automatische Ausfüllen verwenden möchtest, wähle den Button „Zahlungsinformationen automatisch ausfüllen“ aus.</translation>
+<translation id="3001783404098700732">Wenn du die Autofill-Funktion für eine gespeicherte Zahlungsmethode verwenden möchtest, wähle den Button „Zahlungsinformationen automatisch einfügen“ aus.</translation>
 <translation id="3002501248619246229">Medien im Eingabefach prüfen</translation>
 <translation id="3005723025932146533">Gespeicherte Kopie anzeigen</translation>
 <translation id="300580149047131921">Zuletzt verwendet</translation>
@@ -1764,7 +1764,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Wenn du den Google Passwortmanager mit dem macOS-Schlüsselbund verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Schlüsselbund. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
-<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch auszufüllen</translation>
+<translation id="3728173127485570463">Der Chrome-Browser benötigt deinen Fingerabdruck nicht mehr, um Passwörter automatisch einzufügen</translation>
 <translation id="3736564442532774454">Der Chrome-Browser versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3739842843727261045">Mit „Mag ich“ gibst du an, dass dir diese Ergebnisse gefallen.</translation>
@@ -2482,7 +2482,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4864406669374375262">Versionsstring in Zwischenablage kopiert</translation>
 <translation id="486459320933704969">Ein Elternteil oder Erziehungsberechtigter muss dir erlauben, diese Website zu besuchen.</translation>
 <translation id="4864801646102013152">Heimwerken</translation>
-<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch eintragen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
+<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch einfügen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="4866506163384898554">Zum Einblenden des Cursors |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
 <translation id="4868277513442568587">Aktualisiere Chrome, um deine geteilten Tabgruppen weiterhin verwenden zu können</translation>
 <translation id="4873616204573862158">Brillen</translation>
@@ -2645,7 +2645,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
-<translation id="5116015291385561204">Identität bestätigen, um vertrauliche Daten automatisch ausfüllen zu lassen</translation>
+<translation id="5116015291385561204">Identität bestätigen, um vertrauliche Daten automatisch einzufügen</translation>
 <translation id="5120526915373271910">Filme für die ganze Familie</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
@@ -2826,7 +2826,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5396631636586785122">Mehrere Heftklammern rechts</translation>
 <translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, früher <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Ich</translation>
-<translation id="5398461103557553443">Wenn diese IBAN beim nächsten Mal automatisch ausgefüllt werden soll, speichere sie in Google Wallet</translation>
+<translation id="5398461103557553443">Wenn diese IBAN beim nächsten Mal automatisch eingefügt werden soll, speichere sie in Google Wallet</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5401344472773249513">Prominenten- und Unterhaltungsnachrichten</translation>
@@ -3139,7 +3139,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5879272455334365707">Finanzplanung und -management</translation>
 <translation id="5879989559903563723">Im Gastmodus nicht zulässig</translation>
 <translation id="5880050725127890683">Chrome-Sicherheitscheck aufrufen</translation>
-<translation id="5880385758720707152">Privat- und Arbeitsadresse aus deinem Google-Konto automatisch ausfüllen lassen</translation>
+<translation id="5880385758720707152">Privat- und Arbeitsadresse aus deinem Google-Konto automatisch einfügen</translation>
 <translation id="5884465125445718607">Umschlag Chinesisch Nr. 6</translation>
 <translation id="5887400589839399685">Karte gespeichert</translation>
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
@@ -3432,7 +3432,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6322182122604171028">Windows Hello konnte nicht verwendet werden</translation>
 <translation id="6326947323444967009">Chrome in den iOS-Einstellungen als Standardbrowser für das System festlegen</translation>
 <translation id="6328639280570009161">Deaktiviere die Netzwerkvorhersage.</translation>
-<translation id="6329742260390895689">Wenn du deine Informationen automatisch ausfüllen lassen möchtest, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
+<translation id="6329742260390895689">Wenn deine Informationen automatisch eingefügt werden sollen, aktiviere in den Wallet-Einstellungen die Option „Karten/Tickets auf Google verwenden“</translation>
 <translation id="6329815962353376655">&lt;Frage eingeben&gt;</translation>
 <translation id="633348045801643466">Optionen für <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />Später bezahlen<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> an der Kasse anzeigen</translation>
 <translation id="6335029926534404762">Sportschuhe</translation>
@@ -3820,7 +3820,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6927878187051807444">Kameradateien und Screenshots</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mit der Standardsuchmaschine hast du die Möglichkeit, im Web zu suchen und Chrome-Funktionen zu nutzen.<ph name="END_BOLD" /> Du kannst beispielsweise über die Adressleiste oder über Bilder auf Webseiten suchen. Eine Funktion ist möglicherweise nicht verfügbar, wenn sie nicht von deiner Suchmaschine unterstützt wird.</translation>
 <translation id="6934672428414710184">Dieser Name stammt aus deinem Google-Konto</translation>
-<translation id="6935077351544118151">Du kannst Kundenkarten aus Google Wallet jetzt automatisch ausfüllen lassen</translation>
+<translation id="6935077351544118151">Informationen von Kundenkarten können jetzt aus Google Wallet automatisch eingefügt werden.</translation>
 <translation id="6935082727755903526">Buchhaltungs- und Finanzjobs</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
 <translation id="6936976777388162184">Dieses Gerät ist Teil eines Sets und kann nicht mit dem Upgrade für Kioske und Beschilderung registriert werden.</translation>
@@ -3997,7 +3997,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7195432682252510959">Gib diesen Code beim Bezahlen an. Gültig bis <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Aktiviere diese Einstellung und kehre dann zu diesem Tab zurück, um mit dem Schreiben zu beginnen</translation>
 <translation id="7196153352301578792">Chrome sendet automatisch den Seiteninhalt und die URLs der geöffneten Tabs, die für deine Frage relevant sein könnten, an Google, um dir personalisiertere Antworten zu bieten. Chrome teilt nur die Tabs aus dem Fenster, in dem du gerade arbeitest.</translation>
-<translation id="7196370964328811506">Diese Karte bei Käufen in Chrome automatisch ausfüllen, wenn sie auf diesem Gerät gespeichert wurde</translation>
+<translation id="7196370964328811506">Informationen dieser Karte bei Käufen in Chrome automatisch einfügen, wenn sie auf diesem Gerät gespeichert wurde</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und die Eingabetaste, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
 <translation id="7203375778433816396">Chrome als Standardbrowser für das System festlegen</translation>
@@ -4133,7 +4133,7 @@ Weitere Details:
 <translation id="7408613996403626141">Spielzeug</translation>
 <translation id="7410852728357935715">Auf ein Gerät streamen</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
-<translation id="7412081313067625215">Deine Karte wurde in Google Wallet gespeichert, damit du ihre Details bei zukünftigen Käufen automatisch ausfüllen lassen kannst</translation>
+<translation id="7412081313067625215">Deine Karte wurde in Google Wallet gespeichert, damit ihre Details bei zukünftigen Käufen automatisch eingefügt werden können</translation>
 <translation id="7416351320495623771">Passwörter verwalten…</translation>
 <translation id="7416898721136759658">Ausbildungsförderung, Stipendien und Finanzhilfen</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4384,7 +4384,7 @@ Weitere Details:
 <translation id="7752995774971033316">Nicht verwaltet</translation>
 <translation id="7754587126786572336">Deine Chrome-Tabs und -Apps werden zu Beginn des Updates geschlossen</translation>
 <translation id="7755624218968747854">Erste Rolle</translation>
-<translation id="7756441544371887150">Informationen dieser Karte bei Käufen in Chrome automatisch eintragen lassen, wenn sie in Google Wallet gespeichert ist</translation>
+<translation id="7756441544371887150">Informationen dieser Karte bei Käufen in Chrome automatisch einfügen, wenn sie in Google Wallet gespeichert ist</translation>
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
 <translation id="7759147511335618829">MIDI-Gerätesteuerung &amp; -Neuprogrammierung</translation>
 <translation id="7759809451544302770">Optional</translation>
@@ -4434,7 +4434,7 @@ Weitere Details:
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Verfügbare Zahlungsmethoden, die ausgewählt werden können, um mit der Zahlung fortzufahren. Tastatur ausgeblendet.</translation>
-<translation id="784189052219692670">Gemini kann sich jetzt an deine personenbezogenen Daten aus deinen Google-Apps erinnern und sie auf der Seite, die du gerade ansiehst, automatisch ausfüllen.</translation>
+<translation id="784189052219692670">Gemini kann sich jetzt an deine personenbezogenen Daten aus deinen Google-Apps erinnern und sie auf der Seite, die du gerade ansiehst, automatisch einfügen.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="784623644169604270">Keine neuen Aktivitäten</translation>
@@ -4514,7 +4514,7 @@ Weitere Details:
 <translation id="7966803981046576691">Kontotyp des Auftrags</translation>
 <translation id="7967477318370169806">Anlagefonds</translation>
 <translation id="7967636097426665267">Kommunikationsgeräte</translation>
-<translation id="7967973398323409409">Informationen, die automatisch ausgefüllt werden, sind für niemanden sichtbar</translation>
+<translation id="7967973398323409409">Informationen, die automatisch eingefügt werden, sind für niemanden sichtbar</translation>
 <translation id="79682505114836835">Der Wert „<ph name="VALUE" />“ ist kein gültiger Hex-Farbcode.</translation>
 <translation id="7968982339740310781">Details ansehen</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
@@ -4818,7 +4818,7 @@ Weitere Details:
 <translation id="8451518040456311377">Ausweisdokumente speichern und ausfüllen</translation>
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">Die Ansicht am unteren Rand ist geschlossen.</translation>
-<translation id="8456775115498700722">Du kannst jetzt deine Karten von <ph name="CARD_ISSUER_NAME" /> automatisch ausfüllen lassen, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist.</translation>
+<translation id="8456775115498700722">Deine Karteninformationen von <ph name="CARD_ISSUER_NAME" /> können jetzt automatisch eingefügt werden, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist.</translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8461289985785035071">Redress-Nummer bearbeiten</translation>
@@ -4847,7 +4847,7 @@ Weitere Details:
 <translation id="8508648098325802031">Symbol "Suche"</translation>
 <translation id="8511402995811232419">Cookies verwalten</translation>
 <translation id="8513580896341796021">Download gestartet. Um ihn aufzurufen, drücke |<ph name="ACCELERATOR" />|.</translation>
-<translation id="8515544520486085367">Zahlungsinformationen automatisch ausfüllen</translation>
+<translation id="8515544520486085367">Zahlungsinformationen automatisch einfügen</translation>
 <translation id="8519753333133776369">HID-Geräte sind von deinem Administrator zugelassen</translation>
 <translation id="8521013008769249764">Sofas und Sessel</translation>
 <translation id="8521812709849134608">Arbeitsplatten</translation>
@@ -5219,12 +5219,12 @@ Weitere Details:
 <translation id="9138037198177304356">Benachrichtigungen zulässig</translation>
 <translation id="913846191326613072">Wenn Tabs geteilt werden, werden ihre Inhalte und URLs an Google gesendet.</translation>
 <translation id="9139318394846604261">Shopping</translation>
-<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Ausfüllen von Passwörtern verwenden</translation>
+<translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Einfügen von Passwörtern verwenden</translation>
 <translation id="9141013498910525015">Adressen verwalten</translation>
 <translation id="9141435142213469335">Adresse mit weiteren Informationen speichern</translation>
 <translation id="9141510259469546089">Mindestkaufbetrag: <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="9141672681283222114">AR-Berechtigung einmalig gewährt</translation>
-<translation id="9143898823728499852">Du kannst diese Karte automatisch ausfüllen lassen, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist</translation>
+<translation id="9143898823728499852">Diese Karteninformationen können automatisch eingefügt werden, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist</translation>
 <translation id="9144951720726881238">Ablaufdatum:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Melde dich wieder an<ph name="END_LINK" /> und kehre dann zu diesem Tab zurück, um Hilfe beim Formulieren zu erhalten</translation>
 <translation id="9148507642005240123">&amp;Bearbeiten rückgängig machen</translation>
@@ -5296,7 +5296,7 @@ Weitere Details:
 <translation id="940524522703752213">Der Dateiupload in <ph name="CLOUD_PROVIDER" /> beginnt in <ph name="MINUTES" /> Minuten</translation>
 <translation id="943185096918807504">Maximaler Kaufbetrag: <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="944578681290094302">Anzeigen, welche Prämien und Vorteile für deine Karten an der Kasse verfügbar sind. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Informationen zu Kartenvorteilen<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
-<translation id="945673208656386843">Diese Karte bei Käufen in Chromium automatisch ausfüllen, wenn sie auf diesem Gerät gespeichert wurde</translation>
+<translation id="945673208656386843">Informationen dieser Karte bei Käufen in Chromium automatisch einfügen, wenn sie auf diesem Gerät gespeichert wurde</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> Mitglieder sind der Tabgruppe „<ph name="GROUP_NAME" />“ beigetreten</translation>
 <translation id="949314938206378263">Deine Anfrage wurde gesendet. Dein Elternteil kann sie in Family Link prüfen.</translation>
@@ -5321,7 +5321,7 @@ Weitere Details:
 <translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Element}other{# Elemente}}</translation>
 <translation id="976522784004777030">5 × 8 Zoll</translation>
 <translation id="977502174772294970">Hochzeiten</translation>
-<translation id="978750072783101994">Informationen dieser Karte bei Käufen in Chromium automatisch eintragen lassen, wenn sie in Google Wallet gespeichert ist</translation>
+<translation id="978750072783101994">Informationen dieser Karte bei Käufen in Chromium automatisch einfügen, wenn sie in Google Wallet gespeichert ist</translation>
 <translation id="979107176848483472">Dein Browser und Profil werden verwaltet von <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Messen und Tagungen</translation>
 <translation id="981121421437150478">Offline</translation>
