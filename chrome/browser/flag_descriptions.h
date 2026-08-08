@@ -1414,6 +1414,12 @@ inline constexpr char kBottomSheetOnDesktopWindowingDescription[] =
     "Enables modifications that improve the bottom sheet experience when in "
     "desktop mode.";
 
+inline constexpr char kDialogsOnLargeFormFactorsName[] =
+    "Dialogs on Large Form Factors";
+inline constexpr char kDialogsOnLargeFormFactorsDescription[] =
+    "Enables modifications that improve the dialog UX when on large form "
+    "factors.";
+
 inline constexpr char kSeparateWebAppShortcutBadgeIconName[] =
     "Separate Web App Shortcut Badge Icon";
 inline constexpr char kSeparateWebAppShortcutBadgeIconDescription[] =

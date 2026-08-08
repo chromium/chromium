@@ -19833,6 +19833,7 @@ from previous Chrome versions.
   <int value="1654501133" label="UseRunningCompact:disabled"/>
   <int value="1654543587" label="AutofillParseAsync:disabled"/>
   <int value="1654949170" label="ArcSwitchToKeyMintOnT:enabled"/>
+  <int value="1656276044" label="DialogsOnLargeFormFactors:enabled"/>
   <int value="1656675966" label="CrossWindowTabGroupOperations:enabled"/>
   <int value="1656768789" label="EnableGetDebugdLogsInParallel:enabled"/>
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
@@ -20636,6 +20637,7 @@ from previous Chrome versions.
   <int value="1897898952" label="ScheduleWindowCleaning:disabled"/>
   <int value="1898231011" label="enable-native-notifications"/>
   <int value="1898286738" label="EnableRFC8925:disabled"/>
+  <int value="1898528188" label="DialogsOnLargeFormFactors:disabled"/>
   <int value="1898762702" label="AndroidXrImmersivePlayer:enabled"/>
   <int value="1899111954" label="WebRtcMetronomeTaskQueue:disabled"/>
   <int value="1899152924" label="CrossDeviceSigninFromDesktop:enabled"/>

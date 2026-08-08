@@ -420,6 +420,7 @@ public abstract class ChromeFeatureList {
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
+    public static final String DIALOGS_ON_LARGE_FORM_FACTORS = "DialogsOnLargeFormFactors";
     public static final String DISABLE_PARTNER_HOMEPAGE_ANDROID = "DisablePartnerHomepageAndroid";
     public static final String DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW =
             "DisableScrollbarOfFadingEdgeScrollView";
@@ -973,6 +974,11 @@ public abstract class ChromeFeatureList {
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sDialogsOnLargeFormFactors =
+            newCachedFlag(
+                    DIALOGS_ON_LARGE_FORM_FACTORS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sDisablePartnerHomepageAndroid =
             newCachedFlag(
                     DISABLE_PARTNER_HOMEPAGE_ANDROID,
@@ -1392,6 +1398,7 @@ public abstract class ChromeFeatureList {
                     sDefaultBrowserPromoEntryPoint,
                     sDesktopAndroidLinkCapturing,
                     sDesktopUAOnConnectedDisplay,
+                    sDialogsOnLargeFormFactors,
                     sDisablePartnerHomepageAndroid,
                     sDocumentPictureInPictureAPI,
                     sDrawChromePagesEdgeToEdge,
