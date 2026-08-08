@@ -16,9 +16,7 @@
 #include "ash/webui/diagnostics_ui/backend/system/connectivity_problem_formatter.h"
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller_delegate.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -216,8 +214,7 @@ void SystemRoutineController::OnAvailableRoutinesFetched(
     const std::vector<healthd::DiagnosticRoutineEnum>& available_routines) {
   base::flat_set<healthd::DiagnosticRoutineEnum> healthd_routines(
       available_routines);
-  for (size_t i = 0; i < kRoutinePropertiesLength; i++) {
-    const RoutineProperties& routine = UNSAFE_TODO(kRoutineProperties[i]);
+  for (const RoutineProperties& routine : kRoutineProperties) {
     // Direct-path routines are not reported by cros_healthd; handled below.
     if (IsDirectNetworkRoutine(routine.type)) {
       continue;

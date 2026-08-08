@@ -7,6 +7,12 @@
 
 #include <cstdint>
 
+#include "ash/ash_export.h"
+
+namespace base {
+class FilePath;
+}
+
 namespace ash {
 namespace hud_display {
 
@@ -33,6 +39,13 @@ struct CpuStats {
                         // guest operating systems under the control of the
                         // Linux kernel).
 };
+
+namespace internal {
+
+// Reads and parses the aggregate CPU line from a proc stat file.
+ASH_EXPORT CpuStats ReadProcStatCPU(const base::FilePath& path);
+
+}  // namespace internal
 
 // Parses current /proc/stat and restuns current values.
 // Must be called on io-enabled thread.

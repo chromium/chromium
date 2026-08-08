@@ -3888,6 +3888,7 @@ test("ash_unittests") {
     "glanceables/tasks/glanceables_tasks_view_unittest.cc",
     "host/ash_window_tree_host_platform_unittest.cc",
     "host/ash_window_tree_host_unified_unittest.cc",
+    "hud_display/cpu_stats_unittest.cc",
     "ime/ime_controller_impl_unittest.cc",
     "in_session_auth/auth_dialog_contents_view_unittest.cc",
     "in_session_auth/in_session_auth_dialog_contents_view_unittest.cc",

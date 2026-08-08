@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
+#include <array>
 #include <string_view>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
@@ -138,15 +138,40 @@ constexpr mojom::TopRowKey kSystemKeysDrallion[] = {
 // Wilco and Drallion have unique 'action' scancodes for their top rows,
 // that are different from the vivaldi mappings. These scancodes are generated
 // when a top-tow key is pressed without the /Fn/ modifier.
-constexpr uint32_t kScancodesWilco[] = {
-    0xEA, 0xE7, 0xD5, 0xD6, 0x95, 0x91, 0xA0,
-    0xAE, 0xB0, 0x44, 0x57, 0x8B, 0xD3,
-};
+constexpr auto kScancodesWilco = std::to_array<uint32_t>({
+    0xEA,
+    0xE7,
+    0xD5,
+    0xD6,
+    0x95,
+    0x91,
+    0xA0,
+    0xAE,
+    0xB0,
+    0x44,
+    0x57,
+    0x8B,
+    0xD3,
+});
+static_assert(std::size(kSystemKeysWilco) == kScancodesWilco.size());
 
-constexpr uint32_t kScancodesDrallion[] = {
-    0xEA, 0xE7, 0xD5, 0xD6, 0x95, 0x91, 0xA0,
-    0xAE, 0xB0, 0x44, 0x57, 0xd7, 0x8B, 0xD3,
-};
+constexpr auto kScancodesDrallion = std::to_array<uint32_t>({
+    0xEA,
+    0xE7,
+    0xD5,
+    0xD6,
+    0x95,
+    0x91,
+    0xA0,
+    0xAE,
+    0xB0,
+    0x44,
+    0x57,
+    0xd7,
+    0x8B,
+    0xD3,
+});
+static_assert(std::size(kSystemKeysDrallion) == kScancodesDrallion.size());
 
 // For Vivaldi keyboard, some are having delete key on the top row.
 constexpr uint32_t kScancodeDelete = 0xD3;
@@ -295,7 +320,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
                           std::end(kSystemKeysWilco));
 
       for (size_t i = 0; i < top_row_keys.size(); i++)
-        top_row_key_scancode_indexes[UNSAFE_TODO(kScancodesWilco[i])] = i;
+        top_row_key_scancode_indexes[kScancodesWilco.at(i)] = i;
       break;
 
     case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
@@ -303,7 +328,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
                           std::end(kSystemKeysDrallion));
 
       for (size_t i = 0; i < top_row_keys.size(); i++)
-        top_row_key_scancode_indexes[UNSAFE_TODO(kScancodesDrallion[i])] = i;
+        top_row_key_scancode_indexes[kScancodesDrallion.at(i)] = i;
 
       // On some Drallion devices, the F12 key is used for the Privacy Screen.
 

@@ -6,10 +6,12 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_COMMON_ROUTINE_PROPERTIES_H_
 
 #include <stddef.h>
+
 #include <cstdint>
 #include <string>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
+#include "base/containers/span.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 
 namespace ash {
@@ -25,7 +27,7 @@ struct RoutineProperties {
   cros_healthd::mojom::DiagnosticRoutineEnum healthd_type;
 };
 
-extern const RoutineProperties kRoutineProperties[];
+extern const base::span<const RoutineProperties> kRoutineProperties;
 extern const size_t kRoutinePropertiesLength;
 
 // Returns the metric name for a given routine type.

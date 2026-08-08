@@ -136,6 +136,17 @@ gfx::Rect GetTooSmallToFitCameraRegion() {
 
 }  // namespace
 
+TEST(CameraIdOrderingTest, OrdersByModelThenNumber) {
+  const CameraId camera_a1("camera_a", 1);
+  const CameraId camera_a2("camera_a", 2);
+  const CameraId camera_b1("camera_b", 1);
+
+  EXPECT_FALSE(camera_a1 < camera_a1);
+  EXPECT_TRUE(camera_a1 < camera_a2);
+  EXPECT_TRUE(camera_a2 < camera_b1);
+  EXPECT_FALSE(camera_b1 < camera_a2);
+}
+
 class CaptureModeCameraTest : public AshTestBase {
  public:
   CaptureModeCameraTest()

@@ -5,7 +5,7 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 
 #include <algorithm>
-#include <cstring>
+#include <tuple>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -30,7 +30,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -367,10 +366,8 @@ CameraId::CameraId(std::string model_id_or_display_name, int number)
 }
 
 bool CameraId::operator<(const CameraId& rhs) const {
-  const int result =
-      UNSAFE_TODO(std::strcmp(model_id_or_display_name_.c_str(),
-                              rhs.model_id_or_display_name_.c_str()));
-  return result != 0 ? result : (number_ < rhs.number_);
+  return std::tie(model_id_or_display_name_, number_) <
+         std::tie(rhs.model_id_or_display_name_, rhs.number_);
 }
 
 std::string CameraId::ToString() const {

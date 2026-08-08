@@ -45,8 +45,9 @@ class EcheUidProvider : public mojom::UidGenerator {
   std::optional<std::vector<uint8_t>> ConvertStringToBinary(
       std::string_view str,
       size_t expected_len);
-  void GenerateKeyPair(uint8_t public_key[ED25519_PUBLIC_KEY_LEN],
-                       uint8_t private_key[ED25519_PRIVATE_KEY_LEN]);
+  void GenerateKeyPair(
+      base::span<uint8_t, ED25519_PUBLIC_KEY_LEN> public_key,
+      base::span<uint8_t, ED25519_PRIVATE_KEY_LEN> private_key);
 
   mojo::Receiver<mojom::UidGenerator> uid_receiver_{this};
   std::string uid_{};
