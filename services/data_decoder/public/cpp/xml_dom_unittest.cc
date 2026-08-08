@@ -24,7 +24,7 @@ TEST(XmlDocumentTest, FindFirstElementByTagName) {
     const auto* node = doc->FindFirstElementByTagName(Name{"root"});
     ASSERT_TRUE(node);
     ASSERT_EQ(node->GetType(), Node::Type::kElement);
-    EXPECT_EQ(node->GetName(), Name{"root"});
+    EXPECT_THAT(node->GetName(), Pointee(Name{"root"}));
 
     EXPECT_EQ(doc->FindFirstElementByTagName(Name{"a"}), nullptr);
   }
@@ -37,7 +37,7 @@ TEST(XmlDocumentTest, FindFirstElementByTagName) {
     const auto* a_node = doc->FindFirstElementByTagName(Name{"a"});
     ASSERT_TRUE(a_node);
     ASSERT_EQ(a_node->GetType(), Node::Type::kElement);
-    EXPECT_EQ(a_node->GetName(), Name{"a"});
+    EXPECT_THAT(a_node->GetName(), Pointee(Name{"a"}));
 
     const auto* b_node = doc->FindFirstElementByTagName(Name{"b"});
     ASSERT_TRUE(b_node);
@@ -86,17 +86,17 @@ TEST(XmlNodeTest, GetChildrenByTagName) {
     const auto b_nodes = doc->GetRoot()->GetChildrenByTagName(Name{"b"});
     ASSERT_EQ(b_nodes.size(), 1u);
     ASSERT_EQ(b_nodes[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(b_nodes[0]->GetName(), Name{"b"});
+    EXPECT_THAT(b_nodes[0]->GetName(), Pointee(Name{"b"}));
 
     const auto c_nodes = doc->GetRoot()->GetChildrenByTagName(Name{"c"});
     ASSERT_EQ(c_nodes.size(), 1u);
     ASSERT_EQ(c_nodes[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(c_nodes[0]->GetName(), Name{"c"});
+    EXPECT_THAT(c_nodes[0]->GetName(), Pointee(Name{"c"}));
 
     const auto d_nodes = doc->GetRoot()->GetChildrenByTagName(Name{"d"});
     ASSERT_EQ(d_nodes.size(), 1u);
     ASSERT_EQ(d_nodes[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(d_nodes[0]->GetName(), Name{"d"});
+    EXPECT_THAT(d_nodes[0]->GetName(), Pointee(Name{"d"}));
   }
 
   {
@@ -118,12 +118,12 @@ TEST(XmlNodeTest, FindFirstChildByTagName) {
     const auto* a_node = doc->GetRoot()->FindFirstChildByTagName(Name{"a"});
     ASSERT_TRUE(a_node);
     ASSERT_EQ(a_node->GetType(), Node::Type::kElement);
-    EXPECT_EQ(a_node->GetName(), Name{"a"});
+    EXPECT_THAT(a_node->GetName(), Pointee(Name{"a"}));
 
     const auto* b_node = doc->GetRoot()->FindFirstChildByTagName(Name{"b"});
     ASSERT_TRUE(b_node);
     ASSERT_EQ(b_node->GetType(), Node::Type::kElement);
-    EXPECT_EQ(b_node->GetName(), Name{"b"});
+    EXPECT_THAT(b_node->GetName(), Pointee(Name{"b"}));
 
     EXPECT_EQ(doc->GetRoot()->FindFirstChildByTagName(Name{"c"}), nullptr);
   }

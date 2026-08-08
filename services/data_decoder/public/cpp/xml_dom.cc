@@ -25,12 +25,12 @@ const Node* DepthFirstSearch(const Node& node, const F& f) {
   if (f(node)) {
     return &node;
   }
-  if (node.GetType() != Node::Type::kElement) {
-    return nullptr;
-  }
-  for (const auto& child : node.GetChildren()) {
-    if (const auto* result = DepthFirstSearch(*child, f)) {
-      return result;
+  const auto* children = node.GetChildren();
+  if (children) {
+    for (const auto& child : *children) {
+      if (const auto* result = DepthFirstSearch(*child, f)) {
+        return result;
+      }
     }
   }
   return nullptr;
@@ -56,7 +56,8 @@ const Node* Document::FindFirstElementByTagName(Name name) const {
   }
 
   return DepthFirstSearch(*root_, [&](const Node& node) {
-    return node.GetType() == Node::Type::kElement && node.GetName() == name;
+    const auto* node_name = node.GetName();
+    return node_name && *node_name == name;
   });
 }
 
@@ -80,38 +81,72 @@ Node::Type Node::GetType() const {
       data_);
 }
 
-const OwnedName& Node::GetName() const {
-  return std::get<Element>(data_).name;
-}
-const std::string& Node::GetLocalName() const {
-  return GetName().local_name;
-}
-
-const std::string& Node::GetNamespacePrefix() const {
-  return GetName().prefix;
+const OwnedName* Node::GetName() const {
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->name;
 }
 
-const absl::flat_hash_map<OwnedName, std::string>& Node::GetAttributes() const {
-  return std::get<Element>(data_).attributes;
+const std::string* Node::GetLocalName() const {
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->name.local_name;
+}
+
+const std::string* Node::GetNamespacePrefix() const {
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->name.prefix;
+}
+
+const absl::flat_hash_map<OwnedName, std::string>* Node::GetAttributes() const {
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->attributes;
 }
 
 const std::string* Node::GetAttribute(Name name) const {
-  return base::FindOrNull(GetAttributes(), name);
+  const auto* attributes = GetAttributes();
+  if (!attributes) {
+    return nullptr;
+  }
+  return base::FindOrNull(*attributes, name);
 }
 
-const absl::flat_hash_map<std::string, std::string>& Node::GetNamespaces()
+const absl::flat_hash_map<std::string, std::string>* Node::GetNamespaces()
     const {
-  return std::get<Element>(data_).namespaces;
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->namespaces;
 }
 
-const std::vector<std::unique_ptr<Node>>& Node::GetChildren() const {
-  return std::get<Element>(data_).children;
+const std::vector<std::unique_ptr<Node>>* Node::GetChildren() const {
+  const auto* element = std::get_if<Element>(&data_);
+  if (!element) {
+    return nullptr;
+  }
+  return &element->children;
 }
 
 std::vector<const Node*> Node::GetChildrenByTagName(Name name) const {
   std::vector<const Node*> result;
-  for (const auto& child : GetChildren()) {
-    if (child->GetType() == Type::kElement && child->GetName() == name) {
+  const auto* children = GetChildren();
+  if (!children) {
+    return result;
+  }
+  for (const auto& child : *children) {
+    const auto* child_name = child->GetName();
+    if (child_name && *child_name == name) {
       result.push_back(child.get());
     }
   }
@@ -119,8 +154,13 @@ std::vector<const Node*> Node::GetChildrenByTagName(Name name) const {
 }
 
 const Node* Node::FindFirstChildByTagName(Name name) const {
-  for (const auto& child : GetChildren()) {
-    if (child->GetType() == Type::kElement && child->GetName() == name) {
+  const auto* children = GetChildren();
+  if (!children) {
+    return nullptr;
+  }
+  for (const auto& child : *children) {
+    const auto* child_name = child->GetName();
+    if (child_name && *child_name == name) {
       return child.get();
     }
   }
@@ -144,15 +184,16 @@ base::Value Node::ToValueForTesting() const {
   switch (GetType()) {
     case Type::kElement: {
       dict.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kElementType);
-      const std::string& prefix = GetNamespacePrefix();
-      const std::string& local_name = GetLocalName();
-      dict.Set(mojom::XmlParser::kTagKey,
-               prefix.empty() ? local_name : prefix + ":" + local_name);
+      const std::string* prefix = GetNamespacePrefix();
+      const std::string* local_name = GetLocalName();
+      std::string tag =
+          prefix->empty() ? *local_name : *prefix + ":" + *local_name;
+      dict.Set(mojom::XmlParser::kTagKey, std::move(tag));
 
-      const auto& attributes = GetAttributes();
-      if (!attributes.empty()) {
+      const auto* attributes = GetAttributes();
+      if (!attributes->empty()) {
         base::DictValue attr_dict;
-        for (const auto& [name, value] : attributes) {
+        for (const auto& [name, value] : *attributes) {
           std::string key = name.prefix.empty()
                                 ? name.local_name
                                 : name.prefix + ":" + name.local_name;
@@ -161,19 +202,19 @@ base::Value Node::ToValueForTesting() const {
         dict.Set(mojom::XmlParser::kAttributesKey, std::move(attr_dict));
       }
 
-      const auto& namespaces = GetNamespaces();
-      if (!namespaces.empty()) {
+      const auto* namespaces = GetNamespaces();
+      if (!namespaces->empty()) {
         base::DictValue ns_dict;
-        for (const auto& [ns_prefix, uri] : namespaces) {
+        for (const auto& [ns_prefix, uri] : *namespaces) {
           ns_dict.Set(ns_prefix, uri);
         }
         dict.Set(mojom::XmlParser::kNamespacesKey, std::move(ns_dict));
       }
 
-      const auto& children = GetChildren();
-      if (!children.empty()) {
+      const auto* children = GetChildren();
+      if (!children->empty()) {
         base::ListValue children_list;
-        for (const auto& child : children) {
+        for (const auto& child : *children) {
           children_list.Append(child->ToValueForTesting());  // IN-TEST
         }
         dict.Set(mojom::XmlParser::kChildrenKey, std::move(children_list));
