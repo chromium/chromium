@@ -165,10 +165,8 @@ def RunCargo(cargo_args):
         env['LDFLAGS'] += f' -isysroot {sdk_path}'
         env['RUSTFLAGS'] += f' -Clink-arg=-isysroot -Clink-arg={sdk_path}'
         if 'x86_64' in RustTargetTriple():
-            for rt in Path(llvm_dir).glob(
-                    'lib/clang/*/lib/darwin/libclang_rt.osx.a'):
-                env['LDFLAGS'] += f' {rt}'
-                env['RUSTFLAGS'] += f' -Clink-arg={rt}'
+            env['LDFLAGS'] += ' -fapple-link-rtlib'
+            env['RUSTFLAGS'] += ' -Clink-arg=-fapple-link-rtlib'
 
     # This will `fail_hard` and not return if `cargo` reports problems.
     RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)
