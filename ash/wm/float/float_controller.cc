@@ -1200,15 +1200,16 @@ void FloatController::UnfloatImpl(aura::Window* window) {
 
   // Floated window have been hidden on purpose on the inactive desk.
   ShowFloatedWindow(window);
-  // Re-parent window to the "parent" desk's desk container.
-  floated_window_info->desk()
-      ->GetDeskContainerForRoot(window->GetRootWindow())
-      ->AddChild(window);
+  const Desk* desk = floated_window_info->desk();
+  // Make window not floated first so that the window is considered
+  // non float when observers are notified.
   floated_window_info_map_.erase(window);
   if (floated_window_info_map_.empty()) {
     desks_controller_observation_.Reset();
     display_observer_.reset();
   }
+  // Re-parent window to the "parent" desk's desk container.
+  desk->GetDeskContainerForRoot(window->GetRootWindow())->AddChild(window);
 
   // A floated window does not have per-desk z-order, so we need to start
   // tracking the window again after it is unfloated.
