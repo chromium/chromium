@@ -1711,7 +1711,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
-        'version': '3ksu6GHkUbpzkDsAaj431h_iUnzF8hv9XNfc3HpViEwC',
+        'version': 'rGF0LYOvbN_x3Dfa_ive_JrvXAdd_bdUhwBJhcnsXXYC',
       },
     ],
     'condition': 'non_git_source',
