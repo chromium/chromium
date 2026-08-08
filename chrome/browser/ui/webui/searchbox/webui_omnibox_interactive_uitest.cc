@@ -941,7 +941,8 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
 }
 
 // TODO(crbug.com/512348269): Flaky on Mac and Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/542622759): Flaky on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OblongShapeApplied DISABLED_OblongShapeApplied
 #else
 #define MAYBE_OblongShapeApplied OblongShapeApplied
