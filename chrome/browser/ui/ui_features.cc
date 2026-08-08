@@ -126,7 +126,13 @@ BASE_FEATURE(kExtensionsPinnedByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 // isn't the default already.
 BASE_FEATURE(kPdfInfoBar, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSeparateDefaultAndPinPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSeparateDefaultAndPinPrompt,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_WIN)
+);
 BASE_FEATURE_PARAM(int,
                    kSeparateDefaultAndPinPromptRandSeed,
                    &kSeparateDefaultAndPinPrompt,
@@ -136,12 +142,12 @@ BASE_FEATURE_PARAM(int,
                    kSeparateDefaultAndPinPromptPinMaxCount,
                    &kSeparateDefaultAndPinPrompt,
                    "pin_max_count",
-                   5);
+                   10);
 BASE_FEATURE_PARAM(int,
                    kSeparateDefaultAndPinPromptPinCooldownDays,
                    &kSeparateDefaultAndPinPrompt,
                    "pin_cooldown_days",
-                   21);
+                   7);
 BASE_FEATURE_PARAM(int,
                    kSeparateDefaultAndPinPromptDefaultMaxCount,
                    &kSeparateDefaultAndPinPrompt,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
+
 #include <memory>
 #include <vector>
 
@@ -21,7 +23,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -92,10 +93,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(new_browser->GetWindow()->IsVisible());
 
-  // When bubble dialog surface is used for default browser prompts, focus will
-  // be on the bubble dialog instead.
-  if (default_browser::GetDefaultBrowserPromptSurface() !=
-      default_browser::DefaultBrowserPromptSurface::kBubbleDialog) {
+  // When dialog surfaces (bubble or modal) are used for default browser
+  // prompts, focus will be on the dialog instead of the browser window.
+  if (default_browser::GetDefaultBrowserPromptSurface() ==
+      default_browser::DefaultBrowserPromptSurface::kInfobar) {
     EXPECT_TRUE(new_browser->GetWindow()->IsActive());
   }
 

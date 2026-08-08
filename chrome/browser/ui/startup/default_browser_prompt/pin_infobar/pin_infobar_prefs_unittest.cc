@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_prefs.h"
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,8 +56,13 @@ TEST_F(PinInfoBarPrefsTest, InfoBarShownRecentlyOrMaxTimes) {
 }
 
 TEST_F(PinInfoBarPrefsTest, InfoBarShownRecentlyOrMaxTimesMaxReached) {
-  local_state()->SetInteger(prefs::kPinInfoBarTimesShown,
-                            kPinInfoBarMaxPromptCount);
+  int max_count = kPinInfoBarMaxPromptCount;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
+    max_count = features::kSeparateDefaultAndPinPromptPinMaxCount.Get();
+  }
+#endif
+  local_state()->SetInteger(prefs::kPinInfoBarTimesShown, max_count);
   local_state()->SetTime(prefs::kPinInfoBarLastShown,
                          base::Time::Now() - base::Days(3650));
   // The infobar has been shown the max number of times, so it shouldn't be

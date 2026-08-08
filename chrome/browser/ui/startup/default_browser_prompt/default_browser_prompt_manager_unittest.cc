@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -209,8 +210,9 @@ constexpr int kFrameworkMaxPromptCount = 5;
 constexpr int kFrameworkRepromptDurationDays = 14;
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
-  scoped_feature_list_.InitAndEnableFeature(
-      default_browser::kDefaultBrowserPromptSurfaces);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{default_browser::kDefaultBrowserPromptSurfaces},
+      /*disabled_features=*/{features::kSeparateDefaultAndPinPrompt});
 
   // Show if the declined count is less than the max prompt count.
   TestShouldShowInfoBarPrompt(
@@ -228,8 +230,9 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
-  scoped_feature_list_.InitAndEnableFeature(
-      default_browser::kDefaultBrowserPromptSurfaces);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{default_browser::kDefaultBrowserPromptSurfaces},
+      /*disabled_features=*/{features::kSeparateDefaultAndPinPrompt});
 
   // After the prompt is declined once, show the prompt again if the time since
   // the last time the prompt was declined is strictly longer than the base
@@ -275,10 +278,12 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkPromptSurfaceBecomesInfoBar) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      default_browser::kDefaultBrowserPromptSurfaces,
-      {{default_browser::kDefaultBrowserPromptSurfaceParam.name,
-        "bubble_dialog"}});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{default_browser::kDefaultBrowserPromptSurfaces,
+                             {{default_browser::
+                                   kDefaultBrowserPromptSurfaceParam.name,
+                               "bubble_dialog"}}}},
+      /*disabled_features=*/{features::kSeparateDefaultAndPinPrompt});
 
   // When decline count is < 3, the surface should be bubble_dialog, so no
   // infobar is shown.
