@@ -43,7 +43,7 @@
         osc.connect(analyser).connect(context.destination);
         osc.start();
 
-        // Kick‑off offline rendering before the first suspend
+        // Kick-off offline rendering before the first suspend
         const renderingCompletePromise = context.startRendering();
 
         // Suspend after getting a full analyser frame. (Not really necessary,
