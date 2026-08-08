@@ -160,6 +160,17 @@ testing::AssertionResult VerifyGeometry(
   return testing::AssertionSuccess();
 }
 
+void AppendAnnotatedText(const optimization_guide::proto::ContentNode& node,
+                         std::vector<std::string>& texts) {
+  if (node.content_attributes().attribute_type() ==
+      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT) {
+    texts.push_back(node.content_attributes().text_data().text_content());
+  }
+  for (const auto& child : node.children_nodes()) {
+    AppendAnnotatedText(child, texts);
+  }
+}
+
 }  // namespace
 
 // A fake snapshot generator delegate that can be controlled to simulate
@@ -569,6 +580,71 @@ TEST_P(PageContextWrapperTest, PopulatePageContext) {
             optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
   EXPECT_EQ(iframe2_text_node.content_attributes().text_data().text_content(),
             "Child frame 2 text");
+}
+
+// Tests that page content extraction pierces open Shadow DOM (including nested
+// shadow roots) for both inner text and annotated page content, while leaving
+// closed shadow roots untouched. Content inside an open shadow root is not
+// reflected by light-DOM APIs (Element.innerText / TreeWalker), so extraction
+// must explicitly traverse the shadow boundary; closed shadow roots are
+// inaccessible from script and must be excluded.
+TEST_P(PageContextWrapperTest, PopulatePageContextWithShadowDom) {
+  auto page_structure =
+      HtmlPage("Shadow", RawHtml("<p>light-dom text</p>"
+                                 "<div id=\"open-host\" role=\"region\">"
+                                 "open host light text</div>"
+                                 "<div id=\"closed-host\"></div>"
+                                 "<div id=\"nested-host\"></div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Attach the shadow roots after the page has loaded:
+  //  * an open shadow root, whose content must be extracted,
+  //  * a closed shadow root, whose content must never be extracted, and
+  //  * a nested open shadow root (a shadow host inside another shadow tree),
+  //    which must be traversed recursively.
+  web::test::ExecuteJavaScript(
+      @"const open = document.getElementById('open-host')."
+      @"attachShadow({mode: 'open'});"
+      @"open.innerHTML = 'direct shadow text<p>open shadow text</p>';"
+      @"const closed = document.getElementById('closed-host')."
+      @"attachShadow({mode: 'closed'});"
+      @"closed.innerHTML = '<p>closed shadow text</p>';"
+      @"const outer = document.getElementById('nested-host')."
+      @"attachShadow({mode: 'open'});"
+      @"outer.innerHTML = '<p>outer shadow text</p><div id=\"inner\"></div>';"
+      @"const inner = outer.querySelector('#inner')."
+      @"attachShadow({mode: 'open'});"
+      @"inner.innerHTML = '<p>inner shadow text</p>';",
+      web_state());
+
+  PageContextWrapperCallbackResponse response =
+      RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+        wrapper.shouldGetInnerText = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_inner_text());
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  // Inner text keeps the existing light DOM text first, then appends open
+  // shadow text in traversal order.
+  const auto& inner_text = page_context->inner_text();
+  EXPECT_EQ(inner_text,
+            "light-dom text\n\n\ndirect shadow text\n"
+            "open shadow text\nouter shadow text\ninner shadow text");
+
+  const auto& root_node = page_context->annotated_page_content().root_node();
+  std::vector<std::string> annotated_texts;
+  AppendAnnotatedText(root_node, annotated_texts);
+  EXPECT_THAT(annotated_texts, testing::ElementsAre(inner_text));
 }
 
 // Tests that the completion callback is called even when no async fields are

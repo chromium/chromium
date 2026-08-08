@@ -50,6 +50,8 @@ const isContentEditableGetter =
         ?.get;
 const tabIndexGetter =
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')?.get;
+const shadowRootGetter =
+    Object.getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')?.get;
 
 const textContentGetter =
     Object.getOwnPropertyDescriptor(Node.prototype, 'textContent')?.get;
@@ -91,10 +93,16 @@ function safeNodeType(node: Node): number {
 
 
 // Returns the equivalent of `node.parentElement` but directly calls the `Node`
-// prototype to prevent clobbering.
-function safeParentElement(node: Node): HTMLElement|null {
-  return parentElementGetter ? parentElementGetter.call(node) :
-                               node.parentElement;
+// prototype to prevent clobbering. Text directly under a ShadowRoot uses the
+// shadow host as its styling parent because ShadowRoot.parentElement is null.
+function safeParentElement(node: Node): Element|null {
+  const parentElement =
+      parentElementGetter ? parentElementGetter.call(node) : node.parentElement;
+  if (parentElement) {
+    return parentElement;
+  }
+  const root = getRootNodeMethod.call(node);
+  return root instanceof ShadowRoot ? root.host : null;
 }
 
 // Returns the equivalent of `element.tagName` but directly calls the `Element`
@@ -122,6 +130,12 @@ function safeGetAttribute(element: Element, name: string): string|null {
     return element.getAttribute(name);
   }
   return getAttributeMethod.call(element, name);
+}
+
+// Returns the equivalent of `element.shadowRoot` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeShadowRoot(element: Element): ShadowRoot|null {
+  return shadowRootGetter ? shadowRootGetter.call(element) : element.shadowRoot;
 }
 
 // Returns the equivalent of `element.hasAttribute(name)` but directly calls the
@@ -3979,6 +3993,43 @@ export function extractAnnotatedPageContent(
   // Collect interactive nodes (focused element, selection start/end).
   const interactiveNodeIds = getInteractiveNodeIds(document);
 
+  walkTreeAndPopulate(
+      root, ancestorStack, document, nonce, maxDepth, interactiveNodeIds,
+      actionableMode, paidContentContext, hasCanvas,
+      includeSensitivePaymentsForRedaction, styleCache);
+
+  const pageInteractionInfo = extractPageInteractionInfo(document);
+
+  // Start the viewport at (0, 0) as it represents the entire page surface which
+  // is the root surface. This deliberately extracts the layout viewport bounds,
+  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
+  // to maintain parity with Blink's ConvertViewportGeometry in
+  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
+  const viewportGeometry = toEnclosingRect(getViewportRect(document));
+
+  if (actionableMode) {
+    computeZOrder(rootNode, document);
+  }
+
+  return {
+    rootNode,
+    pageInteractionInfo,
+    frameData: extractFrameData(document, paidContentContext),
+    viewportGeometry,
+    visibleBoundingBoxesForPasswordRedaction: [],
+  };
+}
+
+// Walks the DOM subtree rooted at `root` (a document body or a ShadowRoot),
+// populating the APC node tree under `ancestorStack[0]`. `ancestorStack` must
+// start with that single base item. A separate function so it can recurse into
+// open shadow roots, which a TreeWalker does not cross.
+function walkTreeAndPopulate(
+    root: Node, ancestorStack: AncestorStackItem[], document: Document,
+    nonce: string, maxDepth: number, interactiveNodeIds: InteractiveNodeIds,
+    actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
+    hasCanvas: boolean, includeSensitivePaymentsForRedaction: boolean,
+    styleCache?: StyleCache): void {
   // Create a tree walker to traverse the DOM tree.
   // Uses `undefined` as the filter lambda to avoid performance penalty since
   // the walker would have to cross WebCore C++/JS bridge for every node.
@@ -4077,6 +4128,23 @@ export function extractAnnotatedPageContent(
         actionableMode, paidContentContext, hasCanvas,
         includeSensitivePaymentsForRedaction, styleCache);
 
+    // Descend into an open shadow root, which the TreeWalker does not cross.
+    // Anchor it at the current stack top (the host's node if emitted, else the
+    // nearest emitted ancestor) so shadow content is not dropped.
+    if (safeNodeType(currentNode) === Node.ELEMENT_NODE) {
+      const shadowRoot = safeShadowRoot(currentNode as Element);
+      if (shadowRoot) {
+        // TODO(crbug.com/537140560): Walk the composed tree so shadow and
+        // light-DOM children retain visual order and assigned nodes are
+        // visited at their slots.
+        walkTreeAndPopulate(
+            shadowRoot, [ancestorStack[ancestorStack.length - 1]!], document,
+            nonce, maxDepth, interactiveNodeIds, actionableMode,
+            paidContentContext, hasCanvas, includeSensitivePaymentsForRedaction,
+            styleCache);
+      }
+    }
+
     currentNode = walker.nextNode();
   }
 
@@ -4090,25 +4158,4 @@ export function extractAnnotatedPageContent(
       childrenOfParent.pop();
     }
   }
-
-  const pageInteractionInfo = extractPageInteractionInfo(document);
-
-  // Start the viewport at (0, 0) as it represents the entire page surface which
-  // is the root surface. This deliberately extracts the layout viewport bounds,
-  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
-  // to maintain parity with Blink's ConvertViewportGeometry in
-  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
-  const viewportGeometry = toEnclosingRect(getViewportRect(document));
-
-  if (actionableMode) {
-    computeZOrder(rootNode, document);
-  }
-
-  return {
-    rootNode,
-    pageInteractionInfo,
-    frameData: extractFrameData(document, paidContentContext),
-    viewportGeometry,
-    visibleBoundingBoxesForPasswordRedaction: [],
-  };
 }

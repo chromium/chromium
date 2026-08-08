@@ -109,10 +109,12 @@ constexpr const char kRemoteFrameTokenKey[] = "remoteToken";
 // The JavaScript to be executed on each WebState's WebFrames, which retrieves
 // the innerText of the document body, and recursively traverses through
 // same-origin nested iframes to retrieve their innerTexts as well,
-// constructing a tree structure. iframes are marked as processed with a nonce
-// to avoid duplicate text from frames, but only for the current run. Early
-// returns if the PageContext should be detached, or the frame is not the
-// top-most same-origin frame.
+// constructing a tree structure. The innerText of a node also includes text
+// inside open Shadow DOM roots, which is otherwise excluded from
+// Element.innerText. iframes are marked as processed with a nonce to avoid
+// duplicate text from frames, but only for the current run. Early returns if
+// the PageContext should be detached, or the frame is not the top-most
+// same-origin frame.
 constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 (() => {
     // Checks whether the PageContext should be detached.
@@ -133,6 +135,66 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
         // Not the top-most same-origin frame, early exit.
         return null;
     }
+
+    // Direct references to `Element` members, used to read shadow roots and
+    // query descendants without going through instance properties that a
+    // hostile page could clobber (e.g. a form control named `querySelectorAll`
+    // or `shadowRoot`).
+    const shadowRootGetter =
+        Object.getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')?.get;
+    const querySelectorAllMethod = Element.prototype.querySelectorAll;
+    const safeShadowRoot = (element) =>
+        element ? (shadowRootGetter ? shadowRootGetter.call(element) :
+                                      element.shadowRoot) :
+                  null;
+    const safeQuerySelectorAllAsArray = (element, selector) =>
+        Array.from(querySelectorAllMethod.call(element, selector));
+
+    // Keep this implementation in sync with `getInnerTextIncludingShadowDom()`
+    // in page_context_extractor.ts.
+    // Collects the innerText of a node, additionally piercing open Shadow DOM
+    // roots whose text is not reflected in Element.innerText. Nested shadow
+    // roots are handled through the recursion. Closed shadow roots are
+    // inaccessible from script and are skipped.
+    const getInnerTextIncludingShadowDom = (node) => {
+        if (!node) {
+            return '';
+        }
+        const texts = [];
+        if (node.innerText) {
+            texts.push(node.innerText);
+        }
+        // The node itself and its light-DOM descendants may be shadow hosts.
+        // querySelectorAll does not cross shadow boundaries, so shadow hosts
+        // nested inside another shadow tree are reached via the recursion.
+        const hosts = safeQuerySelectorAllAsArray(node, '*');
+        if (safeShadowRoot(node)) {
+            hosts.unshift(node);
+        }
+        for (const host of hosts) {
+            const shadowRoot = safeShadowRoot(host);
+            if (!shadowRoot) {
+                continue;
+            }
+            // Iterate all child nodes (not just elements) so text authored
+            // directly under the shadow root is not dropped.
+            for (const shadowChild of shadowRoot.childNodes) {
+                let shadowText = '';
+                if (shadowChild.nodeType === Node.ELEMENT_NODE) {
+                    shadowText = getInnerTextIncludingShadowDom(shadowChild);
+                } else if (shadowChild.nodeType === Node.TEXT_NODE) {
+                    shadowText = (shadowChild.textContent || '').trim();
+                }
+                if (shadowText) {
+                    texts.push(shadowText);
+                }
+            }
+        }
+        // `innerText` above collects all light-DOM text at once. Shadow-DOM
+        // chunks are therefore appended after it rather than inserted at their
+        // visual positions.
+        return texts.join('\n');
+    };
 
     // Recursively constructs the innerText tree for the passed node and its
     // children same-origin iframes.
@@ -169,7 +231,7 @@ constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
         });
 
         const result = {
-            currentNodeInnerText: node.innerText,
+            currentNodeInnerText: getInnerTextIncludingShadowDom(node),
             children: childNodeInnerTexts.filter(item => item !== null),
             sourceUrl: frameURL,
             title: frameTitle,

@@ -791,6 +791,65 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
             "Nested Text");
 }
 
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_ShadowDom) {
+  for (bool actionable_mode : {false, true}) {
+    const std::string html =
+        "<html><body><div id=\"open-host\" role=\"region\">"
+        "light text</div></body></html>";
+    web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                        test_server_.GetURL(kMainPagePath), web_state());
+    web::test::ExecuteJavaScript(
+        @"const root = document.getElementById('open-host')."
+        @"attachShadow({mode: 'open'});"
+        @"root.innerHTML = 'direct shadow text<p>shadow paragraph</p>';",
+        web_state());
+
+    std::optional<base::Value> result_value = RunExtraction(
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+        /*include_cross_origin_frame_content=*/false,
+        /*use_rich_extraction=*/true,
+        /*use_rich_extraction_with_actionable=*/actionable_mode,
+        /*extract_paid_content=*/false,
+        /*attempt_paid_content_json_fixing=*/false,
+        actionable_mode ? "actionable-nonce" : "nonce", base::Seconds(1));
+
+    ASSERT_TRUE(result_value);
+    const base::DictValue* root_node =
+        result_value->GetDict().FindDict("rootNode");
+    ASSERT_TRUE(root_node);
+    const base::ListValue* root_children = root_node->FindList("childrenNodes");
+    ASSERT_TRUE(root_children);
+    ASSERT_EQ(root_children->size(), 1u);
+
+    const base::DictValue& host_node = (*root_children)[0].GetDict();
+    const base::ListValue* host_children = host_node.FindList("childrenNodes");
+    ASSERT_TRUE(host_children);
+    ASSERT_EQ(host_children->size(), 3u);
+    const std::string* direct_shadow_text =
+        (*host_children)[0].GetDict().FindStringByDottedPath(
+            "contentAttributes.textInfo.textContent");
+    ASSERT_TRUE(direct_shadow_text);
+    EXPECT_EQ(*direct_shadow_text, "direct shadow text");
+
+    const base::ListValue* paragraph_children =
+        (*host_children)[1].GetDict().FindList("childrenNodes");
+    ASSERT_TRUE(paragraph_children);
+    ASSERT_EQ(paragraph_children->size(), 1u);
+    const std::string* shadow_paragraph =
+        (*paragraph_children)[0].GetDict().FindStringByDottedPath(
+            "contentAttributes.textInfo.textContent");
+    ASSERT_TRUE(shadow_paragraph);
+    EXPECT_EQ(*shadow_paragraph, "shadow paragraph");
+
+    const std::string* light_text =
+        (*host_children)[2].GetDict().FindStringByDottedPath(
+            "contentAttributes.textInfo.textContent");
+    ASSERT_TRUE(light_text);
+    EXPECT_EQ(*light_text, "light text");
+  }
+}
+
 // Verifies that SVG anchors are correctly extracted.
 TEST_P(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction_Svg_Anchor) {
