@@ -245,6 +245,8 @@ class COMPOSITOR_EXPORT Compositor
   // Set the current CGDirectDisplayID and update the private client.
   void SetVSyncDisplayID(const int64_t display_id);
   int64_t display_id() const;
+
+  void UpdateRefreshRate(float refresh_rate);
 #endif
 
   const gfx::DisplayColorSpaces& display_color_spaces() const {
@@ -646,8 +648,6 @@ class COMPOSITOR_EXPORT Compositor
 
   // Current vsync refresh rate per second. Initialized to 60hz as a reasonable
   // value until first begin frame arrives with the real refresh rate.
-  // macOS only: This is the default refresh rate when a display_id is set. It
-  // does not get updated later.
   float refresh_rate_ = 60.f;
 
   // A map from child id to parent id.

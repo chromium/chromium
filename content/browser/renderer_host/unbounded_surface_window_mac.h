@@ -97,6 +97,7 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
     float scale_factor = 1.0f;
     gfx::DisplayColorSpaces display_color_spaces;
     int64_t display_id = display::kInvalidDisplayId;
+    float display_frequency = 60.f;
   };
 
   DisplayInfo GetDisplayInfo() const;

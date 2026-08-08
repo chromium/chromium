@@ -66,7 +66,7 @@ interface DisplayPrivate {
   ForceImmediateDrawAndSwapIfPossible();
 
   // Updates the refresh rate of the associated Display.
-  [EnableIf=is_android]
+  [EnableIf=is_android|is_mac]
   UpdateRefreshRate(float refresh_rate);
 
   // Updates adaptive refresh rate information of the associated Display.

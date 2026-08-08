@@ -472,7 +472,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
     return last_begin_frame_args_;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   // Notifies when the refresh rate of the display is updated. |refresh_rate| is
   // the rate in frames per second.
   virtual void UpdateRefreshRate(float refresh_rate) {}

@@ -716,9 +716,9 @@ void NativeWidgetMacNSWindowHost::UpdateCompositorProperties() {
   gfx::Size content_bounds_in_pixels =
       gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
           content_bounds_in_screen_.size(), display_.device_scale_factor()));
-  compositor_->UpdateSurface(content_bounds_in_pixels,
-                             display_.device_scale_factor(),
-                             display_.GetColorSpaces(), display_.id());
+  compositor_->UpdateSurface(
+      content_bounds_in_pixels, display_.device_scale_factor(),
+      display_.GetColorSpaces(), display_.id(), display_.display_frequency());
 }
 
 void NativeWidgetMacNSWindowHost::DestroyCompositor() {
@@ -1503,9 +1503,9 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
   gfx::Size content_bounds_in_pixels =
       gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
           content_bounds_in_screen_.size(), display_.device_scale_factor()));
-  compositor_->UpdateSurface(content_bounds_in_pixels,
-                             display_.device_scale_factor(),
-                             display_.GetColorSpaces(), display_.id());
+  compositor_->UpdateSurface(
+      content_bounds_in_pixels, display_.device_scale_factor(),
+      display_.GetColorSpaces(), display_.id(), display_.display_frequency());
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
