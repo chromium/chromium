@@ -1428,7 +1428,10 @@ public class RootUiCoordinator
                 transitiveTopInsetProvider.set(topInsetCoordinator);
             }
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_HOVER_STATUS_BAR)) {
+        // Temporarily disable LinkHoverStatusBar on non-desktop devices.
+        // TODO(b/542488395): Enable this on non-desktop devices.
+        if (DeviceInfo.isDesktop()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_HOVER_STATUS_BAR)) {
             ViewStub statusBarStub = mActivity.findViewById(R.id.link_hover_status_bar_stub);
             mLinkHoverStatusBarCoordinator =
                     new LinkHoverStatusBarCoordinator(

@@ -234,6 +234,12 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
 
     @Override
     public boolean onHover(View view, MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
+            Tab tab = mTabProvider.get();
+            if (tab != null) {
+                onUpdateTargetUrl(tab, GURL.emptyGURL());
+            }
+        }
         onCursorPositionChanged(event.getRawX(), event.getRawY());
         // Return false so the event is not consumed and can be passed to
         // other listeners.
