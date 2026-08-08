@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -86,6 +85,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/message_center/message_center.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "url/url_constants.h"
@@ -373,8 +373,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2ReleaseNotesNotificationFromBackground) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
   base::UserActionTester user_action_tester;
   profile()->GetPrefs()->SetInteger(
       ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
@@ -411,17 +409,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Wait until the browser with the web contents closes.
   observer.Wait();
   // Assert that the notification really is there.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  ASSERT_EQ(0u, notifications.size());
+  ASSERT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "show_release_notes_notification"));
 
   // Click on the notification.
   GURL expected_url = GURL("chrome://help-app/updates");
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
-  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                 "show_release_notes_notification",
-                                 std::nullopt, std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(
+      "show_release_notes_notification");
 #if !BUILDFLAG(ENABLE_CROS_HELP_APP)
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -437,8 +434,6 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationObserver navigation_observer(
       expected_trusted_frame_url);
   navigation_observer.StartWatchingNewWebContents();
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
 
   profile()->GetPrefs()->SetInteger(
       ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
@@ -446,9 +441,9 @@ IN_PROC_BROWSER_TEST_P(
       ->MaybeShowReleaseNotesNotification();
 
   // The release notes notification should not appear.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  EXPECT_EQ(0u, notifications.size());
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "show_release_notes_notification"));
   // The release notes suggestion chip should not appear.
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 ash::prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
@@ -471,8 +466,6 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationObserver navigation_observer(
       expected_trusted_frame_url);
   navigation_observer.StartWatchingNewWebContents();
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
 
   profile()->GetPrefs()->SetInteger(
       ash::help_app::prefs::kHelpAppNotificationLastShownMilestone, 20);
@@ -480,9 +473,9 @@ IN_PROC_BROWSER_TEST_P(
       ->MaybeShowReleaseNotesNotification();
 
   // The release notes notification should not appear.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  EXPECT_EQ(0u, notifications.size());
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "show_release_notes_notification"));
   // The release notes suggestion chip should not appear.
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 ash::prefs::kReleaseNotesSuggestionChipTimesLeftToShow),

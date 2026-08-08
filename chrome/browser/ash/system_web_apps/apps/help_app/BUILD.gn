@@ -136,6 +136,7 @@ source_set("browser_tests") {
     "//ui/events:test_support",
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
+    "//ui/message_center",
     "//ui/views",
     "//url",
   ]
@@ -162,7 +163,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/account_id",
@@ -173,6 +173,7 @@ source_set("unit_tests") {
     "//components/version_info",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/message_center",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

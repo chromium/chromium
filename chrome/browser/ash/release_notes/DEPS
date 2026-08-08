@@ -16,13 +16,15 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/grit",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/message_center_observer.h",
 ]
 
 specific_include_rules = {

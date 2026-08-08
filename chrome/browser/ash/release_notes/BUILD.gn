@@ -28,8 +28,6 @@ static_library("release_notes") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/notifications",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/common:constants",
@@ -47,6 +45,7 @@ static_library("release_notes") {
     "//google_apis",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }
@@ -69,7 +68,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/release_notes",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
@@ -82,5 +80,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/chromeos",
+    "//ui/message_center",
   ]
 }

@@ -8,25 +8,26 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "base/feature_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 
 namespace ash {
 
 class ReleaseNotesNotificationTest
     : public BrowserWithTestWindowTest,
-      public ::testing::WithParamInterface</*notification_eligible=*/bool> {
+      public ::testing::WithParamInterface</*notification_eligible=*/bool>,
+      public message_center::MessageCenterObserver {
  public:
   ReleaseNotesNotificationTest() : notification_eligible_(GetParam()) {}
   ReleaseNotesNotificationTest(const ReleaseNotesNotificationTest&) = delete;
@@ -37,12 +38,7 @@ class ReleaseNotesNotificationTest
   // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
-    tester_ = std::make_unique<NotificationDisplayServiceTester>(nullptr);
-    tester_->SetNotificationAddedClosure(
-        base::BindRepeating(&ReleaseNotesNotificationTest::OnNotificationAdded,
-                            base::Unretained(this)));
+    message_center_observation_.Observe(message_center::MessageCenter::Get());
     release_notes_notification_ =
         std::make_unique<ReleaseNotesNotification>(profile());
     if (notification_eligible()) {
@@ -61,7 +57,7 @@ class ReleaseNotesNotificationTest
 
   void TearDown() override {
     release_notes_notification_.reset();
-    tester_.reset();
+    message_center_observation_.Reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -71,25 +67,31 @@ class ReleaseNotesNotificationTest
     return "primary_profile@google.com";
   }
 
-  void OnNotificationAdded() { notification_count_++; }
-
   bool notification_eligible() const { return notification_eligible_; }
 
  protected:
   bool HasReleaseNotesNotification() {
-    return tester_->GetNotification("show_release_notes_notification")
-        .has_value();
+    return GetReleaseNotesNotification() != nullptr;
   }
 
-  message_center::Notification GetReleaseNotesNotification() {
-    return tester_->GetNotification("show_release_notes_notification").value();
+  const message_center::Notification* GetReleaseNotesNotification() {
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+        "show_release_notes_notification");
   }
 
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      message_center_observation_{this};
   int notification_count_ = 0;
   std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 
  private:
-  std::unique_ptr<NotificationDisplayServiceTester> tester_;
+  void OnNotificationAdded(const std::string& notification_id) override {
+    if (notification_id == "show_release_notes_notification") {
+      ++notification_count_;
+    }
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   const bool notification_eligible_;
 };
@@ -134,9 +136,9 @@ TEST_P(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
     EXPECT_TRUE(HasReleaseNotesNotification());
     EXPECT_EQ(ui::SubstituteChromeOSDeviceType(
                   IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE),
-              GetReleaseNotesNotification().title());
+              GetReleaseNotesNotification()->title());
     EXPECT_EQ("Get highlights from the latest update",
-              base::UTF16ToASCII(GetReleaseNotesNotification().message()));
+              base::UTF16ToASCII(GetReleaseNotesNotification()->message()));
     // And it show the release notes suggestion chip.
     EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
                      ash::prefs::kReleaseNotesSuggestionChipTimesLeftToShow));

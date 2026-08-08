@@ -1,3 +1,8 @@
+include_rules = [
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/message_center_observer.h",
+]
+
 specific_include_rules = {
   "help_app_integration_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
