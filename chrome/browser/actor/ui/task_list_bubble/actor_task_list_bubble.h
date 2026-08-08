@@ -8,11 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "components/actor/core/task_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {

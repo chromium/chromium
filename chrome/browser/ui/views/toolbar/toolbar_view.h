@@ -46,6 +46,7 @@
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+class ActorTaskListBubble;
 class AvatarToolbarButton;
 class AvatarToolbarButtonInterface;
 class BatterySaverButton;
@@ -404,6 +405,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
+  std::unique_ptr<ActorTaskListBubble> actor_task_list_bubble_;
 
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.

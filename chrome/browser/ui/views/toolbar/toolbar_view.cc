@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
@@ -938,17 +939,31 @@ void ToolbarView::ShowActorTaskListBubble() {
   if (!glic_actor_task_icon_) {
     return;
   }
-  ActorTaskListBubbleController::From(browser_)->ShowBubble(
-      glic_actor_task_icon());
+  if (!actor_task_list_bubble_) {
+    Profile* profile = browser_->GetProfile();
+    auto* manager =
+        glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    auto* controller = ActorTaskListBubbleController::From(browser_);
+    if (manager && controller) {
+      actor_task_list_bubble_ = std::make_unique<ActorTaskListBubble>(
+          profile, browser_, manager->actor_task_list_bubble_rows(),
+          base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
+                              base::Unretained(controller)));
+    }
+  }
+  if (actor_task_list_bubble_) {
+    actor_task_list_bubble_->Show(glic_actor_task_icon_);
+  }
 }
 
 void ToolbarView::CloseActorTaskListBubble() {
-  NOTIMPLEMENTED();
+  if (actor_task_list_bubble_) {
+    actor_task_list_bubble_->Close();
+  }
 }
 
 bool ToolbarView::IsActorTaskListBubbleShowing() {
-  NOTIMPLEMENTED();
-  return false;
+  return actor_task_list_bubble_ && actor_task_list_bubble_->IsShowing();
 }
 
 void ToolbarView::FinalizeHideGlicActorTaskIcon() {

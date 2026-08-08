@@ -10,12 +10,21 @@ source_set("delegate") {
 
 if (!is_android) {
   source_set("ui") {
+    sources = [ "actor_task_list_bubble.h" ]
+    public_deps = [
+      "//base",
+      "//components/actor/core:task_id",
+      "//ui/views",
+    ]
+  }
+
+  source_set("ui_impl") {
     sources = [
       "actor_task_list_bubble.cc",
-      "actor_task_list_bubble.h",
       "actor_task_list_bubble_row_button.cc",
       "actor_task_list_bubble_row_button.h",
     ]
+    public_deps = [ ":ui" ]
     deps = [
       ":controller",
       "//base",
@@ -79,7 +88,7 @@ if (!is_android) {
     ]
     deps = [
       ":controller",
-      ":ui",
+      ":ui_impl",
       "//base",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
@@ -98,7 +107,7 @@ if (!is_android) {
     sources = [ "actor_task_list_bubble_interactive_uitest.cc" ]
     deps = [
       ":controller",
-      ":ui",
+      ":ui_impl",
       "//base",
       "//base/test:test_support",
       "//chrome/browser/actor",

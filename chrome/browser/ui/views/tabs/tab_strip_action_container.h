@@ -27,6 +27,7 @@ namespace glic {
 class TabStripGlicActorTaskIcon;
 class GlicSplitButtonController;
 }
+class ActorTaskListBubble;
 class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
 
@@ -225,6 +226,7 @@ class TabStripActionContainer : public views::View,
   std::list<base::CallbackListSubscription> subscriptions_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
+  std::unique_ptr<ActorTaskListBubble> actor_task_list_bubble_;
 
   // Border insets as passed down from the HorizontalTabStripRegionView, used to
   // update button view borders.

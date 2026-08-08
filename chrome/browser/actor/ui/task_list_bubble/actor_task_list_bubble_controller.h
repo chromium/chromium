@@ -48,9 +48,10 @@ class ActorTaskListBubbleController {
   base::CallbackListSubscription RegisterBubbleDestroyedCallback(
       base::RepeatingClosure callback);
 
+  void OnTaskRowClicked(actor::TaskId task_id);
+
  private:
   void ShowBubbleImpl(views::View* anchor_view, bool is_start_notification);
-  void OnTaskRowClicked(actor::TaskId task_id);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   // TODO(crbug.com/518584352): Remove; views should own this.

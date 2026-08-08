@@ -3035,6 +3035,8 @@ source_set("browser") {
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:window_controller_impl",
       "//chrome/browser/actor/ui/task_list_bubble:controller_impl",
+      "//chrome/browser/actor/ui/task_list_bubble:ui",
+      "//chrome/browser/actor/ui/task_list_bubble:ui_impl",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",

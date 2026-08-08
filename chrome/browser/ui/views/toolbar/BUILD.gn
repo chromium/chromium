@@ -180,6 +180,7 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser:resources",
     "//chrome/browser/actor/ui/task_list_bubble:controller",
+    "//chrome/browser/actor/ui/task_list_bubble:ui",
     "//chrome/browser/bookmarks",
     "//chrome/browser/extensions",
     "//chrome/browser/external_protocol",

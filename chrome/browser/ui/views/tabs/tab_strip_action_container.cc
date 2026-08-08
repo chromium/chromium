@@ -10,6 +10,7 @@
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
@@ -472,17 +473,33 @@ void TabStripActionContainer::ShowActorTaskListBubble() {
   if (!glic_actor_task_icon_) {
     return;
   }
-  ActorTaskListBubbleController::From(browser_window_interface_)
-      ->ShowBubble(glic_actor_task_icon());
+  if (!actor_task_list_bubble_) {
+    Profile* profile = browser_window_interface_->GetProfile();
+    auto* manager =
+        glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    auto* controller =
+        ActorTaskListBubbleController::From(browser_window_interface_);
+    if (manager && controller) {
+      actor_task_list_bubble_ = std::make_unique<ActorTaskListBubble>(
+          profile, browser_window_interface_,
+          manager->actor_task_list_bubble_rows(),
+          base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
+                              base::Unretained(controller)));
+    }
+  }
+  if (actor_task_list_bubble_) {
+    actor_task_list_bubble_->Show(glic_actor_task_icon_);
+  }
 }
 
 void TabStripActionContainer::CloseActorTaskListBubble() {
-  NOTIMPLEMENTED();
+  if (actor_task_list_bubble_) {
+    actor_task_list_bubble_->Close();
+  }
 }
 
 bool TabStripActionContainer::IsActorTaskListBubbleShowing() {
-  NOTIMPLEMENTED();
-  return false;
+  return actor_task_list_bubble_ && actor_task_list_bubble_->IsShowing();
 }
 
 void TabStripActionContainer::ShowGlicActorNudge(
