@@ -6,14 +6,14 @@
 
 [Exposed=Window]
 interface CustomElementRegistry {
-    [CallWith=ScriptState, RuntimeEnabled=ScopedCustomElementRegistry] constructor();
+    [CallWith=ScriptState] constructor();
     [CallWith=ScriptState, CEReactions, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options = {});
     any get(DOMString name);
     DOMString? getName(CustomElementConstructor constructor);
     [CallWith=ScriptState,RaisesException] Promise<CustomElementConstructor> whenDefined(DOMString name);
     [CEReactions] void upgrade(Node root);
 
-    [RuntimeEnabled=ScopedCustomElementRegistry,CEReactions, RaisesException] void initialize(Node root);
+    [CEReactions, RaisesException] void initialize(Node root);
 };
 
 callback CustomElementConstructor = any ();

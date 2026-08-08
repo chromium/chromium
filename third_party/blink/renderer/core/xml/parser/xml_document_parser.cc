@@ -1150,8 +1150,7 @@ void XMLDocumentParser::StartElementNs(
   for (const auto& attr : prefixed_attributes) {
     if (attr.GetName() == html_names::kIsAttr) {
       is = attr.Value();
-    } else if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-               attr.GetName() == html_names::kCustomelementregistryAttr) {
+    } else if (attr.GetName() == html_names::kCustomelementregistryAttr) {
       has_customelementregistry_attr = true;
     }
   }
@@ -1164,8 +1163,7 @@ void XMLDocumentParser::StartElementNs(
   }
 
   CustomElementRegistry* registry = nullptr;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      !has_customelementregistry_attr) {
+  if (!has_customelementregistry_attr) {
     // If the element doesn't have the customelementregistry attribute, then
     // it should inherit its registry from its parent.
     if (auto* parent_element = DynamicTo<Element>(current_node_.Get())) {

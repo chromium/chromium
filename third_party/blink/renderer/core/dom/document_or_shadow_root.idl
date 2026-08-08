@@ -27,6 +27,6 @@ interface mixin DocumentOrShadowRoot {
     // https://w3c.github.io/picture-in-picture/#documentorshadowroot-extension
     [Measure] readonly attribute Element? pictureInPictureElement;
 
-    [CallWith=ScriptState, RuntimeEnabled=ScopedCustomElementRegistry]
+    [CallWith=ScriptState]
     readonly attribute CustomElementRegistry? customElementRegistry;
 };

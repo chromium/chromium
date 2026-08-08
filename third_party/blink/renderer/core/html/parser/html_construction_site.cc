@@ -704,8 +704,7 @@ void HTMLConstructionSite::InsertHTMLBodyStartTagInBody(
   // DefaultForAfterHead). In that case, the parser only merges attributes onto
   // the existing body element rather than creating a new one, so we must
   // handle the customelementregistry attribute explicitly.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+  if (token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
     Element* body = open_elements_.BodyElement();
     body->SetCustomElementRegistry(CustomElementRegistryAssignment::Wait());
     if (document_) {
@@ -1113,10 +1112,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             : g_null_atom;
     AtomicString adopted_stylesheets = template_element->FastGetAttribute(
         html_names::kShadowrootadoptedstylesheetsAttr);
-    bool waiting_for_scoped_registry =
-        RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-        template_element->FastHasAttribute(
-            html_names::kShadowrootcustomelementregistryAttr);
+    bool waiting_for_scoped_registry = template_element->FastHasAttribute(
+        html_names::kShadowrootcustomelementregistryAttr);
 
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
@@ -1369,24 +1366,8 @@ CustomElementDefinition* HTMLConstructionSite::LookUpCustomElementDefinition(
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    if (!registry) {
-      return nullptr;
-    }
-  } else {
-    // "1. (pre-scoped registry old spec) If document does not have a browsing
-    // context, return null."
-    LocalDOMWindow* window = document.domWindow();
-    if (!window) {
-      return nullptr;
-    }
-
-    // "3. (pre-scoped registry old spec) Let registry be document's browsing
-    // context's Window's CustomElementRegistry object."
-    registry = window->MaybeCustomElements();
-    if (!registry) {
-      return nullptr;
-    }
+  if (!registry) {
+    return nullptr;
   }
 
   const AtomicString& local_name = tag_name.LocalName();
@@ -1429,46 +1410,44 @@ Element* HTMLConstructionSite::CreateElement(
   // "6. Let registry be the result of looking up a custom element registry
   // given intended parent."
   CustomElementRegistry* registry = custom_element_registry_;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // Look up intended parent's custom element registry. Note that if the
-    // intended parent is a template element, which means it will create a
-    // document fragment, the custom element registry should be null.
-    if (open_elements_.StackDepth() > 1) {
-      if (auto* tmpl = DynamicTo<HTMLTemplateElement>(CurrentNode())) {
-        if (tmpl->IsShadowRootModeTemplate()) {
-          // For declarative shadow root templates, the insertion target is the
-          // shadow root itself. Use the shadow root's registry so elements get
-          // the correct tree scope registry (null for scoped-waiting, global
-          // for non-scoped).
-          registry =
-              To<ShadowRoot>(tmpl->InsertionTarget())->customElementRegistry();
-        } else {
-          // Regular <template> element: content goes into a template content
-          // document which has no browsing context, so no registry can exist.
-          registry = nullptr;
-        }
-      } else if (document.IsTemplateDocument()) {
-        // Template content documents have no browsing context, so no registry
-        // can exist. This covers deeper descendants inside template content.
+  // Look up intended parent's custom element registry. Note that if the
+  // intended parent is a template element, which means it will create a
+  // document fragment, the custom element registry should be null.
+  if (open_elements_.StackDepth() > 1) {
+    if (auto* tmpl = DynamicTo<HTMLTemplateElement>(CurrentNode())) {
+      if (tmpl->IsShadowRootModeTemplate()) {
+        // For declarative shadow root templates, the insertion target is the
+        // shadow root itself. Use the shadow root's registry so elements get
+        // the correct tree scope registry (null for scoped-waiting, global
+        // for non-scoped).
+        registry =
+            To<ShadowRoot>(tmpl->InsertionTarget())->customElementRegistry();
+      } else {
+        // Regular <template> element: content goes into a template content
+        // document which has no browsing context, so no registry can exist.
         registry = nullptr;
-      } else if (is_parsing_fragment_ ||
-                 document.ScopedCustomElementRegistryUsed() ||
-                 &document != document_) {
-        // Only perform the per-element registry lookup when it may differ from
-        // the cached custom_element_registry_: during fragment parsing, when
-        // scoped registries are in use, or when a script has moved the current
-        // node to a different document mid-parse (stale cached registry).
-        registry = CurrentElement()->customElementRegistry();
       }
-    }
-    // If the token has the "customelementregistry" content attribute, override
-    // the registry to null. This allows declarative opt-out from the default
-    // registry during parsing.
-    if (registry &&
-        token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
-      document.SetScopedCustomElementRegistryUsed();
+    } else if (document.IsTemplateDocument()) {
+      // Template content documents have no browsing context, so no registry
+      // can exist. This covers deeper descendants inside template content.
       registry = nullptr;
+    } else if (is_parsing_fragment_ ||
+               document.ScopedCustomElementRegistryUsed() ||
+               &document != document_) {
+      // Only perform the per-element registry lookup when it may differ from
+      // the cached custom_element_registry_: during fragment parsing, when
+      // scoped registries are in use, or when a script has moved the current
+      // node to a different document mid-parse (stale cached registry).
+      registry = CurrentElement()->customElementRegistry();
     }
+  }
+  // If the token has the "customelementregistry" content attribute, override
+  // the registry to null. This allows declarative opt-out from the default
+  // registry during parsing.
+  if (registry &&
+      token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+    document.SetScopedCustomElementRegistryUsed();
+    registry = nullptr;
   }
   // 8. Let definition be the result of looking up a custom element definition
   // given registry, given namespace, local name and is.

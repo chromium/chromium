@@ -104,8 +104,7 @@ DocumentFragment* ParseHTMLFragmentInternal(
       // newly-created elements are using the same registry as the tree scope.
       // If they're the same, we don't need to set registry on the descendants
       // as the descendants can look up the registry from tree scope like usual.
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-          registry != context_element->GetTreeScope().customElementRegistry()) {
+      if (registry != context_element->GetTreeScope().customElementRegistry()) {
         for (Element& element : ElementTraversal::DescendantsOf(*fragment)) {
           element.SetCustomElementRegistry(
               CustomElementRegistryAssignment::ResolveNullableRegistry(
@@ -211,22 +210,18 @@ FragmentParserConfig FragmentParserConfig::ForContainer(
     const AtomicString& interface_name,
     const AtomicString& property_name) {
   CHECK(context->IsElementNode() || context->IsShadowRoot());
-  return {
-      .sanitizer_mode = mode,
-      .parse_declarative_shadows =
-          FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
-      .force_html = FragmentParserConfig::ForceHtml::kForce,
-      .interface_name = interface_name,
-      .property_name = property_name,
-      .context_element = context->IsElementNode()
-                             ? To<Element>(context)
-                             : &To<ShadowRoot>(context)->host(),
-      .registry =
-          context->IsElementNode()
-              ? (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-                     ? To<Element>(context)->customElementRegistry()
-                     : nullptr)
-              : To<ShadowRoot>(context)->customElementRegistry()};
+  return {.sanitizer_mode = mode,
+          .parse_declarative_shadows =
+              FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+          .force_html = FragmentParserConfig::ForceHtml::kForce,
+          .interface_name = interface_name,
+          .property_name = property_name,
+          .context_element = context->IsElementNode()
+                                 ? To<Element>(context)
+                                 : &To<ShadowRoot>(context)->host(),
+          .registry = context->IsElementNode()
+                          ? To<Element>(context)->customElementRegistry()
+                          : To<ShadowRoot>(context)->customElementRegistry()};
 }
 
 DocumentFragment* ParseHTMLFragment(const String& markup,
@@ -289,11 +284,9 @@ DocumentFragment* CreateContextualFragment(const String& html,
   // Use null registry to create fragment if the context element is a
   // template element as the container of the document fragment will be a
   // document fragment without browsing context.
-  CustomElementRegistry* registry =
-      (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-       IsA<HTMLTemplateElement>(element))
-          ? nullptr
-          : element->customElementRegistry();
+  CustomElementRegistry* registry = IsA<HTMLTemplateElement>(element)
+                                        ? nullptr
+                                        : element->customElementRegistry();
 
   DocumentFragment* fragment = blink::ParseHTMLFragment(
       html,

@@ -681,21 +681,18 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
   // The shadowrootcustomelementregistryattribute should be added unless
   //   - both document and shadow root registry are null
   //   - both document and shadow root registry are global registries
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    auto* document_registry =
-        shadow_root->GetDocument().customElementRegistry();
-    auto* shadow_registry = shadow_root->customElementRegistry();
-    bool should_append_registry_attribute = true;
-    if (document_registry == nullptr && shadow_registry == nullptr) {
-      should_append_registry_attribute = false;
-    } else if (document_registry && document_registry->IsGlobalRegistry() &&
-               shadow_registry && shadow_registry->IsGlobalRegistry()) {
-      should_append_registry_attribute = false;
-    }
-    if (should_append_registry_attribute) {
-      template_element->SetBooleanAttribute(
-          html_names::kShadowrootcustomelementregistryAttr, true);
-    }
+  auto* document_registry = shadow_root->GetDocument().customElementRegistry();
+  auto* shadow_registry = shadow_root->customElementRegistry();
+  bool should_append_registry_attribute = true;
+  if (document_registry == nullptr && shadow_registry == nullptr) {
+    should_append_registry_attribute = false;
+  } else if (document_registry && document_registry->IsGlobalRegistry() &&
+             shadow_registry && shadow_registry->IsGlobalRegistry()) {
+    should_append_registry_attribute = false;
+  }
+  if (should_append_registry_attribute) {
+    template_element->SetBooleanAttribute(
+        html_names::kShadowrootcustomelementregistryAttr, true);
   }
   return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
                                                       template_element);

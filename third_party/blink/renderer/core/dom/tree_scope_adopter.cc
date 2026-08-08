@@ -68,7 +68,6 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
   // Pre-check for scoped custom element registry handling during tree scope
   // changes (both cross-document adoption and within-document scope changes).
   bool handle_registry =
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       (old_document.ScopedCustomElementRegistryUsed() ||
        new_document.ScopedCustomElementRegistryUsed());
   if (handle_registry && will_move_to_new_document &&
@@ -187,9 +186,8 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   // inclusiveDescendant's custom element registry to document's effective
   // global custom element registry.
   auto* shadow_root_registry = shadow_root.customElementRegistry();
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      (old_document.ScopedCustomElementRegistryUsed() ||
-       new_document.ScopedCustomElementRegistryUsed())) {
+  if (old_document.ScopedCustomElementRegistryUsed() ||
+      new_document.ScopedCustomElementRegistryUsed()) {
     if ((!shadow_root_registry &&
          !shadow_root.ShouldKeepCustomElementRegistryNull()) ||
         (shadow_root_registry && shadow_root_registry->IsGlobalRegistry())) {
@@ -257,7 +255,6 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
       // the element's registry here to ensure the knowledge is kept even with
       // the scope change.
       if (old_document.ScopedCustomElementRegistryUsed()) {
-        DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
         auto* registry = element->customElementRegistry();
         if (registry && registry == old_document.customElementRegistry()) {
           element->SetCustomElementRegistry(

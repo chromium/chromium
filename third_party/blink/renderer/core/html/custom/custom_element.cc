@@ -166,9 +166,7 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
            (CustomElement::IsValidName(tag_name.LocalName()) ||
             !is_value.IsNull()))
     element->SetCustomElementState(CustomElementState::kUndefined);
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    element->SetCustomElementRegistry(registry_assignment);
-  }
+  element->SetCustomElementRegistry(registry_assignment);
 
   return element;
 }
@@ -200,8 +198,7 @@ HTMLElement* CustomElement::CreateFailedElement(
 
   auto* element = MakeGarbageCollected<HTMLUnknownElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kFailed);
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      registry) {
+  if (registry) {
     element->SetCustomElementRegistry(
         CustomElementRegistryAssignment::Explicit(registry));
   }

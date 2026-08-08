@@ -60,14 +60,11 @@ void V8HTMLConstructor::HtmlConstructor(
   // steps.
   v8::Local<v8::Object> constructor = new_target.As<v8::Object>();
   CustomElementDefinition* definition = nullptr;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // For scoped registries, we first check the construction stack for
-    // definition in a scoped registry.
-    CustomElementConstructionStack* construction_stack =
-        GetCustomElementConstructionStack(window, constructor);
-    if (construction_stack && construction_stack->size()) {
-      definition = construction_stack->back().definition;
-    }
+  // First check the construction stack for a definition in a scoped registry.
+  CustomElementConstructionStack* construction_stack =
+      GetCustomElementConstructionStack(window, constructor);
+  if (construction_stack && construction_stack->size()) {
+    definition = construction_stack->back().definition;
   }
   if (!definition) {
     definition =
@@ -127,8 +124,6 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 8. If definition's construction stack is empty...
   Element* element;
-  CustomElementConstructionStack* construction_stack =
-      GetCustomElementConstructionStack(window, constructor);
   if (!construction_stack || construction_stack->empty()) {
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());

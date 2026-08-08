@@ -675,12 +675,10 @@ NodeRareData::EnsureExplicitlySetElementsForAttr() {
 }
 
 bool NodeRareData::HasCustomElementRegistrySet() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   return flags_.has_custom_element_registry_;
 }
 
 CustomElementRegistry* NodeRareData::GetCustomElementRegistry() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   DCHECK(HasCustomElementRegistrySet());
   return static_cast<CustomElementRegistry*>(
       GetField(FieldId::kCustomElementRegistry));
@@ -691,7 +689,6 @@ NodeRareData* NodeRareData::SetCustomElementRegistry(
   // An element's custom element registry should only be set once unless the
   // registry is a global registry and can be reset during cross document node
   // adoption.
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   DCHECK(!GetField(FieldId::kCustomElementRegistry) ||
          static_cast<CustomElementRegistry*>(
              GetField(FieldId::kCustomElementRegistry))
@@ -706,7 +703,6 @@ NodeRareData* NodeRareData::SetCustomElementRegistry(
 }
 
 void NodeRareData::ClearCustomElementRegistry() {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   flags_.has_custom_element_registry_ = false;
   SetFieldToNullIfExists(FieldId::kCustomElementRegistry);
 }

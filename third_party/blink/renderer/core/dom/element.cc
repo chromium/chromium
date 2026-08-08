@@ -1124,19 +1124,17 @@ Node* Element::Clone(Document& factory,
                      ExceptionState& append_exception_state) const {
   Element* copy;
   CustomElementRegistry* registry = nullptr;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // 2-1. Let registry be node's custom element registry.
-    // 2-2. If registry is null, then set registry to fallbackRegistry
-    if (auto* node_registry = customElementRegistry()) {
-      registry = node_registry;
-    } else {
-      registry = fallback_registry;
-    }
-    // 2-3. If registry is a global custom element registry, then set
-    // registry to document's effective global custom element registry.
-    if (registry && registry->IsGlobalRegistry()) {
-      registry = factory.customElementRegistry();
-    }
+  // 2-1. Let registry be node's custom element registry.
+  // 2-2. If registry is null, then set registry to fallbackRegistry
+  if (auto* node_registry = customElementRegistry()) {
+    registry = node_registry;
+  } else {
+    registry = fallback_registry;
+  }
+  // 2-3. If registry is a global custom element registry, then set
+  // registry to document's effective global custom element registry.
+  if (registry && registry->IsGlobalRegistry()) {
+    registry = factory.customElementRegistry();
   }
   if (!data.Has(CloneOption::kIncludeDescendants)) {
     copy = &CloneWithoutChildren(data, registry, &factory);
@@ -1156,31 +1154,24 @@ Node* Element::Clone(Document& factory,
     if (shadow_root->GetMode() == ShadowRootMode::kOpen ||
         shadow_root->GetMode() == ShadowRootMode::kClosed) {
       CustomElementRegistry* shadow_root_registry = nullptr;
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-        // 6.2 Let shadowRootRegistry be node's shadow root's custom element
-        // registry
-        shadow_root_registry = shadow_root->customElementRegistry();
-        // 6.3 If shadowRootRegistry is a global custom element registry, then
-        // set shadowRootRegistry to document's effective global custom element
-        // registry
-        if (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()) {
-          shadow_root_registry = factory.customElementRegistry();
-        }
+      // 6.2 Let shadowRootRegistry be node's shadow root's custom element
+      // registry
+      shadow_root_registry = shadow_root->customElementRegistry();
+      // 6.3 If shadowRootRegistry is a global custom element registry, then
+      // set shadowRootRegistry to document's effective global custom element
+      // registry
+      if (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()) {
+        shadow_root_registry = factory.customElementRegistry();
       }
       // 6.4 Run attach a shadow root with copy, node's shadow root's mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
       // slot assignment.
       CustomElementRegistryAssignment registry_assignment =
-          CustomElementRegistryAssignment::Inherit();
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-        registry_assignment =
-            shadow_root->IsWaitingForScopedRegistry()
-                ? CustomElementRegistryAssignment::Wait()
-                : CustomElementRegistryAssignment::ResolveNullableRegistry(
-                      shadow_root_registry,
-                      CustomElementRegistryAssignment::NullRegistryFallback::
-                          kInherit);
-      }
+          shadow_root->IsWaitingForScopedRegistry()
+              ? CustomElementRegistryAssignment::Wait()
+              : CustomElementRegistryAssignment::ResolveNullableRegistry(
+                    shadow_root_registry, CustomElementRegistryAssignment::
+                                              NullRegistryFallback::kInherit);
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
           shadow_root->GetMode(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
@@ -4304,7 +4295,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   // we only need to do such bookkeeping when scoped custom element registry
   // is actually used.
   if (GetDocument().ScopedCustomElementRegistryUsed()) {
-    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     if (NodeRareData* rare_data = RareData()) {
       if (rare_data->HasCustomElementRegistrySet() &&
           insertion_point.IsInTreeScope()) {
@@ -4594,7 +4584,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // before moved. Note that we only need to do such bookkeeping when
   // scoped custom element registry is actually used.
   if (GetDocument().ScopedCustomElementRegistryUsed()) {
-    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     EnsureRareData();
     NodeRareData* data = RareData();
     if (!data->HasCustomElementRegistrySet() &&
@@ -7474,8 +7463,7 @@ CustomElementRegistry* Element::customElementRegistry(
   // If scoped registry is not exercised at all in the document,
   // we can avoid the rare data lookup and just return the tree scope's
   // registry.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      GetDocument().ScopedCustomElementRegistryUsed()) {
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
     if (const NodeRareData* data = RareData()) {
       if (data->HasCustomElementRegistrySet()) {
         CustomElementRegistry* registry = data->GetCustomElementRegistry();
@@ -7495,8 +7483,6 @@ CustomElementRegistry* Element::customElementRegistry(
 void Element::SetCustomElementRegistry(
     CustomElementRegistryAssignment assignment,
     bool always_retain_registry) {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-
   const NodeRareData* data = RareData();
   if (assignment.IsInherit()) {
     DCHECK(!data || !data->HasCustomElementRegistrySet());
@@ -7687,9 +7673,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   // 1. Let registry be this's custom element registry.
   // 2. If init["customElementRegistry"] exist then set registry to it.
-  bool scoped_registry =
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      shadow_root_init_dict->hasCustomElementRegistry();
+  bool scoped_registry = shadow_root_init_dict->hasCustomElementRegistry();
   auto* registry = scoped_registry
                        ? shadow_root_init_dict->customElementRegistry()
                        : GetDocument().customElementRegistry();
@@ -7802,8 +7786,7 @@ bool Element::AttachDeclarativeShadowRoot(
   shadow_root.SetAvailableToElementInternals(true);
   // 10.8.8. If templateStartTag has a shadowrootcustomelementregistry
   // attribute, then set shadow's keep custom element registry null to true.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      waiting_for_scoped_registry) {
+  if (waiting_for_scoped_registry) {
     shadow_root.SetKeepCustomElementRegistryNull(true);
     GetDocument().SetScopedCustomElementRegistryUsed();
   }
@@ -7861,9 +7844,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
   // 12. Set shadow's custom element registry to registry.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    shadow_root.SetCustomElementRegistry(registry);
-  }
+  shadow_root.SetCustomElementRegistry(registry);
   // 11. Set shadow’s serializable to serializable.
   shadow_root.setSerializable(serializable);
   // 10. Set shadow’s clonable to clonable.
@@ -9567,8 +9548,7 @@ CustomElementRegistry* CustomElementRegistryForInnerHTML(Element* element) {
   // Use null registry to create fragment if the context element is a
   // template element as the container of the document fragment will be a
   // document fragment without browsing context.
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      IsA<HTMLTemplateElement>(element)) {
+  if (IsA<HTMLTemplateElement>(element)) {
     return nullptr;
   }
   return element->customElementRegistry();
@@ -9673,8 +9653,7 @@ void Element::SetOuterHTMLInternal(const String& html,
   // use, all elements share the tree scope's global registry so no distinction
   // is needed.
   CustomElementRegistry* registry;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      GetDocument().ScopedCustomElementRegistryUsed()) {
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
     auto* parent_element = DynamicTo<Element>(p);
     registry = parent_element ? parent_element->customElementRegistry()
                               : p->GetTreeScope().customElementRegistry();
@@ -9967,8 +9946,7 @@ void Element::InsertAdjacentHTMLInternal(const String& where,
   // all elements share the tree scope's global registry so no distinction is
   // needed.
   CustomElementRegistry* registry;
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      GetDocument().ScopedCustomElementRegistryUsed()) {
+  if (GetDocument().ScopedCustomElementRegistryUsed()) {
     auto* context_element_for_registry = DynamicTo<Element>(context_node);
     registry = context_element_for_registry
                    ? context_element_for_registry->customElementRegistry()

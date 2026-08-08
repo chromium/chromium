@@ -46,8 +46,7 @@ void CollectUpgradeCandidateInNode(CustomElementRegistry* registry,
   if (auto* root_element = DynamicTo<Element>(root)) {
     if (root_element->GetCustomElementState() ==
             CustomElementState::kUndefined &&
-        (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() ||
-         root_element->customElementRegistry() == registry)) {
+        root_element->customElementRegistry() == registry) {
       candidates.push_back(root_element);
     }
     if (auto* shadow_root = root_element->GetShadowRoot()) {
@@ -88,7 +87,6 @@ bool ThrowIfValidName(const AtomicString& name,
 // static
 CustomElementRegistry* CustomElementRegistry::Create(
     ScriptState* script_state) {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   auto* window = LocalDOMWindow::From(script_state);
   window->document()->SetScopedCustomElementRegistryUsed();
   return MakeGarbageCollected<CustomElementRegistry>(
@@ -389,12 +387,10 @@ void CustomElementRegistry::CollectCandidates(
   for (Element* element : *it.Get()->value) {
     if (!element || !desc.Matches(*element))
       continue;
-    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-      if ((*element).customElementRegistry() != this) {
-        // The element has been moved away from the original tree scope and no
-        // longer uses this registry.
-        continue;
-      }
+    if ((*element).customElementRegistry() != this) {
+      // The element has been moved away from the original tree scope and no
+      // longer uses this registry.
+      continue;
     }
     sorter.Add(element);
   }
@@ -430,7 +426,6 @@ void CustomElementRegistry::AssociatedWith(Document& document) {
 // https://html.spec.whatwg.org/multipage/custom-elements.html#dom-customelementregistry-initialize
 void CustomElementRegistry::initialize(Node* root,
                                        ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   // 1. If this's "is scoped" is false and either root is a Document node or
   // root's node document's custom element registry is not this, then throw a
   // "NotSupportedError" DOMException.

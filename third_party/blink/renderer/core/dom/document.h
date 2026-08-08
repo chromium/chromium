@@ -221,7 +221,6 @@ class HitTestRequest;
 class HttpRefreshScheduler;
 class IntersectionObserverController;
 class InvalidateNodeListCachesScope;
-class ImportNodeOptions;
 class LayoutUpgrade;
 class LayoutView;
 class LazyLoadMediaObserver;
@@ -277,6 +276,7 @@ class TrustedHTML;
 class V8DocumentReadyState;
 class V8NodeFilter;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
+class V8UnionBooleanOrImportNodeOptions;
 class V8UnionElementCreationOptionsOrString;
 class V8UnionStringOrTrustedHTML;
 class ViewportData;
@@ -499,7 +499,7 @@ class CORE_EXPORT Document : public ContainerNode,
                           ExceptionState&);
 
   Node* importNode(Node* imported_node,
-                   ImportNodeOptions* options,
+                   V8UnionBooleanOrImportNodeOptions* options,
                    ExceptionState&);
   Node* importNode(Node* imported_node, bool deep, ExceptionState&);
 
@@ -2333,7 +2333,6 @@ class CORE_EXPORT Document : public ContainerNode,
   CustomElementRegistry* EffectiveGlobalCustomElementRegistry() const;
 
   void SetScopedCustomElementRegistryUsed() {
-    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     scoped_custom_element_registry_used_ = true;
   }
   bool ScopedCustomElementRegistryUsed() const {

@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_overscroll_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_importnodeoptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_elementcreationoptions_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
@@ -1432,8 +1433,7 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
         is = AtomicString(options->is());
       }
       // 3-2. If options["customElementRegistry"] exists:
-      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-          options->hasCustomElementRegistry()) {
+      if (options->hasCustomElementRegistry()) {
         // 3-2-1. If is is non-null, then throw a "notSupportedError"
         // DOMException.
         if (!is.IsNull()) {
@@ -1592,11 +1592,6 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   CustomElementDefinition* definition = nullptr;
   // 2. If registry is "default", set registry to the result of looking
   // up a custom element registry given document.
-  // Note that we need to assign default registry when scoped registry is
-  // disabled
-  if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    registry = CustomElementRegistry::DefaultRegistry(*this);
-  }
   if (flags.IsCustomElements() &&
       q_name.NamespaceURI() == html_names::xhtmlNamespaceURI) {
     // 3. Let definition be the result of looking up a custom element definition
@@ -1677,48 +1672,37 @@ Text* Document::CreateEditingTextNode(const String& text) {
 }
 
 Node* Document::importNode(Node* imported_node,
-                           ImportNodeOptions* options,
+                           V8UnionBooleanOrImportNodeOptions* options,
                            ExceptionState& exception_state) {
   DCHECK(options);
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
 
-  // The spec[1] says:
-  // 1. Let subtree be false.
-  // ...4. If options is a boolean, then set subtree to options .
-  // ...5.1 Set subtree to the negation of options [" selfOnly "].
-  //
-  // However, due to the overloads we know `ImportNodeOptions` to be
-  // an object, but `selfOnly` may not be supplied (in which case it
-  // will be false). Because we take the _negation_ of selfOnly, this
-  // means when it is not supplied subtree will be true. So another
-  // way to write the spec could be:
-  //
-  // 1. Let subtree be true
-  // ...5.1 Set subtree to the negation of options [" selfOnly "].
-  //
-  // [1]:
-  // https://whatpr.org/dom/1341/eaf2ac7...2ff2920.html#dom-document-importnode
-  bool subtree = true;
-  if (options->hasSelfOnly()) {
-    subtree = !options->selfOnly();
-  }
-
-  // 5-2. If options["customElementRegistry"] exists, then set registry to it.
+  bool subtree = false;
   CustomElementRegistry* registry = nullptr;
-  if (options->hasCustomElementRegistry()) {
-    CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-    registry = options->customElementRegistry();
-    // 5-3. If registry's "is scoped" is false and registry is not this's custom
-    // element registry, then throw a "notSupportedError" DOMException.
-    if (registry->IsGlobalRegistry() && registry != customElementRegistry()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "The registry provided is a global registry from another document.");
-      return nullptr;
+  // 4. If options is a boolean, then set subtree to options.
+  if (options->IsBoolean()) {
+    subtree = options->GetAsBoolean();
+  } else {
+    ImportNodeOptions* import_node_options = options->GetAsImportNodeOptions();
+    // 5.1. Set subtree to the negation of options["selfOnly"].
+    subtree =
+        !import_node_options->hasSelfOnly() || !import_node_options->selfOnly();
+
+    // 5.2. If options["customElementRegistry"] exists, then set registry to it.
+    if (import_node_options->hasCustomElementRegistry()) {
+      registry = import_node_options->customElementRegistry();
+      // 5.3. If registry is global and differs from this document's registry,
+      // then throw a NotSupportedError.
+      if (registry->IsGlobalRegistry() && registry != customElementRegistry()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "The registry provided is a global registry from another "
+            "document.");
+        return nullptr;
+      }
     }
   }
-  // 6. If registry is null, then set registry to the result of looking up a
-  // custom element registry given this
+
+  // 6. If registry is null, look up a custom element registry given this.
   if (!registry) {
     registry = customElementRegistry();
   }
@@ -3448,8 +3432,7 @@ void Document::Shutdown() {
   // Document.customElementRegistry continues to return the correct registry
   // even after the document's browsing context is destroyed (e.g., when an
   // iframe is removed from the DOM).
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      dom_window_) {
+  if (dom_window_) {
     if (CustomElementRegistry* registry = dom_window_->MaybeCustomElements()) {
       SetCustomElementRegistry(
           CustomElementRegistryAssignment::Explicit(registry));
@@ -3640,10 +3623,8 @@ CanvasFontCache* Document::GetCanvasFontCache() {
 
 DocumentParser* Document::CreateParser() {
   if (auto* html_document = DynamicTo<HTMLDocument>(this)) {
-    CustomElementRegistry* registry = nullptr;
-    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-      registry = CustomElementRegistry::DefaultRegistry(*this);
-    }
+    CustomElementRegistry* registry =
+        CustomElementRegistry::DefaultRegistry(*this);
     return MakeGarbageCollected<HTMLDocumentParser>(
         *html_document, parser_sync_policy_, registry, sanitizer_.Get());
   }
@@ -5603,13 +5584,11 @@ Node* Document::Clone(Document& factory,
     return nullptr;
   Document* clone = CloneDocumentWithoutChildren();
   clone->CloneDataFromDocument(*this);
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // 2. If node's custom element registry's "is scoped" is true, then
-    // set copy's custom element registry to node's custom element registry.
-    if (fallback_registry && !fallback_registry->IsGlobalRegistry()) {
-      clone->SetCustomElementRegistry(
-          CustomElementRegistryAssignment::Explicit(fallback_registry));
-    }
+  // 2. If node's custom element registry's "is scoped" is true, then
+  // set copy's custom element registry to node's custom element registry.
+  if (fallback_registry && !fallback_registry->IsGlobalRegistry()) {
+    clone->SetCustomElementRegistry(
+        CustomElementRegistryAssignment::Explicit(fallback_registry));
   }
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data, fallback_registry);
@@ -10430,7 +10409,6 @@ net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {
 
 
 CustomElementRegistry* Document::EffectiveGlobalCustomElementRegistry() const {
-  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   auto* registry = customElementRegistry();
   if (registry && registry->IsGlobalRegistry()) {
     return registry;

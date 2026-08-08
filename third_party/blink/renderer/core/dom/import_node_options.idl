@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 dictionary ImportNodeOptions {
-  [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry customElementRegistry;
+  CustomElementRegistry customElementRegistry;
   boolean selfOnly = false;
 };

@@ -50,7 +50,7 @@
     [CEReactions, Reflect, RuntimeEnabled=ShadowRootAdoptedStyleSheet] attribute DOMString shadowRootAdoptedStyleSheets;
 
     // Used by Scoped Element Registries
-    [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;
+    [CEReactions, Reflect] attribute DOMString shadowRootCustomElementRegistry;
 
     // Used by document patching
     [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute boolean buffer;
