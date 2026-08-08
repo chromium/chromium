@@ -138,7 +138,7 @@ suite('LineFocusMoveMode', () => {
 
       mode.onActivated(container, defaultHeight);
 
-      const expectedFocalPoint = model.getMaxY() / 2;
+      const expectedFocalPoint = styleMode.getCenterY();
       assertEquals(expectedFocalPoint, model.getFocalPoint());
       assertTrue(notifiedContentPositionChange);
     });
@@ -320,7 +320,7 @@ suite('LineFocusMoveMode', () => {
       mode.onTextLocationsChange(container, defaultHeight);
 
       assertTrue(notifiedVisualPositionChange);
-      const center = model.getMaxY() / 2;
+      const center = styleMode.getCenterY();
       assertEquals(center, model.getFocalPoint());
     });
 

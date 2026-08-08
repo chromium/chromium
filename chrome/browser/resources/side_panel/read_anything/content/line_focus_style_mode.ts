@@ -21,6 +21,9 @@ export abstract class LineFocusStyleMode {
     return this.style_;
   }
 
+  // Returns the vertical midpoint of the visible reading area.
+  abstract getCenterY(): number;
+
   // Returns how far from the center the current focal point is if it is outside
   // the viewport. Returns 0 otherwise.
   getOffScreenDiff(targetIndex: number): number {
@@ -30,7 +33,7 @@ export abstract class LineFocusStyleMode {
     if (bottomRect.bottom > this.model_.getMaxY() ||
         topRect.top < this.model_.getMinY()) {
       const center = this.getFocalPoint(topRect, bottomRect);
-      return center - (this.model_.getMaxY() / 2);
+      return center - this.getCenterY();
     }
     return 0;
   }
@@ -41,7 +44,7 @@ export abstract class LineFocusStyleMode {
     const {topRect, bottomRect} =
         this.getFocusWindowBounds(textBounds, targetIndex);
     const center = this.getFocalPoint(topRect, bottomRect);
-    return center - (this.model_.getMaxY() / 2);
+    return center - this.getCenterY();
   }
 
   // Returns where the center of the focus element should be in the focus area
@@ -85,6 +88,16 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
   constructor(style: LineFocusStyle, model: LineFocusModel) {
     super(style, model);
   }
+
+  override getCenterY(): number {
+    // Because underline style is rendered directly under a line of text,
+    // offsetting by the toolbar / minY can sometimes cause the underline
+    // to be placed directly through the center of the text when scrolling
+    // automatically, so the vertical midpoint should only be calculated using
+    // maxY.
+    return this.model_.getMaxY() / 2;
+  }
+
 
   updateFocusBounds(): void {
     this.model_.setTop(this.model_.getFocalPoint());
@@ -131,6 +144,14 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     super(style, model);
   }
 
+  override getCenterY(): number {
+    // Because window style is rendered centered around a line of text,
+    // the vertical midpoint should be offset by the toolbar (minY) in
+    // order to ensure the window is properly centered around the current
+    // line(s) when scrolling automatically.
+    return (this.model_.getMinY() + this.model_.getMaxY()) / 2;
+  }
+
   updateFocusBounds(): void {
     const bounds = this.model_.getTextBounds();
     if (bounds.length === 0) {
@@ -140,7 +161,7 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     // Use a set height to calculate a multi-line window if the window should
     // not adapt to the line heights.
     if (!this.shouldAdaptToTextBounds()) {
-      const center = this.model_.getMaxY() / 2;
+      const center = this.getCenterY();
       const mostCommonPitch = getMostCommonPitch(bounds);
       const windowHeight = mostCommonPitch * this.style_.lines;
       this.model_.setTop(center - (windowHeight / 2));
@@ -266,6 +287,11 @@ export class LineFocusNoneStyleMode extends LineFocusStyleMode {
   shouldAdaptToTextBounds(): boolean {
     // Do nothing when line focus is disabled.
     return false;
+  }
+
+  override getCenterY(): number {
+    // The center Y isn't needed when line focus is disabled.
+    return 0;
   }
 
   protected getFocusWindowBounds(_lines: DOMRect[], _targetIndex: number):
