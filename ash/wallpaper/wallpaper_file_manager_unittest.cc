@@ -10,10 +10,12 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
@@ -129,6 +131,66 @@ TEST_P(WallpaperFileManagerTest, SaveAndLoadSameWallpaper) {
   EXPECT_TRUE(gfx::test::AreImagesClose(gfx::Image(test_image),
                                         gfx::Image(load_wallpaper_future.Get()),
                                         kMaxPixelDeviation));
+}
+
+class WallpaperFileManagerLocationTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+    wallpaper_dir_ = scoped_temp_dir_.GetPath()
+                         .Append("wallpapers")
+                         .Append("google_photos")
+                         .Append("account_key");
+    other_dir_ = scoped_temp_dir_.GetPath().Append("other");
+    ASSERT_TRUE(base::CreateDirectory(wallpaper_dir_));
+    ASSERT_TRUE(base::CreateDirectory(other_dir_));
+  }
+
+  base::FilePath wallpaper_dir_;
+  base::FilePath other_dir_;
+
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir scoped_temp_dir_;
+  InProcessDataDecoder decoder_;
+  WallpaperFileManager wallpaper_file_manager_;
+};
+
+TEST_F(WallpaperFileManagerLocationTest, SaveRejectsFileNameReferencingParent) {
+  const base::Time past = base::Time::Now() - base::Days(1);
+  ASSERT_TRUE(base::TouchFile(other_dir_, past, past));
+  base::File::Info initial_info;
+  ASSERT_TRUE(base::GetFileInfo(other_dir_, &initial_info));
+
+  base::test::TestFuture<const base::FilePath&> save_wallpaper_future;
+  wallpaper_file_manager_.SaveWallpaperToDisk(
+      WallpaperType::kOnceGooglePhotos, wallpaper_dir_,
+      "../../../other/file.jpg", WALLPAPER_LAYOUT_CENTER_CROPPED,
+      gfx::test::CreateImageSkia(10, SK_ColorBLUE),
+      save_wallpaper_future.GetCallback());
+
+  EXPECT_TRUE(save_wallpaper_future.Get().empty());
+  EXPECT_TRUE(base::IsDirectoryEmpty(other_dir_));
+
+  base::File::Info final_info;
+  ASSERT_TRUE(base::GetFileInfo(other_dir_, &final_info));
+  EXPECT_EQ(initial_info.last_modified, final_info.last_modified);
+}
+
+TEST_F(WallpaperFileManagerLocationTest, LoadRejectsLocationReferencingParent) {
+  base::test::TestFuture<const base::FilePath&> save_wallpaper_future;
+  wallpaper_file_manager_.SaveWallpaperToDisk(
+      WallpaperType::kOnceGooglePhotos, other_dir_, "file.jpg",
+      WALLPAPER_LAYOUT_CENTER_CROPPED,
+      gfx::test::CreateImageSkia(10, SK_ColorBLUE),
+      save_wallpaper_future.GetCallback());
+  ASSERT_FALSE(save_wallpaper_future.Get().empty());
+
+  base::test::TestFuture<const gfx::ImageSkia&> load_wallpaper_future;
+  wallpaper_file_manager_.LoadWallpaper(
+      WallpaperType::kOnceGooglePhotos, wallpaper_dir_,
+      "../../../other/file.jpg", load_wallpaper_future.GetCallback());
+
+  EXPECT_TRUE(load_wallpaper_future.Get().isNull());
 }
 
 }  // namespace
