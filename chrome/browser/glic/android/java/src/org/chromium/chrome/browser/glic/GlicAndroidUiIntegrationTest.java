@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -307,8 +308,8 @@ public class GlicAndroidUiIntegrationTest {
     @Test
     @LargeTest
     public void testActorOverlayViewAndTakeOver() {
-        // Initially, the overlay view should not be visible.
-        onView(withId(R.id.actor_overlay)).check(matches(not(isDisplayed())));
+        // Initially, the overlay view should not be inflated/present in the hierarchy.
+        onView(withId(R.id.actor_overlay)).check(doesNotExist());
 
         // 1. Simulate Actor UI Tab state update on the tab -> overlay active, border glow visible,
         // handoff button active.

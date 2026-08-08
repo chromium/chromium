@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor.ui;
 
 import static java.util.Collections.emptySet;
 
+import android.content.Context;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionSet;
@@ -44,9 +45,9 @@ import java.util.Collection;
 @NullMarked
 public class ActorOverlayCoordinator {
     private final ActorOverlayMediator mMediator;
-    private final ActorOverlayView mView;
+    private final ViewStub mViewStub;
+    private final Context mContext;
     private final PropertyModel mModel;
-    private final PropertyModelChangeProcessor mChangeProcessor;
     private final SnackbarManager mSnackbarManager;
     private final BackPressHandlerRegistry mBackPressHandlerRegistry;
     private final SnackbarManager.SnackbarController mSnackbarController;
@@ -54,6 +55,9 @@ public class ActorOverlayCoordinator {
     private final Callback<Profile> mProfileObserver;
     private final TabModelSelector mTabModelSelector;
     private final @Nullable SideUiStateProvider mSideUiStateProvider;
+
+    private @Nullable ActorOverlayView mView;
+    private @Nullable PropertyModelChangeProcessor mChangeProcessor;
     private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable ActorKeyedService mActorKeyedService;
     private ActorKeyedService.@Nullable Observer mActorObserver;
@@ -81,7 +85,8 @@ public class ActorOverlayCoordinator {
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable SideUiStateProvider sideUiStateProvider) {
-        mView = (ActorOverlayView) viewStub.inflate();
+        mViewStub = viewStub;
+        mContext = viewStub.getContext();
         mSnackbarManager = snackbarManager;
         mBackPressHandlerRegistry = backPressHandlerRegistry;
         mProfileSupplier = profileSupplier;
@@ -103,12 +108,9 @@ public class ActorOverlayCoordinator {
 
         mSideUiStateProvider = sideUiStateProvider;
         if (mSideUiStateProvider != null) {
-            mSideUiObserver = new MarginAdjusterForSideUi(mView, mModel);
+            mSideUiObserver = new MarginAdjusterForSideUi();
             mSideUiStateProvider.addObserver(mSideUiObserver);
         }
-
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
 
         // Empty impl, used to dismiss a named snackbar.
         mSnackbarController = new SnackbarManager.SnackbarController() {};
@@ -120,6 +122,7 @@ public class ActorOverlayCoordinator {
                         browserControlsVisibilityManager,
                         tabObscuringHandler,
                         layoutManagerSupplier,
+                        this::inflateView,
                         this::showInteractionLimitedSnackbar,
                         this::dismissInteractionLimitedSnackbar);
         mBackPressHandlerRegistry.addHandler(mMediator, BackPressHandler.Type.ACTOR_OVERLAY);
@@ -128,18 +131,21 @@ public class ActorOverlayCoordinator {
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
     }
 
-    private static class MarginAdjusterForSideUi implements SideUiObserver {
-        private final View mView;
-        private final PropertyModel mModel;
+    private void inflateView() {
+        if (mView != null) return;
+        mView = (ActorOverlayView) mViewStub.inflate();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
+    }
 
-        MarginAdjusterForSideUi(View view, PropertyModel model) {
-            mView = view;
-            mModel = model;
-        }
+    private class MarginAdjusterForSideUi implements SideUiObserver {
 
         @Override
         public @Nullable Transition onPreSideUiSpecsChange(
                 SideUiCoordinator.SideUiSpecs sideUiSpecs) {
+            if (mView == null || !mModel.get(ActorOverlayProperties.VISIBLE)) {
+                return null;
+            }
             TransitionSet transitionSet = new TransitionSet();
             Collection<View> descendants = new ArrayList<>();
             ViewUtils.getAllDescendants(mView, descendants, emptySet());
@@ -199,7 +205,7 @@ public class ActorOverlayCoordinator {
 
         Snackbar snackbar =
                 Snackbar.make(
-                        mView.getContext().getString(R.string.actor_overlay_snackbar_message),
+                        mContext.getString(R.string.actor_overlay_snackbar_message),
                         mSnackbarController,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_ACTOR);
@@ -210,14 +216,13 @@ public class ActorOverlayCoordinator {
         mSnackbarManager.dismissSnackbars(mSnackbarController);
     }
 
-    /** Returns the root view of the overlay. */
-    public View getView() {
-        return mView;
-    }
-
     /** Returns the mediator for the overlay. */
     public ActorOverlayMediator getMediator() {
         return mMediator;
+    }
+
+    boolean isViewInflatedForTesting() {
+        return mView != null;
     }
 
     PropertyModel getModelForTesting() {
@@ -242,7 +247,10 @@ public class ActorOverlayCoordinator {
         }
         mBackPressHandlerRegistry.removeHandler(mMediator);
         mMediator.destroy();
-        mChangeProcessor.destroy();
+        if (mChangeProcessor != null) {
+            mChangeProcessor.destroy();
+            mChangeProcessor = null;
+        }
         dismissInteractionLimitedSnackbar();
     }
 }
