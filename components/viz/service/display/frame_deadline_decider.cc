@@ -11,6 +11,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace viz {
 
@@ -160,7 +161,9 @@ size_t FrameDeadlineDecider::SelectDeadline(
     std::optional<base::TimeTicks> earliest_input_time,
     bool is_handling_interaction) {
   TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz",
-                    "FrameDeadlineDecider::SelectDeadline");
+                    "FrameDeadlineDecider::SelectDeadline",
+                    perfetto::TerminatingFlow::ProcessScoped(
+                        GetTraceFlowId(frame_time.since_origin())));
 
   QueryResult result =
       QueryDeadline(possible_deadlines, vsync_interval, max_allowed_buffers,
