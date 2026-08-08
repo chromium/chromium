@@ -11,9 +11,9 @@ using media_session::mojom::MediaImageBitmap;
 
 namespace media_session {
 
-using MojoTraitsTest = testing::Test;
+using MediaSessionMojoTraitsTest = testing::Test;
 
-TEST_F(MojoTraitsTest, ColorTypeConversion_RGBA_8888) {
+TEST_F(MediaSessionMojoTraitsTest, ColorTypeConversion_RGBA_8888) {
   SkBitmap input;
   SkImageInfo info =
       SkImageInfo::Make(200, 100, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
@@ -32,7 +32,7 @@ TEST_F(MojoTraitsTest, ColorTypeConversion_RGBA_8888) {
   EXPECT_EQ(kPremul_SkAlphaType, output.info().alphaType());
 }
 
-TEST_F(MojoTraitsTest, ColorTypeConversion_BGRA_8888) {
+TEST_F(MediaSessionMojoTraitsTest, ColorTypeConversion_BGRA_8888) {
   SkBitmap input;
   SkImageInfo info =
       SkImageInfo::Make(200, 100, kBGRA_8888_SkColorType, kPremul_SkAlphaType);

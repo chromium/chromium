@@ -112,6 +112,8 @@ auto AnyHitTestRegionList() {
       fuzztest::VectorOf(AnyHitTestRegion()).WithMaxSize(100));
 }
 
+using HitTestStructTraitsTest = testing::Test;
+
 }  // namespace
 
 void AggregatedHitTestRegionFuzz(const AggregatedHitTestRegion& input) {
@@ -119,17 +121,17 @@ void AggregatedHitTestRegionFuzz(const AggregatedHitTestRegion& input) {
   mojo::test::SerializeAndDeserialize<mojom::AggregatedHitTestRegion>(input,
                                                                       output);
 }
-FUZZ_TEST(StructTraitsTest, AggregatedHitTestRegionFuzz)
+FUZZ_TEST(HitTestStructTraitsFuzzTest, AggregatedHitTestRegionFuzz)
     .WithDomains(AnyAggregatedHitTestRegion());
 
 void HitTestRegionListFuzz(const HitTestRegionList& input) {
   HitTestRegionList output;
   mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, HitTestRegionListFuzz)
+FUZZ_TEST(HitTestStructTraitsFuzzTest, HitTestRegionListFuzz)
     .WithDomains(AnyHitTestRegionList());
 
-TEST(StructTraitsTest, AggregatedHitTestRegion) {
+TEST_F(HitTestStructTraitsTest, AggregatedHitTestRegion) {
   constexpr FrameSinkId frame_sink_id(1337, 1234);
   constexpr uint32_t flags = HitTestRegionFlags::kHitTestAsk;
   constexpr uint32_t async_hit_test_reasons =
@@ -152,7 +154,7 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
   EXPECT_EQ(input.child_count, output.child_count);
 }
 
-TEST(StructTraitsTest, HitTestRegionList) {
+TEST_F(HitTestStructTraitsTest, HitTestRegionList) {
   std::optional<HitTestRegionList> input(std::in_place);
   input->flags = HitTestRegionFlags::kHitTestAsk;
   input->async_hit_test_reasons = AsyncHitTestReasons::kOverlappedRegion;
@@ -186,7 +188,7 @@ TEST(StructTraitsTest, HitTestRegionList) {
 
 // Ensures gfx::Transform doesn't mutate itself when its const methods are
 // called, to ensure it won't change in the read-only shared memory segment.
-TEST(StructTraitsTest, TransformImmutable) {
+TEST_F(HitTestStructTraitsTest, TransformImmutable) {
   auto t = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
                                     14, 15, 16);
   uint8_t mem[sizeof(t)];

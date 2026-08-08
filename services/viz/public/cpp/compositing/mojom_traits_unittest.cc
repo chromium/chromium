@@ -104,11 +104,11 @@ namespace viz {
 
 namespace {
 
-using StructTraitsTest = testing::Test;
+using CompositingStructTraitsTest = testing::Test;
 
 }  // namespace
 
-TEST_F(StructTraitsTest, BeginFrameArgs) {
+TEST_F(CompositingStructTraitsTest, BeginFrameArgs) {
   const base::TimeTicks frame_time = base::TimeTicks::Now();
   const base::TimeTicks deadline = base::TimeTicks::Now();
   const base::TimeDelta interval = base::Milliseconds(1337);
@@ -145,7 +145,7 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   EXPECT_EQ(unthrottled_interval, output.unthrottled_interval);
 }
 
-TEST_F(StructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
+TEST_F(CompositingStructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
   const base::TimeTicks frame_time = base::TimeTicks::Now();
   const base::TimeTicks deadline = base::TimeTicks::Now();
   const base::TimeDelta interval = base::Milliseconds(1337);
@@ -190,7 +190,7 @@ TEST_F(StructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
   }
 }
 
-TEST_F(StructTraitsTest, BeginFrameAck) {
+TEST_F(CompositingStructTraitsTest, BeginFrameAck) {
   const uint64_t source_id = 5;
   const uint64_t sequence_number = 10;
   const bool has_damage = true;
@@ -254,7 +254,7 @@ void ExpectEqual(const cc::FilterOperation& input,
 
 }  // namespace
 
-TEST_F(StructTraitsTest, FilterOperationBlur) {
+TEST_F(CompositingStructTraitsTest, FilterOperationBlur) {
   cc::FilterOperation input = cc::FilterOperation::CreateBlurFilter(20);
 
   cc::FilterOperation output;
@@ -262,7 +262,7 @@ TEST_F(StructTraitsTest, FilterOperationBlur) {
   ExpectEqual(input, output);
 }
 
-TEST_F(StructTraitsTest, FilterOperationDropShadow) {
+TEST_F(CompositingStructTraitsTest, FilterOperationDropShadow) {
   cc::FilterOperation input = cc::FilterOperation::CreateDropShadowFilter(
       gfx::Point(4, 4), 4.0f, SkColor4f{0.15f, 0.0f, 0.0f, 1.0f});
 
@@ -271,7 +271,7 @@ TEST_F(StructTraitsTest, FilterOperationDropShadow) {
   ExpectEqual(input, output);
 }
 
-TEST_F(StructTraitsTest, FilterOperationReferenceFilter) {
+TEST_F(CompositingStructTraitsTest, FilterOperationReferenceFilter) {
   cc::FilterOperation input = cc::FilterOperation::CreateReferenceFilter(
       sk_make_sp<cc::DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
@@ -284,7 +284,7 @@ TEST_F(StructTraitsTest, FilterOperationReferenceFilter) {
   ExpectEqual(input, output);
 }
 
-TEST_F(StructTraitsTest, FilterOperations) {
+TEST_F(CompositingStructTraitsTest, FilterOperations) {
   cc::FilterOperations input;
   input.Append(cc::FilterOperation::CreateBlurFilter(0.f));
   input.Append(cc::FilterOperation::CreateSaturateFilter(4.f));
@@ -299,7 +299,7 @@ TEST_F(StructTraitsTest, FilterOperations) {
   }
 }
 
-TEST_F(StructTraitsTest, LocalSurfaceId) {
+TEST_F(CompositingStructTraitsTest, LocalSurfaceId) {
   LocalSurfaceId input(
       42, base::UnguessableToken::CreateForTesting(0x12345678, 0x9abcdef0));
 
@@ -309,7 +309,7 @@ TEST_F(StructTraitsTest, LocalSurfaceId) {
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
+TEST_F(CompositingStructTraitsTest, CopyOutputRequest_BitmapRequest) {
   base::test::TaskEnvironment task_environment;
 
   const auto result_format = CopyOutputRequest::ResultFormat::RGBA;
@@ -331,7 +331,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
              std::unique_ptr<CopyOutputResult> result) {
             EXPECT_EQ(expected_rect, result->rect());
             // Note: CopyOutputResult plumbing for bitmap requests is tested in
-            // StructTraitsTest.CopyOutputResult_Bitmap.
+            // CompositingStructTraitsTest.CopyOutputResult_Bitmap.
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure(), result_rect)));
@@ -367,7 +367,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
   run_loop.Run();
 }
 
-TEST_F(StructTraitsTest, CopyOutputRequest_MessagePipeBroken) {
+TEST_F(CompositingStructTraitsTest, CopyOutputRequest_MessagePipeBroken) {
   base::test::TaskEnvironment task_environment;
 
   base::RunLoop run_loop;
@@ -390,7 +390,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_MessagePipeBroken) {
   run_loop.Run();
 }
 
-TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
+TEST_F(CompositingStructTraitsTest, CopyOutputRequest_TextureRequest) {
   base::test::TaskEnvironment task_environment;
 
   const auto result_format = CopyOutputRequest::ResultFormat::RGBA;
@@ -412,7 +412,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
              std::unique_ptr<CopyOutputResult> result) {
             EXPECT_EQ(expected_rect, result->rect());
             // Note: CopyOutputResult plumbing for texture requests is tested in
-            // StructTraitsTest.CopyOutputResult_Texture.
+            // CompositingStructTraitsTest.CopyOutputResult_Texture.
             std::move(quit_closure).Run();
           },
           run_loop_for_result.QuitClosure(), result_rect)));
@@ -453,7 +453,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
   run_loop_for_release.Run();
 }
 
-TEST_F(StructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
+TEST_F(CompositingStructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
   base::test::TaskEnvironment task_environment;
 
   int n_called = 0;
@@ -480,7 +480,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
   EXPECT_EQ(1, n_called);
 }
 
-TEST_F(StructTraitsTest, Selection) {
+TEST_F(CompositingStructTraitsTest, Selection) {
   gfx::SelectionBound start;
   start.SetEdge(gfx::PointF(1234.5f, 67891.f), gfx::PointF(5432.1f, 1987.6f));
   start.set_visible(true);
@@ -498,7 +498,7 @@ TEST_F(StructTraitsTest, Selection) {
   EXPECT_EQ(end, output.end);
 }
 
-TEST_F(StructTraitsTest, SharedQuadState) {
+TEST_F(CompositingStructTraitsTest, SharedQuadState) {
   const auto quad_to_target_transform =
       gfx::Transform::RowMajor(1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f,
                                10.f, 11.f, 12.f, 13.f, 14.f, 15.f, 16.f);
@@ -535,7 +535,7 @@ TEST_F(StructTraitsTest, SharedQuadState) {
 // Note that this is a fairly trivial test of CompositorFrame serialization as
 // most of the heavy lifting has already been done by CompositorFrameMetadata,
 // CompositorRenderPass, and QuadListBasic unit tests.
-TEST_F(StructTraitsTest, CompositorFrame) {
+TEST_F(CompositingStructTraitsTest, CompositorFrame) {
   auto render_pass = CompositorRenderPass::Create();
   render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(5, 6),
                       gfx::Rect(2, 3), gfx::Transform());
@@ -669,7 +669,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
             out_solid_color_draw_quad->force_anti_aliasing_off);
 }
 
-TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
+TEST_F(CompositingStructTraitsTest, CompositorFrameTransitionDirective) {
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .AddDefaultRenderPass()
@@ -712,7 +712,7 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
       frame, output));
 }
 
-TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
+TEST_F(CompositingStructTraitsTest, ViewTransitionElementResourceId) {
   ViewTransitionElementResourceId empty_id;
   ASSERT_FALSE(empty_id.IsValid());
   ViewTransitionElementResourceId empty_output_id;
@@ -757,7 +757,7 @@ TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
                mojom::ViewTransitionElementResourceId>(mojom_id, output));
 }
 
-TEST_F(StructTraitsTest, SurfaceInfo) {
+TEST_F(CompositingStructTraitsTest, SurfaceInfo) {
   const SurfaceId surface_id(
       FrameSinkId(1234, 4321),
       LocalSurfaceId(5678,
@@ -774,7 +774,7 @@ TEST_F(StructTraitsTest, SurfaceInfo) {
   EXPECT_EQ(input.device_scale_factor(), output.device_scale_factor());
 }
 
-TEST_F(StructTraitsTest, ReturnedResource) {
+TEST_F(CompositingStructTraitsTest, ReturnedResource) {
   const ResourceId id(1337u);
   const gpu::CommandBufferNamespace command_buffer_namespace = gpu::IN_PROCESS;
   const gpu::CommandBufferId command_buffer_id(
@@ -800,7 +800,7 @@ TEST_F(StructTraitsTest, ReturnedResource) {
   EXPECT_EQ(lost, output.lost);
 }
 
-TEST_F(StructTraitsTest, CompositorFrameMetadata) {
+TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   const float device_scale_factor = 2.6f;
   const gfx::PointF root_scroll_offset(1234.5f, 6789.1f);
   const float page_scale_factor = 1337.5f;
@@ -869,7 +869,8 @@ TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   EXPECT_EQ(*output.top_controls_visible_height, top_controls_visible_height);
 }
 
-TEST_F(StructTraitsTest, CompositorFrameMetadataBadOffsetTagDefinition) {
+TEST_F(CompositingStructTraitsTest,
+       CompositorFrameMetadataBadOffsetTagDefinition) {
   CompositorFrameMetadata input;
   input.device_scale_factor = 1.0f;
   input.frame_token = 1u;
@@ -906,7 +907,7 @@ TEST_F(StructTraitsTest, CompositorFrameMetadataBadOffsetTagDefinition) {
   }
 }
 
-TEST_F(StructTraitsTest, RenderPass) {
+TEST_F(CompositingStructTraitsTest, RenderPass) {
   // The CopyOutputRequest struct traits require a TaskRunner.
   base::test::TaskEnvironment task_environment;
 
@@ -1076,7 +1077,7 @@ TEST_F(StructTraitsTest, RenderPass) {
             out_surface_quad->override_child_dynamic_range_limit);
 }
 
-TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
+TEST_F(CompositingStructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   constexpr CompositorRenderPassId kRenderPassId{3u};
   constexpr gfx::Rect kOutputRect(45, 22, 120, 13);
   constexpr gfx::Rect kDamageRect(56, 123, 19, 43);
@@ -1122,7 +1123,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
 // Verifies that backdrop filters with null (no) crop rect still work correctly.
 // This ensures that null backdrop_filter_bounds means "don't apply bounds"
 // rather than "don't show any backdrop-filter".
-TEST_F(StructTraitsTest, BackdropFilterWithNullBounds) {
+TEST_F(CompositingStructTraitsTest, BackdropFilterWithNullBounds) {
   base::test::TaskEnvironment task_environment;
 
   // Create a null backdrop filter bounds
@@ -1153,7 +1154,7 @@ TEST_F(StructTraitsTest, BackdropFilterWithNullBounds) {
   EXPECT_EQ(5.0f, output->backdrop_filters.at(0).amount());
 }
 
-TEST_F(StructTraitsTest, QuadListBasic) {
+TEST_F(CompositingStructTraitsTest, QuadListBasic) {
   auto render_pass = CompositorRenderPass::Create();
   render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(), gfx::Rect(),
                       gfx::Transform());
@@ -1339,7 +1340,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
                 .is_horizontally_positioned);
 }
 
-TEST_F(StructTraitsTest, SharedElementDrawQuadValid) {
+TEST_F(CompositingStructTraitsTest, SharedElementDrawQuadValid) {
   auto render_pass = CompositorRenderPass::Create();
   render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 100, 100),
                       gfx::Rect(0, 0, 100, 100), gfx::Transform());
@@ -1364,7 +1365,7 @@ TEST_F(StructTraitsTest, SharedElementDrawQuadValid) {
   EXPECT_TRUE(out_quad->element_resource_id.IsValid());
 }
 
-TEST_F(StructTraitsTest, SharedElementDrawQuadInvalid) {
+TEST_F(CompositingStructTraitsTest, SharedElementDrawQuadInvalid) {
   auto render_pass = CompositorRenderPass::Create();
   render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 100, 100),
                       gfx::Rect(0, 0, 100, 100), gfx::Transform());
@@ -1383,7 +1384,7 @@ TEST_F(StructTraitsTest, SharedElementDrawQuadInvalid) {
       render_pass, output));
 }
 
-TEST_F(StructTraitsTest, SurfaceId) {
+TEST_F(CompositingStructTraitsTest, SurfaceId) {
   static constexpr FrameSinkId frame_sink_id(1337, 1234);
   static LocalSurfaceId local_surface_id(0xfbadbeef,
                                          base::UnguessableToken::Create());
@@ -1394,7 +1395,7 @@ TEST_F(StructTraitsTest, SurfaceId) {
   EXPECT_EQ(local_surface_id, output.local_surface_id());
 }
 
-TEST_F(StructTraitsTest, OffsetTag) {
+TEST_F(CompositingStructTraitsTest, OffsetTag) {
   constexpr OffsetTag input(base::Token(1, 1));
   OffsetTag output;
 
@@ -1402,7 +1403,7 @@ TEST_F(StructTraitsTest, OffsetTag) {
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, OffsetTagValue) {
+TEST_F(CompositingStructTraitsTest, OffsetTagValue) {
   constexpr OffsetTag kTag(base::Token(1, 1));
   OffsetTagValue input = {kTag, {5.0f, 7.7f}};
   OffsetTagValue output;
@@ -1412,7 +1413,7 @@ TEST_F(StructTraitsTest, OffsetTagValue) {
   EXPECT_EQ(input.offset, output.offset);
 }
 
-TEST_F(StructTraitsTest, OffsetTagDefinition) {
+TEST_F(CompositingStructTraitsTest, OffsetTagDefinition) {
   SurfaceId surface_id(
       FrameSinkId(1337, 1234),
       LocalSurfaceId(0xfbadbeef, base::UnguessableToken::Create()));
@@ -1432,7 +1433,7 @@ TEST_F(StructTraitsTest, OffsetTagDefinition) {
   EXPECT_EQ(input.constraints.max_offset, output.constraints.max_offset);
 }
 
-TEST_F(StructTraitsTest, TransferableResource) {
+TEST_F(CompositingStructTraitsTest, TransferableResource) {
   const ResourceId id(1337);
   const SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
   const gfx::Size size(1234, 5678);
@@ -1491,21 +1492,21 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(kBottomLeft_GrSurfaceOrigin, output.GetOrigin());
 }
 
-TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {
+TEST_F(CompositingStructTraitsTest, SharedImageFormatWithSinglePlane) {
   SharedImageFormat input = SinglePlaneFormat::kR_8;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, SharedImageFormatWithMultiPlane) {
+TEST_F(CompositingStructTraitsTest, SharedImageFormatWithMultiPlane) {
   SharedImageFormat input = MultiPlaneFormat::kNV12;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, SharedImageFormatWithUnknownPlane) {
+TEST_F(CompositingStructTraitsTest, SharedImageFormatWithUnknownPlane) {
   SharedImageFormat input = SharedImageFormat();
   SharedImageFormat output;
   EXPECT_CHECK_DEATH(
@@ -1513,7 +1514,7 @@ TEST_F(StructTraitsTest, SharedImageFormatWithUnknownPlane) {
                                                                     output));
 }
 
-TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
+TEST_F(CompositingStructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto input = std::make_unique<CopyOutputResult>(
       CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
@@ -1532,7 +1533,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 }
 
-TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
+TEST_F(CompositingStructTraitsTest, CopyOutputResult_EmptyTexture) {
   base::test::TaskEnvironment task_environment;
 
   auto input = std::make_unique<CopyOutputResult>(
@@ -1551,7 +1552,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
   EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 }
 
-TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
+TEST_F(CompositingStructTraitsTest, CopyOutputResult_Bitmap) {
   const gfx::Rect result_rect(42, 43, 7, 8);
   SkBitmap bitmap;
   const sk_sp<SkColorSpace> adobe_rgb =
@@ -1598,7 +1599,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   EXPECT_EQ(output->GetTrackedElementRects(), tracked_element_rects);
 }
 
-TEST_F(StructTraitsTest, TrackedElementRects) {
+TEST_F(CompositingStructTraitsTest, TrackedElementRects) {
   TrackedElementRects input;
   const auto token1 = base::Token(1, 1);
   const auto token2 = base::Token(2, 2);
@@ -1634,7 +1635,7 @@ TEST_F(StructTraitsTest, TrackedElementRects) {
                    .should_exclude_fixed_and_sticky_occlusions);
 }
 
-TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
+TEST_F(CompositingStructTraitsTest, CopyOutputResult_Texture) {
   base::test::TaskEnvironment task_environment;
 
   const gfx::Rect result_rect(12, 34, 56, 78);
@@ -1685,7 +1686,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   run_loop.Run();
 }
 
-TEST_F(StructTraitsTest, TreesInVizTimingTest) {
+TEST_F(CompositingStructTraitsTest, TreesInVizTimingTest) {
   // Set some appropriately ordered ttimestamps.
   const base::TimeTicks start_update_display_tree = base::TimeTicks::Now();
   const base::TimeTicks start_prepare_to_draw =
@@ -1706,14 +1707,14 @@ TEST_F(StructTraitsTest, TreesInVizTimingTest) {
   EXPECT_EQ(submit_compositor_frame, out.submit_compositor_frame);
 }
 
-TEST_F(StructTraitsTest, TreesInVizUnsetTest) {
+TEST_F(CompositingStructTraitsTest, TreesInVizUnsetTest) {
   TreesInVizTiming timestamps;
   TreesInVizTiming out;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TreesInVizTiming>(
       timestamps, out));
 }
 
-TEST_F(StructTraitsTest, TreesInVizBadTimestampOrderTest) {
+TEST_F(CompositingStructTraitsTest, TreesInVizBadTimestampOrderTest) {
   const base::TimeTicks start_update_display_tree = base::TimeTicks::Now();
   const base::TimeTicks start_prepare_to_draw =
       start_update_display_tree + base::Seconds(1);
@@ -1727,7 +1728,7 @@ TEST_F(StructTraitsTest, TreesInVizBadTimestampOrderTest) {
       timestamps, out));
 }
 
-TEST_F(StructTraitsTest, RegionCaptureBounds) {
+TEST_F(CompositingStructTraitsTest, RegionCaptureBounds) {
   RegionCaptureBounds input;
   const RegionCaptureCropId crop_id = base::Token::CreateRandom();
   const gfx::Rect bounds(10, 20, 30, 40);
@@ -1739,7 +1740,7 @@ TEST_F(StructTraitsTest, RegionCaptureBounds) {
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, VerticalScrollDirection) {
+TEST_F(CompositingStructTraitsTest, VerticalScrollDirection) {
   const VerticalScrollDirection input = VerticalScrollDirection::kDown;
   VerticalScrollDirection output;
   EXPECT_TRUE(
@@ -1748,7 +1749,7 @@ TEST_F(StructTraitsTest, VerticalScrollDirection) {
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, FrameTimingDetails) {
+TEST_F(CompositingStructTraitsTest, FrameTimingDetails) {
   FrameTimingDetails input;
   input.received_compositor_frame_timestamp = base::TimeTicks::Now();
   input.embedded_frame_timestamp = base::TimeTicks::Now();
@@ -1778,7 +1779,7 @@ TEST_F(StructTraitsTest, FrameTimingDetails) {
   EXPECT_EQ(input.frame_id, output.frame_id);
 }
 
-TEST_F(StructTraitsTest, BlitRequest) {
+TEST_F(CompositingStructTraitsTest, BlitRequest) {
   BlitRequest input(gfx::Point(1, 2), LetterboxingBehavior::kLetterbox,
                     gpu::ClientSharedImage::CreateForTesting(),
                     gpu::SyncToken(), true);
@@ -1788,7 +1789,7 @@ TEST_F(StructTraitsTest, BlitRequest) {
       mojo::test::SerializeAndDeserialize<mojom::BlitRequest>(input, output));
 }
 
-TEST_F(StructTraitsTest, FrameIntervalInputs) {
+TEST_F(CompositingStructTraitsTest, FrameIntervalInputs) {
   FrameIntervalInputs input;
   input.frame_time = base::TimeTicks::Now();
   input.has_input = true;
@@ -1821,7 +1822,7 @@ TEST_F(StructTraitsTest, FrameIntervalInputs) {
             output.has_only_content_frame_interval_updates);
 }
 
-TEST_F(StructTraitsTest, Thread) {
+TEST_F(CompositingStructTraitsTest, Thread) {
   Thread input{base::PlatformThreadId::ForTest(123), Thread::Type::kCompositor};
   Thread output;
   EXPECT_TRUE(
@@ -1829,7 +1830,7 @@ TEST_F(StructTraitsTest, Thread) {
   EXPECT_EQ(input, output);
 }
 
-TEST_F(StructTraitsTest, FrameSinkBundleId) {
+TEST_F(CompositingStructTraitsTest, FrameSinkBundleId) {
   FrameSinkBundleId input(1, 2);
   FrameSinkBundleId output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FrameSinkBundleId>(
@@ -1903,20 +1904,21 @@ void BeginFrameArgsFuzz(const BeginFrameArgs& input) {
   BeginFrameArgs output;
   mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, BeginFrameArgsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, BeginFrameArgsFuzz)
     .WithDomains(AnyBeginFrameArgs());
 
 void BeginFrameAckFuzz(const BeginFrameAck& input) {
   BeginFrameAck output;
   mojo::test::SerializeAndDeserialize<mojom::BeginFrameAck>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, BeginFrameAckFuzz).WithDomains(AnyBeginFrameAck());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, BeginFrameAckFuzz)
+    .WithDomains(AnyBeginFrameAck());
 
 void BeginFrameAckAsValueFuzz(const BeginFrameAck& input) {
   base::trace_event::TracedValue dict;
   input.AsValueInto(&dict);
 }
-FUZZ_TEST(StructTraitsTest, BeginFrameAckAsValueFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, BeginFrameAckAsValueFuzz)
     .WithDomains(AnyBeginFrameAck());
 
 auto AnyFrameSinkId() {
@@ -1948,19 +1950,21 @@ void SurfaceIdFuzz(const SurfaceId& input) {
   SurfaceId output;
   mojo::test::SerializeAndDeserialize<mojom::SurfaceId>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SurfaceIdFuzz).WithDomains(AnySurfaceId());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SurfaceIdFuzz)
+    .WithDomains(AnySurfaceId());
 
 void FrameSinkIdFuzz(const FrameSinkId& input) {
   FrameSinkId output;
   mojo::test::SerializeAndDeserialize<mojom::FrameSinkId>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, FrameSinkIdFuzz).WithDomains(AnyFrameSinkId());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FrameSinkIdFuzz)
+    .WithDomains(AnyFrameSinkId());
 
 void LocalSurfaceIdFuzz(const LocalSurfaceId& input) {
   LocalSurfaceId output;
   mojo::test::SerializeAndDeserialize<mojom::LocalSurfaceId>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, LocalSurfaceIdFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, LocalSurfaceIdFuzz)
     .WithDomains(AnyLocalSurfaceId());
 
 auto AnySurfaceRange() {
@@ -1972,7 +1976,7 @@ void SurfaceRangeFuzz(const SurfaceRange& input) {
   SurfaceRange output;
   mojo::test::SerializeAndDeserialize<mojom::SurfaceRange>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SurfaceRangeFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SurfaceRangeFuzz)
     .WithDomains(
         fuzztest::Filter([](const SurfaceRange& r) { return r.IsValid(); },
                          AnySurfaceRange()));
@@ -2043,14 +2047,14 @@ void FilterOperationFuzz(const cc::FilterOperation& input) {
   cc::FilterOperation output;
   mojo::test::SerializeAndDeserialize<mojom::FilterOperation>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, FilterOperationFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FilterOperationFuzz)
     .WithDomains(AnyFilterOperation());
 
 void FilterOperationsFuzz(const cc::FilterOperations& input) {
   cc::FilterOperations output;
   mojo::test::SerializeAndDeserialize<mojom::FilterOperations>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, FilterOperationsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FilterOperationsFuzz)
     .WithDomains(AnyFilterOperations());
 
 auto AnyPointF() {
@@ -2089,7 +2093,8 @@ void SelectionFuzz(const Selection<gfx::SelectionBound>& input) {
   Selection<gfx::SelectionBound> output;
   mojo::test::SerializeAndDeserialize<mojom::Selection>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SelectionFuzz).WithDomains(AnySelection());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SelectionFuzz)
+    .WithDomains(AnySelection());
 
 auto AnySharedQuadState() {
   return fuzztest::Map(
@@ -2115,7 +2120,7 @@ void SharedQuadStateFuzz(const SharedQuadState& input) {
   SharedQuadState output;
   mojo::test::SerializeAndDeserialize<mojom::SharedQuadState>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SharedQuadStateFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SharedQuadStateFuzz)
     .WithDomains(AnySharedQuadState());
 
 auto AnyCompositorFrameTransitionDirective() {
@@ -2135,7 +2140,8 @@ void CompositorFrameTransitionDirectiveFuzz(
   mojo::test::SerializeAndDeserialize<
       mojom::CompositorFrameTransitionDirective>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, CompositorFrameTransitionDirectiveFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest,
+          CompositorFrameTransitionDirectiveFuzz)
     .WithDomains(AnyCompositorFrameTransitionDirective());
 
 auto AnyCompositorFrame() {
@@ -2152,7 +2158,7 @@ void CompositorFrameFuzz(const CompositorFrame& input) {
   CompositorFrame output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, CompositorFrameFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, CompositorFrameFuzz)
     .WithDomains(AnyCompositorFrame());
 
 auto AnyViewTransitionElementResourceId() {
@@ -2175,7 +2181,7 @@ void ViewTransitionElementResourceIdFuzz(
   mojo::test::SerializeAndDeserialize<mojom::ViewTransitionElementResourceId>(
       input, output);
 }
-FUZZ_TEST(StructTraitsTest, ViewTransitionElementResourceIdFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, ViewTransitionElementResourceIdFuzz)
     .WithDomains(AnyViewTransitionElementResourceId());
 
 auto AnySurfaceInfo() {
@@ -2190,7 +2196,7 @@ void SurfaceInfoFuzz(const SurfaceInfo& input) {
   SurfaceInfo output;
   mojo::test::SerializeAndDeserialize<mojom::SurfaceInfo>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SurfaceInfoFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SurfaceInfoFuzz)
     .WithDomains(fuzztest::Filter(
         [](const SurfaceInfo& info) { return info.is_valid(); },
         AnySurfaceInfo()));
@@ -2211,7 +2217,7 @@ void ReturnedResourceFuzz(const ReturnedResource& input) {
   ReturnedResource output;
   mojo::test::SerializeAndDeserialize<mojom::ReturnedResource>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, ReturnedResourceFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, ReturnedResourceFuzz)
     .WithDomains(AnyReturnedResource());
 
 auto AnyCompositorFrameMetadata() {
@@ -2233,7 +2239,7 @@ void CompositorFrameMetadataFuzz(const CompositorFrameMetadata& input) {
   mojo::test::SerializeAndDeserialize<mojom::CompositorFrameMetadata>(input,
                                                                       output);
 }
-FUZZ_TEST(StructTraitsTest, CompositorFrameMetadataFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, CompositorFrameMetadataFuzz)
     .WithDomains(AnyCompositorFrameMetadata());
 
 auto AnyCompositorRenderPass() {
@@ -2253,7 +2259,7 @@ void CompositorRenderPassFuzz(
   mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(input,
                                                                    output);
 }
-FUZZ_TEST(StructTraitsTest, CompositorRenderPassFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, CompositorRenderPassFuzz)
     .WithDomains(AnyCompositorRenderPass());
 
 auto AnyOffsetTag() {
@@ -2268,7 +2274,8 @@ void OffsetTagFuzz(const OffsetTag& input) {
   OffsetTag output;
   mojo::test::SerializeAndDeserialize<mojom::OffsetTag>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, OffsetTagFuzz).WithDomains(AnyOffsetTag());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, OffsetTagFuzz)
+    .WithDomains(AnyOffsetTag());
 
 auto AnyVector2dF() {
   return fuzztest::ConstructorOf<gfx::Vector2dF>(fuzztest::Arbitrary<float>(),
@@ -2287,7 +2294,7 @@ void OffsetTagValueFuzz(const OffsetTagValue& input) {
   OffsetTagValue output;
   mojo::test::SerializeAndDeserialize<mojom::OffsetTagValue>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, OffsetTagValueFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, OffsetTagValueFuzz)
     .WithDomains(fuzztest::Filter(
         [](const OffsetTagValue& value) { return value.IsValid(); },
         AnyOffsetTagValue()));
@@ -2314,7 +2321,7 @@ void OffsetTagDefinitionFuzz(const OffsetTagDefinition& input) {
   mojo::test::SerializeAndDeserialize<mojom::OffsetTagDefinition>(input,
                                                                   output);
 }
-FUZZ_TEST(StructTraitsTest, OffsetTagDefinitionFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, OffsetTagDefinitionFuzz)
     .WithDomains(fuzztest::Filter(
         [](const OffsetTagDefinition& def) { return def.IsValid(); },
         AnyOffsetTagDefinition()));
@@ -2339,7 +2346,7 @@ void SharedImageFormatFuzz(const SharedImageFormat& input) {
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, SharedImageFormatFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, SharedImageFormatFuzz)
     .WithDomains(AnySharedImageFormat());
 
 auto AnyTransferableResource() {
@@ -2357,7 +2364,7 @@ void TransferableResourceFuzz(const TransferableResource& input) {
   mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(input,
                                                                    output);
 }
-FUZZ_TEST(StructTraitsTest, TransferableResourceFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, TransferableResourceFuzz)
     .WithDomains(AnyTransferableResource());
 
 auto AnyCopyOutputResult() {
@@ -2378,7 +2385,7 @@ void CopyOutputResultFuzz(const std::unique_ptr<CopyOutputResult>& input) {
   std::unique_ptr<CopyOutputResult> output;
   mojo::test::SerializeAndDeserialize<mojom::CopyOutputResult>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, CopyOutputResultFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, CopyOutputResultFuzz)
     .WithDomains(AnyCopyOutputResult());
 
 auto AnyTreesInVizTiming() {
@@ -2399,7 +2406,7 @@ void TreesInVizTimingFuzz(const TreesInVizTiming& input) {
   TreesInVizTiming output;
   mojo::test::SerializeAndDeserialize<mojom::TreesInVizTiming>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, TreesInVizTimingFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, TreesInVizTimingFuzz)
     .WithDomains(AnyTreesInVizTiming());
 
 auto AnyToken() {
@@ -2586,7 +2593,7 @@ void RegionCaptureBoundsFuzz(const RegionCaptureBounds& input) {
   mojo::test::SerializeAndDeserialize<mojom::RegionCaptureBounds>(input,
                                                                   output);
 }
-FUZZ_TEST(StructTraitsTest, RegionCaptureBoundsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, RegionCaptureBoundsFuzz)
     .WithDomains(AnyRegionCaptureBounds());
 
 void VerticalScrollDirectionFuzz(VerticalScrollDirection input) {
@@ -2594,14 +2601,14 @@ void VerticalScrollDirectionFuzz(VerticalScrollDirection input) {
   mojo::test::SerializeAndDeserialize<mojom::VerticalScrollDirection>(input,
                                                                       output);
 }
-FUZZ_TEST(StructTraitsTest, VerticalScrollDirectionFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, VerticalScrollDirectionFuzz)
     .WithDomains(AnyVerticalScrollDirection());
 
 void FrameTimingDetailsFuzz(const FrameTimingDetails& input) {
   FrameTimingDetails output;
   mojo::test::SerializeAndDeserialize<mojom::FrameTimingDetails>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, FrameTimingDetailsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FrameTimingDetailsFuzz)
     .WithDomains(AnyFrameTimingDetails());
 
 void TrackedElementRectsFuzz(const TrackedElementRects& input) {
@@ -2609,34 +2616,35 @@ void TrackedElementRectsFuzz(const TrackedElementRects& input) {
   mojo::test::SerializeAndDeserialize<mojom::TrackedElementRects>(input,
                                                                   output);
 }
-FUZZ_TEST(StructTraitsTest, TrackedElementRectsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, TrackedElementRectsFuzz)
     .WithDomains(AnyTrackedElementRects());
 
 void BlitRequestFuzz(BlitRequest input) {
   BlitRequest output;
   mojo::test::SerializeAndDeserialize<mojom::BlitRequest>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, BlitRequestFuzz).WithDomains(AnyBlitRequest());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, BlitRequestFuzz)
+    .WithDomains(AnyBlitRequest());
 
 void FrameIntervalInputsFuzz(const FrameIntervalInputs& input) {
   FrameIntervalInputs output;
   mojo::test::SerializeAndDeserialize<mojom::FrameIntervalInputs>(input,
                                                                   output);
 }
-FUZZ_TEST(StructTraitsTest, FrameIntervalInputsFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FrameIntervalInputsFuzz)
     .WithDomains(AnyFrameIntervalInputs());
 
 void ThreadFuzz(const Thread& input) {
   Thread output;
   mojo::test::SerializeAndDeserialize<mojom::Thread>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, ThreadFuzz).WithDomains(AnyThread());
+FUZZ_TEST(CompositingStructTraitsFuzzTest, ThreadFuzz).WithDomains(AnyThread());
 
 void FrameSinkBundleIdFuzz(const FrameSinkBundleId& input) {
   FrameSinkBundleId output;
   mojo::test::SerializeAndDeserialize<mojom::FrameSinkBundleId>(input, output);
 }
-FUZZ_TEST(StructTraitsTest, FrameSinkBundleIdFuzz)
+FUZZ_TEST(CompositingStructTraitsFuzzTest, FrameSinkBundleIdFuzz)
     .WithDomains(AnyFrameSinkBundleId());
 
 }  // namespace
