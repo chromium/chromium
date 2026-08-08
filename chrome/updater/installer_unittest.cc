@@ -229,20 +229,17 @@ TEST(InstallerTest, GetInstalledFileReturnsNothing) {
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
-  ASSERT_EQ(
-      static_cast<scoped_refptr<update_client::CrxInstaller>>(
-          base::MakeRefCounted<Installer>(
-              "id", "client_install_data", "install_data_index",
-              "install_source", "target_channel", "target_version_prefix",
-              /*rollback_allowed=*/true,
-              /*major_version_rollout_policy=*/1,
-              /*minor_version_rollout_policy=*/2,
-              /*update_disabled=*/false,
-              UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
-              crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
-              std::nullopt))
-          ->GetInstalledFile("f"),
-      std::nullopt);
+  scoped_refptr<update_client::CrxInstaller> installer =
+      base::MakeRefCounted<Installer>(
+          "id", "client_install_data", "install_data_index", "install_source",
+          "target_channel", "target_version_prefix",
+          /*rollback_allowed=*/true,
+          /*major_version_rollout_policy=*/1,
+          /*minor_version_rollout_policy=*/2,
+          /*update_disabled=*/false,
+          UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
+          crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt);
+  ASSERT_EQ(installer->GetInstalledFile("f"), std::nullopt);
 }
 
 }  // namespace updater

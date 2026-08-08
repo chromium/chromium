@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "components/update_client/pipeline_util.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -26,12 +28,11 @@ base::DictValue MakeSimpleOperationEvent(const CategorizedError& error,
                                          const int operation_type) {
   base::DictValue event;
   event.Set("eventtype", operation_type);
-  event.Set("eventresult",
-            static_cast<int>(error.category == ErrorCategory::kNone
-                                 ? protocol_request::kEventResultSuccess
-                                 : protocol_request::kEventResultError));
+  event.Set("eventresult", error.category == ErrorCategory::kNone
+                               ? protocol_request::kEventResultSuccess
+                               : protocol_request::kEventResultError);
   if (error.category != ErrorCategory::kNone) {
-    event.Set("errorcat", static_cast<int>(error.category));
+    event.Set("errorcat", std::to_underlying(error.category));
   }
   if (error.code != 0) {
     event.Set("errorcode", error.code);

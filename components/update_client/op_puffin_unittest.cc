@@ -4,6 +4,8 @@
 
 #include "components/update_client/op_puffin.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -145,9 +147,9 @@ TEST_P(PuffOperationTest, BadPatch) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
                   loop_.Quit();
                   ASSERT_FALSE(result.has_value());
-                  EXPECT_EQ(
-                      result.error().code,
-                      static_cast<int>(UnpackerError::kDeltaOperationFailure));
+                  EXPECT_EQ(result.error().code,
+                            std::to_underlying(
+                                UnpackerError::kDeltaOperationFailure));
                 }));
       }));
   loop_.Run();
@@ -157,11 +159,11 @@ TEST_P(PuffOperationTest, BadPatch) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"),
             protocol_request::kEventResultError);
   EXPECT_EQ(pings_[0].FindInt("errorcat"),
-            static_cast<int>(ErrorCategory::kUnpack));
+            std::to_underlying(ErrorCategory::kUnpack));
   EXPECT_EQ(pings_[0].FindInt("errorcode"),
-            static_cast<int>(UnpackerError::kDeltaOperationFailure));
+            std::to_underlying(UnpackerError::kDeltaOperationFailure));
   EXPECT_EQ(pings_[0].FindInt("extracode1"),
-            static_cast<int>(Error::INVALID_ARGUMENT));
+            std::to_underlying(Error::INVALID_ARGUMENT));
 }
 
 TEST_P(PuffOperationTest, NotInCache) {
@@ -184,8 +186,9 @@ TEST_P(PuffOperationTest, NotInCache) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
             loop_.Quit();
             ASSERT_FALSE(result.has_value());
-            EXPECT_EQ(result.error().code,
-                      static_cast<int>(UnpackerError::kCrxCacheFileNotCached));
+            EXPECT_EQ(
+                result.error().code,
+                std::to_underlying(UnpackerError::kCrxCacheFileNotCached));
           }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
@@ -194,9 +197,9 @@ TEST_P(PuffOperationTest, NotInCache) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"),
             protocol_request::kEventResultError);
   EXPECT_EQ(pings_[0].FindInt("errorcat"),
-            static_cast<int>(ErrorCategory::kUnpack));
+            std::to_underlying(ErrorCategory::kUnpack));
   EXPECT_EQ(pings_[0].FindInt("errorcode"),
-            static_cast<int>(UnpackerError::kCrxCacheFileNotCached));
+            std::to_underlying(UnpackerError::kCrxCacheFileNotCached));
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
@@ -219,7 +222,7 @@ TEST_P(PuffOperationTest, NoCache) {
             loop_.Quit();
             ASSERT_FALSE(result.has_value());
             EXPECT_EQ(result.error().code,
-                      static_cast<int>(UnpackerError::kCrxCacheNotProvided));
+                      std::to_underlying(UnpackerError::kCrxCacheNotProvided));
           }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
@@ -228,9 +231,9 @@ TEST_P(PuffOperationTest, NoCache) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"),
             protocol_request::kEventResultError);
   EXPECT_EQ(pings_[0].FindInt("errorcat"),
-            static_cast<int>(ErrorCategory::kUnpack));
+            std::to_underlying(ErrorCategory::kUnpack));
   EXPECT_EQ(pings_[0].FindInt("errorcode"),
-            static_cast<int>(UnpackerError::kCrxCacheNotProvided));
+            std::to_underlying(UnpackerError::kCrxCacheNotProvided));
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
@@ -263,7 +266,7 @@ TEST_P(PuffOperationTest, OutHashMismatch) {
                   ASSERT_FALSE(result.has_value());
                   EXPECT_EQ(
                       result.error().code,
-                      static_cast<int>(UnpackerError::kPatchOutHashMismatch));
+                      std::to_underlying(UnpackerError::kPatchOutHashMismatch));
                 }));
       }));
   loop_.Run();
@@ -273,9 +276,9 @@ TEST_P(PuffOperationTest, OutHashMismatch) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"),
             protocol_request::kEventResultError);
   EXPECT_EQ(pings_[0].FindInt("errorcat"),
-            static_cast<int>(ErrorCategory::kUnpack));
+            std::to_underlying(ErrorCategory::kUnpack));
   EXPECT_EQ(pings_[0].FindInt("errorcode"),
-            static_cast<int>(UnpackerError::kPatchOutHashMismatch));
+            std::to_underlying(UnpackerError::kPatchOutHashMismatch));
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 

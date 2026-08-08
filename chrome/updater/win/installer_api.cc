@@ -369,7 +369,7 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
   if (installer_outcome.installer_result) {
     if (key->WriteValue(
             kRegValueInstallerResult,
-            static_cast<DWORD>(*installer_outcome.installer_result)) !=
+            std::to_underlying(*installer_outcome.installer_result)) !=
         ERROR_SUCCESS) {
       return false;
     }

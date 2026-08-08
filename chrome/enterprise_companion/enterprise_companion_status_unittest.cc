@@ -5,6 +5,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
@@ -97,7 +98,7 @@ TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqualsOtherType) {
   EnterpriseCompanionStatus status1 =
       EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
           /*space=*/3,
-          /*code=*/static_cast<int>(ApplicationError::kCannotAcquireLock),
+          /*code=*/std::to_underlying(ApplicationError::kCannotAcquireLock),
           /*description=*/"description1"));
   EnterpriseCompanionStatus status2 =
       EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock);
@@ -131,10 +132,10 @@ TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqual) {
 TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqualsOtherType) {
   EnterpriseCompanionStatus status_1 =
       EnterpriseCompanionStatus::FromPersistedError(PersistedError(
-          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+          3, std::to_underlying(ApplicationError::kCannotAcquireLock), {}));
   EnterpriseCompanionStatus status_2 =
       EnterpriseCompanionStatus::FromPersistedError(PersistedError(
-          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+          3, std::to_underlying(ApplicationError::kCannotAcquireLock), {}));
   EXPECT_EQ(status_1, status_2);
 }
 

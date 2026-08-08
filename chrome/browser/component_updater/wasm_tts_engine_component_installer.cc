@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -276,7 +278,7 @@ void WasmTtsEngineComponentInstallerPolicy::UpdateWasmComponentOnDemand() {
           DLOG(ERROR)
               << "On demand update of the Wasm TTS Engine component failed "
                  "with error: "
-              << static_cast<int>(error);
+              << std::to_underlying(error);
         }
       }));
 }

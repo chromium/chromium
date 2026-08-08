@@ -30,16 +30,6 @@ bool CanRetry(int try_count) {
 }
 
 template <typename T>
-using DoneFunc =
-    void (*)(scoped_refptr<UpdateServiceProxy>,
-             base::RepeatingCallback<void(
-                 base::OnceCallback<void(base::expected<T, RpcError>)>)> call,
-             base::OnceCallback<void(T)>,
-             T,
-             int,
-             base::expected<T, RpcError>);
-
-template <typename T>
 void CallDone(scoped_refptr<UpdateServiceProxy> proxy,
               base::RepeatingCallback<void(
                   base::OnceCallback<void(base::expected<T, RpcError>)>)> call,
@@ -48,9 +38,8 @@ void CallDone(scoped_refptr<UpdateServiceProxy> proxy,
               int try_count,
               base::expected<T, RpcError> result) {
   if (!result.has_value() && CanRetry(try_count)) {
-    call.Run(base::BindOnce(static_cast<DoneFunc<T>>(&CallDone), proxy, call,
-                            std::move(callback), default_response,
-                            try_count + 1));
+    call.Run(base::BindOnce(&CallDone<T>, proxy, call, std::move(callback),
+                            default_response, try_count + 1));
     return;
   }
   std::move(callback).Run(result.value_or(default_response));
@@ -67,8 +56,7 @@ void UpdateServiceProxy::GetVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto call = base::BindRepeating(&UpdateServiceProxyImpl::GetVersion, proxy_);
   call.Run(base::BindOnce(
-      static_cast<DoneFunc<base::Version>>(&CallDone),
-      base::WrapRefCounted(this), call,
+      &CallDone<base::Version>, base::WrapRefCounted(this), call,
       base::BindOnce(
           [](base::OnceCallback<void(const base::Version&)> callback,
              base::Version version) { std::move(callback).Run(version); },
@@ -81,9 +69,8 @@ void UpdateServiceProxy::FetchPolicies(policy::PolicyFetchReason reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto call = base::BindRepeating(&UpdateServiceProxyImpl::FetchPolicies,
                                   proxy_, reason);
-  call.Run(base::BindOnce(static_cast<DoneFunc<int>>(&CallDone),
-                          base::WrapRefCounted(this), call, std::move(callback),
-                          kErrorIpcDisconnect, 1));
+  call.Run(base::BindOnce(&CallDone<int>, base::WrapRefCounted(this), call,
+                          std::move(callback), kErrorIpcDisconnect, 1));
 }
 
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
@@ -91,9 +78,8 @@ void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto call = base::BindRepeating(&UpdateServiceProxyImpl::RegisterApp, proxy_,
                                   request);
-  call.Run(base::BindOnce(static_cast<DoneFunc<int>>(&CallDone),
-                          base::WrapRefCounted(this), call, std::move(callback),
-                          kErrorIpcDisconnect, 1));
+  call.Run(base::BindOnce(&CallDone<int>, base::WrapRefCounted(this), call,
+                          std::move(callback), kErrorIpcDisconnect, 1));
 }
 
 void UpdateServiceProxy::GetAppStates(
@@ -102,8 +88,7 @@ void UpdateServiceProxy::GetAppStates(
   auto call =
       base::BindRepeating(&UpdateServiceProxyImpl::GetAppStates, proxy_);
   call.Run(base::BindOnce(
-      static_cast<DoneFunc<std::vector<AppState>>>(&CallDone),
-      base::WrapRefCounted(this), call,
+      &CallDone<std::vector<AppState>>, base::WrapRefCounted(this), call,
       base::BindOnce(
           [](base::OnceCallback<void(const std::vector<AppState>&)> callback,
              std::vector<AppState> value) { std::move(callback).Run(value); },
@@ -116,7 +101,7 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   auto call =
       base::BindRepeating(&UpdateServiceProxyImpl::RunPeriodicTasks, proxy_);
   call.Run(base::BindOnce(
-      static_cast<DoneFunc<int>>(&CallDone), base::WrapRefCounted(this), call,
+      &CallDone<int>, base::WrapRefCounted(this), call,
       base::BindOnce([](base::OnceClosure callback,
                         int /*result*/) { std::move(callback).Run(); },
                      std::move(callback)),
@@ -134,10 +119,9 @@ void UpdateServiceProxy::CheckForUpdate(
   auto call = base::BindRepeating(
       &UpdateServiceProxyImpl::CheckForUpdate, proxy_, app_id, priority,
       policy_same_version_update, language, state_update);
-  call.Run(
-      base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
-                     base::WrapRefCounted(this), call, std::move(callback),
-                     UpdateService::Result::kIPCConnectionFailed, 1));
+  call.Run(base::BindOnce(&CallDone<UpdateService::Result>,
+                          base::WrapRefCounted(this), call, std::move(callback),
+                          UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
 void UpdateServiceProxy::Update(
@@ -152,10 +136,9 @@ void UpdateServiceProxy::Update(
   auto call = base::BindRepeating(
       &UpdateServiceProxyImpl::Update, proxy_, app_id, install_data_index,
       priority, policy_same_version_update, language, state_update);
-  call.Run(
-      base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
-                     base::WrapRefCounted(this), call, std::move(callback),
-                     UpdateService::Result::kIPCConnectionFailed, 1));
+  call.Run(base::BindOnce(&CallDone<UpdateService::Result>,
+                          base::WrapRefCounted(this), call, std::move(callback),
+                          UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
 void UpdateServiceProxy::UpdateAll(
@@ -164,10 +147,9 @@ void UpdateServiceProxy::UpdateAll(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto call = base::BindRepeating(&UpdateServiceProxyImpl::UpdateAll, proxy_,
                                   state_update);
-  call.Run(
-      base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
-                     base::WrapRefCounted(this), call, std::move(callback),
-                     UpdateService::Result::kIPCConnectionFailed, 1));
+  call.Run(base::BindOnce(&CallDone<UpdateService::Result>,
+                          base::WrapRefCounted(this), call, std::move(callback),
+                          UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
 void UpdateServiceProxy::Install(
@@ -183,10 +165,9 @@ void UpdateServiceProxy::Install(
       base::BindRepeating(&UpdateServiceProxyImpl::Install, proxy_,
                           registration, client_install_data, install_data_index,
                           priority, language, state_update);
-  call.Run(
-      base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
-                     base::WrapRefCounted(this), call, std::move(callback),
-                     UpdateService::Result::kIPCConnectionFailed, 1));
+  call.Run(base::BindOnce(&CallDone<UpdateService::Result>,
+                          base::WrapRefCounted(this), call, std::move(callback),
+                          UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
 void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
@@ -207,10 +188,9 @@ void UpdateServiceProxy::RunInstaller(
   auto call = base::BindRepeating(
       &UpdateServiceProxyImpl::RunInstaller, proxy_, app_id, installer_path,
       install_args, install_data, install_settings, language, state_update);
-  call.Run(
-      base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
-                     base::WrapRefCounted(this), call, std::move(callback),
-                     UpdateService::Result::kIPCConnectionFailed, 1));
+  call.Run(base::BindOnce(&CallDone<UpdateService::Result>,
+                          base::WrapRefCounted(this), call, std::move(callback),
+                          UpdateService::Result::kIPCConnectionFailed, 1));
 }
 
 void UpdateServiceProxy::GetUpdaterState(
@@ -219,8 +199,7 @@ void UpdateServiceProxy::GetUpdaterState(
   auto call =
       base::BindRepeating(&UpdateServiceProxyImpl::GetUpdaterState, proxy_);
   call.Run(base::BindOnce(
-      static_cast<DoneFunc<UpdaterState>>(&CallDone),
-      base::WrapRefCounted(this), call,
+      &CallDone<UpdaterState>, base::WrapRefCounted(this), call,
       base::BindOnce([](base::OnceCallback<void(const UpdaterState&)> callback,
                         UpdaterState value) { std::move(callback).Run(value); },
                      std::move(callback)),
@@ -233,8 +212,7 @@ void UpdateServiceProxy::GetPoliciesJson(
   auto call =
       base::BindRepeating(&UpdateServiceProxyImpl::GetPoliciesJson, proxy_);
   call.Run(base::BindOnce(
-      static_cast<DoneFunc<std::string>>(&CallDone), base::WrapRefCounted(this),
-      call,
+      &CallDone<std::string>, base::WrapRefCounted(this), call,
       base::BindOnce(
           [](base::OnceCallback<void(const std::string&)> callback,
              std::string policies_json) {

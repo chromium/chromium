@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -84,7 +85,7 @@ void SodaLanguagePackComponentInstallerPolicy::
           LOG(ERROR)
               << "On demand update of the SODA language component failed "
                  "with error: "
-              << static_cast<int>(error);
+              << std::to_underlying(error);
         }
       }));
 }

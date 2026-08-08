@@ -210,7 +210,7 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
     attributes["lastupdatecheckerrorcode"] =
         state_->last_update_check_error.code;
     attributes["lastupdatecheckerrorcat"] =
-        static_cast<int>(state_->last_update_check_error.category);
+        std::to_underlying(state_->last_update_check_error.category);
     attributes["lastupdatecheckextracode1"] =
         state_->last_update_check_error.extra;
   }

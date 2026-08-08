@@ -446,7 +446,7 @@ bool KSAdminApp::MatchesXCPath(NSString* ticket_path) const {
     NSString* xcpath = base::SysUTF8ToNSString(xcpath_raw);
     xcpath = [xcpath stringByStandardizingPath];
     ticket_path = [ticket_path stringByStandardizingPath];
-    return static_cast<bool>([xcpath isEqual:ticket_path]);
+    return [xcpath isEqual:ticket_path];
   }
 }
 

@@ -134,7 +134,7 @@ void BrowserUpdaterClient::UpdateCompleted(
   UpdateService::UpdateState update_state;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;
   update_state.error_category = UpdateService::ErrorCategory::kUpdateCheck;
-  update_state.error_code = static_cast<int>(result);
+  update_state.error_code = std::to_underlying(result);
   callback.Run(update_state);
 }
 

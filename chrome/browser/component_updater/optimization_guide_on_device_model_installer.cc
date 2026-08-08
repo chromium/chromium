@@ -10,6 +10,7 @@
 #include <optional>
 #include <ranges>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/byte_size.h"
@@ -605,7 +606,7 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
         if (error != update_client::Error::NONE &&
             error != update_client::Error::UPDATE_IN_PROGRESS) {
           LOG(ERROR) << "Failed to update on-device model component with error "
-                     << static_cast<int>(error);
+                     << std::to_underlying(error);
         }
       }));
 }

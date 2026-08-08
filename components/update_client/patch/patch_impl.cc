@@ -20,13 +20,13 @@ namespace {
 
 int CheckFiles(bool old_valid, bool patch_valid, bool destination_valid) {
   if (!old_valid) {
-    return static_cast<int>(UnpackerError::kPatchInvalidOldFile);
+    return std::to_underlying(UnpackerError::kPatchInvalidOldFile);
   }
   if (!patch_valid) {
-    return static_cast<int>(UnpackerError::kPatchInvalidPatchFile);
+    return std::to_underlying(UnpackerError::kPatchInvalidPatchFile);
   }
   if (!destination_valid) {
-    return static_cast<int>(UnpackerError::kPatchInvalidNewFile);
+    return std::to_underlying(UnpackerError::kPatchInvalidNewFile);
   }
   return 0;
 }
@@ -68,7 +68,7 @@ class PatcherImpl : public Patcher {
     patch::ZucchiniPatch(callback_.Run(), std::move(old_file),
                          std::move(patch_file), std::move(destination_file),
                          base::BindOnce([](zucchini::status::Code result) {
-                           return static_cast<int>(result);
+                           return std::to_underlying(result);
                          }).Then(std::move(callback)));
   }
 

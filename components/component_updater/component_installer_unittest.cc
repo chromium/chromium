@@ -525,7 +525,7 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
         EXPECT_EQ(result.result.category,
                   update_client::ErrorCategory::kInstall);
         EXPECT_EQ(result.result.code,
-                  static_cast<int>(
+                  std::to_underlying(
                       update_client::InstallError::NO_DIR_COMPONENT_USER));
       }));
 

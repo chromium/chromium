@@ -113,7 +113,7 @@ void DownloadComplete(
             std::move(callback),
             base::unexpected<CategorizedError>(
                 {.category = ErrorCategory::kService,
-                 .code = static_cast<int>(ServiceError::CANCELLED)})));
+                 .code = std::to_underlying(ServiceError::CANCELLED)})));
     return;
   }
 

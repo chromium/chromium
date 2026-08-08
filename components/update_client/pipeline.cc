@@ -62,11 +62,11 @@ using Operation = base::OnceCallback<base::OnceClosure(
 
 constexpr CategorizedError kUnsupportedOperationError = CategorizedError(
     {.category = ErrorCategory::kUpdateCheck,
-     .code = static_cast<int>(ProtocolError::UNSUPPORTED_OPERATION)});
+     .code = std::to_underlying(ProtocolError::UNSUPPORTED_OPERATION)});
 
 constexpr CategorizedError kInvalidOperationAttributesError = CategorizedError(
     {.category = ErrorCategory::kUpdateCheck,
-     .code = static_cast<int>(ProtocolError::INVALID_OPERATION_ATTRIBUTES)});
+     .code = std::to_underlying(ProtocolError::INVALID_OPERATION_ATTRIBUTES)});
 
 // `Pipeline` manages the flow of operations, passing the output path of
 // each operation to the next one, short-circuiting on errors.
@@ -142,7 +142,7 @@ void Pipeline::OpComplete(
     // Pipeline still running, but cancelled.
     std::move(callback_).Run(
         {.category = ErrorCategory::kService,
-         .code = static_cast<int>(ServiceError::CANCELLED)});
+         .code = std::to_underlying(ServiceError::CANCELLED)});
     return;
   }
   // Pipeline still running: start next operation.

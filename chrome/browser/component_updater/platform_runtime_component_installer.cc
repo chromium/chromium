@@ -181,7 +181,7 @@ void PlatformRuntimeComponentInstallerPolicy::UpdateOnDemand(
             error != update_client::Error::UPDATE_IN_PROGRESS) {
           LOG(ERROR)
               << "Failed to update Platform Runtime component with error "
-              << static_cast<int>(error);
+              << std::to_underlying(error);
         }
       }));
 }

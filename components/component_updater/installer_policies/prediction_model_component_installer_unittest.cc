@@ -128,7 +128,7 @@ class PredictionModelComponentInstallerTest : public PlatformTest {
 
     feature_list_.InitAndEnableFeatureWithParameters(
         optimization_guide::kPredictionModelComponentDelivery,
-        {{"targets", base::NumberToString(static_cast<int>(kTestTarget))}});
+        {{"targets", base::NumberToString(std::to_underlying(kTestTarget))}});
 
     // Create a default config for testing.
     config_ =
@@ -233,7 +233,7 @@ TEST_F(PredictionModelComponentInstallerTest,
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(
       optimization_guide::kPredictionModelComponentDelivery,
-      {{"targets", base::NumberToString(static_cast<int>(kTestTarget))}});
+      {{"targets", base::NumberToString(std::to_underlying(kTestTarget))}});
 
   base::RunLoop run_loop;
   EXPECT_CALL(cus_, RegisterComponent(testing::_))
@@ -251,7 +251,7 @@ TEST_F(PredictionModelComponentInstallerTest,
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeatureWithParameters(
       optimization_guide::kPredictionModelComponentDelivery,
-      {{"targets", base::NumberToString(static_cast<int>(
+      {{"targets", base::NumberToString(std::to_underlying(
                        optimization_guide::proto::
                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD))}});
 

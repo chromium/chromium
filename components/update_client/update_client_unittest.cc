@@ -5165,7 +5165,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       EXPECT_EQ(base::Version("0.0"), ping_data[0].previous_version);
       EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
       EXPECT_EQ(ErrorCategory::kService, ping_data[0].error_category);
-      EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED),
+      EXPECT_EQ(std::to_underlying(ServiceError::CANCELLED),
                 ping_data[0].error_code);
     }
   };
@@ -5305,7 +5305,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       EXPECT_EQ(base::Version("0.0"), ping_data[0].previous_version);
       EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
       EXPECT_EQ(ErrorCategory::kService, ping_data[0].error_category);
-      EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED),
+      EXPECT_EQ(std::to_underlying(ServiceError::CANCELLED),
                 ping_data[0].error_code);
     }
   };
@@ -5517,7 +5517,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
       EXPECT_EQ(ping_data[0].next_version, base::Version("1.0"));
       EXPECT_EQ(ping_data[0].error_category, ErrorCategory::kService);
       EXPECT_EQ(ping_data[0].error_code,
-                static_cast<int>(ServiceError::CHECK_FOR_UPDATE_ONLY));
+                std::to_underlying(ServiceError::CHECK_FOR_UPDATE_ONLY));
       EXPECT_EQ(ping_data[0].extra_code1, 0);
     }
   };
@@ -5886,7 +5886,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   EXPECT_EQ(items.size(), 1u);
   EXPECT_EQ(items[0].state, ComponentState::kUpdateError);
   EXPECT_EQ(items[0].id, "jebgalgnebhfojomionfpkfelancnnkf");
-  EXPECT_EQ(items[0].error_code, static_cast<int>(Error::CRX_NOT_FOUND));
+  EXPECT_EQ(items[0].error_code, std::to_underlying(Error::CRX_NOT_FOUND));
 }
 
 // Tests `CheckForUpdate` when the updates are disabled but the server ignores
@@ -5943,7 +5943,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       EXPECT_EQ(ping_data[0].next_version, base::Version("1.0"));
       EXPECT_EQ(ping_data[0].error_category, ErrorCategory::kService);
       EXPECT_EQ(ping_data[0].error_code,
-                static_cast<int>(ServiceError::UPDATE_DISABLED));
+                std::to_underlying(ServiceError::UPDATE_DISABLED));
     }
   };
 
@@ -6090,7 +6090,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
       EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", ping_data[1].id);
       EXPECT_EQ(base::Version("0.9"), ping_data[1].previous_version);
       EXPECT_EQ(base::Version("1.0"), ping_data[1].next_version);
-      EXPECT_EQ(0, static_cast<int>(ping_data[1].error_category));
+      EXPECT_EQ(ping_data[1].error_category, ErrorCategory::kNone);
       EXPECT_EQ(0, ping_data[1].error_code);
     }
   };

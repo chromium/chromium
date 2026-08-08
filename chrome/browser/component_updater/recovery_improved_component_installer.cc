@@ -99,10 +99,10 @@ void RecoveryComponentActionHandler::Unpack() {
 void RecoveryComponentActionHandler::UnpackComplete(
     const update_client::Unpacker::Result& result) {
   if (result.error != update_client::UnpackerError::kNone) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), false,
-                       static_cast<int>(result.error), result.extended_error));
+    main_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(std::move(callback_), false,
+                                               std::to_underlying(result.error),
+                                               result.extended_error));
     return;
   }
 
@@ -150,7 +150,7 @@ void RecoveryComponentActionHandler::WaitForCommand(
         process_or_error->WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
   } else {
     exit_code =
-        static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED);
+        std::to_underlying(update_client::InstallError::LAUNCH_PROCESS_FAILED);
     extra_code1 = process_or_error.error();
   }
   base::DeletePathRecursively(unpack_path_);

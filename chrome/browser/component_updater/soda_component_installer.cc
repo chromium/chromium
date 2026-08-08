@@ -95,7 +95,7 @@ void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {
             error != update_client::Error::UPDATE_IN_PROGRESS) {
           LOG(ERROR) << "On demand update of the SODA component failed "
                         "with error: "
-                     << static_cast<int>(error);
+                     << std::to_underlying(error);
         }
       }));
 }

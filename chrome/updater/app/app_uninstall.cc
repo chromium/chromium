@@ -271,7 +271,7 @@ void AppUninstall::UninstallAll(UninstallPingReason reason) {
       {.event_type = update_client::protocol_request::kEventUninstall,
        .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
-       .extra_code1 = static_cast<int>(reason)},
+       .extra_code1 = std::to_underlying(reason)},
       base::BindOnce(
           [](base::OnceCallback<void(int)> shutdown, UpdaterScope scope,
              update_client::Error uninstall_ping_error) {

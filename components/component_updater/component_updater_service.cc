@@ -504,7 +504,7 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
                                         const base::TimeTicks& start_time,
                                         update_client::Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "Update completed with error " << static_cast<int>(error);
+  VLOG(1) << "Update completed with error " << std::to_underlying(error);
 
   UMA_HISTOGRAM_BOOLEAN("ComponentUpdater.UpdateCompleteResult",
                         error != update_client::Error::NONE);

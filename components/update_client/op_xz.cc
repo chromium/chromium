@@ -39,7 +39,7 @@ void Done(base::OnceCallback<
       success ? base::expected<base::FilePath, CategorizedError>(out_file)
               : base::unexpected<CategorizedError>(
                     {.category = ErrorCategory::kUnpack,
-                     .code = static_cast<int>(UnpackerError::kXzFailed)});
+                     .code = std::to_underlying(UnpackerError::kXzFailed)});
 
   base::OnceClosure done = base::BindOnce(
       [](const base::expected<base::FilePath, CategorizedError>& result,
