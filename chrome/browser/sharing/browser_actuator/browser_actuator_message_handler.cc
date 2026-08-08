@@ -12,7 +12,9 @@
 #include "chrome/browser/browser_actuator/browser_actuator_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
+#include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/features.h"
+#include "components/browser_actuator/public/transport_session.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 
 BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(Profile* profile)
@@ -57,17 +59,20 @@ void BrowserActuatorMessageHandler::HandleGlicExperimentalTriggering(
     return;
   }
 
-  EnsureTransportSessionCreated(session_id);
-}
-
-void BrowserActuatorMessageHandler::EnsureTransportSessionCreated(
-    const std::string& session_id) {
   if (!profile_) {
     return;
   }
   browser_actuator::BrowserActuatorService* service =
       browser_actuator::BrowserActuatorServiceFactory::GetForProfile(profile_);
-  if (service && service->IsInitialized()) {
-    service->GetOrCreateSession(session_id);
+  if (!service || !service->IsInitialized()) {
+    return;
   }
+  browser_actuator::TransportSession* session =
+      service->GetOrCreateSession(session_id);
+  if (!session) {
+    return;
+  }
+
+  session->ProcessWakeUpMessage(
+      browser_actuator::PayloadType::kExperimentalTriggering, triggering);
 }

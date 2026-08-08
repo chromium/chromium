@@ -32,6 +32,12 @@ class TransportSession {
   virtual base::expected<void, SendMessageError> SendMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) = 0;
+
+  // Dispatches an incoming wake-up message to handlers registered for
+  // payload_type.
+  virtual void ProcessWakeUpMessage(
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) = 0;
 };
 
 }  // namespace browser_actuator

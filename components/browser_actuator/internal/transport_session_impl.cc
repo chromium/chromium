@@ -42,9 +42,27 @@ base::expected<void, SendMessageError> TransportSessionImpl::SendMessage(
   return base::unexpected(SendMessageError::kChannelDisconnected);
 }
 
+void TransportSessionImpl::ProcessWakeUpMessage(
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message) {
+  std::ignore =
+      DispatchToHandlers(payload_type, [&message](TransportHandler* handler) {
+        handler->ProcessWakeUpMessage(message);
+      });
+}
+
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
 TransportSessionImpl::ProcessPayload(PayloadType payload_type,
                                      std::string_view payload) {
+  return DispatchToHandlers(payload_type, [payload](TransportHandler* handler) {
+    handler->OnMessage(payload);
+  });
+}
+
+base::expected<void, TransportSessionImpl::ProcessPayloadError>
+TransportSessionImpl::DispatchToHandlers(
+    PayloadType payload_type,
+    base::FunctionRef<void(TransportHandler*)> dispatch_fn) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channel_) {
     return base::unexpected(ProcessPayloadError::kChannelDisconnected);
@@ -64,11 +82,10 @@ TransportSessionImpl::ProcessPayload(PayloadType payload_type,
       handlers.push_back(handler.get());
     }
     for (TransportHandler* handler : handlers) {
-      // If a handler destroys the session stop dispatching to future handlers.
       if (!session) {
         break;
       }
-      handler->OnMessage(payload);
+      dispatch_fn(handler);
     }
   }
 

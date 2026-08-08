@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_BROWSER_ACTUATOR_BROWSER_ACTUATOR_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_SHARING_BROWSER_ACTUATOR_BROWSER_ACTUATOR_MESSAGE_HANDLER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "components/sharing_message/sharing_message_handler.h"
 
@@ -35,10 +32,6 @@ class BrowserActuatorMessageHandler : public SharingMessageHandler {
  private:
   void HandleGlicExperimentalTriggering(
       const components_sharing_message::GlicExperimentalTriggering& triggering);
-
-  // Helper to initialize/get the TransportSession for
-  // session_id.
-  void EnsureTransportSessionCreated(const std::string& session_id);
 
   const raw_ptr<Profile> profile_;
 };

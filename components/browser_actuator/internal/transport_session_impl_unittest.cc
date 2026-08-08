@@ -281,6 +281,7 @@ TEST(TransportSessionImplTest, HandlerInstantiationFailed) {
 TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
   MockTransportChannel channel;
   TransportHandlerFactoryRegistryImpl registry;
+
   EXPECT_CALL(channel, GetHandlerFactoryRegistry())
       .WillRepeatedly(testing::Return(&registry));
 
@@ -308,6 +309,32 @@ TEST(TransportSessionImplTest, ProcessDownstreamMessageRoutesControlCommand) {
   typed->mutable_proto_payload()->set_value(serialized_command);
 
   session.ProcessDownstreamMessage(message);
+}
+
+TEST(TransportSessionImplTest, ProcessWakeUpMessage) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  TransportSessionImpl session("test_session", channel.GetWeakPtr());
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+
+  ControlCommand command;
+  command.mutable_close_session();
+
+  EXPECT_CALL(*handler_ptr, ProcessWakeUpMessage(testing::Ref(command)));
+
+  session.ProcessWakeUpMessage(PayloadType::kControl, command);
 }
 
 }  // namespace

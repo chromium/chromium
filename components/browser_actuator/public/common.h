@@ -14,6 +14,7 @@ namespace browser_actuator {
 enum class PayloadType {
   kUnspecified = 0,
   kControl = 1,
+  kExperimentalTriggering = 2,
 };
 
 // Identifies the feature factory instance, to ensure we do not re-register

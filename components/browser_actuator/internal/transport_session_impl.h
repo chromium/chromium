@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -49,6 +50,10 @@ class TransportSessionImpl : public TransportSession {
   std::string_view GetSessionId() const override;
 
   base::expected<void, SendMessageError> SendMessage(
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) override;
+
+  void ProcessWakeUpMessage(
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override;
 
@@ -94,6 +99,12 @@ class TransportSessionImpl : public TransportSession {
   // instantiated, and added to the `routing_table_`.
   base::expected<void, ProcessPayloadError> ResolveHandlersForType(
       PayloadType payload_type);
+
+  // Helper to resolve handlers for `payload_type` and safely dispatch to them
+  // using a callback function.
+  base::expected<void, ProcessPayloadError> DispatchToHandlers(
+      PayloadType payload_type,
+      base::FunctionRef<void(TransportHandler*)> dispatch_fn);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const std::string session_id_;

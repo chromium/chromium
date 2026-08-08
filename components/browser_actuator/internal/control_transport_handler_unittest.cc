@@ -30,6 +30,9 @@ class TestTransportSession : public TransportSession {
       const google::protobuf::MessageLite& message) override {
     return {};
   }
+  void ProcessWakeUpMessage(
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) override {}
 
  private:
   std::string session_id_;
