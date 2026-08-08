@@ -178,7 +178,7 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   // The entry point for the decorator chain that enriches the context.
   std::unique_ptr<CompositeContextDecorator> composite_context_decorator_;
 
-  // Obsevers of the model.
+  // Observers of the model.
   base::ObserverList<ContextualTasksService::Observer> observers_;
 
   std::unique_ptr<AiThreadSyncBridge> ai_thread_sync_bridge_;

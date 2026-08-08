@@ -398,10 +398,21 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
   SessionID active_tab_id =
       sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  ContextualTask active_task(active_task_id);
+  active_task.AddThread(Thread(ThreadType::kAiMode, "thread_1", "Title", 1000));
   EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
-      .WillRepeatedly(Return(ContextualTask(active_task_id)));
+      .WillRepeatedly(Return(active_task));
   EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(active_task_id))
       .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+  tabs::TabInterface* inactive_tab = CreateMockTab();
+  SessionID inactive_tab_id =
+      sessions::SessionTabHelper::IdForTab(inactive_tab->GetContents());
+  ContextualTask inactive_task(inactive_task_id);
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(inactive_tab_id))
+      .WillRepeatedly(Return(inactive_task));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(inactive_task_id))
+      .WillRepeatedly(Return(std::vector<SessionID>{inactive_tab_id}));
 
   UpdateWebContentsForActiveTab();
   ASSERT_EQ(coordinator_->GetActiveWebContents(),
@@ -559,6 +570,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OpenInZeroStateCreatesNewTask) {
   EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
       .WillOnce(Return(old_task))
       .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(old_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
 
   EXPECT_CALL(*mock_controller_,
               DisassociateTabFromTask(old_task.GetTaskId(), active_tab_id))
@@ -566,6 +580,59 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OpenInZeroStateCreatesNewTask) {
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(1);
 
   coordinator_->OpenInZeroState();
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseZeroStateTaskDisassociatesTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasksEphemeralBrandedEntryPoint,
+      {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}});
+
+  ContextualTask zero_state_task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(zero_state_task));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(zero_state_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(
+      *mock_controller_,
+      DisassociateTabFromTask(zero_state_task.GetTaskId(), active_tab_id))
+      .Times(1);
+
+  coordinator_->Close();
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseTaskWithThreadPreservesTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasksEphemeralBrandedEntryPoint,
+      {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}});
+
+  ContextualTask thread_task(base::Uuid::GenerateRandomV4());
+  thread_task.AddThread(
+      Thread(ThreadType::kAiMode, "thread_123", "Title", 1000));
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(thread_task));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(thread_task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(thread_task.GetTaskId(), active_tab_id))
+      .Times(0);
+
+  coordinator_->Close();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

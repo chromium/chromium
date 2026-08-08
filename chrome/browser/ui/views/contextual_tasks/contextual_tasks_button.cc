@@ -323,9 +323,14 @@ void ContextualTasksButton::OnButtonPress() {
         "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel"));
     base::UmaHistogramBoolean(
         "ContextualTasks.ToolbarButton.UserAction.OpenSidePanel", true);
-    controller->Show(
-        /*transition_from_tab=*/false,
-        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+    if (contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      controller->Show(
+          /*transition_from_tab=*/false,
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+    } else {
+      controller->OpenInZeroState();
+    }
   }
 }
 
