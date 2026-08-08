@@ -15,8 +15,11 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -38,6 +41,95 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace {
+
+class MockGlicActorTaskIconManager : public glic::GlicActorTaskIconManager {
+ public:
+  MockGlicActorTaskIconManager(Profile* profile,
+                               actor::ActorKeyedService* actor_service)
+      : glic::GlicActorTaskIconManager(profile, actor_service) {}
+  ~MockGlicActorTaskIconManager() override = default;
+
+  base::CallbackListSubscription RegisterTaskListBubbleStateChange(
+      TaskListBubbleChangeCallback callback) override {
+    return base::CallbackListSubscription();
+  }
+};
+
+class MockGlicActorNudgeController : public glic::GlicActorNudgeController {
+ public:
+  MockGlicActorNudgeController(
+      BrowserWindowInterface* browser,
+      glic::GlicSplitButtonController* split_button_controller)
+      : glic::GlicActorNudgeController(browser, split_button_controller) {}
+  ~MockGlicActorNudgeController() override = default;
+
+  void ShowBubble() override {}
+  void CloseBubble() override {}
+};
+
+class MockGlicSplitButtonController : public glic::GlicSplitButtonController {
+ public:
+  MockGlicSplitButtonController(BrowserWindowInterface* browser,
+                                glic::GlicKeyedService* glic_service)
+      : glic::GlicSplitButtonController(browser, glic_service) {
+    SetActorNudgeControllerForTesting(nullptr);
+    SetActorNudgeControllerForTesting(
+        std::make_unique<MockGlicActorNudgeController>(browser, this));
+  }
+  ~MockGlicSplitButtonController() override = default;
+
+  MOCK_METHOD(glic::GlicSplitButtonDelegate*,
+              GetActiveDelegate,
+              (),
+              (override));
+};
+
+class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
+ public:
+  explicit TestGlicSplitButtonDelegate(
+      BrowserWindowInterface* browser,
+      views::View* anchor_view,
+      ActorTaskListBubbleController* controller)
+      : browser_(browser), anchor_view_(anchor_view), controller_(controller) {}
+
+  void ShowActorTaskListBubble() override {
+    if (bubble_) {
+      bubble_->Close();
+      bubble_.reset();
+    }
+    Profile* profile = browser_->GetProfile();
+    auto* manager =
+        glic::GlicActorTaskIconManagerFactory::GetForProfile(profile);
+    if (manager && controller_) {
+      bubble_ = std::make_unique<ActorTaskListBubble>(
+          profile, browser_, manager->actor_task_list_bubble_rows(),
+          base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
+                              base::Unretained(controller_)));
+      bubble_->Show(anchor_view_);
+    }
+  }
+
+  void CloseActorTaskListBubble() override {
+    if (bubble_) {
+      bubble_->Close();
+      bubble_.reset();
+    }
+  }
+
+  bool IsActorTaskListBubbleShowing() override {
+    return bubble_ && bubble_->IsShowing();
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<views::View> anchor_view_;
+  raw_ptr<ActorTaskListBubbleController> controller_;
+  std::unique_ptr<ActorTaskListBubble> bubble_;
+};
+
+}  // namespace
 
 class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
  public:
@@ -91,9 +183,17 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         .WillByDefault(testing::Return(profile_));
     ON_CALL(*browser_window_interface_, IsActive())
         .WillByDefault(testing::Return(true));
+    mock_glic_split_button_controller_ =
+        std::make_unique<testing::NiceMock<MockGlicSplitButtonController>>(
+            browser_window_interface_.get(), mock_glic_keyed_service_);
     actor_task_list_bubble_controller_ =
-        std::make_unique<ActorTaskListBubbleController>(
-            browser_window_interface_.get());
+        ActorTaskListBubbleController::From(browser_window_interface_.get());
+    ASSERT_TRUE(actor_task_list_bubble_controller_);
+    test_delegate_ = std::make_unique<TestGlicSplitButtonDelegate>(
+        browser_window_interface_.get(), anchor_widget_->GetContentsView(),
+        actor_task_list_bubble_controller_);
+    ON_CALL(*mock_glic_split_button_controller_, GetActiveDelegate())
+        .WillByDefault(testing::Return(test_delegate_.get()));
   }
 
   std::unique_ptr<KeyedService> BuildGlicActorTaskIconManager(
@@ -101,8 +201,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     Profile* profile = Profile::FromBrowserContext(context);
     auto* actor_service =
         actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
-    auto manager = std::make_unique<glic::GlicActorTaskIconManager>(
-        profile, actor_service);
+    auto manager =
+        std::make_unique<MockGlicActorTaskIconManager>(profile, actor_service);
     return std::move(manager);
   }
 
@@ -129,7 +229,9 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    actor_task_list_bubble_controller_.reset();
+    test_delegate_.reset();
+    actor_task_list_bubble_controller_ = nullptr;
+    mock_glic_split_button_controller_.reset();
     browser_window_interface_.reset();
     mock_glic_keyed_service_ = nullptr;
     profile_ = nullptr;
@@ -168,8 +270,11 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   glic::GlicProfileManager glic_profile_manager_;
   glic::GlicUnitTestEnvironment glic_test_env_;
   raw_ptr<glic::MockGlicKeyedService> mock_glic_keyed_service_ = nullptr;
-  std::unique_ptr<ActorTaskListBubbleController>
-      actor_task_list_bubble_controller_;
+  std::unique_ptr<MockGlicSplitButtonController>
+      mock_glic_split_button_controller_;
+  std::unique_ptr<TestGlicSplitButtonDelegate> test_delegate_;
+  raw_ptr<ActorTaskListBubbleController> actor_task_list_bubble_controller_ =
+      nullptr;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;
   views::UniqueWidgetPtr anchor_widget_;
@@ -188,8 +293,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
 
   base::HistogramTester histogram_tester;
 
-  actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView());
+  actor_task_list_bubble_controller_->ShowBubble();
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
 
@@ -206,8 +310,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
     manager->UpdateTaskIconComponents(new_task_id);
   }
 
-  actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView());
+  actor_task_list_bubble_controller_->ShowBubble();
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 4, 1);
@@ -237,7 +340,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
   manager->UpdateTaskIconComponents(task_id);
 
   actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView(), /*is_start_notification=*/false);
+      /*is_start_notification=*/false);
 
   // Bubble widget should not be created.
   EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
@@ -264,7 +367,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
   manager->UpdateTaskIconComponents(task_id);
 
   actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView(), /*is_start_notification=*/true);
+      /*is_start_notification=*/true);
 
   // Bubble widget should not be created.
   EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
@@ -290,7 +393,11 @@ TEST_F(ActorTaskListBubbleControllerTest,
   manager->UpdateTaskIconComponents(task_id);
 
   actor_task_list_bubble_controller_->ShowBubble(
-      anchor_widget_->GetContentsView(), /*is_start_notification=*/true);
+      /*is_start_notification=*/true);
+
+  // Fast forward for delayed show.
+  task_environment()->FastForwardBy(
+      base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
 
   // Bubble widget should be created and visible.
   EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
@@ -311,13 +418,14 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
   anchor_view->SetVisible(false);
 
   actor_task_list_bubble_controller_->ShowBubble(
-      anchor_view, /*is_start_notification=*/true);
+      /*is_start_notification=*/true);
 
   // Bubble widget should NOT be created immediately.
   EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
 
-  // Fast forward by 250ms.
-  task_environment()->FastForwardBy(base::Milliseconds(250));
+  // Fast forward by delay ms.
+  task_environment()->FastForwardBy(
+      base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
 
   // Bubble widget should now be created and visible.
   EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
@@ -339,7 +447,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
   anchor_view->SetVisible(true);
 
   actor_task_list_bubble_controller_->ShowBubble(
-      anchor_view, /*is_start_notification=*/true);
+      /*is_start_notification=*/false);
 
   // Bubble widget should be created immediately.
   EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());

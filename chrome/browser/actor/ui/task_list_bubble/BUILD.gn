@@ -55,7 +55,6 @@ if (!is_android) {
       "//components/actor/core:task_id",
       "//components/tabs:public",
       "//ui/base/unowned_user_data",
-      "//ui/views",
     ]
   }
 
@@ -63,20 +62,15 @@ if (!is_android) {
     sources = [ "actor_task_list_bubble_controller.cc" ]
     deps = [
       ":controller",
-      ":ui",
+      ":delegate",
       "//base",
       "//chrome/browser/actor",
       "//chrome/browser/actor/resources:grit",
-      "//chrome/browser/actor/ui",
       "//chrome/browser/glic",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/interaction",
-      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/tab_list",
       "//ui/base",
-      "//ui/views",
     ]
   }
 

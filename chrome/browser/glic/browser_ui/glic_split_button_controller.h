@@ -37,7 +37,7 @@ class GlicSplitButtonController {
   GlicSplitButtonController& operator=(const GlicSplitButtonController&) =
       delete;
 
-  ~GlicSplitButtonController();
+  virtual ~GlicSplitButtonController();
 
   // TODO(crbug.com/511309088): Rename these to toolbar and tab strip delegate
   // since they no longer necessarily correspond to vertical tab mode.
@@ -47,7 +47,7 @@ class GlicSplitButtonController {
 
   void OnGlicButtonClicked();
 
-  GlicSplitButtonDelegate* GetActiveDelegate();
+  virtual GlicSplitButtonDelegate* GetActiveDelegate();
   void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
 
   GlicNudgeController* nudge_controller() {
@@ -56,6 +56,8 @@ class GlicSplitButtonController {
   GlicActorNudgeController* actor_nudge_controller() {
     return glic_actor_nudge_controller_.get();
   }
+  void SetActorNudgeControllerForTesting(
+      std::unique_ptr<GlicActorNudgeController> controller);
 
  private:
   bool IsToolbarButton() const;

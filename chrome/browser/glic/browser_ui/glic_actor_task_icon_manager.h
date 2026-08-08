@@ -72,10 +72,10 @@ class GlicActorTaskIconManager : public KeyedService {
       TaskNudgeChangeCallback callback);
 
   // Register for this callback to get task state change notifications for the
-  // bubble.
+  // bubble. Virtual for testing.
   using TaskListBubbleChangeCallback =
       base::RepeatingCallback<void(bool is_start_notification)>;
-  base::CallbackListSubscription RegisterTaskListBubbleStateChange(
+  virtual base::CallbackListSubscription RegisterTaskListBubbleStateChange(
       TaskListBubbleChangeCallback callback);
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;

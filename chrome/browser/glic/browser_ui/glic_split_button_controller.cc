@@ -65,7 +65,7 @@ GlicSplitButtonController::GlicSplitButtonController(
 // TODO(crbug.com/518584352): Port this to Android.
 #if !BUILDFLAG(IS_ANDROID)
     actor_task_list_bubble_controller_ =
-        std::make_unique<ActorTaskListBubbleController>(browser);
+        std::make_unique<ActorTaskListBubbleController>(browser, *this);
 #endif
     glic_actor_nudge_controller_ =
         std::make_unique<GlicActorNudgeController>(browser, this);
@@ -174,6 +174,11 @@ mojom::InvocationSource GlicSplitButtonController::GetInvocationSource(
 base::WeakPtr<GlicSplitButtonController>
 GlicSplitButtonController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void GlicSplitButtonController::SetActorNudgeControllerForTesting(
+    std::unique_ptr<GlicActorNudgeController> controller) {
+  glic_actor_nudge_controller_ = std::move(controller);
 }
 
 }  // namespace glic

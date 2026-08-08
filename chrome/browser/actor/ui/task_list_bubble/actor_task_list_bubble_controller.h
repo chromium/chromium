@@ -10,31 +10,32 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/view.h"
 
-class ActorTaskListBubble;
+namespace glic {
+class GlicSplitButtonController;
+}
+class ActorTaskListBubbleControllerDelegate;
 
 // Controller that handles the visibility and display of the
 // ActorTaskListBubble.
 class ActorTaskListBubbleController {
  public:
   explicit ActorTaskListBubbleController(
-      BrowserWindowInterface* browser_window);
+      BrowserWindowInterface* browser_window,
+      glic::GlicSplitButtonController& split_button_controller);
   ~ActorTaskListBubbleController();
 
   DECLARE_USER_DATA(ActorTaskListBubbleController);
   static ActorTaskListBubbleController* From(BrowserWindowInterface* window);
 
-  void ShowBubble(views::View* anchor_view, bool is_start_notification = false);
+  void ShowBubble(bool is_start_notification = false);
   void CloseBubble();
   void OnStateUpdate(bool is_start_notification);
   void OnBubbleDestroyed();
@@ -51,11 +52,11 @@ class ActorTaskListBubbleController {
   void OnTaskRowClicked(actor::TaskId task_id);
 
  private:
-  void ShowBubbleImpl(views::View* anchor_view, bool is_start_notification);
+  void ShowBubbleImpl(bool is_start_notification);
+  ActorTaskListBubbleControllerDelegate* GetActiveDelegate() const;
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
-  // TODO(crbug.com/518584352): Remove; views should own this.
-  std::unique_ptr<ActorTaskListBubble> bubble_;
+  raw_ref<glic::GlicSplitButtonController> split_button_controller_;
   base::RepeatingClosureList on_bubble_shown_callback_list;
   base::RepeatingClosureList on_bubble_destroyed_callback_list;
 

@@ -15,13 +15,21 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -48,28 +56,43 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
                                                 {});
 
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(
-        actor::ActorKeyedServiceFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<actor::ActorKeyedServiceFake>(
-              Profile::FromBrowserContext(context));
-        }));
-    builder.AddTestingFactory(
-        glic::GlicActorTaskIconManagerFactory::GetInstance(),
-        base::BindRepeating([](content::BrowserContext* context)
-                                -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto* actor_service =
-              actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
-          return std::make_unique<glic::GlicActorTaskIconManager>(
-              profile, actor_service);
-        }));
-    profile_ = builder.Build();
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+
+    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        "profile",
+        TestingProfile::TestingFactories{
+            TestingProfile::TestingFactory{
+                actor::ActorKeyedServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<actor::ActorKeyedServiceFake>(
+                      Profile::FromBrowserContext(context));
+                })},
+            TestingProfile::TestingFactory{
+                glic::GlicActorTaskIconManagerFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  Profile* profile = Profile::FromBrowserContext(context);
+                  auto* actor_service =
+                      actor::ActorKeyedServiceFactory::GetActorKeyedService(
+                          profile);
+                  return std::make_unique<glic::GlicActorTaskIconManager>(
+                      profile, actor_service);
+                })},
+            TestingProfile::TestingFactory{
+                glic::GlicKeyedServiceFactory::GetInstance(),
+                base::BindRepeating(
+                    &ActorTaskListBubbleTest::BuildMockGlicKeyedService,
+                    base::Unretained(this))}});
+
+    glic_test_env_.SetupProfile(profile_);
 
     actor_service_ = static_cast<actor::ActorKeyedServiceFake*>(
-        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_.get()));
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_));
 
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -80,25 +103,47 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     ON_CALL(*browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
     ON_CALL(*browser_window_interface_, GetProfile())
-        .WillByDefault(testing::Return(profile_.get()));
+        .WillByDefault(testing::Return(profile_));
     ON_CALL(*browser_window_interface_, IsActive())
         .WillByDefault(testing::Return(true));
-    controller_ = std::make_unique<ActorTaskListBubbleController>(
-        browser_window_interface_.get());
+    mock_glic_service_ = static_cast<glic::MockGlicKeyedService*>(
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_));
+    glic_split_button_controller_ =
+        std::make_unique<glic::GlicSplitButtonController>(
+            browser_window_interface_.get(), mock_glic_service_);
+    controller_ =
+        ActorTaskListBubbleController::From(browser_window_interface_.get());
+    ASSERT_TRUE(controller_);
+  }
+
+  std::unique_ptr<KeyedService> BuildMockGlicKeyedService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    auto mock_service =
+        std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
+            profile, identity_test_env_.identity_manager(),
+            testing_profile_manager_->profile_manager(), &glic_profile_manager_,
+            /*contextual_cueing_service=*/nullptr,
+            actor::ActorKeyedServiceFactory::GetActorKeyedService(profile));
+    return mock_service;
   }
 
   void TearDown() override {
     bubble_.reset();
-    controller_.reset();
+    controller_ = nullptr;
+    glic_split_button_controller_.reset();
+    mock_glic_service_ = nullptr;
     browser_window_interface_.reset();
     anchor_widget_.reset();
     actor_service_ = nullptr;
-    profile_.reset();
+    profile_ = nullptr;
+    testing_profile_manager_.reset();
+    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
     ChromeViewsTestBase::TearDown();
   }
 
  protected:
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return profile_; }
 
   // Mock callback for task clicks.
   void OnTaskClicked(actor::TaskId task_id) {}
@@ -144,12 +189,19 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   MockTabInterface& mock_tab() { return mock_tab_; }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  glic::GlicProfileManager glic_profile_manager_;
+  glic::GlicUnitTestEnvironment glic_test_env_;
   MockTabInterface mock_tab_;
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;
-  std::unique_ptr<ActorTaskListBubbleController> controller_;
+  raw_ptr<glic::MockGlicKeyedService> mock_glic_service_ = nullptr;
+  std::unique_ptr<glic::GlicSplitButtonController>
+      glic_split_button_controller_;
+  raw_ptr<ActorTaskListBubbleController> controller_ = nullptr;
   std::unique_ptr<ActorTaskListBubble> bubble_;
   base::test::ScopedFeatureList feature_list_;
 };

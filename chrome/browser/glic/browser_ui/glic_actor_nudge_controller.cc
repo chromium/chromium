@@ -201,10 +201,7 @@ void GlicActorNudgeController::TriggerGlicActorNudge(
 void GlicActorNudgeController::ShowBubble() {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
-    // TODO(crbug.com/518584352): Temporary hack to show the bubble without
-    // having to pass in an anchor view here. Replace with a call to
-    // ShowBubble() once it no longer needs an anchor view.
-    bubble_controller->OnStateUpdate(/*is_start_notification=*/true);
+    bubble_controller->ShowBubble();
   }
 #endif
 }
