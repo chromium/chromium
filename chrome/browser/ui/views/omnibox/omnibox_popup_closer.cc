@@ -67,7 +67,8 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
     if (auto* presenter = popup_view->presenter()) {
       // Note: ESC key notifications (`PopupCloseReason::kEscapeKeyPressed`)
       // are handled via `OmniboxPopupWebUIBaseContent::OnPreHandleEscapeKey()`.
-      if (presenter->has_active_blockers()) {
+      if (presenter->has_active_blockers() ||
+          presenter->IsPermissionPromptPreventingClose()) {
         return;
       }
     }

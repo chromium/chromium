@@ -1220,6 +1220,32 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       }));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    EmbeddedPermissionPromptInteractiveTest,
+    TestWindowMiddlePositioningClampedToContainerBoundsOnSmallWindow) {
+  // Set the browser window to a small size so prompt bounds exceed container
+  // bound in `kWindowMiddle` mode.
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+      {10, 10, 500, 200});
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ExecuteJs(kWebContentsElementId, "setFontSizeSmall"),
+      ClickOnPEPCElement("microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(CheckView(
+          EmbeddedPermissionPromptBaseView::kMainViewId,
+          [this](views::View* view) {
+            content::WebContents* web_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            gfx::Rect container_bounds = web_contents->GetContainerBounds();
+            gfx::Rect prompt_bounds = view->GetBoundsInScreen();
+            return prompt_bounds.x() >= container_bounds.x() &&
+                   prompt_bounds.y() >= container_bounds.y();
+          })));
+}
+
 class EmbeddedPermissionPromptPositioningInteractiveTest
     : public EmbeddedPermissionPromptInteractiveTest {
  public:
@@ -1377,6 +1403,47 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
           manager->FinalizeCurrentRequests();
         }));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       TestPositioningClampedToContainerBoundsOnSmallWindow) {
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+      {10, 10, 500, 200});
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ExecuteJs(kWebContentsElementId, "setFontSizeSmall"),
+      ClickOnPEPCElement("microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      InAnyContext(CheckView(
+          EmbeddedPermissionPromptBaseView::kMainViewId,
+          [this](views::View* view) {
+            content::WebContents* web_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            gfx::Rect container_bounds = web_contents->GetContainerBounds();
+            gfx::Rect prompt_bounds = view->GetBoundsInScreen();
+            return prompt_bounds.x() >= container_bounds.x() &&
+                   prompt_bounds.y() >= container_bounds.y();
+          })));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
+                       TestNullContentsWebViewHandling) {
+  // Construct a standalone frameless widget context where `ContentsWebView` is
+  // absent. Ensure its absences (null value) is properly handled.
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = browser()->GetWindow()->GetNativeWindow();
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)));
 }
 
 // A test suite for running policy-related interactive tests. This test suite
