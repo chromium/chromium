@@ -49,6 +49,20 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
 // If enabled, the EnergyEffect for Realbox will be shown.
 BASE_FEATURE(kEnergyEffect, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<EnergyEffectVariant>::Option
+    kEnergyEffectVariantOptions[] = {
+        {EnergyEffectVariant::kEnergyEffectOriginal, "energy-effect-original"},
+        {EnergyEffectVariant::kEnergyEffectDarkerShadow,
+         "energy-effect-darker-shadow"},
+        {EnergyEffectVariant::kPreEnergyEffectWithBorder,
+         "pre-energy-effect-with-border"},
+        {EnergyEffectVariant::kEnergyEffectFusebox, "energy-effect-fusebox"},
+};
+
+const base::FeatureParam<EnergyEffectVariant> kEnergyEffectVariantParam{
+    &kEnergyEffect, "EnergyEffectVariantParam",
+    EnergyEffectVariant::kEnergyEffectOriginal, &kEnergyEffectVariantOptions};
+
 // If enabled, the EnergyEffect animation for Realbox will be shown.
 BASE_FEATURE(kEnergyEffectAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 

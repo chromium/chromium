@@ -78,9 +78,14 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
+      isDark: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
+  accessor isDark: boolean = false;
   accessor entrypointName: string = 'Realbox';
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

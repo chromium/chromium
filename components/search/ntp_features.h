@@ -25,6 +25,17 @@ BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
+enum class EnergyEffectVariant {
+  // Default (M149 / 12% shadow)
+  kEnergyEffectOriginal = 0,
+  // Variant 1 (20% shadow)
+  kEnergyEffectDarkerShadow = 1,
+  // Variant 2 (reduced original shadow + darker border)
+  kPreEnergyEffectWithBorder = 2,
+  // Variant 4 (Fusebox shadow @ 16%)
+  kEnergyEffectFusebox = 3,
+};
+
 BASE_DECLARE_FEATURE(kEnergyEffect);
 BASE_DECLARE_FEATURE(kEnergyEffectAnimation);
 BASE_DECLARE_FEATURE(kRealboxCr23Theming);
@@ -349,6 +360,8 @@ int GetMaxEnterpriseShortcuts();
 base::TimeDelta GetBookmarkBarMinStalenessTimeInterval();
 
 int GetBookmarkBarCountThreshold();
+
+extern const base::FeatureParam<EnergyEffectVariant> kEnergyEffectVariantParam;
 
 }  // namespace ntp_features
 
