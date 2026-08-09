@@ -1129,7 +1129,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Benachrichtigung anzeigen}other{Benachrichtigungen anzeigen}}</translation>
 <translation id="5811144606237321538"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter, stummgeschalteter Tab</translation>
 <translation id="5823093032261493462">Möchtest du „<ph name="FILE_NAME" />“ trotzdem von <ph name="DOWNLOAD_DOMAIN" /> herunterladen?</translation>
-<translation id="5825135637446025843">Nach dem Neustart von Chrome werden die von deinem neuen Anbieter gespeicherten Informationen verwendet, um Passwörter, Passkeys, Adressen, Zahlungsmethoden und andere Informationen automatisch auszufüllen.</translation>
+<translation id="5825135637446025843">Nach dem Neustart von Chrome werden die von deinem neuen Anbieter gespeicherten Informationen verwendet, um Passwörter, Passkeys, Adressen, Zahlungsmethoden und andere Informationen automatisch einzufügen.</translation>
 <translation id="5828921839638612740">Du kannst die Daten in den Chrome-Einstellungen löschen</translation>
 <translation id="5829586821381540080">In „<ph name="FOLDER_NAME" />“ gespeichert</translation>
 <translation id="583281660410589416">Unbekannt</translation>

@@ -2967,7 +2967,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderilemedi}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderilemedi}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Yardım</translation>
 <translation id="3118748462829336648">Yan Paneli Aç</translation>
-<translation id="3119743309973425629">Metin imlecinin yanıp sönme hızı</translation>
+<translation id="3119743309973425629">Metin imlecinin yanıp sönme oranı</translation>
 <translation id="3119948370277171654">Hangi içeriği/URL'yi yayınlıyordunuz?</translation>
 <translation id="3120204271988747891">Siteler, yerel ağınızdaki diğer cihazlara erişmek için izin isteyebilir</translation>
 <translation id="3122464029669770682">CPU</translation>

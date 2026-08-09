@@ -2966,7 +2966,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3117791853215125017">{COUNT,plural, =1{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{No fue posible enviar <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Ayuda</translation>
 <translation id="3118748462829336648">Abrir el panel lateral</translation>
-<translation id="3119743309973425629">Velocidad de parpadeo del cursor de texto</translation>
+<translation id="3119743309973425629">Frecuencia de parpadeo del cursor de texto</translation>
 <translation id="3119948370277171654">¿Qué contenido o URL estabas transmitiendo?</translation>
 <translation id="3120204271988747891">Los sitios pueden solicitar acceso a otros dispositivos de tu red local</translation>
 <translation id="3122464029669770682">CPU</translation>

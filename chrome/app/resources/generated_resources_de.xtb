@@ -3483,7 +3483,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="351152300840026870">Schriftart mit fester Breite</translation>
 <translation id="3511528412952710609">Kurz</translation>
 <translation id="3512465804715993309">Adaptives Hervorheben</translation>
-<translation id="3512495006767217696">Der Passwortmanager ist direkt in Chrome eingebunden und kann für dich starke Passwörter erstellen, speichern und automatisch eintragen. Füge die Verknüpfung hinzu, um einfacher darauf zuzugreifen.</translation>
+<translation id="3512495006767217696">Der Passwortmanager ist direkt in Chrome eingebunden und kann für dich starke Passwörter erstellen, speichern und automatisch einfügen. Füge die Verknüpfung hinzu, um einfacher darauf zuzugreifen.</translation>
 <translation id="3513019849832307207">Beitreten und öffnen</translation>
 <translation id="3513563267917474897">Schieberegler für den Farbton von <ph name="MIN_VALUE" /> bis <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Du wirst durch die standardmäßigen Sicherheitsfunktionen geschützt. Wenn du das erweiterte Safe Browsing in den Chrome-Einstellungen aktivierst, profitierst du von noch umfangreicherem Schutz gegen schädliche Websites, Downloads und Erweiterungen.</translation>
@@ -7607,7 +7607,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6564343790052433242">Damit du einen Passkey für <ph name="APP_NAME" /> erstellen kannst, muss der Google Passwortmanager aktiviert sein</translation>
 <translation id="6565899972286925956">Kreativität ohne Grenzen</translation>
 <translation id="6566648465417201421">Geschlossene geteilte Ansicht wieder öffnen</translation>
-<translation id="656679903990115526">Scanne diesen QR-Code mit deinem Smartphone, um deine Passwörter zu speichern und automatisch ausfüllen zu lassen, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
+<translation id="656679903990115526">Scanne diesen QR-Code mit deinem Smartphone, um deine Passwörter zu speichern und automatisch einzufügen, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
 <translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>
