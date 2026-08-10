@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.accessibility;
 import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import static org.mockito.hamcrest.MockitoHamcrest.doubleThat;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,9 +32,12 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.HostZoomMap;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link PageZoomManager}. */
 @SmallTest
@@ -143,5 +148,60 @@ public class PageZoomManagerUnitTest {
                         eq(mWebContentsMock),
                         doubleThat(closeTo(2.22, 0.01)),
                         doubleThat(closeTo(6.54, 0.01)));
+    }
+
+    @Test
+    public void testCanShowPopupWindow_NullWebContents() {
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
+        when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(null);
+        Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
+    }
+
+    @Test
+    public void testCanShowPopupWindow_MatchesCurrentHost() {
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
+
+        NavigationController navControllerMock = mock(NavigationController.class);
+        when(mWebContentsMock.getNavigationController()).thenReturn(navControllerMock);
+        when(navControllerMock.getPendingEntry()).thenReturn(null);
+
+        GURL currentGurl = new GURL("https://example.com");
+        when(mWebContentsMock.getLastCommittedUrl()).thenReturn(currentGurl);
+
+        Assert.assertTrue(mManager.canShowPopupWindow("example.com"));
+    }
+
+    @Test
+    public void testCanShowPopupWindow_MismatchedCurrentHost() {
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
+
+        NavigationController navControllerMock = mock(NavigationController.class);
+        when(mWebContentsMock.getNavigationController()).thenReturn(navControllerMock);
+        when(navControllerMock.getPendingEntry()).thenReturn(null);
+
+        GURL currentGurl = new GURL("https://other.com");
+        when(mWebContentsMock.getLastCommittedUrl()).thenReturn(currentGurl);
+
+        Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
+    }
+
+    @Test
+    public void testCanShowPopupWindow_MatchesPendingHost() {
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
+
+        NavigationController navControllerMock = mock(NavigationController.class);
+        when(mWebContentsMock.getNavigationController()).thenReturn(navControllerMock);
+
+        NavigationEntry pendingEntryMock = mock(NavigationEntry.class);
+        GURL pendingGurl = new GURL("https://pending.com");
+        when(pendingEntryMock.getUrl()).thenReturn(pendingGurl);
+        when(navControllerMock.getPendingEntry()).thenReturn(pendingEntryMock);
+
+        // Even if the current host is different, we respect the pending host when navigating.
+        GURL currentGurl = new GURL("https://example.com");
+        when(mWebContentsMock.getLastCommittedUrl()).thenReturn(currentGurl);
+
+        Assert.assertTrue(mManager.canShowPopupWindow("pending.com"));
+        Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
     }
 }

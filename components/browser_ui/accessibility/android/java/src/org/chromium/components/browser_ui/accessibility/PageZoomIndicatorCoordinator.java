@@ -58,7 +58,7 @@ public class PageZoomIndicatorCoordinator {
                     @Override
                     public void onZoomLevelChanged(String host, double newZoomLevel) {
                         setTooltip();
-                        if (!mManager.canShowPopupWindow()) return;
+                        if (!mManager.canShowPopupWindow(host)) return;
                         WebContents webContents = mManager.getWebContents();
                         if (webContents != null && !isPopupWindowShowing()) {
                             showInternal(/* shouldHaveDismissalTimer= */ true);

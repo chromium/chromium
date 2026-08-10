@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.accessibility;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +64,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
         when(mManager.getWebContents()).thenReturn(mWebContents);
         when(mManager.getZoomLevel()).thenReturn(0.0);
         when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
-        when(mManager.canShowPopupWindow()).thenReturn(true);
+        when(mManager.canShowPopupWindow(anyString())).thenReturn(true);
         DeviceFormFactor.setIsTabletForTesting(true);
 
         mCoordinator = new PageZoomIndicatorCoordinator(anchorViewSupplier, mManager);
@@ -177,7 +178,7 @@ public class PageZoomIndicatorCoordinatorUnitTest {
 
     @Test
     public void testOnZoomLevelChanged_CannotShowPopupWindow_DoesNotShowPopup() {
-        when(mManager.canShowPopupWindow()).thenReturn(false);
+        when(mManager.canShowPopupWindow(anyString())).thenReturn(false);
         assertFalse(mCoordinator.isPopupWindowShowing());
 
         mObserverCaptor.getValue().onZoomLevelChanged("example.com", 0.52);
