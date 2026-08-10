@@ -712,6 +712,11 @@
                   '|content/public/test/btm_.*' \
                   '|content/test/data/btm/'
     },
+    'browser_actuator': {
+      'filepath': 'components/browser_actuator/' \
+                  '|chrome/browser/browser_actuator/' \
+                  '|chrome/browser/sharing/browser_actuator/'
+    },
     'browser_components': {
       'filepath': 'chrome/browser/autofill/' \
                   '|chrome/browser/bookmarks/' \
@@ -2854,6 +2859,7 @@
                                     'njeunje+watch-btm@chromium.org',
                                     'ortuno+watch-btm@chromium.org',
                                     'svend+watch-btm@chromium.org'],
+    'browser_actuator': ['chrome-agents-team+cls@google.com'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
