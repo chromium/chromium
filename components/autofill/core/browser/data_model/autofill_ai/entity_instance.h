@@ -297,6 +297,26 @@ class EntityInstance final {
     kMaxValue = kPersonalContext,
   };
 
+  // Defines record-type-specific payloads stored within `RecordTypeData`.
+  // Specializations associate additional metadata with specific `RecordType`
+  // values (e.g., extraction sources for `kPersonalContext`), while types with
+  // no extra metadata remain empty.
+  struct LocalRecordTypePayload {
+    friend bool operator==(const LocalRecordTypePayload&,
+                           const LocalRecordTypePayload&) = default;
+  };
+  struct WalletRecordTypePayload {
+    friend bool operator==(const WalletRecordTypePayload&,
+                           const WalletRecordTypePayload&) = default;
+  };
+  struct PersonalContextRecordTypePayload {
+    friend bool operator==(const PersonalContextRecordTypePayload&,
+                           const PersonalContextRecordTypePayload&) = default;
+  };
+  using RecordTypeData = std::variant<LocalRecordTypePayload,
+                                      WalletRecordTypePayload,
+                                      PersonalContextRecordTypePayload>;
+
   // Categorizes different types of Google Wallet passes.
   enum class WalletPassType {
     // The entity is not supported as a Wallet pass (e.g., local entities, or
@@ -330,7 +350,7 @@ class EntityInstance final {
                  base::Time date_modified,
                  int64_t use_count,
                  base::Time use_date,
-                 RecordType record_type,
+                 RecordTypeData record_type_data,
                  AreAttributesReadOnly are_attributes_read_only,
                  std::string frecency_override);
 
@@ -419,7 +439,10 @@ class EntityInstance final {
   }
 
   // Returns the type of storage used for the specific entity.
-  RecordType record_type() const { return record_type_; }
+  RecordType record_type() const;
+
+  // Returns the record type payload data for the specific entity.
+  const RecordTypeData& record_type_data() const { return record_type_data_; }
 
   // Returns the ordering override for the specific entity.
   const std::string& frecency_override(
@@ -511,7 +534,7 @@ class EntityInstance final {
       attributes_;
   std::string nickname_;
   EntityMetadata metadata_;
-  RecordType record_type_;
+  RecordTypeData record_type_data_;
   AreAttributesReadOnly are_attributes_read_only_;
   std::string frecency_override_;
 };

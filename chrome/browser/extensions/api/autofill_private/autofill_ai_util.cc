@@ -210,12 +210,16 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
       private_api_entity_instance.stored_in_wallet.value_or(false) &&
       entity_supports_wallet_storage;
 
+  EntityInstance::RecordTypeData record_type_data =
+      save_entity_to_wallet ? EntityInstance::RecordTypeData(
+                                  EntityInstance::WalletRecordTypePayload{})
+                            : EntityInstance::RecordTypeData(
+                                  EntityInstance::LocalRecordTypePayload{});
+
   return EntityInstance(
       std::move(entity_type), attribute_instances, std::move(guid),
       private_api_entity_instance.nickname, base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time::Now(),
-      save_entity_to_wallet ? EntityInstance::RecordType::kServerWallet
-                            : EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time::Now(), std::move(record_type_data),
       EntityInstance::AreAttributesReadOnly(
           private_api_entity_instance.is_read_only.value_or(false)),
       /*frecency_override=*/"");

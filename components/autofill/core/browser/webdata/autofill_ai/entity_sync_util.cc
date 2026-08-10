@@ -783,7 +783,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               specifics.serialized_chrome_valuables_metadata()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -803,7 +803,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               specifics.serialized_chrome_valuables_metadata()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           frecency_override);
     }
@@ -816,7 +816,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -829,7 +829,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -842,7 +842,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -855,7 +855,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -868,7 +868,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               AttributeInstance::MarkAsMaskedPasskey()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -880,7 +880,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               specifics.serialized_chrome_valuables_metadata()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }
@@ -892,7 +892,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
               specifics.serialized_chrome_valuables_metadata()),
           guid,
           /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
-          /*use_date=*/{}, EntityInstance::RecordType::kServerWallet,
+          /*use_date=*/{}, EntityInstance::WalletRecordTypePayload{},
           EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
           /*frecency_override=*/"");
     }

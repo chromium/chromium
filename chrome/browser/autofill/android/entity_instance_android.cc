@@ -8,6 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/notreached.h"
 #include "components/autofill/android/main_autofill_jni_headers/EntityInstance_jni.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
@@ -135,6 +136,20 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
     }
   }
 
+  // TODO(crbug.com/542083924): The Java EntityInstance doesn't support
+  // RecordTypeData. Until metadata exists that is relevant in Android or can be
+  // created by Android, creating an empty payload from the RecordType suffices.
+  auto record_type_data = [&] -> EntityInstance::RecordTypeData {
+    switch (record_type) {
+      case EntityInstance::RecordType::kLocal:
+        return EntityInstance::LocalRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet:
+        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kPersonalContext:
+        return EntityInstance::PersonalContextRecordTypePayload{};
+    }
+    NOTREACHED();
+  }();
   return EntityInstance(
       entity_type.ToEntityType(), std::move(attributes_set),
       EntityInstance::EntityId(
@@ -142,7 +157,7 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
               ? base::Uuid::GenerateRandomV4().AsLowercaseString()
               : metadata.guid),
       nickname, metadata.date_modified, metadata.use_count, metadata.use_date,
-      record_type, EntityInstance::AreAttributesReadOnly(false),
+      std::move(record_type_data), EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }
 

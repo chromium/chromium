@@ -237,11 +237,22 @@ std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
     return std::nullopt;
   }
 
+  auto record_type_data = [&] -> EntityInstance::RecordTypeData {
+    switch (*record_type) {
+      case EntityInstance::RecordType::kLocal:
+        return EntityInstance::LocalRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet:
+        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kPersonalContext:
+        return EntityInstance::PersonalContextRecordTypePayload{};
+    }
+    NOTREACHED();
+  }();
   return EntityInstance(
       *entity_type, std::move(attributes),
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), *record_type,
+      /*use_date=*/base::Time(), std::move(record_type_data),
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }

@@ -90,7 +90,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
   EntityInstance existing_entity(
       entity_type, {existing_attribute}, EntityInstance::EntityId(kGuid),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/1, base::Time::Now(),
-      EntityInstance::RecordType::kLocal,
+      EntityInstance::LocalRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 
@@ -164,7 +164,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
       {existing_passport_name_attribute, existing_passport_number_attribute},
       EntityInstance::EntityId(kGuid),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/1, base::Time::Now(),
-      EntityInstance::RecordType::kLocal,
+      EntityInstance::LocalRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 

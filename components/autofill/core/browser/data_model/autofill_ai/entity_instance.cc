@@ -379,7 +379,7 @@ EntityInstance::EntityInstance(
     base::Time date_modified,
     int64_t use_count,
     base::Time use_date,
-    RecordType record_type,
+    RecordTypeData record_type_data,
     AreAttributesReadOnly are_attributes_read_only,
     std::string frecency_override)
     : type_(type),
@@ -389,7 +389,7 @@ EntityInstance::EntityInstance(
                 .date_modified = date_modified,
                 .use_count = use_count,
                 .use_date = use_date},
-      record_type_(record_type),
+      record_type_data_(std::move(record_type_data)),
       are_attributes_read_only_(are_attributes_read_only),
       frecency_override_(std::move(frecency_override)) {
   DCHECK(!attributes_.empty());
@@ -633,7 +633,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
 }
 
 bool EntityInstance::IsServerInstance() const {
-  switch (record_type_) {
+  switch (record_type()) {
     case RecordType::kLocal:
       return false;
     case RecordType::kServerWallet:
@@ -696,12 +696,12 @@ bool EntityInstance::IsSubsetOf(const EntityInstance& other) const {
 bool EntityInstance::IsMaskedEntity() const {
   const bool masked =
       std::ranges::any_of(attributes_, &AttributeInstance::masked);
-  CHECK(!masked || IsMaskableRecordType(record_type_));
+  CHECK(!masked || IsMaskableRecordType(record_type()));
   return masked;
 }
 
 bool EntityInstance::IsUnmaskedEntity() const {
-  return IsMaskableRecordType(record_type_) &&
+  return IsMaskableRecordType(record_type()) &&
          std::ranges::any_of(
              attributes_, [](const AttributeInstance& attribute) {
                return !attribute.masked() && attribute.type().is_obfuscated();
@@ -717,8 +717,31 @@ EntityInstance EntityInstance::CopyWithNewEntityId(EntityId id) const {
 EntityInstance EntityInstance::CopyWithNewRecordType(
     RecordType record_type) const {
   EntityInstance new_entity = *this;
-  new_entity.record_type_ = record_type;
+  switch (record_type) {
+    case RecordType::kLocal:
+      new_entity.record_type_data_ = LocalRecordTypePayload();
+      break;
+    case RecordType::kServerWallet:
+      new_entity.record_type_data_ = WalletRecordTypePayload();
+      break;
+    case RecordType::kPersonalContext:
+      new_entity.record_type_data_ = PersonalContextRecordTypePayload();
+      break;
+  }
   return new_entity;
+}
+
+EntityInstance::RecordType EntityInstance::record_type() const {
+  return std::visit(absl::Overload{[](const LocalRecordTypePayload&) {
+                                     return RecordType::kLocal;
+                                   },
+                                   [](const WalletRecordTypePayload&) {
+                                     return RecordType::kServerWallet;
+                                   },
+                                   [](const PersonalContextRecordTypePayload&) {
+                                     return RecordType::kPersonalContext;
+                                   }},
+                    record_type_data_);
 }
 
 EntityInstance EntityInstance::CopyWithUpdatedAttribute(

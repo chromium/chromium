@@ -44,7 +44,18 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
     autofill::EntityType type,
     autofill::EntityInstance::RecordType record_type) {
   autofill::EntityInstanceBuilder builder(type);
-  builder.SetRecordType(record_type);
+  auto record_type_data = [&] -> autofill::EntityInstance::RecordTypeData {
+    switch (record_type) {
+      case autofill::EntityInstance::RecordType::kLocal:
+        return autofill::EntityInstance::LocalRecordTypePayload{};
+      case autofill::EntityInstance::RecordType::kServerWallet:
+        return autofill::EntityInstance::WalletRecordTypePayload{};
+      case autofill::EntityInstance::RecordType::kPersonalContext:
+        return autofill::EntityInstance::PersonalContextRecordTypePayload{};
+    }
+    NOTREACHED();
+  }();
+  builder.SetRecordTypeData(std::move(record_type_data));
 
   // Iterate through all attributes for this specific type.
   for (autofill::AttributeType attr_type : type.attributes()) {

@@ -242,7 +242,7 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_Valid) {
        CreateAttribute(AttributeTypeName::kPassportName, "John Doe")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time(), EntityInstance::LocalRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 
@@ -256,7 +256,7 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_Valid) {
        CreateAttribute(AttributeTypeName::kVehicleVin, "1ABCD2EF3GHI45678")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time(), EntityInstance::LocalRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 
@@ -279,7 +279,7 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_Valid) {
                        "2024-12-25")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time(), EntityInstance::LocalRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(true),
       /*frecency_override=*/"");
 
@@ -443,7 +443,7 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
                        "Widget, Gadget")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kServerWallet,
+      /*use_date=*/base::Time(), EntityInstance::WalletRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 
@@ -464,7 +464,7 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
                        "Widget, Gadget")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kServerWallet,
+      /*use_date=*/base::Time(), EntityInstance::WalletRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 

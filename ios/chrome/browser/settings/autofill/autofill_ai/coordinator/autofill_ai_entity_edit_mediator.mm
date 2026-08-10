@@ -227,7 +227,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
       .SetDateModified(base::Time::Now())
       .SetUseCount(_entityInstance->use_count())
       .SetUseDate(_entityInstance->use_date())
-      .SetRecordType(_entityInstance->record_type())
+      .SetRecordTypeData(_entityInstance->record_type_data())
       .SetAreAttributesReadOnly(_entityInstance->are_attributes_read_only())
       .SetFrecencyOverride(std::string());
 

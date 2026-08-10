@@ -103,7 +103,8 @@ EntityInstance CreateEntityInstance(EntityTypeName type_name,
       /*nickname=*/"",
       /*date_modified=*/base::Time::Now(),
       /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kPersonalContext,
+      /*use_date=*/base::Time(),
+      EntityInstance::PersonalContextRecordTypePayload{},
       EntityInstance::AreAttributesReadOnly(true),
       std::move(frecency_override));
 }

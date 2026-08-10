@@ -43,9 +43,9 @@ EntityInstanceBuilder& EntityInstanceBuilder::SetUseDate(base::Time use_date) {
   return *this;
 }
 
-EntityInstanceBuilder& EntityInstanceBuilder::SetRecordType(
-    EntityInstance::RecordType record_type) {
-  record_type_ = record_type;
+EntityInstanceBuilder& EntityInstanceBuilder::SetRecordTypeData(
+    EntityInstance::RecordTypeData record_type_data) {
+  record_type_data_ = std::move(record_type_data);
   return *this;
 }
 
@@ -109,7 +109,7 @@ EntityInstance EntityInstanceBuilder::Build() {
   CHECK(!attributes_.empty());
   return EntityInstance(type_, std::move(attributes_), guid_,
                         std::move(nickname_), date_modified_, use_count_,
-                        use_date_, record_type_, are_attributes_read_only_,
+                        use_date_, record_type_data_, are_attributes_read_only_,
                         std::move(frecency_override_));
 }
 

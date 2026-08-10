@@ -464,13 +464,25 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                               return attribute.type().entity_type() == type;
                             }))
       << "All attribute types must belong to the same entity type";
+  auto record_type_data = [&] -> EntityInstance::RecordTypeData {
+    switch (options.record_type) {
+      case EntityInstance::RecordType::kLocal:
+        return EntityInstance::LocalRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet:
+        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kPersonalContext:
+        return EntityInstance::PersonalContextRecordTypePayload{};
+    }
+    NOTREACHED();
+  }();
   return EntityInstance(
       type, std::move(attributes),
       EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
       std::string(options.nickname),
       base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
-      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
-      options.are_attributes_read_only, std::string(options.frecency_override));
+      base::Time::FromTimeT(options.use_date.ToTimeT()),
+      std::move(record_type_data), options.are_attributes_read_only,
+      std::string(options.frecency_override));
 }
 
 EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
@@ -498,12 +510,13 @@ EntityInstance MaskEntityInstance(const EntityInstance& entity_instance) {
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
     test_api(attribute).mark_as_masked();
   }
-  return EntityInstance(
-      entity_instance.type(), std::move(attributes), entity_instance.guid(),
-      entity_instance.nickname(), entity_instance.date_modified(),
-      entity_instance.use_count(), entity_instance.use_date(),
-      entity_instance.record_type(), entity_instance.are_attributes_read_only(),
-      test_api(entity_instance).frecency_override());
+  return EntityInstance(entity_instance.type(), std::move(attributes),
+                        entity_instance.guid(), entity_instance.nickname(),
+                        entity_instance.date_modified(),
+                        entity_instance.use_count(), entity_instance.use_date(),
+                        entity_instance.record_type_data(),
+                        entity_instance.are_attributes_read_only(),
+                        test_api(entity_instance).frecency_override());
 }
 
 }  // namespace autofill::test

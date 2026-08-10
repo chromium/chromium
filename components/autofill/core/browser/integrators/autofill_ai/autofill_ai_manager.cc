@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -172,10 +173,21 @@ EntityInstance GetMergedEntity(
   new_attributes.insert_range(observed_entity.attributes());
   // Add the remaining attributes from the saved entity.
   new_attributes.insert_range(saved_entity.attributes());
+  auto record_type_data = [&] -> EntityInstance::RecordTypeData {
+    switch (target_record_type) {
+      case EntityInstance::RecordType::kLocal:
+        return EntityInstance::LocalRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet:
+        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kPersonalContext:
+        return EntityInstance::PersonalContextRecordTypePayload{};
+    }
+    NOTREACHED();
+  }();
   return EntityInstance(saved_entity.type(), std::move(new_attributes),
                         saved_entity.guid(), saved_entity.nickname(),
                         base::Time::Now(), saved_entity.use_count(),
-                        base::Time::Now(), target_record_type,
+                        base::Time::Now(), std::move(record_type_data),
                         EntityInstance::AreAttributesReadOnly(false),
                         /*frecency_override=*/"");
 }
