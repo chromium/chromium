@@ -15,6 +15,8 @@ source_set("ui") {
     "actuation_worklog_constants.h",
     "actuation_worklog_item_view.h",
     "actuation_worklog_item_view.mm",
+    "actuation_worklog_view.h",
+    "actuation_worklog_view.mm",
     "actuation_worklog_view_data.h",
     "actuation_worklog_view_data.mm",
   ]
