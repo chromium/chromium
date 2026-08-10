@@ -7,16 +7,10 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/strings/string_split.h"
 #include "google_apis/google_api_keys.h"
 
 namespace optimization_guide {
 namespace switches {
-
-// Overrides scheduling and time delays for fetching hints and causes a hints
-// fetch immediately on start up using the provided comma separate lists of
-// hosts.
-const char kFetchHintsOverride[] = "optimization-guide-fetch-hints-override";
 
 // Overrides the Optimization Guide Service URL that the HintsFetcher will
 // request remote hints from.
@@ -136,28 +130,6 @@ bool IsDebugLogsEnabled() {
   static bool enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(kDebugLoggingEnabled);
   return enabled;
-}
-
-// Parses a list of hosts to have hints fetched for. This overrides scheduling
-// of the first hints fetch and forces it to occur immediately. If no hosts are
-// provided, nullopt is returned.
-std::optional<std::vector<std::string>>
-ParseHintsFetchOverrideFromCommandLine() {
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch(kFetchHintsOverride))
-    return std::nullopt;
-
-  std::string override_hosts_value =
-      cmd_line->GetSwitchValueASCII(kFetchHintsOverride);
-
-  std::vector<std::string> hosts =
-      base::SplitString(override_hosts_value, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-
-  if (hosts.size() == 0)
-    return std::nullopt;
-
-  return hosts;
 }
 
 bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting() {

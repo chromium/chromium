@@ -42,6 +42,7 @@
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/filters/test_hints_component_creator.h"
+#include "components/optimization_guide/core/hints/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #include "components/optimization_guide/core/hints/hints_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
@@ -205,7 +206,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
             .spec());
     cmd->AppendSwitchASCII("force-variation-ids", "4");
 
-    cmd->AppendSwitchASCII(optimization_guide::switches::kFetchHintsOverride,
+    cmd->AppendSwitchASCII(optimization_guide::kFetchHintsOverrideSwitch,
                            "example1.com, example2.com");
 
     cmd->AppendSwitch(optimization_guide::kFetchHintsOverrideTimerSwitch);
@@ -847,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      optimization_guide::switches::kFetchHintsOverride, "whatever.com");
+      optimization_guide::kFetchHintsOverrideSwitch, "whatever.com");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::kFetchHintsOverrideTimerSwitch);
 

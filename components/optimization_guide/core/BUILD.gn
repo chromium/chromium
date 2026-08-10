@@ -946,7 +946,6 @@ source_set("unit_tests") {
     "optimization_guide_logger_unittest.cc",
     "optimization_guide_permissions_util_unittest.cc",
     "optimization_guide_proto_util_unittest.cc",
-    "optimization_guide_switches_unittest.cc",
     "optimization_guide_util_unittest.cc",
   ]
   deps = [

@@ -10,7 +10,6 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -20,16 +19,6 @@
 
 namespace optimization_guide {
 namespace switches {
-
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/hints/command_line_top_host_provider.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kFetchHintsOverride[];
-// Parses a list of hosts to have hints fetched for. This overrides scheduling
-// of the first hints fetch and forces it to occur immediately. If no hosts are
-// provided, nullopt is returned.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::vector<std::string>>
-ParseHintsFetchOverrideFromCommandLine();
 
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/hints/hints_fetcher.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

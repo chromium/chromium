@@ -13,6 +13,12 @@
 
 namespace optimization_guide {
 
+// Overrides scheduling and time delays for fetching hints and causes a hints
+// fetch immediately on start up using the provided comma-separated list of
+// hosts.
+inline constexpr char kFetchHintsOverrideSwitch[] =
+    "optimization-guide-fetch-hints-override";
+
 // A TopHostProvider implementation that provides top hosts based on what is fed
 // through the command line. This implementation is intended to be used just for
 // developer and integration testing.
