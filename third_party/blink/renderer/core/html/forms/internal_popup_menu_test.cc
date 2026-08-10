@@ -154,6 +154,44 @@ TEST_F(InternalPopupMenuTest, PagePopupControllerUAFAfterOrphanedFree) {
   controller->setWindowRect(0, 0, 100, 100);
 }
 
+TEST_F(InternalPopupMenuTest, ShowSelectDeviceScaleFactorBelowOne) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  web_view->MainFrameWidget()->SetDeviceScaleFactorForTesting(0.5f);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(400, 300));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      select {
+        position: absolute;
+        left: 700px;
+        top: 500px;
+        width: 80px;
+        height: 30px;
+      }
+    </style>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  select->ShowPopup();
+  EXPECT_TRUE(select->PopupIsVisible());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

@@ -366,20 +366,28 @@ TEST_F(ExternalPopupMenuTest, PopupClippedToViewportVariations) {
   } test_cases[] = {
       // Top left partial
       {-50, -50, 200, 200, 1.0f, true, 0, 0, 150, 150},
-      // Top left partial with DPR
+      // Top left partial with DPR > 1.0
       {-50, -50, 200, 200, 2.0f, true, 0, 0, 150, 150},
+      // Top left partial with DPR < 1.0
+      {-50, -50, 200, 200, 0.5f, true, 0, 0, 150, 150},
       // Top left complete
       {-250, -250, 200, 200, 1.0f, false, 0, 0, 0, 0},
-      // Top left complete with DPR
+      // Top left complete with DPR > 1.0
       {-250, -250, 200, 200, 2.0f, false, 0, 0, 0, 0},
+      // Top left complete with DPR < 1.0
+      {-250, -250, 200, 200, 0.5f, false, 0, 0, 0, 0},
       // Bottom right partial
       {750, 550, 200, 200, 1.0f, true, 750, 550, 50, 50},
-      // Bottom right partial with DPR
-      {750, 550, 200, 200, 2.0f, true, 750, 550, 200, 200},
+      // Bottom right partial with DPR > 1.0
+      {750, 550, 200, 200, 2.0f, true, 750, 550, 50, 50},
+      // Bottom right partial with DPR < 1.0
+      {750, 550, 200, 200, 0.5f, true, 750, 550, 50, 50},
       // Bottom right complete
       {850, 650, 200, 200, 1.0f, false, 0, 0, 0, 0},
-      // Bottom right complete with DPR
+      // Bottom right complete with DPR > 1.0
       {850, 650, 200, 200, 2.0f, false, 0, 0, 0, 0},
+      // Bottom right complete with DPR < 1.0
+      {850, 650, 200, 200, 0.5f, false, 0, 0, 0, 0},
   };
 
   for (const auto& test_case : test_cases) {
