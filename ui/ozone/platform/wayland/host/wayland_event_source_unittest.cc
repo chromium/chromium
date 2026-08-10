@@ -529,6 +529,42 @@ TEST_P(WaylandEventSourceTest,
   EXPECT_EQ(nullptr, window_manager->GetCurrentPointerFocusedWindow());
 }
 
+// Some compositors warp the seat cursor to follow a tablet tool, emitting a
+// wl_pointer.motion alongside the tool's own events. That motion must not
+// inherit the tool's button state, or it reaches Blink as a mouse pointermove
+// with buttons:1 and the spec-default pressure:0.5 in the middle of a stroke.
+TEST_P(WaylandEventSourceTest, PointerMotionDoesNotInheritTabletToolButtons) {
+  auto* event_source = connection_->event_source();
+
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              kDefaultBounds, &delegate);
+
+  const PointerDetails pen(EventPointerType::kPen, /*pointer_id=*/2);
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_))
+      .Times(::testing::AnyNumber());
+  // The mouse is inside the window, as wl_pointer.enter would establish.
+  event_source->OnPointerFocusChanged(window.get(), gfx::PointF(10, 10),
+                                      base::TimeTicks::Now(),
+                                      wl::EventDispatchPolicy::kImmediate);
+  event_source->OnTabletToolProximityIn(window.get(), gfx::PointF(20, 20), pen,
+                                        base::TimeTicks::Now());
+  // Tip down: `tablet_tool_buttons_` now holds EF_LEFT_MOUSE_BUTTON.
+  event_source->OnTabletToolButton(EF_LEFT_MOUSE_BUTTON, /*pressed=*/true, pen,
+                                   base::TimeTicks::Now());
+  ::testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_)).WillOnce([](Event* event) {
+    ASSERT_TRUE(event->IsMouseEvent());
+    auto* mouse_event = event->AsMouseEvent();
+    EXPECT_EQ(mouse_event->type(), EventType::kMouseMoved);
+    EXPECT_FALSE(mouse_event->flags() & EF_LEFT_MOUSE_BUTTON);
+  });
+  event_source->OnPointerMotionEvent(
+      gfx::PointF(30, 30), base::TimeTicks::Now(),
+      wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/false);
+}
+
 // Check that if an event dispatched by ReleasePressedPointerButtons causes the
 // target window to be destroyed, we don't cause a UAF or dangling pointer.
 TEST_P(WaylandEventSourceTest, ReleasePressedPointerButtonsUAF) {

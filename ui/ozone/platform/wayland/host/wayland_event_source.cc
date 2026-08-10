@@ -451,7 +451,12 @@ void WaylandEventSource::OnPointerMotionEvent(
     bool is_synthesized) {
   pointer_location_ = location;
 
-  int flags = pointer_flags_ | keyboard_modifiers_ | tablet_tool_buttons_;
+  // Deliberately excludes `tablet_tool_buttons_`. Some compositors warp the
+  // seat cursor to follow a tablet tool, emitting a wl_pointer.motion alongside
+  // the tool's own events; folding the tool's buttons in here would report a
+  // mouse move with a button held that the mouse does not have held. The tool's
+  // own button state reaches Aura through OnTabletToolMotion().
+  int flags = pointer_flags_ | keyboard_modifiers_;
   if (is_synthesized) {
     flags |= EF_IS_SYNTHESIZED;
   }
