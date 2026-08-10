@@ -167,12 +167,11 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputePartitionedFingerprint(
 VisitedLinkCommon::Fingerprint
 VisitedLinkCommon::ComputePseudoPartitionedFingerprint(
     std::string_view canonical_url) {
-  GURL gurl(canonical_url);
-  net::SchemefulSite top_level_site(gurl);
-  url::Origin frame_origin = url::Origin::Create(gurl);
-  return ComputePartitionedFingerprint(canonical_url, top_level_site,
-                                       frame_origin,
-                                       kPseudoPartitionedConstantSalt);
+  VisitedLink link = CreatePseudoPartitionedLink(GURL(canonical_url));
+  if (!link.IsValid()) {
+    return kNullFingerprint;
+  }
+  return ComputePartitionedFingerprint(link, kPseudoPartitionedConstantSalt);
 }
 
 }  // namespace visitedlink
