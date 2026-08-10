@@ -19,11 +19,13 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.view.ViewConfiguration;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.MainThread;
@@ -100,6 +102,10 @@ public class DownloadUtils {
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
     private static @Nullable Boolean sIsDownloadRestrictedByPolicyForTesting;
+    // Tracks the timestamp and identifier of the last openFile request to debounce rapid
+    // consecutive clicks (e.g. double-taps) and prevent launching duplicate chooser dialogs.
+    private static long sLastOpenFileTimeMs;
+    private static @Nullable String sLastOpenFileIdentifier;
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
@@ -409,13 +415,26 @@ public class DownloadUtils {
     }
 
     /**
-     * Opens a file using a {@link DownloadOpenRequest}. Attempts the provided MIME type,
-     * then falls back to one inferred from the file extension.
+     * Opens a file using a {@link DownloadOpenRequest}. Attempts the provided MIME type, then falls
+     * back to one inferred from the file extension.
      *
-     * @param req The {@link DownloadOpenRequest} containing file path, MIME, GUID,
-     *         profile, URLs, source, and context.
+     * @param req The {@link DownloadOpenRequest} containing file path, MIME, GUID, profile, URLs,
+     *     source, and context.
      */
     public static boolean openFile(DownloadOpenRequest req) {
+        // Debounce rapid consecutive clicks on the same downloaded item (e.g. double-taps).
+        String identifier = req.mDownloadGuid != null ? req.mDownloadGuid : req.mFilePath;
+        long currentTimeMs = SystemClock.elapsedRealtime();
+        if (sLastOpenFileIdentifier != null
+                && sLastOpenFileIdentifier.equals(identifier)
+                && currentTimeMs - sLastOpenFileTimeMs < ViewConfiguration.getDoubleTapTimeout()) {
+            // Drop duplicate request within the double-tap window; treat as already handled so
+            // failure toasts or fallback UI are not shown.
+            return true;
+        }
+        sLastOpenFileTimeMs = currentTimeMs;
+        sLastOpenFileIdentifier = identifier;
+
         DownloadMetrics.recordDownloadOpen(req.mSource, req.mMimeType);
 
         boolean canOpen = doOpenFile(req);
@@ -649,6 +668,11 @@ public class DownloadUtils {
             return inferred;
         }
         return null;
+    }
+
+    public static void resetLastOpenFileForTesting() {
+        sLastOpenFileTimeMs = 0;
+        sLastOpenFileIdentifier = null;
     }
 
     /**

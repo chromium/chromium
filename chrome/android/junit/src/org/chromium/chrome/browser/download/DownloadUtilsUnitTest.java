@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.SystemClock;
+import android.view.ViewConfiguration;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,6 +77,7 @@ public class DownloadUtilsUnitTest {
 
     @Before
     public void setUp() {
+        DownloadUtils.resetLastOpenFileForTesting();
         mContext = RuntimeEnvironment.getApplication();
         mShadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
         mOriginalDownloadManagerService =
@@ -82,6 +86,7 @@ public class DownloadUtilsUnitTest {
 
     @After
     public void tearDown() {
+        DownloadUtils.resetLastOpenFileForTesting();
         DownloadManagerService.setDownloadManagerService(mOriginalDownloadManagerService);
     }
 
@@ -291,5 +296,63 @@ public class DownloadUtilsUnitTest {
         watcher.assertExpected();
         verify(mMockDownloadManagerService)
                 .updateLastAccessTime(eq(TEST_GUID), eq(TEST_OTR_PROFILE_ID));
+    }
+
+    @Test
+    @Feature({"Download"})
+    @EnableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP})
+    public void testOpenFile_DoubleTap_Debounced() {
+        DownloadOpenRequest req = createTestDownloadOpenRequest(TEST_MIME_TYPE);
+        when(mMockDownloadManagerService.isDownloadOpenableInBrowser(any(), anyBoolean()))
+                .thenReturn(true);
+
+        // First click opens successfully.
+        boolean firstOpen = DownloadUtils.openFile(req);
+        assertTrue(firstOpen);
+        verify(mMockDownloadManagerService, times(1))
+                .updateLastAccessTime(eq(TEST_GUID), eq(TEST_OTR_PROFILE_ID));
+
+        // Rapid second click (double-tap) within double-tap timeout should be debounced.
+        boolean secondOpen = DownloadUtils.openFile(req);
+        assertTrue(secondOpen);
+        // Verify updateLastAccessTime was not invoked again.
+        verify(mMockDownloadManagerService, times(1))
+                .updateLastAccessTime(eq(TEST_GUID), eq(TEST_OTR_PROFILE_ID));
+
+        // Wait past double-tap timeout.
+        SystemClock.sleep(ViewConfiguration.getDoubleTapTimeout() + 50);
+
+        // Third click after timeout should open again.
+        boolean thirdOpen = DownloadUtils.openFile(req);
+        assertTrue(thirdOpen);
+        verify(mMockDownloadManagerService, times(2))
+                .updateLastAccessTime(eq(TEST_GUID), eq(TEST_OTR_PROFILE_ID));
+    }
+
+    @Test
+    @Feature({"Download"})
+    @EnableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP})
+    public void testOpenFile_DifferentItems_NotDebounced() {
+        DownloadOpenRequest req1 = createTestDownloadOpenRequest(TEST_MIME_TYPE);
+        DownloadOpenRequest req2 =
+                DownloadOpenRequest.builder(mContext, "/path/to/other_file.pdf")
+                        .mimeType(TEST_MIME_TYPE)
+                        .downloadGuid("other-guid")
+                        .otrProfileId(TEST_OTR_PROFILE_ID)
+                        .originalUrl(TEST_ORIGINAL_URL)
+                        .referrer(TEST_REFERRER)
+                        .build();
+        when(mMockDownloadManagerService.isDownloadOpenableInBrowser(any(), anyBoolean()))
+                .thenReturn(true);
+
+        // First item opens.
+        assertTrue(DownloadUtils.openFile(req1));
+        verify(mMockDownloadManagerService, times(1))
+                .updateLastAccessTime(eq(TEST_GUID), eq(TEST_OTR_PROFILE_ID));
+
+        // Different item opened immediately is not debounced.
+        assertTrue(DownloadUtils.openFile(req2));
+        verify(mMockDownloadManagerService, times(1))
+                .updateLastAccessTime(eq("other-guid"), eq(TEST_OTR_PROFILE_ID));
     }
 }
