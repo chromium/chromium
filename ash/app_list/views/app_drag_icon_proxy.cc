@@ -84,7 +84,8 @@ AppDragIconProxy::AppDragIconProxy(
   const gfx::Point shadow_offset(
       (size.width() - scaled_shadow_size.width()) / 2,
       (size.height() - scaled_shadow_size.height()) / 2);
-  shadow_ = SystemShadow::CreateShadowOnTextureLayer(kShadowType);
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
+      kShadowType, SystemShadow::LayerRecreatedCallback());
   shadow_->SetRoundedCornerRadius(scaled_shadow_size.width() / 2);
   drag_image->AddLayerToRegion(shadow_->GetLayer(), views::LayerRegion::kBelow);
 
