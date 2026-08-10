@@ -329,6 +329,10 @@ BASE_FEATURE(kAutofillIgnoreEmptyCvcsInSyncBridge,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, ignores the strike database checks for payments churned users.
+BASE_FEATURE(kAutofillIgnorePaymentsChurnedUsersStrikesForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card upload legal message lines are parsed for the word
 // "personalization" for feature launch metrics. This flag is temporary, is
 // enabled by default, and functions as a kill switch in case of unexpected

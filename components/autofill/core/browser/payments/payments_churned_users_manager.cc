@@ -50,7 +50,9 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
     return;
   }
 
-  if (strike_database_ && strike_database_->ShouldBlockFeature()) {
+  if (strike_database_ && strike_database_->ShouldBlockFeature() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillIgnorePaymentsChurnedUsersStrikesForTesting)) {
     return;
   }
 

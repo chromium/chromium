@@ -1163,6 +1163,14 @@ inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =
     "When enabled, shows the Wallet Reminder Notice prompt or bottom sheet "
     "after the payment form submission.";
 
+inline constexpr char
+    kAutofillIgnorePaymentsChurnedUsersStrikesForTestingName[] =
+        "Ignore payments churned users strikes for testing";
+inline constexpr char
+    kAutofillIgnorePaymentsChurnedUsersStrikesForTestingDescription[] =
+        "When enabled, ignores the strike database checks for the payments "
+        "churned users resurrecting bubble feature. For testing purposes.";
+
 inline constexpr char kAutofillManualTestingDataName[] =
     "Autofill manual testing data";
 inline constexpr char kAutofillManualTestingDataDescription[] =

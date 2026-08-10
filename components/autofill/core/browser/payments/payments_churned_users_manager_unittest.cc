@@ -257,6 +257,25 @@ TEST_F(PaymentsChurnedUsersManagerTest, ShowUiNotTriggered_MaxStrikesReached) {
   SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
 }
 
+TEST_F(PaymentsChurnedUsersManagerTest,
+       ShowUiTriggered_MaxStrikesReached_IgnoreStrikesFlagEnabled) {
+  feature_list_.InitWithFeatures(
+      {features::kAutofillEnableResurrectingPaymentsUsers,
+       features::kAutofillIgnorePaymentsChurnedUsersStrikesForTesting},
+      {});
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  PaymentsChurnedUsersStrikeDatabase strike_database(
+      autofill_client().GetStrikeDatabase());
+  strike_database.AddStrikes(strike_database.GetMaxStrikesLimit());
+
+  EXPECT_CALL(*payments_client(), ShowPaymentsChurnedUsersUI);
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+}
+
 // Tests that cancelling the UI adds the maximum number of strikes to the
 // strike database, preventing it from showing again.
 TEST_F(PaymentsChurnedUsersManagerTest, CancelCallbackAddsStrikes) {

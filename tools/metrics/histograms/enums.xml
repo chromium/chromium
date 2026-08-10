@@ -9212,6 +9212,8 @@ from previous Chrome versions.
   <int value="-1684815580" label="GlicMITabContextMenu:enabled"/>
   <int value="-1684773837" label="TabEngagementReportingAndroid:disabled"/>
   <int value="-1684321829" label="AutofillUpstreamEnforceStrikeDelay:enabled"/>
+  <int value="-1684216211"
+      label="AutofillIgnorePaymentsChurnedUsersStrikesForTesting:disabled"/>
   <int value="-1684123448" label="disable-best-effort-tasks"/>
   <int value="-1683976057" label="ArcOnDemand:disabled"/>
   <int value="-1682843294" label="DataReductionProxyDecidesTransform:enabled"/>
@@ -14869,6 +14871,8 @@ from previous Chrome versions.
   <int value="94950485" label="HideAimEntrypointForUrlSuggestions:enabled"/>
   <int value="95043207" label="NtpOneGoogleBarAsyncBarParts:disabled"/>
   <int value="95820546" label="RubyShortHeuristics:disabled"/>
+  <int value="95971815"
+      label="AutofillIgnorePaymentsChurnedUsersStrikesForTesting:enabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="96328487" label="UseWebUiNtpAndroid:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
