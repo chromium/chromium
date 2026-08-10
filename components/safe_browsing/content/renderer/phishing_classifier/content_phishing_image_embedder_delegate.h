@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_
 
 #include <memory>
 
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder.h"
+#include "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
+
+class ContentPhishingImageEmbedder;
 
 enum class SBPhishingImageEmbedderEvent {
   kPhishingImageEmbeddingRequested = 0,
@@ -44,19 +46,20 @@ enum class SBPhishingImageEmbedderEvent {
 // This class is used by the RenderView to interact with a
 // PhishingImageEmbedder. This class is self-deleting and has the same lifetime
 // as the content::RenderFrame that it is observing.
-class PhishingImageEmbedderDelegate
+class ContentPhishingImageEmbedderDelegate
     : public content::RenderFrameObserver,
       public mojom::PhishingImageEmbedderDetector,
       public ScorerStorage::Observer {
  public:
-  static PhishingImageEmbedderDelegate* Create(
+  static ContentPhishingImageEmbedderDelegate* Create(
       content::RenderFrame* render_frame);
 
-  PhishingImageEmbedderDelegate(const PhishingImageEmbedderDelegate&) = delete;
-  PhishingImageEmbedderDelegate& operator=(
-      const PhishingImageEmbedderDelegate&) = delete;
+  ContentPhishingImageEmbedderDelegate(
+      const ContentPhishingImageEmbedderDelegate&) = delete;
+  ContentPhishingImageEmbedderDelegate& operator=(
+      const ContentPhishingImageEmbedderDelegate&) = delete;
 
-  ~PhishingImageEmbedderDelegate() override;
+  ~ContentPhishingImageEmbedderDelegate() override;
 
   // Called by the RenderFrame when a page has started loading in the given
   // WebFrame.  Typically, this will cause any pending image embedding to be
@@ -75,9 +78,10 @@ class PhishingImageEmbedderDelegate
   bool is_ready() const;
 
  private:
-  friend class PhishingImageEmbedderDelegateTest;
+  friend class ContentPhishingImageEmbedderDelegateTest;
 
-  explicit PhishingImageEmbedderDelegate(content::RenderFrame* render_frame);
+  explicit ContentPhishingImageEmbedderDelegate(
+      content::RenderFrame* render_frame);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -137,7 +141,7 @@ class PhishingImageEmbedderDelegate
   // ScorerStorage::Observer implementation:
   void OnScorerChanged() override;
 
-  std::unique_ptr<PhishingImageEmbedder> image_embedder_;
+  std::unique_ptr<ContentPhishingImageEmbedder> image_embedder_;
 
   // The last URL that the browser instructed us to process image embedding,
   // with the ref stripped.
@@ -178,4 +182,4 @@ class PhishingImageEmbedderDelegate
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_IMAGE_EMBEDDER_DELEGATE_H_

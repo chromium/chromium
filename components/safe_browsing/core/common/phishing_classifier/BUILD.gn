@@ -10,6 +10,8 @@ source_set("phishing_classifier") {
     "flatbuffer_utils.h",
     "phishing_classifier.cc",
     "phishing_classifier.h",
+    "phishing_image_embedder.cc",
+    "phishing_image_embedder.h",
     "scorer.cc",
     "scorer.h",
   ]
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "features_unittest.cc",
     "flatbuffer_utils_unittest.cc",
     "phishing_classifier_unittest.cc",
+    "phishing_image_embedder_unittest.cc",
     "scorer_unittest.cc",
   ]
   deps = [

@@ -90,7 +90,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier_delegate.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_image_embedder_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -747,7 +747,8 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
       safe_browsing::ContentPhishingClassifierDelegate::Create(render_frame(),
                                                                nullptr);
   phishing_image_embedder_ =
-      safe_browsing::PhishingImageEmbedderDelegate::Create(render_frame());
+      safe_browsing::ContentPhishingImageEmbedderDelegate::Create(
+          render_frame());
 #endif
 }
 

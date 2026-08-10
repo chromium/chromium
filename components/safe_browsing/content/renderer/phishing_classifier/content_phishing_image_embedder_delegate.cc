@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_image_embedder_delegate.h"
 
 #include <memory>
 #include <optional>
@@ -10,7 +10,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_image_embedder.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -31,38 +31,40 @@ GURL StripRef(const GURL& url) {
 
 }  // namespace
 
-PhishingImageEmbedderDelegate::PhishingImageEmbedderDelegate(
+ContentPhishingImageEmbedderDelegate::ContentPhishingImageEmbedderDelegate(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
-      image_embedder_(std::make_unique<PhishingImageEmbedder>(render_frame)),
+      image_embedder_(
+          std::make_unique<ContentPhishingImageEmbedder>(render_frame)),
       is_image_embedding_(false),
       is_image_embedding_running_(false) {
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::PhishingImageEmbedderDetector>(base::BindRepeating(
-          &PhishingImageEmbedderDelegate::PhishingImageEmbedderReceiver,
+          &ContentPhishingImageEmbedderDelegate::PhishingImageEmbedderReceiver,
           base::Unretained(this)));
 
   model_change_observation_.Observe(ScorerStorage::GetInstance());
 }
 
-PhishingImageEmbedderDelegate::~PhishingImageEmbedderDelegate() {
+ContentPhishingImageEmbedderDelegate::~ContentPhishingImageEmbedderDelegate() {
   CancelPendingImageEmbedding(kShutdown);
 }
 
 // static
-PhishingImageEmbedderDelegate* PhishingImageEmbedderDelegate::Create(
+ContentPhishingImageEmbedderDelegate*
+ContentPhishingImageEmbedderDelegate::Create(
     content::RenderFrame* render_frame) {
-  return new PhishingImageEmbedderDelegate(render_frame);
+  return new ContentPhishingImageEmbedderDelegate(render_frame);
 }
 
-void PhishingImageEmbedderDelegate::PhishingImageEmbedderReceiver(
+void ContentPhishingImageEmbedderDelegate::PhishingImageEmbedderReceiver(
     mojo::PendingAssociatedReceiver<mojom::PhishingImageEmbedderDetector>
         receiver) {
   phishing_image_embedder_receiver_.reset();
   phishing_image_embedder_receiver_.Bind(std::move(receiver));
 }
 
-void PhishingImageEmbedderDelegate::StartImageEmbedding(
+void ContentPhishingImageEmbedderDelegate::StartImageEmbedding(
     const GURL& url,
     bool can_extract_visual_features,
     StartImageEmbeddingCallback callback) {
@@ -81,7 +83,7 @@ void PhishingImageEmbedderDelegate::StartImageEmbedding(
   MaybeStartImageEmbedding(can_extract_visual_features);
 }
 
-void PhishingImageEmbedderDelegate::DidCommitProvisionalLoad(
+void ContentPhishingImageEmbedderDelegate::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // A new page is starting to load, so cancel image embedding.
@@ -91,15 +93,15 @@ void PhishingImageEmbedderDelegate::DidCommitProvisionalLoad(
   }
 }
 
-void PhishingImageEmbedderDelegate::DidFinishSameDocumentNavigation() {
+void ContentPhishingImageEmbedderDelegate::DidFinishSameDocumentNavigation() {
   CancelPendingImageEmbedding(kNavigateWithinPage);
 }
 
-bool PhishingImageEmbedderDelegate::is_ready() const {
+bool ContentPhishingImageEmbedderDelegate::is_ready() const {
   return image_embedder_->is_ready();
 }
 
-void PhishingImageEmbedderDelegate::MaybeStartImageEmbedding(
+void ContentPhishingImageEmbedderDelegate::MaybeStartImageEmbedding(
     bool can_extract_visual_features) {
   // We can begin the image embedding process when the following conditions are
   // met:
@@ -148,11 +150,12 @@ void PhishingImageEmbedderDelegate::MaybeStartImageEmbedding(
   is_image_embedding_ = true;
   image_embedder_->BeginImageEmbedding(
       can_extract_visual_features,
-      base::BindOnce(&PhishingImageEmbedderDelegate::ImageEmbeddingDone,
+      base::BindOnce(&ContentPhishingImageEmbedderDelegate::ImageEmbeddingDone,
                      base::Unretained(this)));
 }
 
-void PhishingImageEmbedderDelegate::PageCaptured(bool preliminary_capture) {
+void ContentPhishingImageEmbedderDelegate::PageCaptured(
+    bool preliminary_capture) {
   RecordEvent(SBPhishingImageEmbedderEvent::kPageTextCaptured);
 
   if (preliminary_capture) {
@@ -175,7 +178,7 @@ void PhishingImageEmbedderDelegate::PageCaptured(bool preliminary_capture) {
   MaybeStartImageEmbedding();
 }
 
-void PhishingImageEmbedderDelegate::CancelPendingImageEmbedding(
+void ContentPhishingImageEmbedderDelegate::CancelPendingImageEmbedding(
     CancelImageEmbeddingReason reason) {
   if (is_image_embedding_) {
     UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.CancelImageEmbeddingReason",
@@ -185,8 +188,8 @@ void PhishingImageEmbedderDelegate::CancelPendingImageEmbedding(
   }
 }
 
-void PhishingImageEmbedderDelegate::ImageEmbeddingDone(
-    PhishingImageEmbedder::Result result,
+void ContentPhishingImageEmbedderDelegate::ImageEmbeddingDone(
+    ContentPhishingImageEmbedder::Result result,
     const ImageFeatureEmbedding& image_feature_embedding,
     const VisualFeatures& visual_features) {
   RecordEvent(SBPhishingImageEmbedderEvent::kImageEmbeddingComplete);
@@ -201,20 +204,20 @@ void PhishingImageEmbedderDelegate::ImageEmbeddingDone(
   mojom::PhishingImageEmbeddingResult final_result =
       mojom::PhishingImageEmbeddingResult::kSuccess;
   switch (result) {
-    case PhishingImageEmbedder::Result::kSuccess:
+    case ContentPhishingImageEmbedder::Result::kSuccess:
       if (image_feature_embedding.embedding_value_size() == 0) {
         final_result = mojom::PhishingImageEmbeddingResult::kFailed;
       }
       break;
-    case PhishingImageEmbedder::Result::kInvalidURLFormatRequest:
+    case ContentPhishingImageEmbedder::Result::kInvalidURLFormatRequest:
       final_result =
           mojom::PhishingImageEmbeddingResult::kInvalidURLFormatRequest;
       break;
-    case PhishingImageEmbedder::Result::kInvalidDocumentLoader:
+    case ContentPhishingImageEmbedder::Result::kInvalidDocumentLoader:
       final_result =
           mojom::PhishingImageEmbeddingResult::kInvalidDocumentLoader;
       break;
-    case PhishingImageEmbedder::Result::kVisualExtractionFailed:
+    case ContentPhishingImageEmbedder::Result::kVisualExtractionFailed:
       final_result = mojom::PhishingImageEmbeddingResult::kFailed;
       break;
   }
@@ -229,12 +232,12 @@ void PhishingImageEmbedderDelegate::ImageEmbeddingDone(
   }
 }
 
-void PhishingImageEmbedderDelegate::RecordEvent(
+void ContentPhishingImageEmbedderDelegate::RecordEvent(
     SBPhishingImageEmbedderEvent event) {
   UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ImageEmbedder.Event2", event);
 }
 
-void PhishingImageEmbedderDelegate::OnDestruct() {
+void ContentPhishingImageEmbedderDelegate::OnDestruct() {
   if (is_image_embedding_running_) {
     RecordEvent(
         SBPhishingImageEmbedderEvent::kDestructedBeforeImageEmbeddingDone);
@@ -242,7 +245,7 @@ void PhishingImageEmbedderDelegate::OnDestruct() {
   delete this;
 }
 
-void PhishingImageEmbedderDelegate::OnScorerChanged() {
+void ContentPhishingImageEmbedderDelegate::OnScorerChanged() {
   Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
 
   if (!scorer) {

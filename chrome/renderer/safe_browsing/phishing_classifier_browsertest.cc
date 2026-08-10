@@ -22,8 +22,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_image_embedder.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/features.h"
@@ -259,7 +259,7 @@ class PhishingClassifierTest
 
   void SetUpImageEmbedder() {
     image_embedder_ =
-        std::make_unique<PhishingImageEmbedder>(GetMainRenderFrame());
+        std::make_unique<ContentPhishingImageEmbedder>(GetMainRenderFrame());
   }
 
   // Helper method to start phishing classification.
@@ -273,7 +273,7 @@ class PhishingClassifierTest
 
   // Helper method to start phishing image embedding.
   void RunPhishingImageEmbedder() {
-    base::test::TestFuture<PhishingImageEmbedder::Result,
+    base::test::TestFuture<ContentPhishingImageEmbedder::Result,
                            const ImageFeatureEmbedding&, const VisualFeatures&>
         test_future;
     image_embedder_->BeginImageEmbedding(true, test_future.GetCallback());
@@ -293,7 +293,7 @@ class PhishingClassifierTest
 
   std::string response_content_;
   std::unique_ptr<ContentPhishingClassifier> classifier_;
-  std::unique_ptr<PhishingImageEmbedder> image_embedder_;
+  std::unique_ptr<ContentPhishingImageEmbedder> image_embedder_;
   base::MappedReadOnlyRegion mapped_region_;
 
   // Features that are in the model.
@@ -303,7 +303,7 @@ class PhishingClassifierTest
 
   // Outputs of phishing classifier.
   ClientPhishingRequest verdict_;
-  PhishingImageEmbedder::Result image_embedder_result_;
+  ContentPhishingImageEmbedder::Result image_embedder_result_;
   ImageFeatureEmbedding image_feature_embedding_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
@@ -338,7 +338,7 @@ TEST_F(PhishingClassifierTest, TestImageEmbeddingWhenSchemeNotSupported) {
   SetUpImageEmbedder();
   LoadHtml(GURL("file://host.net"), "<html><body>content</body></html>");
   RunPhishingImageEmbedder();
-  EXPECT_EQ(PhishingImageEmbedder::Result::kInvalidURLFormatRequest,
+  EXPECT_EQ(ContentPhishingImageEmbedder::Result::kInvalidURLFormatRequest,
             image_embedder_result_);
   EXPECT_EQ(0, image_feature_embedding_.embedding_value_size());
 }

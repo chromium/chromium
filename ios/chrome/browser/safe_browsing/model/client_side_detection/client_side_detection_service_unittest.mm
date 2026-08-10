@@ -22,6 +22,7 @@
 #import "components/safe_browsing/core/browser/client_side_phishing_model.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -422,6 +423,23 @@ TEST_F(ClientSideDetectionServiceTest, PhishingClassifierScorerInjection) {
   // Verify that it is not ready when injected with null.
   classifier.set_scorer(nullptr);
   EXPECT_FALSE(classifier.is_ready());
+}
+
+TEST_F(ClientSideDetectionServiceTest, PhishingImageEmbedderScorerInjection) {
+  // Update model to get a scorer.
+  UpdateModel(model_observer_tracker_.get());
+  ASSERT_THAT(csd_service_->GetScorer(), testing::NotNull());
+
+  // Verify that explicitly passing the Scorer works for the
+  // PhishingImageEmbedder.
+  PhishingImageEmbedder embedder;
+  EXPECT_FALSE(embedder.is_ready());
+  embedder.set_scorer(csd_service_->GetScorer());
+  EXPECT_TRUE(embedder.is_ready());
+
+  // Verify that it is not ready when injected with null.
+  embedder.set_scorer(nullptr);
+  EXPECT_FALSE(embedder.is_ready());
 }
 
 TEST_F(ClientSideDetectionServiceTest, ModelUpdatesScorer) {
