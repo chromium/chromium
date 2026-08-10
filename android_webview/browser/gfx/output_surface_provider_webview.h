@@ -41,7 +41,6 @@ class OutputSurfaceProviderWebView {
   std::unique_ptr<viz::OutputSurface> CreateOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController*
           display_compositor_controller);
-  void MarkAllowContextLoss();
 
   const viz::RendererSettings& renderer_settings() const {
     return renderer_settings_;
@@ -67,7 +66,6 @@ class OutputSurfaceProviderWebView {
   scoped_refptr<AwGLSurface> gl_surface_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   bool enable_vulkan_;
-  raw_ptr<bool> expect_context_loss_ = nullptr;
 };
 
 }  // namespace android_webview

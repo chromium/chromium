@@ -183,6 +183,33 @@ sk_sp<SkColorSpace> CreateColorSpace(T* params) {
   return SkColorSpace::MakeRGB(transfer_fn, to_xyz);
 }
 
+// RAII helper to check if gpu::SharedContextState has already detected context
+// loss on RenderThread at the entrance and exit of WebView functor callbacks
+// (except destroy).
+//
+// Rationale for Entrance & Exit Checks:
+// - Entry Check: Checks if gpu::SharedContextState was already marked as lost
+//   during a previous operation (e.g., on another call or from another WebView
+//   instance sharing the context state) and survived until this call, crashing
+//   before attempting further drawing operations.
+// - Exit Check: Catches context loss immediately if our current drawing
+//   operations caused gpu::SharedContextState to detect loss, ensuring we log
+//   crash keys and trigger LOG(FATAL) on RenderThread before returning control
+//   to HWUI.
+class ScopedContextLossCheck {
+ public:
+  explicit ScopedContextLossCheck(RenderThreadManager* render_thread_manager)
+      : render_thread_manager_(render_thread_manager) {
+    render_thread_manager_->CrashOnContextLossOnRT();
+  }
+  ~ScopedContextLossCheck() {
+    render_thread_manager_->CrashOnContextLossOnRT();
+  }
+
+ private:
+  const raw_ptr<RenderThreadManager> render_thread_manager_;
+};
+
 }  // namespace
 
 static void JNI_AwDrawFnImpl_SetDrawFnFunctionTable(JNIEnv* env,
@@ -255,6 +282,7 @@ static int64_t JNI_AwDrawFnImpl_Create(JNIEnv* env) {
 }
 
 void AwDrawFnImpl::OnSync(AwDrawFn_OnSyncParams* params) {
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
   render_thread_manager_.UpdateViewTreeForceDarkStateOnRT(
       params->apply_force_dark);
   render_thread_manager_.CommitFrameOnRT();
@@ -272,6 +300,7 @@ void AwDrawFnImpl::OnContextDestroyed() {
 }
 
 void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
   auto color_space = params->version >= 2 ? CreateColorSpace(params) : nullptr;
   HardwareRendererDrawParams hr_params =
       CreateHRDrawParams(params, color_space.get());
@@ -282,6 +311,7 @@ void AwDrawFnImpl::DrawGL(AwDrawFn_DrawGLParams* params) {
 }
 
 void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
   // We should never have a |vulkan_context_provider_| if we are calling VkInit.
   // This means context destroyed was not correctly called.
   DCHECK(!vulkan_context_provider_);
@@ -295,6 +325,8 @@ void AwDrawFnImpl::InitVk(AwDrawFn_InitVkParams* params) {
 void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
+
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
 
   // Android HWUI has a bug that asks functor to draw into a 8-bit mask for
   // functionality that is not related to and not needed by webview.
@@ -334,6 +366,8 @@ void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
 
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
+
   if (skip_next_post_draw_vk_) {
     skip_next_post_draw_vk_ = false;
     return;
@@ -344,6 +378,7 @@ void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
 }
 
 void AwDrawFnImpl::RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params) {
+  ScopedContextLossCheck context_loss_check(&render_thread_manager_);
   DCHECK(params->merge_transaction);
   render_thread_manager_.RemoveOverlaysOnRT(params->merge_transaction);
 }

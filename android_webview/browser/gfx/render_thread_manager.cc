@@ -225,6 +225,12 @@ void RenderThreadManager::RemoveOverlaysOnRT(
     hardware_renderer_->RemoveOverlays(merge_transaction);
 }
 
+void RenderThreadManager::CrashOnContextLossOnRT() {
+  if (hardware_renderer_) {
+    hardware_renderer_->CrashOnContextLoss();
+  }
+}
+
 void RenderThreadManager::DestroyHardwareRendererOnRT() {
   GpuServiceWebView::GetInstance();
 

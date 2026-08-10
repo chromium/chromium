@@ -76,6 +76,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
                 ReportRenderingThreadsCallback report_rendering_threads);
   void DestroyHardwareRendererOnRT();
   void RemoveOverlaysOnRT(OverlaysParams::MergeTransactionFn merge_transaction);
+  void CrashOnContextLossOnRT();
 
   // May be created on either thread.
   class InsideHardwareReleaseReset {

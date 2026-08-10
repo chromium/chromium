@@ -23,6 +23,7 @@
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
+#include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -31,8 +32,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -173,14 +176,17 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                      std::vector<pid_t>* rendering_thread_ids,
                      base::TimeDelta* preferred_frame_interval);
   void RemoveOverlaysOnViz();
-  void MarkAllowContextLossOnViz();
 
   OverlayProcessorWebView* overlay_processor() {
     return overlay_processor_webview_;
   }
 
   // viz::DisplayClient overrides.
-  void DisplayOutputSurfaceLost() override;
+  void DisplayOutputSurfaceLost() override {
+    // Context loss is already handled deterministically on RenderThread via
+    // HardwareRenderer::CrashOnContextLoss(). So there is no need to handle it
+    // on Viz thread.
+  }
   void DisplayWillDrawAndSwap(
       bool will_draw_and_swap,
       viz::AggregatedRenderPassList* render_passes) override;
@@ -205,7 +211,6 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
   const bool viz_frame_submission_;
-  bool expect_context_loss_ = false;
 
   // Initialized in ctor and never changes, so it's safe to access from both
   // threads. Can be null, if overlays are disabled.
@@ -499,23 +504,11 @@ void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
   }
 }
 
-void HardwareRenderer::OnViz::MarkAllowContextLossOnViz() {
-  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  expect_context_loss_ = true;
-}
-
 viz::FrameSinkManagerImpl* HardwareRenderer::OnViz::GetFrameSinkManager() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   return VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
 }
 
-void HardwareRenderer::OnViz::DisplayOutputSurfaceLost() {
-  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  if (!expect_context_loss_) {
-    // Android WebView does not handle real context loss.
-    LOG(FATAL) << "Render thread context loss";
-  }
-}
 
 void HardwareRenderer::OnViz::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
@@ -630,9 +623,6 @@ void HardwareRenderer::InitializeOnViz(
 
 HardwareRenderer::~HardwareRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-  // Do not crash for context loss during destruction. It's possible functor is
-  // being destroyed due to an already-detected lost context.
-  MarkAllowContextLoss();
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::DoNothingWithBoundArgs(std::move(on_viz_)));
@@ -826,14 +816,21 @@ void HardwareRenderer::MergeTransactionIfNeeded(
   }
 }
 
-void HardwareRenderer::MarkAllowContextLoss() {
-  if (on_viz_) {
-    VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HardwareRenderer::OnViz::MarkAllowContextLossOnViz,
-                       base::Unretained(on_viz_.get())));
+void HardwareRenderer::CrashOnContextLoss() {
+  DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  auto* context_state = output_surface_provider_.shared_context_state().get();
+  if (context_state && context_state->context_lost()) {
+    if (auto reason = context_state->context_lost_reason()) {
+      static ::crash_reporter::CrashKeyString<10> reason_key(
+          crash_keys::kContextLossReason);
+      reason_key.Set(base::NumberToString(static_cast<int>(*reason)));
+    }
+
+    // TODO(crbug.com/40143203): Debugging contexts loss crash on RenderThread
+    // to understand the reason of context lost.
+    LOG(FATAL) << "Non owned context lost!";
   }
-  output_surface_provider_.MarkAllowContextLoss();
 }
 
 void HardwareRenderer::CommitFrame() {

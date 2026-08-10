@@ -78,26 +78,6 @@ GLSurfaceContextPair GetRealContextForVulkan() {
   return std::make_pair(std::move(surface), std::move(context));
 }
 
-void OnContextLost(std::unique_ptr<bool> expect_loss,
-                   bool synthetic_loss,
-                   gpu::error::ContextLostReason context_lost_reason) {
-  if (expect_loss && *expect_loss)
-    return;
-
-  static ::crash_reporter::CrashKeyString<10> reason_key(
-      crash_keys::kContextLossReason);
-  reason_key.Set(base::NumberToString(static_cast<int>(context_lost_reason)));
-
-  // TODO(crbug.com/40143203): Debugging contexts losts. WebView will
-  // intentionally crash in HardwareRenderer::OnViz::DisplayOutputSurface
-  // that will happen after this callback. That crash happens on viz thread and
-  // doesn't have any useful information. Crash here on RenderThread to
-  // understand the reason of context losts.
-  // If this implementation changes, need to ensure `expect_loss` access from
-  // MarkAllowContextLoss is still valid.
-  LOG(FATAL) << "Non owned context lost!";
-}
-
 }  // namespace
 
 OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
@@ -209,12 +189,12 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   }
 
   auto* share_group = gl_context->share_group();
-  auto expect_context_loss_ptr = std::make_unique<bool>(false);
-  expect_context_loss_ = expect_context_loss_ptr.get();
+  // Context loss is checked and handled on RenderThread in
+  // HardwareRenderer::CrashOnContextLoss(), so no immediate OnContextLost
+  // callback handler is required here.
   shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
       share_group, std::move(gl_surface_for_scs), std::move(gl_context),
-      /*use_virtualized_gl_contexts=*/false,
-      base::BindOnce(&OnContextLost, std::move(expect_context_loss_ptr)),
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
       GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
       vulkan_context_provider_, /*dawn_context_provider=*/nullptr,
       /*peak_memory_monitor=*/nullptr,
@@ -254,14 +234,6 @@ OutputSurfaceProviderWebView::CreateOutputSurface(
          "CreateOutputSurface()";
   return viz::SkiaOutputSurfaceImpl::Create(
       display_compositor_controller, renderer_settings_, debug_settings());
-}
-
-void OutputSurfaceProviderWebView::MarkAllowContextLoss() {
-  // This is safe because either the OnContextLost callback has run and we've
-  // already crashed or it has not run and this pointer is still valid.
-  if (expect_context_loss_)
-    *expect_context_loss_ = true;
-  expect_context_loss_ = nullptr;
 }
 
 }  // namespace android_webview
