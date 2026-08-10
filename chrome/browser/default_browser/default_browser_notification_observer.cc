@@ -19,10 +19,12 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -79,16 +81,13 @@ void DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged(
   optional_fields.accessible_name =
       l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_MESSAGE);
 
-  const gfx::Image product_logo =
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PRODUCT_LOGO_128);
-
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       DefaultBrowserManager::kNotificationId,
       l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_TITLE),
       l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_CHANGED_MESSAGE),
-      ui::ImageModel::FromImage(product_logo),
+      ui::ImageModel::FromVectorIcon(vector_icons::kProductRefreshIcon,
+                                     ui::kColorMenuIcon, 128),
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  DefaultBrowserManager::kNotificationId),

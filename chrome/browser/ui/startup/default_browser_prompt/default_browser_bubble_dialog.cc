@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -24,11 +24,11 @@ namespace {
 
 std::unique_ptr<views::ImageView> CreateTitleImage() {
   auto title_image = std::make_unique<views::ImageView>();
-  title_image->SetImage(ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_128));
 
   // The design spec calls for 67.5px but since gfx::Size has to be integer
   // based, rounding up here.
-  title_image->SetImageSize(gfx::Size(68, 68));
+  title_image->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kProductRefreshIcon, ui::kColorMenuIcon, 68));
   title_image->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   title_image->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 16, 0)));
