@@ -710,10 +710,13 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
       WrapCallbackWithSpareKeyLatencyHistogram(std::move(callback));
 
   if (base::FeatureList::IsEnabled(kEnableUnexportableKeysSpareKeyPool)) {
-    scoped_refptr<RefCountedUnexportableSigningKey> spare_key =
-        spare_signing_key_pool_->PopSpareKey(acceptable_algorithms);
-    spare_signing_key_pool_->ReplenishSpareKeyPoolAsync(acceptable_algorithms);
-    if (spare_key) {
+    if (scoped_refptr<RefCountedUnexportableSigningKey> spare_key =
+            spare_signing_key_pool_->PopSpareKey(acceptable_algorithms)) {
+      // We never replenish if there was a failure during the initial pool
+      // filling. This is acceptable because hardware key generation failures
+      // are expected to be sticky.
+      spare_signing_key_pool_->ReplenishSpareKeyPoolAsync(
+          acceptable_algorithms);
       std::move(wrapped_callback)
           .Run(signing_keys_->OnKeyGenerated(std::move(spare_key)));
       return;
@@ -759,11 +762,13 @@ void UnexportableKeyServiceImpl::GenerateAttestationKeySlowlyAsync(
       WrapCallbackWithSpareKeyLatencyHistogram(std::move(callback));
 
   if (base::FeatureList::IsEnabled(kEnableUnexportableKeysSpareKeyPool)) {
-    scoped_refptr<RefCountedUnexportableAttestationKey> spare_key =
-        spare_attestation_key_pool_->PopSpareKey(acceptable_algorithms);
-    spare_attestation_key_pool_->ReplenishSpareKeyPoolAsync(
-        acceptable_algorithms);
-    if (spare_key) {
+    if (scoped_refptr<RefCountedUnexportableAttestationKey> spare_key =
+            spare_attestation_key_pool_->PopSpareKey(acceptable_algorithms)) {
+      // We never replenish if there was a failure during the initial pool
+      // filling. This is acceptable because hardware key generation failures
+      // are expected to be sticky.
+      spare_attestation_key_pool_->ReplenishSpareKeyPoolAsync(
+          acceptable_algorithms);
       std::move(wrapped_callback)
           .Run(attestation_keys_->OnKeyGenerated(std::move(spare_key)));
       return;
