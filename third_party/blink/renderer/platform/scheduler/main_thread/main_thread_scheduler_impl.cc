@@ -1174,6 +1174,26 @@ void MainThreadSchedulerImpl::SetRendererBackgroundedForTesting(
   SetRendererBackgrounded(backgrounded);
 }
 
+void MainThreadSchedulerImpl::SetBatterySaverEnabled(bool enabled) {
+  helper_.CheckOnValidThread();
+
+  if (helper_.IsShutdown() ||
+      main_thread_only().battery_saver_enabled == enabled) {
+    return;
+  }
+  main_thread_only().battery_saver_enabled = enabled;
+
+  // Energy saver gates fullscreen video timer throttling, so re-evaluate the
+  // throttling policy for all pages (and their frames).
+  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
+    page_scheduler->UpdatePolicy();
+  }
+}
+
+bool MainThreadSchedulerImpl::IsBatterySaverEnabled() const {
+  return main_thread_only().battery_saver_enabled;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
@@ -2056,6 +2076,7 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add("have_seen_input_since_navigation",
            any_thread().have_seen_input_since_navigation);
   dict.Add("renderer_backgrounded", main_thread_only().renderer_backgrounded);
+  dict.Add("battery_saver_enabled", main_thread_only().battery_saver_enabled);
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
   dict.Add("awaiting_touch_start_response",
            any_thread().awaiting_touch_start_response);

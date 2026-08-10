@@ -3610,6 +3610,168 @@ TEST_F(FrameSchedulerImplTest, DeleteSoonAfterShutdown) {
   EXPECT_EQ(counter, 3);
 }
 
+// Tests for throttling the active tab's throttleable task queues (JS timers)
+// while the tab contains an effectively-fullscreen video. This only applies
+// while the browser is in energy saver (battery saver) mode.
+class FrameSchedulerImplThrottleFullscreenVideoEnabledTest
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplThrottleFullscreenVideoEnabledTest()
+      : FrameSchedulerImplTest({features::kThrottleFullscreenVideoActiveTab},
+                               {}) {}
+};
+
+// Fullscreen video on the active tab must not be throttled while the browser is
+// not in energy saver mode.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       NotThrottledWithoutEnergySaver) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_FALSE(IsThrottled());
+}
+
+// Energy saver alone (without fullscreen video) must not throttle the active
+// tab. Entering and leaving fullscreen video toggles the throttling.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       FullscreenVideoStateTogglesThrottling) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  EXPECT_FALSE(IsThrottled());
+
+  // Entering fullscreen video while in energy saver throttles.
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_TRUE(IsThrottled());
+
+  // Leaving fullscreen video stops throttling.
+  page_scheduler_->SetIsFullscreenVideo(false);
+  EXPECT_FALSE(IsThrottled());
+}
+
+// Toggling energy saver while a fullscreen video is playing toggles the
+// throttling.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       EnergySaverStateTogglesThrottling) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_FALSE(IsThrottled());
+
+  // Both energy saver and fullscreen video are required to throttle.
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_TRUE(IsThrottled());
+
+  // Leaving energy saver stops throttling, even while the video stays
+  // fullscreen.
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(false);
+  EXPECT_FALSE(IsThrottled());
+
+  // Re-entering energy saver resumes throttling.
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  EXPECT_TRUE(IsThrottled());
+}
+
+// Fullscreen video playback is normally audible. Unlike background throttling,
+// which exempts audible pages, fullscreen video throttling applies regardless
+// of audio playback.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       ThrottledWhileAudible) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->AudioStateChanged(true);
+  EXPECT_FALSE(IsThrottled());
+
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_TRUE(IsThrottled());
+}
+
+// A hidden page keeps its regular background throttling regardless of the
+// fullscreen video state, i.e. the fullscreen video check doesn't override the
+// background checks that run before it.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       HiddenPageRemainsThrottled) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(false);
+  frame_scheduler_->SetFrameVisible(true);
+  EXPECT_TRUE(IsThrottled());
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_TRUE(IsThrottled());
+
+  page_scheduler_->SetIsFullscreenVideo(false);
+  EXPECT_TRUE(IsThrottled());
+}
+
+// JS timers on the active tab are aligned to 1 second while a fullscreen video
+// is playing and the browser is in energy saver mode.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       FullscreenVideoInEnergySaverAlignsJSTimersTo1s) {
+  page_scheduler_->SetPageVisible(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->SetIsFullscreenVideo(true);
+
+  PostTasks_Expect1sAlignment(task_runner);
+}
+
+// JS timers on the active tab are unaffected by a fullscreen video while the
+// browser is not in energy saver mode.
+TEST_F(FrameSchedulerImplThrottleFullscreenVideoEnabledTest,
+       FullscreenVideoWithoutEnergySaverDoesNotAlignJSTimers) {
+  page_scheduler_->SetPageVisible(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+
+  page_scheduler_->SetIsFullscreenVideo(true);
+
+  PostTasks_ExpectNoAlignment(task_runner);
+}
+
+// With the ThrottleFullscreenVideoActiveTab feature disabled, fullscreen video
+// during energy saver must not throttle the active tab.
+TEST_F(FrameSchedulerImplTest, FullscreenVideoNotThrottledWhenFeatureDisabled) {
+  LazyInitThrottleableTaskQueue();
+  page_scheduler_->SetPageVisible(true);
+  frame_scheduler_->SetFrameVisible(true);
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->SetIsFullscreenVideo(true);
+  EXPECT_FALSE(IsThrottled());
+}
+
+// JS timers are unaffected by a fullscreen video in energy saver mode when the
+// ThrottleFullscreenVideoActiveTab feature is disabled.
+TEST_F(FrameSchedulerImplTest,
+       FullscreenVideoDoesNotAlignJSTimersWhenFeatureDisabled) {
+  page_scheduler_->SetPageVisible(true);
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(
+          TaskType::kJavascriptTimerDelayedLowNesting);
+  frame_scheduler_->SetFrameVisible(true);
+
+  task_environment_.GetMainThreadScheduler()->SetBatterySaverEnabled(true);
+  page_scheduler_->SetIsFullscreenVideo(true);
+
+  PostTasks_ExpectNoAlignment(task_runner);
+}
+
 }  // namespace frame_scheduler_impl_unittest
 }  // namespace scheduler
 }  // namespace blink

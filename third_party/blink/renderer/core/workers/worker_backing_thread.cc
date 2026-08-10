@@ -116,12 +116,15 @@ void MemoryPressureNotificationToAllIsolates(v8::MemoryPressureLevel level) {
 }
 
 void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
-  Thread::MainThread()
-      ->Scheduler()
-      ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
-        isolate->SetBatterySaverMode(battery_saver_mode_enabled);
-      });
+  MainThreadScheduler* main_thread_scheduler =
+      Thread::MainThread()->Scheduler()->ToMainThreadScheduler();
+  main_thread_scheduler->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+    isolate->SetBatterySaverMode(battery_saver_mode_enabled);
+  });
+  // Store the process-global energy saver state on the main thread scheduler so
+  // it can gate energy-saver-only throttling (e.g. fullscreen video
+  // throttling).
+  main_thread_scheduler->SetBatterySaverEnabled(battery_saver_mode_enabled);
   WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
       battery_saver_mode_enabled);
 }

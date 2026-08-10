@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/lazy_media_helper.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
@@ -90,6 +91,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -1153,6 +1155,14 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
 
     wmp->SetIsEffectivelyFullscreen(status);
     wmp->OnDisplayTypeChanged(GetDisplayType());
+  }
+
+  if (is_effectively_fullscreen_ != was_effectively_fullscreen) {
+    if (Page* page = GetDocument().GetPage()) {
+      if (PageScheduler* page_scheduler = page->GetPageScheduler()) {
+        page_scheduler->SetIsFullscreenVideo(is_effectively_fullscreen_);
+      }
+    }
   }
 
   // If the video becomes effectively fullscreen, enter an immersive

@@ -221,6 +221,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void RemoveRAILModeObserver(RAILModeObserver const* observer) override;
   void ForEachMainThreadIsolate(
       base::FunctionRef<void(v8::Isolate* isolate)>) override;
+  void SetBatterySaverEnabled(bool enabled) override;
+  bool IsBatterySaverEnabled() const override;
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
   void ExecuteAfterCurrentTaskForTesting(
@@ -763,6 +765,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     std::optional<base::ScopedSampleMetadata> renderer_frozen_metadata;
     bool renderer_backgrounded = kLaunchingProcessIsBackgrounded;
+    // Whether the browser is in energy saver (battery saver) mode. Pushed from
+    // the browser via `SetBatterySaverEnabled()` and used to gate fullscreen
+    // video timer throttling.
+    bool battery_saver_enabled = false;
     TraceableState<bool, "renderer.scheduler.status">
         blocking_input_expected_soon;
     TraceableState<bool, "renderer.scheduler.status">

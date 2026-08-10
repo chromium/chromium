@@ -2277,6 +2277,12 @@ BASE_FEATURE_PARAM(int,
                    "large_frame_size_percent_threshold",
                    75);
 
+// Enables throttling of the active (visible) page's throttleable task queues
+// (JS timers) to 1 Hz while it contains an effectively-fullscreen video, to
+// reduce CPU/power usage during fullscreen video playback.
+BASE_FEATURE(kThrottleFullscreenVideoActiveTab,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes behavior of User-Agent Client Hints to send blank headers when the
 // User-Agent string is overridden, instead of disabling the headers altogether.
 BASE_FEATURE(kUACHOverrideBlank, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -67,6 +67,10 @@ class PLATFORM_EXPORT PageScheduler {
 
   virtual bool IsAudioPlaying() const = 0;
 
+  // Sets whether the page contains an effectively-fullscreen video, i.e. a
+  // video element that is the fullscreen element and dominant in the viewport.
+  virtual void SetIsFullscreenVideo(bool is_fullscreen_video) = 0;
+
   // Returns true if the page should be exempted from aggressive throttling
   // (e.g. due to a page maintaining an active connection).
   virtual bool IsExemptFromBudgetBasedThrottling() const = 0;

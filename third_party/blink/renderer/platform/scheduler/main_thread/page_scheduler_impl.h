@@ -82,10 +82,15 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       FrameScheduler::FrameType) override;
   void AudioStateChanged(bool is_audio_playing) override;
   bool IsAudioPlaying() const override;
+  void SetIsFullscreenVideo(bool is_fullscreen_video) override;
   bool IsExemptFromBudgetBasedThrottling() const override;
   bool OptedOutFromAggressiveThrottlingForTest() const override;
   scoped_refptr<WidgetScheduler> CreateWidgetScheduler(
       WidgetScheduler::Delegate*) override;
+
+  // Returns whether the page currently contains an effectively-fullscreen
+  // video.
+  bool IsFullscreenVideo() const;
 
   bool IsFrozen() const;
   bool OptedOutFromAggressiveThrottling() const;
@@ -228,6 +233,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   base::TimeTicks page_visibility_changed_time_;
   AudioState audio_state_;
   base::TimeTicks audio_state_changed_time_;
+  bool is_fullscreen_video_;
   bool is_frozen_;
   bool opted_out_from_aggressive_throttling_;
   bool nested_runloop_;

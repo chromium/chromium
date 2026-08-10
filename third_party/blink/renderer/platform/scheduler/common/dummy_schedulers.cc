@@ -180,6 +180,7 @@ class DummyPageScheduler : public PageScheduler {
   void SetPageBackForwardCached(bool) override {}
   void AudioStateChanged(bool is_audio_playing) override {}
   bool IsAudioPlaying() const override { return false; }
+  void SetIsFullscreenVideo(bool is_fullscreen_video) override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   bool OptedOutFromAggressiveThrottlingForTest() const override {
     return false;

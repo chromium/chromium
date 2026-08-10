@@ -161,6 +161,7 @@ PageSchedulerImpl::PageSchedulerImpl(
       page_visibility_changed_time_(main_thread_scheduler_->NowTicks()),
       audio_state_(AudioState::kSilent),
       audio_state_changed_time_(page_visibility_changed_time_),
+      is_fullscreen_video_(false),
       is_frozen_(false),
       opted_out_from_aggressive_throttling_(false),
       nested_runloop_(false),
@@ -417,6 +418,19 @@ void PageSchedulerImpl::OnAudioSilent() {
   PolicyUpdater policy_updater;
   UpdateFrozenState(policy_updater);
   policy_updater.UpdatePagePolicy(this);
+}
+
+void PageSchedulerImpl::SetIsFullscreenVideo(bool is_fullscreen_video) {
+  if (is_fullscreen_video == is_fullscreen_video_) {
+    return;
+  }
+  is_fullscreen_video_ = is_fullscreen_video;
+  PolicyUpdater policy_updater;
+  policy_updater.UpdatePagePolicy(this);
+}
+
+bool PageSchedulerImpl::IsFullscreenVideo() const {
+  return is_fullscreen_video_;
 }
 
 bool PageSchedulerImpl::IsExemptFromBudgetBasedThrottling() const {

@@ -1111,6 +1111,17 @@ ThrottlingType FrameSchedulerImpl::ComputeThrottlingType() {
     }
   }
 
+  // Throttle the active tab's timers (to 1 Hz, like a background page) while it
+  // contains an effectively-fullscreen video and the browser is in energy saver
+  // (battery saver) mode. This runs after the background checks so more
+  // aggressive background throttling still takes precedence.
+  if (parent_page_scheduler_->IsFullscreenVideo() &&
+      main_thread_scheduler_->IsBatterySaverEnabled() &&
+      base::FeatureList::IsEnabled(
+          features::kThrottleFullscreenVideoActiveTab)) {
+    return ThrottlingType::kBackground;
+  }
+
   if (frame_can_be_throttled_foreground) {
     return ThrottlingType::kForegroundUnimportant;
   }

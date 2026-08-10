@@ -79,6 +79,16 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   virtual void ForEachMainThreadIsolate(
       base::FunctionRef<void(v8::Isolate* isolate)>) = 0;
 
+  // Sets whether the browser is in energy saver (a.k.a. battery saver) mode.
+  // This is a process-global signal pushed from the browser. The scheduler
+  // uses it to gate energy-saver-only throttling, such as throttling the
+  // active tab's timers during fullscreen video playback.
+  virtual void SetBatterySaverEnabled(bool enabled) {}
+
+  // Returns whether the browser is currently in energy saver (battery saver)
+  // mode.
+  virtual bool IsBatterySaverEnabled() const { return false; }
+
   // Returns a list of all unique attributions that are marked for event
   // dispatch. If |include_continuous| is true, include event types from
   // "continuous" sources (see PendingUserInput::IsContinuousEventTypes).
