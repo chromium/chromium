@@ -54,6 +54,13 @@ class SearchBarTextfield : public views::Textfield {
   }
 
   ~SearchBarTextfield() override = default;
+
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override {
+    if (event.key_code() == ui::VKEY_TAB) {
+      return true;
+    }
+    return views::Textfield::SkipDefaultKeyEventProcessing(event);
+  }
 };
 
 BEGIN_METADATA(SearchBarTextfield)
@@ -63,8 +70,10 @@ END_METADATA
 class SearchBarClearButton : public views::ImageButton {
   METADATA_HEADER(SearchBarClearButton, views::ImageButton)
  public:
-  explicit SearchBarClearButton(PressedCallback callback)
-      : views::ImageButton(std::move(callback)) {
+  SearchBarClearButton(PressedCallback callback,
+                       PopupSearchBarView* search_bar_view)
+      : views::ImageButton(std::move(callback)),
+        search_bar_view_(*search_bar_view) {
     views::ConfigureVectorImageButton(this);
     views::SetImageFromVectorIconWithColor(
         this,
@@ -81,6 +90,23 @@ class SearchBarClearButton : public views::ImageButton {
   }
 
   ~SearchBarClearButton() override = default;
+
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override {
+    if (event.key_code() == ui::VKEY_TAB) {
+      return true;
+    }
+    return views::ImageButton::SkipDefaultKeyEventProcessing(event);
+  }
+
+  bool OnKeyPressed(const ui::KeyEvent& event) override {
+    if (search_bar_view_->HandleKeyPressed(this, event)) {
+      return true;
+    }
+    return views::ImageButton::OnKeyPressed(event);
+  }
+
+ private:
+  const raw_ref<PopupSearchBarView> search_bar_view_;
 };
 
 BEGIN_METADATA(SearchBarClearButton)
@@ -132,9 +158,10 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   // TODO(crbug.com/325246516): Clarify whether the clear button should be
   // rendered on top of the input field and rework the layout (probably with a
   // custom LayoutManager).
-  clear_ =
-      AddChildView(std::make_unique<SearchBarClearButton>(base::BindRepeating(
-          &PopupSearchBarView::OnClearPressed, base::Unretained(this))));
+  clear_ = AddChildView(std::make_unique<SearchBarClearButton>(
+      base::BindRepeating(&PopupSearchBarView::OnClearPressed,
+                          base::Unretained(this)),
+      this));
 
   if (show_indicator) {
     indicator_ = AddChildView(views::Builder<views::Label>()
@@ -161,15 +188,42 @@ void PopupSearchBarView::OnDidChangeFocus(views::View* focused_before,
   }
 }
 
-bool PopupSearchBarView::HandleKeyEvent(views::Textfield* sender,
-                                        const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::EventType::kKeyPressed) {
-    if (key_event.key_code() == ui::VKEY_RETURN) {
+bool PopupSearchBarView::HandleKeyPressed(views::View* sender,
+                                          const ui::KeyEvent& event) {
+  if (event.type() != ui::EventType::kKeyPressed) {
+    return false;
+  }
+
+  if (sender == input_) {
+    if (event.key_code() == ui::VKEY_RETURN) {
       input_change_notification_timer_.Stop();
     }
-    return delegate_->SearchBarHandleKeyPressed(key_event);
+    if (delegate_->SearchBarHandleKeyPressed(event)) {
+      return true;
+    }
+    if (event.key_code() == ui::VKEY_TAB) {
+      if (clear_->GetVisible()) {
+        clear_->RequestFocus();
+      } else {
+        input_->RequestFocus();
+      }
+      return true;
+    }
+  } else if (sender == clear_) {
+    if (event.key_code() == ui::VKEY_TAB) {
+      input_->RequestFocus();
+      return true;
+    }
+    if (delegate_->SearchBarHandleKeyPressed(event)) {
+      return true;
+    }
   }
   return false;
+}
+
+bool PopupSearchBarView::HandleKeyEvent(views::Textfield* sender,
+                                        const ui::KeyEvent& key_event) {
+  return HandleKeyPressed(sender, key_event);
 }
 
 void PopupSearchBarView::SetLoading(bool is_loading) {
@@ -212,6 +266,9 @@ PopupSearchBarView::~PopupSearchBarView() = default;
 void PopupSearchBarView::OnInputChanged() {
   bool empty = input_->GetText().empty();
   clear_->SetVisible(!empty);
+  if (empty && clear_->HasFocus()) {
+    input_->RequestFocus();
+  }
   if (indicator_) {
     indicator_->SetVisible(empty);
   }
@@ -225,6 +282,7 @@ void PopupSearchBarView::OnInputChanged() {
 
 void PopupSearchBarView::OnClearPressed() {
   input_->SetText({});
+  input_->RequestFocus();
 }
 
 BEGIN_METADATA(PopupSearchBarView)

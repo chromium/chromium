@@ -100,6 +100,9 @@ class PopupSearchBarView : public views::View,
   // Sets the loading state of the search bar, showing a throbber if loading.
   void SetLoading(bool is_loading);
 
+  // Handles key press events from child views (input field and clear button).
+  bool HandleKeyPressed(views::View* sender, const ui::KeyEvent& event);
+
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
   bool IsClearButtonVisibleForTesting() const;
