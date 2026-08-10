@@ -632,16 +632,10 @@ more information.
 Instead of running `install-build-deps.sh` to install build dependencies, run:
 
 ```shell
-$ sudo pacman -S --needed python perl gcc gcc-libs bison flex gperf pkgconfig \
+$ sudo pacman -S --needed base-devel python perl gperf \
 nss alsa-lib glib2 gtk3 nspr freetype2 cairo dbus xorg-server-xvfb \
 xorg-xdpyinfo
 ```
-
-For the optional packages on Arch Linux:
-
-* `php-cgi` is provided with `pacman`
-* `wdiff` is not in the main repository but `dwdiff` is. You can get `wdiff`
-    in AUR/`yaourt`
 
 ### Crostini (Debian based)
 
