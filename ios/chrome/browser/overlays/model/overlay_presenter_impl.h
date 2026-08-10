@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -108,7 +109,7 @@ class OverlayPresenterImpl : public OverlayPresenter,
   // This function is called when the OverlayDismissalCallback provided to
   // `presentation_context` is executed.
   void OverlayWasDismissed(OverlayPresentationContext* presentation_context,
-                           OverlayRequest* request,
+                           OverlayRequestId request_id,
                            base::WeakPtr<OverlayRequestQueueImpl> queue,
                            OverlayDismissalReason reason);
 

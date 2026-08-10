@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/memory/ptr_util.h"
+#import "base/not_fatal_until.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
@@ -287,11 +288,10 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
   OverlayPresentationCallback presentation_callback = base::BindOnce(
       &OverlayPresenterImpl::OverlayWasPresented, weak_factory_.GetWeakPtr(),
       presentation_context_, request);
-  OverlayDismissalCallback dismissal_callback = base::BindOnce(
-      &OverlayPresenterImpl::OverlayWasDismissed, weak_factory_.GetWeakPtr(),
-      // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
-      presentation_context_, base::UnsafeDanglingUntriaged(request),
-      GetActiveQueue()->GetWeakPtr());
+  OverlayDismissalCallback dismissal_callback =
+      base::BindOnce(&OverlayPresenterImpl::OverlayWasDismissed,
+                     weak_factory_.GetWeakPtr(), presentation_context_,
+                     request->GetRequestId(), GetActiveQueue()->GetWeakPtr());
   presentation_context_->ShowOverlayUI(
       request, std::move(presentation_callback), std::move(dismissal_callback));
 }
@@ -310,7 +310,7 @@ void OverlayPresenterImpl::OverlayWasPresented(
 
 void OverlayPresenterImpl::OverlayWasDismissed(
     OverlayPresentationContext* presentation_context,
-    OverlayRequest* request,
+    OverlayRequestId request_id,
     base::WeakPtr<OverlayRequestQueueImpl> queue,
     OverlayDismissalReason reason) {
   // If the UI delegate is reset while presenting an overlay, that overlay will
@@ -334,7 +334,14 @@ void OverlayPresenterImpl::OverlayWasDismissed(
     return;
   }
 
-  DCHECK_EQ(presented_request_, request);
+  OverlayRequest* request = presented_request_;
+  if (!request && removed_request_awaiting_dismissal_ &&
+      removed_request_awaiting_dismissal_->GetRequestId() == request_id) {
+    request = removed_request_awaiting_dismissal_.get();
+  }
+
+  CHECK(request, base::NotFatalUntil::M156);
+  DCHECK_EQ(request->GetRequestId(), request_id);
 
   // Pop the request for overlays dismissed by the user.  The check against
   // `removed_request_awaiting_dismissal_` prevents the queue's front request
