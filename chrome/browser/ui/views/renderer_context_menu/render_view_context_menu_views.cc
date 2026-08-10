@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
@@ -123,21 +124,21 @@ RenderViewContextMenuViews::RenderViewContextMenuViews(
                             is_paste_enabled,
                             is_paste_and_match_style_enabled),
       bidi_submenu_model_(this) {
-  std::unique_ptr<ToolkitDelegate> delegate(new ToolkitDelegateViews);
-  set_toolkit_delegate(std::move(delegate));
+  set_toolkit_delegate(std::make_unique<ToolkitDelegateViews>());
 }
 
 RenderViewContextMenuViews::~RenderViewContextMenuViews() = default;
 
 // static
-RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
+std::unique_ptr<RenderViewContextMenuViews> RenderViewContextMenuViews::Create(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params,
     bool is_paste_enabled,
     bool is_paste_and_match_style_enabled) {
-  return new RenderViewContextMenuViews(render_frame_host, params,
-                                        is_paste_enabled,
-                                        is_paste_and_match_style_enabled);
+  // Protected ctor.
+  return base::WrapUnique(new RenderViewContextMenuViews(
+      render_frame_host, params, is_paste_enabled,
+      is_paste_and_match_style_enabled));
 }
 
 void RenderViewContextMenuViews::RunMenuAt(views::Widget* parent,

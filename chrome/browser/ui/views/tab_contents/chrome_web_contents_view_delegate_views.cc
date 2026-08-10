@@ -83,10 +83,10 @@ std::unique_ptr<RenderViewContextMenuBase>
 ChromeWebContentsViewDelegateViews::BuildMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  std::unique_ptr<RenderViewContextMenuBase> menu(
+  std::unique_ptr<RenderViewContextMenuBase> menu =
       RenderViewContextMenuViews::Create(render_frame_host, params,
                                          is_paste_enabled_,
-                                         is_paste_and_match_style_enabled_));
+                                         is_paste_and_match_style_enabled_);
   menu->Init();
   return menu;
 }
