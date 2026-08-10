@@ -1500,44 +1500,49 @@ void GeminiBrowserAgent::OnTabPickerSelectionChanged(
     std::set<web::WebStateID> selected_tabs) {
   web::WebStateID active_web_state_id = GetActiveWebStateID();
 
-  // `new_attached_tabs` will replace `attached_tabs_`.
-  std::map<web::WebStateID, __strong GeminiPageContext*> new_attached_tabs;
+  // Create `new_attached_tabs` which will replace `attached_tabs_`.
+  AttachedTabsList new_attached_tabs;
   std::vector<web::WebStateID> tabs_to_fetch;
 
-  // Process each selected tab.
+  // Add existing attached tabs to `new_attached_tabs` in insertion order,
+  // ensuring their attachment state reflects whether they were selected.
+  for (const auto& [tab_id, context] : attached_tabs_) {
+    if (tab_id == active_web_state_id) {
+      if (IsPageContextEligibleForTabPicker(context)) {
+        // Update the active tab's selection state if it was shown in the Tab
+        // Picker.
+        ios::provider::GeminiPageContextAttachmentState new_state =
+            selected_tabs.contains(active_web_state_id)
+                ? ios::provider::GeminiPageContextAttachmentState::kAttached
+                : ios::provider::GeminiPageContextAttachmentState::kDetached;
+        context.geminiPageContextAttachmentState = new_state;
+      }
+      new_attached_tabs.emplace_back(tab_id, context);
+    } else if (selected_tabs.contains(tab_id)) {
+      // Keep existing page context for a tab that is still selected.
+      new_attached_tabs.emplace_back(tab_id, context);
+    }
+  }
+
+  // Identify newly selected tabs and queue them for page context fetch.
   for (web::WebStateID selected_tab : selected_tabs) {
     if (selected_tab == active_web_state_id) {
+      // We already processed the active tab above, so we can ignore it here.
       continue;
     }
-
-    if (GeminiPageContext* existing_context =
-            GetAttachedPageContext(selected_tab)) {
-      // The tab was already selected. Reuse its existing page context.
-      new_attached_tabs[selected_tab] = existing_context;
-    } else {
-      // The tab is newly selected. Mark it as needing to fetch page context.
+    if (!GetAttachedPageContext(selected_tab)) {
+      // Tab is newly selected and we will need to fetch its page context.
       tabs_to_fetch.push_back(selected_tab);
     }
   }
 
-  // Ensure the active tab's state reflects whether it was selected.
-  GeminiPageContext* active_page_context =
-      GetAttachedPageContext(active_web_state_id);
-  CHECK(active_page_context);
-
-  if (IsPageContextEligibleForTabPicker(active_page_context)) {
-    ios::provider::GeminiPageContextAttachmentState new_state =
-        selected_tabs.contains(active_web_state_id)
-            ? ios::provider::GeminiPageContextAttachmentState::kAttached
-            : ios::provider::GeminiPageContextAttachmentState::kDetached;
-
-    active_page_context.geminiPageContextAttachmentState = new_state;
-  }
-  new_attached_tabs[active_web_state_id] = active_page_context;
-
   attached_tabs_ = std::move(new_attached_tabs);
 
   UpdateAttachedTabContexts(tabs_to_fetch);
+
+  GeminiPageContext* active_page_context =
+      GetAttachedPageContext(active_web_state_id);
+  CHECK(active_page_context);
 
   ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
 }
@@ -2476,16 +2481,27 @@ void GeminiBrowserAgent::UpdateLocalTabAttachmentState(
 
 GeminiPageContext* GeminiBrowserAgent::GetAttachedPageContext(
     web::WebStateID tab_id) const {
-  auto it = attached_tabs_.find(tab_id);
-  return it != attached_tabs_.end() ? it->second : nil;
+  for (const auto& [id, context] : attached_tabs_) {
+    if (id == tab_id) {
+      return context;
+    }
+  }
+  return nil;
 }
 
 void GeminiBrowserAgent::SetAttachedPageContext(
     web::WebStateID tab_id,
     GeminiPageContext* page_context) {
-  attached_tabs_[tab_id] = page_context;
+  for (auto& [id, existing_context] : attached_tabs_) {
+    if (id == tab_id) {
+      existing_context = page_context;
+      return;
+    }
+  }
+  attached_tabs_.emplace_back(tab_id, page_context);
 }
 
 void GeminiBrowserAgent::RemoveAttachedPageContext(web::WebStateID tab_id) {
-  attached_tabs_.erase(tab_id);
+  std::erase_if(attached_tabs_,
+                [tab_id](const auto& pair) { return pair.first == tab_id; });
 }
