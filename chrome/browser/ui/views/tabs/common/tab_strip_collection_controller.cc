@@ -154,8 +154,16 @@ void TabStripCollectionController::MoveTabFirst(
     return;
   }
 
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   int target_index = 0;
-  if (!model_->IsTabPinned(start_index.value())) {
+  if (focused_group.has_value() && tab_interface->GetGroup() == focused_group) {
+    const TabGroup* group =
+        model_->group_model()->GetTabGroup(focused_group.value());
+    if (!group) {
+      return;
+    }
+    target_index = group->ListTabs().start();
+  } else if (!model_->IsTabPinned(start_index.value())) {
     while (target_index < start_index && model_->IsTabPinned(target_index)) {
       ++target_index;
     }
@@ -165,7 +173,7 @@ void TabStripCollectionController::MoveTabFirst(
     return;
   }
 
-  if (target_index != start_index) {
+  if (target_index != start_index.value()) {
     model_->MoveWebContentsAt(start_index.value(), target_index,
                               /*select_after_move=*/false);
   }
@@ -173,7 +181,8 @@ void TabStripCollectionController::MoveTabFirst(
   // The tab may unintentionally land in the first group in the tab strip, so we
   // remove the group to ensure consistent behavior. Even if the tab is already
   // at the front, it should "move" out of its current group.
-  if (tab_interface->GetGroup().has_value()) {
+  if (tab_interface->GetGroup().has_value() &&
+      tab_interface->GetGroup() != focused_group) {
     model_->RemoveFromGroup({target_index});
   }
 
@@ -191,8 +200,16 @@ void TabStripCollectionController::MoveTabLast(
 
   const int start_index = maybe_start_index.value();
 
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   int target_index;
-  if (model_->IsTabPinned(start_index)) {
+  if (focused_group.has_value() && tab_interface->GetGroup() == focused_group) {
+    const TabGroup* group =
+        model_->group_model()->GetTabGroup(focused_group.value());
+    if (!group) {
+      return;
+    }
+    target_index = group->ListTabs().end() - 1;
+  } else if (model_->IsTabPinned(start_index)) {
     int temp_index = start_index + 1;
     while (temp_index < model_->count() && model_->IsTabPinned(temp_index)) {
       ++temp_index;
@@ -214,7 +231,8 @@ void TabStripCollectionController::MoveTabLast(
   // The tab may unintentionally land in the last group in the tab strip, so we
   // remove the group to ensure consistent behavior. Even if the tab is already
   // at the back, it should "move" out of its current group.
-  if (tab_interface->GetGroup().has_value()) {
+  if (tab_interface->GetGroup().has_value() &&
+      tab_interface->GetGroup() != focused_group) {
     model_->RemoveFromGroup({target_index});
   }
 
@@ -562,11 +580,12 @@ void TabStripCollectionController::ShiftTabRelative(
   int target_index = start_index + offset;
 
   const auto old_group = tab_interface->GetGroup();
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   if (!model_->ContainsIndex(target_index) ||
       model_->IsTabPinned(start_index) != model_->IsTabPinned(target_index)) {
     // Even if we've reached the boundary of where the tab could go, it may
     // still be able to "move" out of its current group.
-    if (old_group.has_value()) {
+    if (old_group.has_value() && old_group != focused_group) {
       AnnounceTabRemovedFromGroup(old_group.value());
       model_->RemoveFromGroup({start_index});
     }
@@ -578,6 +597,12 @@ void TabStripCollectionController::ShiftTabRelative(
   std::optional<tab_groups::TabGroupId> target_group =
       model_->GetTabGroupForTab(target_index);
   if (old_group != target_group) {
+    // Do not allow tabs to enter or exit the focused tab group.
+    if (focused_group.has_value() &&
+        (old_group == focused_group || target_group == focused_group)) {
+      return;
+    }
+
     if (old_group.has_value()) {
       AnnounceTabRemovedFromGroup(old_group.value());
       model_->RemoveFromGroup({start_index});
