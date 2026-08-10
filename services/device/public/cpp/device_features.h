@@ -62,6 +62,12 @@ extern const DEVICE_FEATURES_EXPORT
 
 DEVICE_FEATURES_EXPORT bool IsOsLevelGeolocationPermissionSupportEnabled();
 
+// Returns the mode `LocationProviderManager` should operate in. This is
+// normally `kLocationProviderManagerParam`, but platforms that cannot support
+// the platform location provider are forced to `kNetworkOnly`.
+DEVICE_FEATURES_EXPORT device::mojom::LocationProviderManagerMode
+GetLocationProviderManagerMode();
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kAutomaticUsbDetach);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)

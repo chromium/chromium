@@ -4,7 +4,12 @@
 
 #include "services/device/public/cpp/device_features.h"
 
+#include "build/build_config.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace features {
 
@@ -160,12 +165,52 @@ const base::FeatureParam<device::mojom::LocationProviderManagerMode>
         &location_provider_manager_mode_options};
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Returns true if the OS provides the Windows location stack that Chromium's
+// platform geolocation support depends on.
+//
+// Two separate pieces arrived in Windows 10, version 1903 (build 18362): the
+// `Windows.Security.Authorization.AppCapabilityAccess` namespace used to query
+// and observe the system-level location permission (which requires
+// UniversalApiContract v8), and the Windows Location Platform that backs
+// `LocationProviderWinrt`. Earlier releases, including Windows Server 2019
+// (build 17763), provide neither. See crbug.com/540482875.
+bool IsWindowsLocationPlatformSupported() {
+  return base::win::GetVersion() >= base::win::Version::WIN10_19H1;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
+
 bool IsOsLevelGeolocationPermissionSupportEnabled() {
+#if BUILDFLAG(IS_WIN)
+  // Activating the AppCapability runtime class fails where it is unavailable,
+  // so fall back to the legacy behavior of ignoring the system-level
+  // permission on those versions.
+  if (!IsWindowsLocationPlatformSupported()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   return true;
 #else
   return false;
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+}
+
+device::mojom::LocationProviderManagerMode GetLocationProviderManagerMode() {
+#if BUILDFLAG(IS_WIN)
+  // Because `kPlatformOnly` has no fallback, leaving it selected where the
+  // Windows Location Platform is unavailable makes every location request fail
+  // with `kPositionUnavailable`. Use the network provider instead, which is the
+  // behavior Windows had before the platform provider was enabled by default.
+  if (!IsWindowsLocationPlatformSupported()) {
+    return device::mojom::LocationProviderManagerMode::kNetworkOnly;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return kLocationProviderManagerParam.Get();
 }
 
 // Controls whether Chrome will try to automatically detach kernel drivers when

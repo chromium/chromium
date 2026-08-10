@@ -98,7 +98,7 @@ LocationProviderManager::LocationProviderManager(
 #else
   // On macOS / Windows / Linux platforms, use the mode specified by the feature
   // flag.
-  provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+  provider_manager_mode_ = features::GetLocationProviderManagerMode();
 #endif
   GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::LocationProviderManager: "
                             "provider_manager_mode_ is initialized to "
@@ -176,7 +176,7 @@ void LocationProviderManager::StopProvider() {
   // implemented only for macOS; add other platforms here if they support
   // fallback.
 #if BUILDFLAG(IS_MAC)
-  provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+  provider_manager_mode_ = features::GetLocationProviderManagerMode();
   GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::StopProvider: Resetting "
                             "provider_manager_mode_ to "
                          << LocationProviderManagerModeAsString(

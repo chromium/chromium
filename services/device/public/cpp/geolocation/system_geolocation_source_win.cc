@@ -290,6 +290,9 @@ SystemGeolocationSourceWin::~SystemGeolocationSourceWin() = default;
 // static
 std::unique_ptr<GeolocationSystemPermissionManager>
 SystemGeolocationSourceWin::CreateGeolocationSystemPermissionManager() {
+  if (!features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+    return nullptr;
+  }
   return std::make_unique<GeolocationSystemPermissionManager>(
       std::make_unique<SystemGeolocationSourceWin>());
 }

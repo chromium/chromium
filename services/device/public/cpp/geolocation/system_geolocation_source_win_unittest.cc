@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_os_info_override_win.h"
 #include "base/test/task_environment.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -231,6 +232,24 @@ TEST_F(SystemGeolocationSourceWinTest, EventBasedFallbackToPolling) {
   // Advance time to trigger a poll.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_GE(fake_capability_->check_access_count(), 2);
+}
+
+TEST_F(SystemGeolocationSourceWinTest,
+       CreatesGeolocationSystemPermissionManagerWhenSupported) {
+  base::test::ScopedOSInfoOverride os_override(
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro21H1);
+
+  EXPECT_TRUE(
+      SystemGeolocationSourceWin::CreateGeolocationSystemPermissionManager());
+}
+
+TEST_F(SystemGeolocationSourceWinTest,
+       DoesNotCreateGeolocationSystemPermissionManagerWhenUnsupported) {
+  base::test::ScopedOSInfoOverride os_override(
+      base::test::ScopedOSInfoOverride::Type::kWinServer2019);
+
+  EXPECT_FALSE(
+      SystemGeolocationSourceWin::CreateGeolocationSystemPermissionManager());
 }
 
 }  // namespace device
