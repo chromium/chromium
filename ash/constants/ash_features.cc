@@ -1535,11 +1535,6 @@ BASE_FEATURE(kPickerGifs, base::FEATURE_ENABLED_BY_DEFAULT);
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, ChromeOS print preview app is available. Enabling does not
-// replace the existing Chrome print preview UI, and will require an additional
-// flag and pref configured to facilitate. See b/323421684 for more information.
-BASE_FEATURE(kPrintPreviewCrosApp, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the Projector app launches in debug mode, with more detailed
 // error messages.
 BASE_FEATURE(kProjectorAppDebug, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3015,10 +3010,6 @@ bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
-}
-
-bool IsPrinterPreviewCrosAppEnabled() {
-  return base::FeatureList::IsEnabled(kPrintPreviewCrosApp);
 }
 
 bool IsProjectorAppDebugMode() {

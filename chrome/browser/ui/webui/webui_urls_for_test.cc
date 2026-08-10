@@ -420,7 +420,6 @@ base::span<const std::string_view> GetUntestedChromeUrlsForTest() {
       "chrome://notification-tester",
       "chrome://oobe",
       "chrome://os-credits",
-      "chrome://os-print",
       // Needs html path to be valid.
       "chrome://proximity-auth",
       "chrome://recorder-app",

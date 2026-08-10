@@ -8004,11 +8004,6 @@ inline constexpr char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "
     "is loaded when matching PPD files during printer setup.";
 
-inline constexpr char kPrintPreviewCrosAppName[] =
-    "Enable ChromeOS print preview";
-inline constexpr char kPrintPreviewCrosAppDescription[] =
-    "Enables ChromeOS print preview app.";
-
 inline constexpr char kProjectorAppDebugName[] = "Enable Projector app debug";
 inline constexpr char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";

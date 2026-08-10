@@ -36,7 +36,7 @@ message SystemWebAppDataProto {
     OS_FLAGS = 23;
     FACE_ML = 24;
     VC_BACKGROUND = 25;
-    PRINT_PREVIEW_CROS = 26;
+    // Removed: PRINT_PREVIEW_CROS = 26;
     BOCA = 27;
     MALL = 28;
     OS_SANITIZE = 29;

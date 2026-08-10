@@ -675,7 +675,6 @@ source_set("chrome_web_ui_controller_factory") {
       "//ash/webui/help_app_ui",
       "//ash/webui/mall:url_constants",
       "//ash/webui/multidevice_debug",
-      "//ash/webui/print_preview_cros:url_constants",
       "//ash/webui/recorder_app_ui",
       "//ash/webui/vc_background_ui",
     ]

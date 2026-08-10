@@ -30,7 +30,6 @@ static_library("config") {
     "//ash/webui/mall",
     "//ash/webui/os_feedback_ui",
     "//ash/webui/print_management",
-    "//ash/webui/print_preview_cros",
     "//ash/webui/sanitize_ui",
     "//ash/webui/scanner_feedback_ui",
     "//ash/webui/scanning",

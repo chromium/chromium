@@ -56,7 +56,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/os_settings_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_system_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/print_management_web_app_info.h"
-#include "chrome/browser/ash/system_web_apps/apps/print_preview_cros_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/projector_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/recorder_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/sanitize_system_web_app_info.h"
@@ -134,7 +133,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
-  info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
   info_vec.push_back(std::make_unique<RecorderSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<MallSystemAppDelegate>(profile));

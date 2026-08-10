@@ -760,7 +760,6 @@ static_library("test_support") {
       "//ash/webui/os_feedback_ui:url_constants",
       "//ash/webui/personalization_app:test_support",
       "//ash/webui/print_management:url_constants",
-      "//ash/webui/print_preview_cros:url_constants",
       "//ash/webui/scanning:url_constants",
       "//ash/webui/shortcut_customization_ui:url_constants",
       "//chrome/browser/ash/app_mode",

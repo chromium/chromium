@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/cloud_devices/common",
-  "+printing",
-  "+printing/mojom",
-]

@@ -60,8 +60,6 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
-#include "ash/webui/print_preview_cros/mojom/destination_provider.mojom.h"
-#include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
@@ -407,12 +405,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
   RegisterWebUIControllerInterfaceBinder<
       ash::shortcut_customization::mojom::SearchHandler,
       ash::ShortcutCustomizationAppUI>(map);
-
-  if (ash::features::IsPrinterPreviewCrosAppEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::printing::print_preview::mojom::DestinationProvider,
-        ash::printing::print_preview::PrintPreviewCrosUI>(map);
-  }
 
   RegisterWebUIControllerInterfaceBinder<
       emoji_picker::mojom::PageHandlerFactory, ash::EmojiUI>(map);

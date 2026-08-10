@@ -103,7 +103,6 @@
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/mall/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
-#include "ash/webui/print_preview_cros/url_constants.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
