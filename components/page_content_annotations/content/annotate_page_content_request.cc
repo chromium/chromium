@@ -761,7 +761,7 @@ void AnnotatedPageContentRequest::RequestPdf(TriggerSource trigger_source) {
   CHECK(IsPdf());
 
   if (auto* pdf_helper =
-          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents())) {
     // If the PDF content request callback is not run in the end because the
     // PDF load never completes, this will record the status to the histogram.
     base::ScopedClosureRunner metrics_recorder(base::BindOnce([]() {
@@ -807,7 +807,7 @@ void AnnotatedPageContentRequest::RequestPdfPageCount(
   lifecycle_ = Lifecycle::kExtracted;
 
   if (auto* pdf_helper =
-          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents())) {
     // Fetch zero PDF bytes to just receive the total page count.
     pdf_helper->GetPdfBytes(
         /*size_limit=*/0,

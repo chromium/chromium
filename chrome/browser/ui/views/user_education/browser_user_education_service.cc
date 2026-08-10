@@ -1034,7 +1034,7 @@ void MaybeRegisterChromeFeaturePromos(
                 for (auto* contents_web_view : contents_web_views) {
                   auto* pdf_doc_helper =
                       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-                          contents_web_view->GetWebContents());
+                          *contents_web_view->GetWebContents());
                   if (pdf_doc_helper && pdf_doc_helper->SearchifyStarted()) {
                     return elements[0];
                   }

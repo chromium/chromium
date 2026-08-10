@@ -251,7 +251,7 @@ void TabContextualizationController::FetchPageContextInternal(
 #if BUILDFLAG(ENABLE_PDF)
   // Capture the PDF bytes if the PDF helper exists.
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (pdf_helper) {
     // Fetch the PDF bytes then run the callback.
     pdf_helper->GetPdfBytes(
@@ -313,7 +313,7 @@ void TabContextualizationController::OnPdfBytesReceived(
 
   // Get the most visible page index if the PDF helper exists.
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (pdf_helper) {
     // TODO(crbug.com/443743308): Parallelize the PDF page index fetch with the
     // PDF bytes fetch.

@@ -64,7 +64,7 @@ class PDFDocumentHelper
       std::unique_ptr<PDFDocumentHelperClient> client);
 
   static PDFDocumentHelper* MaybeGetForWebContents(
-      content::WebContents* contents);
+      content::WebContents& contents);
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(

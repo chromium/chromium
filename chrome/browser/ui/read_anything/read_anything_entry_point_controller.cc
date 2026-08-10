@@ -140,7 +140,7 @@ void RunPdfDistillableHeuristic(
 }
 #endif
 
-pdf::PDFDocumentHelper* GetPdf(content::WebContents* contents) {
+pdf::PDFDocumentHelper* GetPdf(content::WebContents& contents) {
 #if BUILDFLAG(ENABLE_PDF)
   return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
 #else
@@ -178,7 +178,7 @@ void OnOptimizationGuideDecision(
 
   // This check is already done in CheckIfShouldSuggestReadingMode but it's
   // possible that the page was not detected as a PDF yet so check again.
-  if (auto* pdf_helper = GetPdf(contents)) {
+  if (auto* pdf_helper = GetPdf(*contents)) {
     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
   }
@@ -453,7 +453,7 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
   // But since PDFs are distilled via Screen2x, use a custom heuristic to
   // determine if the PDF will distill well with RM.
   content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
-  if (auto* pdf_helper = GetPdf(contents)) {
+  if (auto* pdf_helper = GetPdf(*contents)) {
     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
   }

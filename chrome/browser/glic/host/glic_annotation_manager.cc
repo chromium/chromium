@@ -88,7 +88,7 @@ GetVerifiedAnnotationTargetFrameForPDF(const mojom::ScrollToParams& params,
   }
 
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(focused_contents);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*focused_contents);
   if (!pdf_helper || !pdf_helper->IsDocumentLoadComplete()) {
     return base::unexpected(mojom::ScrollToErrorReason::kNoMatchingDocument);
   }

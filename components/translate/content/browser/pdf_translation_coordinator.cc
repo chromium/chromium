@@ -44,9 +44,7 @@ void PDFTranslationCoordinator::RunIfPdfIsTranslatable(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   pdf::PDFDocumentHelper* pdf_helper =
-      web_contents
-          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents)
-          : nullptr;
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (!pdf_helper) {
     OnTranslatabilityDetermined(false);
     return;
@@ -61,9 +59,7 @@ void PDFTranslationCoordinator::StartTranslatabilityCheck() {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   pdf::PDFDocumentHelper* pdf_helper =
-      web_contents
-          ? pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents)
-          : nullptr;
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (!pdf_helper) {
     OnTranslatabilityDetermined(false);
     return;

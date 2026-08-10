@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(PageSettledMonitorChromeBrowserTest, PdfFlow) {
 
   // Verify that it is fully loaded.
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents());
   ASSERT_TRUE(pdf_helper);
   EXPECT_TRUE(pdf_helper->IsDocumentLoadComplete());
 }

@@ -177,7 +177,7 @@ void LensSearchContextualizationController::GetPageContextualization(
   // not called.
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-          lens_search_controller_->GetTabInterface()->GetContents());
+          *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     // Fetch the PDF bytes then run the callback.
     MaybeGetPdfBytes(pdf_helper, std::move(callback));
@@ -239,7 +239,7 @@ void LensSearchContextualizationController::
         PdfPartialPageTextRetrievedCallback callback) {
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-          lens_search_controller_->GetTabInterface()->GetContents());
+          *lens_search_controller_->GetTabInterface()->GetContents());
   if (!pdf_helper ||
       lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0 ||
       page_count == 0) {
@@ -425,7 +425,7 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart2(
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-          lens_search_controller_->GetTabInterface()->GetContents());
+          *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
         &LensSearchContextualizationController::UpdatePageContext,
@@ -749,7 +749,7 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
 
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-          lens_search_controller_->GetTabInterface()->GetContents());
+          *lens_search_controller_->GetTabInterface()->GetContents());
 
   // Stop the loop if the character limit is reached or if the page index is
   // out of bounds or the PDF helper no longer exists.
@@ -1038,7 +1038,7 @@ void LensSearchContextualizationController::GetPdfCurrentPage(
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(
-          lens_search_controller_->GetTabInterface()->GetContents());
+          *lens_search_controller_->GetTabInterface()->GetContents());
   if (pdf_helper) {
     pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
         &LensSearchContextualizationController::DidCaptureScreenshot,

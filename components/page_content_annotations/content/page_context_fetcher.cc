@@ -491,7 +491,7 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   bool is_pdf_document =
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
   pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents());
 
   if (options.format() == PdfOptions::Format::kBytes) {
     // This metric is specific to Glic, which requests PDF bytes only.

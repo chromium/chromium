@@ -631,7 +631,7 @@ static bool IsPdfCitation(const GURL& url,
       page_url.GetQuery() != url.GetQuery() || url.GetRef().empty()) {
     return false;
   }
-  return pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents) !=
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents) !=
          nullptr;
 }
 #endif

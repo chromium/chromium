@@ -549,7 +549,7 @@ void LensOverlaySidePanelCoordinator::OnScrollToMessage(
   // If a PDFDocumentHelper is found attached to the current web contents,
   // that means that the PDF viewer is currently loaded in it.
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (pdf_helper) {
     if (ShouldHandlePDFViewportChange(latest_page_url_with_viewport_params)) {
       pdf_extension_util::DispatchShouldUpdateViewportEvent(
@@ -903,7 +903,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     // that means that the PDF viewer is currently loaded in it.
     if (ShouldHandlePDFViewportChange(nav_url)) {
       auto* pdf_helper =
-          pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+          pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
       if (pdf_helper) {
         pdf_extension_util::DispatchShouldUpdateViewportEvent(
             web_contents->GetPrimaryMainFrame(), nav_url);

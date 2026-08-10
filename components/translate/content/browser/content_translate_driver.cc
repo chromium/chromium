@@ -316,7 +316,7 @@ void ContentTranslateDriver::DidFinishNavigation(
     // The browser defers the RegisterPage() message on a prerendering page, so
     // this kind of data is noisy and should be filtered out.
     finish_navigation_time_ = base::TimeTicks();
-  } else if (navigation_handle->IsInPrimaryMainFrame()) {
+  } else {
     finish_navigation_time_ = base::TimeTicks::Now();
   }
 

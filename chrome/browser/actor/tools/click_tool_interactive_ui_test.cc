@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
 
   ASSERT_TRUE(base::test::RunUntil([this]() {
     auto* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents());
     if (!pdf_helper) {
       return false;
     }

@@ -2921,7 +2921,7 @@ IN_PROC_BROWSER_TEST_P(
   // Wait for PDFDocumentHelper creation.
   pdf::PDFDocumentHelper* pdf_helper;
   ASSERT_TRUE(base::test::RunUntil([&pdf_helper, &web_contents]() {
-    pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+    pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
     return pdf_helper != nullptr;
   }));
 

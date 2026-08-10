@@ -220,7 +220,7 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
 
   // The plugin has loaded.  Now make sure it finished loading the document.
   auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (!pdf_helper) {
     VLOG(1) << "PDFDocumentHelper not ready yet.";
     return false;

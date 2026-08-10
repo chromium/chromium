@@ -303,7 +303,7 @@ pdf::PDFDocumentHelper* MaybeGetFullPagePdfHelper(
     return nullptr;
   }
 
-  return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(*contents);
 }
 
 void OnRequestPdfBytesForModelPrototyping(

@@ -229,8 +229,10 @@ ContextualCueingPageData::DidMatchCueingConditions(
 void ContextualCueingPageData::RequestPdfPageCount() {
   CHECK_EQ(pdf::kPDFMimeType, page().GetContentsMimeType());
 
-  auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(
-      content::WebContents::FromRenderFrameHost(&page().GetMainDocument()));
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (pdf_helper) {
     pdf_helper->RegisterForDocumentLoadComplete(
         base::BindOnce(&ContextualCueingPageData::OnPdfDocumentLoadComplete,
@@ -240,8 +242,10 @@ void ContextualCueingPageData::RequestPdfPageCount() {
 
 void ContextualCueingPageData::OnPdfDocumentLoadComplete() {
   CHECK_EQ(pdf::kPDFMimeType, page().GetContentsMimeType());
-  auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(
-      content::WebContents::FromRenderFrameHost(&page().GetMainDocument()));
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents);
   if (pdf_helper) {
     // Fetch zero PDF bytes to just receive the total page count.
     pdf_helper->GetPdfBytes(

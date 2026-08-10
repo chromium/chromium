@@ -188,7 +188,8 @@ void PageSettledMonitor::OnPdfDocumentHelperCreated() {
     return;
   }
 
-  auto* helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+  auto* helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents());
   CHECK(helper);
 
   if (helper->IsDocumentLoadComplete()) {
@@ -266,7 +267,7 @@ void PageSettledMonitor::MoveToState(State new_state) {
 
 #if BUILDFLAG(ENABLE_PDF)
       if (auto* pdf_helper =
-              pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+              pdf::PDFDocumentHelper::MaybeGetForWebContents(*web_contents())) {
         if (pdf_helper->IsDocumentLoadComplete()) {
           NotifyMilestone(Milestone::kPdfLoadCompletion);
         } else {
