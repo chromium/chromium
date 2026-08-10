@@ -58,18 +58,6 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
           ? navigation_controller_->GetIndexForGoForward()
           : navigation_controller_->GetIndexForGoBack();
   CHECK(index.has_value());
-  auto* destination_entry = navigation_controller_->GetEntryAtIndex(*index);
-
-  CHECK(destination_entry)
-      << "The embedder should only delegate the history navigation task "
-         "to this manager if there is a destination entry.";
-
-  // Each previous gesture should finished with `OnGestureCancelled()` or
-  // `OnGestureInvoked()`. In both cases we reset `destination_entry_id_` to
-  // -1.
-  CHECK_EQ(destination_entry_id_, NavigationTransitionData::kInvalidId);
-  destination_entry_id_ =
-      destination_entry->navigation_transition_data().unique_id();
 
   if (animator_) {
     // It's possible for a user to start a second gesture when the first gesture
@@ -81,6 +69,22 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     animator_->AbortAnimation(AnimationAbortReason::kChainedBack);
     DestroyAnimator();
   }
+
+  auto* destination_entry = navigation_controller_->GetEntryAtIndex(*index);
+  if (!destination_entry) {
+    // TODO(crbug.com/530682179): The embedder should only delegate the
+    // history navigation task to this manager if there is a destination
+    // entry.
+    // Make it a CHECK once we have figured the root cause for this call.
+    return;
+  }
+
+  // Each previous gesture should finished with `OnGestureCancelled()` or
+  // `OnGestureInvoked()`. In both cases we reset `destination_entry_id_` to
+  // -1.
+  CHECK_EQ(destination_entry_id_, NavigationTransitionData::kInvalidId);
+  destination_entry_id_ =
+      destination_entry->navigation_transition_data().unique_id();
 
   if (!ShouldAnimateNavigationTransition(navigation_direction, edge)) {
     TRACE_EVENT(
