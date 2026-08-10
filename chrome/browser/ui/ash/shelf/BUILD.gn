@@ -157,7 +157,6 @@ static_library("shelf") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
-    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/pip",
     "//chrome/browser/ash/arc/session",
