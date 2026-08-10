@@ -5,10 +5,16 @@
 package org.chromium.chrome.browser.actor;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabIdManager;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -38,22 +44,99 @@ public class ActorTabStateHelper {
         TabModel regularModel = selector.getModel(/* incognito= */ false);
         ActorKeyedService service = getActorKeyedService(regularModel);
 
-        if (regularModel == null || service == null) {
+        if (regularModel == null || service == null || service.getActiveTasksCount() == 0) {
             return Collections.emptyList();
         }
 
-        List<BackgroundSession> sessionsToTransition = findActiveSessions(regularModel, service);
+        return findAndDetachActiveSessions(regularModel, service);
+    }
 
-        // Detach active task tabs from the UI model.
-        // TODO(crbug.com/537330680): Handle edge case when a tab group only has one tab.
-        // TODO(crbug.com/540427987): Handle edge case when restoring a previously pinned tab.
-        for (BackgroundSession session : sessionsToTransition) {
-            regularModel
-                    .getTabRemover()
-                    .removeTab(session.getLastActiveTab(), /* allowDialog= */ false);
+    /**
+     * Iterates over a copy of the model's tabs, detects active tasks, and performs transitions.
+     * Only creates and populates sessions for tabs whose placeholders were inserted correctly.
+     */
+    private static List<BackgroundSession> findAndDetachActiveSessions(
+            TabModel model, ActorKeyedService service) {
+        List<BackgroundSession> sessions = new ArrayList<>();
+
+        for (Tab originalTab : model) {
+            if (originalTab == null) continue;
+
+            Integer taskId = ActorTaskHelper.getActiveTaskIdOnTab(service, originalTab);
+            if (taskId == null) continue;
+
+            int originalIndex = model.indexOf(originalTab);
+            Tab placeholderTab = createAndInsertPlaceholder(originalTab, model);
+            if (placeholderTab == null) {
+                continue;
+            }
+
+            BackgroundSession.BackgroundTabData tabData =
+                    new BackgroundSession.BackgroundTabData(
+                            originalTab, placeholderTab.getId(), originalIndex);
+            BackgroundSession session = getSessionForTask(sessions, taskId);
+            if (session != null) {
+                session.addTabData(tabData);
+            } else {
+                sessions.add(new BackgroundSession(tabData, taskId));
+            }
+            // TODO(b/544014273) : Consider canceling the task if detaching tab was not successful
+            model.getTabRemover().removeTab(originalTab, /* allowDialog= */ false);
         }
 
-        return sessionsToTransition;
+        return sessions;
+    }
+
+    /**
+     * Creates and inserts a dormant placeholder tab in the TabModel at the index immediately
+     * following the original tab, duplicating its visual properties and state.
+     */
+    public static @Nullable Tab createAndInsertPlaceholder(Tab originalTab, TabModel regularModel) {
+        ThreadUtils.assertOnUiThread();
+
+        int originalIndex = regularModel.indexOf(originalTab);
+        if (originalIndex == TabModel.INVALID_TAB_INDEX) return null;
+
+        TabCreator tabCreator = regularModel.getTabCreator();
+
+        TabState originalState = TabStateExtractor.from(originalTab);
+        if (originalState == null) return null;
+
+        int placeholderId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
+
+        Tab placeholderTab =
+                tabCreator.createFrozenTab(originalState, placeholderId, originalIndex + 1);
+
+        if (placeholderTab != null) {
+            transferGroupAndPinState(originalTab, placeholderTab, regularModel, originalIndex);
+        }
+
+        return placeholderTab;
+    }
+
+    /**
+     * Symmetrically transfers the grouping and pinning properties from a source tab to a
+     * destination tab within the TabModel.
+     */
+    private static void transferGroupAndPinState(
+            Tab sourceTab, Tab destinationTab, TabModel model, int sourceIndex) {
+        ThreadUtils.assertOnUiThread();
+
+        if (sourceTab.getIsPinned()) {
+            model.pinTab(destinationTab.getId(), /* showUngroupDialog= */ false);
+            model.moveTab(destinationTab.getId(), sourceIndex + 1);
+        }
+
+        Token tabGroupId = sourceTab.getTabGroupId();
+        if (tabGroupId != null) {
+            List<Tab> relatedTabs = model.getRelatedTabList(sourceTab.getId());
+            int indexInGroup = relatedTabs.indexOf(sourceTab);
+            model.mergeListOfTabsToGroup(
+                    Collections.singletonList(destinationTab),
+                    sourceTab,
+                    indexInGroup + 1,
+                    TabGroupMergeNotificationType.DONT_NOTIFY);
+        }
     }
 
     private static @Nullable ActorKeyedService getActorKeyedService(@Nullable TabModel model) {
@@ -61,27 +144,6 @@ public class ActorTabStateHelper {
         Profile profile = model.getProfile();
         if (profile == null) return null;
         return ActorKeyedServiceFactory.getForProfile(profile.getOriginalProfile());
-    }
-
-    private static List<BackgroundSession> findActiveSessions(
-            TabModel model, ActorKeyedService service) {
-        if (service.getActiveTasksCount() == 0) {
-            return Collections.emptyList();
-        }
-        List<BackgroundSession> sessions = new ArrayList<>();
-        for (Tab tab : model) {
-            if (tab == null) continue;
-            Integer taskId = ActorTaskHelper.getActiveTaskIdOnTab(service, tab);
-            if (taskId != null) {
-                BackgroundSession session = getSessionForTask(sessions, taskId);
-                if (session != null) {
-                    session.addTab(tab);
-                } else {
-                    sessions.add(new BackgroundSession(tab, taskId));
-                }
-            }
-        }
-        return sessions;
     }
 
     private static @Nullable BackgroundSession getSessionForTask(

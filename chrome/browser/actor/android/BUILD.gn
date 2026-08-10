@@ -260,6 +260,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorNotificationClickIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorTabStateHelperIntegrationTest.java",
   ]
   deps = [
     ":java",
