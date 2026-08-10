@@ -6641,7 +6641,8 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
   if (IsText()) {
     AggregateRangesForMarkerType(this, marker_type, /*offset_ranges_amount=*/0,
                                  &relevant_ranges, highlight_type);
-  } else if (IsAtomicTextField()) {
+  } else if (IsAtomicTextField() && IsWebContent()) {
+    // Native Views text fields do not have an internal AXNode tree to traverse.
     // An atomic text field (e.g. <input>, <textarea>) is exposed to the
     // platform as a leaf, so its marker-bearing static-text descendants are
     // hidden from the platform tree. Walk the INTERNAL accessibility tree to
