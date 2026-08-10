@@ -1,7 +1,7 @@
 Name: ktfmt
 URL: https://github.com/Kotlin/ktfmt
-Version: N/A
-Revision: $_3PP_VERSION
+Version: $_3PP_VERSION
+Revision: N/A
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
