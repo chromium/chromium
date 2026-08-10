@@ -421,6 +421,12 @@ ChromeWebUIControllerFactory::GetFaviconResourceBytes(
         .LoadDataResourceBytesForScale(IDR_SETTINGS_FAVICON, scale_factor);
   }
 
+  if (page_url.host() == chrome::kChromeUIDownloadsHost) {
+    // Android doesn't have download_ui.cc, so load the resource directly.
+    return ui::ResourceBundle::GetSharedInstance()
+        .LoadDataResourceBytesForScale(IDR_DOWNLOADS_FAVICON, scale_factor);
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // The chrome://apps page is not available on Android or ChromeOS.
@@ -442,11 +448,6 @@ ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 
   if (page_url.host() == password_manager::kChromeUIPasswordManagerHost) {
     return PasswordManagerUI::GetFaviconResourceBytes(scale_factor);
-  }
-
-  // Android uses the native download manager.
-  if (page_url.host() == chrome::kChromeUIDownloadsHost) {
-    return DownloadsUI::GetFaviconResourceBytes(scale_factor);
   }
 
   if (page_url.host() == chrome::kChromeUIManagementHost) {
@@ -492,6 +493,7 @@ bool ChromeWebUIControllerFactory::HasFaviconForNativePage(
   }
   return page_url.host() == chrome::kChromeUIHistoryHost ||
          page_url.host() == chrome::kChromeUIBookmarksHost ||
-         page_url.host() == chrome::kChromeUISettingsHost;
+         page_url.host() == chrome::kChromeUISettingsHost ||
+         page_url.host() == chrome::kChromeUIDownloadsHost;
 }
 #endif

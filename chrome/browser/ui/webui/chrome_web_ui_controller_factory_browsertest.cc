@@ -17,6 +17,32 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 
+namespace {
+
+// Helper function to synchronously fetch the favicon raw bitmap results for a
+// given WebUI page URL.
+std::vector<favicon_base::FaviconRawBitmapResult> GetFaviconForURL(
+    Profile* profile,
+    const GURL& page_url) {
+  base::RunLoop run_loop;
+  std::vector<favicon_base::FaviconRawBitmapResult> results;
+  ChromeWebUIControllerFactory::GetInstance()->GetFaviconForURL(
+      profile, page_url, {16},
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             std::vector<favicon_base::FaviconRawBitmapResult>* out_results,
+             const std::vector<favicon_base::FaviconRawBitmapResult>&
+                 favicon_results) {
+            *out_results = favicon_results;
+            run_loop->Quit();
+          },
+          &run_loop, &results));
+  run_loop.Run();
+  return results;
+}
+
+}  // namespace
+
 using ChromeWebUIControllerFactoryBrowserTest = InProcessBrowserTest;
 
 // Verify that if there is a chrome-untrusted:// URLDataSource with the same
@@ -73,21 +99,17 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
                        GetFaviconForURLSettings) {
-  base::RunLoop run_loop;
-  std::vector<favicon_base::FaviconRawBitmapResult> results;
-  ChromeWebUIControllerFactory::GetInstance()->GetFaviconForURL(
-      browser()->GetProfile(), GURL(chrome::kChromeUISettingsURL), {16},
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             std::vector<favicon_base::FaviconRawBitmapResult>* out_results,
-             const std::vector<favicon_base::FaviconRawBitmapResult>&
-                 favicon_results) {
-            *out_results = favicon_results;
-            run_loop->Quit();
-          },
-          &run_loop, &results));
-  run_loop.Run();
+  std::vector<favicon_base::FaviconRawBitmapResult> results = GetFaviconForURL(
+      browser()->GetProfile(), GURL(chrome::kChromeUISettingsURL));
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].bitmap_data);
+  EXPECT_GT(results[0].bitmap_data->size(), 0u);
+}
 
+IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
+                       GetFaviconForURLDownloads) {
+  std::vector<favicon_base::FaviconRawBitmapResult> results = GetFaviconForURL(
+      browser()->GetProfile(), GURL(chrome::kChromeUIDownloadsURL));
   ASSERT_EQ(1u, results.size());
   EXPECT_TRUE(results[0].bitmap_data);
   EXPECT_GT(results[0].bitmap_data->size(), 0u);

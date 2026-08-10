@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread.h"
@@ -35,7 +34,6 @@
 #include "chrome/grit/downloads_resources.h"
 #include "chrome/grit/downloads_resources_map.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
@@ -53,7 +51,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -289,13 +286,6 @@ DownloadsUI::DownloadsUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(DownloadsUI)
 
 DownloadsUI::~DownloadsUI() = default;
-
-// static
-scoped_refptr<base::RefCountedMemory> DownloadsUI::GetFaviconResourceBytes(
-    ui::ResourceScaleFactor scale_factor) {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-      IDR_DOWNLOADS_FAVICON, scale_factor);
-}
 
 void DownloadsUI::BindInterface(
     mojo::PendingReceiver<downloads::mojom::PageHandlerFactory> receiver) {

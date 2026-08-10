@@ -100,8 +100,8 @@
         <structure type="chrome_scaled_image" name="IDR_CONFLICT_FAVICON" file="common/favicon_conflicts.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_COOKIE_STORAGE_ICON" file="common/cookie_storage.png" />
+      <structure type="chrome_scaled_image" name="IDR_DOWNLOADS_FAVICON" file="common/favicon_downloads.png" />
       <if expr="not is_android">
-        <structure type="chrome_scaled_image" name="IDR_DOWNLOADS_FAVICON" file="common/favicon_downloads.png" />
         <structure type="chrome_scaled_image" name="IDR_ENHANCED_BROWSING_ON_IOS" file="common/enhanced_browsing_on_ios.png" />
       </if>
       <if expr="enable_extensions_core">
