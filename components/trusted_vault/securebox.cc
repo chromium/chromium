@@ -18,16 +18,12 @@
 #include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "crypto/aead.h"
 #include "crypto/kdf.h"
 #include "crypto/kex.h"
 #include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
-#include "third_party/boringssl/src/include/openssl/aead.h"
-#include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ecdh.h"
-#include "third_party/boringssl/src/include/openssl/nid.h"
 
 namespace trusted_vault {
 
@@ -36,7 +32,6 @@ namespace {
 const size_t kP256FieldBytes = 32;
 const size_t kAES128KeyLength = 16;
 const size_t kNonceLength = 12;
-const size_t kTagLength = 16;
 const size_t kECPointLength = 65;
 const size_t kVersionLength = 2;
 const uint8_t kSecureBoxVersion[] = {0x02, 0};
@@ -44,6 +39,7 @@ const uint8_t kHkdfSalt[] = {'S', 'E', 'C', 'U',  'R', 'E',
                              'B', 'O', 'X', 0x02, 0};
 const char kHkdfInfoWithPublicKey[] = "P256 HKDF-SHA-256 AES-128-GCM";
 const char kHkdfInfoWithoutPublicKey[] = "SHARED HKDF-SHA-256 AES-128-GCM";
+const crypto::aead::Algorithm kAeadAlgorithm = crypto::aead::AES_128_GCM;
 
 // Concatenates spans in |bytes_spans|.
 std::vector<uint8_t> ConcatBytes(
@@ -88,70 +84,6 @@ std::array<uint8_t, kAES128KeyLength> SecureBoxComputeSecret(
                                              base::as_byte_span(hkdf_info));
 }
 
-// This function implements AES-GCM, using AES-128, a 96-bit nonce, and 128-bit
-// tag.
-std::vector<uint8_t> SecureBoxAesGcmEncrypt(
-    base::span<const uint8_t> secret_key,
-    base::span<const uint8_t> nonce,
-    base::span<const uint8_t> plaintext,
-    base::span<const uint8_t> associated_data,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  DCHECK_EQ(secret_key.size(), kAES128KeyLength);
-  DCHECK_EQ(nonce.size(), kNonceLength);
-
-  const size_t max_output_length =
-      EVP_AEAD_max_overhead(EVP_aead_aes_128_gcm()) + plaintext.size();
-
-  bssl::ScopedEVP_AEAD_CTX ctx;
-  size_t output_length;
-  std::vector<uint8_t> result(max_output_length);
-
-  int init_result =
-      EVP_AEAD_CTX_init(ctx.get(), EVP_aead_aes_128_gcm(), secret_key.data(),
-                        secret_key.size(), kTagLength, nullptr);
-  DCHECK(init_result);
-
-  int seal_result = EVP_AEAD_CTX_seal(
-      ctx.get(), result.data(), &output_length, max_output_length, nonce.data(),
-      nonce.size(), plaintext.data(), plaintext.size(), associated_data.data(),
-      associated_data.size());
-  CHECK(seal_result);
-
-  DCHECK_LE(output_length, max_output_length);
-  result.resize(output_length);
-  return result;
-}
-
-// Decrypts using AES-GCM.
-std::optional<std::vector<uint8_t>> SecureBoxAesGcmDecrypt(
-    base::span<const uint8_t> secret_key,
-    base::span<const uint8_t> nonce,
-    base::span<const uint8_t> ciphertext,
-    base::span<const uint8_t> associated_data,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
-  const size_t max_output_length = ciphertext.size();
-
-  bssl::ScopedEVP_AEAD_CTX ctx;
-  size_t output_length;
-  std::vector<uint8_t> result(max_output_length);
-  int init_result =
-      EVP_AEAD_CTX_init(ctx.get(), EVP_aead_aes_128_gcm(), secret_key.data(),
-                        secret_key.size(), kTagLength, /*impl=*/nullptr);
-  DCHECK(init_result);
-
-  if (!EVP_AEAD_CTX_open(ctx.get(), result.data(), &output_length,
-                         max_output_length, nonce.data(), nonce.size(),
-                         ciphertext.data(), ciphertext.size(),
-                         associated_data.data(), associated_data.size())) {
-    // |ciphertext| can't be decrypted with given parameters.
-    return std::nullopt;
-  }
-
-  DCHECK_LE(output_length, max_output_length);
-  result.resize(output_length);
-  return result;
-}
-
 // |our_key_pair| and |their_public_key| might be nullopt, but if either of them
 // is not nullopt, other must be not nullopt as well. |shared_secret|, |header|
 // and |payload| may be empty.
@@ -160,15 +92,14 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
     std::optional<crypto::keypair::PublicKey> their_public_key,
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
-    base::span<const uint8_t> payload,
-    const crypto::OpenSSLErrStackTracer& err_tracer) {
+    base::span<const uint8_t> payload) {
   DCHECK_EQ(our_key_pair.has_value(), their_public_key.has_value());
   std::array<uint8_t, kAES128KeyLength> secret =
       SecureBoxComputeSecret(our_key_pair, their_public_key, shared_secret);
 
   std::vector<uint8_t> nonce = crypto::RandBytesAsVector(kNonceLength);
   std::vector<uint8_t> ciphertext =
-      SecureBoxAesGcmEncrypt(secret, nonce, payload, header, err_tracer);
+      crypto::aead::Seal(kAeadAlgorithm, secret, payload, nonce, header);
 
   std::vector<uint8_t> encoded_our_public_key;
   if (our_key_pair) {
@@ -186,8 +117,6 @@ std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> encrypted_payload) {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
   size_t min_payload_size = kVersionLength + kNonceLength;
   if (our_key_pair) {
     min_payload_size += kECPointLength;
@@ -219,8 +148,8 @@ std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
 
   base::span<const uint8_t> ciphertext = encrypted_payload.subspan(offset);
 
-  return SecureBoxAesGcmDecrypt(secret_key, nonce, ciphertext, header,
-                                err_tracer);
+  return crypto::aead::Open(kAeadAlgorithm, secret_key, ciphertext, nonce,
+                            header);
 }
 
 }  // namespace
@@ -229,10 +158,9 @@ std::vector<uint8_t> SecureBoxSymmetricEncrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> payload) {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   return SecureBoxEncryptImpl(/*our_key_pair=*/std::nullopt,
                               /*their_public_key=*/std::nullopt, shared_secret,
-                              header, payload, err_tracer);
+                              header, payload);
 }
 
 std::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
@@ -274,12 +202,10 @@ std::vector<uint8_t> SecureBoxPublicKey::Encrypt(
     base::span<const uint8_t> shared_secret,
     base::span<const uint8_t> header,
     base::span<const uint8_t> payload) const {
-  const crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
   const crypto::keypair::PrivateKey our_key_pair =
       crypto::keypair::PrivateKey::GenerateEcP256();
   return SecureBoxEncryptImpl(our_key_pair, key_, shared_secret, header,
-                              payload, err_tracer);
+                              payload);
 }
 
 // static
