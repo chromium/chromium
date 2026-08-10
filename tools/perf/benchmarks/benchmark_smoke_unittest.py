@@ -116,6 +116,9 @@ _BLOCK_LIST_TEST_NAMES = [
     'memory.desktop',  # crbug.com/1277277 and b/286898261
     'desktop_ui' if sys.platform == 'darwin' else None,  # crbug.com/1370958
     'power.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1370958
+    'omnibox.aim.perf' if sys.platform == 'darwin' else None,  # b/544452037
+    ('UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr'
+     if sys.platform == 'darwin' else None),  # b/544452037
 ]
 
 
