@@ -1183,11 +1183,22 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public void show(@TabSelectionType int type) {
-        // Batch service binding updates for the tab including the subframes. TabImpl.show() is
-        // triggered not only on tab switch, but also when the window is shown.
         try (ScopedServiceBindingBatch scope = ScopedServiceBindingBatch.scoped()) {
+
             TraceEvent.begin("Tab.show");
-            if (!isHidden()) return;
+            if (!isHidden()) {
+                var wc = getWebContents();
+                if (wc == null) {
+                    Log.i(TAG, "TabImpl.show early return: WebContents is null.");
+                } else {
+                    Log.i(
+                            TAG,
+                            "TabImpl.show early return: WebContents visibility=%d",
+                            wc.getVisibility());
+                }
+                return;
+            }
+
             // Keep unsetting mIsHidden above loadIfNeeded(), so that we pass correct visibility
             // when spawning WebContents in loadIfNeeded().
             mIsHidden = false;
