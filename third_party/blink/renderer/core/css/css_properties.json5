@@ -6913,6 +6913,7 @@
       name: "app-region",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       surrogate_for: "window-drag",
+      devtools_keywords: ["none", "move", "no-drag"],
     },
     {
       name: "-webkit-app-region",
@@ -6932,6 +6933,7 @@
       // the `app-region` surrogate. `app-region: drag` maps to the shared
       // `kMove` state.
       keywords: ["none", "move", "no-drag"],
+      devtools_keywords: ["none", "move"],
       name_for_methods: "DraggableRegionMode",
       style_builder_custom_functions: ["value"],
       invalidate: ["layout"],
