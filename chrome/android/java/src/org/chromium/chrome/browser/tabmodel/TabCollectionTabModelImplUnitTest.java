@@ -22,6 +22,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -628,6 +631,83 @@ public class TabCollectionTabModelImplUnitTest {
 
         mTabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
         verify(mTabModelObserver).allTabsAreClosing();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseTabs_closeAllTabs() {
+        @TabId int tabId = 789;
+        MockTab tab = createMockTab(tabId, mProfile);
+        tab.setIsInitialized(true);
+
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.closeTabs(TabClosureParams.closeAllTabs().allowUndo(false).build());
+
+        verify(mTabModelObserver).willCloseTabs(eq(List.of(tab)), eq(true), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseTabs_allTabsAreClosing() {
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+
+        @TabId int tabId = 789;
+        MockTab tab = createMockTab(tabId, mProfile);
+        tab.setIsInitialized(true);
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        assertEquals(1, mTabModel.getCount());
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+
+        // When closing the last tab, isAllTabs should be true, mirroring `allTabsAreClosing()`.
+        verify(mTabModelObserver).willCloseTabs(eq(List.of(tab)), eq(true), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseTabs_closeOneTab() {
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+
+        @TabId int tabId1 = 789;
+        MockTab tab1 = createMockTab(tabId1, mProfile);
+        tab1.setIsInitialized(true);
+        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        @TabId int tabId2 = 456;
+        MockTab tab2 = createMockTab(tabId2, mProfile);
+        tab2.setIsInitialized(true);
+        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        mTabModel.closeTabs(TabClosureParams.closeTab(tab1).allowUndo(false).build());
+
+        verify(mTabModelObserver).willCloseTabs(eq(List.of(tab1)), eq(false), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseTabs_closeMultipleTabs() {
+        when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
+
+        @TabId int tabId1 = 789;
+        MockTab tab1 = createMockTab(tabId1, mProfile);
+        tab1.setIsInitialized(true);
+        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        @TabId int tabId2 = 456;
+        MockTab tab2 = createMockTab(tabId2, mProfile);
+        tab2.setIsInitialized(true);
+        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        @TabId int tabId3 = 123;
+        MockTab tab3 = createMockTab(tabId3, mProfile);
+        tab3.setIsInitialized(true);
+        mTabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        mTabModel.closeTabs(TabClosureParams.closeTabs(List.of(tab1, tab2)).allowUndo(false).build());
+
+        verify(mTabModelObserver).willCloseTabs(eq(List.of(tab1, tab2)), eq(false), eq(false));
     }
 
     @Test

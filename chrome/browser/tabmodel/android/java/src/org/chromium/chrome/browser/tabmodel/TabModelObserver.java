@@ -128,6 +128,19 @@ public interface TabModelObserver {
     default void allTabsAreClosing() {}
 
     /**
+     * Called before one or more tabs are removed from the {@link TabModel} for closure.
+     *
+     * <p>TODO(crbug.com/381471263): Method in development. This replaces {@link #willCloseTab},
+     * {@link #willCloseMultipleTabs}, {@link #willCloseAllTabs}, and {@link #allTabsAreClosing}.
+     * It is called once per closure operation while the tabs are still present in the tab model.
+     *
+     * @param tabs The list of {@link Tab}s about to be closed.
+     * @param isAllTabs Whether this closure operation will leave 0 tabs in the model.
+     * @param allowUndo Whether undo is allowed for this tab closure operation.
+     */
+    default void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {}
+
+    /**
      * Called after the tab has been removed from the tab model for tab closure. This is called
      * regardless of whether the tab closure is undoable or not and will always be called before a
      * tab closure is finalized.

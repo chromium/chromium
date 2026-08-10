@@ -46,6 +46,11 @@ class TabModelObserverJniBridge {
 
   void DidSelectTab(JNIEnv* env, TabAndroid* tab, int type, int last_id);
 
+  void WillCloseTabs(JNIEnv* env,
+                     const std::vector<TabAndroid*>& tabs,
+                     bool is_all_tabs,
+                     bool allow_undo);
+
   void WillCloseTab(JNIEnv* env, TabAndroid* tab);
 
   void DidRemoveTabForClosure(JNIEnv* env, TabAndroid* tab);

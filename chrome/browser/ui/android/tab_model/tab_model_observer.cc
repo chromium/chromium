@@ -14,6 +14,10 @@ TabModelObserver::~TabModelObserver() = default;
 void TabModelObserver::DidSelectTab(TabAndroid* tab,
                                     TabModel::TabSelectionType type) {}
 
+void TabModelObserver::WillCloseTabs(const std::vector<TabAndroid*>& tabs,
+                                     bool is_all_tabs,
+                                     bool allow_undo) {}
+
 void TabModelObserver::WillCloseTab(TabAndroid* tab) {}
 
 void TabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {}

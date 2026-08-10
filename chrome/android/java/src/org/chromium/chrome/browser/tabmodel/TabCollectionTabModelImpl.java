@@ -1877,30 +1877,43 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
         ObserverList.RewindableIterator<TabModelObserver> observers =
                 mTabModelObservers.rewindableIterator();
-        if (params.tabCloseType == TabCloseType.MULTIPLE) {
-            while (observers.hasNext()) {
-                observers.next().willCloseMultipleTabs(allowUndo, tabsToClose);
-            }
-        } else if (params.tabCloseType == TabCloseType.ALL) {
-            while (observers.hasNext()) {
-                observers.next().willCloseAllTabs(isIncognito());
-            }
-        }
 
         Set<Integer> tabsToCloseIds = new ArraySet<>(tabsToClose.size());
-        boolean didCloseAlone = params.tabCloseType == TabCloseType.SINGLE;
         for (Tab tab : tabsToClose) {
             tabsToCloseIds.add(tab.getId());
-            observers.rewind();
-            while (observers.hasNext()) {
-                observers.next().willCloseTab(tab, didCloseAlone);
-            }
         }
+        boolean isClosingAllTabs = tabsToClose.size() == getCount();
 
-        if (tabsToCloseIds.size() == getCount()) {
+        if (ChromeFeatureList.sTabClosureMethodRefactor.isEnabled()) {
             observers.rewind();
             while (observers.hasNext()) {
-                observers.next().allTabsAreClosing();
+                observers.next().willCloseTabs(tabsToClose, isClosingAllTabs, allowUndo);
+            }
+        } else {
+            observers.rewind();
+            if (params.tabCloseType == TabCloseType.MULTIPLE) {
+                while (observers.hasNext()) {
+                    observers.next().willCloseMultipleTabs(allowUndo, tabsToClose);
+                }
+            } else if (params.tabCloseType == TabCloseType.ALL) {
+                while (observers.hasNext()) {
+                    observers.next().willCloseAllTabs(isIncognito());
+                }
+            }
+
+            boolean didCloseAlone = params.tabCloseType == TabCloseType.SINGLE;
+            for (Tab tab : tabsToClose) {
+                observers.rewind();
+                while (observers.hasNext()) {
+                    observers.next().willCloseTab(tab, didCloseAlone);
+                }
+            }
+
+            if (isClosingAllTabs) {
+                observers.rewind();
+                while (observers.hasNext()) {
+                    observers.next().allTabsAreClosing();
+                }
             }
         }
 

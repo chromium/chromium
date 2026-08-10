@@ -51,6 +51,16 @@ void TabModelObserverJniBridge::DidSelectTab(JNIEnv* env,
   }
 }
 
+void TabModelObserverJniBridge::WillCloseTabs(
+    JNIEnv* env,
+    const std::vector<TabAndroid*>& tabs,
+    bool is_all_tabs,
+    bool allow_undo) {
+  for (auto& observer : model_observers_) {
+    observer.WillCloseTabs(tabs, is_all_tabs, allow_undo);
+  }
+}
+
 void TabModelObserverJniBridge::WillCloseTab(JNIEnv* env, TabAndroid* tab) {
   CHECK(tab);
   for (auto& observer : model_observers_) {
