@@ -74,14 +74,14 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
                                        active_start, active_end);
     }
   }
-  TriggerBoundaries ComputeTriggerBoundariesForTest(
+  std::optional<TriggerBoundaries> ComputeTriggerBoundariesForTest(
       double current_offset,
       Element& timeline_source,
       const ScrollTimeline& timeline) {
     // TODO(crbug.com/473568234): Support multiple timelines.
     return GetRange() ? GetRange()->ComputeTriggerBoundariesForTest(
                             current_offset, timeline_source, timeline)
-                      : TriggerBoundaries();
+                      : std::nullopt;
   }
 
   bool CanTrigger() const override;

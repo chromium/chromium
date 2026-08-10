@@ -6301,4 +6301,105 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PlayReset) {
                     /* start_time=*/std::nullopt);
 }
 
+TEST_F(CompositorAnimationTriggerTest, InactiveTimeline) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+     @keyframes anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        animation: anim 1s both;
+        width: 100px; height: 50px; background: blue;
+        timeline-trigger: --trigger scroll(self);
+        animation-trigger: --trigger play;
+      }
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+  ASSERT_NE(target, nullptr);
+  ASSERT_NE(target->NamedTriggers(), nullptr);
+  ASSERT_FALSE(target->NamedTriggers()->empty());
+
+  TimelineTrigger* trigger =
+      DynamicTo<TimelineTrigger>(target->NamedTriggers()->begin()->value.Get());
+  ASSERT_NE(trigger, nullptr);
+
+  EXPECT_FALSE(trigger->Timeline()->IsActive());
+  EXPECT_EQ(trigger->CompositorTrigger(), nullptr);
+}
+
+TEST_F(CompositorAnimationTriggerTest,
+       InactiveMainTimelineCompositorUpdateSkipped) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #scroller {
+        width: 100px;
+        height: 200px;
+        overflow: scroll;
+      }
+      #content {
+        height: 300px;
+      }
+      @keyframes anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        width: 100px;
+        height: 50px;
+        background: blue;
+      }
+      #target.trigger-active {
+        animation: anim 1s both;
+        timeline-trigger: --trigger scroll(nearest);
+        animation-trigger: --trigger play;
+      }
+    </style>
+    <div id='scroller'>
+      <div id='content'></div>
+      <div id='target' class='trigger-active'></div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* scroller = GetElement("scroller");
+  Element* target = GetElement("target");
+
+  // Verify active and composited.
+  TimelineTrigger* trigger =
+      DynamicTo<TimelineTrigger>(target->NamedTriggers()->begin()->value.Get());
+  EXPECT_TRUE(trigger->Timeline()->IsActive());
+  EXPECT_NE(trigger->CompositorTrigger(), nullptr);
+
+  // Remove animation to destroy compositor trigger.
+  target->removeAttribute(html_names::kClassAttr);
+  Compositor().BeginFrame();
+  EXPECT_EQ(trigger->CompositorTrigger(), nullptr);
+
+  // Make timeline inactive AND restore trigger.
+  scroller->setAttribute(html_names::kStyleAttr,
+                         AtomicString("display: none;"));
+  target->setAttribute(html_names::kClassAttr, AtomicString("trigger-active"));
+
+  // Use kJavaScript to update layout but defer snapshotting, keeping the
+  // compositor timeline offsets stale (active) while main thread is inactive.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+
+  // Trigger creation while mismatched.
+  GetDocument().GetDocumentAnimations().UpdateAnimations(
+      DocumentLifecycle::kLayoutClean, nullptr, false);
+}
+
 }  // namespace blink

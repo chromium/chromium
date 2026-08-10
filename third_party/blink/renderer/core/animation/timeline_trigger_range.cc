@@ -294,11 +294,14 @@ Node* TimelineTriggerRange::ComputeBoundariesSource(
   return timeline_source;
 }
 
-TimelineTriggerRange::TriggerBoundaries
+std::optional<TimelineTriggerRange::TriggerBoundaries>
 TimelineTriggerRange::ComputeTriggerBoundaries(double current_offset,
                                                Element& timeline_source,
                                                const ScrollTimeline& timeline) {
   const auto timeline_state = timeline.ComputeTimelineState();
+  if (!timeline_state.scroll_offsets) {
+    return std::nullopt;
+  }
 
   TriggerBoundaries boundaries;
 
@@ -385,8 +388,13 @@ TimelineTriggerRange::ComputeState() {
     current_offset = AdjustForAbsoluteZoom::AdjustScroll(
         *current_offset, *timeline_source->GetLayoutObject());
 
-    boundaries = ComputeTriggerBoundaries(
-        *current_offset, *To<Element>(timeline_source), *timeline);
+    const std::optional<TriggerBoundaries>& trigger_boundaries =
+        ComputeTriggerBoundaries(*current_offset, *To<Element>(timeline_source),
+                                 *timeline);
+    if (!trigger_boundaries) {
+      return std::nullopt;
+    }
+    boundaries = *trigger_boundaries;
   } else {
     // Only scroll-triggered animations are supported at the moment.
     // Return values that indicate that the a trigger with the document timeline
@@ -439,13 +447,23 @@ TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
     return std::nullopt;
   }
 
+  const std::optional<cc::ScrollTimeline::ScrollOffsets>& pending_offsets =
+      static_cast<cc::ScrollTimeline*>(cc_timeline)->pending_offsets();
+  if (!pending_offsets) {
+    return std::nullopt;
+  }
   Node* timeline_source = ComputeBoundariesSource(*timeline);
   if (!timeline_source) {
     return std::nullopt;
   }
 
-  TriggerBoundaries boundaries = ComputeTriggerBoundaries(
-      /*(unused) current_offset=*/0, *To<Element>(timeline_source), *timeline);
+  std::optional<TriggerBoundaries> trigger_boundaries =
+      ComputeTriggerBoundaries(
+          /*(unused) current_offset=*/0, *To<Element>(timeline_source),
+          *timeline);
+  if (!trigger_boundaries) {
+    return std::nullopt;
+  }
 
   // Blink boundaries are calculated in CSS pixels, but cc ScrollTimeline
   // offsets are in physical pixels. So, scale the blink boundaries into
@@ -453,10 +471,10 @@ TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
   // TODO(451238244): Update boundaries whenever zoom factor changes.
   double zoom_factor =
       timeline_source->GetLayoutBox()->StyleRef().EffectiveZoom();
-  boundaries.activation_start = boundaries.activation_start * zoom_factor;
-  boundaries.activation_end = boundaries.activation_end * zoom_factor;
-  boundaries.active_start = boundaries.active_start * zoom_factor;
-  boundaries.active_end = boundaries.active_end * zoom_factor;
+  trigger_boundaries->activation_start *= zoom_factor;
+  trigger_boundaries->activation_end *= zoom_factor;
+  trigger_boundaries->active_start *= zoom_factor;
+  trigger_boundaries->active_end *= zoom_factor;
 
   const double ms_per_pixel_multiplier =
       cc::ScrollTimeline::kScrollTimelineMicrosecondsPerPixel;
@@ -465,26 +483,27 @@ TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
   // timeline. The current time of the timeline is measured relative to the
   // start of the timeline's range which, in the case of a view timeline, is the
   // start of its cover range.
-  double timeline_start_offset =
-      static_cast<cc::ScrollTimeline*>(cc_timeline)->pending_offsets()->start;
+  double timeline_start_offset = pending_offsets->start;
 
   CcBoundaries cc_boundaries;
   cc_boundaries.activation_start_time =
       base::TimeTicks() +
-      base::Microseconds((boundaries.activation_start - timeline_start_offset) *
-                         ms_per_pixel_multiplier);
+      base::Microseconds(
+          (trigger_boundaries->activation_start - timeline_start_offset) *
+          ms_per_pixel_multiplier);
   cc_boundaries.activation_end_time =
       base::TimeTicks() +
-      base::Microseconds((boundaries.activation_end - timeline_start_offset) *
-                         ms_per_pixel_multiplier);
+      base::Microseconds(
+          (trigger_boundaries->activation_end - timeline_start_offset) *
+          ms_per_pixel_multiplier);
   cc_boundaries.active_start_time =
-      base::TimeTicks() +
-      base::Microseconds((boundaries.active_start - timeline_start_offset) *
-                         ms_per_pixel_multiplier);
+      base::TimeTicks() + base::Microseconds((trigger_boundaries->active_start -
+                                              timeline_start_offset) *
+                                             ms_per_pixel_multiplier);
   cc_boundaries.active_end_time =
-      base::TimeTicks() +
-      base::Microseconds((boundaries.active_end - timeline_start_offset) *
-                         ms_per_pixel_multiplier);
+      base::TimeTicks() + base::Microseconds((trigger_boundaries->active_end -
+                                              timeline_start_offset) *
+                                             ms_per_pixel_multiplier);
 
   return cc_boundaries;
 }
