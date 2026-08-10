@@ -168,6 +168,7 @@ TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded) {
                                        false, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, true,
                                        1);
+  histogram_tester_.ExpectUniqueSample(kPromptTabsAttachedCountHistogram, 1, 1);
 }
 
 // Tests that Nano Banana metrics are recorded correctly.
@@ -196,6 +197,7 @@ TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
                                        true, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, false,
                                        1);
+  histogram_tester_.ExpectUniqueSample(kPromptTabsAttachedCountHistogram, 0, 1);
 }
 
 // Tests that generated image included in response is recorded.
