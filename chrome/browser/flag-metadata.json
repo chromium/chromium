@@ -1283,11 +1283,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "bookmark-tab-group-conversion",
-    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "bookmarks-bar-context-menu",
     "owners": ["wylieb@google.com", "evanluo@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 165
@@ -2183,14 +2178,6 @@
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "create-new-tab-group-app-menu-top-level",
-    "owners": [
-      "dominicaustria@google.com",
-      "yuhengh@chromium.org",
-      "top-chrome-desktop-ui@google.com"],
-    "expiry_milestone": 155
   },
   {
     "name": "credential-management-third-party-web-api-request-forwarding",
@@ -7107,11 +7094,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "new-tab-adds-to-active-group",
-    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "new-tab-page-customization-theme-sync",
     "owners": ["hanxi@google.com", "xinyiji@google.com", "clank-start@google.com"],
     "expiry_milestone": 160
@@ -9066,11 +9048,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "show-tab-groups-mac-system-menu",
-    "owners": ["dominicaustria@google.com", "top-chrome-desktop-ui@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "show-tab-list-animations",
     "owners": [ "dregalo@google.com", "gurmeetk@google.com", "desiatyrikov@google.com" ],
     "expiry_milestone": 150
@@ -9454,11 +9431,6 @@
   {
     "name": "tab-group-hover-cards",
     "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
-    "name": "tab-group-more-entry-points",
-    "owners": ["dominicaustria@google.com", "top-chrome-desktop-ui@google.com"],
     "expiry_milestone": 155
   },
   {

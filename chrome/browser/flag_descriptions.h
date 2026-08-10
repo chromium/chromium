@@ -194,13 +194,6 @@ inline constexpr char kNewContentForCheckerboardedScrollsDescription[] =
     "prioritize the new content over scrolling with the intention of "
     "decreasing the amount of checkerboarded frames.";
 
-inline constexpr char kNewTabAddsToActiveGroupName[] =
-    "Add new tabs to active tab group.";
-
-inline constexpr char kNewTabAddsToActiveGroupDescription[] =
-    "If enabled, and there is a tab group is focused, then new tabs "
-    "will be added to the focused tab group.";
-
 inline constexpr char kAndroidAdaptiveFrameRateName[] =
     "Android Adaptive Refresh Rate features";
 inline constexpr char kAndroidAdaptiveFrameRateDescription[] =
@@ -1263,11 +1256,6 @@ inline constexpr char kBookmarksEncryptionDescription[] =
 inline constexpr char kSessionEncryptionName[] = "Session Encryption";
 inline constexpr char kSessionEncryptionDescription[] =
     "Enable encryption for sessions";
-
-inline constexpr char kBookmarkTabGroupConversionName[] =
-    "Bookmark and tab group conversion";
-inline constexpr char kBookmarkTabGroupConversionDescription[] =
-    "Enable conversion between bookmark and tab group";
 
 inline constexpr char kBrowserLaunchMetadataReportingName[] =
     "Browser launch metadata reporting";
@@ -4705,11 +4693,6 @@ inline constexpr char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-inline constexpr char kTabGroupMenuMoreEntryPointsName[] =
-    "Make options menus to include more tab group actions";
-inline constexpr char kTabGroupMenuMoreEntryPointsDescription[] =
-    "Add options to menus to facilitate tab group creation and interaction";
-
 inline constexpr char kTabGroupHoverCardsName[] =
     "Tab group header hover cards";
 inline constexpr char kTabGroupHoverCardsDescription[] =
@@ -5167,18 +5150,11 @@ inline constexpr char kVulkanFromAngleName[] = "Vulkan from ANGLE";
 inline constexpr char kVulkanFromAngleDescription[] =
     "Initialize Vulkan from inside ANGLE and share the instance with Chrome.";
 
-inline constexpr char kShowTabGroupsMacSystemMenuName[] =
-    "Show tab group colours of tabs in Mac top bar menu";
-inline constexpr char kShowTabGroupsMacSystemMenuDescription[] =
-    "Show tab group colours of tabs that are in tab groups in the 'tabs' and"
-    "'windows' menu' of the Mac OS menu bar";
-
 inline constexpr char kAndroidYuvOverlayEvenAlignmentName[] =
     "Android YUV Overlay Even Alignment";
 inline constexpr char kAndroidYuvOverlayEvenAlignmentDescription[] =
     "Enforces 2-pixel even boundary alignment for YUV hardware video overlays "
     "in SurfaceControl to prevent odd-coordinate display scaling rejections.";
-
 inline constexpr char kUsePassthroughCommandDecoderName[] =
     "Use passthrough command decoder";
 inline constexpr char kUsePassthroughCommandDecoderDescription[] =
@@ -6624,11 +6600,6 @@ inline constexpr char kBrowserInitiatedAutomaticPictureInPictureName[] =
 inline constexpr char kBrowserInitiatedAutomaticPictureInPictureDescription[] =
     "When enabled, allows the browser to automatically enter picture in "
     "picture when a series of conditions are met.";
-
-inline constexpr char kCreateNewTabGroupAppMenuTopLevelName[] =
-    "Create new tab group menu option at the top level of the app menu";
-inline constexpr char kCreateNewTabGroupAppMenuTopLevelDescription[] =
-    "In the app menu, add an option to create a new tab group at the top level";
 
 inline constexpr char kDeviceSignalsBackfillDisclaimerName[] =
     "Startup Enterprise Signals Disclaimer";

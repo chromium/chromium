@@ -11883,13 +11883,6 @@ const FeatureEntry kFeatureEntries[] = {
          permissions::features::
              kSafetyHubUnusedPermissionRevocationForAllSurfaces)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"bookmark-tab-group-conversion",
-     flag_descriptions::kBookmarkTabGroupConversionName,
-     flag_descriptions::kBookmarkTabGroupConversionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kBookmarkTabGroupConversion)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-suppress-accessory-on-empty",
      flag_descriptions::kAutofillAndroidDesktopSuppressAccessoryOnEmptyName,
@@ -11998,13 +11991,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillManualTestingDataDescription, kOsAll,
      STRING_VALUE_TYPE(autofill::kManualContentImportForTestingFlag, "")},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"new-tab-adds-to-active-group",
-     flag_descriptions::kNewTabAddsToActiveGroupName,
-     flag_descriptions::kNewTabAddsToActiveGroupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kNewTabAddsToActiveGroup)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-theme-overlay-testing",
      flag_descriptions::kIncognitoThemeOverlayTestingName,
@@ -12045,21 +12031,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID),
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"tab-group-more-entry-points",
-     flag_descriptions::kTabGroupMenuMoreEntryPointsName,
-     flag_descriptions::kTabGroupMenuMoreEntryPointsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroupMenuMoreEntryPoints)},
-
     {"tab-group-hover-cards", flag_descriptions::kTabGroupHoverCardsName,
      flag_descriptions::kTabGroupHoverCardsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupHoverCards)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_MAC)
-    {"show-tab-groups-mac-system-menu",
-     flag_descriptions::kShowTabGroupsMacSystemMenuName,
-     flag_descriptions::kShowTabGroupsMacSystemMenuDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kShowTabGroupsMacSystemMenu)},
-#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-keyboard-accessory-revamp",
@@ -12345,14 +12320,6 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualTasksCookiePrefetchDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksCookiePrefetch)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"create-new-tab-group-app-menu-top-level",
-     flag_descriptions::kCreateNewTabGroupAppMenuTopLevelName,
-     flag_descriptions::kCreateNewTabGroupAppMenuTopLevelDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCreateNewTabGroupAppMenuTopLevel)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-unicorn-chrome-activity-reporting",
