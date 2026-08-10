@@ -7,6 +7,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -23,9 +24,11 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -57,37 +60,41 @@ import org.chromium.ui.widget.ViewRectProvider;
  *   <li>An optional boolean (allowMultipleLines) to avoid longer text strings to wrap to a second
  *       line.
  *   <li>An optional boolean (showLoadingView) to show a loading view in place of the start icon.
+ *   <li>An optional compact state (isCompact) that hides text and only shows the icon.
  * </ul>
  */
 @NullMarked
 public class ChipView extends LinearLayout {
     /** An id to use for {@link #setIcon(int, boolean)} when there is no icon on the chip. */
-    public static final int INVALID_ICON_ID = -1;
+    public static final @DrawableRes int INVALID_ICON_ID = Resources.ID_NULL;
 
     private static final int MAX_LINES = 2;
 
-    private static final int HORIZONTAL_TEXT_ARANGEMENT = 0;
-    private static final int VERTICAL_TEXT_ARANGEMENT = 1;
+    private static final int HORIZONTAL_TEXT_ARRANGEMENT = 0;
+    private static final int VERTICAL_TEXT_ARRANGEMENT = 1;
 
     private final RippleBackgroundHelper mRippleBackgroundHelper;
     private final AppCompatTextView mPrimaryText;
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
-    private final @Px int mTextStartPadding;
     private final @StyleRes int mSecondaryTextAppearanceId;
     private final boolean mTextAlignStart;
-    private final int mEndIconWidth;
-    private final int mEndIconHeight;
-    private final int mEndIconMarginStart;
-    private final int mEndIconMarginEnd;
-    private final int mCornerRadius;
+    private final @Px int mEndIconWidth;
+    private final @Px int mEndIconHeight;
+    private final @Px int mEndIconMarginStart;
+    private final @Px int mEndIconMarginEnd;
+    private final @Px int mCornerRadius;
+    private final @Px int mChipStartPadding;
+    private final @Px int mChipEndPadding;
+    private final @Px int mTextStartPadding;
 
     private @MonotonicNonNull ViewGroup mEndIconWrapper;
     private @MonotonicNonNull LinearLayout mTextViewsWrapper;
     private @MonotonicNonNull AppCompatTextView mSecondaryText;
     private @Px int mMaxWidth = Integer.MAX_VALUE;
     private @Nullable Callback<Boolean> mSelectHandler;
+    private boolean mIsCompact;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -121,6 +128,7 @@ public class ChipView extends LinearLayout {
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_chipStartPadding,
                         getResources().getDimensionPixelSize(R.dimen.chip_view_start_padding));
+        mChipStartPadding = chipStartPadding;
 
         @Px int chipTopPadding = a.getDimensionPixelSize(R.styleable.ChipView_chipTopPadding, 0);
 
@@ -129,6 +137,7 @@ public class ChipView extends LinearLayout {
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_chipEndPadding,
                         getResources().getDimensionPixelSize(R.dimen.chip_view_end_padding));
+        mChipEndPadding = chipEndPadding;
 
         @Px
         int chipBottomPadding = a.getDimensionPixelSize(R.styleable.ChipView_chipBottomPadding, 0);
@@ -171,8 +180,8 @@ public class ChipView extends LinearLayout {
                         getResources().getDimensionPixelSize(R.dimen.chip_icon_size));
         mUseRoundedStartIcon = a.getBoolean(R.styleable.ChipView_useRoundedIcon, false);
         final boolean alignTextVertically =
-                a.getInteger(R.styleable.ChipView_textArrangement, HORIZONTAL_TEXT_ARANGEMENT)
-                        == VERTICAL_TEXT_ARANGEMENT;
+                a.getInteger(R.styleable.ChipView_textArrangement, HORIZONTAL_TEXT_ARRANGEMENT)
+                        == VERTICAL_TEXT_ARRANGEMENT;
         int primaryTextAppearance =
                 a.getResourceId(
                         R.styleable.ChipView_primaryTextAppearance,
@@ -211,7 +220,6 @@ public class ChipView extends LinearLayout {
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_loadingViewSize,
                         getResources().getDimensionPixelSize(R.dimen.chip_loading_view_size));
-        a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
         mStartIcon.setId(R.id.chip_view_start_icon);
@@ -248,6 +256,12 @@ public class ChipView extends LinearLayout {
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         mPrimaryText.setId(R.id.chip_view_primary_text);
         mPrimaryText.setTextAppearance(primaryTextAppearance);
+
+        CharSequence text = a.getText(R.styleable.ChipView_android_text);
+        if (!TextUtils.isEmpty(text)) {
+            setText(text);
+        }
+
         // Reduce font padding if the text is aligned vertically.
         mPrimaryText.setIncludeFontPadding(!alignTextVertically);
         // Default layout parameters used for vertically oriented linear layout are (MATCH_PARENT,
@@ -286,6 +300,8 @@ public class ChipView extends LinearLayout {
             addView(mPrimaryText);
         }
 
+        int horizontalInset = a.getDimensionPixelSize(R.styleable.ChipView_horizontalInset, 0);
+
         // Reset icon and background:
         mRippleBackgroundHelper =
                 new RippleBackgroundHelper(
@@ -297,10 +313,24 @@ public class ChipView extends LinearLayout {
                         chipStrokeColorId,
                         chipBorderWidthId,
                         verticalInset,
-                        0);
-        setIconWithTint(INVALID_ICON_ID, /* tintWithTextColor= */ false);
+                        horizontalInset);
+
+        @DrawableRes int iconId = a.getResourceId(R.styleable.ChipView_icon, INVALID_ICON_ID);
+        @Nullable ColorStateList iconTint = a.getColorStateList(R.styleable.ChipView_iconTint);
+        if (iconId != INVALID_ICON_ID) {
+            Drawable icon = AppCompatResources.getDrawable(getContext(), iconId);
+            if (icon != null && iconTint != null) {
+                DrawableCompat.setTintList(icon, iconTint);
+            }
+
+            // If iconTint is not null, we do not want to overwrite the tint with the text color.
+            setIconWithTint(icon, /* tintWithTextColor= */ iconTint == null);
+        } else {
+            setIconWithTint(INVALID_ICON_ID, /* tintWithTextColor= */ false);
+        }
 
         updateLayoutDirection();
+        a.recycle();
     }
 
     /**
@@ -529,6 +559,50 @@ public class ChipView extends LinearLayout {
         return mPrimaryText;
     }
 
+    private void updateAccessibilityText() {
+        // To provide a tooltip for the chip when it is compact and the text is not visible, we set
+        // the content description and tooltip text to the text of the chip.
+        CharSequence text = mPrimaryText.getText();
+        if (mIsCompact && TextUtils.isEmpty(getContentDescription()) && !TextUtils.isEmpty(text)) {
+            setContentDescription(text);
+            TooltipCompat.setTooltipText(this, text);
+        }
+    }
+
+    /** Sets the primary text of the chip. */
+    public void setText(CharSequence text) {
+        mPrimaryText.setText(text);
+        updateAccessibilityText();
+    }
+
+    /** Sets the primary text of the chip from a string resource. */
+    public void setText(@StringRes int resid) {
+        setText(getContext().getString(resid));
+    }
+
+    /** Sets the text color of the primary text view. */
+    public void setTextColor(ColorStateList colors) {
+        mPrimaryText.setTextColor(colors);
+    }
+
+    /** Sets the text color of the primary text view. */
+    public void setTextColor(@ColorInt int color) {
+        setTextColor(ColorStateList.valueOf(color));
+    }
+
+    /** Sets the tint for the start icon. */
+    public void setIconTint(ColorStateList tint) {
+        Drawable icon = mStartIcon.getDrawable();
+        if (icon != null) {
+            DrawableCompat.setTintList(icon, tint);
+        }
+    }
+
+    /** Sets the tint for the start icon. */
+    public void setIconTint(@ColorInt int color) {
+        setIconTint(ColorStateList.valueOf(color));
+    }
+
     /**
      * Returns the {@link TextView} that contains the secondary label of the chip. If it wasn't used
      * until now, this creates the view.
@@ -752,5 +826,44 @@ public class ChipView extends LinearLayout {
         if (mSelectHandler != null && wasSelected != isSelected) {
             mSelectHandler.onResult(isSelected);
         }
+    }
+
+    /**
+     * Sets whether the chip is compact (displaying only the icon). When compact, all text views are
+     * hidden and the horizontal padding is dynamically adjusted to compact padding. Toggling off
+     * compact mode restores the original horizontal padding.
+     *
+     * @param isCompact True to hide text and center the icon with symmetric start/end padding.
+     */
+    public void setIsCompact(boolean isCompact) {
+        if (mIsCompact == isCompact) return;
+        mIsCompact = isCompact;
+
+        int textVisibility = isCompact ? GONE : VISIBLE;
+
+        // If the text views are stacked vertically in a wrapper, update the visibility of the
+        // wrapper. Otherwise, update the visibility of the primary and secondary text views.
+        if (mTextViewsWrapper != null) {
+            mTextViewsWrapper.setVisibility(textVisibility);
+        } else {
+            mPrimaryText.setVisibility(textVisibility);
+            if (mSecondaryText != null) {
+                mSecondaryText.setVisibility(textVisibility);
+            }
+        }
+
+        @Px
+        int compactPadding =
+                getResources().getDimensionPixelSize(R.dimen.chip_view_compact_padding);
+        int startPadding = isCompact ? compactPadding : mChipStartPadding;
+        int endPadding = isCompact ? compactPadding : mChipEndPadding;
+        setPaddingRelative(startPadding, getPaddingTop(), endPadding, getPaddingBottom());
+
+        updateAccessibilityText();
+    }
+
+    /** Returns whether the chip is currently in compact mode. */
+    public boolean isCompact() {
+        return mIsCompact;
     }
 }

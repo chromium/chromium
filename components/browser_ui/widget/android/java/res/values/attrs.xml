@@ -110,6 +110,10 @@ found in the LICENSE file.
         <attr name="secondaryTextAppearance" format="reference"/>
         <attr name="rippleColor"/>
         <attr name="verticalInset"/>
+        <attr name="horizontalInset"/>
+        <attr name="android:text"/>
+        <attr name="icon" format="reference"/>
+        <attr name="iconTint" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="MaterialCardViewNoShadow">

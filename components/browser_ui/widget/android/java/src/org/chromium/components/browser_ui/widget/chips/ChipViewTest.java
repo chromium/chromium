@@ -11,8 +11,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -335,6 +337,54 @@ public final class ChipViewTest {
                         mActivity, R.drawable.test_ic_arrow_downward_black_24dp),
                 /* tintWithTextColor= */ true);
         assertEquals(View.VISIBLE, startIcon.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void compactMode() {
+        mChipView.getPrimaryTextView().setText("Primary text");
+        int defaultStartPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.chip_view_start_padding);
+        int defaultEndPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.chip_view_end_padding);
+        int compactPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.chip_view_compact_padding);
+
+        mChipView.setIsCompact(true);
+        assertTrue(mChipView.isCompact());
+        assertEquals(View.GONE, mChipView.getPrimaryTextView().getVisibility());
+        assertEquals(compactPadding, mChipView.getPaddingStart());
+        assertEquals(compactPadding, mChipView.getPaddingEnd());
+
+        mChipView.setIsCompact(false);
+        assertFalse(mChipView.isCompact());
+        assertEquals(View.VISIBLE, mChipView.getPrimaryTextView().getVisibility());
+        assertEquals(defaultStartPadding, mChipView.getPaddingStart());
+        assertEquals(defaultEndPadding, mChipView.getPaddingEnd());
+    }
+
+    @Test
+    @SmallTest
+    public void compactModeAccessibilityTextAndTooltip() {
+        mChipView.setText("Search Tab");
+        assertNull(mChipView.getContentDescription());
+        assertNull(mChipView.getTooltipText());
+
+        mChipView.setIsCompact(true);
+        assertEquals("Search Tab", mChipView.getContentDescription());
+        assertEquals("Search Tab", mChipView.getTooltipText());
+    }
+
+    @Test
+    @SmallTest
+    public void compactModePreservesExistingContentDescription() {
+        mChipView.setContentDescription("Custom accessibility description");
+        mChipView.setText("Visible text");
+        mChipView.setIsCompact(true);
+
+        // Explicitly configured content description should not be overwritten.
+        assertEquals("Custom accessibility description", mChipView.getContentDescription());
+        assertNull(mChipView.getTooltipText());
     }
 
     private void measureChip(ChipView chip) {
