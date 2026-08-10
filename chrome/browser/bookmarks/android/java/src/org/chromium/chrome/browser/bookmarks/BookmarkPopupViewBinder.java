@@ -55,6 +55,8 @@ public class BookmarkPopupViewBinder {
             if (scaleType != null) {
                 view.setImageScaleType(scaleType);
             }
+        } else if (key == BookmarkPopupProperties.IMAGE_VISIBLE) {
+            view.setImageVisible(model.get(BookmarkPopupProperties.IMAGE_VISIBLE));
         } else if (key == BookmarkPopupProperties.PRICE_TRACKING_VISIBLE) {
             view.setPriceTrackingVisible(model.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
         } else if (key == BookmarkPopupProperties.PRICE_TRACKING_ENABLED) {

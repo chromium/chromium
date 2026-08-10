@@ -45,6 +45,9 @@ public class BookmarkPopupProperties {
     public static final WritableObjectPropertyKey<ScaleType> IMAGE_SCALE_TYPE =
             new WritableObjectPropertyKey<>();
 
+    /** Visibility of the bookmark thumbnail image container. */
+    public static final WritableBooleanPropertyKey IMAGE_VISIBLE = new WritableBooleanPropertyKey();
+
     /** Listener for click events on the remove action button. */
     public static final WritableObjectPropertyKey<Runnable> REMOVE_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -81,6 +84,7 @@ public class BookmarkPopupProperties {
         HEADER_TEXT,
         IMAGE_DRAWABLE,
         IMAGE_SCALE_TYPE,
+        IMAGE_VISIBLE,
         PRICE_TRACKING_ENABLED,
         PRICE_TRACKING_SWITCH_CHECKED,
         PRICE_TRACKING_SWITCH_LISTENER,

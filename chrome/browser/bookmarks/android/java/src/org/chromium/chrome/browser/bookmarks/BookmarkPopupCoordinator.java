@@ -61,6 +61,14 @@ public class BookmarkPopupCoordinator {
 
         int popupWidth =
                 activity.getResources().getDimensionPixelSize(R.dimen.bookmark_popup_width);
+        if (activity.getResources().getDisplayMetrics().widthPixels < popupWidth) {
+            mPropertyModel.set(BookmarkPopupProperties.IMAGE_VISIBLE, false);
+            popupWidth -=
+                    activity.getResources()
+                            .getDimensionPixelSize(R.dimen.bookmark_popup_image_size);
+        } else {
+            mPropertyModel.set(BookmarkPopupProperties.IMAGE_VISIBLE, true);
+        }
 
         mPopupWindow =
                 new AnchoredPopupWindow.Builder(
@@ -116,5 +124,15 @@ public class BookmarkPopupCoordinator {
     /** Returns the popup window for testing. */
     public AnchoredPopupWindow getPopupWindowForTesting() {
         return mPopupWindow;
+    }
+
+    /** Returns the property model for testing. */
+    PropertyModel getPropertyModelForTesting() {
+        return mPropertyModel;
+    }
+
+    /** Returns the view for testing. */
+    BookmarkPopupView getViewForTesting() {
+        return mView;
     }
 }

@@ -70,6 +70,12 @@ public class BookmarkPopupViewBinderTest {
 
         mModel.set(BookmarkPopupProperties.IMAGE_SCALE_TYPE, ScaleType.CENTER);
         verify(mView).setImageScaleType(ScaleType.CENTER);
+
+        mModel.set(BookmarkPopupProperties.IMAGE_VISIBLE, true);
+        verify(mView).setImageVisible(true);
+
+        mModel.set(BookmarkPopupProperties.IMAGE_VISIBLE, false);
+        verify(mView).setImageVisible(false);
     }
 
     @Test

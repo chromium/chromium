@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 /** View for the desktop android bookmark popup. */
 @NullMarked
 public class BookmarkPopupView extends ConstraintLayout {
+    private View mImageContainer;
     private ImageView mImageView;
     private TextView mHeaderTextView;
     private EditText mTitleView;
@@ -45,6 +46,7 @@ public class BookmarkPopupView extends ConstraintLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mImageContainer = findViewById(R.id.bookmark_image_container);
         mImageView = findViewById(R.id.bookmark_image);
         mHeaderTextView = findViewById(R.id.popup_title);
         mTitleView = findViewById(R.id.bookmark_title);
@@ -90,6 +92,11 @@ public class BookmarkPopupView extends ConstraintLayout {
     /** Sets the scale type for the bookmark thumbnail image view. */
     public void setImageScaleType(ImageView.ScaleType scaleType) {
         mImageView.setScaleType(scaleType);
+    }
+
+    /** Sets the visibility of the bookmark thumbnail image container. */
+    public void setImageVisible(boolean visible) {
+        mImageContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /** Sets the folder name displayed in the folder selector row. */

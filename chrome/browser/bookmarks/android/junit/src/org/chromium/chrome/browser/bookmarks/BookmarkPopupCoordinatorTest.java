@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import org.junit.Before;
@@ -90,5 +91,45 @@ public class BookmarkPopupCoordinatorTest {
         ShadowLooper.shadowMainLooper().idle();
 
         assertFalse(mCoordinator.getPopupWindowForTesting().isShowing());
+    }
+
+    @Test
+    public void testNarrowWindowHidesImage() {
+        DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
+        displayMetrics.widthPixels = 400;
+
+        BookmarkPopupCoordinator coordinator =
+                new BookmarkPopupCoordinator(
+                        mActivity,
+                        mProfile,
+                        mAnchor,
+                        mBookmarkManagerOpener,
+                        mShoppingService,
+                        mPriceDropNotificationManager);
+
+        assertFalse(
+                coordinator
+                        .getPropertyModelForTesting()
+                        .get(BookmarkPopupProperties.IMAGE_VISIBLE));
+    }
+
+    @Test
+    public void testWideWindowShowsImage() {
+        DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
+        displayMetrics.widthPixels = 600;
+
+        BookmarkPopupCoordinator coordinator =
+                new BookmarkPopupCoordinator(
+                        mActivity,
+                        mProfile,
+                        mAnchor,
+                        mBookmarkManagerOpener,
+                        mShoppingService,
+                        mPriceDropNotificationManager);
+
+        assertTrue(
+                coordinator
+                        .getPropertyModelForTesting()
+                        .get(BookmarkPopupProperties.IMAGE_VISIBLE));
     }
 }
