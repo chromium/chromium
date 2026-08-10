@@ -155,6 +155,10 @@ bool CryptData::SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,
 
   if (!Found)
   {
+#if defined(CHROMIUM_UNRAR)
+    if (KDFCacheMisses++>=CRYPT_KDF_CACHE_MISS_MAX)
+      return false;
+#endif
     char PwdUtf[MAXPASSWORD*4];
     WideToUtf(PwdW,PwdUtf,ASIZE(PwdUtf));
     

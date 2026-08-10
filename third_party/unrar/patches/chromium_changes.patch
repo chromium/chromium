@@ -42,6 +42,23 @@ index db1cb533823bf..8dde040e02fa0 100644
  #ifdef USE_QOPEN
      bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
      int Read(void *Data,size_t Size) override;
+diff --git c/third_party/unrar/src/arcread.cpp w/third_party/unrar/src/arcread.cpp
+index 7cfa30bf6f40b..204023fb52ed2 100644
+--- c/third_party/unrar/src/arcread.cpp
++++ w/third_party/unrar/src/arcread.cpp
+@@ -160,7 +160,11 @@ size_t Archive::ReadHeader15()
+       UnexpEndArcMsg();
+       return 0;
+     }
+-    HeadersCrypt.SetCryptKeys(false,CRYPT_RAR30,&Cmd->Password,Salt,NULL,0,NULL,NULL);
++    if (!HeadersCrypt.SetCryptKeys(false,CRYPT_RAR30,&Cmd->Password,Salt,NULL,0,NULL,NULL))
++    {
++      FailedHeaderDecryption=true;
++      return 0;
++    }
+     Raw.SetCrypt(&HeadersCrypt);
+ #endif
+   }
 diff --git c/third_party/unrar/src/blake2s.hpp w/third_party/unrar/src/blake2s.hpp
 index 90b7885fde18a..4d30fe8685745 100644
 --- c/third_party/unrar/src/blake2s.hpp
@@ -99,11 +116,34 @@ index 61c616289ae47..f9a9d74f021c8 100644
  }
  
  
+diff --git c/third_party/unrar/src/crypt.cpp w/third_party/unrar/src/crypt.cpp
+index 9c754ffe404d8..dbc1fb0c3cef3 100644
+--- c/third_party/unrar/src/crypt.cpp
++++ w/third_party/unrar/src/crypt.cpp
+@@ -13,6 +13,9 @@ CryptData::CryptData()
+   Method=CRYPT_NONE;
+   KDF3CachePos=0;
+   KDF5CachePos=0;
++#if defined(CHROMIUM_UNRAR)
++  KDFCacheMisses=0;
++#endif
+   memset(CRCTab,0,sizeof(CRCTab));
+ }
+ 
+@@ -83,7 +86,7 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
+       break;
+ #endif
+     case CRYPT_RAR30:
+-      SetKey30(Encrypt,Password,PwdW,Salt);
++      Success=SetKey30(Encrypt,Password,PwdW,Salt);
+       break;
+     case CRYPT_RAR50:
+       Success=SetKey50(Encrypt,Password,PwdW,Salt,InitV,Lg2Cnt,HashKey,PswCheck);
 diff --git c/third_party/unrar/src/crypt.hpp w/third_party/unrar/src/crypt.hpp
-index 286c84807c3d5..6d100cdfe9536 100644
+index 286c84807c3d5..cc5aa4d781a1f 100644
 --- c/third_party/unrar/src/crypt.hpp
 +++ w/third_party/unrar/src/crypt.hpp
-@@ -17,9 +17,16 @@ enum CRYPT_METHOD {
+@@ -17,9 +17,23 @@ enum CRYPT_METHOD {
  #define CRYPT_BLOCK_MASK         (CRYPT_BLOCK_SIZE-1) // 0xf
  
  #define CRYPT5_KDF_LG2_COUNT     15 // LOG2 of PDKDF2 iteration count.
@@ -114,12 +154,82 @@ index 286c84807c3d5..6d100cdfe9536 100644
  #define CRYPT5_KDF_LG2_COUNT_MAX 24 // LOG2 of maximum accepted iteration count.
 +#endif
 +
++#if defined(CHROMIUM_UNRAR)
++// Maximum number of distinct keys to derive per CryptData instance. Archives
++// using more salts than this will have remaining encrypted data treated as
++// undecryptable, while still allowing header metadata to be enumerated.
++#define CRYPT_KDF_CACHE_MISS_MAX 16
++#endif
++
  #define CRYPT_VERSION             0 // Supported encryption version.
  
 +static_assert(CRYPT5_KDF_LG2_COUNT <= CRYPT5_KDF_LG2_COUNT_MAX);
  
  class CryptData
  {
+@@ -79,7 +93,7 @@ class CryptData
+     void EncryptBlock20(byte *Buf);
+     void DecryptBlock20(byte *Buf);
+ 
+-    void SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt);
++    bool SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt);
+     bool SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt,const byte *InitV,uint Lg2Cnt,byte *HashKey,byte *PswCheck);
+ 
+     KDF3CacheItem KDF3Cache[4];
+@@ -88,6 +102,10 @@ class CryptData
+     KDF5CacheItem KDF5Cache[4];
+     uint KDF5CachePos;
+ 
++#if defined(CHROMIUM_UNRAR)
++    uint KDFCacheMisses;
++#endif
++
+     CRYPT_METHOD Method;
+ 
+     Rijndael rin;
+diff --git c/third_party/unrar/src/crypt3.cpp w/third_party/unrar/src/crypt3.cpp
+index e6e3a82cbb23a..458cc33d7acf4 100644
+--- c/third_party/unrar/src/crypt3.cpp
++++ w/third_party/unrar/src/crypt3.cpp
+@@ -1,4 +1,4 @@
+-void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt)
++bool CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt)
+ {
+   byte AESKey[16],AESInit[16];
+ 
+@@ -17,6 +17,10 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
+ 
+   if (!Cached)
+   {
++#if defined(CHROMIUM_UNRAR)
++    if (KDFCacheMisses++>=CRYPT_KDF_CACHE_MISS_MAX)
++      return false;
++#endif
+     byte RawPsw[2*MAXPASSWORD+SIZE_SALT30];
+     size_t PswLength=wcslen(PwdW);
+     size_t RawLength=2*PswLength;
+@@ -65,5 +69,6 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
+   rin.Init(Encrypt, AESKey, 128, AESInit);
+   cleandata(AESKey,sizeof(AESKey));
+   cleandata(AESInit,sizeof(AESInit));
++  return true;
+ }
+ 
+diff --git c/third_party/unrar/src/crypt5.cpp w/third_party/unrar/src/crypt5.cpp
+index 2183c8f0814b5..ed2dfc966436a 100644
+--- c/third_party/unrar/src/crypt5.cpp
++++ w/third_party/unrar/src/crypt5.cpp
+@@ -155,6 +155,10 @@ bool CryptData::SetKey50(bool Encrypt,SecPassword *Password,const wchar *PwdW,
+ 
+   if (!Found)
+   {
++#if defined(CHROMIUM_UNRAR)
++    if (KDFCacheMisses++>=CRYPT_KDF_CACHE_MISS_MAX)
++      return false;
++#endif
+     char PwdUtf[MAXPASSWORD*4];
+     WideToUtf(PwdW,PwdUtf,ASIZE(PwdUtf));
+     
 diff --git c/third_party/unrar/src/errhnd.cpp w/third_party/unrar/src/errhnd.cpp
 index b347678fe1903..0a363a79c74b8 100644
 --- c/third_party/unrar/src/errhnd.cpp

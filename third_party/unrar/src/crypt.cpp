@@ -13,6 +13,9 @@ CryptData::CryptData()
   Method=CRYPT_NONE;
   KDF3CachePos=0;
   KDF5CachePos=0;
+#if defined(CHROMIUM_UNRAR)
+  KDFCacheMisses=0;
+#endif
   memset(CRCTab,0,sizeof(CRCTab));
 }
 
@@ -83,7 +86,7 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
       break;
 #endif
     case CRYPT_RAR30:
-      SetKey30(Encrypt,Password,PwdW,Salt);
+      Success=SetKey30(Encrypt,Password,PwdW,Salt);
       break;
     case CRYPT_RAR50:
       Success=SetKey50(Encrypt,Password,PwdW,Salt,InitV,Lg2Cnt,HashKey,PswCheck);

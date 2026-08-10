@@ -330,6 +330,22 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPasswordMultipleFiles) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeRar4WithManyEncryptedEntries) {
+  // v4_many_encrypted.rar is a RAR 4.x archive containing 500 zero-length
+  // encrypted entries, each with a distinct salt. Analysis should enumerate
+  // every entry without spending unbounded time on key derivation.
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("v4_many_encrypted.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_EQ(500, results.archived_binary.size());
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+}
+
 TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarContainingExecutable) {
   // Can detect when .rar contains executable files.
   // has_exe.rar contains 1 file: signed.exe

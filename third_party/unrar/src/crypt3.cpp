@@ -1,4 +1,4 @@
-void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt)
+bool CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,const byte *Salt)
 {
   byte AESKey[16],AESInit[16];
 
@@ -17,6 +17,10 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
 
   if (!Cached)
   {
+#if defined(CHROMIUM_UNRAR)
+    if (KDFCacheMisses++>=CRYPT_KDF_CACHE_MISS_MAX)
+      return false;
+#endif
     byte RawPsw[2*MAXPASSWORD+SIZE_SALT30];
     size_t PswLength=wcslen(PwdW);
     size_t RawLength=2*PswLength;
@@ -65,5 +69,6 @@ void CryptData::SetKey30(bool Encrypt,SecPassword *Password,const wchar *PwdW,co
   rin.Init(Encrypt, AESKey, 128, AESInit);
   cleandata(AESKey,sizeof(AESKey));
   cleandata(AESInit,sizeof(AESInit));
+  return true;
 }
 
