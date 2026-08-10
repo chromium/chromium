@@ -190,8 +190,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
-        mMediator.show(waitForKeyboard, isCredentialFieldOrHasAutofillSuggestions);
+    public void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
+        mMediator.show(waitForKeyboard, shouldShowOnLargeFormFactor);
     }
 
     @Override
@@ -273,8 +273,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void forceShowForTesting() {
-        mMediator.show(
-                /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
+        mMediator.show(/* waitForKeyboard= */ true, /* shouldShowOnLargeFormFactor= */ true);
     }
 
     @Override

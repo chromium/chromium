@@ -42,10 +42,8 @@ class ManualFillingProperties {
     // KEYBOARD_EXTENSION_STATE.
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_EXTEND_KEYBOARD =
             new PropertyModel.WritableBooleanPropertyKey("should_extend_keyboard");
-    static final PropertyModel.WritableBooleanPropertyKey
-            IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS =
-                    new PropertyModel.WritableBooleanPropertyKey(
-                            "is_credential_field_or_has_autofill_suggestions");
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_ON_LARGE_FORM_FACTOR =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_on_large_form_factor");
     static final PropertyModel.WritableObjectPropertyKey<RectF> FIELD_BOUNDS =
             new PropertyModel.WritableObjectPropertyKey<>("field_bounds");
 
@@ -98,7 +96,7 @@ class ManualFillingProperties {
                         IS_FULLSCREEN,
                         SUPPRESSED_BY_BOTTOM_SHEET,
                         SHOULD_EXTEND_KEYBOARD,
-                        IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS,
+                        SHOULD_SHOW_ON_LARGE_FORM_FACTOR,
                         FIELD_BOUNDS)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
@@ -106,7 +104,7 @@ class ManualFillingProperties {
                 .with(IS_FULLSCREEN, false)
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .with(SHOULD_EXTEND_KEYBOARD, true)
-                .with(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS, false)
+                .with(SHOULD_SHOW_ON_LARGE_FORM_FACTOR, false)
                 .with(FIELD_BOUNDS, new RectF())
                 .build();
     }

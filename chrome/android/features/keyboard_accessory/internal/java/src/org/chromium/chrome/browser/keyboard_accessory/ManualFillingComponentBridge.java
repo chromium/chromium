@@ -104,10 +104,9 @@ class ManualFillingComponentBridge {
     }
 
     @CalledByNative
-    void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
+    void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
         if (getManualFillingComponent() != null) {
-            getManualFillingComponent()
-                    .show(waitForKeyboard, isCredentialFieldOrHasAutofillSuggestions);
+            getManualFillingComponent().show(waitForKeyboard, shouldShowOnLargeFormFactor);
         }
     }
 

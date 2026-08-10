@@ -42,7 +42,7 @@ namespace {
 
 constexpr auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
     {FillingSource::PASSWORD_FALLBACKS, FillingSource::CREDIT_CARD_FALLBACKS,
-     FillingSource::ADDRESS_FALLBACKS});
+     FillingSource::ADDRESS_FALLBACKS, FillingSource::AT_MEMORY});
 
 constexpr char
     kUmaAccessoryActionSelectedForNonCredentialFieldWithoutSuggestions[] =
@@ -85,6 +85,7 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
   DCHECK(pwd_controller);
   DCHECK(address_controller);
   DCHECK(payment_method_controller);
+  DCHECK(at_memory_controller);
   DCHECK(view);
 
   web_contents->SetUserData(
@@ -334,11 +335,14 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
     case FocusedFieldType::kUnknown:
       return available_sources_.contains(FillingSource::AUTOFILL);
 
-    // AtMemory suggestion is supported for contenteditable fields.
+    // AtMemory suggestions are supported for contenteditable fields on Android.
+    // Unlike database-backed fallback sheets (passwords, addresses, payments)
+    // which signal availability asynchronously via `available_sources_`,
+    // AtMemory availability on contenteditables is purely focus-driven and
+    // only requires that the `AtMemoryAccessoryController` is attached.
+    // Note: `PasswordAutofillAgent` verifies the feature enablement.
     case FocusedFieldType::kContenteditableField:
-      // TODO(crbug.com/370301890): Return and handle a new, dedicated
-      // `FillingSource`.
-      return available_sources_.contains(FillingSource::AUTOFILL);
+      return at_memory_controller_ != nullptr;
   }
 }
 
@@ -359,17 +363,17 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       }
     }
 
-    // TODO(crbug.com/370301890): Account for kContenteditableField and AtMemory
-    // `FillingSource` when determining suppression on LFF.
     view_->Show(
         ManualFillingViewInterface::WaitForKeyboard(
             last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
             last_focused_field_type_ != FocusedFieldType::kUnknown),
-        ManualFillingViewInterface::IsCredentialFieldOrHasAutofillSuggestions(
+        ManualFillingViewInterface::ShouldShowOnLargeFormFactor(
             last_focused_field_type_ ==
                 FocusedFieldType::kFillableUsernameField ||
             last_focused_field_type_ ==
                 FocusedFieldType::kFillablePasswordField ||
+            last_focused_field_type_ ==
+                FocusedFieldType::kContenteditableField ||
             available_sources_.contains(FillingSource::AUTOFILL)));
   } else {
     view_->Hide();
@@ -459,6 +463,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
       return payment_method_controller_.get();
     case FillingSource::ADDRESS_FALLBACKS:
       return address_controller_.get();
+    case FillingSource::AT_MEMORY:
+      return at_memory_controller_.get();
     case FillingSource::AUTOFILL:
       NOTREACHED() << "Controller not defined for filling source: "
                    << static_cast<int>(filling_source);

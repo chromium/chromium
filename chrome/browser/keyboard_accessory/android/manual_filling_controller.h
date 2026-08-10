@@ -44,6 +44,7 @@ class ManualFillingController {
     PASSWORD_FALLBACKS,
     CREDIT_CARD_FALLBACKS,
     ADDRESS_FALLBACKS,
+    AT_MEMORY,
   };
 
   using ShouldShowAction = base::StrongAlias<struct ShouldShowActionTag, bool>;

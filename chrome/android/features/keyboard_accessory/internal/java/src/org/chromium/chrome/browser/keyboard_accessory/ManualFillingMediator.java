@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
@@ -17,6 +16,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.PORTRAIT_ORIENTATION;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOULD_EXTEND_KEYBOARD;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOULD_SHOW_ON_LARGE_FORM_FACTOR;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
@@ -444,10 +444,8 @@ class ManualFillingMediator
         hideSoftKeyboard();
     }
 
-    void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
-        mModel.set(
-                IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS,
-                isCredentialFieldOrHasAutofillSuggestions);
+    void show(boolean waitForKeyboard, boolean shouldShowOnLargeFormFactor) {
+        mModel.set(SHOULD_SHOW_ON_LARGE_FORM_FACTOR, shouldShowOnLargeFormFactor);
         showWithKeyboardExtensionState(waitForKeyboard);
     }
 
@@ -582,8 +580,8 @@ class ManualFillingMediator
             // in HIDDEN state.
             assert mModel.get(SHOULD_EXTEND_KEYBOARD) || is(HIDDEN);
             return;
-        } else if (property == IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS) {
-            // Do nothing. IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS is used with
+        } else if (property == SHOULD_SHOW_ON_LARGE_FORM_FACTOR) {
+            // Do nothing. SHOULD_SHOW_ON_LARGE_FORM_FACTOR is used with
             // KEYBOARD_EXTENSION_STATE.
             return;
         } else if (property == FIELD_BOUNDS) {
@@ -662,14 +660,13 @@ class ManualFillingMediator
     }
 
     private boolean shouldHideKeyboardAccessoryForLargeFormFactor() {
-        // Hides keyboard accessory if it is large form factor and does not have autofill
-        // suggestions for non credential fields. The check for feature flag needs to happen before
-        // `IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS` check to ensure we get the unbiased
-        // metrics.
+        // Hides keyboard accessory if it is large form factor and the field is not eligible to show
+        // the accessory on large form factor. The check for feature flag needs to happen before
+        // `SHOULD_SHOW_ON_LARGE_FORM_FACTOR` check to ensure we get the unbiased metrics.
         return isLargeFormFactor()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY)
-                && !mModel.get(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS);
+                && !mModel.get(SHOULD_SHOW_ON_LARGE_FORM_FACTOR);
     }
 
     /**
