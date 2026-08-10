@@ -69,7 +69,7 @@ number may vary (`echo $DISPLAY` outside the chroot to see what your display
 number is).
 
 You can also use `Xvfb` if you only want to
-[run tests headless](web_tests_linux.md#Using-an-embedded-X-server).
+[run tests headless](../testing/web_tests_linux.md#Using-an-embedded-X-server).
 
 ### Having web test results open in a browser
 
