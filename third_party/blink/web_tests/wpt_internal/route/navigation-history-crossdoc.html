@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<title>Cross-document @navigation(history: reload|back|forward|traverse)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+    function waitForNextLoad() {
+      return new Promise(resolve => {
+        let events = [];
+        const listener = e => {
+          events.push(e.data);
+          if (e.data.event === "load") {
+            window.removeEventListener("message", listener);
+            t.step_timeout(() => resolve(events), 0);
+          }
+        };
+        window.addEventListener("message", listener);
+      });
+    }
+
+    // Step 1: Initial load
+    let p = waitForNextLoad();
+    let iframe = document.createElement("iframe");
+    iframe.src = "resources/navigation-history-crossdoc-helper.html";
+    document.body.appendChild(iframe);
+    let initialEvents = await p;
+
+    assert_true(initialEvents.length > 0, "Received initial load events");
+    assert_true(initialEvents.every(e => !e.match.reload && !e.match.back && !e.match.forward && !e.match.traverse), "Initial load matches none");
+
+    // Step 2: Reload
+    p = waitForNextLoad();
+    iframe.contentWindow.location.reload();
+    let reloadEvents = await p;
+
+    let domContentLoadedEvent = reloadEvents.find(e => e.event === "DOMContentLoaded");
+    let loadEvent = reloadEvents.find(e => e.event === "load");
+    assert_true(domContentLoadedEvent && domContentLoadedEvent.match.reload, "DOMContentLoaded matches history: reload");
+    assert_true(loadEvent && loadEvent.match.reload, "load matches history: reload");
+
+    // Step 3: Navigate to page 2 (push)
+    p = waitForNextLoad();
+    iframe.contentWindow.location.href = "resources/navigation-history-crossdoc-helper.html?page=2";
+    let pushEvents = await p;
+    assert_true(pushEvents.every(e => !e.match.back && !e.match.forward && !e.match.reload && !e.match.traverse), "Push navigation matches none");
+
+    // Step 4: Go back in history (cross-document back)
+    p = waitForNextLoad();
+    iframe.contentWindow.history.back();
+    let backEvents = await p;
+
+    let backDCL = backEvents.find(e => e.event === "DOMContentLoaded");
+    let backLoad = backEvents.find(e => e.event === "load");
+    assert_true(backDCL && backDCL.match.back && backDCL.match.traverse, "DOMContentLoaded matches back & traverse");
+    assert_false(backDCL.match.forward || backDCL.match.reload, "DOMContentLoaded does not match forward or reload");
+    assert_true(backLoad && backLoad.match.back && backLoad.match.traverse, "load matches back & traverse");
+    assert_false(backLoad.match.forward || backLoad.match.reload, "load does not match forward or reload");
+
+    // Step 5: Go forward in history (cross-document forward)
+    p = waitForNextLoad();
+    iframe.contentWindow.history.forward();
+    let fwdEvents = await p;
+
+    let fwdDCL = fwdEvents.find(e => e.event === "DOMContentLoaded");
+    let fwdLoad = fwdEvents.find(e => e.event === "load");
+    assert_true(fwdDCL && fwdDCL.match.forward && fwdDCL.match.traverse, "DOMContentLoaded matches forward & traverse");
+    assert_false(fwdDCL.match.back || fwdDCL.match.reload, "DOMContentLoaded does not match back or reload");
+    assert_true(fwdLoad && fwdLoad.match.forward && fwdLoad.match.traverse, "load matches forward & traverse");
+    assert_false(fwdLoad.match.back || fwdLoad.match.reload, "load does not match back or reload");
+  }, "Cross-document reload, back, and forward");
+</script>

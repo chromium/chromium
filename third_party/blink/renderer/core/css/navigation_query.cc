@@ -158,6 +158,8 @@ bool NavigationTypeTestExpression::Matches(Document& document) const {
       return type_ == kTraverse || type_ == kBack;
     case NavigationState::kForward:
       return type_ == kTraverse || type_ == kForward;
+    case NavigationState::kReload:
+      return type_ == kReload;
   }
 }
 
@@ -173,7 +175,9 @@ void NavigationTypeTestExpression::SerializeTo(StringBuilder& builder) const {
     case kForward:
       builder.Append("forward");
       break;
-      // TODO(crbug.com/436805487): Support "reload".
+    case kReload:
+      builder.Append("reload");
+      break;
   }
 }
 

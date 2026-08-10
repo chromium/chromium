@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>@navigation(history:back|forward|traverse)</title>
+<title>@navigation(history:back|forward|traverse|reload)</title>
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#typedef-navigation-type-test">
 <style>
   @navigation(history: back) {
@@ -11,6 +11,9 @@
   @navigation(history: traverse) {
     #elm { padding-top: 12px; }
   }
+  @navigation(history: reload) {
+    #elm { padding-bottom: 13px; padding-left: 14px; }
+  }
 </style>
 <div id="elm"></div>
 <script src="/resources/testharness.js"></script>
@@ -19,15 +22,17 @@
   const no_match = "0px";
   const match_traverse_back = "12px 0px 0px 10px";
   const match_traverse_forward = "12px 11px 0px 0px";
+  const match_reload = "0px 0px 13px 14px";
 
   promise_test(async (t) => {
     await new Promise(r => window.onload = () => t.step_timeout(r, 0));
 
-    let nav, precommit, handler;
+    let nav, precommit, handler, success;
     function setup() {
       nav = Promise.withResolvers();
       precommit = Promise.withResolvers();
       handler = Promise.withResolvers();
+      success = Promise.withResolvers();
 
       navigation.addEventListener("navigate", event => {
         nav.resolve();
@@ -42,44 +47,61 @@
           }
         })
       }, {once: true});
+      navigation.addEventListener("navigatesuccess", () => {
+        t.step_timeout(success.resolve, 0);
+      }, {once: true});
+      return { nav, precommit, handler, success };
     }
-    // Navigate to a URL. This is not history traversal.
-    setup();
+
+    // Navigate to a URL. This is not history traversal or reload.
+    let s = setup();
     assert_equals(getComputedStyle(elm).padding, no_match);
     navigation.navigate("#aaaaa");
-    await nav.promise;
+    await s.nav.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
-    await precommit.promise;
+    await s.precommit.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
     await navigation.transition.committed;
     assert_equals(getComputedStyle(elm).padding, no_match);
-    await handler.promise;
+    await s.handler.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
-    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    await s.success.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
 
     // Go back in history. history:back and history:traverse should match.
-    setup();
+    s = setup();
     navigation.back();
-    await nav.promise;
+    await s.nav.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
-    await precommit.promise;
+    await s.precommit.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
-    await handler.promise;
+    await s.handler.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_back);
-    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    await s.success.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
 
     // Go forward in history. history:forward and history:traverse should match.
-    setup();
+    s = setup();
     navigation.forward();
-    await nav.promise;
+    await s.nav.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
-    await precommit.promise;
+    await s.precommit.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
-    await handler.promise;
+    await s.handler.promise;
     assert_equals(getComputedStyle(elm).padding, match_traverse_forward);
-    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    await s.success.promise;
     assert_equals(getComputedStyle(elm).padding, no_match);
-  }, "Go forward");
+
+    // Reload. history:reload should match.
+    s = setup();
+    navigation.reload();
+    await s.nav.promise;
+    assert_equals(getComputedStyle(elm).padding, match_reload);
+    await s.precommit.promise;
+    assert_equals(getComputedStyle(elm).padding, match_reload);
+    await s.handler.promise;
+    assert_equals(getComputedStyle(elm).padding, match_reload);
+    await s.success.promise;
+    assert_equals(getComputedStyle(elm).padding, no_match);
+  }, "Go forward and reload");
 </script>

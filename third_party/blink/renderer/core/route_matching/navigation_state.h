@@ -30,6 +30,7 @@ class CORE_EXPORT NavigationState final
     kNotTraversing,
     kBack,
     kForward,
+    kReload,
   };
 
   NavigationState(Document& document,

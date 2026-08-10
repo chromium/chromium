@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<style>
+  @navigation (history: reload) {
+    #elm { --matches-reload: yes; }
+  }
+  @navigation (history: back) {
+    #elm { --matches-back: yes; }
+  }
+  @navigation (history: forward) {
+    #elm { --matches-forward: yes; }
+  }
+  @navigation (history: traverse) {
+    #elm { --matches-traverse: yes; }
+  }
+</style>
+<div id="elm"></div>
+<script>
+  function getMatchResult() {
+    const style = getComputedStyle(elm);
+    return {
+      reload: style.getPropertyValue("--matches-reload").trim() == "yes",
+      back: style.getPropertyValue("--matches-back").trim() == "yes",
+      forward: style.getPropertyValue("--matches-forward").trim() == "yes",
+      traverse: style.getPropertyValue("--matches-traverse").trim() == "yes",
+    };
+  }
+
+  window.addEventListener("pageswap", (e) => {
+    window.parent.postMessage({ event: "pageswap", match: getMatchResult() }, "*");
+  });
+  window.addEventListener("pagereveal", (e) => {
+    window.parent.postMessage({ event: "pagereveal", match: getMatchResult() }, "*");
+  });
+  window.addEventListener("DOMContentLoaded", (e) => {
+    window.parent.postMessage({ event: "DOMContentLoaded", match: getMatchResult() }, "*");
+  });
+  window.addEventListener("load", (e) => {
+    window.parent.postMessage({ event: "load", match: getMatchResult() }, "*");
+  });
+</script>

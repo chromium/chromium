@@ -31,6 +31,12 @@
   }, "navigation-type-test");
 
   test(()=> {
+    const canonical = "@navigation (history: reload) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( History:Reload){ \n } ", canonical);
+  }, "navigation-type-test reload");
+
+  test(()=> {
     const canonical = "@navigation (phase: loading) {\n}";
     test_valid_rule(canonical);
     test_valid_rule("@Navigation  ( Phase:Loading){ \n } ", canonical);

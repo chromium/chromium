@@ -42,8 +42,7 @@ NavigationTestExpression* NavigationParser::ParseNavigationTest(
     } else if (EqualIgnoringAsciiCase(type_token.Value(), "forward")) {
       type = NavigationTypeTestExpression::kForward;
     } else if (EqualIgnoringAsciiCase(type_token.Value(), "reload")) {
-      // TODO(crbug.com/436805487): Support "reload".
-      return nullptr;
+      type = NavigationTypeTestExpression::kReload;
     } else {
       return nullptr;
     }

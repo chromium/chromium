@@ -142,8 +142,7 @@ class NavigationPhaseTestExpression : public NavigationTestExpression {
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-type-test
 class NavigationTypeTestExpression : public NavigationTestExpression {
  public:
-  // TODO(crbug.com/436805487): Support "reload".
-  enum Type { kTraverse, kBack, kForward };
+  enum Type { kTraverse, kBack, kForward, kReload };
 
   explicit NavigationTypeTestExpression(Type type) : type_(type) {}
 
