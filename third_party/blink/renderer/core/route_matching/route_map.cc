@@ -181,6 +181,9 @@ void RouteMap::SetNavigationStarted() {
 }
 
 void RouteMap::SetTraverseType(NavigationState::HistoryTraverseType type) {
+  if (!RuntimeEnabledFeatures::NavigationTypeAndPhaseEnabled()) {
+    return;
+  }
   auto* navigation_state = NavigationState::Get(&GetDocument());
   DCHECK(navigation_state);
   navigation_state->SetTraverseType(type);

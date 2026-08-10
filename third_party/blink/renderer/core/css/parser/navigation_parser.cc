@@ -27,7 +27,8 @@ NavigationTestExpression* NavigationParser::ParseNavigationTest(
     return nullptr;
   }
   stream.ConsumeIncludingWhitespace();
-  if (EqualIgnoringAsciiCase(token.Value(), "history")) {
+  if (EqualIgnoringAsciiCase(token.Value(), "history") &&
+      RuntimeEnabledFeatures::NavigationTypeAndPhaseEnabled()) {
     // <navigation-type-test> = history : <navigation-type-keyword>
     // <navigation-type-keyword> = traverse | back | forward | reload
     if (stream.Peek().GetType() != kIdentToken) {
@@ -49,7 +50,8 @@ NavigationTestExpression* NavigationParser::ParseNavigationTest(
     return MakeGarbageCollected<NavigationTypeTestExpression>(type);
   }
 
-  if (EqualIgnoringAsciiCase(token.Value(), "phase")) {
+  if (EqualIgnoringAsciiCase(token.Value(), "phase") &&
+      RuntimeEnabledFeatures::NavigationTypeAndPhaseEnabled()) {
     // <navigation-phase-test> = phase : <navigation-phase-keyword>
     // <navigation-phase-keyword> = loading | ready | committed
     if (stream.Peek().GetType() != kIdentToken) {
