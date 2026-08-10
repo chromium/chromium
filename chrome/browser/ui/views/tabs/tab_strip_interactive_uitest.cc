@@ -93,8 +93,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
 class TestNewTabButtonContextMenu : public TabStripInteractiveUiTest {
  public:
   TestNewTabButtonContextMenu() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupMenuMoreEntryPoints}, {tabs::kTabStripUnification});
+    scoped_feature_list_.InitWithFeatures({}, {tabs::kTabStripUnification});
   }
 
   TabStrip* tabstrip() {

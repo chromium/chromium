@@ -26,7 +26,6 @@ BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 // Enables a compositor-driven rotation animation for the tab load throbber.
 BASE_DECLARE_FEATURE(kCompositorLoadingThrobber);
 
-BASE_DECLARE_FEATURE(kCreateNewTabGroupAppMenuTopLevel);
 
 BASE_DECLARE_FEATURE(kCtrlTabMru);
 
@@ -193,11 +192,6 @@ BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 BASE_DECLARE_FEATURE(kCollapseTabGroupDuringDrag);
 
 #if !BUILDFLAG(IS_ANDROID)
-// General improvements to tab group menus
-
-BASE_DECLARE_FEATURE(kTabGroupMenuMoreEntryPoints);
-bool IsTabGroupMenuMoreEntryPointsEnabled();
-
 BASE_DECLARE_FEATURE(kNewTabButtonContextMenu);
 
 BASE_DECLARE_FEATURE(kTabGroupHoverCards);
@@ -298,11 +292,6 @@ BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
 
 BASE_DECLARE_FEATURE(kPageActionsPrioritySelector);
 
-#if BUILDFLAG(IS_MAC)
-// Add tab group colours when viewing tab groups using the top mac OS menu bar.
-BASE_DECLARE_FEATURE(kShowTabGroupsMacSystemMenu);
-bool IsShowTabGroupsMacSystemMenuEnabled();
-#endif  // BUILDFLAG(IS_MAC)
 
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
@@ -315,11 +304,6 @@ BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanel);
 BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Controls whether to add new tabs to active tab group or to the end of the
-// tab strip.
-BASE_DECLARE_FEATURE(kNewTabAddsToActiveGroup);
-
-bool IsNewTabAddsToActiveGroupEnabled();
 
 bool IsWebUIReloadButtonEnabled();
 
@@ -359,10 +343,6 @@ bool IsWebUIToolbarFullyEnabled();
 // Controls whether to show a toast for Chrome non milestone update.
 BASE_DECLARE_FEATURE(kNonMilestoneUpdateToast);
 
-// Controls whether the updated bookmark and tab group conversion is enabled.
-BASE_DECLARE_FEATURE(kBookmarkTabGroupConversion);
-
-bool IsBookmarkTabGroupConversionEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInBrowser);

@@ -56,8 +56,7 @@ class SharedTabGroupInteractiveUiTest
 
   void SetUp() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {data_sharing::features::kDataSharingFeature, {}},
-        {features::kTabGroupMenuMoreEntryPoints, {}}};
+        {data_sharing::features::kDataSharingFeature, {}}};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     InProcessBrowserTest::SetUp();

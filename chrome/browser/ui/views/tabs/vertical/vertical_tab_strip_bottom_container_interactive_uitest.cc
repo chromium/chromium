@@ -160,15 +160,6 @@ class NewTabButtonContextMenuInteractiveUITest
  public:
   NewTabButtonContextMenuInteractiveUITest() = default;
   ~NewTabButtonContextMenuInteractiveUITest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    VerticalTabStripBottomContainerInteractiveUiTest::
-        SetUpInProcessBrowserTestFixture();
-    feature_list_.InitAndEnableFeature(features::kTabGroupMenuMoreEntryPoints);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NewTabButtonContextMenuInteractiveUITest,
