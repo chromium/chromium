@@ -11,7 +11,8 @@ export function getHtml(this: InstalledAppListItemElement) {
   return html`
 <div id="icon-circle">
   ${this.app.name.length > 0 ? html`
-    <img src="chrome://app-icon/${this.app.appId}/48" alt="">
+    <img id="app-icon" draggable="false"
+         src="chrome://app-icon/${this.app.appId}/48" alt="">
   ` : ''}
 </div>
 <div id="details">

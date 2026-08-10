@@ -80,3 +80,8 @@
   margin-inline-end: 16px;
   width: 48px;
 }
+
+#app-icon {
+  width: 100%;
+  height: 100%;
+}
