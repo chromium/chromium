@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
 
 namespace ui::test::internal {
@@ -33,6 +35,43 @@ class ElementCountStateObserver : public StateObserver<size_t> {
 
 DECLARE_STATE_IDENTIFIER_VALUE(::ui::test::internal::ElementCountStateObserver,
                                kWaitForElementCountState);
+
+// Observer that waits for an element that matches a specific `id` in `context`
+// that satisfies `predicate`. If `context` is null, elements in all contexts
+// are checked.
+class ElementMatcherStateObserver : public StateObserver<bool> {
+ public:
+  using Predicate = base::RepeatingCallback<bool(const ui::TrackedElement* el)>;
+
+  ElementMatcherStateObserver(ui::ElementIdentifier id,
+                              ui::ElementContext context,
+                              const Predicate& predicate);
+  ~ElementMatcherStateObserver() override;
+
+  bool GetStateObserverInitialState() const override;
+
+  // General purpose function for trying to find a matching element.
+  static ui::TrackedElement* GetMatchingElement(ui::ElementIdentifier id,
+                                                ui::ElementContext context,
+                                                const Predicate& predicate);
+
+ private:
+  void UpdatePresence(ui::TrackedElement*);
+
+  const ui::ElementIdentifier id_;
+  const ui::ElementContext context_;
+  const Predicate predicate_;
+  base::CallbackListSubscription shown_subscription_;
+  base::CallbackListSubscription hidden_subscription_;
+  bool present_ = false;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(
+    ::ui::test::internal::ElementMatcherStateObserver,
+    kWaitForMatchingElementState);
+
+DECLARE_STATE_IDENTIFIER_VALUE(::ui::test::PollingStateObserver<bool>,
+                               kWaitForElementMatchingImplState);
 
 }  // namespace ui::test::internal
 

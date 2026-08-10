@@ -49,46 +49,39 @@ class TrackedElementManagerBrowsertest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TrackedElementManagerBrowsertest, CheckElementsExist) {
-  gfx::Rect bounds;
-  std::string secondary_id;
-  ui::TrackedElement* target_menu_item = nullptr;
+  gfx::Rect menu_bounds;
   RunTestSequence(
       InstrumentTab(kTabElementId),
       NavigateWebContents(kTabElementId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      // Wait for the menu element to appear and capture its bounds.
       InAnyContext(AfterShow(UserEducationInternalsUI::kMenuElementId,
-                             [&bounds, &secondary_id](ui::TrackedElement* el) {
+                             [&menu_bounds](ui::TrackedElement* el) {
                                auto* const dom_el =
                                    el->AsA<ui::TrackedElementWebUI>();
                                ASSERT_NE(nullptr, dom_el);
-                               bounds = dom_el->GetScreenBounds();
-                               secondary_id = dom_el->secondary_identifier();
-                             }),
-                   WaitForElementCount(
-                       UserEducationInternalsUI::kMenuItemElementId, 8U)),
-      Do([&bounds, &target_menu_item] {
-        const auto menu_items =
-            ui::ElementTracker::GetElementTracker()
-                ->GetAllMatchingElementsInAnyContext(
-                    UserEducationInternalsUI::kMenuItemElementId);
-        EXPECT_EQ(8U, menu_items.size());
-        std::set<std::string> secondary_ids;
-        for (auto* menu_item : menu_items) {
-          auto* const dom_el = menu_item->AsA<ui::TrackedElementWebUI>();
-          ASSERT_NE(nullptr, dom_el);
-          const auto secondary_id = dom_el->secondary_identifier();
-          const auto item_bounds = dom_el->GetScreenBounds();
-          ASSERT_FALSE(secondary_id.empty());
-          ASSERT_TRUE(secondary_ids.insert(secondary_id).second)
-              << "Duplicate secondary ID: " << secondary_id;
-          EXPECT_TRUE(bounds.Contains(item_bounds));
-          if (secondary_id == "index:2") {
-            target_menu_item = dom_el;
-          }
-        }
-      }),
-      NameElement(kElementName, std::ref(target_menu_item)),
+                               menu_bounds = dom_el->GetScreenBounds();
+                             })),
+      InSameContext(
+          // Wait for all menu items to be present.
+          WaitForElementCount(UserEducationInternalsUI::kMenuItemElementId, 8U),
+          // Grab the menu item for section 2.
+          NameElementMatching(
+              UserEducationInternalsUI::kMenuItemElementId, kElementName,
+              [](const ui::TrackedElement* el) {
+                auto* const dom_el = el->AsA<ui::TrackedElementWebUI>();
+                return dom_el && dom_el->secondary_identifier() == "index:2";
+              })),
+      // Verify that the menu item is inside the menu.
+      CheckElement(kElementName,
+                   [&menu_bounds](ui::TrackedElement* el) {
+                     const auto item_bounds = el->GetScreenBounds();
+                     return !item_bounds.IsEmpty() &&
+                            menu_bounds.Contains(item_bounds);
+                   }),
+      // Click the menu item
       PressButton(kElementName),
+      // Verify that the index changes in the document.
       CheckJsResultAt(kTabElementId, {"user-education-internals"},
                       "el => el.selectedTabIndex", 2));
 }

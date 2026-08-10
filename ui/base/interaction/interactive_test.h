@@ -317,6 +317,20 @@ class InteractiveTestApi {
   [[nodiscard]] MultiStep WaitForElementCount(ElementIdentifier id,
                                               size_t count);
 
+  // Waits for an element with identifier `id` to appear in the current context
+  // (or in any context, if that is specified) which matches `predicate`.
+  //
+  // If `poll` is true (default), will check periodically, which means that this
+  // step will succeed if the state of an existing element changes. If `poll` is
+  // set to false, will only update whether a match is present when an element
+  // with that id is show or hidden. Prefer to use polling unless you absolutely
+  // must transition directly on an event.
+  template <typename P>
+    requires internal::HasSignature<P, bool(const TrackedElement*)>
+  [[nodiscard]] MultiStep WaitForElementMatching(ElementIdentifier id,
+                                                 P&& predicate,
+                                                 bool poll = true);
+
   // Specifies an element not relative to any particular other element.
   using AbsoluteElementSpecifier = std::variant<
       // Specify an element that is known at the time the sequence is created.
@@ -347,6 +361,14 @@ class InteractiveTestApi {
   [[nodiscard]] StepBuilder NameElementRelative(ElementSpecifier relative_to,
                                                 std::string_view name,
                                                 C&& find_callback);
+
+  // Names the first element with identifier `id` which matches `predicate` as
+  // `name`. Fails if an element is not found.
+  template <typename P>
+    requires internal::HasSignature<P, bool(const TrackedElement*)>
+  [[nodiscard]] StepBuilder NameElementMatching(ui::ElementIdentifier id,
+                                                std::string_view name,
+                                                P&& predicate);
 
   // Adds an observed state with identifier `id` in the current context. Use
   // `WaitForState()` to wait for state changes. This is a useful way to wait
@@ -759,6 +781,18 @@ class InteractiveTestApi {
   static FindElementCallback GetFindElementCallback(
       AbsoluteElementSpecifier spec);
 
+  // Implementation for WaitForElementMatching().
+  MultiStep WaitForElementMatchingImpl(
+      ui::ElementIdentifier id,
+      base::RepeatingCallback<bool(const TrackedElement*)> callback,
+      bool poll);
+
+  // Implementation for NameElementMatching().
+  StepBuilder NameElementMatchingImpl(
+      ui::ElementIdentifier id,
+      std::string_view name,
+      base::RepeatingCallback<bool(const TrackedElement*)> callback);
+
   // Helper method to add a step or steps to a sequence builder.
   static void AddStep(InteractionSequence::Builder& builder, MultiStep steps);
   template <typename T>
@@ -911,6 +945,26 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
   return builder;
 }
 
+template <typename P>
+  requires internal::HasSignature<P, bool(const TrackedElement*)>
+InteractiveTestApi::MultiStep InteractiveTestApi::WaitForElementMatching(
+    ElementIdentifier id,
+    P&& predicate,
+    bool poll) {
+  return WaitForElementMatchingImpl(id, internal::MaybeBindRepeating(predicate),
+                                    poll);
+}
+
+template <typename P>
+  requires internal::HasSignature<P, bool(const TrackedElement*)>
+InteractionSequence::StepBuilder InteractiveTestApi::NameElementMatching(
+    ui::ElementIdentifier id,
+    std::string_view name,
+    P&& predicate) {
+  return NameElementMatchingImpl(id, name,
+                                 internal::MaybeBindRepeating(predicate));
+}
+
 // static
 template <typename C>
   requires internal::HasSignature<C, TrackedElement*(TrackedElement*)>
@@ -925,8 +979,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElementRelative(
   builder.SetMustBeVisibleAtStart(true);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<TrackedElement*(TrackedElement*)> find_callback,
-         std::string name, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
+         std::string name, ui::InteractionSequence* seq, TrackedElement* el) {
         TrackedElement* const result = std::move(find_callback).Run(el);
         if (!result) {
           LOG(ERROR) << "NameElement(): No element found.";
@@ -1079,9 +1132,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::IfMatches(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
           [](base::OnceCallback<R(const InteractionSequence*)> function,
-             const InteractionSequence* seq, const ui::TrackedElement*) {
-            return std::move(function).Run(seq);
-          },
+             const InteractionSequence* seq,
+             const TrackedElement*) { return std::move(function).Run(seq); },
           base::RectifyCallback<R(const InteractionSequence*)>(
               internal::MaybeBind(std::forward<F>(function)))),
       std::forward<M>(matcher), std::move(then_steps), std::move(else_steps));
