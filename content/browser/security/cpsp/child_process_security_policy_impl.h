@@ -531,6 +531,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantRequestOfSpecificFile(ChildProcessId child_id,
                                   const base::FilePath& file);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Grants the child process the capability to request a specific external file
+  // URL, but not all URLs of the same scheme.
+  void GrantRequestOfExternalFileUrl(ChildProcessId child_id, const GURL& url);
+
+  // Grants the child process the capability to commit a specific externalfile
+  // URL.
+  void GrantCommitOfExternalFileUrl(ChildProcessId child_id, const GURL& url);
+#endif
+
   // Revokes all permissions granted to the given file.
   void RevokeAllPermissionsForFile(ChildProcessId child_id,
                                    const base::FilePath& file);

@@ -187,6 +187,9 @@ class ChildProcessSecurityPolicyTest
 #if BUILDFLAG(IS_ANDROID)
     test_browser_client_.AddScheme(url::kContentScheme);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    test_browser_client_.AddScheme(content::kExternalFileScheme);
+#endif
     SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     // With unit tests, it's possible that the same global
@@ -746,6 +749,92 @@ TEST_P(ChildProcessSecurityPolicyTest, GrantCommitURLToNonStandardScheme) {
 
   p->Remove(kRendererProcess);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(ChildProcessSecurityPolicyTest, ExternalFile_Normalization) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  GURL base_url("externalfile:foo.pdf");
+  GURL url_with_ref("externalfile:foo.pdf#page=1");
+  GURL url_with_query("externalfile:foo.pdf?print=true");
+  GURL url_with_both("externalfile:foo.pdf?print=true#page=1");
+  GURL completely_different_url("externalfile:bar.pdf");
+
+  // Verify that externalfile is registered as a handled scheme on ChromeOS.
+  ASSERT_TRUE(GetContentClientForTesting()->browser()->IsHandledURL(base_url));
+
+  p->AddForTesting(kRendererProcess, browser_context());
+  LockProcessIfNeeded(kRendererProcess, browser_context(), base_url);
+
+  // Grant request access to the base URL.
+  p->GrantRequestOfExternalFileUrl(kRendererProcess, base_url);
+
+  // Verify that the base URL is allowed.
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, base_url));
+
+  // Verify that variations with query and ref are also allowed,
+  // proving that the URLs are being properly normalized under the hood.
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_with_ref));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_with_query));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_with_both));
+
+  // Verify that normalization doesn't accidentally grant access to other files.
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, completely_different_url));
+
+  // Grant commit access using a URL that contains a query and ref.
+  p->GrantCommitOfExternalFileUrl(kRendererProcess, url_with_both);
+
+  // Verify that normalization allows the base URL to be committed,
+  // even though the grant was issued using a complex URL.
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, base_url));
+
+  p->Remove(kRendererProcess);
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(ChildProcessSecurityPolicyTest, ExternalFile) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  GURL externalfile1("externalfile:foo.png");
+  GURL externalfile2("externalfile:bar.png");
+
+  // Verify that externalfile is registered as a handled scheme on ChromeOS.
+  ASSERT_TRUE(
+      GetContentClientForTesting()->browser()->IsHandledURL(externalfile1));
+
+  p->AddForTesting(kRendererProcess, browser_context());
+  LockProcessIfNeeded(kRendererProcess, browser_context(), externalfile2);
+
+  // Initially, neither can be requested or committed.
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, externalfile1));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, externalfile1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, externalfile2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, externalfile2));
+
+  // Grant ONLY request access to externalfile1.
+  p->GrantRequestOfExternalFileUrl(kRendererProcess, externalfile1);
+
+  // Verify request is granted, but commit is strictly denied.
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, externalfile1));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, externalfile1));
+
+  // externalfile2 should remain entirely unaffected.
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, externalfile2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, externalfile2));
+
+  // Grant ONLY commit access to externalfile2.
+  p->GrantCommitOfExternalFileUrl(kRendererProcess, externalfile2);
+
+  // Verify commit is granted and request is also granted.
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, externalfile2));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, externalfile2));
+
+  p->Remove(kRendererProcess);
+}
+#endif
 
 TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   ChildProcessSecurityPolicyImpl* p =
