@@ -253,8 +253,9 @@ TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
           },
           &result_item));
   ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_token());
-  EXPECT_EQ("logged-in", result_item->item.GetString());
+  EXPECT_EQ(result_item->item,
+            net::structured_headers::Item(
+                "logged-in", net::structured_headers::Item::kTokenType));
 
   result_item.reset();
   parse_cb.Run(
@@ -266,8 +267,9 @@ TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
           },
           &result_item));
   ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_token());
-  EXPECT_EQ("logged-out", result_item->item.GetString());
+  EXPECT_EQ(result_item->item,
+            net::structured_headers::Item(
+                "logged-out", net::structured_headers::Item::kTokenType));
 
   result_item.reset();
   parse_cb.Run(
@@ -311,8 +313,9 @@ TEST_F(IdentityUrlLoaderThrottleTest, DataDecoderParserCallback) {
           &result_item));
   task_environment.RunUntilIdle();
   ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_token());
-  EXPECT_EQ("logged-in", result_item->item.GetString());
+  EXPECT_EQ(result_item->item,
+            net::structured_headers::Item(
+                "logged-in", net::structured_headers::Item::kTokenType));
 
   result_item.reset();
   parse_cb.Run(
@@ -325,8 +328,9 @@ TEST_F(IdentityUrlLoaderThrottleTest, DataDecoderParserCallback) {
           &result_item));
   task_environment.RunUntilIdle();
   ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_token());
-  EXPECT_EQ("logged-out", result_item->item.GetString());
+  EXPECT_EQ(result_item->item,
+            net::structured_headers::Item(
+                "logged-out", net::structured_headers::Item::kTokenType));
 
   result_item.reset();
   parse_cb.Run(

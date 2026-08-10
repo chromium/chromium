@@ -182,14 +182,14 @@ void IdentityUrlLoaderThrottle::OnHeaderParsed(
     std::optional<net::structured_headers::ParameterizedItem> item) {
   is_header_parsed_ = true;
 
-  if (item && item->item.is_token()) {
-    const std::string& token = item->item.GetString();
-    if (token == kSetLoginHeaderValueLoggedIn) {
+  const std::string* token = item ? item->item.GetIfToken() : nullptr;
+  if (token) {
+    if (*token == kSetLoginHeaderValueLoggedIn) {
       // Mark IDP as logged in
       VLOG(1) << "IDP signed in: " << idp_origin.Serialize();
       set_idp_status_cb_.Run(request_initiator_, idp_origin,
                              IdpSigninStatus::kSignedIn);
-    } else if (token == kSetLoginHeaderValueLoggedOut) {
+    } else if (*token == kSetLoginHeaderValueLoggedOut) {
       // Mark IDP as logged out
       VLOG(1) << "IDP signed out: " << idp_origin.Serialize();
       set_idp_status_cb_.Run(request_initiator_, idp_origin,
