@@ -138,6 +138,9 @@ class CORE_EXPORT GapDataListIterator {
       region_ = kAuto;
       current_region_slots_remaining_ = auto_repeat_slot_count_;
       repeated_value_idx_ = 0;
+      if (current_region_slots_remaining_ == 0) {
+        TransitionToNextRegion();
+      }
     } else {
       // Auto-repeater is not the first item, start at kLeading region.
       region_ = kLeading;

@@ -36,4 +36,23 @@ TEST(GapDataListTest, GapDataListEquivalence) {
   EXPECT_NE(gap_colors3, default_gap_colors);
 }
 
+TEST(GapDataListTest, IteratorSkipsZeroSlotAutoRepeater) {
+  typename ValueRepeater<int>::VectorType auto_repeated_values;
+  auto_repeated_values.push_back(5);
+  ValueRepeater<int>* auto_repeater =
+      MakeGarbageCollected<ValueRepeater<int>>(std::move(auto_repeated_values),
+                                               /*repeat_count=*/std::nullopt);
+
+  typename GapDataList<int>::GapDataVector gap_data_vector;
+  gap_data_vector.push_back(GapData<int>(auto_repeater));
+  gap_data_vector.push_back(GapData<int>(9));
+  gap_data_vector.push_back(GapData<int>(10));
+  GapDataList<int> gap_data_list(std::move(gap_data_vector));
+
+  GapDataListIterator<int> iterator(gap_data_list.GetGapDataList(),
+                                    /*gap_count=*/2);
+  EXPECT_EQ(iterator.Next(), 9);
+  EXPECT_EQ(iterator.Next(), 10);
+}
+
 }  // namespace blink
