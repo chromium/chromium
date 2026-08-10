@@ -18,7 +18,7 @@ class LockError(Exception):
 
 
 def _open_file(lockfile):
-    open_flags = (os.O_CREAT | os.O_WRONLY)
+    open_flags = os.O_CREAT | os.O_WRONLY
     return os.open(lockfile, open_flags, 0o644)
 
 
@@ -53,12 +53,14 @@ def _lock(path, timeout=0):
                 sleep_time = min(10, timeout - elapsed)
                 logging.info(
                     'Could not create lockfile; will retry after sleep(%d).',
-                    sleep_time)
+                    sleep_time,
+                )
                 elapsed += sleep_time
                 time.sleep(sleep_time)
                 continue
-            raise LockError("Error locking %s (err: %s)" %
-                            (path, str(error))) from error
+            raise LockError(
+                "Error locking %s (err: %s)" % (path, str(error))
+            ) from error
 
 
 @contextlib.contextmanager
@@ -71,7 +73,7 @@ def lock(path, timeout=0):
             # Do something
             pass
 
-     """
+    """
     release_fn = _lock(path, timeout)
     try:
         yield

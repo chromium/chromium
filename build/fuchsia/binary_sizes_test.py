@@ -49,84 +49,87 @@ _EXAMPLE_BLOBS = """
 
 
 class TestBinarySizes(unittest.TestCase):
-  tmpdir = None
+    tmpdir = None
 
-  @classmethod
-  def setUpClass(cls):
-    cls.tmpdir = tempfile.mkdtemp()
+    @classmethod
+    def setUpClass(cls):
+        cls.tmpdir = tempfile.mkdtemp()
 
-  @classmethod
-  def tearDownClass(cls):
-    shutil.rmtree(cls.tmpdir)
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmpdir)
 
+    def testReadAndWritePackageBlobs(self):
+        # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
+        # NamedTemporaryFile by name.
+        if os.name == 'nt':
+            return
+        with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+            tmp_file.write(_EXAMPLE_BLOBS)
+            tmp_file.flush()
 
-  def testReadAndWritePackageBlobs(self):
-    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
-    # NamedTemporaryFile by name.
-    if os.name == 'nt':
-      return
-    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
-      tmp_file.write(_EXAMPLE_BLOBS)
-      tmp_file.flush()
+            package_blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
 
-      package_blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
+        tmp_package_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
+        tmp_package_file.close()
+        try:
+            binary_sizes.WritePackageBlobsJson(
+                tmp_package_file.name, package_blobs
+            )
 
-    tmp_package_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
-    tmp_package_file.close()
-    try:
-      binary_sizes.WritePackageBlobsJson(tmp_package_file.name, package_blobs)
+            self.assertEqual(
+                binary_sizes.ReadPackageBlobsJson(tmp_package_file.name),
+                package_blobs,
+            )
+        finally:
+            os.remove(tmp_package_file.name)
 
-      self.assertEqual(binary_sizes.ReadPackageBlobsJson(tmp_package_file.name),
-                       package_blobs)
-    finally:
-      os.remove(tmp_package_file.name)
+    def testReadAndWritePackageSizes(self):
+        # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
+        # NamedTemporaryFile by name.
+        if os.name == 'nt':
+            return
+        with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+            tmp_file.write(_EXAMPLE_BLOBS)
+            tmp_file.flush()
+            blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
 
-  def testReadAndWritePackageSizes(self):
-    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
-    # NamedTemporaryFile by name.
-    if os.name == 'nt':
-      return
-    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
-      tmp_file.write(_EXAMPLE_BLOBS)
-      tmp_file.flush()
-      blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
+        sizes = binary_sizes.GetPackageSizes(blobs)
 
-    sizes = binary_sizes.GetPackageSizes(blobs)
+        new_sizes = {}
+        with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+            binary_sizes.WritePackageSizesJson(tmp_file.name, sizes)
+            new_sizes = binary_sizes.ReadPackageSizesJson(tmp_file.name)
+            self.assertEqual(new_sizes, sizes)
+            self.assertIn('web_engine', new_sizes)
 
-    new_sizes = {}
-    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
-      binary_sizes.WritePackageSizesJson(tmp_file.name, sizes)
-      new_sizes = binary_sizes.ReadPackageSizesJson(tmp_file.name)
-      self.assertEqual(new_sizes, sizes)
-      self.assertIn('web_engine', new_sizes)
+    def testGetPackageSizesUsesBlobMerklesForCount(self):
+        # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
+        # NamedTemporaryFile by name.
+        if os.name == 'nt':
+            return
+        blobs = json.loads(_EXAMPLE_BLOBS)
 
-  def testGetPackageSizesUsesBlobMerklesForCount(self):
-    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
-    # NamedTemporaryFile by name.
-    if os.name == 'nt':
-      return
-    blobs = json.loads(_EXAMPLE_BLOBS)
+        # Make a duplicate of the last blob.
+        last_blob = dict(blobs['web_engine'][-1])
+        blobs['cast_runner'] = []
+        last_blob['path'] = 'foo'  # Give a non-sense name, but keep merkle.
 
-    # Make a duplicate of the last blob.
-    last_blob = dict(blobs['web_engine'][-1])
-    blobs['cast_runner'] = []
-    last_blob['path'] = 'foo'  # Give a non-sense name, but keep merkle.
+        # If the merkle is the same, the blob_count increases by 1.
+        # This effectively reduces the size of the blobs size by half.
+        # In both packages, despite it appearing in both and under different
+        # names.
+        blobs['cast_runner'].append(last_blob)
 
-    # If the merkle is the same, the blob_count increases by 1.
-    # This effectively reduces the size of the blobs size by half.
-    # In both packages, despite it appearing in both and under different
-    # names.
-    blobs['cast_runner'].append(last_blob)
+        with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+            tmp_file.write(json.dumps(blobs))
+            tmp_file.flush()
+            blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
 
-    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
-      tmp_file.write(json.dumps(blobs))
-      tmp_file.flush()
-      blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
+        sizes = binary_sizes.GetPackageSizes(blobs)
 
-    sizes = binary_sizes.GetPackageSizes(blobs)
-
-    self.assertEqual(sizes['cast_runner'].compressed, last_blob['size'] / 2)
+        self.assertEqual(sizes['cast_runner'].compressed, last_blob['size'] / 2)
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

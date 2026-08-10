@@ -16,9 +16,8 @@ from util import java_cpp_utils
 
 
 class _TestFeaturesParser(unittest.TestCase):
-
-  def testParseComments(self):
-    test_data = """
+    def testParseComments(self):
+        test_data = """
 /**
  * This should be ignored as well.
  */
@@ -39,19 +38,20 @@ BASE_FEATURE(kSomeOtherFeature, "SomeOtherFeature",
 
 // Comment followed by nothing.
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(2, len(features))
-    self.assertEqual('SOME_FEATURE', features[0].name)
-    self.assertEqual('"SomeFeature"', features[0].value)
-    self.assertEqual(1, len(features[0].comments.split('\n')))
-    self.assertEqual('SOME_OTHER_FEATURE', features[1].name)
-    self.assertEqual('"SomeOtherFeature"', features[1].value)
-    self.assertEqual(2, len(features[1].comments.split('\n')))
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual(2, len(features))
+        self.assertEqual('SOME_FEATURE', features[0].name)
+        self.assertEqual('"SomeFeature"', features[0].value)
+        self.assertEqual(1, len(features[0].comments.split('\n')))
+        self.assertEqual('SOME_OTHER_FEATURE', features[1].name)
+        self.assertEqual('"SomeOtherFeature"', features[1].value)
+        self.assertEqual(2, len(features[1].comments.split('\n')))
 
-  def testWhitespace(self):
-    test_data = """
+    def testWhitespace(self):
+        test_data = """
 // 1 line
 BASE_FEATURE(kShort, "Short", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -66,23 +66,27 @@ BASE_FEATURE(kFeatureWithAVeryLongNameThatWillHaveToWrap,
     "FeatureWithAVeryLongNameThatWillHaveToWrap",
     base::FEATURE_DISABLED_BY_DEFAULT);
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(4, len(features))
-    self.assertEqual('SHORT', features[0].name)
-    self.assertEqual('"Short"', features[0].value)
-    self.assertEqual('TWO_LINE_FEATURE_A', features[1].name)
-    self.assertEqual('"TwoLineFeatureA"', features[1].value)
-    self.assertEqual('TWO_LINE_FEATURE_B', features[2].name)
-    self.assertEqual('"TwoLineFeatureB"', features[2].value)
-    self.assertEqual('FEATURE_WITH_A_VERY_LONG_NAME_THAT_WILL_HAVE_TO_WRAP',
-                     features[3].name)
-    self.assertEqual('"FeatureWithAVeryLongNameThatWillHaveToWrap"',
-                     features[3].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual(4, len(features))
+        self.assertEqual('SHORT', features[0].name)
+        self.assertEqual('"Short"', features[0].value)
+        self.assertEqual('TWO_LINE_FEATURE_A', features[1].name)
+        self.assertEqual('"TwoLineFeatureA"', features[1].value)
+        self.assertEqual('TWO_LINE_FEATURE_B', features[2].name)
+        self.assertEqual('"TwoLineFeatureB"', features[2].value)
+        self.assertEqual(
+            'FEATURE_WITH_A_VERY_LONG_NAME_THAT_WILL_HAVE_TO_WRAP',
+            features[3].name,
+        )
+        self.assertEqual(
+            '"FeatureWithAVeryLongNameThatWillHaveToWrap"', features[3].value
+        )
 
-  def testCppSyntax(self):
-    test_data = """
+    def testCppSyntax(self):
+        test_data = """
 // Mismatched name
 BASE_FEATURE(kMismatchedFeature, "MismatchedName",
     base::FEATURE_DISABLED_BY_DEFAULT);
@@ -108,22 +112,22 @@ BASE_FEATURE(kMaybeEnabled, "MaybeEnabled",
 #endif
 );
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(4, len(features))
-    self.assertEqual('MISMATCHED_FEATURE', features[0].name)
-    self.assertEqual('"MismatchedName"', features[0].value)
-    self.assertEqual('SOME_FEATURE', features[1].name)
-    self.assertEqual('"SomeFeature"', features[1].value)
-    self.assertEqual('ANDROID_ONLY_FEATURE', features[2].name)
-    self.assertEqual('"AndroidOnlyFeature"', features[2].value)
-    self.assertEqual('MAYBE_ENABLED', features[3].name)
-    self.assertEqual('"MaybeEnabled"', features[3].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual(4, len(features))
+        self.assertEqual('MISMATCHED_FEATURE', features[0].name)
+        self.assertEqual('"MismatchedName"', features[0].value)
+        self.assertEqual('SOME_FEATURE', features[1].name)
+        self.assertEqual('"SomeFeature"', features[1].value)
+        self.assertEqual('ANDROID_ONLY_FEATURE', features[2].name)
+        self.assertEqual('"AndroidOnlyFeature"', features[2].value)
+        self.assertEqual('MAYBE_ENABLED', features[3].name)
+        self.assertEqual('"MaybeEnabled"', features[3].value)
 
-
-  def testTwoArgumentMacro(self):
-    test_data = """
+    def testTwoArgumentMacro(self):
+        test_data = """
 // 2-arg BASE_FEATURE macro
 BASE_FEATURE(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -156,25 +160,26 @@ BASE_FEATURE(kCommentsInFeatureDefinition,
 #endif
 );
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(6, len(features))
-    self.assertEqual('MY_FEATURE', features[0].name)
-    self.assertEqual('"MyFeature"', features[0].value)
-    self.assertEqual('ANOTHER_FEATURE', features[1].name)
-    self.assertEqual('"AnotherFeature"', features[1].value)
-    self.assertEqual('OLD_STYLE_FEATURE', features[2].name)
-    self.assertEqual('"OldStyleFeature"', features[2].value)
-    self.assertEqual('NEW_STYLE_FEATURE', features[3].name)
-    self.assertEqual('"NewStyleFeature"', features[3].value)
-    self.assertEqual('MAYBE_ENABLED_FEATURE', features[4].name)
-    self.assertEqual('"MaybeEnabledFeature"', features[4].value)
-    self.assertEqual('COMMENTS_IN_FEATURE_DEFINITION', features[5].name)
-    self.assertEqual('"CommentsInFeatureDefinition"', features[5].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual(6, len(features))
+        self.assertEqual('MY_FEATURE', features[0].name)
+        self.assertEqual('"MyFeature"', features[0].value)
+        self.assertEqual('ANOTHER_FEATURE', features[1].name)
+        self.assertEqual('"AnotherFeature"', features[1].value)
+        self.assertEqual('OLD_STYLE_FEATURE', features[2].name)
+        self.assertEqual('"OldStyleFeature"', features[2].value)
+        self.assertEqual('NEW_STYLE_FEATURE', features[3].name)
+        self.assertEqual('"NewStyleFeature"', features[3].value)
+        self.assertEqual('MAYBE_ENABLED_FEATURE', features[4].name)
+        self.assertEqual('"MaybeEnabledFeature"', features[4].value)
+        self.assertEqual('COMMENTS_IN_FEATURE_DEFINITION', features[5].name)
+        self.assertEqual('"CommentsInFeatureDefinition"', features[5].value)
 
-  def testNameDependsOnOs(self):
-    test_data = """
+    def testNameDependsOnOs(self):
+        test_data = """
 BASE_FEATURE(kNameDependsOnOs,
 #if BUILDFLAG(IS_ANDROID)
     "MaybeName1",
@@ -183,15 +188,16 @@ BASE_FEATURE(kNameDependsOnOs,
 #endif
     base::FEATURE_DISABLED_BY_DEFAULT);
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual(1, len(features))
-    self.assertEqual('NAME_DEPENDS_ON_OS', features[0].name)
-    self.assertEqual('"MaybeName1"', features[0].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual(1, len(features))
+        self.assertEqual('NAME_DEPENDS_ON_OS', features[0].name)
+        self.assertEqual('"MaybeName1"', features[0].value)
 
-  def testTreatWebViewLikeOneWord(self):
-    test_data = """
+    def testTreatWebViewLikeOneWord(self):
+        test_data = """
 BASE_FEATURE(kSomeWebViewFeature, "SomeWebViewFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewOtherFeature, "WebViewOtherFeature",
@@ -200,32 +206,34 @@ BASE_FEATURE(kFeatureWithPluralWebViews,
     "FeatureWithPluralWebViews",
     base::FEATURE_ENABLED_BY_DEFAULT);
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual('SOME_WEBVIEW_FEATURE', features[0].name)
-    self.assertEqual('"SomeWebViewFeature"', features[0].value)
-    self.assertEqual('WEBVIEW_OTHER_FEATURE', features[1].name)
-    self.assertEqual('"WebViewOtherFeature"', features[1].value)
-    self.assertEqual('FEATURE_WITH_PLURAL_WEBVIEWS', features[2].name)
-    self.assertEqual('"FeatureWithPluralWebViews"', features[2].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual('SOME_WEBVIEW_FEATURE', features[0].name)
+        self.assertEqual('"SomeWebViewFeature"', features[0].value)
+        self.assertEqual('WEBVIEW_OTHER_FEATURE', features[1].name)
+        self.assertEqual('"WebViewOtherFeature"', features[1].value)
+        self.assertEqual('FEATURE_WITH_PLURAL_WEBVIEWS', features[2].name)
+        self.assertEqual('"FeatureWithPluralWebViews"', features[2].value)
 
-  def testSpecialCharacters(self):
-    test_data = r"""
+    def testSpecialCharacters(self):
+        test_data = r"""
 BASE_FEATURE(kFeatureWithEscapes, "Weird\tfeature\"name\n",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureWithEscapes2,
     "Weird\tfeature\"name\n",
     base::FEATURE_ENABLED_BY_DEFAULT);
 """.split('\n')
-    feature_file_parser = java_cpp_utils.CppConstantParser(
-        java_cpp_features.FeatureParserDelegate(), test_data)
-    features = feature_file_parser.Parse()
-    self.assertEqual('FEATURE_WITH_ESCAPES', features[0].name)
-    self.assertEqual(r'"Weird\tfeature\"name\n"', features[0].value)
-    self.assertEqual('FEATURE_WITH_ESCAPES2', features[1].name)
-    self.assertEqual(r'"Weird\tfeature\"name\n"', features[1].value)
+        feature_file_parser = java_cpp_utils.CppConstantParser(
+            java_cpp_features.FeatureParserDelegate(), test_data
+        )
+        features = feature_file_parser.Parse()
+        self.assertEqual('FEATURE_WITH_ESCAPES', features[0].name)
+        self.assertEqual(r'"Weird\tfeature\"name\n"', features[0].value)
+        self.assertEqual('FEATURE_WITH_ESCAPES2', features[1].name)
+        self.assertEqual(r'"Weird\tfeature\"name\n"', features[1].value)
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

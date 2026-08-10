@@ -38,77 +38,102 @@ from devil.utils import run_tests_helper
 
 
 def CreateAppData(device, old_apk, app_data, package_name):
-  device.Install(old_apk)
-  input('Set the application state. Once ready, press enter and '
-        'select "Backup my data" on the device.')
-  device.adb.Backup(app_data, packages=[package_name])
-  logging.critical('Application data saved to %s', app_data)
+    device.Install(old_apk)
+    input(
+        'Set the application state. Once ready, press enter and '
+        'select "Backup my data" on the device.'
+    )
+    device.adb.Backup(app_data, packages=[package_name])
+    logging.critical('Application data saved to %s', app_data)
+
 
 def TestUpdate(device, old_apk, new_apk, app_data, package_name):
-  device.Install(old_apk)
-  device.adb.Restore(app_data)
-  # Restore command is not synchronous
-  input('Select "Restore my data" on the device. Then press enter to '
-        'continue.')
-  if not device.IsApplicationInstalled(package_name):
-    raise Exception('Expected package %s to already be installed. '
-                    'Package name might have changed!' % package_name)
+    device.Install(old_apk)
+    device.adb.Restore(app_data)
+    # Restore command is not synchronous
+    input(
+        'Select "Restore my data" on the device. Then press enter to continue.'
+    )
+    if not device.IsApplicationInstalled(package_name):
+        raise Exception(
+            'Expected package %s to already be installed. '
+            'Package name might have changed!' % package_name
+        )
 
-  logging.info('Verifying that %s can be overinstalled.', new_apk)
-  device.adb.Install(new_apk, reinstall=True)
-  logging.critical('Successfully updated to the new apk. Please verify that '
-                   'the application data is preserved.')
+    logging.info('Verifying that %s can be overinstalled.', new_apk)
+    device.adb.Install(new_apk, reinstall=True)
+    logging.critical(
+        'Successfully updated to the new apk. Please verify that '
+        'the application data is preserved.'
+    )
+
 
 def main():
-  parser = argparse.ArgumentParser(
-      description="Script to do semi-automated upgrade testing.")
-  parser.add_argument('-v', '--verbose', action='count',
-                      help='Print verbose log information.')
-  parser.add_argument('--denylist-file', help='Device denylist JSON file.')
-  command_parsers = parser.add_subparsers(dest='command')
+    parser = argparse.ArgumentParser(
+        description="Script to do semi-automated upgrade testing."
+    )
+    parser.add_argument(
+        '-v', '--verbose', action='count', help='Print verbose log information.'
+    )
+    parser.add_argument('--denylist-file', help='Device denylist JSON file.')
+    command_parsers = parser.add_subparsers(dest='command')
 
-  subparser = command_parsers.add_parser('create_app_data')
-  subparser.add_argument('--old-apk', required=True,
-                         help='Path to apk to update from.')
-  subparser.add_argument('--app-data', required=True,
-                         help='Path to where the app data backup should be '
-                           'saved to.')
-  subparser.add_argument('--package-name',
-                         help='Chrome apk package name.')
+    subparser = command_parsers.add_parser('create_app_data')
+    subparser.add_argument(
+        '--old-apk', required=True, help='Path to apk to update from.'
+    )
+    subparser.add_argument(
+        '--app-data',
+        required=True,
+        help='Path to where the app data backup should be saved to.',
+    )
+    subparser.add_argument('--package-name', help='Chrome apk package name.')
 
-  subparser = command_parsers.add_parser('test_update')
-  subparser.add_argument('--old-apk', required=True,
-                         help='Path to apk to update from.')
-  subparser.add_argument('--new-apk', required=True,
-                         help='Path to apk to update to.')
-  subparser.add_argument('--app-data', required=True,
-                         help='Path to where the app data backup is saved.')
-  subparser.add_argument('--package-name',
-                         help='Chrome apk package name.')
+    subparser = command_parsers.add_parser('test_update')
+    subparser.add_argument(
+        '--old-apk', required=True, help='Path to apk to update from.'
+    )
+    subparser.add_argument(
+        '--new-apk', required=True, help='Path to apk to update to.'
+    )
+    subparser.add_argument(
+        '--app-data',
+        required=True,
+        help='Path to where the app data backup is saved.',
+    )
+    subparser.add_argument('--package-name', help='Chrome apk package name.')
 
-  args = parser.parse_args()
-  run_tests_helper.SetLogLevel(args.verbose)
+    args = parser.parse_args()
+    run_tests_helper.SetLogLevel(args.verbose)
 
-  devil_chromium.Initialize()
+    devil_chromium.Initialize()
 
-  denylist = (device_denylist.Denylist(args.denylist_file)
-              if args.denylist_file else None)
+    denylist = (
+        device_denylist.Denylist(args.denylist_file)
+        if args.denylist_file
+        else None
+    )
 
-  devices = device_utils.DeviceUtils.HealthyDevices(denylist)
-  if not devices:
-    raise device_errors.NoDevicesError()
-  device = devices[0]
-  logging.info('Using device %s for testing.', str(device))
+    devices = device_utils.DeviceUtils.HealthyDevices(denylist)
+    if not devices:
+        raise device_errors.NoDevicesError()
+    device = devices[0]
+    logging.info('Using device %s for testing.', str(device))
 
-  package_name = (args.package_name if args.package_name
-                  else apk_helper.GetPackageName(args.old_apk))
-  if args.command == 'create_app_data':
-    CreateAppData(device, args.old_apk, args.app_data, package_name)
-  elif args.command == 'test_update':
-    TestUpdate(
-        device, args.old_apk, args.new_apk, args.app_data, package_name)
-  else:
-    raise Exception('Unknown test command: %s' % args.command)
+    package_name = (
+        args.package_name
+        if args.package_name
+        else apk_helper.GetPackageName(args.old_apk)
+    )
+    if args.command == 'create_app_data':
+        CreateAppData(device, args.old_apk, args.app_data, package_name)
+    elif args.command == 'test_update':
+        TestUpdate(
+            device, args.old_apk, args.new_apk, args.app_data, package_name
+        )
+    else:
+        raise Exception('Unknown test command: %s' % args.command)
+
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

@@ -29,137 +29,157 @@ _TEMP_GLOBLIST_CONTENTS = """**
 
 
 class BundleDataPresubmit(unittest.TestCase):
-  def setUp(self):
-    self.mock_input_api = MockInputApi()
-    self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
-        os.path.dirname(__file__), '..', '..')
-    self.mock_input_api.PresubmitLocalPath = lambda: os.path.dirname(__file__)
-    self.mock_output_api = MockOutputApi()
+    def setUp(self):
+        self.mock_input_api = MockInputApi()
+        self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
+            os.path.dirname(__file__), '..', '..'
+        )
+        self.mock_input_api.PresubmitLocalPath = lambda: os.path.dirname(
+            __file__
+        )
+        self.mock_output_api = MockOutputApi()
 
-  def testBasic(self):
-    """
+    def testBasic(self):
+        """
         Checks that a glob can be expanded to build a file list and if it
         matches the existing file list, we should see no error.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/basic', '.')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/basic', '.'
+        )
+        self.assertEqual([], results)
 
-  def testExclusion(self):
-    """
+    def testExclusion(self):
+        """
         Check that globs can be used to exclude files from file lists.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/exclusions', '.')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/exclusions',
+            '.',
+        )
+        self.assertEqual([], results)
 
-  def testDifferentLocalPath(self):
-    """
+    def testDifferentLocalPath(self):
+        """
         Checks the case where the presubmit directory is not the same as the
         globroot, but it is still local (i.e., not relative to the repository
         root)
         """
-    results = presubmit_support.CheckBundleData(
-        self.mock_input_api, self.mock_output_api,
-        'test_data/different_local_path', 'test_data')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/different_local_path',
+            'test_data',
+        )
+        self.assertEqual([], results)
 
-  def testRepositoryRelative(self):
-    """
+    def testRepositoryRelative(self):
+        """
         Checks the case where globs are relative to the repository root.
         """
-    results = presubmit_support.CheckBundleData(
-        self.mock_input_api, self.mock_output_api,
-        'test_data/repository_relative')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/repository_relative',
+        )
+        self.assertEqual([], results)
 
-  def testMissingFilesInFilelist(self):
-    """
+    def testMissingFilesInFilelist(self):
+        """
         Checks that we do indeed return an error if the filelist is missing a
         file. In this case, all of the test .filelist and .globlist files are
         excluded.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/missing', '.')
-    self.assertEqual(1, len(results))
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/missing', '.'
+        )
+        self.assertEqual(1, len(results))
 
-  def testExtraFilesInFilelist(self):
-    """
+    def testExtraFilesInFilelist(self):
+        """
         Checks the case where extra files have been included in the file list.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/extra', '.')
-    self.assertEqual(1, len(results))
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/extra', '.'
+        )
+        self.assertEqual(1, len(results))
 
-  def testOrderInsensitive(self):
-    """
+    def testOrderInsensitive(self):
+        """
         Checks that we do not trigger an error for cases where the file list is
         correct, but in a different order than the globlist expansion.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/reorder', '.')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/reorder', '.'
+        )
+        self.assertEqual([], results)
 
-  def testUnexpectedHeader(self):
-    """
+    def testUnexpectedHeader(self):
+        """
         Checks an unexpected header in a file list causes an error.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/comment', '.')
-    self.assertEqual(1, len(results))
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/comment', '.'
+        )
+        self.assertEqual(1, len(results))
 
-  def testUntrackedFiles(self):
-    """
+    def testUntrackedFiles(self):
+        """
         Checks that the untracked files are correctly ignored.
         """
-    with tempfile.TemporaryDirectory() as temp_dir:
-      with open(os.path.join(temp_dir, 'untracked.filelist'), 'w') as f:
-        f.write(_TEMP_FILELIST_CONTENTS)
-      with open(os.path.join(temp_dir, 'untracked.globlist'), 'w') as f:
-        f.write(_TEMP_GLOBLIST_CONTENTS)
-      with open(os.path.join(temp_dir, 'untracked.txt'), 'w') as f:
-        f.write('Hello, World!')
-      path = os.path.join(temp_dir, 'untracked')
-      self.mock_input_api.change.RepositoryRoot = lambda: temp_dir
-      self.mock_input_api.PresubmitLocalPath = lambda: temp_dir
-      results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                  self.mock_output_api,
-                                                  'untracked')
-      self.assertEqual([], results)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with open(os.path.join(temp_dir, 'untracked.filelist'), 'w') as f:
+                f.write(_TEMP_FILELIST_CONTENTS)
+            with open(os.path.join(temp_dir, 'untracked.globlist'), 'w') as f:
+                f.write(_TEMP_GLOBLIST_CONTENTS)
+            with open(os.path.join(temp_dir, 'untracked.txt'), 'w') as f:
+                f.write('Hello, World!')
+            path = os.path.join(temp_dir, 'untracked')
+            self.mock_input_api.change.RepositoryRoot = lambda: temp_dir
+            self.mock_input_api.PresubmitLocalPath = lambda: temp_dir
+            results = presubmit_support.CheckBundleData(
+                self.mock_input_api, self.mock_output_api, 'untracked'
+            )
+            self.assertEqual([], results)
 
-  def testExcludeDuplicates(self):
-    """
+    def testExcludeDuplicates(self):
+        """
         Checks that duplicate filenames are not added to a filelist.
         """
-    results = presubmit_support.CheckBundleData(self.mock_input_api,
-                                                self.mock_output_api,
-                                                'test_data/duplicates', '.')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/duplicates',
+            '.',
+        )
+        self.assertEqual([], results)
 
-  def testCheckOutsideGloblistDir(self):
-    """
+    def testCheckOutsideGloblistDir(self):
+        """
         Checks that including files outside the globlist directory is an error.
         """
-    results = presubmit_support.CheckBundleData(
-        self.mock_input_api, self.mock_output_api,
-        'test_data/outside_globlist_dir', '.')
-    self.assertEqual(1, len(results))
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/outside_globlist_dir',
+            '.',
+        )
+        self.assertEqual(1, len(results))
 
-  def testCheckIgnoreOutsideGloblistDir(self):
-    """
+    def testCheckIgnoreOutsideGloblistDir(self):
+        """
         Checks that files outside the globlist directory can be ignored.
         """
-    results = presubmit_support.CheckBundleData(
-        self.mock_input_api, self.mock_output_api,
-        'test_data/ignore_outside_globlist_dir', '.')
-    self.assertEqual([], results)
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api,
+            self.mock_output_api,
+            'test_data/ignore_outside_globlist_dir',
+            '.',
+        )
+        self.assertEqual([], results)
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

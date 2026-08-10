@@ -27,48 +27,57 @@ import wrapper_utils
 # just 'cmd' is the actual command given to Python's subprocess module.
 BAT_PREFIX = 'cmd /c call '
 
+
 def CommandToRun(command):
-  if command[0].startswith(BAT_PREFIX):
-    command = command[0].split(None, 3) + command[1:]
-  return command
+    if command[0].startswith(BAT_PREFIX):
+        command = command[0].split(None, 3) + command[1:]
+    return command
 
 
 def main():
-  parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--strip',
-                      help='The strip binary to run',
-                      metavar='PATH')
-  parser.add_argument('--symbols-file',
-                      help='.so file with .debug sections '
-                      '(if different from --output)',
-                      metavar='FILE')
-  parser.add_argument('--map-file',
-                      help=('Use --Wl,-Map to generate a map file. Will be '
-                            'gzipped if extension ends with .gz'),
-                      metavar='FILE')
-  parser.add_argument('--output',
-                      required=True,
-                      help='Final output executable file',
-                      metavar='FILE')
-  parser.add_argument('command', nargs='+',
-                      help='Linking command')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--strip', help='The strip binary to run', metavar='PATH'
+    )
+    parser.add_argument(
+        '--symbols-file',
+        help='.so file with .debug sections (if different from --output)',
+        metavar='FILE',
+    )
+    parser.add_argument(
+        '--map-file',
+        help=(
+            'Use --Wl,-Map to generate a map file. Will be '
+            'gzipped if extension ends with .gz'
+        ),
+        metavar='FILE',
+    )
+    parser.add_argument(
+        '--output',
+        required=True,
+        help='Final output executable file',
+        metavar='FILE',
+    )
+    parser.add_argument('command', nargs='+', help='Linking command')
+    args = parser.parse_args()
 
-  # Work-around for gold being slow-by-default. http://crbug.com/632230
-  fast_env = dict(os.environ)
-  fast_env['LC_ALL'] = 'C'
-  result = wrapper_utils.RunLinkWithOptionalMapFile(args.command, env=fast_env,
-                                                    map_file=args.map_file)
-  if result != 0:
+    # Work-around for gold being slow-by-default. http://crbug.com/632230
+    fast_env = dict(os.environ)
+    fast_env['LC_ALL'] = 'C'
+    result = wrapper_utils.RunLinkWithOptionalMapFile(
+        args.command, env=fast_env, map_file=args.map_file
+    )
+    if result != 0:
+        return result
+
+    # Finally, strip the linked executable (if desired).
+    if args.strip:
+        result = subprocess.call(
+            CommandToRun([args.strip, '-o', args.output, args.symbols_file])
+        )
+
     return result
-
-  # Finally, strip the linked executable (if desired).
-  if args.strip:
-    result = subprocess.call(
-        CommandToRun([args.strip, '-o', args.output, args.symbols_file]))
-
-  return result
 
 
 if __name__ == "__main__":
-  sys.exit(main())
+    sys.exit(main())

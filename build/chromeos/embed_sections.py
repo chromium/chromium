@@ -17,18 +17,19 @@ import sys
 import shutil
 
 llvm_readelf = os.path.join(
-    os.path.dirname(sys.argv[0]), '..', '..', 'third_party', 'llvm-build',
-    'Release+Asserts', 'bin', 'llvm-readelf')
+  os.path.dirname(sys.argv[0]),
+  '..',
+  '..',
+  'third_party',
+  'llvm-build',
+  'Release+Asserts',
+  'bin',
+  'llvm-readelf',
+)
 
 TARGET_SECTIONS = {
-    '.rodata': {
-        'addr': 'kRodataAddr',
-        'size': 'kRodataSize'
-    },
-    '.text.hot': {
-        'addr': 'kTextHotAddr',
-        'size': 'kTextHotSize'
-    },
+  '.rodata': {'addr': 'kRodataAddr', 'size': 'kRodataSize'},
+  '.text.hot': {'addr': 'kTextHotAddr', 'size': 'kTextHotSize'},
 }
 
 
@@ -65,14 +66,14 @@ def parse_section_info(objdump_result, section_name):
 
 
 def create_symbol_map(binary_input, objdump_result):
-  (rodata_section_addr, rodata_section_offset,
-   rodata_section_size) = parse_section_info(objdump_result, '.rodata')
+  (rodata_section_addr, rodata_section_offset, rodata_section_size) = (
+    parse_section_info(objdump_result, '.rodata')
+  )
 
   command = [llvm_readelf, '--symbols', binary_input]
   with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
-
     variable_names = [
-        var for maps in TARGET_SECTIONS.values() for var in maps.values()
+      var for maps in TARGET_SECTIONS.values() for var in maps.values()
     ]
     result = {}
     while len(result) < len(variable_names):
@@ -98,28 +99,35 @@ def create_symbol_map(binary_input, objdump_result):
   return result
 
 
-def overwrite_variable(file, symbol_map, endianess, section_name, var_type,
-                       value):
+def overwrite_variable(
+  file, symbol_map, endianess, section_name, var_type, value
+):
   (var_offset, var_size) = symbol_map[TARGET_SECTIONS[section_name][var_type]]
   file.seek(var_offset)
-  if file.write(
-      value.to_bytes(length=var_size, byteorder=endianess,
-                     signed=False)) != var_size:
+  if (
+    file.write(
+      value.to_bytes(length=var_size, byteorder=endianess, signed=False)
+    )
+    != var_size
+  ):
     raise ValueError('failed to write value to file')
 
 
 def main():
   argparser = argparse.ArgumentParser(
-      description='embed sections informataion into binary.')
+    description='embed sections informataion into binary.'
+  )
 
   argparser.add_argument('--binary-input', help='exe file path.')
   argparser.add_argument('--binary-output', help='embedded file path.')
   args = argparser.parse_args()
 
-  objdump_result = subprocess.run([llvm_readelf, '-e', args.binary_input],
-                                  stdout=subprocess.PIPE,
-                                  check=True,
-                                  text=True).stdout
+  objdump_result = subprocess.run(
+    [llvm_readelf, '-e', args.binary_input],
+    stdout=subprocess.PIPE,
+    check=True,
+    text=True,
+  ).stdout
 
   assert_elf_type(objdump_result)
 
@@ -134,16 +142,19 @@ def main():
   with open(args.binary_output, 'r+b') as file:
     for section_name in TARGET_SECTIONS:
       (addr, _, size) = parse_section_info(objdump_result, section_name)
-      overwrite_variable(file, symbol_map, endianess, section_name, 'addr',
-                         addr)
-      overwrite_variable(file, symbol_map, endianess, section_name, 'size',
-                         size)
+      overwrite_variable(
+        file, symbol_map, endianess, section_name, 'addr', addr
+      )
+      overwrite_variable(
+        file, symbol_map, endianess, section_name, 'size', size
+      )
 
   objdump_result_after = subprocess.run(
-      [llvm_readelf, '-e', args.binary_output],
-      stdout=subprocess.PIPE,
-      check=True,
-      text=True).stdout
+    [llvm_readelf, '-e', args.binary_output],
+    stdout=subprocess.PIPE,
+    check=True,
+    text=True,
+  ).stdout
   if objdump_result_after != objdump_result:
     raise ValueError('realelf result has changed')
 

@@ -49,79 +49,72 @@ if __name__ == '__main__':
   sys.exit(main())
 """)
 
+
 def main(args):
-  args = build_utils.ExpandFileArgs(args)
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--script-output-path', required=True,
-                      help='Output path for executable script.')
-  parser.add_argument('--bundle-path', required=True)
-  parser.add_argument('--bundle-apks-path', required=True)
-  parser.add_argument(
-      '--additional-apk-path',
-      action='append',
-      dest='additional_apk_paths',
-      default=[],
-      help='Paths to APKs to be installed prior to --apk-path.')
-  parser.add_argument('--package-name', required=True)
-  parser.add_argument('--aapt2-path', required=True)
-  parser.add_argument('--keystore-path', required=True)
-  parser.add_argument('--keystore-password', required=True)
-  parser.add_argument('--key-name', required=True)
-  parser.add_argument('--command-line-flags-file')
-  parser.add_argument('--proguard-mapping-path')
-  parser.add_argument('--target-cpu')
-  parser.add_argument('--system-image-locales')
-  parser.add_argument('--default-modules', nargs='*', default=[])
-  parser.add_argument('--is-official-build', action='store_true')
-  args = parser.parse_args(args)
+    args = build_utils.ExpandFileArgs(args)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--script-output-path',
+        required=True,
+        help='Output path for executable script.',
+    )
+    parser.add_argument('--bundle-path', required=True)
+    parser.add_argument('--bundle-apks-path', required=True)
+    parser.add_argument(
+        '--additional-apk-path',
+        action='append',
+        dest='additional_apk_paths',
+        default=[],
+        help='Paths to APKs to be installed prior to --apk-path.',
+    )
+    parser.add_argument('--package-name', required=True)
+    parser.add_argument('--aapt2-path', required=True)
+    parser.add_argument('--keystore-path', required=True)
+    parser.add_argument('--keystore-password', required=True)
+    parser.add_argument('--key-name', required=True)
+    parser.add_argument('--command-line-flags-file')
+    parser.add_argument('--proguard-mapping-path')
+    parser.add_argument('--target-cpu')
+    parser.add_argument('--system-image-locales')
+    parser.add_argument('--default-modules', nargs='*', default=[])
+    parser.add_argument('--is-official-build', action='store_true')
+    args = parser.parse_args(args)
 
-  def relativize(path):
-    """Returns the path relative to the output script directory."""
-    if path is None:
-      return path
-    return os.path.relpath(path, os.path.dirname(args.script_output_path))
+    def relativize(path):
+        """Returns the path relative to the output script directory."""
+        if path is None:
+            return path
+        return os.path.relpath(path, os.path.dirname(args.script_output_path))
 
-  wrapped_script_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
-  wrapped_script_dir = relativize(wrapped_script_dir)
-  with open(args.script_output_path, 'w', encoding='utf-8') as script:
-    script_dict = {
-        'WRAPPED_SCRIPT_DIR':
-        repr(wrapped_script_dir),
-        'OUTPUT_DIR':
-        repr(relativize('.')),
-        'BUNDLE_PATH':
-        repr(relativize(args.bundle_path)),
-        'BUNDLE_APKS_PATH':
-        repr(relativize(args.bundle_apks_path)),
-        'ADDITIONAL_APK_PATHS':
-        [relativize(p) for p in args.additional_apk_paths],
-        'PACKAGE_NAME':
-        repr(args.package_name),
-        'AAPT2_PATH':
-        repr(relativize(args.aapt2_path)),
-        'KEYSTORE_PATH':
-        repr(relativize(args.keystore_path)),
-        'KEYSTORE_PASSWORD':
-        repr(args.keystore_password),
-        'KEY_NAME':
-        repr(args.key_name),
-        'MAPPING_PATH':
-        repr(relativize(args.proguard_mapping_path)),
-        'FLAGS_FILE':
-        repr(args.command_line_flags_file),
-        'TARGET_CPU':
-        repr(args.target_cpu),
-        'SYSTEM_IMAGE_LOCALES':
-        repr(action_helpers.parse_gn_list(args.system_image_locales)),
-        'DEFAULT_MODULES':
-        repr(args.default_modules),
-        'IS_OFFICIAL_BUILD':
-        repr(args.is_official_build),
-    }
-    script.write(SCRIPT_TEMPLATE.substitute(script_dict))
-  os.chmod(args.script_output_path, 0o750)
-  return 0
+    wrapped_script_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
+    wrapped_script_dir = relativize(wrapped_script_dir)
+    with open(args.script_output_path, 'w', encoding='utf-8') as script:
+        script_dict = {
+            'WRAPPED_SCRIPT_DIR': repr(wrapped_script_dir),
+            'OUTPUT_DIR': repr(relativize('.')),
+            'BUNDLE_PATH': repr(relativize(args.bundle_path)),
+            'BUNDLE_APKS_PATH': repr(relativize(args.bundle_apks_path)),
+            'ADDITIONAL_APK_PATHS': [
+                relativize(p) for p in args.additional_apk_paths
+            ],
+            'PACKAGE_NAME': repr(args.package_name),
+            'AAPT2_PATH': repr(relativize(args.aapt2_path)),
+            'KEYSTORE_PATH': repr(relativize(args.keystore_path)),
+            'KEYSTORE_PASSWORD': repr(args.keystore_password),
+            'KEY_NAME': repr(args.key_name),
+            'MAPPING_PATH': repr(relativize(args.proguard_mapping_path)),
+            'FLAGS_FILE': repr(args.command_line_flags_file),
+            'TARGET_CPU': repr(args.target_cpu),
+            'SYSTEM_IMAGE_LOCALES': repr(
+                action_helpers.parse_gn_list(args.system_image_locales)
+            ),
+            'DEFAULT_MODULES': repr(args.default_modules),
+            'IS_OFFICIAL_BUILD': repr(args.is_official_build),
+        }
+        script.write(SCRIPT_TEMPLATE.substitute(script_dict))
+    os.chmod(args.script_output_path, 0o750)
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))

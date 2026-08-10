@@ -10,26 +10,26 @@ from count import Count
 
 
 class CountTest(unittest.TestCase):
-  """Test count.py."""
+    """Test count.py."""
 
-  def test_no_record(self) -> None:
-    count = Count("a")
-    self.assertEqual(count.dump().name, "a")
-    self.assertEqual(count.dump().value, 0)
+    def test_no_record(self) -> None:
+        count = Count("a")
+        self.assertEqual(count.dump().name, "a")
+        self.assertEqual(count.dump().value, 0)
 
-  def test_one_record(self) -> None:
-    count = Count("b")
-    count.record()
-    self.assertEqual(count.dump().name, "b")
-    self.assertEqual(count.dump().value, 1)
+    def test_one_record(self) -> None:
+        count = Count("b")
+        count.record()
+        self.assertEqual(count.dump().name, "b")
+        self.assertEqual(count.dump().value, 1)
 
-  def test_more_records(self) -> None:
-    count = Count("c")
-    count.record()
-    count.record()
-    self.assertEqual(count.dump().name, "c")
-    self.assertEqual(count.dump().value, 2)
+    def test_more_records(self) -> None:
+        count = Count("c")
+        count.record()
+        count.record()
+        self.assertEqual(count.dump().name, "c")
+        self.assertEqual(count.dump().value, 2)
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

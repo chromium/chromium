@@ -10,38 +10,43 @@ import pathlib
 import sys
 import tempfile
 
-from rustc_wrapper import (PrepareRustEnvForExecution, LoadRustEnvAndFlags,
-                           HandleReturnCode)
+from rustc_wrapper import (
+    PrepareRustEnvForExecution,
+    LoadRustEnvAndFlags,
+    HandleReturnCode,
+)
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--cpp-api-from-rust-exe-path',
-                      required=True,
-                      type=pathlib.Path)
-  parser.add_argument('--rustc-env-and-flags', type=pathlib.Path, required=True)
-  parser.add_argument('args', metavar='ARG', nargs='+')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--cpp-api-from-rust-exe-path', required=True, type=pathlib.Path
+    )
+    parser.add_argument(
+        '--rustc-env-and-flags', type=pathlib.Path, required=True
+    )
+    parser.add_argument('args', metavar='ARG', nargs='+')
+    args = parser.parse_args()
 
-  (rustenv, rustflags) = LoadRustEnvAndFlags(args.rustc_env_and_flags)
-  PrepareRustEnvForExecution(rustenv)
+    (rustenv, rustflags) = LoadRustEnvAndFlags(args.rustc_env_and_flags)
+    PrepareRustEnvForExecution(rustenv)
 
-  rustflags = [*args.args, "--", *rustflags]
+    rustflags = [*args.args, "--", *rustflags]
 
-  # `cpp_api_from_rust` should not write any files into the build directory
-  # (e.g. into `out/`).
-  assert not [x for x in rustflags if x.startswith("--emit")]
-  assert not [x for x in rustflags if x.startswith("-o")]
-  assert not [x for x in rustflags if x.startswith("--out-dir")]
-  temp_dir = tempfile.TemporaryDirectory()
-  rustflags += ["--out-dir", temp_dir.name]
+    # `cpp_api_from_rust` should not write any files into the build directory
+    # (e.g. into `out/`).
+    assert not [x for x in rustflags if x.startswith("--emit")]
+    assert not [x for x in rustflags if x.startswith("-o")]
+    assert not [x for x in rustflags if x.startswith("--out-dir")]
+    temp_dir = tempfile.TemporaryDirectory()
+    rustflags += ["--out-dir", temp_dir.name]
 
-  r = subprocess.run([args.cpp_api_from_rust_exe_path, *rustflags],
-                     env=rustenv,
-                     check=False)
-  HandleReturnCode(r)
-  return 0
+    r = subprocess.run(
+        [args.cpp_api_from_rust_exe_path, *rustflags], env=rustenv, check=False
+    )
+    HandleReturnCode(r)
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

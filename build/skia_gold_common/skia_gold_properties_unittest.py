@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-#pylint: disable=protected-access
+# pylint: disable=protected-access
 
 import os
 import sys
@@ -24,21 +24,27 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
   """Tests that SkiaGoldProperties initializes (or doesn't) when expected."""
 
   def verifySkiaGoldProperties(
-      self, instance: skia_gold_properties.SkiaGoldProperties,
-      expected: dict) -> None:
-    self.assertEqual(instance._local_pixel_tests,
-                     expected.get('local_pixel_tests'))
+    self, instance: skia_gold_properties.SkiaGoldProperties, expected: dict
+  ) -> None:
+    self.assertEqual(
+      instance._local_pixel_tests, expected.get('local_pixel_tests')
+    )
     self.assertEqual(instance._no_luci_auth, expected.get('no_luci_auth'))
-    self.assertEqual(instance._code_review_system,
-                     expected.get('code_review_system'))
-    self.assertEqual(instance._continuous_integration_system,
-                     expected.get('continuous_integration_system'))
+    self.assertEqual(
+      instance._code_review_system, expected.get('code_review_system')
+    )
+    self.assertEqual(
+      instance._continuous_integration_system,
+      expected.get('continuous_integration_system'),
+    )
     self.assertEqual(instance._git_revision, expected.get('git_revision'))
     self.assertEqual(instance._issue, expected.get('gerrit_issue'))
     self.assertEqual(instance._patchset, expected.get('gerrit_patchset'))
     self.assertEqual(instance._job_id, expected.get('buildbucket_id'))
-    self.assertEqual(instance._bypass_skia_gold_functionality,
-                     expected.get('bypass_skia_gold_functionality'))
+    self.assertEqual(
+      instance._bypass_skia_gold_functionality,
+      expected.get('bypass_skia_gold_functionality'),
+    )
 
   def test_initializeSkiaGoldAttributes_unsetLocal(self) -> None:
     args = createSkiaGoldArgs()
@@ -63,10 +69,9 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
   def test_initializeSkiaGoldAttributes_explicitServiceAccount(self) -> None:
     args = createSkiaGoldArgs(service_account='a')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    self.verifySkiaGoldProperties(sgp, {
-        'service_account': 'a',
-        'no_luci_auth': True
-    })
+    self.verifySkiaGoldProperties(
+      sgp, {'service_account': 'a', 'no_luci_auth': True}
+    )
 
   def test_initializeSkiaGoldAttributes_explicitCrs(self) -> None:
     args = createSkiaGoldArgs(code_review_system='foo')
@@ -89,38 +94,40 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
     self.verifySkiaGoldProperties(sgp, {'git_revision': 'a'})
 
   def test_initializeSkiaGoldAttributes_tryjobArgsIgnoredWithoutRevision(
-      self) -> None:
-    args = createSkiaGoldArgs(gerrit_issue=1,
-                              gerrit_patchset=2,
-                              buildbucket_id=3)
+    self,
+  ) -> None:
+    args = createSkiaGoldArgs(
+      gerrit_issue=1, gerrit_patchset=2, buildbucket_id=3
+    )
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {})
 
   def test_initializeSkiaGoldAttributes_tryjobArgs(self) -> None:
-    args = createSkiaGoldArgs(git_revision='a',
-                              gerrit_issue=1,
-                              gerrit_patchset=2,
-                              buildbucket_id=3)
+    args = createSkiaGoldArgs(
+      git_revision='a', gerrit_issue=1, gerrit_patchset=2, buildbucket_id=3
+    )
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(
-        sgp, {
-            'git_revision': 'a',
-            'gerrit_issue': 1,
-            'gerrit_patchset': 2,
-            'buildbucket_id': 3
-        })
+      sgp,
+      {
+        'git_revision': 'a',
+        'gerrit_issue': 1,
+        'gerrit_patchset': 2,
+        'buildbucket_id': 3,
+      },
+    )
 
   def test_initializeSkiaGoldAttributes_tryjobMissingPatchset(self) -> None:
-    args = createSkiaGoldArgs(git_revision='a',
-                              gerrit_issue=1,
-                              buildbucket_id=3)
+    args = createSkiaGoldArgs(
+      git_revision='a', gerrit_issue=1, buildbucket_id=3
+    )
     with self.assertRaises(RuntimeError):
       skia_gold_properties.SkiaGoldProperties(args)
 
   def test_initializeSkiaGoldAttributes_tryjobMissingBuildbucket(self) -> None:
-    args = createSkiaGoldArgs(git_revision='a',
-                              gerrit_issue=1,
-                              gerrit_patchset=2)
+    args = createSkiaGoldArgs(
+      git_revision='a', gerrit_issue=1, gerrit_patchset=2
+    )
     with self.assertRaises(RuntimeError):
       skia_gold_properties.SkiaGoldProperties(args)
 
@@ -150,10 +157,9 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
     self.assertFalse(sgp.IsTryjobRun())
 
   def testIsTryjobRun_issue(self) -> None:
-    args = createSkiaGoldArgs(git_revision='a',
-                              gerrit_issue=1,
-                              gerrit_patchset=2,
-                              buildbucket_id=3)
+    args = createSkiaGoldArgs(
+      git_revision='a', gerrit_issue=1, gerrit_patchset=2, buildbucket_id=3
+    )
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.assertTrue(sgp.IsTryjobRun())
 
@@ -165,8 +171,9 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
   def testGetGitRevision_findValidRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
-                           '_GetGitOriginMainHeadSha1') as patched_head:
+    with mock.patch.object(
+      skia_gold_properties.SkiaGoldProperties, '_GetGitOriginMainHeadSha1'
+    ) as patched_head:
       expected = 'a' * 40
       patched_head.return_value = expected
       self.assertEqual(sgp.git_revision, expected)
@@ -182,8 +189,9 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
   def testGetGitRevision_findEmptyRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
-                           '_GetGitOriginMainHeadSha1') as patched_head:
+    with mock.patch.object(
+      skia_gold_properties.SkiaGoldProperties, '_GetGitOriginMainHeadSha1'
+    ) as patched_head:
       patched_head.return_value = ''
       with self.assertRaises(RuntimeError):
         _ = sgp.git_revision
@@ -191,8 +199,9 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
   def testGetGitRevision_findMalformedRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
-                           '_GetGitOriginMainHeadSha1') as patched_head:
+    with mock.patch.object(
+      skia_gold_properties.SkiaGoldProperties, '_GetGitOriginMainHeadSha1'
+    ) as patched_head:
       patched_head.return_value = 'a' * 39
       with self.assertRaises(RuntimeError):
         _ = sgp.git_revision

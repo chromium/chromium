@@ -15,10 +15,10 @@ import java_google_api_keys
 
 
 class TestJavaGoogleAPIKeys(unittest.TestCase):
-  def testOutput(self):
-    definition = {'E1': 'abc', 'E2': 'defgh'}
-    output = java_google_api_keys.GenerateOutput(definition)
-    expected = """
+    def testOutput(self):
+        definition = {'E1': 'abc', 'E2': 'defgh'}
+        output = java_google_api_keys.GenerateOutput(definition)
+        expected = """
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -35,8 +35,10 @@ public class GoogleAPIKeys {
   public static final String E2 = "defgh";
 }
 """
-    self.assertEqual(expected % java_google_api_keys.GetScriptName(), output)
+        self.assertEqual(
+            expected % java_google_api_keys.GetScriptName(), output
+        )
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

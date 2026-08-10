@@ -17,8 +17,14 @@ import re
 
 # Set up path to be able to import action_helpers.
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
-                 os.pardir, os.pardir, 'build'))
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.pardir,
+        os.pardir,
+        os.pardir,
+        'build',
+    )
+)
 import action_helpers
 
 # This script wraps rustc for (currently) these reasons:
@@ -104,334 +110,357 @@ FILE_RE = re.compile("^([^# ][^ ]*):( .+)?$")
 
 # Equivalent of python3.9 built-in
 def remove_lib_suffix_from_l_args(text):
-  if text.startswith("-l") and text.endswith(".lib"):
-    return text[:-len(".lib")]
-  return text
+    if text.startswith("-l") and text.endswith(".lib"):
+        return text[: -len(".lib")]
+    return text
 
 
 # Equivalent of python3.9 built-in
 def remove_lib_suffix_from_extern_args(text):
-  if text.endswith(".dll.lib"):
-    # Trimmed:
-    # * `--extern=foo=foo.dll.lib`    -> `text.startswith("--extern")`
-    # * `--extern`, `foo=foo.dll.lib` -> `"=" in text`
-    #
-    # Not trimmed:
-    # * `-Clink-arg=./atomic.dll.lib` -> `not text.startswith("-")`
-    if text.startswith("--extern=") or \
-        ("=" in text and not text.startswith("-")):
-      return text[:-len(".lib")]
-  return text
+    if text.endswith(".dll.lib"):
+        # Trimmed:
+        # * `--extern=foo=foo.dll.lib`    -> `text.startswith("--extern")`
+        # * `--extern`, `foo=foo.dll.lib` -> `"=" in text`
+        #
+        # Not trimmed:
+        # * `-Clink-arg=./atomic.dll.lib` -> `not text.startswith("-")`
+        if text.startswith("--extern=") or (
+            "=" in text and not text.startswith("-")
+        ):
+            return text[: -len(".lib")]
+    return text
 
 
 def remove_gn_escaping_from_rsp_args(arg):
-  """Remove GN escaping from the `arg`. """
+    """Remove GN escaping from the `arg`."""
 
-  # `--cfg=feature=\"foo\"` => `--cfg=feature="foo"`
-  arg = arg.replace(r'\"', '"')
+    # `--cfg=feature=\"foo\"` => `--cfg=feature="foo"`
+    arg = arg.replace(r'\"', '"')
 
-  # `"foo bar"` => `foo bar` (Rust-style `.rsp` file expects one flag per line
-  # so it doesn't need to worry about escaping whitespace (unlike
-  # default-GN-style `.rsp` file where flags are separated by whitespace).
-  if arg.startswith('"') and arg.endswith('"'):
-    arg = arg[1:len(arg) - 1]
+    # `"foo bar"` => `foo bar` (Rust-style `.rsp` file expects one flag per line
+    # so it doesn't need to worry about escaping whitespace (unlike
+    # default-GN-style `.rsp` file where flags are separated by whitespace).
+    if arg.startswith('"') and arg.endswith('"'):
+        arg = arg[1 : len(arg) - 1]
 
-  return arg
+    return arg
 
 
 def normalize_path(path, abs_build_root):
-  """Returns normalized `path` ('/' + relative to build root). """
+    """Returns normalized `path` ('/' + relative to build root)."""
 
-  # str.removeprefix() does not exist before python 3.9.
-  def remove_prefix(text, prefix):
-    if text.startswith(prefix):
-      return text[len(prefix):]
-    return text
+    # str.removeprefix() does not exist before python 3.9.
+    def remove_prefix(text, prefix):
+        if text.startswith(prefix):
+            return text[len(prefix) :]
+        return text
 
-  return os.path.relpath(os.path.normpath(remove_prefix(
-      path, abs_build_root))).replace('\\', '/')
+    return os.path.relpath(
+        os.path.normpath(remove_prefix(path, abs_build_root))
+    ).replace('\\', '/')
 
 
 def normalize_depline(depline, abs_build_root):
-  """Returns `depline` with normalized file paths.
+    """Returns `depline` with normalized file paths.
 
-     Path normalization is needed to avoid "absolute path in deps ... request is
-     not relocatable" error.
+    Path normalization is needed to avoid "absolute path in deps ... request is
+    not relocatable" error.
 
-     If `depline` doesn't describe file/path dependencies (e.g. describes an
-     `env-dep`) then an unmodified `depline` is returned.
-  """
-  m = FILE_RE.match(depline)
-  if not m:
-    return depline
+    If `depline` doesn't describe file/path dependencies (e.g. describes an
+    `env-dep`) then an unmodified `depline` is returned.
+    """
+    m = FILE_RE.match(depline)
+    if not m:
+        return depline
 
-  lhs_file = m.group(1)
-  rhs_group = m.group(2)
-  if rhs_group:
-    rhs_files = rhs_group.split()
-  else:
-    rhs_files = []
+    lhs_file = m.group(1)
+    rhs_group = m.group(2)
+    if rhs_group:
+        rhs_files = rhs_group.split()
+    else:
+        rhs_files = []
 
-  lhs_file = normalize_path(lhs_file, abs_build_root)
-  rhs_files = [normalize_path(f, abs_build_root) for f in rhs_files]
+    lhs_file = normalize_path(lhs_file, abs_build_root)
+    rhs_files = [normalize_path(f, abs_build_root) for f in rhs_files]
 
-  if rhs_files:
-    rhs_files = " ".join(rhs_files)
-    return f"{lhs_file}: {rhs_files}"
-  else:
-    return f"{lhs_file}:"
+    if rhs_files:
+        rhs_files = " ".join(rhs_files)
+        return f"{lhs_file}: {rhs_files}"
+    else:
+        return f"{lhs_file}:"
 
 
 def verify_inputs(depline, sources, abs_build_root):
-  """Verify everything used by rustc (found in `depline`) was specified in the
-  GN build rule (found in `sources` or `inputs`).
+    """Verify everything used by rustc (found in `depline`) was specified in the
+    GN build rule (found in `sources` or `inputs`).
 
-  TODO(danakj): This allows things in `sources` that were not actually used by
-  rustc since third-party packages sources need to be a union of all build
-  configs/platforms for simplicity in generating build rules. For first-party
-  code we could be more strict and reject things in `sources` that were not
-  consumed.
-  """
+    TODO(danakj): This allows things in `sources` that were not actually used by
+    rustc since third-party packages sources need to be a union of all build
+    configs/platforms for simplicity in generating build rules. For first-party
+    code we could be more strict and reject things in `sources` that were not
+    consumed.
+    """
 
-  # Collect the files that rustc says are needed.
-  found_files = {}
-  m = FILE_RE.match(depline)
-  if m and m.group(2):
-    files = m.group(2)
-    found_files = {normalize_path(f, abs_build_root): f for f in files.split()}
-  # Get which ones are not listed in GN.
-  missing_files = found_files.keys() - sources
+    # Collect the files that rustc says are needed.
+    found_files = {}
+    m = FILE_RE.match(depline)
+    if m and m.group(2):
+        files = m.group(2)
+        found_files = {
+            normalize_path(f, abs_build_root): f for f in files.split()
+        }
+    # Get which ones are not listed in GN.
+    missing_files = found_files.keys() - sources
 
-  if not missing_files:
-    return True
+    if not missing_files:
+        return True
 
-  # The matching did a bunch of path manipulation to get paths relative to the
-  # build dir such that they would match GN. In errors, we will print out the
-  # exact path that rustc produces for easier debugging and writing of stdlib
-  # config rules.
-  for file_files_key in missing_files:
-    gn_type = "sources" if file_files_key.endswith(".rs") else "inputs"
-    print(f'ERROR: Rust source file or input not in GN {gn_type}: ' +
-          f'{found_files[file_files_key]}',
-          file=sys.stderr)
-  print('NOTE: See `//docs/rust/build_errors_guide.md` for more information.',
-        file=sys.stderr)
-  return False
+    # The matching did a bunch of path manipulation to get paths relative to the
+    # build dir such that they would match GN. In errors, we will print out the
+    # exact path that rustc produces for easier debugging and writing of stdlib
+    # config rules.
+    for file_files_key in missing_files:
+        gn_type = "sources" if file_files_key.endswith(".rs") else "inputs"
+        print(
+            f'ERROR: Rust source file or input not in GN {gn_type}: '
+            + f'{found_files[file_files_key]}',
+            file=sys.stderr,
+        )
+    print(
+        'NOTE: See `//docs/rust/build_errors_guide.md` for more information.',
+        file=sys.stderr,
+    )
+    return False
 
 
 def PrepareRustEnvForExecution(env):
-  """Converts values stored in the `env` dictionary to absolute paths, and
-     merges in system environment variables (with target-specific variables
-     taking precedence)."""
-  for k, v in env.items():
-    # Paths need to be relative at gn/ninja level (for compatibility with
-    # distributed builds), but it's okay to use absolute paths below gn/ninja
-    # level.  And because some paths need to be absolute, we make all of them
-    # absolute.  Examples of environment-variable-stored paths that need to be
-    # absolute:
-    #
-    # * `OUT_DIR` (because `rustc` resolves `include!` in relation to `.rs`
-    #   files - see https://crbug.com/448040713#comment6).
-    # * `SDKROOT` - see https://crbug.com/442128549
-    if v and os.path.exists(v):
-      env[k] = os.path.abspath(v)
+    """Converts values stored in the `env` dictionary to absolute paths, and
+    merges in system environment variables (with target-specific variables
+    taking precedence)."""
+    for k, v in env.items():
+        # Paths need to be relative at gn/ninja level (for compatibility with
+        # distributed builds), but it's okay to use absolute paths below gn/ninja
+        # level.  And because some paths need to be absolute, we make all of them
+        # absolute.  Examples of environment-variable-stored paths that need to be
+        # absolute:
+        #
+        # * `OUT_DIR` (because `rustc` resolves `include!` in relation to `.rs`
+        #   files - see https://crbug.com/448040713#comment6).
+        # * `SDKROOT` - see https://crbug.com/442128549
+        if v and os.path.exists(v):
+            env[k] = os.path.abspath(v)
 
-  # Merge in os.environ. Keys already in env take precedence over os.environ.
-  for k, v in os.environ.items():
-    env.setdefault(k, v)
+    # Merge in os.environ. Keys already in env take precedence over os.environ.
+    for k, v in os.environ.items():
+        env.setdefault(k, v)
 
 
 def _SaveRustEnvAndFlags(path, rustenv, rustflags):
-  os.makedirs(os.path.dirname(path), exist_ok=True)
-  data = {'rustenv': rustenv, 'rustflags': rustflags}
-  with action_helpers.atomic_output(path,
-                                    'w',
-                                    encoding='utf-8',
-                                    only_if_changed=False) as json_file:
-    json.dump(data, json_file, indent=4)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    data = {'rustenv': rustenv, 'rustflags': rustflags}
+    with action_helpers.atomic_output(
+        path, 'w', encoding='utf-8', only_if_changed=False
+    ) as json_file:
+        json.dump(data, json_file, indent=4)
 
 
 def LoadRustEnvAndFlags(path):
-  """Loads previously dumped env and flags (see --dump-rustc-env-and-flags. """
-  with open(path, "r", encoding='utf-8') as json_file:
-    data = json.load(json_file)
-  rustenv = data["rustenv"]
-  rustflags = data["rustflags"]
-  return rustenv, rustflags
+    """Loads previously dumped env and flags (see --dump-rustc-env-and-flags."""
+    with open(path, "r", encoding='utf-8') as json_file:
+        data = json.load(json_file)
+    rustenv = data["rustenv"]
+    rustflags = data["rustflags"]
+    return rustenv, rustflags
 
 
 def HandleReturnCode(completed_process, rustc_env_and_flags=None):
-  """ Takes `completed_process` returned by `subprocess.run(..., check=False)`
-      and if `returncode` is non-zero, then prints some diagnostic info and
-      calls `sys.exit(...)`.  This routine helps to avoid confusing signal-based
-      and exit-code-based failure conditions - see https://crbug.com/493357693.
+    """Takes `completed_process` returned by `subprocess.run(..., check=False)`
+    and if `returncode` is non-zero, then prints some diagnostic info and
+    calls `sys.exit(...)`.  This routine helps to avoid confusing signal-based
+    and exit-code-based failure conditions - see https://crbug.com/493357693.
 
-      If the `returncode` is non-zero and the optional `rustc_env_and_flags`
-      argument is present, then `_RecommendApplyFixesScript` will be called to
-      suggest using a script to apply machine-applicable fixes.
-  """
-  if completed_process.returncode == 0:
-    return
+    If the `returncode` is non-zero and the optional `rustc_env_and_flags`
+    argument is present, then `_RecommendApplyFixesScript` will be called to
+    suggest using a script to apply machine-applicable fixes.
+    """
+    if completed_process.returncode == 0:
+        return
 
-  process_path = completed_process.args[0]
-  process_name = os.path.basename(process_path)
-  return_code = completed_process.returncode
-  if return_code < 0:
-    signal_code = -return_code
-    try:
-      signal_name = signal.Signals(signal_code).name
-    except:
-      signal_name = "<unrecognized signal>"
-    print(f'ERROR: `{process_name}` was terminated by '\
-          f'signal {signal_code} ({signal_name})',
-          file=sys.stderr)
-    sys.exit(128 + signal_code)  # like `$?` in `bash`
-  else:
-    exit_code = return_code
-    print(f'ERROR: `{process_name}` exited with '\
-          f'a non-zero exit code: {exit_code}',
-          file=sys.stderr)
-    if rustc_env_and_flags:
-      _RecommendApplyFixesScript(process_path, rustc_env_and_flags)
-    sys.exit(exit_code)
+    process_path = completed_process.args[0]
+    process_name = os.path.basename(process_path)
+    return_code = completed_process.returncode
+    if return_code < 0:
+        signal_code = -return_code
+        try:
+            signal_name = signal.Signals(signal_code).name
+        except:
+            signal_name = "<unrecognized signal>"
+        print(
+            f'ERROR: `{process_name}` was terminated by '
+            f'signal {signal_code} ({signal_name})',
+            file=sys.stderr,
+        )
+        sys.exit(128 + signal_code)  # like `$?` in `bash`
+    else:
+        exit_code = return_code
+        print(
+            f'ERROR: `{process_name}` exited with '
+            f'a non-zero exit code: {exit_code}',
+            file=sys.stderr,
+        )
+        if rustc_env_and_flags:
+            _RecommendApplyFixesScript(process_path, rustc_env_and_flags)
+        sys.exit(exit_code)
 
 
 def _RecommendApplyFixesScript(tool, rustc_env_and_flags):
-  source_root = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             os.pardir, os.pardir, os.pardir)
-  rel_build_dir = os.path.relpath(os.getcwd(), source_root)
+    source_root = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.pardir,
+        os.pardir,
+        os.pardir,
+    )
+    rel_build_dir = os.path.relpath(os.getcwd(), source_root)
 
-  print(f"NOTE: To apply machine-applicable fix suggestions (if any), run:",
+    print(
+        f"NOTE: To apply machine-applicable fix suggestions (if any), run:",
         file=sys.stderr,
-        end='')
-  print(f" build/rust/apply_fixes.py", file=sys.stderr, end='')
-  print(f" {rel_build_dir}", file=sys.stderr, end='')
-  print(f" {os.path.basename(tool)} {rustc_env_and_flags}", file=sys.stderr)
+        end='',
+    )
+    print(f" build/rust/apply_fixes.py", file=sys.stderr, end='')
+    print(f" {rel_build_dir}", file=sys.stderr, end='')
+    print(f" {os.path.basename(tool)} {rustc_env_and_flags}", file=sys.stderr)
 
 
 def _ExpandNestedRustStyleRspFiles(rsp_args):
-  # `rustc` doesn't support using `@<file.rsp>` from **inside** `@another.rsp`.
-  # And things like `@cargo_flags.rs` (see build script handling inside
-  # `cargo_crate.gni`) may end up in `rustflags`.  And since `rustflags` are
-  # **also** put into an rsp file, we have to undo the undesirable nesting.
-  new_rsp_args = []
-  for arg in rsp_args:
-    if arg.startswith('@'):
-      with open(arg[1:], 'r') as nested_rsp_file:
-        # Nested rsp files are expected to conform to `rustc` requirements and
-        # therefore there is no need any additional processing/unescaping/etc.
-        new_rsp_args += [line.rstrip() for line in nested_rsp_file]
-    else:
-      new_rsp_args.append(arg)
-  return new_rsp_args
+    # `rustc` doesn't support using `@<file.rsp>` from **inside** `@another.rsp`.
+    # And things like `@cargo_flags.rs` (see build script handling inside
+    # `cargo_crate.gni`) may end up in `rustflags`.  And since `rustflags` are
+    # **also** put into an rsp file, we have to undo the undesirable nesting.
+    new_rsp_args = []
+    for arg in rsp_args:
+        if arg.startswith('@'):
+            with open(arg[1:], 'r') as nested_rsp_file:
+                # Nested rsp files are expected to conform to `rustc` requirements and
+                # therefore there is no need any additional processing/unescaping/etc.
+                new_rsp_args += [line.rstrip() for line in nested_rsp_file]
+        else:
+            new_rsp_args.append(arg)
+    return new_rsp_args
 
 
 def main():
-  parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-  parser.add_argument('--rustc', required=True, type=pathlib.Path)
-  parser.add_argument('--depfile', required=True, type=pathlib.Path)
-  parser.add_argument('--rsp', type=pathlib.Path, required=True)
-  parser.add_argument('--target-windows', action='store_true')
-  parser.add_argument('--dump-rustc-env-and-flags',
-                      type=pathlib.Path,
-                      required=True)
-  parser.add_argument('-v', action='store_true')
+    parser.add_argument('--rustc', required=True, type=pathlib.Path)
+    parser.add_argument('--depfile', required=True, type=pathlib.Path)
+    parser.add_argument('--rsp', type=pathlib.Path, required=True)
+    parser.add_argument('--target-windows', action='store_true')
+    parser.add_argument(
+        '--dump-rustc-env-and-flags', type=pathlib.Path, required=True
+    )
+    parser.add_argument('-v', action='store_true')
 
-  # Explicitly intercept `-o` and `--emit` to prevent them from getting
-  # saved via `_SaveRustEnvAndFlags`.  This helps to avoid overwriting
-  # these outputs when reusing the command-line flags for `clippy-driver`.
-  parser.add_argument('-o', type=pathlib.Path, required=True)
-  parser.add_argument('--emit', type=str, required=True)
+    # Explicitly intercept `-o` and `--emit` to prevent them from getting
+    # saved via `_SaveRustEnvAndFlags`.  This helps to avoid overwriting
+    # these outputs when reusing the command-line flags for `clippy-driver`.
+    parser.add_argument('-o', type=pathlib.Path, required=True)
+    parser.add_argument('--emit', type=str, required=True)
 
-  parser.add_argument('args', metavar='ARG', nargs='+')
+    parser.add_argument('args', metavar='ARG', nargs='+')
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  remaining_args = args.args
+    remaining_args = args.args
 
-  ldflags_separator = remaining_args.index("LDFLAGS")
-  rustenv_separator = remaining_args.index("RUSTENV", ldflags_separator)
-  # Sometimes we duplicate the SOURCES list into the command line for debugging
-  # issues on the bots.
-  try:
-    sources_separator = remaining_args.index("SOURCES", rustenv_separator)
-  except:
-    sources_separator = None
-  rustc_args = remaining_args[:ldflags_separator]
-  ldflags = remaining_args[ldflags_separator + 1:rustenv_separator]
-  rustenv = remaining_args[rustenv_separator + 1:sources_separator]
+    ldflags_separator = remaining_args.index("LDFLAGS")
+    rustenv_separator = remaining_args.index("RUSTENV", ldflags_separator)
+    # Sometimes we duplicate the SOURCES list into the command line for debugging
+    # issues on the bots.
+    try:
+        sources_separator = remaining_args.index("SOURCES", rustenv_separator)
+    except:
+        sources_separator = None
+    rustc_args = remaining_args[:ldflags_separator]
+    ldflags = remaining_args[ldflags_separator + 1 : rustenv_separator]
+    rustenv = remaining_args[rustenv_separator + 1 : sources_separator]
 
-  abs_build_root = os.getcwd().replace('\\', '/') + '/'
-  is_windows = sys.platform == 'win32' or args.target_windows
+    abs_build_root = os.getcwd().replace('\\', '/') + '/'
+    is_windows = sys.platform == 'win32' or args.target_windows
 
-  rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
+    rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
 
-  with open(args.rsp) as rspfile:
-    rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
+    with open(args.rsp) as rspfile:
+        rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
 
-  sources_separator = rsp_args.index("SOURCES")
-  sources = set(rsp_args[sources_separator + 1:])
-  rsp_args = rsp_args[:sources_separator]
+    sources_separator = rsp_args.index("SOURCES")
+    sources = set(rsp_args[sources_separator + 1 :])
+    rsp_args = rsp_args[:sources_separator]
 
-  if is_windows:
-    # Work around for "-l<foo>.lib", where ".lib" suffix is undesirable.
-    # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
-    rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
-    rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
-    # Work around for "--extern std=.../std_std.dll.lib`, where ".lib" suffix is
-    # undesirable.  See also https://crbug.com/498216362#comment9
-    rsp_args = [remove_lib_suffix_from_extern_args(arg) for arg in rsp_args]
-    rustc_args = [remove_lib_suffix_from_extern_args(arg) for arg in rustc_args]
-  rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
-  rsp_args = _ExpandNestedRustStyleRspFiles(rsp_args)
-  out_rsp = str(args.rsp) + ".rust"
-  with open(out_rsp, 'w') as rspfile:
-    # rustc needs the rsp file to be separated by newlines. Note that GN
-    # generates the file separated by spaces:
-    # https://bugs.chromium.org/p/gn/issues/detail?id=249,
-    rspfile.write("\n".join(rsp_args))
-  rustc_args.append(f'@{out_rsp}')
+    if is_windows:
+        # Work around for "-l<foo>.lib", where ".lib" suffix is undesirable.
+        # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
+        rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
+        rustc_args = [remove_lib_suffix_from_l_args(arg) for arg in rustc_args]
+        # Work around for "--extern std=.../std_std.dll.lib`, where ".lib" suffix is
+        # undesirable.  See also https://crbug.com/498216362#comment9
+        rsp_args = [remove_lib_suffix_from_extern_args(arg) for arg in rsp_args]
+        rustc_args = [
+            remove_lib_suffix_from_extern_args(arg) for arg in rustc_args
+        ]
+    rsp_args = [remove_gn_escaping_from_rsp_args(arg) for arg in rsp_args]
+    rsp_args = _ExpandNestedRustStyleRspFiles(rsp_args)
+    out_rsp = str(args.rsp) + ".rust"
+    with open(out_rsp, 'w') as rspfile:
+        # rustc needs the rsp file to be separated by newlines. Note that GN
+        # generates the file separated by spaces:
+        # https://bugs.chromium.org/p/gn/issues/detail?id=249,
+        rspfile.write("\n".join(rsp_args))
+    rustc_args.append(f'@{out_rsp}')
 
-  rustenv = dict([item.split("=", 1) for item in rustenv])  # list to dict
-  _SaveRustEnvAndFlags(args.dump_rustc_env_and_flags, rustenv, rustc_args)
-  PrepareRustEnvForExecution(rustenv)
+    rustenv = dict([item.split("=", 1) for item in rustenv])  # list to dict
+    _SaveRustEnvAndFlags(args.dump_rustc_env_and_flags, rustenv, rustc_args)
+    PrepareRustEnvForExecution(rustenv)
 
-  # Add `--emit` and `-o` flags into the `rustc` invocation
-  # (but do this _after_ the `_SaveRustEnvAndFlags` call above).
-  rustc_args += ["--emit", args.emit, "-o", args.o]
+    # Add `--emit` and `-o` flags into the `rustc` invocation
+    # (but do this _after_ the `_SaveRustEnvAndFlags` call above).
+    rustc_args += ["--emit", args.emit, "-o", args.o]
 
-  if args.v:
-    print(' '.join(f'{k}={shlex.quote(v)}' for k, v in rustenv.items()),
-          args.rustc, shlex.join(rustc_args))
-  r = subprocess.run([args.rustc, *rustc_args], env=rustenv, check=False)
-  HandleReturnCode(r, args.dump_rustc_env_and_flags)
+    if args.v:
+        print(
+            ' '.join(f'{k}={shlex.quote(v)}' for k, v in rustenv.items()),
+            args.rustc,
+            shlex.join(rustc_args),
+        )
+    r = subprocess.run([args.rustc, *rustc_args], env=rustenv, check=False)
+    HandleReturnCode(r, args.dump_rustc_env_and_flags)
 
-  final_depfile_lines = []
-  dirty = False
-  with open(args.depfile, encoding="utf-8") as d:
-    # Figure out which lines we want to keep in the depfile. If it's not the
-    # whole file, we will rewrite the file.
-    env_dep_re = re.compile("# env-dep:(.*)=.*")
-    for line in d:
-      m = env_dep_re.match(line)
-      if m and m.group(1) in rustenv.keys():
-        dirty = True  # We want to skip this line.
-      else:
-        new_line = normalize_depline(line, abs_build_root)
-        dirty = dirty or (new_line != line)
-        final_depfile_lines.append(new_line)
+    final_depfile_lines = []
+    dirty = False
+    with open(args.depfile, encoding="utf-8") as d:
+        # Figure out which lines we want to keep in the depfile. If it's not the
+        # whole file, we will rewrite the file.
+        env_dep_re = re.compile("# env-dep:(.*)=.*")
+        for line in d:
+            m = env_dep_re.match(line)
+            if m and m.group(1) in rustenv.keys():
+                dirty = True  # We want to skip this line.
+            else:
+                new_line = normalize_depline(line, abs_build_root)
+                dirty = dirty or (new_line != line)
+                final_depfile_lines.append(new_line)
 
-  # Verify each dependent file is listed in sources/inputs.
-  for line in final_depfile_lines:
-    if not verify_inputs(line, sources, abs_build_root):
-      return 1
+    # Verify each dependent file is listed in sources/inputs.
+    for line in final_depfile_lines:
+        if not verify_inputs(line, sources, abs_build_root):
+            return 1
 
-  if dirty:  # we made a change, let's write out the file
-    with action_helpers.atomic_output(args.depfile,
-                                      only_if_changed=False) as output:
-      output.write("\n".join(final_depfile_lines).encode("utf-8"))
+    if dirty:  # we made a change, let's write out the file
+        with action_helpers.atomic_output(
+            args.depfile, only_if_changed=False
+        ) as output:
+            output.write("\n".join(final_depfile_lines).encode("utf-8"))
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

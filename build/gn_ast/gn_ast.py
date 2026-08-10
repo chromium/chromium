@@ -65,12 +65,15 @@ def _find_node(root_node: dict, target_node: dict):
     ret = recurse(root_node)
     if ret is None:
         raise Exception(
-            f'Node not found: {target_node}\nLooked in: {root_node}')
+            f'Node not found: {target_node}\nLooked in: {root_node}'
+        )
     return ret
+
 
 @dataclasses.dataclass
 class NodeWrapper:
     """Base class for all wrappers."""
+
     node: dict
 
     @property
@@ -99,8 +102,7 @@ class NodeWrapper:
     def is_identifier(self):
         return self.node_type == 'IDENTIFIER'
 
-    def visit_nodes(self, callback: Callable[[dict],
-                                             Optional[_T]]) -> List[_T]:
+    def visit_nodes(self, callback: Callable[[dict], Optional[_T]]) -> List[_T]:
         ret = []
 
         def recurse(root: dict):
@@ -147,6 +149,7 @@ class NodeWrapper:
 @dataclasses.dataclass
 class BlockWrapper(NodeWrapper):
     """Wraps a BLOCK node."""
+
     def __post_init__(self):
         assert self.node_type == 'BLOCK'
 
@@ -165,6 +168,7 @@ class BlockWrapper(NodeWrapper):
 @dataclasses.dataclass
 class AssignmentWrapper(NodeWrapper):
     """Wraps a =, +=, or -= BINARY node where the LHS is an identifier."""
+
     def __post_init__(self):
         assert self.node_type == 'BINARY'
 
@@ -200,8 +204,8 @@ class AssignmentWrapper(NodeWrapper):
             return None
         children = node[NODE_CHILD]
         assert len(children) == 2, (
-            'Binary nodes should have two child nodes, but the node is: '
-            f'{node}')
+            f'Binary nodes should have two child nodes, but the node is: {node}'
+        )
         left_child, right_child = children
         if left_child.get(NODE_TYPE) != 'IDENTIFIER':
             return None
@@ -217,28 +221,32 @@ class AssignmentWrapper(NodeWrapper):
             'type': 'IDENTIFIER',
             'value': variable_name,
         }
-        return AssignmentWrapper({
-            'location': _create_location_node(),
-            'child': [id_node, value_node],
-            'type': 'BINARY',
-            'value': operation,
-        })
+        return AssignmentWrapper(
+            {
+                'location': _create_location_node(),
+                'child': [id_node, value_node],
+                'type': 'BINARY',
+                'value': operation,
+            }
+        )
 
     @staticmethod
     def create_list(variable_name, operation='='):
-        return AssignmentWrapper.create(variable_name,
-                                        StringList.create(),
-                                        operation=operation)
+        return AssignmentWrapper.create(
+            variable_name, StringList.create(), operation=operation
+        )
 
 
 @dataclasses.dataclass
 class StringList(NodeWrapper):
     """Wraps a list node that contains only string literals."""
+
     def __post_init__(self):
         assert self.is_list()
 
         self.literals: List[str] = [
-            x[NODE_VALUE].strip('"') for x in self.node_children
+            x[NODE_VALUE].strip('"')
+            for x in self.node_children
             if x[NODE_TYPE] == 'LITERAL'
         ]
 
@@ -250,11 +258,13 @@ class StringList(NodeWrapper):
         # comment (which likely does not apply to it).
         self.literals.insert(0, value)
         self.node_children.insert(
-            0, {
+            0,
+            {
                 'location': _create_location_node(),
                 'type': 'LITERAL',
                 'value': f'"{value}"',
-            })
+            },
+        )
 
     def remove_literal(self, value: str):
         self.literals.remove(value)
@@ -269,17 +279,19 @@ class StringList(NodeWrapper):
 
     @staticmethod
     def create() -> StringList:
-        return StringList({
-            'location': _create_location_node(),
-            'begin_token': '[',
-            'child': [],
-            'end': {
+        return StringList(
+            {
                 'location': _create_location_node(),
-                'type': 'END',
-                'value': ']'
-            },
-            'type': 'LIST',
-        })
+                'begin_token': '[',
+                'child': [],
+                'end': {
+                    'location': _create_location_node(),
+                    'type': 'END',
+                    'value': ']',
+                },
+                'type': 'LIST',
+            }
+        )
 
 
 class Target(NodeWrapper):
@@ -292,6 +304,7 @@ class Target(NodeWrapper):
     This does not actually find all targets. E.g. ignores those that use an
     expression for a name, or that use "target(type, name)".
     """
+
     def __init__(self, function_node: dict, name_node: dict):
         super().__init__(function_node)
         self.name_node = name_node
@@ -340,6 +353,7 @@ class Target(NodeWrapper):
 
 class BuildFile:
     """Represents the contents of a BUILD.gn file."""
+
     def __init__(self, path: str, root_node: dict):
         self.block = BlockWrapper(root_node)
         self.path = path
@@ -353,7 +367,8 @@ class BuildFile:
         output = subprocess.check_output(
             ['gn', 'format', '--read-tree=json', self.path],
             text=True,
-            input=new_content)
+            input=new_content,
+        )
         if 'Wrote rebuilt from json to' not in output:
             raise Exception('JSON was invalid')
         return True
@@ -369,5 +384,6 @@ class BuildFile:
     @staticmethod
     def from_file(path):
         output = subprocess.check_output(
-            ['gn', 'format', '--dump-tree=json', path], text=True)
+            ['gn', 'format', '--dump-tree=json', path], text=True
+        )
         return BuildFile(path, json.loads(output))

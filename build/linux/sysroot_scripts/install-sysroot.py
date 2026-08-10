@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Install Debian sysroots for building chromium.
-"""
+"""Install Debian sysroots for building chromium."""
 
 # The sysroot is needed to ensure that binaries that get built will run on
 # the oldest stable version of Debian that we currently support.
@@ -22,7 +21,6 @@
 # to download and the location to extract it to. The extracted sysroot could for
 # example be in build/linux/debian_bullseye_amd64-sysroot/.
 
-
 import glob
 import hashlib
 import json
@@ -36,8 +34,16 @@ from urllib.request import urlopen
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 
-VALID_ARCHS = ("amd64", "i386", "armhf", "arm64", "mipsel", "mips64el",
-               "ppc64el", "riscv64")
+VALID_ARCHS = (
+    "amd64",
+    "i386",
+    "armhf",
+    "arm64",
+    "mipsel",
+    "mips64el",
+    "ppc64el",
+    "riscv64",
+)
 
 ARCH_TRANSLATIONS = {
     "x64": "amd64",
@@ -59,8 +65,10 @@ DEFAULT_TARGET_PLATFORMS = {
     "riscv64": "trixie",
 }
 
-DEFAULT_SYSROOTS_PATH = os.path.join(os.path.relpath(SCRIPT_DIR, SRC_DIR),
-                                     "sysroots.json")
+DEFAULT_SYSROOTS_PATH = os.path.join(
+    os.path.relpath(SCRIPT_DIR, SRC_DIR), "sysroots.json"
+)
+
 
 class Error(Exception):
     pass
@@ -80,17 +88,19 @@ def GetSha256(filename):
 
 
 def main(args):
-    parser = optparse.OptionParser("usage: %prog [OPTIONS]",
-                                   description=__doc__)
-    parser.add_option("--sysroots-json-path",
-                      help="The location of sysroots.json file")
-    parser.add_option("--arch",
-                      help="Sysroot architecture: %s" % ", ".join(VALID_ARCHS))
+    parser = optparse.OptionParser(
+        "usage: %prog [OPTIONS]", description=__doc__
+    )
+    parser.add_option(
+        "--sysroots-json-path", help="The location of sysroots.json file"
+    )
+    parser.add_option(
+        "--arch", help="Sysroot architecture: %s" % ", ".join(VALID_ARCHS)
+    )
     parser.add_option(
         "--all",
         action="store_true",
-        help="Install all sysroot images (useful when updating the"
-        " images)",
+        help="Install all sysroot images (useful when updating the images)",
     )
     options, _ = parser.parse_args(args)
 
@@ -101,12 +111,12 @@ def main(args):
 
     if options.arch:
         arch = ARCH_TRANSLATIONS.get(options.arch, options.arch)
-        InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch],
-                       arch)
+        InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch], arch)
     elif options.all:
         for arch in VALID_ARCHS:
-            InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch],
-                           arch)
+            InstallSysroot(
+                sysroots_json_path, DEFAULT_TARGET_PLATFORMS[arch], arch
+            )
     else:
         print("You much specify one of the options.")
         return 1
@@ -127,8 +137,9 @@ def GetSysrootDict(sysroots_json_path, target_platform, target_arch):
 
 
 def InstallSysroot(sysroots_json_path, target_platform, target_arch):
-    sysroot_dict = GetSysrootDict(sysroots_json_path, target_platform,
-                                  target_arch)
+    sysroot_dict = GetSysrootDict(
+        sysroots_json_path, target_platform, target_arch
+    )
     tarball_filename = sysroot_dict["Tarball"]
     tarball_sha256sum = sysroot_dict["Sha256Sum"]
     url_prefix = sysroot_dict["URL"]
@@ -143,13 +154,16 @@ def InstallSysroot(sysroots_json_path, target_platform, target_arch):
     # This file is created by first class GCS deps. If this file exists,
     # clear the entire directory and download with this script instead
     if os.path.exists(stamp) and not glob.glob(
-            os.path.join(sysroot, ".*_is_first_class_gcs")):
+        os.path.join(sysroot, ".*_is_first_class_gcs")
+    ):
         with open(stamp) as s:
             if s.read() == url:
                 return
 
-    print("Installing Debian %s %s root image: %s" %
-          (target_platform, target_arch, sysroot))
+    print(
+        "Installing Debian %s %s root image: %s"
+        % (target_platform, target_arch, sysroot)
+    )
     if os.path.isdir(sysroot):
         shutil.rmtree(sysroot)
     os.mkdir(sysroot)
@@ -169,8 +183,10 @@ def InstallSysroot(sysroots_json_path, target_platform, target_arch):
         raise Error("Failed to download %s" % url)
     sha256sum = GetSha256(tarball)
     if sha256sum != tarball_sha256sum:
-        raise Error("Tarball sha256sum is wrong."
-                    "Expected %s, actual: %s" % (tarball_sha256sum, sha256sum))
+        raise Error(
+            "Tarball sha256sum is wrong."
+            "Expected %s, actual: %s" % (tarball_sha256sum, sha256sum)
+        )
     subprocess.check_call(["tar", "mxf", tarball, "-C", sysroot])
     os.remove(tarball)
 

@@ -6,14 +6,13 @@ from pylib.base import environment
 
 
 class LocalMachineEnvironment(environment.Environment):
+    def __init__(self, _args, output_manager, _error_func):
+        super().__init__(output_manager)
 
-  def __init__(self, _args, output_manager, _error_func):
-    super().__init__(output_manager)
+    # override
+    def SetUp(self):
+        pass
 
-  #override
-  def SetUp(self):
-    pass
-
-  #override
-  def TearDown(self):
-    pass
+    # override
+    def TearDown(self):
+        pass

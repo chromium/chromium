@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-#pylint: disable=protected-access
+# pylint: disable=protected-access
 
 import os
 import re
@@ -22,8 +22,9 @@ from skia_gold_common import unittest_utils
 createSkiaGoldArgs = unittest_utils.createSkiaGoldArgs
 
 
-def assertArgWith(test: unittest.TestCase, arg_list: list, arg: Any,
-                  value: Any) -> None:
+def assertArgWith(
+  test: unittest.TestCase, arg_list: list, arg: Any, value: Any
+) -> None:
   i = arg_list.index(arg)
   test.assertEqual(arg_list[i + 1], value)
 
@@ -34,17 +35,16 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     self._working_dir = tempfile.mkdtemp()
     self._json_keys = tempfile.NamedTemporaryFile(delete=False).name
 
-  @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession,
-                     '_RunCmdForRcAndOutput')
+  @mock.patch.object(
+    omsgs.OutputManagerlessSkiaGoldSession, '_RunCmdForRcAndOutput'
+  )
   def test_commandCommonArgs(self, cmd_mock: mock.MagicMock) -> None:
     cmd_mock.return_value = (None, None)
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=False)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir,
-                                                     sgp,
-                                                     self._json_keys,
-                                                     'corpus',
-                                                     instance='instance')
+    session = omsgs.OutputManagerlessSkiaGoldSession(
+      self._working_dir, sgp, self._json_keys, 'corpus', instance='instance'
+    )
     session.Diff('name', 'png_file', None)
     call_args = cmd_mock.call_args[0][0]
     self.assertIn('diff', call_args)
@@ -67,19 +67,22 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
     self.assertNotIn(self._working_dir, call_args[i + 1])
 
   @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession, '_StoreDiffLinks')
-  @mock.patch.object(omsgs.OutputManagerlessSkiaGoldSession,
-                     '_RunCmdForRcAndOutput')
+  @mock.patch.object(
+    omsgs.OutputManagerlessSkiaGoldSession, '_RunCmdForRcAndOutput'
+  )
   def test_explicitLocalPngDirectory(self, cmd_mock: mock.MagicMock, _) -> None:
     cmd_mock.return_value = (0, '')
     if sys.platform == 'win32':
       local_png_dir = 'c:\\tmp\\foo'
     else:
       local_png_dir = '/tmp/foo'
-    args = createSkiaGoldArgs(git_revision='a',
-                              skia_gold_local_png_write_directory=local_png_dir)
+    args = createSkiaGoldArgs(
+      git_revision='a', skia_gold_local_png_write_directory=local_png_dir
+    )
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir, sgp,
-                                                     self._json_keys, '', '')
+    session = omsgs.OutputManagerlessSkiaGoldSession(
+      self._working_dir, sgp, self._json_keys, '', ''
+    )
     _, _ = session.Diff('name', '', None)
     self.assertEqual(cmd_mock.call_count, 1)
     call_args = cmd_mock.call_args.args[0]
@@ -94,7 +97,8 @@ class GpuSkiaGoldSessionDiffTest(fake_filesystem_unittest.TestCase):
 
 
 class OutputManagerlessSkiaGoldSessionStoreDiffLinksTest(
-    fake_filesystem_unittest.TestCase):
+  fake_filesystem_unittest.TestCase
+):
   def setUp(self) -> None:
     self.setUpPyfakefs()
     self._working_dir = tempfile.mkdtemp()
@@ -103,13 +107,15 @@ class OutputManagerlessSkiaGoldSessionStoreDiffLinksTest(
   def test_outputManagerNotNeeded(self) -> None:
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
-    session = omsgs.OutputManagerlessSkiaGoldSession(self._working_dir, sgp,
-                                                     self._json_keys, '', '')
+    session = omsgs.OutputManagerlessSkiaGoldSession(
+      self._working_dir, sgp, self._json_keys, '', ''
+    )
     input_filepath = os.path.join(self._working_dir, 'input-inputhash.png')
     with open(input_filepath, 'w') as f:
       f.write('')
-    closest_filepath = os.path.join(self._working_dir,
-                                    'closest-closesthash.png')
+    closest_filepath = os.path.join(
+      self._working_dir, 'closest-closesthash.png'
+    )
     with open(closest_filepath, 'w') as f:
       f.write('')
     diff_filepath = os.path.join(self._working_dir, 'diff.png')
@@ -117,10 +123,12 @@ class OutputManagerlessSkiaGoldSessionStoreDiffLinksTest(
       f.write('')
 
     session._StoreDiffLinks('foo', None, self._working_dir)
-    self.assertEqual(session.GetGivenImageLink('foo'),
-                     'file://' + input_filepath)
-    self.assertEqual(session.GetClosestImageLink('foo'),
-                     'file://' + closest_filepath)
+    self.assertEqual(
+      session.GetGivenImageLink('foo'), 'file://' + input_filepath
+    )
+    self.assertEqual(
+      session.GetClosestImageLink('foo'), 'file://' + closest_filepath
+    )
     self.assertEqual(session.GetDiffImageLink('foo'), 'file://' + diff_filepath)
 
 

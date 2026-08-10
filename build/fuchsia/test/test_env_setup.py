@@ -4,19 +4,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Provides a way to setup the test environment without running the tests. It
-   covers starting up emulator or flashing physical device,
-   setting up fuchsia package repository, publishing the packages and resolving
-   the packages on the target.
+covers starting up emulator or flashing physical device,
+setting up fuchsia package repository, publishing the packages and resolving
+the packages on the target.
 
-   It shares most of the logic with the regular run_test.py, but overriding its
-   _get_test_runner to wait_for_sigterm instead of running tests. So it's
-   blocking until being killed.
+It shares most of the logic with the regular run_test.py, but overriding its
+_get_test_runner to wait_for_sigterm instead of running tests. So it's
+blocking until being killed.
 
-   Since the setup_env does not run the tests, caller should use the pid file to
-   detect when the environment is ready.
+Since the setup_env does not run the tests, caller should use the pid file to
+detect when the environment is ready.
 
-   Killing the process running the setup_env() function would tear down the
-   test environment."""
+Killing the process running the setup_env() function would tear down the
+test environment."""
 
 import argparse
 import os
@@ -36,8 +36,13 @@ class _Blocker(TestRunner):
     received."""
 
     # private, use run_tests.get_test_runner function instead.
-    def __init__(self, out_dir: str, target_id: str, package_deps: List[str],
-                 pid_file: str):
+    def __init__(
+        self,
+        out_dir: str,
+        target_id: str,
+        package_deps: List[str],
+        pid_file: str,
+    ):
         super().__init__(out_dir, [], [], target_id, package_deps)
         self.pid_file = pid_file
 
@@ -53,11 +58,11 @@ class _Blocker(TestRunner):
 def setup_env(mypid: int = 0) -> int:
     """Sets up the environment and blocks until sigterm is received.
 
-       Args:
-           mypid: The script creates the file at logs-dir/$mypid.pid when the
-                  environment is ready.
-                  Since this script won't run tests directly, caller can use
-                  this file to decide when to start running the tests."""
+    Args:
+        mypid: The script creates the file at logs-dir/$mypid.pid when the
+               environment is ready.
+               Since this script won't run tests directly, caller can use
+               this file to decide when to start running the tests."""
     catch_sigterm()
 
     if mypid == 0:
@@ -69,9 +74,13 @@ def setup_env(mypid: int = 0) -> int:
 
     def get_test_runner(runner_args: argparse.Namespace, *_) -> TestRunner:
         return _Blocker(
-            runner_args.out_dir, runner_args.target_id, runner_args.packages,
-            os.path.join(runner_args.logs_dir,
-                         'test_env_setup.' + str(mypid) + '.pid'))
+            runner_args.out_dir,
+            runner_args.target_id,
+            runner_args.packages,
+            os.path.join(
+                runner_args.logs_dir, 'test_env_setup.' + str(mypid) + '.pid'
+            ),
+        )
 
     # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner
@@ -79,10 +88,11 @@ def setup_env(mypid: int = 0) -> int:
 
 
 def wait_for_env_setup(proc: Popen, logs_dir: str) -> bool:
-    """ Waits for the test_env_setup.py process to be ready, returns false if
-        the process terminated unexpected. """
-    pid_file = os.path.join(logs_dir,
-                            'test_env_setup.' + str(proc.pid) + '.pid')
+    """Waits for the test_env_setup.py process to be ready, returns false if
+    the process terminated unexpected."""
+    pid_file = os.path.join(
+        logs_dir, 'test_env_setup.' + str(proc.pid) + '.pid'
+    )
     while not os.path.isfile(pid_file):
         proc.poll()
         if proc.returncode:

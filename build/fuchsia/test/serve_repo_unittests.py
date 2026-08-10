@@ -20,25 +20,18 @@ _REPO_NAME = 'test_repo_name'
 _TARGET = 'test_target'
 _NO_SERVERS_LIST = json.dumps({'ok': {'data': []}})
 _SERVERS_LIST = json.dumps(
-    {'ok': {
-        'data': [{
-            'name': _REPO_NAME,
-            'repo_path': _REPO_DIR
-        }]
-    }})
+    {'ok': {'data': [{'name': _REPO_NAME, 'repo_path': _REPO_DIR}]}}
+)
 _WRONG_SERVERS_LIST = json.dumps(
-    {'ok': {
-        'data': [{
-            'name': 'wrong_name',
-            'repo_path': _REPO_DIR
-        }]
-    }})
+    {'ok': {'data': [{'name': 'wrong_name', 'repo_path': _REPO_DIR}]}}
+)
 
 
 # Tests private functions.
 # pylint: disable=protected-access
 class ServeRepoTest(unittest.TestCase):
     """Unittests for serve_repo.py."""
+
     @mock.patch('serve_repo.run_ffx_command')
     def test_start_server(self, mock_ffx) -> None:
         """Test |_start_serving| function for start."""
@@ -47,35 +40,65 @@ class ServeRepoTest(unittest.TestCase):
             SimpleNamespace(returncode=1, stderr='err1', stdout=''),
             SimpleNamespace(returncode=0, stdout=_SERVERS_LIST, stderr=''),
             SimpleNamespace(returncode=0, stdout=_SERVERS_LIST, stderr=''),
-            SimpleNamespace(returncode=0, stdout='', stderr='')
+            SimpleNamespace(returncode=0, stdout='', stderr=''),
         ]
         serve_repo._start_serving(_REPO_DIR, _REPO_NAME, _TARGET)
         self.assertEqual(mock_ffx.call_count, 3)
         first_call = mock_ffx.call_args_list[0]
 
         self.assertEqual(
-            mock.call(cmd=[
-                'repository', 'server', 'start', '--background', '--address',
-                '[::]:0', '--repository', _REPO_NAME, '--repo-path', _REPO_DIR,
-                '--no-device'
-            ],
-                      check=False), first_call)
+            mock.call(
+                cmd=[
+                    'repository',
+                    'server',
+                    'start',
+                    '--background',
+                    '--address',
+                    '[::]:0',
+                    '--repository',
+                    _REPO_NAME,
+                    '--repo-path',
+                    _REPO_DIR,
+                    '--no-device',
+                ],
+                check=False,
+            ),
+            first_call,
+        )
         second_call = mock_ffx.call_args_list[1]
         self.assertEqual(
-            mock.call(cmd=[
-                '--machine', 'json', 'repository', 'server', 'list', '--name',
-                _REPO_NAME
-            ],
-                      check=False,
-                      capture_output=True), second_call)
+            mock.call(
+                cmd=[
+                    '--machine',
+                    'json',
+                    'repository',
+                    'server',
+                    'list',
+                    '--name',
+                    _REPO_NAME,
+                ],
+                check=False,
+                capture_output=True,
+            ),
+            second_call,
+        )
 
         third_call = mock_ffx.call_args_list[2]
         self.assertEqual(
-            mock.call(cmd=[
-                'target', 'repository', 'register', '-r', _REPO_NAME,
-                '--alias', REPO_ALIAS
-            ],
-                      target_id=_TARGET), third_call)
+            mock.call(
+                cmd=[
+                    'target',
+                    'repository',
+                    'register',
+                    '-r',
+                    _REPO_NAME,
+                    '--alias',
+                    REPO_ALIAS,
+                ],
+                target_id=_TARGET,
+            ),
+            third_call,
+        )
 
     @mock.patch('serve_repo.run_ffx_command')
     def test_assert_server_running(self, mock_ffx) -> None:
@@ -95,9 +118,9 @@ class ServeRepoTest(unittest.TestCase):
     def test_is_server_not_running(self, mock_ffx) -> None:
         """Test |_assert_server_running| function for start with no server."""
 
-        mock_ffx.return_value = SimpleNamespace(returncode=0,
-                                                stdout=_NO_SERVERS_LIST,
-                                                stderr='')
+        mock_ffx.return_value = SimpleNamespace(
+            returncode=0, stdout=_NO_SERVERS_LIST, stderr=''
+        )
 
         with self.assertRaises(RuntimeError):
             serve_repo._assert_server_running(_REPO_NAME)
@@ -106,9 +129,9 @@ class ServeRepoTest(unittest.TestCase):
     def test_is_wrong_server_running(self, mock_ffx) -> None:
         """Test |_assert_server_running| function for start with no server."""
 
-        mock_ffx.return_value = SimpleNamespace(returncode=0,
-                                                stdout=_WRONG_SERVERS_LIST,
-                                                stderr='')
+        mock_ffx.return_value = SimpleNamespace(
+            returncode=0, stdout=_WRONG_SERVERS_LIST, stderr=''
+        )
 
         with self.assertRaises(RuntimeError):
             serve_repo._assert_server_running(_REPO_NAME)
@@ -117,9 +140,9 @@ class ServeRepoTest(unittest.TestCase):
     def test_is_server_not_running_bad_ffx(self, mock_ffx) -> None:
         """Test |_assert_server_running| function for start with bad ffx."""
 
-        mock_ffx.return_value = SimpleNamespace(returncode=1,
-                                                stderr='Some error',
-                                                stdout='')
+        mock_ffx.return_value = SimpleNamespace(
+            returncode=1, stderr='Some error', stdout=''
+        )
 
         with self.assertRaises(RuntimeError):
             serve_repo._assert_server_running(_REPO_NAME)
@@ -128,9 +151,9 @@ class ServeRepoTest(unittest.TestCase):
     def test_is_server_not_running_bad_json(self, mock_ffx) -> None:
         """Test |_assert_server_running| function for start with bad ffx."""
 
-        mock_ffx.return_value = SimpleNamespace(returncode=0,
-                                                stderr='',
-                                                stdout='{"some": bad...')
+        mock_ffx.return_value = SimpleNamespace(
+            returncode=0, stderr='', stdout='{"some": bad...'
+        )
 
         with self.assertRaises(RuntimeError):
             serve_repo._assert_server_running(_REPO_NAME)
@@ -147,11 +170,17 @@ class ServeRepoTest(unittest.TestCase):
             mock.call(
                 cmd=['target', 'repository', 'deregister', '-r', _REPO_NAME],
                 target_id=_TARGET,
-                check=False), first_call)
+                check=False,
+            ),
+            first_call,
+        )
         second_call = mock_ffx.call_args_list[1]
         self.assertEqual(
-            mock.call(cmd=['repository', 'server', 'stop', _REPO_NAME],
-                      check=False), second_call)
+            mock.call(
+                cmd=['repository', 'server', 'stop', _REPO_NAME], check=False
+            ),
+            second_call,
+        )
 
     @mock.patch('serve_repo._start_serving')
     @mock.patch('serve_repo._stop_serving')
@@ -162,10 +191,17 @@ class ServeRepoTest(unittest.TestCase):
         serve_repo.register_serve_args(parser)
         register_device_args(parser)
         with serve_repo.serve_repository(
-                parser.parse_args([
-                    '--repo', _REPO_DIR, '--repo-name', _REPO_NAME,
-                    '--target-id', _TARGET
-                ])):
+            parser.parse_args(
+                [
+                    '--repo',
+                    _REPO_DIR,
+                    '--repo-name',
+                    _REPO_NAME,
+                    '--target-id',
+                    _TARGET,
+                ]
+            )
+        ):
             self.assertEqual(mock_start.call_count, 1)
         self.assertEqual(mock_stop.call_count, 1)
 

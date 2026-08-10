@@ -30,8 +30,9 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
     return filepath
 
   def _StoreDiffLinks(self, image_name: str, _, output_dir: str) -> None:
-    results = self._comparison_results.setdefault(image_name,
-                                                  self.ComparisonResults())
+    results = self._comparison_results.setdefault(
+      image_name, self.ComparisonResults()
+    )
     # The directory should contain "input-<hash>.png", "closest-<hash>.png",
     # and "diff.png".
     for f in os.listdir(output_dir):

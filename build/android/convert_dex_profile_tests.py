@@ -75,8 +75,7 @@ Class descriptor  : 'La;'
 """
 
 # pylint: disable=line-too-long
-PROGUARD_MAPPING = \
-"""org.chromium.Original -> a:
+PROGUARD_MAPPING = """org.chromium.Original -> a:
     org.chromium.Original sDisplayAndroidManager -> e
     org.chromium.Original another() -> b
     4:4:void inlined():237:237 -> a
@@ -90,8 +89,7 @@ PROGUARD_MAPPING = \
     9:9:void initialize():245 -> a
     9:9:org.chromium.Original getInstance():203 -> a"""
 
-OBFUSCATED_PROFILE = \
-"""La;
+OBFUSCATED_PROFILE = """La;
 PLa;->b()La;
 SLa;->a(Ljava/lang/Object;)I
 HPLa;->a(Ljava/lang/String;)I"""
@@ -143,135 +141,168 @@ Class descriptor  : 'La;'
 """
 
 # pylint: disable=line-too-long
-PROGUARD_MAPPING_2 = \
-"""org.chromium.Original -> a:
+PROGUARD_MAPPING_2 = """org.chromium.Original -> a:
     org.chromium.Original sDisplayAndroidManager -> e
     org.chromium.Original another() -> b
     void initialize() -> c
     org.chromium.Original getInstance():203 -> a
     4:4:void inlined():237:237 -> a"""
 
-OBFUSCATED_PROFILE_2 = \
-"""La;
+OBFUSCATED_PROFILE_2 = """La;
 PLa;->b()La;
 HPSLa;->a()La;
 HPLa;->c()V"""
 
-UNOBFUSCATED_PROFILE = \
-"""Lorg/chromium/Original;
+UNOBFUSCATED_PROFILE = """Lorg/chromium/Original;
 PLorg/chromium/Original;->another()Lorg/chromium/Original;
 HPSLorg/chromium/Original;->getInstance()Lorg/chromium/Original;
 HPLorg/chromium/Original;->initialize()V"""
 
+
 class GenerateProfileTests(unittest.TestCase):
-  def testProcessDex(self):
-    dex = cp.ProcessDex(DEX_DUMP.splitlines())
-    self.assertIsNotNone(dex['a'])
+    def testProcessDex(self):
+        dex = cp.ProcessDex(DEX_DUMP.splitlines())
+        self.assertIsNotNone(dex['a'])
 
-    self.assertEqual(len(dex['a'].FindMethodsAtLine('<clinit>', 311, 313)), 1)
-    self.assertEqual(len(dex['a'].FindMethodsAtLine('<clinit>', 309, 315)), 1)
-    clinit = dex['a'].FindMethodsAtLine('<clinit>', 311, 313)[0]
-    self.assertEqual(clinit.name, '<clinit>')
-    self.assertEqual(clinit.return_type, 'V')
-    self.assertEqual(clinit.param_types, 'Ljava/lang/String;')
+        self.assertEqual(
+            len(dex['a'].FindMethodsAtLine('<clinit>', 311, 313)), 1
+        )
+        self.assertEqual(
+            len(dex['a'].FindMethodsAtLine('<clinit>', 309, 315)), 1
+        )
+        clinit = dex['a'].FindMethodsAtLine('<clinit>', 311, 313)[0]
+        self.assertEqual(clinit.name, '<clinit>')
+        self.assertEqual(clinit.return_type, 'V')
+        self.assertEqual(clinit.param_types, 'Ljava/lang/String;')
 
-    self.assertEqual(len(dex['a'].FindMethodsAtLine('a', 8, None)), 2)
-    self.assertIsNone(dex['a'].FindMethodsAtLine('a', 100, None))
+        self.assertEqual(len(dex['a'].FindMethodsAtLine('a', 8, None)), 2)
+        self.assertIsNone(dex['a'].FindMethodsAtLine('a', 100, None))
 
-# pylint: disable=protected-access
-  def testProcessProguardMapping(self):
-    dex = cp.ProcessDex(DEX_DUMP.splitlines())
-    mapping, reverse = cp.ProcessProguardMapping(
-        PROGUARD_MAPPING.splitlines(), dex)
+    # pylint: disable=protected-access
+    def testProcessProguardMapping(self):
+        dex = cp.ProcessDex(DEX_DUMP.splitlines())
+        mapping, reverse = cp.ProcessProguardMapping(
+            PROGUARD_MAPPING.splitlines(), dex
+        )
 
-    self.assertEqual('La;', reverse.GetClassMapping('Lorg/chromium/Original;'))
+        self.assertEqual(
+            'La;', reverse.GetClassMapping('Lorg/chromium/Original;')
+        )
 
-    getInstance = cp.Method(
-        'getInstance', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;')
-    initialize = cp.Method('initialize', 'Lorg/chromium/Original;', '', 'V')
-    another = cp.Method(
-        'another', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;')
-    subclassInit = cp.Method(
-        '<init>', 'Lorg/chromium/Original$Subclass;',
-        'Lorg/chromium/Original;B', 'V')
+        getInstance = cp.Method(
+            'getInstance',
+            'Lorg/chromium/Original;',
+            '',
+            'Lorg/chromium/Original;',
+        )
+        initialize = cp.Method('initialize', 'Lorg/chromium/Original;', '', 'V')
+        another = cp.Method(
+            'another', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;'
+        )
+        subclassInit = cp.Method(
+            '<init>',
+            'Lorg/chromium/Original$Subclass;',
+            'Lorg/chromium/Original;B',
+            'V',
+        )
 
-    mapped = mapping.GetMethodMapping(
-        cp.Method('a', 'La;', 'Ljava/lang/String;', 'I'))
-    self.assertEqual(len(mapped), 2)
-    self.assertIn(getInstance, mapped)
-    self.assertNotIn(subclassInit, mapped)
-    self.assertNotIn(
-        cp.Method('inlined', 'Lorg/chromium/Original;', '', 'V'), mapped)
-    self.assertIn(initialize, mapped)
+        mapped = mapping.GetMethodMapping(
+            cp.Method('a', 'La;', 'Ljava/lang/String;', 'I')
+        )
+        self.assertEqual(len(mapped), 2)
+        self.assertIn(getInstance, mapped)
+        self.assertNotIn(subclassInit, mapped)
+        self.assertNotIn(
+            cp.Method('inlined', 'Lorg/chromium/Original;', '', 'V'), mapped
+        )
+        self.assertIn(initialize, mapped)
 
-    mapped = mapping.GetMethodMapping(
-        cp.Method('a', 'La;', 'Ljava/lang/Object;', 'I'))
-    self.assertEqual(len(mapped), 1)
-    self.assertIn(getInstance, mapped)
+        mapped = mapping.GetMethodMapping(
+            cp.Method('a', 'La;', 'Ljava/lang/Object;', 'I')
+        )
+        self.assertEqual(len(mapped), 1)
+        self.assertIn(getInstance, mapped)
 
-    mapped = mapping.GetMethodMapping(cp.Method('b', 'La;', '', 'La;'))
-    self.assertEqual(len(mapped), 1)
-    self.assertIn(another, mapped)
+        mapped = mapping.GetMethodMapping(cp.Method('b', 'La;', '', 'La;'))
+        self.assertEqual(len(mapped), 1)
+        self.assertIn(another, mapped)
 
-    for from_method, to_methods in mapping._method_mapping.items():
-      for to_method in to_methods:
-        self.assertIn(from_method, reverse.GetMethodMapping(to_method))
-    for from_class, to_class in mapping._class_mapping.items():
-      self.assertEqual(from_class, reverse.GetClassMapping(to_class))
+        for from_method, to_methods in mapping._method_mapping.items():
+            for to_method in to_methods:
+                self.assertIn(from_method, reverse.GetMethodMapping(to_method))
+        for from_class, to_class in mapping._class_mapping.items():
+            self.assertEqual(from_class, reverse.GetClassMapping(to_class))
 
-  def testProcessProfile(self):
-    dex = cp.ProcessDex(DEX_DUMP.splitlines())
-    mapping, _ = cp.ProcessProguardMapping(PROGUARD_MAPPING.splitlines(), dex)
-    profile = cp.ProcessProfile(OBFUSCATED_PROFILE.splitlines(), mapping)
+    def testProcessProfile(self):
+        dex = cp.ProcessDex(DEX_DUMP.splitlines())
+        mapping, _ = cp.ProcessProguardMapping(
+            PROGUARD_MAPPING.splitlines(), dex
+        )
+        profile = cp.ProcessProfile(OBFUSCATED_PROFILE.splitlines(), mapping)
 
-    getInstance = cp.Method(
-        'getInstance', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;')
-    initialize = cp.Method('initialize', 'Lorg/chromium/Original;', '', 'V')
-    another = cp.Method(
-        'another', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;')
+        getInstance = cp.Method(
+            'getInstance',
+            'Lorg/chromium/Original;',
+            '',
+            'Lorg/chromium/Original;',
+        )
+        initialize = cp.Method('initialize', 'Lorg/chromium/Original;', '', 'V')
+        another = cp.Method(
+            'another', 'Lorg/chromium/Original;', '', 'Lorg/chromium/Original;'
+        )
 
-    self.assertIn('Lorg/chromium/Original;', profile._classes)
-    self.assertIn(getInstance, profile._methods)
-    self.assertIn(initialize, profile._methods)
-    self.assertIn(another, profile._methods)
+        self.assertIn('Lorg/chromium/Original;', profile._classes)
+        self.assertIn(getInstance, profile._methods)
+        self.assertIn(initialize, profile._methods)
+        self.assertIn(another, profile._methods)
 
-    self.assertEqual(profile._methods[getInstance], set(['H', 'S', 'P']))
-    self.assertEqual(profile._methods[initialize], set(['H', 'P']))
-    self.assertEqual(profile._methods[another], set(['P']))
+        self.assertEqual(profile._methods[getInstance], set(['H', 'S', 'P']))
+        self.assertEqual(profile._methods[initialize], set(['H', 'P']))
+        self.assertEqual(profile._methods[another], set(['P']))
 
-  def testEndToEnd(self):
-    dex = cp.ProcessDex(DEX_DUMP.splitlines())
-    mapping, _ = cp.ProcessProguardMapping(PROGUARD_MAPPING.splitlines(), dex)
+    def testEndToEnd(self):
+        dex = cp.ProcessDex(DEX_DUMP.splitlines())
+        mapping, _ = cp.ProcessProguardMapping(
+            PROGUARD_MAPPING.splitlines(), dex
+        )
 
-    profile = cp.ProcessProfile(OBFUSCATED_PROFILE.splitlines(), mapping)
-    with tempfile.NamedTemporaryFile() as temp:
-      profile.WriteToFile(temp.name)
-      with open(temp.name, 'r') as f:
-        for a, b in zip(sorted(f), sorted(UNOBFUSCATED_PROFILE.splitlines())):
-          self.assertEqual(a.strip(), b.strip())
+        profile = cp.ProcessProfile(OBFUSCATED_PROFILE.splitlines(), mapping)
+        with tempfile.NamedTemporaryFile() as temp:
+            profile.WriteToFile(temp.name)
+            with open(temp.name, 'r') as f:
+                for a, b in zip(
+                    sorted(f), sorted(UNOBFUSCATED_PROFILE.splitlines())
+                ):
+                    self.assertEqual(a.strip(), b.strip())
 
-  def testObfuscateProfile(self):
-    with build_utils.TempDir() as temp_dir:
-      # The dex dump is used as the dexfile, by passing /bin/cat as the dexdump
-      # program.
-      dex_path = os.path.join(temp_dir, 'dexdump')
-      with open(dex_path, 'w') as dex_file:
-        dex_file.write(DEX_DUMP_2)
-      mapping_path = os.path.join(temp_dir, 'mapping')
-      with open(mapping_path, 'w') as mapping_file:
-        mapping_file.write(PROGUARD_MAPPING_2)
-      unobfuscated_path = os.path.join(temp_dir, 'unobfuscated')
-      with open(unobfuscated_path, 'w') as unobfuscated_file:
-        unobfuscated_file.write(UNOBFUSCATED_PROFILE)
-      obfuscated_path = os.path.join(temp_dir, 'obfuscated')
-      cp.ObfuscateProfile(unobfuscated_path, dex_path, mapping_path, '/bin/cat',
-                          obfuscated_path)
-      with open(obfuscated_path) as obfuscated_file:
-        obfuscated_profile = sorted(obfuscated_file.readlines())
-      for a, b in zip(
-          sorted(OBFUSCATED_PROFILE_2.splitlines()), obfuscated_profile):
-        self.assertEqual(a.strip(), b.strip())
+    def testObfuscateProfile(self):
+        with build_utils.TempDir() as temp_dir:
+            # The dex dump is used as the dexfile, by passing /bin/cat as the dexdump
+            # program.
+            dex_path = os.path.join(temp_dir, 'dexdump')
+            with open(dex_path, 'w') as dex_file:
+                dex_file.write(DEX_DUMP_2)
+            mapping_path = os.path.join(temp_dir, 'mapping')
+            with open(mapping_path, 'w') as mapping_file:
+                mapping_file.write(PROGUARD_MAPPING_2)
+            unobfuscated_path = os.path.join(temp_dir, 'unobfuscated')
+            with open(unobfuscated_path, 'w') as unobfuscated_file:
+                unobfuscated_file.write(UNOBFUSCATED_PROFILE)
+            obfuscated_path = os.path.join(temp_dir, 'obfuscated')
+            cp.ObfuscateProfile(
+                unobfuscated_path,
+                dex_path,
+                mapping_path,
+                '/bin/cat',
+                obfuscated_path,
+            )
+            with open(obfuscated_path) as obfuscated_file:
+                obfuscated_profile = sorted(obfuscated_file.readlines())
+            for a, b in zip(
+                sorted(OBFUSCATED_PROFILE_2.splitlines()), obfuscated_profile
+            ):
+                self.assertEqual(a.strip(), b.strip())
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

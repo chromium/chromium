@@ -17,13 +17,15 @@ from mcp.server import fastmcp
 # pylint: enable=import-error
 
 # pylint: disable=wrong-import-position
-sys.path.insert(0,
-                os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+)
 import gn_helpers
 # pylint: enable=wrong-import-position
 
 CHROMIUM_ROOT = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+    os.path.join(os.path.dirname(__file__), '..', '..')
+)
 
 GN_ARGS_FILE = 'args.gn'
 
@@ -148,8 +150,9 @@ def get_all_build_directories() -> list[str]:
 
 # This tool can be moved to a resource once Gemini CLI supports them.
 @mcp.tool()
-def get_valid_build_directories_for_config(target_os: str,
-                                           target_cpu: str) -> list[str]:
+def get_valid_build_directories_for_config(
+    target_os: str, target_cpu: str
+) -> list[str]:
     """Retrieves a list of all valid build/output directories within the repo
     that can be used to compile for the provided operatying system and
     architecture. Returned paths are relative to the chromium/src root
@@ -215,15 +218,18 @@ def _get_build_directories_under_dir(directory: str) -> list[str]:
     """
     valid_directories = []
     valid_args_files = glob.glob(
-        os.path.join(CHROMIUM_ROOT, directory, '*', GN_ARGS_FILE))
+        os.path.join(CHROMIUM_ROOT, directory, '*', GN_ARGS_FILE)
+    )
     for vaf in valid_args_files:
         valid_directories.append(
-            os.path.relpath(os.path.dirname(vaf), CHROMIUM_ROOT))
+            os.path.relpath(os.path.dirname(vaf), CHROMIUM_ROOT)
+        )
     return valid_directories
 
 
-def _directory_builds_for_config(directory: str, target_os: str,
-                                 target_cpu: str) -> bool:
+def _directory_builds_for_config(
+    directory: str, target_os: str, target_cpu: str
+) -> bool:
     """Checks whether the specified directory builds for the specified config.
 
     Args:

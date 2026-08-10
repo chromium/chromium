@@ -63,283 +63,307 @@ _STOP_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR = '# pop(ignore-relative)'
 
 
 def parse_filelist(filelist_name):
-  try:
-    with open(filelist_name) as filelist:
-      unfiltered = [l for l in filelist]
-      header = ''.join(unfiltered[:_HEADER_HEIGHT])
-      files = sorted(l.strip() for l in unfiltered[_HEADER_HEIGHT:])
-      return (files, header)
-  except Exception as e:
-    print_error(f'Could not read file list: {filelist_name}', f'{type(e)}: {e}')
-    return []
+    try:
+        with open(filelist_name) as filelist:
+            unfiltered = [l for l in filelist]
+            header = ''.join(unfiltered[:_HEADER_HEIGHT])
+            files = sorted(l.strip() for l in unfiltered[_HEADER_HEIGHT:])
+            return (files, header)
+    except Exception as e:
+        print_error(
+            f'Could not read file list: {filelist_name}', f'{type(e)}: {e}'
+        )
+        return []
 
 
 def get_git_command_name():
-  if sys.platform.startswith('win'):
-    return 'git.bat'
-  return 'git'
+    if sys.platform.startswith('win'):
+        return 'git.bat'
+    return 'git'
 
 
 def get_tracked_files_internal(directory, globroot, verbose):
-  try:
-    if os.getcwd().startswith('/google/cog/cloud'):
-      files = []
-      # Directory is relative to globroot, potentially with '//' prefix.
-      # os.path.join needs a path without the leading '//'.
-      start_dir = os.path.join(globroot, directory.lstrip('/'))
+    try:
+        if os.getcwd().startswith('/google/cog/cloud'):
+            files = []
+            # Directory is relative to globroot, potentially with '//' prefix.
+            # os.path.join needs a path without the leading '//'.
+            start_dir = os.path.join(globroot, directory.lstrip('/'))
 
-      if not os.path.isdir(start_dir):
+            if not os.path.isdir(start_dir):
+                if verbose:
+                    print_error(
+                        f'Could not gather a list of tracked files in {directory}',
+                        f'Cog mode: Directory not found, skipping walk: {start_dir}',
+                    )
+                return set()
+
+            for root, _, filenames in os.walk(start_dir):
+                for f in filenames:
+                    full_path = os.path.join(root, f)
+                    # Make the path relative to globroot for comparison.
+                    relative_path = os.path.relpath(full_path, globroot)
+                    # Ensure consistent path separators.
+                    relative_path = relative_path.replace('\\', '/')
+                    files.append(relative_path)
+
+            return set(files)
+
+        cmd = [get_git_command_name(), 'ls-files', '--error-unmatch', directory]
+        with subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=globroot
+        ) as p:
+            output = p.communicate()
+            if p.returncode != 0:
+                if verbose:
+                    print_error(
+                        f'Could not gather a list of tracked files in {directory}',
+                        f'{output[1]}',
+                    )
+                return set()
+
+            files = [f.decode('utf-8') for f in output[0].splitlines()]
+
+            # Handle Windows backslashes
+            files = [f.replace('\\', '/') for f in files]
+
+            return set(files)
+
+    except Exception as e:
         if verbose:
-          print_error(
-              f'Could not gather a list of tracked files in {directory}',
-              f'Cog mode: Directory not found, skipping walk: {start_dir}')
+            print_error(
+                f'Could not gather a list of tracked files in {directory}',
+                f'{type(e)}: {e}',
+            )
         return set()
-
-      for root, _, filenames in os.walk(start_dir):
-        for f in filenames:
-          full_path = os.path.join(root, f)
-          # Make the path relative to globroot for comparison.
-          relative_path = os.path.relpath(full_path, globroot)
-          # Ensure consistent path separators.
-          relative_path = relative_path.replace('\\', '/')
-          files.append(relative_path)
-
-      return set(files)
-
-    cmd = [get_git_command_name(), 'ls-files', '--error-unmatch', directory]
-    with subprocess.Popen(cmd,
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          cwd=globroot) as p:
-      output = p.communicate()
-      if p.returncode != 0:
-        if verbose:
-          print_error(
-              f'Could not gather a list of tracked files in {directory}',
-              f'{output[1]}')
-        return set()
-
-      files = [f.decode('utf-8') for f in output[0].splitlines()]
-
-      # Handle Windows backslashes
-      files = [f.replace('\\', '/') for f in files]
-
-      return set(files)
-
-  except Exception as e:
-    if verbose:
-      print_error(f'Could not gather a list of tracked files in {directory}',
-                  f'{type(e)}: {e}')
-    return set()
 
 
 def get_tracked_files(directory, globroot, repository_root_relative, verbose):
-  files = get_tracked_files_internal(directory, globroot, verbose)
-  # Add the '//' prefix *if* the original glob pattern was root-relative.
-  # This makes the path format match the output of parse_and_expand_globlist.
-  if repository_root_relative:
-    files = set('//' + f for f in files)
-  return files
+    files = get_tracked_files_internal(directory, globroot, verbose)
+    # Add the '//' prefix *if* the original glob pattern was root-relative.
+    # This makes the path format match the output of parse_and_expand_globlist.
+    if repository_root_relative:
+        files = set('//' + f for f in files)
+    return files
 
 
 def combine_potentially_repository_root_relative_paths(a, b):
-  if b.startswith('//'):
-    # If b is relative to the repository root, os.path will consider it absolute
-    # and os.path.join will fail. In this case, we can simply concatenate the
-    # paths.
-    return (a + b, True)
-  else:
-    return (os.path.join(a, b), False)
+    if b.startswith('//'):
+        # If b is relative to the repository root, os.path will consider it absolute
+        # and os.path.join will fail. In this case, we can simply concatenate the
+        # paths.
+        return (a + b, True)
+    else:
+        return (os.path.join(a, b), False)
 
 
 def parse_and_expand_globlist(globlist_name, glob_root):
-  # The following expects glob_root not to end in a trailing slash.
-  if glob_root.endswith('/'):
-    glob_root = glob_root[:-1]
+    # The following expects glob_root not to end in a trailing slash.
+    if glob_root.endswith('/'):
+        glob_root = glob_root[:-1]
 
-  check_expansions_outside_globlist_dir = True
-  globlist_dir = os.path.dirname(globlist_name)
+    check_expansions_outside_globlist_dir = True
+    globlist_dir = os.path.dirname(globlist_name)
 
-  with open(globlist_name) as globlist:
-    # Paths in |files| and |to_check| must use unix separators. Using a set
-    # ensures no unwanted duplicates. The files in |to_check| must be in the
-    # globroot or a subdirectory.
-    files = set()
-    to_check = set()
-    for g in globlist:
-      g = g.strip()
+    with open(globlist_name) as globlist:
+        # Paths in |files| and |to_check| must use unix separators. Using a set
+        # ensures no unwanted duplicates. The files in |to_check| must be in the
+        # globroot or a subdirectory.
+        files = set()
+        to_check = set()
+        for g in globlist:
+            g = g.strip()
 
-      # Ignore blank lines
-      if not g:
-        continue
+            # Ignore blank lines
+            if not g:
+                continue
 
-      # Toggle error checking.
-      if g == _START_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR:
-        check_expansions_outside_globlist_dir = False
-      elif g == _STOP_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR:
-        check_expansions_outside_globlist_dir = True
+            # Toggle error checking.
+            if g == _START_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR:
+                check_expansions_outside_globlist_dir = False
+            elif g == _STOP_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR:
+                check_expansions_outside_globlist_dir = True
 
-      # Ignore comments.
-      if not g or g.startswith('#'):
-        continue
+            # Ignore comments.
+            if not g or g.startswith('#'):
+                continue
 
-      # Exclusions are prefixed with '-'.
-      is_exclusion = g.startswith('-')
-      if is_exclusion:
-        g = g[1:]
+            # Exclusions are prefixed with '-'.
+            is_exclusion = g.startswith('-')
+            if is_exclusion:
+                g = g[1:]
 
-      (combined,
-       root_relative) = combine_potentially_repository_root_relative_paths(
-           glob_root, g)
+            (combined, root_relative) = (
+                combine_potentially_repository_root_relative_paths(glob_root, g)
+            )
 
-      prefix_size = len(glob_root)
-      if not root_relative:
-        # We need to account for the separator.
-        prefix_size += 1
+            prefix_size = len(glob_root)
+            if not root_relative:
+                # We need to account for the separator.
+                prefix_size += 1
 
-      expansion = glob.glob(combined, recursive=True)
+            expansion = glob.glob(combined, recursive=True)
 
-      # Filter out directories.
-      expansion = [f for f in expansion if os.path.isfile(f)]
+            # Filter out directories.
+            expansion = [f for f in expansion if os.path.isfile(f)]
 
-      if check_expansions_outside_globlist_dir:
-        for f in expansion:
-          relative = os.path.relpath(f, globlist_dir)
-          if relative.startswith('..'):
-            raise Exception(f'Globlist expansion outside globlist dir: {f}')
+            if check_expansions_outside_globlist_dir:
+                for f in expansion:
+                    relative = os.path.relpath(f, globlist_dir)
+                    if relative.startswith('..'):
+                        raise Exception(
+                            f'Globlist expansion outside globlist dir: {f}'
+                        )
 
-      # Make relative to |glob_root|.
-      expansion = [f[prefix_size:] for f in expansion]
+            # Make relative to |glob_root|.
+            expansion = [f[prefix_size:] for f in expansion]
 
-      # Handle Windows backslashes
-      expansion = [f.replace('\\', '/') for f in expansion]
+            # Handle Windows backslashes
+            expansion = [f.replace('\\', '/') for f in expansion]
 
-      # Since paths in |expansion| only use unix separators, it is safe to
-      # compare for both the purpose of exclusion and addition.
-      if is_exclusion:
-        files = files.difference(expansion)
-      else:
-        files = files.union(expansion)
+            # Since paths in |expansion| only use unix separators, it is safe to
+            # compare for both the purpose of exclusion and addition.
+            if is_exclusion:
+                files = files.difference(expansion)
+            else:
+                files = files.union(expansion)
 
-    # Return a sorted list.
-    return sorted(files)
+        # Return a sorted list.
+        return sorted(files)
 
 
 def compare_lists(a, b):
-  differ = difflib.Differ()
-  full_diff = differ.compare(a, b)
-  lines = [d for d in full_diff if not d.startswith('  ')]
-  additions = [l[2:] for l in lines if l.startswith('+ ')]
-  removals = [l[2:] for l in lines if l.startswith('- ')]
-  return (additions, removals)
+    differ = difflib.Differ()
+    full_diff = differ.compare(a, b)
+    lines = [d for d in full_diff if not d.startswith('  ')]
+    additions = [l[2:] for l in lines if l.startswith('+ ')]
+    removals = [l[2:] for l in lines if l.startswith('- ')]
+    return (additions, removals)
 
 
 def write_filelist(filelist_name, files, header):
-  try:
-    with open(filelist_name, 'w', encoding='utf-8', newline='') as filelist:
-      if not _HEADER_PATTERN.search(header):
-        header = _HEADER
-      filelist.write(header)
-      for file in files:
-        filelist.write(f'{file}\n')
-  except Exception as e:
-    print_error(f'Could not write file list: {filelist_name}',
-                f'{type(e)}: {e}')
-    return []
+    try:
+        with open(filelist_name, 'w', encoding='utf-8', newline='') as filelist:
+            if not _HEADER_PATTERN.search(header):
+                header = _HEADER
+            filelist.write(header)
+            for file in files:
+                filelist.write(f'{file}\n')
+    except Exception as e:
+        print_error(
+            f'Could not write file list: {filelist_name}', f'{type(e)}: {e}'
+        )
+        return []
 
 
 def process_filelist(filelist, globlist, globroot, check=False, verbose=False):
-  files_from_globlist = []
-  try:
-    files_from_globlist = parse_and_expand_globlist(globlist, globroot)
-  except Exception as e:
-    if verbose:
-      print_error(f'Could not read glob list: {globlist}', f'{type(e)}: {e}')
-    return 1
+    files_from_globlist = []
+    try:
+        files_from_globlist = parse_and_expand_globlist(globlist, globroot)
+    except Exception as e:
+        if verbose:
+            print_error(
+                f'Could not read glob list: {globlist}', f'{type(e)}: {e}'
+            )
+        return 1
 
-  (files, header) = parse_filelist(filelist)
+    (files, header) = parse_filelist(filelist)
 
-  (additions, removals) = compare_lists(files, files_from_globlist)
-  to_ignore = set()
+    (additions, removals) = compare_lists(files, files_from_globlist)
+    to_ignore = set()
 
-  # Ignore additions of untracked files.
-  if additions:
-    directories = set([os.path.dirname(f) for f in additions])
-    tracked_files = set()
-    for d in directories:
-      (combined,
-       root_relative) = combine_potentially_repository_root_relative_paths(
-           globroot, d)
-      relative = os.path.relpath(combined, globroot)
-      tracked_files = tracked_files.union(
-          get_tracked_files(relative, globroot, root_relative, verbose))
-    to_ignore = set(additions).difference(tracked_files)
-    additions = [f for f in additions if f in tracked_files]
+    # Ignore additions of untracked files.
+    if additions:
+        directories = set([os.path.dirname(f) for f in additions])
+        tracked_files = set()
+        for d in directories:
+            (combined, root_relative) = (
+                combine_potentially_repository_root_relative_paths(globroot, d)
+            )
+            relative = os.path.relpath(combined, globroot)
+            tracked_files = tracked_files.union(
+                get_tracked_files(relative, globroot, root_relative, verbose)
+            )
+        to_ignore = set(additions).difference(tracked_files)
+        additions = [f for f in additions if f in tracked_files]
 
-  files_from_globlist = [f for f in files_from_globlist if f not in to_ignore]
+    files_from_globlist = [f for f in files_from_globlist if f not in to_ignore]
 
-  if check:
-    if not _HEADER_PATTERN.search(header):
-      if verbose:
-        print_error(f'Unexpected header for {filelist}', f'{header}')
-      return 1
-    if not additions and not removals:
-      return 0
-    if verbose:
-      pretty_additions = ['+ ' + f for f in additions]
-      pretty_removals = ['- ' + f for f in removals]
-      pretty_diff = '\n'.join(pretty_additions + pretty_removals)
-      print_error('File list does not match glob expansion', f'{pretty_diff}')
-    return 1
-  else:
-    write_filelist(filelist, files_from_globlist, header)
-    return 0
+    if check:
+        if not _HEADER_PATTERN.search(header):
+            if verbose:
+                print_error(f'Unexpected header for {filelist}', f'{header}')
+            return 1
+        if not additions and not removals:
+            return 0
+        if verbose:
+            pretty_additions = ['+ ' + f for f in additions]
+            pretty_removals = ['- ' + f for f in removals]
+            pretty_diff = '\n'.join(pretty_additions + pretty_removals)
+            print_error(
+                'File list does not match glob expansion', f'{pretty_diff}'
+            )
+        return 1
+    else:
+        write_filelist(filelist, files_from_globlist, header)
+        return 0
 
 
 def main(args):
-  parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('filelist', help='Contains one file per line')
-  parser.add_argument('globlist',
-                      help='Contains globs that, when expanded, '
-                      'should match the filelist. Use '
-                      '--help for details on syntax')
-  parser.add_argument('globroot',
-                      help='Directory from which globs are relative')
-  parser.add_argument('-c',
-                      '--check',
-                      action='store_true',
-                      help='Prevents modifying the file list')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='store_true',
-                      help='Use this to print details on differences')
-  args = parser.parse_args()
-  return process_filelist(args.filelist,
-                          args.globlist,
-                          args.globroot,
-                          check=args.check,
-                          verbose=args.verbose)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument('filelist', help='Contains one file per line')
+    parser.add_argument(
+        'globlist',
+        help='Contains globs that, when expanded, '
+        'should match the filelist. Use '
+        '--help for details on syntax',
+    )
+    parser.add_argument(
+        'globroot', help='Directory from which globs are relative'
+    )
+    parser.add_argument(
+        '-c',
+        '--check',
+        action='store_true',
+        help='Prevents modifying the file list',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Use this to print details on differences',
+    )
+    args = parser.parse_args()
+    return process_filelist(
+        args.filelist,
+        args.globlist,
+        args.globroot,
+        check=args.check,
+        verbose=args.verbose,
+    )
 
 
 def print_error(error_message, error_info):
-  """ Print the `error_message` with additional `error_info` """
-  color_start, color_end = adapted_color_for_output(TERMINAL_ERROR_COLOR,
-                                                    TERMINAL_RESET_COLOR)
+    """Print the `error_message` with additional `error_info`"""
+    color_start, color_end = adapted_color_for_output(
+        TERMINAL_ERROR_COLOR, TERMINAL_RESET_COLOR
+    )
 
-  error_message = color_start + 'ERROR: ' + error_message + color_end
-  if len(error_info) > 0:
-    error_message = error_message + '\n' + error_info
-  print(error_message, file=sys.stderr)
+    error_message = color_start + 'ERROR: ' + error_message + color_end
+    if len(error_info) > 0:
+        error_message = error_message + '\n' + error_info
+    print(error_message, file=sys.stderr)
 
 
 def adapted_color_for_output(color_start, color_end):
-  """ Returns a the `color_start`, `color_end` tuple if the output is a
-    terminal, or empty strings otherwise """
-  if not sys.stdout.isatty():
-    return '', ''
-  return color_start, color_end
+    """Returns a the `color_start`, `color_end` tuple if the output is a
+    terminal, or empty strings otherwise"""
+    if not sys.stdout.isatty():
+        return '', ''
+    return color_start, color_end
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))

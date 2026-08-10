@@ -14,8 +14,7 @@ from typing import Optional, Tuple
 
 import common
 from boot_device import BootMode, StateTransitionError, boot_device
-from common import get_system_info, find_image_in_sdk, \
-                   register_device_args
+from common import get_system_info, find_image_in_sdk, register_device_args
 from compatible_utils import get_sdk_hash, running_unattended
 from lockfile import lock
 
@@ -26,8 +25,9 @@ _FF_LOCK_STALE_SECS = 60 * 15
 _FF_LOCK_ACQ_TIMEOUT = _FF_LOCK_STALE_SECS
 
 
-def _get_system_info(target: Optional[str],
-                     serial_num: Optional[str]) -> Tuple[str, str]:
+def _get_system_info(
+    target: Optional[str], serial_num: Optional[str]
+) -> Tuple[str, str]:
     """Retrieves installed OS version from device.
 
     Args:
@@ -48,10 +48,11 @@ def _get_system_info(target: Optional[str],
 
 
 def _update_required(
-        os_check,
-        system_image_dir: Optional[str],
-        target: Optional[str],
-        serial_num: Optional[str] = None) -> Tuple[bool, Optional[str]]:
+    os_check,
+    system_image_dir: Optional[str],
+    target: Optional[str],
+    serial_num: Optional[str] = None,
+) -> Tuple[bool, Optional[str]]:
     """Returns True if a system update is required and path to image dir."""
 
     if os_check == 'ignore':
@@ -62,16 +63,17 @@ def _update_required(
         logging.warning(
             'System image directory does not exist. Assuming it\'s '
             'a product-bundle name and dynamically searching for '
-            'image directory')
+            'image directory'
+        )
         path = find_image_in_sdk(system_image_dir)
         if not path:
             raise FileNotFoundError(
-                f'System image directory {system_image_dir} could not'
-                'be found')
+                f'System image directory {system_image_dir} could notbe found'
+            )
         system_image_dir = path
-    if (os_check == 'check'
-            and get_sdk_hash(system_image_dir) == _get_system_info(
-                target, serial_num)):
+    if os_check == 'check' and get_sdk_hash(
+        system_image_dir
+    ) == _get_system_info(target, serial_num):
         return False, system_image_dir
     return True, system_image_dir
 
@@ -88,18 +90,27 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         # scope. See the discussion in https://fxbug.dev/issues/317228141.
         logging.info(
             'Flash result %s',
-            common.run_ffx_command(cmd=('target', 'flash', '-b',
-                                        system_image_dir,
-                                        '--no-bootloader-reboot'),
-                                   target_id=target_id,
-                                   configs=['ffx.fastboot.inline_target=true'],
-                                   capture_output=True).stdout)
+            common.run_ffx_command(
+                cmd=(
+                    'target',
+                    'flash',
+                    '-b',
+                    system_image_dir,
+                    '--no-bootloader-reboot',
+                ),
+                target_id=target_id,
+                configs=['ffx.fastboot.inline_target=true'],
+                capture_output=True,
+            ).stdout,
+        )
 
 
-def update(system_image_dir: str,
-           os_check: str,
-           target: Optional[str],
-           serial_num: Optional[str] = None) -> None:
+def update(
+    system_image_dir: str,
+    os_check: str,
+    target: Optional[str],
+    serial_num: Optional[str] = None,
+) -> None:
     """Conditionally updates target given.
 
     Args:
@@ -108,11 +119,14 @@ def update(system_image_dir: str,
         target: Node-name string indicating device that should be updated.
         serial_num: String of serial number of device that should be updated.
     """
-    needs_update, actual_image_dir = _update_required(os_check,
-                                                      system_image_dir, target,
-                                                      serial_num)
-    logging.info('update_required %s, actual_image_dir %s', needs_update,
-                 actual_image_dir)
+    needs_update, actual_image_dir = _update_required(
+        os_check, system_image_dir, target, serial_num
+    )
+    logging.info(
+        'update_required %s, actual_image_dir %s',
+        needs_update,
+        actual_image_dir,
+    )
     if not needs_update:
         return
     if serial_num:
@@ -122,30 +136,39 @@ def update(system_image_dir: str,
         _run_flash_command(system_image_dir, target)
 
 
-def register_update_args(arg_parser: argparse.ArgumentParser,
-                         default_os_check: Optional[str] = 'check') -> None:
+def register_update_args(
+    arg_parser: argparse.ArgumentParser,
+    default_os_check: Optional[str] = 'check',
+) -> None:
     """Register common arguments for device updating."""
-    serve_args = arg_parser.add_argument_group('update',
-                                               'device updating arguments')
-    serve_args.add_argument('--system-image-dir',
-                            help='Specify the directory that contains the '
-                            'Fuchsia image used to flash the device. Only '
-                            'needs to be specified if "os_check" is not '
-                            '"ignore".')
-    serve_args.add_argument('--serial-num',
-                            default=os.environ.get('FUCHSIA_FASTBOOT_SERNUM'),
-                            help='Serial number of the device. Should be '
-                            'specified for devices that do not have an image '
-                            'flashed.')
-    serve_args.add_argument('--os-check',
-                            choices=['check', 'update', 'ignore'],
-                            default=default_os_check,
-                            help='Sets the OS version enforcement policy. If '
-                            '"check", then the deployment process will halt '
-                            'if the target\'s version does not match. If '
-                            '"update", then the target device will '
-                            'be reflashed. If "ignore", then the OS version '
-                            'will not be checked.')
+    serve_args = arg_parser.add_argument_group(
+        'update', 'device updating arguments'
+    )
+    serve_args.add_argument(
+        '--system-image-dir',
+        help='Specify the directory that contains the '
+        'Fuchsia image used to flash the device. Only '
+        'needs to be specified if "os_check" is not '
+        '"ignore".',
+    )
+    serve_args.add_argument(
+        '--serial-num',
+        default=os.environ.get('FUCHSIA_FASTBOOT_SERNUM'),
+        help='Serial number of the device. Should be '
+        'specified for devices that do not have an image '
+        'flashed.',
+    )
+    serve_args.add_argument(
+        '--os-check',
+        choices=['check', 'update', 'ignore'],
+        default=default_os_check,
+        help='Sets the OS version enforcement policy. If '
+        '"check", then the deployment process will halt '
+        'if the target\'s version does not match. If '
+        '"update", then the target device will '
+        'be reflashed. If "ignore", then the OS version '
+        'will not be checked.',
+    )
 
 
 def main():
@@ -154,8 +177,9 @@ def main():
     register_device_args(parser)
     register_update_args(parser, default_os_check='update')
     args = parser.parse_args()
-    update(args.system_image_dir, args.os_check, args.target_id,
-           args.serial_num)
+    update(
+        args.system_image_dir, args.os_check, args.target_id, args.serial_num
+    )
 
 
 if __name__ == '__main__':

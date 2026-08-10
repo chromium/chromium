@@ -13,6 +13,7 @@ import re
 import sys
 from shutil import copyfile
 
+
 # Helpers
 def EnsureExists(path):
     try:
@@ -20,10 +21,12 @@ def EnsureExists(path):
     except OSError:
         pass
 
+
 def WriteLinesToFile(lines, file_name):
     EnsureExists(os.path.dirname(file_name))
     with open(file_name, "w") as f:
         f.writelines(lines)
+
 
 def ExtractIdg(proj_file_name):
     result = []
@@ -37,14 +40,17 @@ def ExtractIdg(proj_file_name):
                 result.append(p_line)
                 return result
 
+
 # [ (name, solution_name, vs_version), ... ]
 configs = []
+
 
 def GetVSVersion(solution_file):
     with open(solution_file) as f:
         f.readline()
         comment = f.readline().strip()
         return comment[-4:]
+
 
 # Find all directories that can be used as configs (and record if they have VS
 # files present)
@@ -55,8 +61,9 @@ for root, dirs, files in os.walk("out"):
             solutions = glob.glob(os.path.join("out", out_dir, "*.sln"))
             for solution in solutions:
                 vs_version = GetVSVersion(solution)
-                configs.append((out_dir, os.path.basename(solution),
-                                vs_version))
+                configs.append(
+                    (out_dir, os.path.basename(solution), vs_version)
+                )
     break
 
 # Every project has a GUID that encodes the type. We only care about C++.
@@ -67,8 +74,11 @@ hard_coded_arch = "x64"
 
 # name -> [ (config, pathToProject, GUID, arch), ... ]
 all_projects = {}
-project_pattern = (r'Project\("\{' + cpp_type_guid +
-                   r'\}"\) = "([^"]*)", "([^"]*)", "\{([^\}]*)\}"')
+project_pattern = (
+    r'Project\("\{'
+    + cpp_type_guid
+    + r'\}"\) = "([^"]*)", "([^"]*)", "\{([^\}]*)\}"'
+)
 
 # We need something to work with. Typically, this will fail if no GN folders
 # have IDE files
@@ -91,8 +101,9 @@ for config in configs:
             proj_name = match_obj.group(1)
             if proj_name not in all_projects:
                 all_projects[proj_name] = []
-            all_projects[proj_name].append((config[0], match_obj.group(2),
-                                            match_obj.group(3)))
+            all_projects[proj_name].append(
+                (config[0], match_obj.group(2), match_obj.group(3))
+            )
 
 # We need something to work with. Typically, this will fail if no GN folders
 # have IDE files
@@ -105,31 +116,44 @@ if len(all_projects) == 0:
 # files).
 new_sln_lines = []
 new_sln_lines.append(
-    'Microsoft Visual Studio Solution File, Format Version 12.00\n')
+    'Microsoft Visual Studio Solution File, Format Version 12.00\n'
+)
 new_sln_lines.append('# Visual Studio ' + vs_version + '\n')
 for proj_name, proj_configs in all_projects.items():
-    new_sln_lines.append('Project("{' + cpp_type_guid + '}") = "' + proj_name +
-                         '", "' + proj_configs[0][1] + '", "{' +
-                         proj_configs[0][2] + '}"\n')
+    new_sln_lines.append(
+        'Project("{'
+        + cpp_type_guid
+        + '}") = "'
+        + proj_name
+        + '", "'
+        + proj_configs[0][1]
+        + '", "{'
+        + proj_configs[0][2]
+        + '}"\n'
+    )
     new_sln_lines.append('EndProject\n')
 
 new_sln_lines.append('Global\n')
 new_sln_lines.append(
-    '\tGlobalSection(SolutionConfigurationPlatforms) = preSolution\n')
+    '\tGlobalSection(SolutionConfigurationPlatforms) = preSolution\n'
+)
 for config in configs:
     match = config[0] + '|' + hard_coded_arch
     new_sln_lines.append('\t\t' + match + ' = ' + match + '\n')
 new_sln_lines.append('\tEndGlobalSection\n')
 new_sln_lines.append(
-    '\tGlobalSection(ProjectConfigurationPlatforms) = postSolution\n')
+    '\tGlobalSection(ProjectConfigurationPlatforms) = postSolution\n'
+)
 for proj_name, proj_configs in all_projects.items():
     proj_guid = proj_configs[0][2]
     for config in configs:
         match = config[0] + '|' + hard_coded_arch
-        new_sln_lines.append('\t\t{' + proj_guid + '}.' + match +
-                           '.ActiveCfg = ' + match + '\n')
-        new_sln_lines.append('\t\t{' + proj_guid + '}.' + match +
-                           '.Build.0 = ' + match + '\n')
+        new_sln_lines.append(
+            '\t\t{' + proj_guid + '}.' + match + '.ActiveCfg = ' + match + '\n'
+        )
+        new_sln_lines.append(
+            '\t\t{' + proj_guid + '}.' + match + '.Build.0 = ' + match + '\n'
+        )
 new_sln_lines.append('\tEndGlobalSection\n')
 new_sln_lines.append('\tGlobalSection(SolutionProperties) = preSolution\n')
 new_sln_lines.append('\t\tHideSolutionNode = FALSE\n')
@@ -149,9 +173,10 @@ configuration_template = """    <ProjectConfiguration Include="{config}|{arch}">
     </ProjectConfiguration>
 """
 
+
 def FormatProjectConfig(config):
-    return configuration_template.format(
-        config = config[0], arch = hard_coded_arch)
+    return configuration_template.format(config=config[0], arch=hard_coded_arch)
+
 
 # Now, bring over the project files
 for proj_name, proj_configs in all_projects.items():
@@ -182,9 +207,9 @@ for proj_name, proj_configs in all_projects.items():
                     line = proj_lines.next()
                 idg_lines.append(line)
                 for proj_config in proj_configs:
-                    config_idg_lines = ExtractIdg(os.path.join("out",
-                                                             proj_config[0],
-                                                             proj_config[1]))
+                    config_idg_lines = ExtractIdg(
+                        os.path.join("out", proj_config[0], proj_config[1])
+                    )
                     match = proj_config[0] + '|' + hard_coded_arch
                     new_proj_lines.append(idg_hdr + match + "'\">\n")
                     for idg_line in config_idg_lines[1:]:
@@ -199,12 +224,15 @@ for proj_name, proj_configs in all_projects.items():
                     new_proj_lines.append(FormatProjectConfig(config))
 
             elif "<OutDir" in line:
-                new_proj_lines.append(line.replace(proj_configs[0][0],
-                                                 "$(Configuration)"))
+                new_proj_lines.append(
+                    line.replace(proj_configs[0][0], "$(Configuration)")
+                )
             elif "<PreferredToolArchitecture" in line:
-                new_proj_lines.append("    <PreferredToolArchitecture>" +
-                                      hard_coded_arch +
-                                      "</PreferredToolArchitecture>\n")
+                new_proj_lines.append(
+                    "    <PreferredToolArchitecture>"
+                    + hard_coded_arch
+                    + "</PreferredToolArchitecture>\n"
+                )
             else:
                 new_proj_lines.append(line)
         with open(dst_proj_path, "w") as new_proj:

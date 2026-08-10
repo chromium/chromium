@@ -12,7 +12,7 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 
 @dataclasses.dataclass
-class _SkiaGoldArgs():
+class _SkiaGoldArgs:
   local_pixel_tests: Optional[bool] = None
   no_luci_auth: Optional[bool] = None
   service_account: Optional[str] = None

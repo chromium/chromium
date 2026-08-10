@@ -7,8 +7,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+_EXTRA_PATHS_COMPONENTS = [('testing',)]
 
-_EXTRA_PATHS_COMPONENTS = [('testing', )]
 
 # pylint: disable=invalid-name,missing-function-docstring
 def CommonChecks(input_api, output_api):
@@ -19,18 +19,21 @@ def CommonChecks(input_api, output_api):
     tests = []
 
     chromium_src_path = input_api.os_path.realpath(
-        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
-                               '..'))
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
+    )
     pylint_extra_paths = [
         input_api.os_path.join(chromium_src_path, *component)
         for component in _EXTRA_PATHS_COMPONENTS
     ]
     tests.extend(
-        input_api.canned_checks.GetPylint(input_api,
-                                          output_api,
-                                          extra_paths_list=pylint_extra_paths,
-                                          pylintrc='pylintrc',
-                                          version='3.2'))
+        input_api.canned_checks.GetPylint(
+            input_api,
+            output_api,
+            extra_paths_list=pylint_extra_paths,
+            pylintrc='pylintrc',
+            version='3.2',
+        )
+    )
 
     # coveragetest.py is responsible for running unit tests in this directory
     tests.append(
@@ -38,7 +41,9 @@ def CommonChecks(input_api, output_api):
             name='coveragetest',
             cmd=[input_api.python3_executable, 'coveragetest.py'],
             kwargs={},
-            message=output_api.PresubmitError))
+            message=output_api.PresubmitError,
+        )
+    )
     return input_api.RunTests(tests)
 
 

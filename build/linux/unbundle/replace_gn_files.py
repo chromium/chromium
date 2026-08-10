@@ -33,8 +33,7 @@ REPLACEMENTS = {
     'absl_random': 'third_party/abseil-cpp/absl/random/BUILD.gn',
     'absl_status': 'third_party/abseil-cpp/absl/status/BUILD.gn',
     'absl_strings': 'third_party/abseil-cpp/absl/strings/BUILD.gn',
-    'absl_synchronization':
-    'third_party/abseil-cpp/absl/synchronization/BUILD.gn',
+    'absl_synchronization': 'third_party/abseil-cpp/absl/synchronization/BUILD.gn',
     'absl_time': 'third_party/abseil-cpp/absl/time/BUILD.gn',
     'absl_types': 'third_party/abseil-cpp/absl/types/BUILD.gn',
     'absl_utility': 'third_party/abseil-cpp/absl/utility/BUILD.gn',
@@ -71,10 +70,8 @@ REPLACEMENTS = {
     'snappy': 'third_party/snappy/BUILD.gn',
     # Use system libSPIRV-Tools in Swiftshader.
     # These two shims MUST be used together.
-    'swiftshader-SPIRV-Headers':
-    'third_party/swiftshader/third_party/SPIRV-Headers/BUILD.gn',
-    'swiftshader-SPIRV-Tools':
-    'third_party/swiftshader/third_party/SPIRV-Tools/BUILD.gn',
+    'swiftshader-SPIRV-Headers': 'third_party/swiftshader/third_party/SPIRV-Headers/BUILD.gn',
+    'swiftshader-SPIRV-Tools': 'third_party/swiftshader/third_party/SPIRV-Tools/BUILD.gn',
     # Use system libSPIRV-Tools inside ANGLE.
     # These two shims MUST be used together
     # and can only be used if WebGPU is not compiled (use_dawn=false)
@@ -89,44 +86,54 @@ REPLACEMENTS = {
 
 
 def DoMain(argv):
-  my_dirname = os.path.dirname(__file__)
-  source_tree_root = os.path.abspath(
-    os.path.join(my_dirname, '..', '..', '..'))
+    my_dirname = os.path.dirname(__file__)
+    source_tree_root = os.path.abspath(
+        os.path.join(my_dirname, '..', '..', '..')
+    )
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--system-libraries', nargs='*', default=[])
-  parser.add_argument('--undo', action='store_true')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--system-libraries', nargs='*', default=[])
+    parser.add_argument('--undo', action='store_true')
 
-  args = parser.parse_args(argv)
+    args = parser.parse_args(argv)
 
-  handled_libraries = set()
-  for lib, path in REPLACEMENTS.items():
-    if lib not in args.system_libraries:
-      continue
-    handled_libraries.add(lib)
+    handled_libraries = set()
+    for lib, path in REPLACEMENTS.items():
+        if lib not in args.system_libraries:
+            continue
+        handled_libraries.add(lib)
 
-    if args.undo:
-      # Restore original file, and also remove the backup.
-      # This is meant to restore the source tree to its original state.
-      os.rename(os.path.join(source_tree_root, path + '.orig'),
-                os.path.join(source_tree_root, path))
-    else:
-      # Create a backup copy for --undo.
-      shutil.copyfile(os.path.join(source_tree_root, path),
-                      os.path.join(source_tree_root, path + '.orig'))
+        if args.undo:
+            # Restore original file, and also remove the backup.
+            # This is meant to restore the source tree to its original state.
+            os.rename(
+                os.path.join(source_tree_root, path + '.orig'),
+                os.path.join(source_tree_root, path),
+            )
+        else:
+            # Create a backup copy for --undo.
+            shutil.copyfile(
+                os.path.join(source_tree_root, path),
+                os.path.join(source_tree_root, path + '.orig'),
+            )
 
-      # Copy the GN file from directory of this script to target path.
-      shutil.copyfile(os.path.join(my_dirname, '%s.gn' % lib),
-                      os.path.join(source_tree_root, path))
+            # Copy the GN file from directory of this script to target path.
+            shutil.copyfile(
+                os.path.join(my_dirname, '%s.gn' % lib),
+                os.path.join(source_tree_root, path),
+            )
 
-  unhandled_libraries = set(args.system_libraries) - handled_libraries
-  if unhandled_libraries:
-    print('Unrecognized system libraries requested: %s' % ', '.join(
-        sorted(unhandled_libraries)), file=sys.stderr)
-    return 1
+    unhandled_libraries = set(args.system_libraries) - handled_libraries
+    if unhandled_libraries:
+        print(
+            'Unrecognized system libraries requested: %s'
+            % ', '.join(sorted(unhandled_libraries)),
+            file=sys.stderr,
+        )
+        return 1
 
-  return 0
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(DoMain(sys.argv[1:]))
+    sys.exit(DoMain(sys.argv[1:]))

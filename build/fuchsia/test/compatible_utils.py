@@ -16,6 +16,7 @@ _SSH_KEYS = os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
 _CHROME_HEADLESS = 'CHROME_HEADLESS'
 _SWARMING_SERVER = 'SWARMING_SERVER'
 
+
 class VersionNotFoundError(Exception):
     """Thrown when version info cannot be retrieved from device."""
 
@@ -54,7 +55,7 @@ def force_running_attended() -> None:
 
 
 def get_host_arch() -> str:
-    """Retrieve CPU architecture of the host machine. """
+    """Retrieve CPU architecture of the host machine."""
     host_arch = platform.machine()
     # platform.machine() returns AMD64 on 64-bit Windows.
     if host_arch in ['x86_64', 'AMD64']:
@@ -77,15 +78,16 @@ def add_exec_to_file(file: str) -> None:
 def get_ssh_prefix(host_port_pair: Tuple[str, int]) -> List[str]:
     """Get the prefix of a barebone ssh command."""
     return [
-        'ssh', '-F',
+        'ssh',
+        '-F',
         os.path.join(os.path.dirname(__file__), 'sshconfig'),
-        host_port_pair[0], '-p',
-        str(host_port_pair[1])
+        host_port_pair[0],
+        '-p',
+        str(host_port_pair[1]),
     ]
 
 
-def install_symbols(package_paths: Iterable[str],
-                    fuchsia_out_dir: str) -> None:
+def install_symbols(package_paths: Iterable[str], fuchsia_out_dir: str) -> None:
     """Installs debug symbols for a package into the GDB-standard symbol
     directory located in fuchsia_out_dir."""
 
@@ -97,7 +99,8 @@ def install_symbols(package_paths: Iterable[str],
             for entry in f:
                 build_id, binary_relpath = entry.strip().split(' ')
                 binary_abspath = os.path.abspath(
-                    os.path.join(package_dir, binary_relpath))
+                    os.path.join(package_dir, binary_relpath)
+                )
                 symbol_dir = os.path.join(symbol_root, build_id[:2])
                 symbol_file = os.path.join(symbol_dir, build_id[2:] + '.debug')
                 if not os.path.exists(symbol_dir):
@@ -107,8 +110,9 @@ def install_symbols(package_paths: Iterable[str],
                     # Clobber the existing entry to ensure that the symlink's
                     # target is up to date.
                     os.unlink(symbol_file)
-                os.symlink(os.path.relpath(binary_abspath, symbol_dir),
-                           symbol_file)
+                os.symlink(
+                    os.path.relpath(binary_abspath, symbol_dir), symbol_file
+                )
 
 
 # TODO(crbug.com/42050403): Until one can send files to the device when running
@@ -117,9 +121,11 @@ def map_filter_file_to_package_file(filter_file: str) -> str:
     """Returns the path to |filter_file| within the test component's package."""
 
     if not _FILTER_DIR in filter_file:
-        raise ValueError('CFv2 tests only support registered filter files '
-                         'present in the test package')
-    return '/pkg/' + filter_file[filter_file.index(_FILTER_DIR):]
+        raise ValueError(
+            'CFv2 tests only support registered filter files '
+            'present in the test package'
+        )
+    return '/pkg/' + filter_file[filter_file.index(_FILTER_DIR) :]
 
 
 # TODO(crbug.com/40938340): Rename to get_product_version.
@@ -129,9 +135,10 @@ def get_sdk_hash(system_image_dir: str) -> Tuple[str, str]:
         Tuple of (product, version) of image to be installed.
     """
 
-    with open(os.path.join(system_image_dir,
-                           'product_bundle.json')) as product:
+    with open(os.path.join(system_image_dir, 'product_bundle.json')) as product:
         # The product_name in the json file does not match the name of the image
         # flashed to the device.
-        return (os.path.basename(os.path.normpath(system_image_dir)),
-                json.load(product)['product_version'])
+        return (
+            os.path.basename(os.path.normpath(system_image_dir)),
+            json.load(product)['product_version'],
+        )

@@ -63,7 +63,7 @@ _PACKAGE_NAMES = {
     'WEBVIEW_BETA': 10,
     'WEBVIEW_DEV': 20,
     'WEBVIEW_AUTO': 70,
-    'WEBVIEW_DESKTOP': 80
+    'WEBVIEW_DESKTOP': 80,
 }
 """ "Next" builds get +500 on their patch number.
 
@@ -167,7 +167,7 @@ _APKS = {
         ('WEBVIEW_AUTO_64_32', 'WEBVIEW_AUTO', '64_32'),
         ('WEBVIEW_AUTO_64_32_HIGH', 'WEBVIEW_AUTO', '64_32_high'),
         ('WEBVIEW_DESKTOP_64', 'WEBVIEW_DESKTOP', '64'),
-    ]
+    ],
 }
 
 # Splits input build config architecture to manufacturer and bitness.
@@ -225,199 +225,211 @@ things here:
 
 
 def _GetAbisToDigitMask(build_number, patch_number):
-  """Return the correct digit mask based on build number.
+    """Return the correct digit mask based on build number.
 
-  Updated from build 5750: Some intel devices advertise support for arm,
-  so arm codes must be lower than x86 codes to prevent providing an
-  arm-optimized build to intel devices.
+    Updated from build 5750: Some intel devices advertise support for arm,
+    so arm codes must be lower than x86 codes to prevent providing an
+    arm-optimized build to intel devices.
 
-  Returns:
-    A dictionary of architecture mapped to bitness
-    mapped to version code suffix.
-  """
-  # Scheme change was made directly to M113 and M114 branches.
-  use_new_scheme = (build_number >= 5750
-                    or (build_number == 5672 and patch_number >= 176)
-                    or (build_number == 5735 and patch_number >= 53))
-  if use_new_scheme:
+    Returns:
+      A dictionary of architecture mapped to bitness
+      mapped to version code suffix.
+    """
+    # Scheme change was made directly to M113 and M114 branches.
+    use_new_scheme = (
+        build_number >= 5750
+        or (build_number == 5672 and patch_number >= 176)
+        or (build_number == 5735 and patch_number >= 53)
+    )
+    if use_new_scheme:
+        return {
+            'arm': {
+                '32': 0,
+                '32_64': 1,
+                '64_32': 2,
+                '64_32_high': 3,
+                # This is not shipped, so fine that there's a dupe.
+                '64_high': 4,
+                '64': 4,
+            },
+            'intel': {
+                '32': 6,
+                '32_64': 7,
+                '64_32': 8,
+                '64': 9,
+            },
+        }
     return {
         'arm': {
             '32': 0,
-            '32_64': 1,
-            '64_32': 2,
-            '64_32_high': 3,
-            # This is not shipped, so fine that there's a dupe.
-            '64_high': 4,
-            '64': 4,
+            '32_64': 3,
+            '64_32': 4,
+            '64': 5,
+            '64_32_high': 9,
         },
         'intel': {
-            '32': 6,
-            '32_64': 7,
-            '64_32': 8,
-            '64': 9,
+            '32': 1,
+            '32_64': 6,
+            '64_32': 7,
+            '64': 8,
         },
     }
-  return {
-      'arm': {
-          '32': 0,
-          '32_64': 3,
-          '64_32': 4,
-          '64': 5,
-          '64_32_high': 9,
-      },
-      'intel': {
-          '32': 1,
-          '32_64': 6,
-          '64_32': 7,
-          '64': 8,
-      },
-  }
 
 
-VersionCodeComponents = namedtuple('VersionCodeComponents', [
-    'build_number',
-    'patch_number',
-    'package_name',
-    'abi',
-    'is_next_build',
-])
+VersionCodeComponents = namedtuple(
+    'VersionCodeComponents',
+    [
+        'build_number',
+        'patch_number',
+        'package_name',
+        'abi',
+        'is_next_build',
+    ],
+)
 
 
 def TranslateVersionCode(version_code, is_webview=False):
-  """Translates a version code to its component parts.
+    """Translates a version code to its component parts.
 
-  Returns:
-    A 5-tuple (VersionCodeComponents) with the form:
-      - Build number - integer
-      - Patch number - integer
-      - Package name - string
-      - ABI - string : if the build is 32_64 or 64_32 or 64, that is just
-                       appended to 'arm' or 'x86' with an underscore
-      - Whether the build is a "next" build - boolean
+    Returns:
+      A 5-tuple (VersionCodeComponents) with the form:
+        - Build number - integer
+        - Patch number - integer
+        - Package name - string
+        - ABI - string : if the build is 32_64 or 64_32 or 64, that is just
+                         appended to 'arm' or 'x86' with an underscore
+        - Whether the build is a "next" build - boolean
 
-    So, for build 100.0.5678.99, built for Monochrome on arm 64_32, not a next
-    build, you should get:
-      5678, 99, 'MONOCHROME', 'arm_64_32', False
-  """
-  if len(version_code) == 9:
-    build_number = int(version_code[:4])
-  else:
-    # At one branch per day, we'll hit 5 digits in the year 2035.
-    build_number = int(version_code[:5])
+      So, for build 100.0.5678.99, built for Monochrome on arm 64_32, not a next
+      build, you should get:
+        5678, 99, 'MONOCHROME', 'arm_64_32', False
+    """
+    if len(version_code) == 9:
+        build_number = int(version_code[:4])
+    else:
+        # At one branch per day, we'll hit 5 digits in the year 2035.
+        build_number = int(version_code[:5])
 
-  is_next_build = False
-  patch_number_plus_extra = int(version_code[-5:])
-  if patch_number_plus_extra >= _NEXT_BUILD_VERSION_CODE_DIFF:
-    is_next_build = True
-    patch_number_plus_extra -= _NEXT_BUILD_VERSION_CODE_DIFF
-  patch_number = patch_number_plus_extra // 100
+    is_next_build = False
+    patch_number_plus_extra = int(version_code[-5:])
+    if patch_number_plus_extra >= _NEXT_BUILD_VERSION_CODE_DIFF:
+        is_next_build = True
+        patch_number_plus_extra -= _NEXT_BUILD_VERSION_CODE_DIFF
+    patch_number = patch_number_plus_extra // 100
 
-  # From branch 3992 the name and abi bits in the version code are swapped.
-  if build_number >= 3992:
-    abi_digit = int(version_code[-1])
-    package_digit = int(version_code[-2])
-  else:
-    abi_digit = int(version_code[-2])
-    package_digit = int(version_code[-1])
+    # From branch 3992 the name and abi bits in the version code are swapped.
+    if build_number >= 3992:
+        abi_digit = int(version_code[-1])
+        package_digit = int(version_code[-2])
+    else:
+        abi_digit = int(version_code[-2])
+        package_digit = int(version_code[-1])
 
-  # Before branch 4844 we added 5 to the package digit to indicate a 'next'
-  # build.
-  if build_number < 4844 and package_digit >= 5:
-    is_next_build = True
-    package_digit -= 5
+    # Before branch 4844 we added 5 to the package digit to indicate a 'next'
+    # build.
+    if build_number < 4844 and package_digit >= 5:
+        is_next_build = True
+        package_digit -= 5
 
-  package_name = None
-  for package, number in _PACKAGE_NAMES.items():
-    if number == package_digit * 10:
-      if is_webview == ('WEBVIEW' in package):
-        package_name = package
-        break
-  if not package_name:
-    raise Error(f'Unable to match package with package_digit={package_digit} '
-                f'and is_webview={is_webview}')
+    package_name = None
+    for package, number in _PACKAGE_NAMES.items():
+        if number == package_digit * 10:
+            if is_webview == ('WEBVIEW' in package):
+                package_name = package
+                break
+    if not package_name:
+        raise Error(
+            f'Unable to match package with package_digit={package_digit} '
+            f'and is_webview={is_webview}'
+        )
 
-  for arch, bitness_to_number in (_GetAbisToDigitMask(build_number,
-                                                      patch_number).items()):
-    for bitness, number in bitness_to_number.items():
-      if abi_digit == number:
-        abi = arch if arch != 'intel' else 'x86'
-        if bitness != '32':
-          abi += '_' + bitness
-        break
+    for arch, bitness_to_number in _GetAbisToDigitMask(
+        build_number, patch_number
+    ).items():
+        for bitness, number in bitness_to_number.items():
+            if abi_digit == number:
+                abi = arch if arch != 'intel' else 'x86'
+                if bitness != '32':
+                    abi += '_' + bitness
+                break
 
-  return VersionCodeComponents(build_number, patch_number, package_name, abi,
-                               is_next_build)
+    return VersionCodeComponents(
+        build_number, patch_number, package_name, abi, is_next_build
+    )
 
 
 def GenerateVersionCodes(build_number, patch_number, arch):
-  """Build dict of version codes for the specified build architecture. Eg:
+    """Build dict of version codes for the specified build architecture. Eg:
 
-  {
-    'CHROME_VERSION_CODE': '378100010',
-    'MONOCHROME_VERSION_CODE': '378100013',
-    ...
-  }
+    {
+      'CHROME_VERSION_CODE': '378100010',
+      'MONOCHROME_VERSION_CODE': '378100013',
+      ...
+    }
 
-  versionCode values are built like this:
-  {full BUILD int}{3 digits: PATCH}{1 digit: package}{1 digit: ABIs}.
+    versionCode values are built like this:
+    {full BUILD int}{3 digits: PATCH}{1 digit: package}{1 digit: ABIs}.
 
-  MAJOR and MINOR values are not used for generating versionCode.
-  - MINOR is always 0. It was used for something long ago in Chrome's history
-    but has not been used since, and has never been nonzero on Android.
-  - MAJOR is cosmetic and controlled by the release managers. MAJOR and BUILD
-    always have reasonable sort ordering: for two version codes A and B, it's
-    always the case that (A.MAJOR < B.MAJOR) implies (A.BUILD < B.BUILD), and
-    that (A.MAJOR > B.MAJOR) implies (A.BUILD > B.BUILD). This property is just
-    maintained by the humans who set MAJOR.
+    MAJOR and MINOR values are not used for generating versionCode.
+    - MINOR is always 0. It was used for something long ago in Chrome's history
+      but has not been used since, and has never been nonzero on Android.
+    - MAJOR is cosmetic and controlled by the release managers. MAJOR and BUILD
+      always have reasonable sort ordering: for two version codes A and B, it's
+      always the case that (A.MAJOR < B.MAJOR) implies (A.BUILD < B.BUILD), and
+      that (A.MAJOR > B.MAJOR) implies (A.BUILD > B.BUILD). This property is just
+      maintained by the humans who set MAJOR.
 
-  Thus, this method is responsible for the final two digits of versionCode.
-  """
-  base_version_code = (build_number * 1000 + patch_number) * 100
+    Thus, this method is responsible for the final two digits of versionCode.
+    """
+    base_version_code = (build_number * 1000 + patch_number) * 100
 
-  mfg, bitness = _ARCH_TO_MFG_AND_BITNESS[arch]
+    mfg, bitness = _ARCH_TO_MFG_AND_BITNESS[arch]
 
-  version_codes = {}
+    version_codes = {}
 
-  abi_to_digit_mask = _GetAbisToDigitMask(build_number, patch_number)
-  for apk, package, abis in _APKS[bitness]:
-    if abis == '64_32_high' and arch != 'arm64':
-      continue
-    abi_part = abi_to_digit_mask[mfg][abis]
-    package_part = _PACKAGE_NAMES[package]
+    abi_to_digit_mask = _GetAbisToDigitMask(build_number, patch_number)
+    for apk, package, abis in _APKS[bitness]:
+        if abis == '64_32_high' and arch != 'arm64':
+            continue
+        abi_part = abi_to_digit_mask[mfg][abis]
+        package_part = _PACKAGE_NAMES[package]
 
-    version_code_name = apk + '_VERSION_CODE'
-    version_code_val = base_version_code + package_part + abi_part
-    version_codes[version_code_name] = str(version_code_val)
+        version_code_name = apk + '_VERSION_CODE'
+        version_code_val = base_version_code + package_part + abi_part
+        version_codes[version_code_name] = str(version_code_val)
 
-  return version_codes
+    return version_codes
 
 
 def main():
-  parser = argparse.ArgumentParser(description='Parses version codes.')
-  g1 = parser.add_argument_group('To Generate Version Name')
-  g1.add_argument('--version-code', help='Version code (e.g. 529700010).')
-  g1.add_argument('--webview',
-                  action='store_true',
-                  help='Whether this is a webview version code.')
-  g2 = parser.add_argument_group('To Generate Version Code')
-  g2.add_argument('--version-name', help='Version name (e.g. 124.0.6355.0).')
-  g2.add_argument('--arch',
-                  choices=ARCH_CHOICES,
-                  help='Set which cpu architecture the build is for.')
-  args = parser.parse_args()
-  if args.version_code:
-    print(TranslateVersionCode(args.version_code, is_webview=args.webview))
-  elif args.version_name:
-    if not args.arch:
-      parser.error('Required --arch')
-    _, _, build, patch = args.version_name.split('.')
-    values = GenerateVersionCodes(int(build), int(patch), args.arch)
-    for k, v in values.items():
-      print(f'{k}={v}')
-  else:
-    parser.print_help()
-
+    parser = argparse.ArgumentParser(description='Parses version codes.')
+    g1 = parser.add_argument_group('To Generate Version Name')
+    g1.add_argument('--version-code', help='Version code (e.g. 529700010).')
+    g1.add_argument(
+        '--webview',
+        action='store_true',
+        help='Whether this is a webview version code.',
+    )
+    g2 = parser.add_argument_group('To Generate Version Code')
+    g2.add_argument('--version-name', help='Version name (e.g. 124.0.6355.0).')
+    g2.add_argument(
+        '--arch',
+        choices=ARCH_CHOICES,
+        help='Set which cpu architecture the build is for.',
+    )
+    args = parser.parse_args()
+    if args.version_code:
+        print(TranslateVersionCode(args.version_code, is_webview=args.webview))
+    elif args.version_name:
+        if not args.arch:
+            parser.error('Required --arch')
+        _, _, build, patch = args.version_name.split('.')
+        values = GenerateVersionCodes(int(build), int(patch), args.arch)
+        for k, v in values.items():
+            print(f'{k}={v}')
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':
-  main()
+    main()

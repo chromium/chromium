@@ -196,8 +196,9 @@ def hash_file(hasher, file_name: str) -> str:
 
 def atomic_copyfile(source: str, destination: str) -> None:
     dest_dir = os.path.dirname(destination)
-    with tempfile.NamedTemporaryFile(mode="wb", delete=False,
-                                     dir=dest_dir) as temp_file:
+    with tempfile.NamedTemporaryFile(
+        mode="wb", delete=False, dir=dest_dir
+    ) as temp_file:
         temp_filename = temp_file.name
     shutil.copyfile(source, temp_filename)
     os.rename(temp_filename, destination)
@@ -245,8 +246,8 @@ def download_file(url: str, dest: str, retries=5) -> None:
 
                 # Use a temporary file to write data
                 with tempfile.NamedTemporaryFile(
-                        mode="wb", delete=False,
-                        dir=os.path.dirname(dest)) as temp_file:
+                    mode="wb", delete=False, dir=os.path.dirname(dest)
+                ) as temp_file:
                     for chunk in response.iter_content(chunk_size=8192):
                         temp_file.write(chunk)
 
@@ -291,7 +292,8 @@ def clear_install_dir(install_root: str) -> None:
 
 def create_tarball(install_root: str, arch: str, build_dir: str) -> None:
     tarball_path = os.path.join(
-        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz")
+        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz"
+    )
     banner("Creating tarball " + tarball_path)
     command = [
         "tar",
@@ -311,8 +313,9 @@ def create_tarball(install_root: str, arch: str, build_dir: str) -> None:
     subprocess.run(command, check=True)
 
 
-def generate_package_list_dist_repo(arch: str, dist: str, repo_name: str,
-                                    build_dir: str) -> list[dict[str, str]]:
+def generate_package_list_dist_repo(
+    arch: str, dist: str, repo_name: str, build_dir: str
+) -> list[dict[str, str]]:
     repo_basedir = f"{ARCHIVE_URL}/dists/{dist}"
     package_list = f"{build_dir}/Packages.{dist}_{repo_name}_{arch}"
     package_list = f"{package_list}.{PACKAGES_EXT}"
@@ -325,9 +328,12 @@ def generate_package_list_dist_repo(arch: str, dist: str, repo_name: str,
     with lzma.open(package_list, "rt") as src:
         return [
             dict(
-                line.split(": ", 1) for line in package_meta.splitlines()
-                if not line.startswith(" "))
-            for package_meta in src.read().split("\n\n") if package_meta
+                line.split(": ", 1)
+                for line in package_meta.splitlines()
+                if not line.startswith(" ")
+            )
+            for package_meta in src.read().split("\n\n")
+            if package_meta
         ]
 
 
@@ -344,7 +350,8 @@ def generate_package_list(arch: str, build_dir: str) -> dict[str, str]:
     for dist, repos in sources:
         for repo_name in repos:
             for meta in generate_package_list_dist_repo(
-                    arch, dist, repo_name, build_dir):
+                arch, dist, repo_name, build_dir
+            ):
                 package_meta[meta["Package"]] = meta
                 if "Provides" not in meta:
                     continue
@@ -381,8 +388,9 @@ def generate_package_list(arch: str, build_dir: str) -> dict[str, str]:
         raise Exception(f"Missing packages: {', '.join(missing)}")
 
     # Write the URLs and checksums of the requested packages to the output file
-    output_file = os.path.join(SCRIPT_DIR, "generated_package_lists",
-                               f"{RELEASES[arch]}.{arch}")
+    output_file = os.path.join(
+        SCRIPT_DIR, "generated_package_lists", f"{RELEASES[arch]}.{arch}"
+    )
     with open(output_file, "w") as f:
         f.write("\n".join(sorted(package_dict)) + "\n")
     return package_dict
@@ -397,16 +405,22 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     open(control_file, "a").close()
 
     # Remove an unnecessary dependency on qtchooser.
-    qtchooser_conf = os.path.join(install_root, "usr", "lib", TRIPLES[arch],
-                                  "qt-default/qtchooser/default.conf")
+    qtchooser_conf = os.path.join(
+        install_root,
+        "usr",
+        "lib",
+        TRIPLES[arch],
+        "qt-default/qtchooser/default.conf",
+    )
     if os.path.exists(qtchooser_conf):
         os.remove(qtchooser_conf)
 
     # libxcomposite1 is missing a symbols file.
     atomic_copyfile(
         os.path.join(script_dir, "libxcomposite1-symbols"),
-        os.path.join(install_root, "debian", "libxcomposite1", "DEBIAN",
-                     "symbols"),
+        os.path.join(
+            install_root, "debian", "libxcomposite1", "DEBIAN", "symbols"
+        ),
     )
 
     # __GLIBC_MINOR__ is used as a feature test macro. Replace it with the
@@ -415,14 +429,22 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     replace_in_file(features_h, r"(#define\s+__GLIBC_MINOR__)", r"\1 26 //")
 
     # C23 STRTOL requires glibc >= 2.38
-    replace_in_file(features_h, r"(#\s?define\s+__GLIBC_USE_C23_STRTOL)",
-                    r"\1 0 //")
+    replace_in_file(
+        features_h, r"(#\s?define\s+__GLIBC_USE_C23_STRTOL)", r"\1 0 //"
+    )
 
     # riscv_hwprobe requires glibc >= 2.40
     if arch == "riscv64":
         os.remove(
-            os.path.join(install_root, "usr", "include", "riscv64-linux-gnu",
-                         "sys", "hwprobe.h"))
+            os.path.join(
+                install_root,
+                "usr",
+                "include",
+                "riscv64-linux-gnu",
+                "sys",
+                "hwprobe.h",
+            )
+        )
 
     # fcntl64() was introduced in glibc 2.28. Make sure to use fcntl() instead.
     fcntl_h = os.path.join(install_root, "usr", "include", "fcntl.h")
@@ -443,14 +465,17 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
         "bits",
         "c++config.h",
     )
-    replace_in_file(cppconfig_h,
-                    r"(#define\s+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT)",
-                    r"// \1")
+    replace_in_file(
+        cppconfig_h,
+        r"(#define\s+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT)",
+        r"// \1",
+    )
 
     # Include limits.h in stdlib.h to fix an ODR issue.
     stdlib_h = os.path.join(install_root, "usr", "include", "stdlib.h")
-    replace_in_file(stdlib_h, r"(#include <stddef.h>)",
-                    r"\1\n#include <limits.h>")
+    replace_in_file(
+        stdlib_h, r"(#include <stddef.h>)", r"\1\n#include <limits.h>"
+    )
 
     # Glibc < 2.34 (like in our Bullseye sysroot) doesn't support
     # _FORTIFY_SOURCE=3.  We can "upgrade" it by redefining the internal macros
@@ -460,37 +485,43 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     #
     # First, allow __USE_FORTIFY_LEVEL to be 3.
     replace_in_file(
-        features_h, r"(#\s?if\s+_FORTIFY_SOURCE\s?>\s?1)",
+        features_h,
+        r"(#\s?if\s+_FORTIFY_SOURCE\s?>\s?1)",
         r"# if _FORTIFY_SOURCE > 2\n"
         r"#  define __USE_FORTIFY_LEVEL 3\n"
-        r"# elif _FORTIFY_SOURCE > 1")
+        r"# elif _FORTIFY_SOURCE > 1",
+    )
     # Second, redefine __bos and __bos0 to use __builtin_dynamic_object_size
     # when __USE_FORTIFY_LEVEL is 3.
-    cdefs_h = os.path.join(install_root, "usr", "include", TRIPLES[arch],
-                           "sys", "cdefs.h")
+    cdefs_h = os.path.join(
+        install_root, "usr", "include", TRIPLES[arch], "sys", "cdefs.h"
+    )
     replace_in_file(
-        cdefs_h, r"(#define\s+__bos\(ptr\)\s+__builtin_object_size\s+"
+        cdefs_h,
+        r"(#define\s+__bos\(ptr\)\s+__builtin_object_size\s+"
         r"\(ptr,\s+__USE_FORTIFY_LEVEL\s+>\s+1\))",
         r"#if defined(__clang__) && defined(__USE_FORTIFY_LEVEL) && "
         r"__USE_FORTIFY_LEVEL > 2\n"
         r"# define __bos(ptr) __builtin_dynamic_object_size (ptr, 1)\n"
         r"# define __bos0(ptr) __builtin_dynamic_object_size (ptr, 0)\n"
         r"#else\n"
-        r"\1")
+        r"\1",
+    )
     replace_in_file(
         cdefs_h,
         r"(#define\s+__bos0\(ptr\)\s+__builtin_object_size\s+\(ptr,\s+0\))",
-        r"\1\n#endif")
+        r"\1\n#endif",
+    )
 
     # Move pkgconfig scripts.
     pkgconfig_dir = os.path.join(install_root, "usr", "lib", "pkgconfig")
     os.makedirs(pkgconfig_dir, exist_ok=True)
-    triple_pkgconfig_dir = os.path.join(install_root, "usr", "lib",
-                                        TRIPLES[arch], "pkgconfig")
+    triple_pkgconfig_dir = os.path.join(
+        install_root, "usr", "lib", TRIPLES[arch], "pkgconfig"
+    )
     if os.path.exists(triple_pkgconfig_dir):
         for file in os.listdir(triple_pkgconfig_dir):
-            shutil.move(os.path.join(triple_pkgconfig_dir, file),
-                        pkgconfig_dir)
+            shutil.move(os.path.join(triple_pkgconfig_dir, file), pkgconfig_dir)
 
     # Avoid requiring unsupported glibc versions.
     for lib in ["libc.so.6", "libm.so.6", "libcrypt.so.1"]:
@@ -514,20 +545,24 @@ def create_extra_symlinks(install_root: str, arch: str):
         for lib in ["libdl.so.2", "librt.so.1", "libpthread.so.0"]:
             os.symlink(
                 lib,
-                os.path.join(install_root, "lib", TRIPLES[arch],
-                             lib.rpartition(".")[0]))
+                os.path.join(
+                    install_root, "lib", TRIPLES[arch], lib.rpartition(".")[0]
+                ),
+            )
 
 
-def replace_in_file(file_path: str, search_pattern: str,
-                    replace_pattern: str) -> None:
+def replace_in_file(
+    file_path: str, search_pattern: str, replace_pattern: str
+) -> None:
     with open(file_path, "r") as file:
         content = file.read()
     with open(file_path, "w") as file:
         file.write(re.sub(search_pattern, replace_pattern, content))
 
 
-def install_into_sysroot(build_dir: str, install_root: str,
-                         packages: dict[str, str]) -> None:
+def install_into_sysroot(
+    build_dir: str, install_root: str, packages: dict[str, str]
+) -> None:
     """
     Installs libraries and headers into the sysroot environment.
     """
@@ -548,8 +583,9 @@ def install_into_sysroot(build_dir: str, install_root: str,
             raise ValueError(f"SHA256 mismatch for {package_path}")
 
         sub_banner(f"Extracting to {install_root}")
-        subprocess.run(["dpkg-deb", "-x", package_path, install_root],
-                       check=True)
+        subprocess.run(
+            ["dpkg-deb", "-x", package_path, install_root], check=True
+        )
 
         base_package = get_base_package_name(package_path)
         debian_package_dir = os.path.join(debian_dir, base_package, "DEBIAN")
@@ -558,14 +594,15 @@ def install_into_sysroot(build_dir: str, install_root: str,
         os.makedirs(debian_package_dir, exist_ok=True)
         with subprocess.Popen(
             ["dpkg-deb", "-e", package_path, debian_package_dir],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         ) as proc:
             _, err = proc.communicate()
             if proc.returncode != 0:
                 message = "Failed to extract control from"
                 raise Exception(
-                    f"{message} {package_path}: {err.decode('utf-8')}")
+                    f"{message} {package_path}: {err.decode('utf-8')}"
+                )
 
     # Prune /usr/share, leaving only allowlisted directories.
     USR_SHARE_ALLOWLIST = {
@@ -585,12 +622,15 @@ def get_base_package_name(package_path: str) -> str:
     """
     Retrieves the base package name from a Debian package.
     """
-    result = subprocess.run(["dpkg-deb", "--field", package_path, "Package"],
-                            capture_output=True,
-                            text=True)
+    result = subprocess.run(
+        ["dpkg-deb", "--field", package_path, "Package"],
+        capture_output=True,
+        text=True,
+    )
     if result.returncode != 0:
         raise Exception(
-            f"Failed to get package name from {package_path}: {result.stderr}")
+            f"Failed to get package name from {package_path}: {result.stderr}"
+        )
     return result.stdout.strip()
 
 
@@ -612,11 +652,13 @@ def cleanup_jail_symlinks(install_root: str) -> None:
 
                 # If the link's target does not exist, remove this broken link.
                 if os.path.isabs(target_path):
-                    absolute_target = os.path.join(install_root,
-                                                   target_path.strip("/"))
+                    absolute_target = os.path.join(
+                        install_root, target_path.strip("/")
+                    )
                 else:
-                    absolute_target = os.path.join(os.path.dirname(full_path),
-                                                   target_path)
+                    absolute_target = os.path.join(
+                        os.path.dirname(full_path), target_path
+                    )
                 if not os.path.exists(absolute_target):
                     os.remove(full_path)
                     continue
@@ -628,11 +670,13 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                         os.path.dirname(full_path),
                     )
                     # Verify that the target exists inside the install_root.
-                    joined_path = os.path.join(os.path.dirname(full_path),
-                                               relative_path)
+                    joined_path = os.path.join(
+                        os.path.dirname(full_path), relative_path
+                    )
                     if not os.path.exists(joined_path):
                         raise Exception(
-                            f"Link target doesn't exist: {joined_path}")
+                            f"Link target doesn't exist: {joined_path}"
+                        )
                     os.remove(full_path)
                     os.symlink(relative_path, full_path)
 
@@ -652,8 +696,9 @@ def removing_unnecessary_files(install_root, arch):
     }
 
     for file in ALLOWLIST:
-        assert os.path.exists(os.path.join(install_root,
-                                           file)), f"{file} does not exist"
+        assert os.path.exists(os.path.join(install_root, file)), (
+            f"{file} does not exist"
+        )
 
     # Remove all executables and static libraries, and any symlinks that
     # were pointing to them.
@@ -699,8 +744,11 @@ def strip_sections(install_root: str, arch: str):
     for root, _, files in os.walk(install_root):
         for file in files:
             file_path = os.path.join(root, file)
-            if (os.access(file, os.X_OK) or file.endswith((".a", ".o"))
-                    or os.path.islink(file_path)):
+            if (
+                os.access(file, os.X_OK)
+                or file.endswith((".a", ".o"))
+                or os.path.islink(file_path)
+            ):
                 continue
 
             # Verify this is an ELF file
@@ -711,10 +759,9 @@ def strip_sections(install_root: str, arch: str):
 
             # Get section headers
             objdump_cmd = ["objdump", "-h", file_path]
-            result = subprocess.run(objdump_cmd,
-                                    check=True,
-                                    text=True,
-                                    capture_output=True)
+            result = subprocess.run(
+                objdump_cmd, check=True, text=True, capture_output=True
+            )
             section_lines = result.stdout.splitlines()
 
             # Parse section names
@@ -730,10 +777,14 @@ def strip_sections(install_root: str, arch: str):
                 objcopy_bin = TRIPLES[objcopy_arch] + "-objcopy"
                 if not shutil.which(objcopy_bin):
                     objcopy_bin = "objcopy"
-                objcopy_cmd = ([objcopy_bin] + [
-                    f"--remove-section={section}"
-                    for section in sections_to_remove
-                ] + [file_path])
+                objcopy_cmd = (
+                    [objcopy_bin]
+                    + [
+                        f"--remove-section={section}"
+                        for section in sections_to_remove
+                    ]
+                    + [file_path]
+                )
                 subprocess.run(objcopy_cmd, check=True, stderr=subprocess.PIPE)
 
 
@@ -753,8 +804,9 @@ def record_metadata(install_root: str) -> dict[str, tuple[float, float]]:
     return metadata
 
 
-def restore_metadata(install_root: str,
-                     old_meta: dict[str, tuple[float, float]]) -> None:
+def restore_metadata(
+    install_root: str, old_meta: dict[str, tuple[float, float]]
+) -> None:
     """
     1. Restore the metadata of any file that exists in old_meta.
     2. For all other files, set their timestamp to ARCHIVE_TIMESTAMP.
@@ -763,7 +815,8 @@ def restore_metadata(install_root: str,
     """
     # Convert the timestamp to a UNIX epoch time.
     archive_time = time.mktime(
-        time.strptime(ARCHIVE_TIMESTAMP, "%Y%m%dT%H%M%SZ"))
+        time.strptime(ARCHIVE_TIMESTAMP, "%Y%m%dT%H%M%SZ")
+    )
 
     # Walk through the install_root, applying old_meta where available;
     # otherwise set times to archive_time.
@@ -802,7 +855,8 @@ def build_sysroot(arch: str) -> None:
 def upload_sysroot(arch: str) -> str:
     build_dir = get_build_dir(arch)
     tarball_path = os.path.join(
-        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz")
+        build_dir, f"{DISTRO}_{RELEASES[arch]}_{arch}_sysroot.tar.xz"
+    )
     command = [
         "upload_to_google_storage_first_class.py",
         "--bucket",
@@ -812,8 +866,9 @@ def upload_sysroot(arch: str) -> str:
     return subprocess.check_output(command).decode("utf-8")
 
 
-def verify_package_listing(file_path: str, output_file: str, dist: str,
-                           build_dir: str) -> None:
+def verify_package_listing(
+    file_path: str, output_file: str, dist: str, build_dir: str
+) -> None:
     """
     Verifies the downloaded Packages.xz file against its checksum and GPG keys.
     """
@@ -835,11 +890,13 @@ def verify_package_listing(file_path: str, output_file: str, dist: str,
     # Verify Release file with GPG
     subprocess.run(
         ["gpgv", "--keyring", KEYRING_FILE, release_file_gpg, release_file],
-        check=True)
+        check=True,
+    )
 
     # Find the SHA256 checksum for the specific file in the Release file
-    sha256sum_pattern = re.compile(r"([a-f0-9]{64})\s+\d+\s+" +
-                                   re.escape(file_path) + r"$")
+    sha256sum_pattern = re.compile(
+        r"([a-f0-9]{64})\s+\d+\s+" + re.escape(file_path) + r"$"
+    )
     sha256sum_match = None
     with open(release_file, "r") as f:
         for line in f:
@@ -848,8 +905,7 @@ def verify_package_listing(file_path: str, output_file: str, dist: str,
                 break
 
     if not sha256sum_match:
-        raise Exception(
-            f"Checksum for {file_path} not found in {release_file}")
+        raise Exception(f"Checksum for {file_path} not found in {release_file}")
 
     if hash_file(hashlib.sha256(), output_file) != sha256sum_match:
         raise Exception(f"Checksum mismatch for {output_file}")
@@ -857,7 +913,8 @@ def verify_package_listing(file_path: str, output_file: str, dist: str,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Build and upload Debian sysroot images for Chromium.")
+        description="Build and upload Debian sysroot images for Chromium."
+    )
     parser.add_argument("command", choices=["build", "upload"])
     parser.add_argument("architecture", choices=list(TRIPLES))
     args = parser.parse_args()

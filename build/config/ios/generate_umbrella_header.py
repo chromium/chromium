@@ -28,48 +28,61 @@ $imports
 
 
 def ComputeHeaderGuard(file_path):
-  """Computes the header guard for a file path.
+    """Computes the header guard for a file path.
 
-  Args:
-    file_path: The path to convert into an header guard.
-  Returns:
-    The header guard string for the file_path.
-  """
-  return re.sub(r'[.+/\\]', r'_', file_path.upper()) + '_'
+    Args:
+      file_path: The path to convert into an header guard.
+    Returns:
+      The header guard string for the file_path.
+    """
+    return re.sub(r'[.+/\\]', r'_', file_path.upper()) + '_'
 
 
 def WriteUmbrellaHeader(output_path, imported_headers):
-  """Writes the umbrella header.
+    """Writes the umbrella header.
 
-  Args:
-    output_path: The path to the umbrella header.
-    imported_headers: A list of headers to #import in the umbrella header.
-  """
-  year = datetime.date.today().year
-  header_guard = ComputeHeaderGuard(output_path)
-  imports = '\n'.join([
-      '#import "%s"' % os.path.basename(header)
-          for header in sorted(imported_headers)
-      ])
-  with open(output_path, 'w') as output_file:
-    output_file.write(
-        HEADER_TEMPLATE.safe_substitute({
-            'year': year,
-            'header_guard': header_guard,
-            'imports': imports,
-        }))
+    Args:
+      output_path: The path to the umbrella header.
+      imported_headers: A list of headers to #import in the umbrella header.
+    """
+    year = datetime.date.today().year
+    header_guard = ComputeHeaderGuard(output_path)
+    imports = '\n'.join(
+        [
+            '#import "%s"' % os.path.basename(header)
+            for header in sorted(imported_headers)
+        ]
+    )
+    with open(output_path, 'w') as output_file:
+        output_file.write(
+            HEADER_TEMPLATE.safe_substitute(
+                {
+                    'year': year,
+                    'header_guard': header_guard,
+                    'imports': imports,
+                }
+            )
+        )
 
 
 def Main():
-  parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--output-path', required=True, type=str,
-                      help='Path to the generated umbrella header.')
-  parser.add_argument('imported_headers', type=str, nargs='+',
-                      help='Headers to #import in the umbrella header.')
-  options = parser.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--output-path',
+        required=True,
+        type=str,
+        help='Path to the generated umbrella header.',
+    )
+    parser.add_argument(
+        'imported_headers',
+        type=str,
+        nargs='+',
+        help='Headers to #import in the umbrella header.',
+    )
+    options = parser.parse_args()
 
-  return WriteUmbrellaHeader(options.output_path, options.imported_headers)
+    return WriteUmbrellaHeader(options.output_path, options.imported_headers)
 
 
 if __name__ == '__main__':
-  Main()
+    Main()

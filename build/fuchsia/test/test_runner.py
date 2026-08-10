@@ -15,12 +15,14 @@ from common import read_package_paths
 class TestRunner(ABC):
     """Base class that handles running a test."""
 
-    def __init__(self,
-                 out_dir: str,
-                 test_args: List[str],
-                 packages: List[str],
-                 target_id: Optional[str],
-                 package_deps: Union[Dict[str, str], List[str]] = None):
+    def __init__(
+        self,
+        out_dir: str,
+        test_args: List[str],
+        packages: List[str],
+        target_id: Optional[str],
+        package_deps: Union[Dict[str, str], List[str]] = None,
+    ):
         self._out_dir = out_dir
         self._test_args = test_args
         self._packages = packages

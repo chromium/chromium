@@ -20,9 +20,9 @@ from ffx_integration import run_symbolizer
 class LogManager(AbstractContextManager):
     """Handles opening and closing file streams for logging purposes."""
 
-    def __init__(self,
-                 logs_dir: Optional[str],
-                 wait_for_pattern: Optional[str] = None) -> None:
+    def __init__(
+        self, logs_dir: Optional[str], wait_for_pattern: Optional[str] = None
+    ) -> None:
         """
         Args:
             logs_dir: Directory where logs will be written.
@@ -73,8 +73,10 @@ class LogManager(AbstractContextManager):
         if not os.path.exists(system_log_path):
             return
 
-        logging.info('Waiting for pattern "%s" in system log...',
-                     self._wait_for_log_pattern)
+        logging.info(
+            'Waiting for pattern "%s" in system log...',
+            self._wait_for_log_pattern,
+        )
         compiled_pattern = re.compile(self._wait_for_log_pattern)
         start_time = time.time()
         # Read in text mode with line buffering. We accumulate data into
@@ -82,25 +84,27 @@ class LogManager(AbstractContextManager):
         # (i.e. does not end with a newline) due to concurrent non-atomic
         # writes.
         pending_data = ''
-        with open(system_log_path,
-                  'r',
-                  buffering=1,
-                  encoding='utf-8',
-                  errors='ignore') as f:
+        with open(
+            system_log_path, 'r', buffering=1, encoding='utf-8', errors='ignore'
+        ) as f:
             while time.time() - start_time < 30.0:
                 line = f.readline()
                 if line:
                     pending_data += line
                     if compiled_pattern.search(pending_data):
-                        logging.info('Found pattern "%s" in system log.',
-                                     self._wait_for_log_pattern)
+                        logging.info(
+                            'Found pattern "%s" in system log.',
+                            self._wait_for_log_pattern,
+                        )
                         return
                     if pending_data.endswith('\n'):
                         pending_data = ''
                 else:
                     time.sleep(0.1)
-            logging.warning('Pattern "%s" not found in system log within 30s.',
-                            self._wait_for_log_pattern)
+            logging.warning(
+                'Pattern "%s" not found in system log within 30s.',
+                self._wait_for_log_pattern,
+            )
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Stop all active logging instances."""
@@ -115,11 +119,13 @@ class LogManager(AbstractContextManager):
         return False
 
 
-def start_system_log(log_manager: LogManager,
-                     log_to_stdout: bool,
-                     pkg_paths: Optional[Iterable[str]] = None,
-                     log_args: Optional[Iterable[str]] = None,
-                     target_id: Optional[str] = None) -> None:
+def start_system_log(
+    log_manager: LogManager,
+    log_to_stdout: bool,
+    pkg_paths: Optional[Iterable[str]] = None,
+    log_args: Optional[Iterable[str]] = None,
+    target_id: Optional[str] = None,
+) -> None:
     """
     Start system logging.
 
@@ -141,7 +147,8 @@ def start_system_log(log_manager: LogManager,
         for pkg_path in pkg_paths:
             assert os.path.isfile(pkg_path), '%s does not exist' % pkg_path
             symbol_paths.append(
-                os.path.join(os.path.dirname(pkg_path), 'ids.txt'))
+                os.path.join(os.path.dirname(pkg_path), 'ids.txt')
+            )
 
     if log_to_stdout:
         system_log = sys.stdout
@@ -151,12 +158,14 @@ def start_system_log(log_manager: LogManager,
     if log_args:
         log_cmd.extend(log_args)
     if symbol_paths:
-        log_proc = run_continuous_ffx_command(log_cmd,
-                                              target_id,
-                                              stdout=subprocess.PIPE)
+        log_proc = run_continuous_ffx_command(
+            log_cmd, target_id, stdout=subprocess.PIPE
+        )
         log_manager.add_log_process(log_proc)
         log_manager.add_log_process(
-            run_symbolizer(symbol_paths, log_proc.stdout, system_log))
+            run_symbolizer(symbol_paths, log_proc.stdout, system_log)
+        )
     else:
         log_manager.add_log_process(
-            run_continuous_ffx_command(log_cmd, target_id, stdout=system_log))
+            run_continuous_ffx_command(log_cmd, target_id, stdout=system_log)
+        )

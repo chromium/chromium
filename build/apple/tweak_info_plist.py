@@ -35,474 +35,544 @@ assert sys.version_info.major >= 3, "Requires python 3.0 or higher."
 
 
 def _WritePlistIfChanged(plist, output_path, fmt):
-  """Write a plist file.
+    """Write a plist file.
 
-  Write `plist` to `output_path` in `fmt`. If `output_path` already exist,
-  the file is only overwritten if its content would be different. This allows
-  ninja to consider all dependent step to be considered as unnecessary (see
-  "restat" in ninja documentation).
-  """
-  if os.path.isfile(output_path):
-    with open(output_path, 'rb') as f:
-      try:
-        exising_plist = plistlib.load(f)
-        if exising_plist == plist:
-          return
-      except plistlib.InvalidFileException:
-        # If the file cannot be parsed by plistlib, then overwrite it.
-        pass
+    Write `plist` to `output_path` in `fmt`. If `output_path` already exist,
+    the file is only overwritten if its content would be different. This allows
+    ninja to consider all dependent step to be considered as unnecessary (see
+    "restat" in ninja documentation).
+    """
+    if os.path.isfile(output_path):
+        with open(output_path, 'rb') as f:
+            try:
+                exising_plist = plistlib.load(f)
+                if exising_plist == plist:
+                    return
+            except plistlib.InvalidFileException:
+                # If the file cannot be parsed by plistlib, then overwrite it.
+                pass
 
-  with open(output_path, 'wb') as f:
-    plist_format = {'binary1': plistlib.FMT_BINARY, 'xml1': plistlib.FMT_XML}
-    plistlib.dump(plist, f, fmt=plist_format[fmt])
+    with open(output_path, 'wb') as f:
+        plist_format = {
+            'binary1': plistlib.FMT_BINARY,
+            'xml1': plistlib.FMT_XML,
+        }
+        plistlib.dump(plist, f, fmt=plist_format[fmt])
 
 
 def _GetOutput(args):
-  """Runs a subprocess and waits for termination. Returns (stdout, returncode)
-  of the process. stderr is attached to the parent."""
-  proc = subprocess.Popen(args, stdout=subprocess.PIPE)
-  stdout, _ = proc.communicate()
-  return stdout.decode('UTF-8'), proc.returncode
+    """Runs a subprocess and waits for termination. Returns (stdout, returncode)
+    of the process. stderr is attached to the parent."""
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+    stdout, _ = proc.communicate()
+    return stdout.decode('UTF-8'), proc.returncode
 
 
 def _RemoveKeys(plist, *keys):
-  """Removes a varargs of keys from the plist."""
-  for key in keys:
-    try:
-      del plist[key]
-    except KeyError:
-      pass
+    """Removes a varargs of keys from the plist."""
+    for key in keys:
+        try:
+            del plist[key]
+        except KeyError:
+            pass
 
 
 def _ApplyVersionOverrides(version, keys, overrides, separator='.'):
-  """Applies version overrides.
+    """Applies version overrides.
 
-  Given a |version| string as "a.b.c.d" (assuming a default separator) with
-  version components named by |keys| then overrides any value that is present
-  in |overrides|.
+    Given a |version| string as "a.b.c.d" (assuming a default separator) with
+    version components named by |keys| then overrides any value that is present
+    in |overrides|.
 
-  >>> _ApplyVersionOverrides('a.b', ['major', 'minor'], {'minor': 'd'})
-  'a.d'
-  """
-  if not overrides:
-    return version
-  version_values = version.split(separator)
-  for i, (key, value) in enumerate(zip(keys, version_values)):
-    if key in overrides:
-      version_values[i] = overrides[key]
-  return separator.join(version_values)
+    >>> _ApplyVersionOverrides('a.b', ['major', 'minor'], {'minor': 'd'})
+    'a.d'
+    """
+    if not overrides:
+        return version
+    version_values = version.split(separator)
+    for i, (key, value) in enumerate(zip(keys, version_values)):
+        if key in overrides:
+            version_values[i] = overrides[key]
+    return separator.join(version_values)
 
 
 def _GetVersion(version_format, values, overrides=None):
-  """Generates a version number according to |version_format| using the values
-  from |values| or |overrides| if given."""
-  result = version_format
-  for key in values:
-    if overrides and key in overrides:
-      value = overrides[key]
-    else:
-      value = values[key]
-    result = result.replace('@%s@' % key, value)
-  return result
+    """Generates a version number according to |version_format| using the values
+    from |values| or |overrides| if given."""
+    result = version_format
+    for key in values:
+        if overrides and key in overrides:
+            value = overrides[key]
+        else:
+            value = values[key]
+        result = result.replace('@%s@' % key, value)
+    return result
 
 
-def _AddVersionKeys(plist, version_format_for_key, version=None,
-                    overrides=None):
-  """Adds the product version number into the plist. Returns True on success and
-  False on error. The error will be printed to stderr."""
-  if not version:
-    # Pull in the Chrome version number.
-    VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
-    VERSION_FILE = os.path.join(TOP, 'chrome/VERSION')
-    (stdout, retval) = _GetOutput([
-        VERSION_TOOL, '-f', VERSION_FILE, '-t',
-        '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
-    ])
+def _AddVersionKeys(
+    plist, version_format_for_key, version=None, overrides=None
+):
+    """Adds the product version number into the plist. Returns True on success and
+    False on error. The error will be printed to stderr."""
+    if not version:
+        # Pull in the Chrome version number.
+        VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
+        VERSION_FILE = os.path.join(TOP, 'chrome/VERSION')
+        (stdout, retval) = _GetOutput(
+            [
+                VERSION_TOOL,
+                '-f',
+                VERSION_FILE,
+                '-t',
+                '@MAJOR@.@MINOR@.@BUILD@.@PATCH@',
+            ]
+        )
 
-    # If the command finished with a non-zero return code, then report the
-    # error up.
-    if retval != 0:
-      return False
+        # If the command finished with a non-zero return code, then report the
+        # error up.
+        if retval != 0:
+            return False
 
-    version = stdout.strip()
+        version = stdout.strip()
 
-  # Parse the given version number, that should be in MAJOR.MINOR.BUILD.PATCH
-  # format (where each value is a number). Note that str.isdigit() returns
-  # True if the string is composed only of digits (and thus match \d+ regexp).
-  groups = version.split('.')
-  if len(groups) != 4 or not all(element.isdigit() for element in groups):
-    print('Invalid version string specified: "%s"' % version, file=sys.stderr)
-    return False
-  values = dict(zip(('MAJOR', 'MINOR', 'BUILD', 'PATCH'), groups))
+    # Parse the given version number, that should be in MAJOR.MINOR.BUILD.PATCH
+    # format (where each value is a number). Note that str.isdigit() returns
+    # True if the string is composed only of digits (and thus match \d+ regexp).
+    groups = version.split('.')
+    if len(groups) != 4 or not all(element.isdigit() for element in groups):
+        print(
+            'Invalid version string specified: "%s"' % version, file=sys.stderr
+        )
+        return False
+    values = dict(zip(('MAJOR', 'MINOR', 'BUILD', 'PATCH'), groups))
 
-  for key in version_format_for_key:
-    plist[key] = _GetVersion(version_format_for_key[key], values, overrides)
+    for key in version_format_for_key:
+        plist[key] = _GetVersion(version_format_for_key[key], values, overrides)
 
-  # Return with no error.
-  return True
+    # Return with no error.
+    return True
 
 
 def _DoSCMKeys(plist, add_keys):
-  """Adds the SCM information, visible in about:version, to property list. If
-  |add_keys| is True, it will insert the keys, otherwise it will remove them."""
-  scm_revision = None
-  if add_keys:
-    # Pull in the Chrome revision number.
-    VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
-    LASTCHANGE_FILE = os.path.join(TOP, 'build/util/LASTCHANGE')
-    (stdout, retval) = _GetOutput(
-        [VERSION_TOOL, '-f', LASTCHANGE_FILE, '-t', '@LASTCHANGE@'])
-    if retval:
-      return False
-    scm_revision = stdout.rstrip()
+    """Adds the SCM information, visible in about:version, to property list. If
+    |add_keys| is True, it will insert the keys, otherwise it will remove them."""
+    scm_revision = None
+    if add_keys:
+        # Pull in the Chrome revision number.
+        VERSION_TOOL = os.path.join(TOP, 'build/util/version.py')
+        LASTCHANGE_FILE = os.path.join(TOP, 'build/util/LASTCHANGE')
+        (stdout, retval) = _GetOutput(
+            [VERSION_TOOL, '-f', LASTCHANGE_FILE, '-t', '@LASTCHANGE@']
+        )
+        if retval:
+            return False
+        scm_revision = stdout.rstrip()
 
-  # See if the operation failed.
-  _RemoveKeys(plist, 'SCMRevision')
-  if scm_revision != None:
-    plist['SCMRevision'] = scm_revision
-  elif add_keys:
-    print('Could not determine SCM revision.  This may be OK.', file=sys.stderr)
+    # See if the operation failed.
+    _RemoveKeys(plist, 'SCMRevision')
+    if scm_revision != None:
+        plist['SCMRevision'] = scm_revision
+    elif add_keys:
+        print(
+            'Could not determine SCM revision.  This may be OK.',
+            file=sys.stderr,
+        )
 
-  return True
+    return True
 
 
 def _AddBreakpadKeys(plist, branding, platform, staging):
-  """Adds the Breakpad keys. This must be called AFTER _AddVersionKeys() and
-  also requires the |branding| argument."""
-  plist['BreakpadReportInterval'] = '3600'  # Deliberately a string.
-  plist['BreakpadProduct'] = '%s_%s' % (branding, platform)
-  plist['BreakpadProductDisplay'] = branding
-  if staging:
-    plist['BreakpadURL'] = 'https://clients2.google.com/cr/staging_report'
-  else:
-    plist['BreakpadURL'] = 'https://clients2.google.com/cr/report'
+    """Adds the Breakpad keys. This must be called AFTER _AddVersionKeys() and
+    also requires the |branding| argument."""
+    plist['BreakpadReportInterval'] = '3600'  # Deliberately a string.
+    plist['BreakpadProduct'] = '%s_%s' % (branding, platform)
+    plist['BreakpadProductDisplay'] = branding
+    if staging:
+        plist['BreakpadURL'] = 'https://clients2.google.com/cr/staging_report'
+    else:
+        plist['BreakpadURL'] = 'https://clients2.google.com/cr/report'
 
-  # These are both deliberately strings and not boolean.
-  plist['BreakpadSendAndExit'] = 'YES'
-  plist['BreakpadSkipConfirm'] = 'YES'
+    # These are both deliberately strings and not boolean.
+    plist['BreakpadSendAndExit'] = 'YES'
+    plist['BreakpadSkipConfirm'] = 'YES'
 
 
 def _RemoveBreakpadKeys(plist):
-  """Removes any set Breakpad keys."""
-  _RemoveKeys(plist, 'BreakpadURL', 'BreakpadReportInterval', 'BreakpadProduct',
-              'BreakpadProductDisplay', 'BreakpadVersion',
-              'BreakpadSendAndExit', 'BreakpadSkipConfirm')
+    """Removes any set Breakpad keys."""
+    _RemoveKeys(
+        plist,
+        'BreakpadURL',
+        'BreakpadReportInterval',
+        'BreakpadProduct',
+        'BreakpadProductDisplay',
+        'BreakpadVersion',
+        'BreakpadSendAndExit',
+        'BreakpadSkipConfirm',
+    )
 
 
 def _IsValidBundleId(bundle_identifier):
-  # Based on apple developer documentation, see
-  # https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleidentifier
-  return re.match(r'^[0-9a-zA-Z-.]+$', bundle_identifier) is not None
+    # Based on apple developer documentation, see
+    # https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleidentifier
+    return re.match(r'^[0-9a-zA-Z-.]+$', bundle_identifier) is not None
 
 
 def _TagSuffixes():
-  # Keep this list sorted in the order that tag suffix components are to
-  # appear in a tag value. That is to say, it should be sorted per ASCII.
-  components = ('full', )
-  assert tuple(sorted(components)) == components
+    # Keep this list sorted in the order that tag suffix components are to
+    # appear in a tag value. That is to say, it should be sorted per ASCII.
+    components = ('full',)
+    assert tuple(sorted(components)) == components
 
-  components_len = len(components)
-  combinations = 1 << components_len
-  tag_suffixes = []
-  for combination in range(0, combinations):
-    tag_suffix = ''
-    for component_index in range(0, components_len):
-      if combination & (1 << component_index):
-        tag_suffix += '-' + components[component_index]
-    tag_suffixes.append(tag_suffix)
-  return tag_suffixes
+    components_len = len(components)
+    combinations = 1 << components_len
+    tag_suffixes = []
+    for combination in range(0, combinations):
+        tag_suffix = ''
+        for component_index in range(0, components_len):
+            if combination & (1 << component_index):
+                tag_suffix += '-' + components[component_index]
+        tag_suffixes.append(tag_suffix)
+    return tag_suffixes
 
 
 def _AddKeystoneKeys(plist, bundle_identifier, base_tag):
-  """Adds the Keystone keys. This must be called AFTER _AddVersionKeys() and
-  also requires the |bundle_identifier| argument (com.example.product)."""
-  plist['KSVersion'] = plist['CFBundleShortVersionString']
-  plist['KSProductID'] = bundle_identifier
-  plist['KSUpdateURL'] = 'https://tools.google.com/service/update2'
+    """Adds the Keystone keys. This must be called AFTER _AddVersionKeys() and
+    also requires the |bundle_identifier| argument (com.example.product)."""
+    plist['KSVersion'] = plist['CFBundleShortVersionString']
+    plist['KSProductID'] = bundle_identifier
+    plist['KSUpdateURL'] = 'https://tools.google.com/service/update2'
 
-  _RemoveKeys(plist, 'KSChannelID')
-  if base_tag != '':
-    plist['KSChannelID'] = base_tag
-  for tag_suffix in _TagSuffixes():
-    if tag_suffix:
-      plist['KSChannelID' + tag_suffix] = base_tag + tag_suffix
+    _RemoveKeys(plist, 'KSChannelID')
+    if base_tag != '':
+        plist['KSChannelID'] = base_tag
+    for tag_suffix in _TagSuffixes():
+        if tag_suffix:
+            plist['KSChannelID' + tag_suffix] = base_tag + tag_suffix
 
 
 def _RemoveKeystoneKeys(plist):
-  """Removes any set Keystone keys."""
-  _RemoveKeys(plist, 'KSVersion', 'KSProductID', 'KSUpdateURL')
+    """Removes any set Keystone keys."""
+    _RemoveKeys(plist, 'KSVersion', 'KSProductID', 'KSUpdateURL')
 
-  tag_keys = ['KSChannelID']
-  for tag_suffix in _TagSuffixes():
-    tag_keys.append('KSChannelID' + tag_suffix)
-  _RemoveKeys(plist, *tag_keys)
+    tag_keys = ['KSChannelID']
+    for tag_suffix in _TagSuffixes():
+        tag_keys.append('KSChannelID' + tag_suffix)
+    _RemoveKeys(plist, *tag_keys)
 
 
 def _AddGTMKeys(plist, platform):
-  """Adds the GTM metadata keys. This must be called AFTER _AddVersionKeys()."""
-  plist['GTMUserAgentID'] = plist['CFBundleName']
-  if platform == 'ios':
-    plist['GTMUserAgentVersion'] = plist['CFBundleVersion']
-  else:
-    plist['GTMUserAgentVersion'] = plist['CFBundleShortVersionString']
+    """Adds the GTM metadata keys. This must be called AFTER _AddVersionKeys()."""
+    plist['GTMUserAgentID'] = plist['CFBundleName']
+    if platform == 'ios':
+        plist['GTMUserAgentVersion'] = plist['CFBundleVersion']
+    else:
+        plist['GTMUserAgentVersion'] = plist['CFBundleShortVersionString']
 
 
 def _RemoveGTMKeys(plist):
-  """Removes any set GTM metadata keys."""
-  _RemoveKeys(plist, 'GTMUserAgentID', 'GTMUserAgentVersion')
+    """Removes any set GTM metadata keys."""
+    _RemoveKeys(plist, 'GTMUserAgentID', 'GTMUserAgentVersion')
 
 
 def _AddPrivilegedHelperId(plist, privileged_helper_id):
-  plist['SMPrivilegedExecutables'] = {
-      privileged_helper_id: f'identifier "{privileged_helper_id}"'
-  }
+    plist['SMPrivilegedExecutables'] = {
+        privileged_helper_id: f'identifier "{privileged_helper_id}"'
+    }
 
 
 def _RemovePrivilegedHelperId(plist):
-  _RemoveKeys(plist, 'SMPrivilegedExecutables')
+    _RemoveKeys(plist, 'SMPrivilegedExecutables')
 
 
 def _SetDirectLaunchUrlScheme(plist, bundle_identifier):
-  """Sets the direct launch URL scheme in the plist."""
-  if not bundle_identifier:
-    return
+    """Sets the direct launch URL scheme in the plist."""
+    if not bundle_identifier:
+        return
 
-  scheme = None
-  if bundle_identifier == 'com.google.Chrome':
-    scheme = 'google-chrome'
-    # This logic should match shell_integration::GetDirectLaunchUrlScheme()
-    # in chrome/browser/shell_integration_mac.mm.
-    # Note: chrome/installer/mac/signing/modification.py handles removing
-    # this scheme for non-stable channels during signing.
-  elif bundle_identifier == 'org.chromium.Chromium':
-    scheme = 'chromium'
+    scheme = None
+    if bundle_identifier == 'com.google.Chrome':
+        scheme = 'google-chrome'
+        # This logic should match shell_integration::GetDirectLaunchUrlScheme()
+        # in chrome/browser/shell_integration_mac.mm.
+        # Note: chrome/installer/mac/signing/modification.py handles removing
+        # this scheme for non-stable channels during signing.
+    elif bundle_identifier == 'org.chromium.Chromium':
+        scheme = 'chromium'
 
-  url_types = plist.get('CFBundleURLTypes')
-  if not url_types:
-    return
+    url_types = plist.get('CFBundleURLTypes')
+    if not url_types:
+        return
 
-  placeholder = '%DIRECT_LAUNCH_URL_SCHEME%'
-  new_url_types = []
+    placeholder = '%DIRECT_LAUNCH_URL_SCHEME%'
+    new_url_types = []
 
-  for url_type in url_types:
-    schemes = url_type.get('CFBundleURLSchemes')
-    if schemes and placeholder in schemes:
-      if len(schemes) != 1:
-        raise Exception(f'Placeholder {placeholder} must be the only scheme.')
+    for url_type in url_types:
+        schemes = url_type.get('CFBundleURLSchemes')
+        if schemes and placeholder in schemes:
+            if len(schemes) != 1:
+                raise Exception(
+                    f'Placeholder {placeholder} must be the only scheme.'
+                )
 
-      if scheme is not None:
-        schemes[0] = scheme
-        new_url_types.append(url_type)
-      # Else: scheme is None, so we drop this url_type.
-    else:
-      # This url_type does not contain the placeholder, so keep it as is.
-      new_url_types.append(url_type)
+            if scheme is not None:
+                schemes[0] = scheme
+                new_url_types.append(url_type)
+            # Else: scheme is None, so we drop this url_type.
+        else:
+            # This url_type does not contain the placeholder, so keep it as is.
+            new_url_types.append(url_type)
 
-  plist['CFBundleURLTypes'] = new_url_types
+    plist['CFBundleURLTypes'] = new_url_types
 
 
 def Main(argv):
-  parser = optparse.OptionParser('%prog [options]')
-  parser.add_option('--plist',
-                    dest='plist_path',
-                    action='store',
-                    type='string',
-                    default=None,
-                    help='The path of the plist to tweak.')
-  parser.add_option('--output', dest='plist_output', action='store',
-      type='string', default=None, help='If specified, the path to output ' + \
-      'the tweaked plist, rather than overwriting the input.')
-  parser.add_option('--breakpad',
-                    dest='use_breakpad',
-                    action='store',
-                    type='int',
-                    default=False,
-                    help='Enable Breakpad [1 or 0]')
-  parser.add_option(
-      '--breakpad_staging',
-      dest='use_breakpad_staging',
-      action='store_true',
-      default=False,
-      help='Use staging breakpad to upload reports. Ignored if --breakpad=0.')
-  parser.add_option('--keystone',
-                    dest='use_keystone',
-                    action='store',
-                    type='int',
-                    default=False,
-                    help='Enable Keystone [1 or 0]')
-  parser.add_option('--keystone-base-tag',
-                    default='',
-                    help='Base Keystone tag to set')
-  parser.add_option('--scm',
-                    dest='add_scm_info',
-                    action='store',
-                    type='int',
-                    default=True,
-                    help='Add SCM metadata [1 or 0]')
-  parser.add_option('--branding',
-                    dest='branding',
-                    action='store',
-                    type='string',
-                    default=None,
-                    help='The branding of the binary')
-  parser.add_option('--bundle_id',
-                    dest='bundle_identifier',
-                    action='store',
-                    type='string',
-                    default=None,
-                    help='The bundle id of the binary')
-  parser.add_option('--platform',
-                    choices=('ios', 'mac', 'watchos'),
-                    default='mac',
-                    help='The target platform of the bundle')
-  parser.add_option('--add-gtm-metadata',
-                    dest='add_gtm_info',
-                    action='store',
-                    type='int',
-                    default=False,
-                    help='Add GTM metadata [1 or 0]')
-  parser.add_option(
-      '--version-overrides',
-      action='append',
-      help='Key-value pair to override specific component of version '
-      'like key=value (can be passed multiple time to configure '
-      'more than one override)')
-  parser.add_option('--format',
-                    choices=('binary1', 'xml1'),
-                    default='xml1',
-                    help='Format to use when writing property list '
-                    '(default: %(default)s)')
-  parser.add_option('--version',
-                    dest='version',
-                    action='store',
-                    type='string',
-                    default=None,
-                    help='The version string [major.minor.build.patch]')
-  parser.add_option('--privileged_helper_id',
-                    dest='privileged_helper_id',
-                    action='store',
-                    type='string',
-                    default=None,
-                    help='The id of the privileged helper executable.')
-  (options, args) = parser.parse_args(argv)
+    parser = optparse.OptionParser('%prog [options]')
+    parser.add_option(
+        '--plist',
+        dest='plist_path',
+        action='store',
+        type='string',
+        default=None,
+        help='The path of the plist to tweak.',
+    )
+    parser.add_option(
+        '--output',
+        dest='plist_output',
+        action='store',
+        type='string',
+        default=None,
+        help='If specified, the path to output '
+        + 'the tweaked plist, rather than overwriting the input.',
+    )
+    parser.add_option(
+        '--breakpad',
+        dest='use_breakpad',
+        action='store',
+        type='int',
+        default=False,
+        help='Enable Breakpad [1 or 0]',
+    )
+    parser.add_option(
+        '--breakpad_staging',
+        dest='use_breakpad_staging',
+        action='store_true',
+        default=False,
+        help='Use staging breakpad to upload reports. Ignored if --breakpad=0.',
+    )
+    parser.add_option(
+        '--keystone',
+        dest='use_keystone',
+        action='store',
+        type='int',
+        default=False,
+        help='Enable Keystone [1 or 0]',
+    )
+    parser.add_option(
+        '--keystone-base-tag', default='', help='Base Keystone tag to set'
+    )
+    parser.add_option(
+        '--scm',
+        dest='add_scm_info',
+        action='store',
+        type='int',
+        default=True,
+        help='Add SCM metadata [1 or 0]',
+    )
+    parser.add_option(
+        '--branding',
+        dest='branding',
+        action='store',
+        type='string',
+        default=None,
+        help='The branding of the binary',
+    )
+    parser.add_option(
+        '--bundle_id',
+        dest='bundle_identifier',
+        action='store',
+        type='string',
+        default=None,
+        help='The bundle id of the binary',
+    )
+    parser.add_option(
+        '--platform',
+        choices=('ios', 'mac', 'watchos'),
+        default='mac',
+        help='The target platform of the bundle',
+    )
+    parser.add_option(
+        '--add-gtm-metadata',
+        dest='add_gtm_info',
+        action='store',
+        type='int',
+        default=False,
+        help='Add GTM metadata [1 or 0]',
+    )
+    parser.add_option(
+        '--version-overrides',
+        action='append',
+        help='Key-value pair to override specific component of version '
+        'like key=value (can be passed multiple time to configure '
+        'more than one override)',
+    )
+    parser.add_option(
+        '--format',
+        choices=('binary1', 'xml1'),
+        default='xml1',
+        help='Format to use when writing property list (default: %(default)s)',
+    )
+    parser.add_option(
+        '--version',
+        dest='version',
+        action='store',
+        type='string',
+        default=None,
+        help='The version string [major.minor.build.patch]',
+    )
+    parser.add_option(
+        '--privileged_helper_id',
+        dest='privileged_helper_id',
+        action='store',
+        type='string',
+        default=None,
+        help='The id of the privileged helper executable.',
+    )
+    (options, args) = parser.parse_args(argv)
 
-  if len(args) > 0:
-    print(parser.get_usage(), file=sys.stderr)
-    return 1
-
-  if not options.plist_path:
-    print('No --plist specified.', file=sys.stderr)
-    return 1
-
-  # Read the plist into its parsed format.
-  with open(options.plist_path, 'rb') as f:
-    plist = plistlib.load(f)
-
-  # Convert overrides.
-  overrides = {}
-  if options.version_overrides:
-    for pair in options.version_overrides:
-      if not '=' in pair:
-        print('Invalid value for --version-overrides:', pair, file=sys.stderr)
+    if len(args) > 0:
+        print(parser.get_usage(), file=sys.stderr)
         return 1
-      key, value = pair.split('=', 1)
-      overrides[key] = value
-      if key not in ('MAJOR', 'MINOR', 'BUILD', 'PATCH'):
-        print('Unsupported key for --version-overrides:', key, file=sys.stderr)
+
+    if not options.plist_path:
+        print('No --plist specified.', file=sys.stderr)
         return 1
 
-  if options.platform == 'mac':
-    version_format_for_key = {
-        # Add public version info so "Get Info" works.
-        'CFBundleShortVersionString': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@',
+    # Read the plist into its parsed format.
+    with open(options.plist_path, 'rb') as f:
+        plist = plistlib.load(f)
 
-        # Honor the 429496.72.95 limit.  The maximum comes from splitting
-        # 2^32 - 1 into  6, 2, 2 digits.  The limitation was present in Tiger,
-        # but it could have been fixed in later OS release, but hasn't been
-        # tested (it's easy enough to find out with "lsregister -dump).
-        # http://lists.apple.com/archives/carbon-dev/2006/Jun/msg00139.html
-        # BUILD will always be an increasing value, so BUILD_PATH gives us
-        # something unique that meetings what LS wants.
-        'CFBundleVersion': '@BUILD@.@PATCH@',
-    }
-  else:
-    version_format_for_key = {
-        'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-        'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
-    }
+    # Convert overrides.
+    overrides = {}
+    if options.version_overrides:
+        for pair in options.version_overrides:
+            if not '=' in pair:
+                print(
+                    'Invalid value for --version-overrides:',
+                    pair,
+                    file=sys.stderr,
+                )
+                return 1
+            key, value = pair.split('=', 1)
+            overrides[key] = value
+            if key not in ('MAJOR', 'MINOR', 'BUILD', 'PATCH'):
+                print(
+                    'Unsupported key for --version-overrides:',
+                    key,
+                    file=sys.stderr,
+                )
+                return 1
 
-  if options.use_breakpad:
-    version_format_for_key['BreakpadVersion'] = \
-        '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+    if options.platform == 'mac':
+        version_format_for_key = {
+            # Add public version info so "Get Info" works.
+            'CFBundleShortVersionString': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@',
+            # Honor the 429496.72.95 limit.  The maximum comes from splitting
+            # 2^32 - 1 into  6, 2, 2 digits.  The limitation was present in Tiger,
+            # but it could have been fixed in later OS release, but hasn't been
+            # tested (it's easy enough to find out with "lsregister -dump).
+            # http://lists.apple.com/archives/carbon-dev/2006/Jun/msg00139.html
+            # BUILD will always be an increasing value, so BUILD_PATH gives us
+            # something unique that meetings what LS wants.
+            'CFBundleVersion': '@BUILD@.@PATCH@',
+        }
+    else:
+        version_format_for_key = {
+            'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
+            'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@',
+        }
 
-  # Insert the product version.
-  if not _AddVersionKeys(plist,
-                         version_format_for_key,
-                         version=options.version,
-                         overrides=overrides):
-    return 2
+    if options.use_breakpad:
+        version_format_for_key['BreakpadVersion'] = (
+            '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+        )
 
-  # Add Breakpad if configured to do so.
-  if options.use_breakpad:
-    if options.branding is None:
-      print('Use of Breakpad requires branding.', file=sys.stderr)
-      return 1
-    # Map "target_os" passed from gn via the --platform parameter
-    # to the platform as known by breakpad.
-    platform = {'mac': 'Mac', 'ios': 'iOS'}[options.platform]
-    _AddBreakpadKeys(plist, options.branding, platform,
-                     options.use_breakpad_staging)
-  else:
-    _RemoveBreakpadKeys(plist)
+    # Insert the product version.
+    if not _AddVersionKeys(
+        plist,
+        version_format_for_key,
+        version=options.version,
+        overrides=overrides,
+    ):
+        return 2
 
-  # Add Keystone if configured to do so.
-  if options.use_keystone:
-    if options.bundle_identifier is None:
-      print('Use of Keystone requires the bundle id.', file=sys.stderr)
-      return 1
-    if not _IsValidBundleId(options.bundle_identifier):
-      print(f'Invalid bundle id: {options.bundle_identifier}', file=sys.stderr)
-      return 1
-    _AddKeystoneKeys(plist, options.bundle_identifier,
-                     options.keystone_base_tag)
-  else:
-    _RemoveKeystoneKeys(plist)
+    # Add Breakpad if configured to do so.
+    if options.use_breakpad:
+        if options.branding is None:
+            print('Use of Breakpad requires branding.', file=sys.stderr)
+            return 1
+        # Map "target_os" passed from gn via the --platform parameter
+        # to the platform as known by breakpad.
+        platform = {'mac': 'Mac', 'ios': 'iOS'}[options.platform]
+        _AddBreakpadKeys(
+            plist, options.branding, platform, options.use_breakpad_staging
+        )
+    else:
+        _RemoveBreakpadKeys(plist)
 
-  # Adds or removes any SCM keys.
-  if not _DoSCMKeys(plist, options.add_scm_info):
-    return 3
+    # Add Keystone if configured to do so.
+    if options.use_keystone:
+        if options.bundle_identifier is None:
+            print('Use of Keystone requires the bundle id.', file=sys.stderr)
+            return 1
+        if not _IsValidBundleId(options.bundle_identifier):
+            print(
+                f'Invalid bundle id: {options.bundle_identifier}',
+                file=sys.stderr,
+            )
+            return 1
+        _AddKeystoneKeys(
+            plist, options.bundle_identifier, options.keystone_base_tag
+        )
+    else:
+        _RemoveKeystoneKeys(plist)
 
-  # Add GTM metadata keys.
-  if options.add_gtm_info:
-    _AddGTMKeys(plist, options.platform)
-  else:
-    _RemoveGTMKeys(plist)
+    # Adds or removes any SCM keys.
+    if not _DoSCMKeys(plist, options.add_scm_info):
+        return 3
 
-  # Add SMPrivilegedExecutables keys.
-  if options.privileged_helper_id:
-    if not _IsValidBundleId(options.privileged_helper_id):
-      print(f'Invalid privileged helper id: {options.privileged_helper_id}',
-            file=sys.stderr)
-      return 1
-    _AddPrivilegedHelperId(plist, options.privileged_helper_id)
-  else:
-    _RemovePrivilegedHelperId(plist)
+    # Add GTM metadata keys.
+    if options.add_gtm_info:
+        _AddGTMKeys(plist, options.platform)
+    else:
+        _RemoveGTMKeys(plist)
 
-  _SetDirectLaunchUrlScheme(plist, options.bundle_identifier)
+    # Add SMPrivilegedExecutables keys.
+    if options.privileged_helper_id:
+        if not _IsValidBundleId(options.privileged_helper_id):
+            print(
+                f'Invalid privileged helper id: {options.privileged_helper_id}',
+                file=sys.stderr,
+            )
+            return 1
+        _AddPrivilegedHelperId(plist, options.privileged_helper_id)
+    else:
+        _RemovePrivilegedHelperId(plist)
 
-  output_path = options.plist_path
-  if options.plist_output is not None:
-    output_path = options.plist_output
+    _SetDirectLaunchUrlScheme(plist, options.bundle_identifier)
 
-  # Now that all keys have been mutated, rewrite the file.
-  # Convert Info.plist to the format requested by the --format flag. Any
-  # format would work on Mac but iOS requires specific format.
-  _WritePlistIfChanged(plist, output_path, options.format)
+    output_path = options.plist_path
+    if options.plist_output is not None:
+        output_path = options.plist_output
+
+    # Now that all keys have been mutated, rewrite the file.
+    # Convert Info.plist to the format requested by the --format flag. Any
+    # format would work on Mac but iOS requires specific format.
+    _WritePlistIfChanged(plist, output_path, options.format)
 
 
 if __name__ == '__main__':
-  # TODO(crbug.com/40618161): Temporary workaround until all scripts use
-  # python3 by default.
-  if sys.version_info[0] < 3:
-    os.execvp('python3', ['python3'] + sys.argv)
-  sys.exit(Main(sys.argv[1:]))
+    # TODO(crbug.com/40618161): Temporary workaround until all scripts use
+    # python3 by default.
+    if sys.version_info[0] < 3:
+        os.execvp('python3', ['python3'] + sys.argv)
+    sys.exit(Main(sys.argv[1:]))

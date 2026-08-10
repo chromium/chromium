@@ -42,47 +42,53 @@ if __name__ == '__main__':
 
 
 def main(args):
-  args = build_utils.ExpandFileArgs(args)
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--script-output-path',
-                      help='Output path for executable script.')
-  parser.add_argument('--apk-path')
-  parser.add_argument('--incremental-install-json-path')
-  parser.add_argument('--command-line-flags-file')
-  parser.add_argument('--target-cpu')
-  parser.add_argument(
-      '--additional-apk-path',
-      action='append',
-      dest='additional_apk_paths',
-      default=[],
-      help='Paths to APKs to be installed prior to --apk-path.')
-  parser.add_argument('--proguard-mapping-path')
-  args = parser.parse_args(args)
+    args = build_utils.ExpandFileArgs(args)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--script-output-path', help='Output path for executable script.'
+    )
+    parser.add_argument('--apk-path')
+    parser.add_argument('--incremental-install-json-path')
+    parser.add_argument('--command-line-flags-file')
+    parser.add_argument('--target-cpu')
+    parser.add_argument(
+        '--additional-apk-path',
+        action='append',
+        dest='additional_apk_paths',
+        default=[],
+        help='Paths to APKs to be installed prior to --apk-path.',
+    )
+    parser.add_argument('--proguard-mapping-path')
+    args = parser.parse_args(args)
 
-  def relativize(path):
-    """Returns the path relative to the output script directory."""
-    if path is None:
-      return path
-    return os.path.relpath(path, os.path.dirname(args.script_output_path))
-  apk_operations_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
-  apk_operations_dir = relativize(apk_operations_dir)
+    def relativize(path):
+        """Returns the path relative to the output script directory."""
+        if path is None:
+            return path
+        return os.path.relpath(path, os.path.dirname(args.script_output_path))
 
-  with open(args.script_output_path, 'w', encoding='utf-8') as script:
-    script_dict = {
-        'APK_OPERATIONS_DIR': repr(apk_operations_dir),
-        'OUTPUT_DIR': repr(relativize('.')),
-        'APK_PATH': repr(relativize(args.apk_path)),
-        'ADDITIONAL_APK_PATHS':
-        [relativize(p) for p in args.additional_apk_paths],
-        'INC_JSON_PATH': repr(relativize(args.incremental_install_json_path)),
-        'MAPPING_PATH': repr(relativize(args.proguard_mapping_path)),
-        'FLAGS_FILE': repr(args.command_line_flags_file),
-        'TARGET_CPU': repr(args.target_cpu),
-    }
-    script.write(SCRIPT_TEMPLATE.substitute(script_dict))
-  os.chmod(args.script_output_path, 0o750)
-  return 0
+    apk_operations_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
+    apk_operations_dir = relativize(apk_operations_dir)
+
+    with open(args.script_output_path, 'w', encoding='utf-8') as script:
+        script_dict = {
+            'APK_OPERATIONS_DIR': repr(apk_operations_dir),
+            'OUTPUT_DIR': repr(relativize('.')),
+            'APK_PATH': repr(relativize(args.apk_path)),
+            'ADDITIONAL_APK_PATHS': [
+                relativize(p) for p in args.additional_apk_paths
+            ],
+            'INC_JSON_PATH': repr(
+                relativize(args.incremental_install_json_path)
+            ),
+            'MAPPING_PATH': repr(relativize(args.proguard_mapping_path)),
+            'FLAGS_FILE': repr(args.command_line_flags_file),
+            'TARGET_CPU': repr(args.target_cpu),
+        }
+        script.write(SCRIPT_TEMPLATE.substitute(script_dict))
+    os.chmod(args.script_output_path, 0o750)
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))

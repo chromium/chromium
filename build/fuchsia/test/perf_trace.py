@@ -1,7 +1,7 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Retrieves the system metrics and logs them into the monitors system. """
+"""Retrieves the system metrics and logs them into the monitors system."""
 
 import json
 import os
@@ -33,28 +33,41 @@ METRIC_FILTERS = [
 
 
 def start() -> None:
-    """ Starts the system tracing. """
+    """Starts the system tracing."""
     # TODO(crbug.com/40935291): May include kernel:meta, kernel:sched, magma,
     # oemcrypto, media, kernel:syscall
-    run_ffx_command(cmd=('trace', 'start', '--background', '--categories',
-                         'gfx,memory_monitor,system_metrics', '--buffer-size',
-                         '32', '--buffering-mode', 'streaming'))
+    run_ffx_command(
+        cmd=(
+            'trace',
+            'start',
+            '--background',
+            '--categories',
+            'gfx,memory_monitor,system_metrics',
+            '--buffer-size',
+            '32',
+            '--buffering-mode',
+            'streaming',
+        )
+    )
 
 
 def stop(prefix: Optional[str] = None) -> None:
-    """ Stops the system tracing and logs the metrics into the monitors system
-    with an optional prefix as part of the metric names. """
+    """Stops the system tracing and logs the metrics into the monitors system
+    with an optional prefix as part of the metric names."""
     run_ffx_command(cmd=('trace', 'stop', '--output', FXT_FILE))
     _parse_trace(prefix)
 
 
 # pylint: disable=too-many-nested-blocks
 def _parse_trace(prefix: Optional[str] = None) -> None:
-    subprocess.run([
-        get_host_tool_path('trace2json'), f'--input-file={FXT_FILE}',
-        f'--output-file={JSON_FILE}'
-    ],
-                   check=True)
+    subprocess.run(
+        [
+            get_host_tool_path('trace2json'),
+            f'--input-file={FXT_FILE}',
+            f'--output-file={JSON_FILE}',
+        ],
+        check=True,
+    )
     with open(JSON_FILE, 'r') as file:
         recorders = {}
         for event in json.load(file)['traceEvents']:
@@ -78,8 +91,7 @@ def _parse_trace(prefix: Optional[str] = None) -> None:
                     for f in METRIC_FILTERS:
                         if f in '/'.join(name) + '$':
                             if tuple(name) not in recorders:
-                                recorders[tuple(name)] = monitors.average(
-                                    *name)
+                                recorders[tuple(name)] = monitors.average(*name)
                             recorders[tuple(name)].record(args[arg])
 
 

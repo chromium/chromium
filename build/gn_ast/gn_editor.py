@@ -57,39 +57,59 @@ def _add_deps(target: str, deps: List[str], root: pathlib.Path, path: str):
         build_file.add_deps(target, deps)
 
 
-def _search_deps(name_query: Optional[str], path_query: Optional[str],
-                 root: pathlib.Path, path: str):
+def _search_deps(
+    name_query: Optional[str],
+    path_query: Optional[str],
+    root: pathlib.Path,
+    path: str,
+):
     with json_gn_editor.BuildFile(path, root) as build_file:
         build_file.search_deps(name_query, path_query)
 
 
-def _split_deps(existing_dep: str, new_deps: List[str], root: pathlib.Path,
-                path: str, dryrun: bool) -> Optional[OperationResult]:
+def _split_deps(
+    existing_dep: str,
+    new_deps: List[str],
+    root: pathlib.Path,
+    path: str,
+    dryrun: bool,
+) -> Optional[OperationResult]:
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
         if build_file.split_deps(existing_dep, new_deps):
-            return OperationResult(path=os.path.relpath(path, start=root),
-                                   git_ignored=utils.is_git_ignored(
-                                       root, path),
-                                   dryrun=dryrun)
+            return OperationResult(
+                path=os.path.relpath(path, start=root),
+                git_ignored=utils.is_git_ignored(root, path),
+                dryrun=dryrun,
+            )
     return None
 
 
 def _remove_deps(
-        *, deps: List[str], out_dir: str, root: pathlib.Path, path: str,
-        dryrun: bool, targets: List[str], inline_mode: bool,
-        target_name_filter: Optional[str]) -> Optional[OperationResult]:
+    *,
+    deps: List[str],
+    out_dir: str,
+    root: pathlib.Path,
+    path: str,
+    dryrun: bool,
+    targets: List[str],
+    inline_mode: bool,
+    target_name_filter: Optional[str],
+) -> Optional[OperationResult]:
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
-        if build_file.remove_deps(deps, out_dir, targets, target_name_filter,
-                                  inline_mode):
-            return OperationResult(path=os.path.relpath(path, start=root),
-                                   git_ignored=utils.is_git_ignored(
-                                       root, path),
-                                   dryrun=dryrun)
+        if build_file.remove_deps(
+            deps, out_dir, targets, target_name_filter, inline_mode
+        ):
+            return OperationResult(
+                path=os.path.relpath(path, start=root),
+                git_ignored=utils.is_git_ignored(root, path),
+                dryrun=dryrun,
+            )
     return None
 
 
-def _add(args: argparse.Namespace, build_filepaths: List[str],
-         root: pathlib.Path):
+def _add(
+    args: argparse.Namespace, build_filepaths: List[str], root: pathlib.Path
+):
     deps = args.deps
     target = args.target
     with multiprocessing.Pool() as pool:
@@ -99,8 +119,9 @@ def _add(args: argparse.Namespace, build_filepaths: List[str],
         )
 
 
-def _search(args: argparse.Namespace, build_filepaths: List[str],
-            root: pathlib.Path):
+def _search(
+    args: argparse.Namespace, build_filepaths: List[str], root: pathlib.Path
+):
     name_query = args.name
     path_query = args.path
     if name_query:
@@ -114,15 +135,17 @@ def _search(args: argparse.Namespace, build_filepaths: List[str],
         )
 
 
-def _split(args: argparse.Namespace, build_filepaths: List[str],
-           root: pathlib.Path) -> List[OperationResult]:
+def _split(
+    args: argparse.Namespace, build_filepaths: List[str], root: pathlib.Path
+) -> List[OperationResult]:
     num_total = len(build_filepaths)
     results = []
     with multiprocessing.Pool() as pool:
         tasks = {
             filepath: pool.apply_async(
                 _split_deps,
-                (args.existing, args.new, root, filepath, args.dryrun))
+                (args.existing, args.new, root, filepath, args.dryrun),
+            )
             for filepath in build_filepaths
         }
         for idx, filepath in enumerate(tasks.keys()):
@@ -141,8 +164,9 @@ def _get_project_json_contents(out_dir: str) -> str:
         return f.read()
 
 
-def _calculate_targets_for_file(relpath: str, arg_extra_targets: List[str],
-                                all_targets: Set[str]) -> Optional[List[str]]:
+def _calculate_targets_for_file(
+    relpath: str, arg_extra_targets: List[str], all_targets: Set[str]
+) -> Optional[List[str]]:
     if os.path.basename(relpath) != 'BUILD.gn':
         # Build all targets when we are dealing with build files that might be
         # imported by other build files (e.g. config.gni or other_name.gn).
@@ -154,15 +178,19 @@ def _calculate_targets_for_file(relpath: str, arg_extra_targets: List[str],
         # __ is used for sub-targets in GN, only focus on top-level ones. Also
         # skip targets using other toolchains, e.g.
         # base:feature_buildflags(//build/toolchain/linux:clang_x64)
-        if (target_dir == dirpath and '__' not in short_target_name
-                and '(' not in short_target_name):
+        if (
+            target_dir == dirpath
+            and '__' not in short_target_name
+            and '(' not in short_target_name
+        ):
             file_extra_targets.append(full_target_name)
     targets = arg_extra_targets + file_extra_targets
     return targets or None
 
 
-def _remove(args: argparse.Namespace, build_filepaths: List[str],
-            root: pathlib.Path) -> List[OperationResult]:
+def _remove(
+    args: argparse.Namespace, build_filepaths: List[str], root: pathlib.Path
+) -> List[OperationResult]:
     num_total = len(build_filepaths)
 
     if args.output_directory:
@@ -177,7 +205,8 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
         # Although the target may compile fine, bytecode checks are necessary
         # for correctness at runtime.
         assert 'android_static_analysis = "on"' in f.read(), (
-            'Static analysis must be on to ensure correctness.')
+            'Static analysis must be on to ensure correctness.'
+        )
         # TODO: Ensure that the build server is not running.
 
     logging.info(f'Running "gn gen" in output directory: {out_dir}')
@@ -187,10 +216,14 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
         assert not args.dep, '--all-java-target does not support passing deps.'
         assert args.file, '--all-java-target requires passing --file.'
         logging.info(f'Finding java deps under {out_dir}.')
-        all_java_deps = build_utils.CheckOutput([
-            str(_SRC_PATH / 'build' / 'android' / 'list_java_targets.py'),
-            '--gn-labels', '-C', out_dir
-        ]).split('\n')
+        all_java_deps = build_utils.CheckOutput(
+            [
+                str(_SRC_PATH / 'build' / 'android' / 'list_java_targets.py'),
+                '--gn-labels',
+                '-C',
+                out_dir,
+            ]
+        ).split('\n')
         logging.info(f'Found {len(all_java_deps)} java deps.')
         args.dep += all_java_deps
     else:
@@ -200,10 +233,12 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
     project_json = json.loads(project_json_contents)
     # The input file names have a // prefix. (e.g. //android_webview/BUILD.gn)
     known_build_files = set(
-        name[2:] for name in project_json['build_settings']['gen_input_files'])
+        name[2:] for name in project_json['build_settings']['gen_input_files']
+    )
     # Remove the // prefix for target names so ninja can build them.
-    known_target_names = set(name[2:]
-                             for name in project_json['targets'].keys())
+    known_target_names = set(
+        name[2:] for name in project_json['targets'].keys()
+    )
 
     unknown_targets = [
         t for t in args.extra_build_targets if t not in known_target_names
@@ -233,16 +268,18 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
                 operation_result = OperationResult(
                     path=relpath,
                     skipped=True,
-                    skip_reason='Not in the list of known build files.')
+                    skip_reason='Not in the list of known build files.',
+                )
             else:
-                targets = _calculate_targets_for_file(relpath,
-                                                      args.extra_build_targets,
-                                                      known_target_names)
+                targets = _calculate_targets_for_file(
+                    relpath, args.extra_build_targets, known_target_names
+                )
                 if targets is None:
                     operation_result = OperationResult(
                         path=relpath,
                         skipped=True,
-                        skip_reason='Could not find any valid targets.')
+                        skip_reason='Could not find any valid targets.',
+                    )
                 else:
                     operation_result = _remove_deps(
                         deps=args.dep,
@@ -252,7 +289,8 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
                         dryrun=args.dryrun,
                         targets=targets,
                         inline_mode=should_inline,
-                        target_name_filter=args.target_name_filter)
+                        target_name_filter=args.target_name_filter,
+                    )
             if operation_result:
                 logging.info(operation_result)
                 results.append(operation_result)
@@ -261,111 +299,125 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
             logging.error(
                 f'Encountered error while processing {filepath}. Append the '
                 'following args to resume from this file once the error is '
-                f'fixed:\n\n--resume-from {filepath}\n')
+                f'fixed:\n\n--resume-from {filepath}\n'
+            )
             raise
     return results
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='gn_editor', description='Add or remove deps programatically.')
+        prog='gn_editor', description='Add or remove deps programatically.'
+    )
 
     common_args_parser = argparse.ArgumentParser(add_help=False)
     common_args_parser.add_argument(
         '-n',
         '--dryrun',
         action='store_true',
-        help='Show which files would be updated but avoid changing them.')
-    common_args_parser.add_argument('-v',
-                                    '--verbose',
-                                    action='store_true',
-                                    help='Used to print ninjalog.')
-    common_args_parser.add_argument('-q',
-                                    '--quiet',
-                                    action='store_true',
-                                    help='Used to print less logging.')
-    common_args_parser.add_argument('--file',
-                                    help='Run on a specific build file.')
+        help='Show which files would be updated but avoid changing them.',
+    )
+    common_args_parser.add_argument(
+        '-v', '--verbose', action='store_true', help='Used to print ninjalog.'
+    )
+    common_args_parser.add_argument(
+        '-q', '--quiet', action='store_true', help='Used to print less logging.'
+    )
+    common_args_parser.add_argument(
+        '--file', help='Run on a specific build file.'
+    )
     common_args_parser.add_argument(
         '--resume-from',
-        help='Skip files before this build file path (debugging).')
+        help='Skip files before this build file path (debugging).',
+    )
 
     subparsers = parser.add_subparsers(
-        required=True, help='Use subcommand -h to see full usage.')
+        required=True, help='Use subcommand -h to see full usage.'
+    )
 
     add_parser = subparsers.add_parser(
         'add',
         parents=[common_args_parser],
         help='Add one or more deps to a specific target (pass the path to the '
         'BUILD.gn via --file for faster results). The target **must** '
-        'have a deps variable defined, even if it is an empty [].')
+        'have a deps variable defined, even if it is an empty [].',
+    )
     add_parser.add_argument('--target', help='The name of the target.')
-    add_parser.add_argument('--deps',
-                            nargs='+',
-                            help='The name(s) of the new dep(s).')
+    add_parser.add_argument(
+        '--deps', nargs='+', help='The name(s) of the new dep(s).'
+    )
     add_parser.set_defaults(command=_add)
 
     search_parser = subparsers.add_parser(
         'search',
         parents=[common_args_parser],
-        help='Search for strings in build files. Each query is a regex string.'
+        help='Search for strings in build files. Each query is a regex string.',
     )
-    search_parser.add_argument('--name',
-                               help='This is checked against dep names.')
     search_parser.add_argument(
-        '--path', help='This checks the relative path of the build file.')
+        '--name', help='This is checked against dep names.'
+    )
+    search_parser.add_argument(
+        '--path', help='This checks the relative path of the build file.'
+    )
     search_parser.set_defaults(command=_search)
 
     split_parser = subparsers.add_parser(
         'split',
         parents=[common_args_parser],
-        help='Split one or more deps from an existing dep.')
+        help='Split one or more deps from an existing dep.',
+    )
     split_parser.add_argument('existing', help='The dep to split from.')
-    split_parser.add_argument('new',
-                              nargs='+',
-                              help='One of the new deps to be added.')
+    split_parser.add_argument(
+        'new', nargs='+', help='One of the new deps to be added.'
+    )
     split_parser.set_defaults(command=_split)
 
     remove_parser = subparsers.add_parser(
         'remove',
         parents=[common_args_parser],
         help='Remove one or more deps if the build still succeeds. Removing '
-        'one dep at a time is recommended.')
+        'one dep at a time is recommended.',
+    )
     remove_parser.add_argument(
         'dep',
         nargs='*',
-        help='One or more deps to be removed. Zero when other options are used.'
+        help='One or more deps to be removed. Zero when other options are used.',
     )
     remove_parser.add_argument(
         '-C',
         '--output-directory',
         metavar='OUT',
-        help='If outdir is not provided, will attempt to guess.')
+        help='If outdir is not provided, will attempt to guess.',
+    )
     remove_parser.add_argument(
         '--target-name-filter',
         help='This will cause the script to only remove deps from targets that '
         'match the filter provided. The filter should be a valid python regex '
         'string and is used in a re.search on the full GN target names, e.g. '
-        're.search(pattern, "//base:base_java").')
+        're.search(pattern, "//base:base_java").',
+    )
     remove_parser.add_argument(
         '--all-java-deps',
         action='store_true',
         help='This will attempt to remove all known java deps. This option '
-        'requires no explicit deps to be passed.')
+        'requires no explicit deps to be passed.',
+    )
     remove_parser.add_argument(
         '--extra-build-targets',
         metavar='T',
         nargs='*',
         default=[],
         help='The set of extra targets to compile after each dep removal. This '
-        'is in addition to file-based targets that are automatically added.')
+        'is in addition to file-based targets that are automatically added.',
+    )
     remove_parser.add_argument(
         '--inline-mode',
         action='store_true',
         help='Skip the build file if the first dep is not found and removed. '
         'This is especially useful when inlining deps so that a build file '
         'that does not contain the dep being inlined can be skipped. This '
-        'mode assumes that the first dep is the one being inlined.')
+        'mode assumes that the first dep is the one being inlined.',
+    )
     remove_parser.set_defaults(command=_remove)
 
     args = parser.parse_args()
@@ -377,7 +429,8 @@ def main():
     else:
         level = logging.INFO
     logging.basicConfig(
-        level=level, format='%(levelname).1s %(relativeCreated)7d %(message)s')
+        level=level, format='%(levelname).1s %(relativeCreated)7d %(message)s'
+    )
 
     root = _SRC_PATH
     if args.file:
@@ -414,7 +467,8 @@ def main():
     logging.info('Running on %d valid build files.', num_total)
 
     operation_results: List[OperationResult] = args.command(
-        args, filtered_build_filepaths, root)
+        args, filtered_build_filepaths, root
+    )
     if operation_results is None:
         return
     ignored_operation_results = [r for r in operation_results if r.git_ignored]
@@ -422,12 +476,16 @@ def main():
     num_ignored = len(ignored_operation_results)
     num_skipped = len(skipped_operation_results)
     num_updated = len(operation_results) - num_skipped
-    print(f'Checked {num_total}, updated {num_updated} ({num_ignored} of '
-          f'which are ignored by git under {root}), and skipped {num_skipped} '
-          'build files.')
+    print(
+        f'Checked {num_total}, updated {num_updated} ({num_ignored} of '
+        f'which are ignored by git under {root}), and skipped {num_skipped} '
+        'build files.'
+    )
     if num_ignored:
-        print(f'\nThe following {num_ignored} files were ignored by git and '
-              'may need separate CLs in their respective repositories:')
+        print(
+            f'\nThe following {num_ignored} files were ignored by git and '
+            'may need separate CLs in their respective repositories:'
+        )
         for result in ignored_operation_results:
             print('  ' + result.path)
 

@@ -27,7 +27,8 @@ class RefactorException(Exception):
 
 def find_processor_assignment(target):
     for assignment in target.block.find_assignments(
-            'annotation_processor_deps'):
+        'annotation_processor_deps'
+    ):
         processors = assignment.list_value.literals
         if _PROCESSOR_DEP in processors:
             return assignment
@@ -41,7 +42,8 @@ def find_all_sources(target, build_file):
         for assignment in assignments:
             if assignment.operation not in ('=', '+='):
                 raise RefactorException(
-                    f'{target.name}: sources has a {assignment.operation}.')
+                    f'{target.name}: sources has a {assignment.operation}.'
+                )
 
             value = assignment.value
             if value.is_identifier():
@@ -55,8 +57,7 @@ def find_all_sources(target, build_file):
     return ret
 
 
-def find_matching_jni_target(library_target, jni_target_to_sources,
-                             build_file):
+def find_matching_jni_target(library_target, jni_target_to_sources, build_file):
     all_sources = set(find_all_sources(library_target, build_file))
     matches = []
     for jni_target_name, jni_sources in jni_target_to_sources.items():
@@ -66,10 +67,12 @@ def find_matching_jni_target(library_target, jni_target_to_sources,
         return matches[0]
     if len(matches) > 1:
         raise RefactorException(
-            f'{library_target.name}: Matched multiple generate_jni().')
+            f'{library_target.name}: Matched multiple generate_jni().'
+        )
     if jni_target_to_sources:
         raise RefactorException(
-            f'{library_target.name}: No matching generate_jni().')
+            f'{library_target.name}: No matching generate_jni().'
+        )
     raise RefactorException('No sources found for generate_jni().')
 
 
@@ -89,12 +92,14 @@ def refactor(lib_target, jni_target):
     srcjar_deps = assignments[0] if assignments else None
     if srcjar_deps is None:
         srcjar_deps = gn_ast.AssignmentWrapper.create_list('srcjar_deps')
-        first_source_assignment = lib_target.block.find_assignments(
-            'sources')[0]
+        first_source_assignment = lib_target.block.find_assignments('sources')[
+            0
+        ]
         lib_target.block.add_child(srcjar_deps, before=first_source_assignment)
     elif not srcjar_deps.value.is_list():
         raise RefactorException(
-            f'{lib_target.name}: srcjar_deps is not a list.')
+            f'{lib_target.name}: srcjar_deps is not a list.'
+        )
     srcjar_deps.list_value.add_literal(f':{jni_target.name}')
 
     processor_assignment = find_processor_assignment(lib_target)
@@ -121,13 +126,12 @@ def analyze(build_file):
         return
 
     jni_target_to_sources = {
-        t.name: find_all_sources(t, build_file)
-        for t in jni_targets
+        t.name: find_all_sources(t, build_file) for t in jni_targets
     }
     for lib_target in lib_targets:
-        jni_target_name = find_matching_jni_target(lib_target,
-                                                   jni_target_to_sources,
-                                                   build_file)
+        jni_target_name = find_matching_jni_target(
+            lib_target, jni_target_to_sources, build_file
+        )
         jni_target = build_file.targets_by_name[jni_target_name]
         refactor(lib_target, jni_target)
 

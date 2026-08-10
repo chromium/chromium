@@ -12,20 +12,26 @@ from typing import List, Optional
 from common import DIR_SRC_ROOT
 from test_runner import TestRunner
 
-_GPU_TEST_SCRIPT = os.path.join(DIR_SRC_ROOT, 'content', 'test', 'gpu',
-                                'run_gpu_integration_test.py')
-_PERF_TEST_SCRIPT = os.path.join(DIR_SRC_ROOT, 'tools', 'perf',
-                                 'run_benchmark')
+_GPU_TEST_SCRIPT = os.path.join(
+    DIR_SRC_ROOT, 'content', 'test', 'gpu', 'run_gpu_integration_test.py'
+)
+_PERF_TEST_SCRIPT = os.path.join(DIR_SRC_ROOT, 'tools', 'perf', 'run_benchmark')
 
 
 class TelemetryTestRunner(TestRunner):
     """Test runner for running GPU tests."""
 
-    def __init__(self, test_type: str, out_dir: str, test_args: List[str],
-                 target_id: Optional[str]) -> None:
+    def __init__(
+        self,
+        test_type: str,
+        out_dir: str,
+        test_args: List[str],
+        target_id: Optional[str],
+    ) -> None:
         parser = argparse.ArgumentParser()
         parser.add_argument(
-            '--browser', help='The browser to use for Telemetry based tests.')
+            '--browser', help='The browser to use for Telemetry based tests.'
+        )
         args, _ = parser.parse_known_args(test_args)
 
         if args.browser == 'web-engine-shell':

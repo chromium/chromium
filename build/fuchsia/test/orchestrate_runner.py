@@ -90,10 +90,9 @@ def support_orchestrate(test_type: str) -> bool:
     }
 
 
-def run_tests_with_orchestrate(out_dir: str,
-                               packages: list,
-                               target_cmd: list,
-                               logs_dir: str = None) -> int:
+def run_tests_with_orchestrate(
+    out_dir: str, packages: list, target_cmd: list, logs_dir: str = None
+) -> int:
     """Entry point to execute the test suite via orchestrate config."""
     if not out_dir:
         raise ValueError('--out-dir must be specified.')
@@ -107,8 +106,13 @@ def run_tests_with_orchestrate(out_dir: str,
     orchestrate_bin = os.path.join(common.SDK_TOOLS_DIR, 'orchestrate')
 
     cmd = [
-        orchestrate_bin, 'run', '-input', config_json, '-overrides',
-        overrides_str, '--'
+        orchestrate_bin,
+        'run',
+        '-input',
+        config_json,
+        '-overrides',
+        overrides_str,
+        '--',
     ] + target_cmd
 
     # TODO(crbug.com/346624801): Revert this env injection after

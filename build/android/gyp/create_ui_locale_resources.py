@@ -23,7 +23,9 @@ import zipfile
 sys.path.insert(
     0,
     os.path.join(
-        os.path.dirname(__file__), '..', '..', '..', 'build', 'android', 'gyp'))
+        os.path.dirname(__file__), '..', '..', '..', 'build', 'android', 'gyp'
+    ),
+)
 
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
@@ -45,47 +47,50 @@ _DEFAULT_CHROME_LOCALE = 'en-US'
 
 
 def _GenerateLocaleStringsXml(locale):
-  return _TEMPLATE.format(resource_text=locale)
+    return _TEMPLATE.format(resource_text=locale)
 
 
 def _AddLocaleResourceFileToZip(out_zip, android_locale, locale):
-  locale_data = _GenerateLocaleStringsXml(locale)
-  if android_locale:
-    zip_path = 'values-%s/strings.xml' % android_locale
-  else:
-    zip_path = 'values/strings.xml'
-  zip_helpers.add_to_zip_hermetic(out_zip,
-                                  zip_path,
-                                  data=locale_data,
-                                  compress=False)
+    locale_data = _GenerateLocaleStringsXml(locale)
+    if android_locale:
+        zip_path = 'values-%s/strings.xml' % android_locale
+    else:
+        zip_path = 'values/strings.xml'
+    zip_helpers.add_to_zip_hermetic(
+        out_zip, zip_path, data=locale_data, compress=False
+    )
 
 
 def main():
-  parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
 
-  parser.add_argument(
-      '--locale-list',
-      required=True,
-      help='GN-list of Chrome-specific locale names.')
-  parser.add_argument(
-      '--output-zip', required=True, help='Output zip archive path.')
+    parser.add_argument(
+        '--locale-list',
+        required=True,
+        help='GN-list of Chrome-specific locale names.',
+    )
+    parser.add_argument(
+        '--output-zip', required=True, help='Output zip archive path.'
+    )
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  locale_list = action_helpers.parse_gn_list(args.locale_list)
-  if not locale_list:
-    raise Exception('Locale list cannot be empty!')
+    locale_list = action_helpers.parse_gn_list(args.locale_list)
+    if not locale_list:
+        raise Exception('Locale list cannot be empty!')
 
-  with action_helpers.atomic_output(args.output_zip) as tmp_file:
-    with zipfile.ZipFile(tmp_file, 'w') as out_zip:
-      # First, write the default value, since aapt requires one.
-      _AddLocaleResourceFileToZip(out_zip, '', _DEFAULT_CHROME_LOCALE)
+    with action_helpers.atomic_output(args.output_zip) as tmp_file:
+        with zipfile.ZipFile(tmp_file, 'w') as out_zip:
+            # First, write the default value, since aapt requires one.
+            _AddLocaleResourceFileToZip(out_zip, '', _DEFAULT_CHROME_LOCALE)
 
-      for locale in locale_list:
-        android_locale = resource_utils.ToAndroidLocaleName(locale)
-        _AddLocaleResourceFileToZip(out_zip, android_locale, locale)
+            for locale in locale_list:
+                android_locale = resource_utils.ToAndroidLocaleName(locale)
+                _AddLocaleResourceFileToZip(out_zip, android_locale, locale)
 
 
 if __name__ == '__main__':
-  main()
+    main()

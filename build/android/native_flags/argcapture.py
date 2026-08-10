@@ -8,10 +8,10 @@ import sys
 
 
 def main():
-  with open(sys.argv[1], 'w') as f:
-    f.write('\n'.join(sys.argv[2:]))
-    f.write('\n')
+    with open(sys.argv[1], 'w') as f:
+        f.write('\n'.join(sys.argv[2:]))
+        f.write('\n')
 
 
 if __name__ == '__main__':
-  main()
+    main()

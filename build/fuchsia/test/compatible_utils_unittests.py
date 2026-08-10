@@ -17,6 +17,7 @@ import compatible_utils
 # Allow access to constants for testing.
 # pylint: disable=protected-access
 
+
 @unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class CompatibleUtilsTest(unittest.TestCase):
     """Test compatible_utils.py methods."""
@@ -38,8 +39,10 @@ class CompatibleUtilsTest(unittest.TestCase):
             self.assertEqual(compatible_utils.get_host_arch(), 'x64')
             self.assertEqual(compatible_utils.get_host_arch(), 'arm64')
 
-        with mock.patch('platform.machine', return_value=['fake-arch']), \
-                self.assertRaises(NotImplementedError):
+        with (
+            mock.patch('platform.machine', return_value=['fake-arch']),
+            self.assertRaises(NotImplementedError),
+        ):
             compatible_utils.get_host_arch()
 
     def test_add_exec_to_file(self) -> None:
@@ -53,8 +56,9 @@ class CompatibleUtilsTest(unittest.TestCase):
             new_stat = os.stat(f.name).st_mode
             self.assertTrue(new_stat & stat.S_IXUSR)
 
-    def test_map_filter_filter_file_throws_value_error_if_wrong_path(self
-                                                                     ) -> None:
+    def test_map_filter_filter_file_throws_value_error_if_wrong_path(
+        self,
+    ) -> None:
         """Test |map_filter_file| throws ValueError if path is missing
         FILTER_DIR."""
         with self.assertRaises(ValueError):
@@ -68,7 +72,8 @@ class CompatibleUtilsTest(unittest.TestCase):
 
         # No error.
         compatible_utils.map_filter_file_to_package_file(
-            'testing/buildbot/filters/some.filter')
+            'testing/buildbot/filters/some.filter'
+        )
 
     def test_map_filter_filter_replaces_filter_dir_with_pkg_path(self) -> None:
         """Test |map_filter_file| throws ValueError if path is missing
@@ -76,44 +81,54 @@ class CompatibleUtilsTest(unittest.TestCase):
         self.assertEqual(
             '/pkg/testing/buildbot/filters/some.filter',
             compatible_utils.map_filter_file_to_package_file(
-                'foo/testing/buildbot/filters/some.filter'))
+                'foo/testing/buildbot/filters/some.filter'
+            ),
+        )
 
     def test_get_sdk_hash_success(self) -> None:
         """Test |get_sdk_hash| reads product_bundle.json."""
-        with mock.patch('builtins.open',
-                        return_value=io.StringIO(
-                            json.dumps({'product_version': '12345'}))):
+        with mock.patch(
+            'builtins.open',
+            return_value=io.StringIO(json.dumps({'product_version': '12345'})),
+        ):
             self.assertEqual(
                 compatible_utils.get_sdk_hash(
                     'third_party/fuchsia-sdk/images-internal/sherlock-release/'
-                    'smart_display_max_eng_arrested/'),
-                ('smart_display_max_eng_arrested', '12345'))
+                    'smart_display_max_eng_arrested/'
+                ),
+                ('smart_display_max_eng_arrested', '12345'),
+            )
 
     def test_get_sdk_hash_normalize_path(self) -> None:
         """Test |get_sdk_hash| uses path as product."""
-        with mock.patch('builtins.open',
-                        return_value=io.StringIO(
-                            json.dumps({'product_version': '23456'}))):
+        with mock.patch(
+            'builtins.open',
+            return_value=io.StringIO(json.dumps({'product_version': '23456'})),
+        ):
             self.assertEqual(
                 compatible_utils.get_sdk_hash(
                     'third_party/fuchsia-sdk/images-internal/sherlock-release/'
-                    'smart_display_max_eng_arrested'),
-                ('smart_display_max_eng_arrested', '23456'))
+                    'smart_display_max_eng_arrested'
+                ),
+                ('smart_display_max_eng_arrested', '23456'),
+            )
 
     def test_get_sdk_hash_not_found(self) -> None:
-        """Test |get_sdk_hash| fails if the product_bundle.json does not exist.
+        """Test |get_sdk_hash| fails if the product_bundle.json does not
+        exist.
         """
         with mock.patch('builtins.open', side_effect=IOError()):
-            self.assertRaises(IOError, compatible_utils.get_sdk_hash,
-                              'some/image/dir')
+            self.assertRaises(
+                IOError, compatible_utils.get_sdk_hash, 'some/image/dir'
+            )
 
     def test_get_ssh_prefix(self) -> None:
         """Ensures the get_ssh_prefix won't return a None."""
-        self.assertIsNotNone(compatible_utils.get_ssh_prefix(
-            ("host.test", 80)))
+        self.assertIsNotNone(compatible_utils.get_ssh_prefix(("host.test", 80)))
 
     def test_install_symbols(self):
         """Test |install_symbols|."""
+
         def trim_noop_prefixes(path):
             """Helper function to trim no-op path name prefixes that are
             introduced by os.path.realpath on some platforms. These break
@@ -123,13 +138,17 @@ class CompatibleUtilsTest(unittest.TestCase):
             noop_prefixes = ['/private/']
             for prefix in noop_prefixes:
                 if path.startswith(prefix):
-                    return path[len(prefix) - 1:]
+                    return path[len(prefix) - 1 :]
             return path
 
         with tempfile.TemporaryDirectory() as fuchsia_out_dir:
             build_id = 'test_build_id'
-            symbol_file = os.path.join(fuchsia_out_dir, '.build-id',
-                                       build_id[:2], build_id[2:] + '.debug')
+            symbol_file = os.path.join(
+                fuchsia_out_dir,
+                '.build-id',
+                build_id[:2],
+                build_id[2:] + '.debug',
+            )
             id_path = os.path.join(fuchsia_out_dir, 'ids.txt')
             try:
                 binary_relpath = 'path/to/binary'
@@ -139,7 +158,8 @@ class CompatibleUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.islink(symbol_file))
                 self.assertEqual(
                     trim_noop_prefixes(os.path.realpath(symbol_file)),
-                    os.path.join(fuchsia_out_dir, binary_relpath))
+                    os.path.join(fuchsia_out_dir, binary_relpath),
+                )
 
                 new_binary_relpath = 'path/to/new/binary'
                 with open(id_path, 'w') as f:
@@ -148,15 +168,14 @@ class CompatibleUtilsTest(unittest.TestCase):
                 self.assertTrue(os.path.islink(symbol_file))
                 self.assertEqual(
                     trim_noop_prefixes(os.path.realpath(symbol_file)),
-                    os.path.join(fuchsia_out_dir, new_binary_relpath))
+                    os.path.join(fuchsia_out_dir, new_binary_relpath),
+                )
             finally:
                 os.remove(id_path)
-
 
     def test_ssh_keys(self):
         """Ensures the get_ssh_keys won't return a None."""
         self.assertIsNotNone(compatible_utils.get_ssh_keys())
-
 
     def test_force_running_unattended(self) -> None:
         """Test |force_running_unattended|."""

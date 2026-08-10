@@ -9,5 +9,5 @@ import devil_chromium
 from devil.android.tools import video_recorder
 
 if __name__ == '__main__':
-  devil_chromium.Initialize()
-  sys.exit(video_recorder.main())
+    devil_chromium.Initialize()
+    sys.exit(video_recorder.main())

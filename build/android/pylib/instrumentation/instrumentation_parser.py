@@ -35,78 +35,81 @@ _INSTR_LINE_RE = re.compile(r'^\s*INSTRUMENTATION_([A-Z_]+): (.*)$')
 
 
 class InstrumentationParser:
+    def __init__(self, stream):
+        """An incremental parser for the output of Android instrumentation tests.
 
-  def __init__(self, stream):
-    """An incremental parser for the output of Android instrumentation tests.
+        Example:
 
-    Example:
+          stream = adb.IterShell('am instrument -r ...')
+          parser = InstrumentationParser(stream)
 
-      stream = adb.IterShell('am instrument -r ...')
-      parser = InstrumentationParser(stream)
+          for code, bundle in parser.IterStatus():
+            # do something with each instrumentation status
+            print('status:', code, bundle)
 
-      for code, bundle in parser.IterStatus():
-        # do something with each instrumentation status
-        print('status:', code, bundle)
+          # do something with the final instrumentation result
+          code, bundle = parser.GetResult()
+          print('result:', code, bundle)
 
-      # do something with the final instrumentation result
-      code, bundle = parser.GetResult()
-      print('result:', code, bundle)
+        Args:
+          stream: a sequence of lines as produced by the raw output of an
+            instrumentation test (e.g. by |am instrument -r|).
+        """
+        self._stream = stream
+        self._code = None
+        self._bundle = None
 
-    Args:
-      stream: a sequence of lines as produced by the raw output of an
-        instrumentation test (e.g. by |am instrument -r|).
-    """
-    self._stream = stream
-    self._code = None
-    self._bundle = None
+    def IterStatus(self):
+        """Iterate over statuses as they are produced by the instrumentation test.
 
-  def IterStatus(self):
-    """Iterate over statuses as they are produced by the instrumentation test.
+        Yields:
+          A tuple (code, bundle) for each instrumentation status found in the
+          output.
+        """
 
-    Yields:
-      A tuple (code, bundle) for each instrumentation status found in the
-      output.
-    """
-    def join_bundle_values(bundle):
-      for key in bundle:
-        bundle[key] = '\n'.join(bundle[key])
-      return bundle
+        def join_bundle_values(bundle):
+            for key in bundle:
+                bundle[key] = '\n'.join(bundle[key])
+            return bundle
 
-    bundle = {'STATUS': {}, 'RESULT': {}}
-    header = None
-    key = None
-    for line in self._stream:
-      m = _INSTR_LINE_RE.match(line)
-      if m:
-        header, value = m.groups()
+        bundle = {'STATUS': {}, 'RESULT': {}}
+        header = None
         key = None
-        if header in ['STATUS', 'RESULT'] and '=' in value:
-          key, value = value.split('=', 1)
-          bundle[header][key] = [value]
-        elif header == 'STATUS_CODE':
-          yield int(value), join_bundle_values(bundle['STATUS'])
-          bundle['STATUS'] = {}
-        elif header == 'CODE':
-          self._code = int(value)
-        else:
-          logging.warning('Unknown INSTRUMENTATION_%s line: %s', header, value)
-      elif key is not None:
-        bundle[header][key].append(line)
+        for line in self._stream:
+            m = _INSTR_LINE_RE.match(line)
+            if m:
+                header, value = m.groups()
+                key = None
+                if header in ['STATUS', 'RESULT'] and '=' in value:
+                    key, value = value.split('=', 1)
+                    bundle[header][key] = [value]
+                elif header == 'STATUS_CODE':
+                    yield int(value), join_bundle_values(bundle['STATUS'])
+                    bundle['STATUS'] = {}
+                elif header == 'CODE':
+                    self._code = int(value)
+                else:
+                    logging.warning(
+                        'Unknown INSTRUMENTATION_%s line: %s', header, value
+                    )
+            elif key is not None:
+                bundle[header][key].append(line)
 
-    self._bundle = join_bundle_values(bundle['RESULT'])
+        self._bundle = join_bundle_values(bundle['RESULT'])
 
-  def GetResult(self):
-    """Return the final instrumentation result.
+    def GetResult(self):
+        """Return the final instrumentation result.
 
-    Returns:
-      A pair (code, bundle) with the final instrumentation result. The |code|
-      may be None if no instrumentation result was found in the output.
+        Returns:
+          A pair (code, bundle) with the final instrumentation result. The |code|
+          may be None if no instrumentation result was found in the output.
 
-    Raises:
-      AssertionError if attempting to get the instrumentation result before
-      exhausting |IterStatus| first.
-    """
-    assert self._bundle is not None, (
-        'The IterStatus generator must be exhausted before reading the final'
-        ' instrumentation result.')
-    return self._code, self._bundle
+        Raises:
+          AssertionError if attempting to get the instrumentation result before
+          exhausting |IterStatus| first.
+        """
+        assert self._bundle is not None, (
+            'The IterStatus generator must be exhausted before reading the final'
+            ' instrumentation result.'
+        )
+        return self._code, self._bundle

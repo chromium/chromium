@@ -15,7 +15,6 @@ from util import server_utils
 ERRORPRONE_CHECKS_TO_APPLY = [
     # Be sure to first update "android/errorprone" within
     # build/config/siso/android.star to set "remote": False.
-
     # Build all targets with:
     # tools/android/build_all_errorprone.sh
 ]
@@ -40,7 +39,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # High priority to enable in non-tests:
     'StaticAssignmentInConstructor',
     # CheckReturnValue: See note below about enabling via -Xep.
-
     # Still to look into:
     'AnnotationPosition',
     'AvoidObjectArrays',
@@ -99,7 +97,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'Var',
     'Varifier',
     'YodaCondition',
-
     # Low priority.
     'CatchAndPrintStackTrace',
     'EqualsHashCode',
@@ -118,7 +115,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnnecessaryBoxedVariable',
     'UnnecessarilyFullyQualified',
     'UnsafeReflectiveConstructionCast',
-
     # Never Enable:
     #
     # Chromium uses assert statements.
@@ -189,7 +185,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'CanIgnoreReturnValueSuggester',
     # Too many errors (https://issuetracker.google.com/516651197).
     'ReferenceEquality',
-
     # These are all for Javadoc, which we don't really care about.
     'InvalidBlockTag',
     'InvalidInlineTag',
@@ -224,163 +219,181 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--use-build-server',
-                      action='store_true',
-                      help='Always use the build server.')
-  parser.add_argument('--testonly',
-                      action='store_true',
-                      help='Disable some Error Prone checks')
-  parser.add_argument('--enable-nullaway',
-                      action='store_true',
-                      help='Enable NullAway (requires --enable-errorprone)')
-  parser.add_argument('--stamp',
-                      required=True,
-                      help='Path of output .stamp file')
-  parser.add_argument('--xep-arg',
-                      action='append',
-                      default=[],
-                      help='Error Prone -Xep: flags to pass to the plugin')
-  parser.add_argument('--has-chromium-plugin',
-                      action='store_true',
-                      help='Whether the Chromium Error Prone plugin is loaded.')
-  options, compile_java_argv = parser.parse_known_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--use-build-server',
+        action='store_true',
+        help='Always use the build server.',
+    )
+    parser.add_argument(
+        '--testonly',
+        action='store_true',
+        help='Disable some Error Prone checks',
+    )
+    parser.add_argument(
+        '--enable-nullaway',
+        action='store_true',
+        help='Enable NullAway (requires --enable-errorprone)',
+    )
+    parser.add_argument(
+        '--stamp', required=True, help='Path of output .stamp file'
+    )
+    parser.add_argument(
+        '--xep-arg',
+        action='append',
+        default=[],
+        help='Error Prone -Xep: flags to pass to the plugin',
+    )
+    parser.add_argument(
+        '--has-chromium-plugin',
+        action='store_true',
+        help='Whether the Chromium Error Prone plugin is loaded.',
+    )
+    options, compile_java_argv = parser.parse_known_args()
 
-  compile_java_argv += ['--jar-path', options.stamp]
+    compile_java_argv += ['--jar-path', options.stamp]
 
-  # Use the build server for errorprone runs.
-  if server_utils.MaybeRunCommand(
-      name=options.stamp,
-      argv=sys.argv,
-      stamp_file=options.stamp,
-      use_build_server=options.use_build_server):
-    compile_java.main(compile_java_argv, write_depfile_only=True)
-    return
+    # Use the build server for errorprone runs.
+    if server_utils.MaybeRunCommand(
+        name=options.stamp,
+        argv=sys.argv,
+        stamp_file=options.stamp,
+        use_build_server=options.use_build_server,
+    ):
+        compile_java.main(compile_java_argv, write_depfile_only=True)
+        return
 
-  # All errorprone args are passed space-separated in a single arg.
-  errorprone_flags = ['-Xplugin:ErrorProne']
+    # All errorprone args are passed space-separated in a single arg.
+    errorprone_flags = ['-Xplugin:ErrorProne']
 
-  if options.enable_nullaway:
-    # See: https://github.com/uber/NullAway/wiki/Configuration
-    # Check nullability only for classes marked with @NullMarked (this is our
-    # migration story).
-    errorprone_flags += ['-XepOpt:NullAway:OnlyNullMarked']
-    errorprone_flags += [
-        '-XepOpt:NullAway:CustomContractAnnotations='
-        'org.chromium.build.annotations.Contract,'
-        'org.chromium.support_lib_boundary.util.Contract'
-    ]
-    # TODO(agrieve): Re-enable once this is fixed:
-    #     https://github.com/uber/NullAway/issues/1104
-    # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
+    if options.enable_nullaway:
+        # See: https://github.com/uber/NullAway/wiki/Configuration
+        # Check nullability only for classes marked with @NullMarked (this is our
+        # migration story).
+        errorprone_flags += ['-XepOpt:NullAway:OnlyNullMarked']
+        errorprone_flags += [
+            '-XepOpt:NullAway:CustomContractAnnotations='
+            'org.chromium.build.annotations.Contract,'
+            'org.chromium.support_lib_boundary.util.Contract'
+        ]
+        # TODO(agrieve): Re-enable once this is fixed:
+        #     https://github.com/uber/NullAway/issues/1104
+        # errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
 
-    # TODO(agrieve): Re-enable once we sort out nullability of
-    #     ObservableSuppliers. https://crbug.com/430320400
-    # Make it a warning to use assumeNonNull() with a @NonNull.
-    #errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
-    #                      'org.chromium.build.NullUtil.assumeNonNull')]
-    # Detect "assert foo != null" as a null check.
-    errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
-    # Do not ignore @Nullable & @NonNull in non-@NullMarked classes.
-    errorprone_flags += [
-        '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
-    ]
-    # Treat @RecentlyNullable the same as @Nullable.
-    errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
-    # Enable experimental checking of @Nullable generics.
-    # https://github.com/uber/NullAway/wiki/JSpecify-Support
-    errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
-    # Treat these the same as constructors.
-    # These are in addition to the default list in "DEFAULT_KNOWN_INITIALIZERS":
-    # https://github.com/uber/NullAway/blob/d5cb4f1190a96045d85b92c6d119e4595840cc8a/nullaway/src/main/java/com/uber/nullaway/ErrorProneCLIFlagsConfig.java#L128
-    init_methods = [
-        'android.app.backup.BackupAgent.onCreate',
-        'android.content.ContentProvider.attachInfo',
-        'android.content.ContentProvider.onCreate',
-        'android.content.ContextWrapper.attachBaseContext',
-        'androidx.preference.PreferenceFragmentCompat.onCreatePreferences',
-    ]
-    errorprone_flags += [
-        '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
-    ]
-    # Exclude fields with these annotations from null-checking.
-    mock_annotations = [
-        'org.mockito.Captor',
-        'org.mockito.Mock',
-        'org.mockito.Spy',
-    ]
-    errorprone_flags += [
-        '-XepOpt:NullAway:ExcludedFieldAnnotations=' +
-        ','.join(mock_annotations)
-    ]
+        # TODO(agrieve): Re-enable once we sort out nullability of
+        #     ObservableSuppliers. https://crbug.com/430320400
+        # Make it a warning to use assumeNonNull() with a @NonNull.
+        # errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
+        #                      'org.chromium.build.NullUtil.assumeNonNull')]
+        # Detect "assert foo != null" as a null check.
+        errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
+        # Do not ignore @Nullable & @NonNull in non-@NullMarked classes.
+        errorprone_flags += [
+            '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
+        ]
+        # Treat @RecentlyNullable the same as @Nullable.
+        errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
+        # Enable experimental checking of @Nullable generics.
+        # https://github.com/uber/NullAway/wiki/JSpecify-Support
+        errorprone_flags += ['-XepOpt:NullAway:JSpecifyMode=true']
+        # Treat these the same as constructors.
+        # These are in addition to the default list in "DEFAULT_KNOWN_INITIALIZERS":
+        # https://github.com/uber/NullAway/blob/d5cb4f1190a96045d85b92c6d119e4595840cc8a/nullaway/src/main/java/com/uber/nullaway/ErrorProneCLIFlagsConfig.java#L128
+        init_methods = [
+            'android.app.backup.BackupAgent.onCreate',
+            'android.content.ContentProvider.attachInfo',
+            'android.content.ContentProvider.onCreate',
+            'android.content.ContextWrapper.attachBaseContext',
+            'androidx.preference.PreferenceFragmentCompat.onCreatePreferences',
+        ]
+        errorprone_flags += [
+            '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
+        ]
+        # Exclude fields with these annotations from null-checking.
+        mock_annotations = [
+            'org.mockito.Captor',
+            'org.mockito.Mock',
+            'org.mockito.Spy',
+        ]
+        errorprone_flags += [
+            '-XepOpt:NullAway:ExcludedFieldAnnotations='
+            + ','.join(mock_annotations)
+        ]
 
-  # Make everything a warning so that when treat_warnings_as_errors is false,
-  # they do not fail the build.
-  errorprone_flags += ['-XepAllErrorsAsWarnings']
-  # Don't check generated files (those tagged with @Generated).
-  errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
-  errorprone_flags.extend('-Xep:{}:OFF'.format(x)
-                          for x in ERRORPRONE_WARNINGS_TO_DISABLE)
-  errorprone_flags.extend('-Xep:{}:WARN'.format(x)
-                          for x in ERRORPRONE_WARNINGS_TO_ENABLE)
-  if options.testonly:
-    errorprone_flags.extend('-Xep:{}:OFF'.format(x)
-                            for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
-    if options.has_chromium_plugin:
-      errorprone_flags.extend(
-          '-Xep:{}:OFF'.format(x)
-          for x in CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE)
-    errorprone_flags += ['-XepCompilingTestOnlyCode']
-
-  # To enable CheckReturnValue to be opt-out rather than opt-in:
-  # packages = 'org.chromium,com.google,java.util.regex'
-  # errorprone_flags += ['-XepOpt:CheckReturnValue:Packages=' + packages]
-  # errorprone_flags += ['-XepOpt:CheckReturnValue:CheckAllConstructors=true']
-  # Might also need "-XepOpt:CheckReturnValue:ApiExclusionList=" with a
-  # "cirvlist.txt" that annotates android.* / java.* as @CanIgnoreReturnValue.
-
-  if ERRORPRONE_CHECKS_TO_APPLY:
-    to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
+    # Make everything a warning so that when treat_warnings_as_errors is false,
+    # they do not fail the build.
+    errorprone_flags += ['-XepAllErrorsAsWarnings']
+    # Don't check generated files (those tagged with @Generated).
+    errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
+    errorprone_flags.extend(
+        '-Xep:{}:OFF'.format(x) for x in ERRORPRONE_WARNINGS_TO_DISABLE
+    )
+    errorprone_flags.extend(
+        '-Xep:{}:WARN'.format(x) for x in ERRORPRONE_WARNINGS_TO_ENABLE
+    )
     if options.testonly:
-      to_apply = [
-          x for x in to_apply
-          if x not in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
-      ]
-    errorprone_flags += [
-        '-XepPatchLocation:IN_PLACE', '-XepPatchChecks:,' + ','.join(to_apply)
+        errorprone_flags.extend(
+            '-Xep:{}:OFF'.format(x)
+            for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
+        )
+        if options.has_chromium_plugin:
+            errorprone_flags.extend(
+                '-Xep:{}:OFF'.format(x)
+                for x in CHROMIUM_PLUGIN_TESTONLY_WARNINGS_TO_DISABLE
+            )
+        errorprone_flags += ['-XepCompilingTestOnlyCode']
+
+    # To enable CheckReturnValue to be opt-out rather than opt-in:
+    # packages = 'org.chromium,com.google,java.util.regex'
+    # errorprone_flags += ['-XepOpt:CheckReturnValue:Packages=' + packages]
+    # errorprone_flags += ['-XepOpt:CheckReturnValue:CheckAllConstructors=true']
+    # Might also need "-XepOpt:CheckReturnValue:ApiExclusionList=" with a
+    # "cirvlist.txt" that annotates android.* / java.* as @CanIgnoreReturnValue.
+
+    if ERRORPRONE_CHECKS_TO_APPLY:
+        to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
+        if options.testonly:
+            to_apply = [
+                x
+                for x in to_apply
+                if x not in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE
+            ]
+        errorprone_flags += [
+            '-XepPatchLocation:IN_PLACE',
+            '-XepPatchChecks:,' + ','.join(to_apply),
+        ]
+
+    errorprone_flags.extend(options.xep_arg)
+
+    # These are required to use JDK 16, and are taken directly from
+    # https://errorprone.info/docs/installation
+    javac_args = [
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
+        'ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+        '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
     ]
 
-  errorprone_flags.extend(options.xep_arg)
+    javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 
-  # These are required to use JDK 16, and are taken directly from
-  # https://errorprone.info/docs/installation
-  javac_args = [
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
-      'ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-      '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
-      '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
-      '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
-  ]
+    javac_args += ['-XDshould-stop.ifError=FLOW']
+    # This flag quits errorprone after checks and before code generation, since
+    # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
+    # for chrome_java.
+    if not ERRORPRONE_CHECKS_TO_APPLY:
+        javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
-  javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
-
-  javac_args += ['-XDshould-stop.ifError=FLOW']
-  # This flag quits errorprone after checks and before code generation, since
-  # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
-  # for chrome_java.
-  if not ERRORPRONE_CHECKS_TO_APPLY:
-    javac_args += ['-XDshould-stop.ifNoError=FLOW']
-
-  compile_java.main(compile_java_argv,
-                    extra_javac_args=javac_args,
-                    use_errorprone=True)
+    compile_java.main(
+        compile_java_argv, extra_javac_args=javac_args, use_errorprone=True
+    )
 
 
 if __name__ == '__main__':
-  main()
+    main()

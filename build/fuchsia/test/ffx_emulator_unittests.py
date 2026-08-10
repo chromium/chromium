@@ -13,6 +13,7 @@ from ffx_emulator import FfxEmulator
 
 class FfxEmulatorTest(unittest.TestCase):
     """Unittests for ffx_emulator.py"""
+
     def test_use_fixed_node_name(self) -> None:
         """FfxEmulator should use a fixed node name."""
         # Allowing the test case to access FfxEmulator._node_name directly.
@@ -27,8 +28,12 @@ class FfxEmulatorTest(unittest.TestCase):
                         'logs_dir': '.',
                         'with_network': False,
                         'everlasting': True,
-                        'device_spec': ''
-                    }))._node_name, 'fuchsia-everlasting-emulator')
+                        'device_spec': '',
+                    }
+                )
+            )._node_name,
+            'fuchsia-everlasting-emulator',
+        )
 
     def test_use_random_node_name(self) -> None:
         """FfxEmulator should not use a fixed node name."""
@@ -44,8 +49,12 @@ class FfxEmulatorTest(unittest.TestCase):
                         'logs_dir': '.',
                         'with_network': False,
                         'everlasting': False,
-                        'device_spec': ''
-                    }))._node_name, 'fuchsia-everlasting-emulator')
+                        'device_spec': '',
+                    }
+                )
+            )._node_name,
+            'fuchsia-everlasting-emulator',
+        )
 
     @mock.patch('ffx_emulator.run_ffx_command')
     def test_use_none_device_spec(self, mock_ffx) -> None:
@@ -59,10 +68,14 @@ class FfxEmulatorTest(unittest.TestCase):
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
-                    'device_spec': None
-                })).__enter__()
-        self.assertIn(' '.join(['--net', 'user']),
-                      ' '.join(mock_ffx.call_args.kwargs['cmd']))
+                    'device_spec': None,
+                }
+            )
+        ).__enter__()
+        self.assertIn(
+            ' '.join(['--net', 'user']),
+            ' '.join(mock_ffx.call_args.kwargs['cmd']),
+        )
         self.assertNotIn('--device', mock_ffx.call_args.kwargs['cmd'])
 
     @mock.patch('ffx_emulator.run_ffx_command')
@@ -77,10 +90,14 @@ class FfxEmulatorTest(unittest.TestCase):
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
-                    'device_spec': ''
-                })).__enter__()
-        self.assertIn(' '.join(['--net', 'user']),
-                      ' '.join(mock_ffx.call_args.kwargs['cmd']))
+                    'device_spec': '',
+                }
+            )
+        ).__enter__()
+        self.assertIn(
+            ' '.join(['--net', 'user']),
+            ' '.join(mock_ffx.call_args.kwargs['cmd']),
+        )
         self.assertNotIn('--device', mock_ffx.call_args.kwargs['cmd'])
 
     @mock.patch('ffx_emulator.run_ffx_command')
@@ -95,10 +112,14 @@ class FfxEmulatorTest(unittest.TestCase):
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
-                    'device_spec': 'large'
-                })).__enter__()
-        self.assertIn(' '.join(['--device', 'large']),
-                      ' '.join(mock_ffx.call_args.kwargs['cmd']))
+                    'device_spec': 'large',
+                }
+            )
+        ).__enter__()
+        self.assertIn(
+            ' '.join(['--device', 'large']),
+            ' '.join(mock_ffx.call_args.kwargs['cmd']),
+        )
 
 
 if __name__ == '__main__':

@@ -6,7 +6,6 @@
 
 """Copies files to a directory."""
 
-
 import argparse
 import filecmp
 import itertools
@@ -19,114 +18,133 @@ import action_helpers  # build_utils adds //build to sys.path.
 
 
 def _get_all_files(base):
-  """Returns a list of all the files in |base|. Each entry is relative to the
-  last path entry of |base|."""
-  result = []
-  dirname = os.path.dirname(base)
-  for root, _, files in os.walk(base):
-    result.extend([os.path.join(root[len(dirname):], f) for f in files])
-  return result
+    """Returns a list of all the files in |base|. Each entry is relative to the
+    last path entry of |base|."""
+    result = []
+    dirname = os.path.dirname(base)
+    for root, _, files in os.walk(base):
+        result.extend([os.path.join(root[len(dirname) :], f) for f in files])
+    return result
+
 
 def CopyFile(f, dest, deps):
-  """Copy file or directory and update deps."""
-  if os.path.isdir(f):
-    shutil.copytree(f, os.path.join(dest, os.path.basename(f)))
-    deps.extend(_get_all_files(f))
-  else:
-    if os.path.isfile(os.path.join(dest, os.path.basename(f))):
-      dest = os.path.join(dest, os.path.basename(f))
+    """Copy file or directory and update deps."""
+    if os.path.isdir(f):
+        shutil.copytree(f, os.path.join(dest, os.path.basename(f)))
+        deps.extend(_get_all_files(f))
+    else:
+        if os.path.isfile(os.path.join(dest, os.path.basename(f))):
+            dest = os.path.join(dest, os.path.basename(f))
 
-    deps.append(f)
+        deps.append(f)
 
-    if os.path.isfile(dest):
-      if filecmp.cmp(dest, f, shallow=False):
-        return
-      # The shutil.copy() below would fail if the file does not have write
-      # permissions. Deleting the file has similar costs to modifying the
-      # permissions.
-      os.unlink(dest)
+        if os.path.isfile(dest):
+            if filecmp.cmp(dest, f, shallow=False):
+                return
+            # The shutil.copy() below would fail if the file does not have write
+            # permissions. Deleting the file has similar costs to modifying the
+            # permissions.
+            os.unlink(dest)
 
-    shutil.copy(f, dest)
+        shutil.copy(f, dest)
+
 
 def DoCopy(options, deps):
-  """Copy files or directories given in options.files and update deps."""
-  files = list(
-      itertools.chain.from_iterable(
-          action_helpers.parse_gn_list(f) for f in options.files))
+    """Copy files or directories given in options.files and update deps."""
+    files = list(
+        itertools.chain.from_iterable(
+            action_helpers.parse_gn_list(f) for f in options.files
+        )
+    )
 
-  for f in files:
-    if os.path.isdir(f) and not options.clear:
-      print('To avoid stale files you must use --clear when copying '
-            'directories')
-      sys.exit(-1)
-    CopyFile(f, options.dest, deps)
+    for f in files:
+        if os.path.isdir(f) and not options.clear:
+            print(
+                'To avoid stale files you must use --clear when copying '
+                'directories'
+            )
+            sys.exit(-1)
+        CopyFile(f, options.dest, deps)
+
 
 def DoRenaming(options, deps):
-  """Copy and rename files given in options.renaming_sources and update deps."""
-  src_files = list(
-      itertools.chain.from_iterable(
-          action_helpers.parse_gn_list(f) for f in options.renaming_sources))
+    """Copy and rename files given in options.renaming_sources and update deps."""
+    src_files = list(
+        itertools.chain.from_iterable(
+            action_helpers.parse_gn_list(f) for f in options.renaming_sources
+        )
+    )
 
-  dest_files = list(
-      itertools.chain.from_iterable(
-          action_helpers.parse_gn_list(f)
-          for f in options.renaming_destinations))
+    dest_files = list(
+        itertools.chain.from_iterable(
+            action_helpers.parse_gn_list(f)
+            for f in options.renaming_destinations
+        )
+    )
 
-  if len(src_files) != len(dest_files):
-    print('Renaming source and destination files not match.')
-    sys.exit(-1)
+    if len(src_files) != len(dest_files):
+        print('Renaming source and destination files not match.')
+        sys.exit(-1)
 
-  for src, dest in zip(src_files, dest_files):
-    if os.path.isdir(src):
-      print('renaming diretory is not supported.')
-      sys.exit(-1)
-    else:
-      CopyFile(src, os.path.join(options.dest, dest), deps)
+    for src, dest in zip(src_files, dest_files):
+        if os.path.isdir(src):
+            print('renaming diretory is not supported.')
+            sys.exit(-1)
+        else:
+            CopyFile(src, os.path.join(options.dest, dest), deps)
+
 
 def main(args):
-  args = build_utils.ExpandFileArgs(args)
+    args = build_utils.ExpandFileArgs(args)
 
-  parser = argparse.ArgumentParser()
-  action_helpers.add_depfile_arg(parser)
+    parser = argparse.ArgumentParser()
+    action_helpers.add_depfile_arg(parser)
 
-  parser.add_argument('--dest', help='Directory to copy files to.')
-  parser.add_argument('--files', action='append', help='List of files to copy.')
-  parser.add_argument(
-      '--clear',
-      action='store_true',
-      help='If set, the destination directory will be deleted '
-      'before copying files to it. This is highly recommended to '
-      'ensure that no stale files are left in the directory.')
-  parser.add_argument('--stamp', help='Path to touch on success.')
-  parser.add_argument('--renaming-sources',
-                      action='append',
-                      help='List of files need to be renamed while being '
-                      'copied to dest directory')
-  parser.add_argument('--renaming-destinations',
-                      action='append',
-                      help='List of destination file name without path, the '
-                      'number of elements must match rename-sources.')
+    parser.add_argument('--dest', help='Directory to copy files to.')
+    parser.add_argument(
+        '--files', action='append', help='List of files to copy.'
+    )
+    parser.add_argument(
+        '--clear',
+        action='store_true',
+        help='If set, the destination directory will be deleted '
+        'before copying files to it. This is highly recommended to '
+        'ensure that no stale files are left in the directory.',
+    )
+    parser.add_argument('--stamp', help='Path to touch on success.')
+    parser.add_argument(
+        '--renaming-sources',
+        action='append',
+        help='List of files need to be renamed while being '
+        'copied to dest directory',
+    )
+    parser.add_argument(
+        '--renaming-destinations',
+        action='append',
+        help='List of destination file name without path, the '
+        'number of elements must match rename-sources.',
+    )
 
-  options = parser.parse_args(args)
+    options = parser.parse_args(args)
 
-  if options.clear:
-    build_utils.DeleteDirectory(options.dest)
-    build_utils.MakeDirectory(options.dest)
+    if options.clear:
+        build_utils.DeleteDirectory(options.dest)
+        build_utils.MakeDirectory(options.dest)
 
-  deps = []
+    deps = []
 
-  if options.files:
-    DoCopy(options, deps)
+    if options.files:
+        DoCopy(options, deps)
 
-  if options.renaming_sources:
-    DoRenaming(options, deps)
+    if options.renaming_sources:
+        DoRenaming(options, deps)
 
-  if options.depfile:
-    action_helpers.write_depfile(options.depfile, options.stamp, deps)
+    if options.depfile:
+        action_helpers.write_depfile(options.depfile, options.stamp, deps)
 
-  if options.stamp:
-    build_utils.Touch(options.stamp)
+    if options.stamp:
+        build_utils.Touch(options.stamp)
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))

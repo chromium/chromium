@@ -5,6 +5,7 @@ disable=
   consider-using-f-string,
   consider-using-from-import,
   consider-using-with,
+  duplicate-code,
   fixme,
   missing-function-docstring,
   superfluous-parens,

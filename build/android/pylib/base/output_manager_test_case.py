@@ -8,8 +8,7 @@ import unittest
 
 
 class OutputManagerTestCase(unittest.TestCase):
-
-  def assertUsableTempFile(self, archived_tempfile):
-    self.assertTrue(bool(archived_tempfile.name))
-    self.assertTrue(os.path.exists(archived_tempfile.name))
-    self.assertTrue(os.path.isfile(archived_tempfile.name))
+    def assertUsableTempFile(self, archived_tempfile):
+        self.assertTrue(bool(archived_tempfile.name))
+        self.assertTrue(os.path.exists(archived_tempfile.name))
+        self.assertTrue(os.path.isfile(archived_tempfile.name))

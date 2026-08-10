@@ -15,41 +15,45 @@ import gcc_preprocess
 
 
 class TestPreprocess(unittest.TestCase):
-
-  def testParsePackageName(self):
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-      template = f.name
-      f.file.write("""
+    def testParsePackageName(self):
+        with tempfile.NamedTemporaryFile(mode='w') as f:
+            template = f.name
+            f.file.write("""
 package org.chromium.fake;
 public class Empty {
 }
 """)
-      f.file.flush()
-      package_name, data = gcc_preprocess.ProcessJavaFile(template, [], [])
-      self.assertEqual('org.chromium.fake', package_name)
-      self.assertEqual(
-          """
+            f.file.flush()
+            package_name, data = gcc_preprocess.ProcessJavaFile(
+                template, [], []
+            )
+            self.assertEqual('org.chromium.fake', package_name)
+            self.assertEqual(
+                """
 package org.chromium.fake;
 public class Empty {
 }
-""".strip(), data.strip())
+""".strip(),
+                data.strip(),
+            )
 
-  def testMissingPackageName(self):
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-      template = f.name
-      f.file.write("""
+    def testMissingPackageName(self):
+        with tempfile.NamedTemporaryFile(mode='w') as f:
+            template = f.name
+            f.file.write("""
 public class Empty {
 }
 """)
-      f.file.flush()
-      with self.assertRaisesRegex(Exception,
-                                  r'Could not find java package of.*'):
-        gcc_preprocess.ProcessJavaFile(template, [], [])
+            f.file.flush()
+            with self.assertRaisesRegex(
+                Exception, r'Could not find java package of.*'
+            ):
+                gcc_preprocess.ProcessJavaFile(template, [], [])
 
-  def testSinglePreprocessorEvaluation(self):
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-      template = f.name
-      f.file.write("""
+    def testSinglePreprocessorEvaluation(self):
+        with tempfile.NamedTemporaryFile(mode='w') as f:
+            template = f.name
+            f.file.write("""
 package org.chromium.fake;
 public class Sample {
 #if defined(_ENABLE_ASSERTS)
@@ -59,24 +63,28 @@ public class Sample {
 #endif
 }
 """)
-      f.file.flush()
-      defines = [
-          '_ENABLE_ASSERTS',
-      ]
-      package_name, data = gcc_preprocess.ProcessJavaFile(template, defines, [])
-      self.assertEqual('org.chromium.fake', package_name)
-      self.assertEqual(
-          """
+            f.file.flush()
+            defines = [
+                '_ENABLE_ASSERTS',
+            ]
+            package_name, data = gcc_preprocess.ProcessJavaFile(
+                template, defines, []
+            )
+            self.assertEqual('org.chromium.fake', package_name)
+            self.assertEqual(
+                """
 package org.chromium.fake;
 public class Sample {
     public boolean ENABLE_ASSERTS = true;
 }
-""".strip(), data.strip())
+""".strip(),
+                data.strip(),
+            )
 
-  def testNestedPreprocessorEvaluation(self):
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-      template = f.name
-      f.file.write("""
+    def testNestedPreprocessorEvaluation(self):
+        with tempfile.NamedTemporaryFile(mode='w') as f:
+            template = f.name
+            f.file.write("""
 package org.chromium.fake;
 #if defined(USE_FINAL)
 #define MAYBE_FINAL final
@@ -91,25 +99,29 @@ public class Sample {
 #endif
 }
 """)
-      f.file.flush()
-      defines = [
-          '_ENABLE_ASSERTS',
-          'USE_FINAL',
-      ]
-      package_name, data = gcc_preprocess.ProcessJavaFile(template, defines, [])
-      self.assertEqual('org.chromium.fake', package_name)
-      self.assertEqual(
-          """
+            f.file.flush()
+            defines = [
+                '_ENABLE_ASSERTS',
+                'USE_FINAL',
+            ]
+            package_name, data = gcc_preprocess.ProcessJavaFile(
+                template, defines, []
+            )
+            self.assertEqual('org.chromium.fake', package_name)
+            self.assertEqual(
+                """
 package org.chromium.fake;
 public class Sample {
     public final boolean ENABLE_ASSERTS = true;
 }
-""".strip(), data.strip())
+""".strip(),
+                data.strip(),
+            )
 
-  def testPreserveComments(self):
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-      template = f.name
-      f.file.write("""
+    def testPreserveComments(self):
+        with tempfile.NamedTemporaryFile(mode='w') as f:
+            template = f.name
+            f.file.write("""
 // Copyright header ...
 package org.chromium.fake;
 /**
@@ -126,14 +138,16 @@ public class Sample {
 #endif
 }
 """)
-      f.file.flush()
-      defines = [
-          '_ENABLE_ASSERTS',
-      ]
-      package_name, data = gcc_preprocess.ProcessJavaFile(template, defines, [])
-      self.assertEqual('org.chromium.fake', package_name)
-      self.assertEqual(
-          """
+            f.file.flush()
+            defines = [
+                '_ENABLE_ASSERTS',
+            ]
+            package_name, data = gcc_preprocess.ProcessJavaFile(
+                template, defines, []
+            )
+            self.assertEqual('org.chromium.fake', package_name)
+            self.assertEqual(
+                """
 // Copyright header ...
 package org.chromium.fake;
 /**
@@ -144,8 +158,10 @@ public class Sample {
     // Inside the #if block.
     public boolean ENABLE_ASSERTS = true;
 }
-""".strip(), data.strip())
+""".strip(),
+                data.strip(),
+            )
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

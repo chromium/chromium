@@ -21,9 +21,12 @@ def test_connection(target_id: Optional[str], wait_sec: int = 60) -> None:
     """
     start_sec = time.time()
     while time.time() - start_sec < wait_sec:
-        if run_ffx_command(cmd=('target', 'echo'),
-                           target_id=target_id,
-                           check=False).returncode == 0:
+        if (
+            run_ffx_command(
+                cmd=('target', 'echo'), target_id=target_id, check=False
+            ).returncode
+            == 0
+        ):
             return
         time.sleep(10)
 
@@ -49,7 +52,10 @@ def test_device_connection(target_id: Optional[str]) -> None:
                 # continuing the test rather than failing here.
                 pass
             logging.warning(
-                run_ffx_command(cmd=('target', 'wait'),
-                                target_id=target_id,
-                                check=False,
-                                capture_output=True).stdout)
+                run_ffx_command(
+                    cmd=('target', 'wait'),
+                    target_id=target_id,
+                    check=False,
+                    capture_output=True,
+                ).stdout
+            )

@@ -15,20 +15,20 @@ This function filters them out.
 
 def filter_clang_args(clangargs):
 
-  def do_filter(args):
-    i = 0
-    while i < len(args):
-      # Intercept plugin arguments
-      if args[i] == '-Xclang':
-        i += 1
-        if args[i] == '-add-plugin':
-          pass
-        elif args[i].startswith('-plugin-arg'):
-          i += 2
-      elif args[i] == '-ftime-trace':
-        pass
-      else:
-        yield args[i]
-      i += 1
+    def do_filter(args):
+        i = 0
+        while i < len(args):
+            # Intercept plugin arguments
+            if args[i] == '-Xclang':
+                i += 1
+                if args[i] == '-add-plugin':
+                    pass
+                elif args[i].startswith('-plugin-arg'):
+                    i += 2
+            elif args[i] == '-ftime-trace':
+                pass
+            else:
+                yield args[i]
+            i += 1
 
-  return list(do_filter(clangargs))
+    return list(do_filter(clangargs))

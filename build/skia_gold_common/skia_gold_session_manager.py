@@ -19,13 +19,17 @@ KeysInputType = Union[dict, str]
 #     },
 #   },
 # }
-SessionMapType = Dict[str, Dict[str, Dict[str,
-                                          skia_gold_session.SkiaGoldSession]]]
+SessionMapType = Dict[
+  str, Dict[str, Dict[str, skia_gold_session.SkiaGoldSession]]
+]
 
 
-class SkiaGoldSessionManager():
-  def __init__(self, working_dir: str,
-               gold_properties: skia_gold_properties.SkiaGoldProperties):
+class SkiaGoldSessionManager:
+  def __init__(
+    self,
+    working_dir: str,
+    gold_properties: skia_gold_properties.SkiaGoldProperties,
+  ):
     """Class to manage one or more skia_gold_session.SkiaGoldSessions.
 
     A separate session is required for each instance/corpus/keys_file
@@ -45,11 +49,12 @@ class SkiaGoldSessionManager():
     self._sessions: SessionMapType = {}
 
   def GetSkiaGoldSession(
-      self,
-      keys_input: KeysInputType,
-      corpus: Optional[str] = None,
-      instance: Optional[str] = None,
-      bucket: Optional[str] = None) -> skia_gold_session.SkiaGoldSession:
+    self,
+    keys_input: KeysInputType,
+    corpus: Optional[str] = None,
+    instance: Optional[str] = None,
+    bucket: Optional[str] = None,
+  ) -> skia_gold_session.SkiaGoldSession:
     """Gets a SkiaGoldSession for the given arguments.
 
     Lazily creates one if necessary.
@@ -73,14 +78,17 @@ class SkiaGoldSessionManager():
       corpus = keys_dict.get('source_type', instance)
     # Use the string representation of the keys JSON as a proxy for a hash since
     # dicts themselves are not hashable.
-    session = self._sessions.setdefault(instance,
-                                        {}).setdefault(corpus, {}).setdefault(
-                                            keys_string, None)
+    session = (
+      self._sessions.setdefault(instance, {})
+      .setdefault(corpus, {})
+      .setdefault(keys_string, None)
+    )
     if not session:
       working_dir = tempfile.mkdtemp(dir=self._working_dir)
       keys_file = _GetKeysAsJson(keys_input, working_dir)
-      session = self.GetSessionClass()(working_dir, self._gold_properties,
-                                       keys_file, corpus, instance, bucket)
+      session = self.GetSessionClass()(
+        working_dir, self._gold_properties, keys_file, corpus, instance, bucket
+      )
       self._sessions[instance][corpus][keys_string] = session
     return session
 
@@ -136,9 +144,9 @@ def _GetKeysAsJson(keys_input: KeysInputType, session_work_dir: str) -> str:
   if isinstance(keys_input, str):
     return keys_input
   assert isinstance(keys_input, dict)
-  keys_file = tempfile.NamedTemporaryFile(suffix='.json',
-                                          dir=session_work_dir,
-                                          delete=False).name
+  keys_file = tempfile.NamedTemporaryFile(
+    suffix='.json', dir=session_work_dir, delete=False
+  ).name
   with open(keys_file, 'w') as f:
     json.dump(keys_input, f)
   return keys_file

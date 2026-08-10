@@ -30,6 +30,7 @@ def is_bad_gn_file(filepath: str, root: pathlib.Path) -> bool:
 def is_git_ignored(root: pathlib.Path, filepath: str) -> bool:
     # The command git check-ignore exits with 0 if the path is ignored, 1 if it
     # is not ignored.
-    exit_code = subprocess.run(['git', 'check-ignore', '-q', filepath],
-                               cwd=root).returncode
+    exit_code = subprocess.run(
+        ['git', 'check-ignore', '-q', filepath], cwd=root
+    ).returncode
     return exit_code == 0

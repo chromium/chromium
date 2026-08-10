@@ -7,46 +7,46 @@
 # remove object inheritance from this script.
 # pylint: disable=useless-object-inheritance
 class Environment(object):
-  """An environment in which tests can be run.
+    """An environment in which tests can be run.
 
-  This is expected to handle all logic that is applicable to an entire specific
-  environment but is independent of the test type.
+    This is expected to handle all logic that is applicable to an entire specific
+    environment but is independent of the test type.
 
-  Examples include:
-    - The local device environment, for running tests on devices attached to
-      the local machine.
-    - The local machine environment, for running tests directly on the local
-      machine.
-  """
-
-  def __init__(self, output_manager):
-    """Environment constructor.
-
-    Args:
-      output_manager: Instance of |output_manager.OutputManager| used to
-          save test output.
+    Examples include:
+      - The local device environment, for running tests on devices attached to
+        the local machine.
+      - The local machine environment, for running tests directly on the local
+        machine.
     """
-    self._output_manager = output_manager
 
-    # Some subclasses have different teardown behavior on receiving SIGTERM.
-    self._received_sigterm = False
+    def __init__(self, output_manager):
+        """Environment constructor.
 
-  def SetUp(self):
-    raise NotImplementedError
+        Args:
+          output_manager: Instance of |output_manager.OutputManager| used to
+              save test output.
+        """
+        self._output_manager = output_manager
 
-  def TearDown(self):
-    raise NotImplementedError
+        # Some subclasses have different teardown behavior on receiving SIGTERM.
+        self._received_sigterm = False
 
-  def __enter__(self):
-    self.SetUp()
-    return self
+    def SetUp(self):
+        raise NotImplementedError
 
-  def __exit__(self, _exc_type, _exc_val, _exc_tb):
-    self.TearDown()
+    def TearDown(self):
+        raise NotImplementedError
 
-  @property
-  def output_manager(self):
-    return self._output_manager
+    def __enter__(self):
+        self.SetUp()
+        return self
 
-  def ReceivedSigterm(self):
-    self._received_sigterm = True
+    def __exit__(self, _exc_type, _exc_val, _exc_tb):
+        self.TearDown()
+
+    @property
+    def output_manager(self):
+        return self._output_manager
+
+    def ReceivedSigterm(self):
+        self._received_sigterm = True

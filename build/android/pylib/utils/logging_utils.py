@@ -9,10 +9,11 @@ import os
 from pylib.constants import host_paths
 
 _COLORAMA_PATH = os.path.join(
-    host_paths.DIR_SOURCE_ROOT, 'third_party', 'colorama', 'src')
+    host_paths.DIR_SOURCE_ROOT, 'third_party', 'colorama', 'src'
+)
 
 with host_paths.SysPath(_COLORAMA_PATH, position=0):
-  import colorama
+    import colorama
 
 BACK = colorama.Back
 FORE = colorama.Fore
@@ -20,136 +21,136 @@ STYLE = colorama.Style
 
 
 def InitColorama():
-  # NO_COLOR is a common way of disabling colors in terminal apps.
-  strip = True if bool(os.environ.get('NO_COLOR')) else None
-  colorama.init(strip=strip)
+    # NO_COLOR is a common way of disabling colors in terminal apps.
+    strip = True if bool(os.environ.get('NO_COLOR')) else None
+    colorama.init(strip=strip)
 
 
 def Colorize(text, style=''):
-  return style + text + colorama.Style.RESET_ALL
+    return style + text + colorama.Style.RESET_ALL
 
 
 class _ColorFormatter(logging.Formatter):
-  # pylint does not see members added dynamically in the constructor.
-  # pylint: disable=no-member
+    # pylint does not see members added dynamically in the constructor.
+    # pylint: disable=no-member
 
-  def __init__(self, wrapped_formatter=None, color_warnings=False):
-    """Wraps a |logging.Formatter| and adds color."""
-    super().__init__()
-    self._wrapped_formatter = wrapped_formatter or logging.Formatter()
-    self.color_map = {
-        logging.DEBUG: (),  # Default style.
-        logging.INFO: (),
-        logging.WARNING: FORE.YELLOW if color_warnings else (),
-        logging.ERROR: FORE.RED,
-        logging.CRITICAL: (BACK.RED, FORE.WHITE),
-    }
+    def __init__(self, wrapped_formatter=None, color_warnings=False):
+        """Wraps a |logging.Formatter| and adds color."""
+        super().__init__()
+        self._wrapped_formatter = wrapped_formatter or logging.Formatter()
+        self.color_map = {
+            logging.DEBUG: (),  # Default style.
+            logging.INFO: (),
+            logging.WARNING: FORE.YELLOW if color_warnings else (),
+            logging.ERROR: FORE.RED,
+            logging.CRITICAL: (BACK.RED, FORE.WHITE),
+        }
 
-  #override
-  def format(self, record):
-    message = self._wrapped_formatter.format(record)
-    return self.Colorize(message, record.levelno)
+    # override
+    def format(self, record):
+        message = self._wrapped_formatter.format(record)
+        return self.Colorize(message, record.levelno)
 
-  def Colorize(self, message, log_level):
-    try:
-      colors = ''.join(self.color_map[log_level])
-      if not colors or not message:
-        return message
-      # Color only the log level char.
-      return Colorize(message[0], colors) + message[1:]
-    except KeyError:
-      return message
+    def Colorize(self, message, log_level):
+        try:
+            colors = ''.join(self.color_map[log_level])
+            if not colors or not message:
+                return message
+            # Color only the log level char.
+            return Colorize(message[0], colors) + message[1:]
+        except KeyError:
+            return message
 
 
 class ColorStreamHandler(logging.StreamHandler):
-  """Handler that can be used to colorize logging output.
+    """Handler that can be used to colorize logging output.
 
-  Example using a specific logger:
+    Example using a specific logger:
 
-    logger = logging.getLogger('my_logger')
-    logger.addHandler(ColorStreamHandler())
-    logger.info('message')
+      logger = logging.getLogger('my_logger')
+      logger.addHandler(ColorStreamHandler())
+      logger.info('message')
 
-  Example using the root logger:
+    Example using the root logger:
 
-    ColorStreamHandler.MakeDefault()
-    logging.info('message')
+      ColorStreamHandler.MakeDefault()
+      logging.info('message')
 
-  """
-
-  def __init__(self, force_color=False, color_warnings=False):
-    super().__init__()
-    self.force_color = force_color
-    self.color_warnings = color_warnings
-    self.setFormatter(logging.Formatter())
-
-  @property
-  def is_tty(self):
-    try:
-      isatty = getattr(self.stream, 'isatty')
-    except AttributeError:
-      return False
-    return isatty()
-
-  #override
-  def setFormatter(self, fmt):
-    if self.force_color or self.is_tty:
-      fmt = _ColorFormatter(fmt, color_warnings=self.color_warnings)
-    super().setFormatter(fmt)
-
-  @staticmethod
-  def MakeDefault(force_color=False):
     """
-     Replaces the default logging handlers with a coloring handler. To use
-     a colorizing handler at the same time as others, either register them
-     after this call, or add the ColorStreamHandler on the logger using
-     Logger.addHandler()
 
-     Args:
-       force_color: Set to True to bypass the tty check and always colorize.
-     """
-    # If the existing handlers aren't removed, messages are duplicated
-    logging.getLogger().handlers = []
-    logging.getLogger().addHandler(ColorStreamHandler(force_color))
+    def __init__(self, force_color=False, color_warnings=False):
+        super().__init__()
+        self.force_color = force_color
+        self.color_warnings = color_warnings
+        self.setFormatter(logging.Formatter())
+
+    @property
+    def is_tty(self):
+        try:
+            isatty = getattr(self.stream, 'isatty')
+        except AttributeError:
+            return False
+        return isatty()
+
+    # override
+    def setFormatter(self, fmt):
+        if self.force_color or self.is_tty:
+            fmt = _ColorFormatter(fmt, color_warnings=self.color_warnings)
+        super().setFormatter(fmt)
+
+    @staticmethod
+    def MakeDefault(force_color=False):
+        """
+        Replaces the default logging handlers with a coloring handler. To use
+        a colorizing handler at the same time as others, either register them
+        after this call, or add the ColorStreamHandler on the logger using
+        Logger.addHandler()
+
+        Args:
+          force_color: Set to True to bypass the tty check and always colorize.
+        """
+        # If the existing handlers aren't removed, messages are duplicated
+        logging.getLogger().handlers = []
+        logging.getLogger().addHandler(ColorStreamHandler(force_color))
 
 
 @contextlib.contextmanager
 def OverrideColor(level, color):
-  """Temporarily override the logging color for a specified level.
+    """Temporarily override the logging color for a specified level.
 
-  Args:
-    level: logging level whose color gets overridden.
-    color: tuple of formats to apply to log lines.
-  """
-  prev_colors = {}
-  for handler in logging.getLogger().handlers:
-    if isinstance(handler.formatter, _ColorFormatter):
-      prev_colors[handler.formatter] = handler.formatter.color_map[level]
-      handler.formatter.color_map[level] = color
-  try:
-    yield
-  finally:
-    for formatter, prev_color in prev_colors.items():
-      formatter.color_map[level] = prev_color
+    Args:
+      level: logging level whose color gets overridden.
+      color: tuple of formats to apply to log lines.
+    """
+    prev_colors = {}
+    for handler in logging.getLogger().handlers:
+        if isinstance(handler.formatter, _ColorFormatter):
+            prev_colors[handler.formatter] = handler.formatter.color_map[level]
+            handler.formatter.color_map[level] = color
+    try:
+        yield
+    finally:
+        for formatter, prev_color in prev_colors.items():
+            formatter.color_map[level] = prev_color
 
 
 @contextlib.contextmanager
 def SuppressLogging(level=logging.ERROR):
-  """Momentarilly suppress logging events from all loggers.
+    """Momentarilly suppress logging events from all loggers.
 
-  TODO(jbudorick): This is not thread safe. Log events from other threads might
-  also inadvertently disappear.
+    TODO(jbudorick): This is not thread safe. Log events from other threads might
+    also inadvertently disappear.
 
-  Example:
+    Example:
 
-    with logging_utils.SuppressLogging():
-      # all but CRITICAL logging messages are suppressed
-      logging.info('just doing some thing') # not shown
-      logging.critical('something really bad happened') # still shown
+      with logging_utils.SuppressLogging():
+        # all but CRITICAL logging messages are suppressed
+        logging.info('just doing some thing') # not shown
+        logging.critical('something really bad happened') # still shown
 
-  Args:
-    level: logging events with this or lower levels are suppressed.
-  """
-  logging.disable(level)
-  yield
-  logging.disable(logging.NOTSET)
+    Args:
+      level: logging events with this or lower levels are suppressed.
+    """
+    logging.disable(level)
+    yield
+    logging.disable(logging.NOTSET)

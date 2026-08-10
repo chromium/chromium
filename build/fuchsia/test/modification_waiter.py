@@ -1,8 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" An AbstractContextManager to wait the modifications to finish during exit.
-"""
+"""An AbstractContextManager to wait the modifications to finish during exit."""
 
 import os
 import time
@@ -10,8 +9,8 @@ from contextlib import AbstractContextManager
 
 
 class ModificationWaiter(AbstractContextManager):
-    """ Exits if there is no modifications for a certain time period, or the
-    timeout has been reached. """
+    """Exits if there is no modifications for a certain time period, or the
+    timeout has been reached."""
 
     def __init__(self, path: str) -> None:
         self._path = path

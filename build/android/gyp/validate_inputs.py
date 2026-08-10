@@ -11,24 +11,24 @@ import sys
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--stamp', help='Path to touch on success.')
-  parser.add_argument('inputs', nargs='+', help='Files to check.')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--stamp', help='Path to touch on success.')
+    parser.add_argument('inputs', nargs='+', help='Files to check.')
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  for path in args.inputs:
-    path_obj = pathlib.Path(path)
-    if not path_obj.is_file():
-      if not path_obj.exists():
-        sys.stderr.write(f'File not found: {path}\n')
-      else:
-        sys.stderr.write(f'Not a file: {path}\n')
-      sys.exit(1)
+    for path in args.inputs:
+        path_obj = pathlib.Path(path)
+        if not path_obj.is_file():
+            if not path_obj.exists():
+                sys.stderr.write(f'File not found: {path}\n')
+            else:
+                sys.stderr.write(f'Not a file: {path}\n')
+            sys.exit(1)
 
-  if args.stamp:
-    pathlib.Path(args.stamp).touch()
+    if args.stamp:
+        pathlib.Path(args.stamp).touch()
 
 
 if __name__ == '__main__':
-  main()
+    main()

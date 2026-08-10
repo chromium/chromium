@@ -20,38 +20,38 @@ import tempfile
 
 
 def rustc_name():
-  if platform.system() == 'Windows':
-    return "rustc.exe"
-  else:
-    return "rustc"
+    if platform.system() == 'Windows':
+        return "rustc.exe"
+    else:
+        return "rustc"
 
 
 def capture_rustc_cfg(rust_prefix, target, output_path):
-  """ Invokes `rustc --print=cfg --target=<target>` and saves results.
+    """Invokes `rustc --print=cfg --target=<target>` and saves results.
 
-  Results are saved to a file at `output_path`. """
+    Results are saved to a file at `output_path`."""
 
-  rustc_path = os.path.join(rust_prefix, rustc_name())
+    rustc_path = os.path.join(rust_prefix, rustc_name())
 
-  # TODO(lukasza): Check if command-line flags other `--target` may affect the
-  # output of `--print-cfg`.  If so, then consider also passing extra `args`
-  # (derived from `rustflags` maybe?).
-  args = [rustc_path, "--print=cfg", f"--target={target}"]
+    # TODO(lukasza): Check if command-line flags other `--target` may affect the
+    # output of `--print-cfg`.  If so, then consider also passing extra `args`
+    # (derived from `rustflags` maybe?).
+    args = [rustc_path, "--print=cfg", f"--target={target}"]
 
-  os.makedirs(os.path.dirname(output_path), exist_ok=True)
-  with open(output_path, 'w') as output_file:
-    subprocess.run(args, stdout=output_file, check=True)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, 'w') as output_file:
+        subprocess.run(args, stdout=output_file, check=True)
 
 
 def main():
-  parser = argparse.ArgumentParser("rustc_print_cfg.py")
-  parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
-  parser.add_argument('--target', required=True, help='rust target triple')
-  parser.add_argument('--output-path', required=True, help='output file')
-  args = parser.parse_args()
-  capture_rustc_cfg(args.rust_prefix, args.target, args.output_path)
-  return 0
+    parser = argparse.ArgumentParser("rustc_print_cfg.py")
+    parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
+    parser.add_argument('--target', required=True, help='rust target triple')
+    parser.add_argument('--output-path', required=True, help='output file')
+    args = parser.parse_args()
+    capture_rustc_cfg(args.rust_prefix, args.target, args.output_path)
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

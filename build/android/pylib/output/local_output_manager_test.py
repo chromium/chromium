@@ -15,21 +15,22 @@ from pylib.output import local_output_manager
 
 
 class LocalOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
+    def setUp(self):
+        self._output_dir = tempfile.mkdtemp()
+        self._output_manager = local_output_manager.LocalOutputManager(
+            self._output_dir
+        )
 
-  def setUp(self):
-    self._output_dir = tempfile.mkdtemp()
-    self._output_manager = local_output_manager.LocalOutputManager(
-        self._output_dir)
+    def testUsableTempFile(self):
+        self.assertUsableTempFile(
+            self._output_manager._CreateArchivedFile(
+                'test_file', 'test_subdir', output_manager.Datatype.TEXT, None
+            )
+        )
 
-  def testUsableTempFile(self):
-    self.assertUsableTempFile(
-        self._output_manager._CreateArchivedFile('test_file', 'test_subdir',
-                                                 output_manager.Datatype.TEXT,
-                                                 None))
-
-  def tearDown(self):
-    shutil.rmtree(self._output_dir)
+    def tearDown(self):
+        shutil.rmtree(self._output_dir)
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

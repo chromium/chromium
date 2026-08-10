@@ -18,7 +18,8 @@ import sys
 from typing import Optional, Union
 
 CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..'))
+  os.path.join(os.path.dirname(__file__), '..', '..')
+)
 
 ParsedCmdArgs = Union[argparse.Namespace, optparse.Values]
 
@@ -27,7 +28,7 @@ def _IsWin() -> bool:
   return sys.platform == 'win32'
 
 
-class SkiaGoldProperties():
+class SkiaGoldProperties:
   def __init__(self, args: ParsedCmdArgs):
     """Class to validate and store properties related to Skia Gold.
 
@@ -100,10 +101,15 @@ class SkiaGoldProperties():
 
   def _GetGitOriginMainHeadSha1(self) -> Optional[str]:
     try:
-      return subprocess.check_output(
+      return (
+        subprocess.check_output(
           ['git', 'rev-parse', 'origin/main'],
           shell=_IsWin(),
-          cwd=self._GetGitRepoDirectory()).decode('utf-8').strip()
+          cwd=self._GetGitRepoDirectory(),
+        )
+        .decode('utf-8')
+        .strip()
+      )
     except subprocess.CalledProcessError:
       return None
 
@@ -116,11 +122,13 @@ class SkiaGoldProperties():
       # a workstation and try to get the local origin/master HEAD.
       if not self._IsLocalRun():
         raise RuntimeError(
-            '--git-revision was not passed when running on a bot')
+          '--git-revision was not passed when running on a bot'
+        )
       revision = self._GetGitOriginMainHeadSha1()
       if not revision or len(revision) != 40:
         raise RuntimeError(
-            '--git-revision not passed and unable to determine from git')
+          '--git-revision not passed and unable to determine from git'
+        )
       self._git_revision = revision
     return self._git_revision
 
@@ -137,15 +145,17 @@ class SkiaGoldProperties():
       self._local_pixel_tests = not (in_swarming or in_skylab)
       if self._local_pixel_tests:
         logging.warning(
-            'Automatically determined that test is running on a workstation')
+          'Automatically determined that test is running on a workstation'
+        )
       else:
         logging.warning(
-            'Automatically determined that test is running on a bot')
+          'Automatically determined that test is running on a bot'
+        )
     return self._local_pixel_tests
 
   @staticmethod
   def AddCommandLineArguments(parser: argparse.ArgumentParser) -> None:
-    """ Add command line arguments to an ArgumentParser instance
+    """Add command line arguments to an ArgumentParser instance
 
     Args:
       parser: ArgumentParser instance
@@ -155,18 +165,20 @@ class SkiaGoldProperties():
     """
     parser.add_argument('--git-revision', type=str, help='Git revision')
     parser.add_argument('--gerrit-issue', type=int, help='Gerrit issue number')
-    parser.add_argument('--gerrit-patchset',
-                        type=int,
-                        help='Gerrit patchset number')
-    parser.add_argument('--buildbucket-id',
-                        type=int,
-                        help='Buildbucket ID of builder')
-    parser.add_argument('--code-review-system',
-                        type=str,
-                        help='Code review system')
-    parser.add_argument('--continuous-integration-system',
-                        type=str,
-                        help='Continuous integration system')
+    parser.add_argument(
+      '--gerrit-patchset', type=int, help='Gerrit patchset number'
+    )
+    parser.add_argument(
+      '--buildbucket-id', type=int, help='Buildbucket ID of builder'
+    )
+    parser.add_argument(
+      '--code-review-system', type=str, help='Code review system'
+    )
+    parser.add_argument(
+      '--continuous-integration-system',
+      type=str,
+      help='Continuous integration system',
+    )
 
   def _InitializeProperties(self, args: ParsedCmdArgs) -> None:
     if hasattr(args, 'local_pixel_tests'):
@@ -204,9 +216,11 @@ class SkiaGoldProperties():
     self._issue = args.gerrit_issue
     if not hasattr(args, 'gerrit_patchset') or not args.gerrit_patchset:
       raise RuntimeError(
-          '--gerrit-issue passed, but --gerrit-patchset not passed.')
+        '--gerrit-issue passed, but --gerrit-patchset not passed.'
+      )
     self._patchset = args.gerrit_patchset
     if not hasattr(args, 'buildbucket_id') or not args.buildbucket_id:
       raise RuntimeError(
-          '--gerrit-issue passed, but --buildbucket-id not passed.')
+        '--gerrit-issue passed, but --buildbucket-id not passed.'
+      )
     self._job_id = args.buildbucket_id

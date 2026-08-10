@@ -46,9 +46,9 @@ class BuildFileTest(unittest.TestCase):
             android_library("target3") {
               public_deps = [ "//java" ]
             }
-            '''))
-            with json_gn_editor.BuildFile(build_gn_path,
-                                          rootdir) as build_file:
+            ''')
+                )
+            with json_gn_editor.BuildFile(build_gn_path, rootdir) as build_file:
                 # Test both explicit and implied dep resolution works.
                 build_file.split_dep('//java:java', '//other_dir:other_dep')
                 build_file.split_dep('//java', '//other_dir:other_dep2')
@@ -82,7 +82,8 @@ class BuildFileTest(unittest.TestCase):
                 "//other_dir:other_dep2",
               ]
             }
-            '''))
+            '''),
+                )
 
     def test_split_dep_does_not_duplicate_deps(self):
         with tempfile.TemporaryDirectory() as rootdir:
@@ -98,9 +99,9 @@ class BuildFileTest(unittest.TestCase):
                 "//other_dir:other_dep",
               ]
             }
-            '''))
-            with json_gn_editor.BuildFile(build_gn_path,
-                                          rootdir) as build_file:
+            ''')
+                )
+            with json_gn_editor.BuildFile(build_gn_path, rootdir) as build_file:
                 build_file.split_dep('//java:java', '//other_dir:other_dep')
             with open(build_gn_path, 'r') as f:
                 self.assertEqual(
@@ -112,7 +113,8 @@ class BuildFileTest(unittest.TestCase):
                 "//other_dir:other_dep",
               ]
             }
-            '''))
+            '''),
+                )
 
 
 if __name__ == '__main__':

@@ -37,10 +37,9 @@ def _env_ready() -> bool:
     return True
 
 
-def boot_device(node_id: str,
-                serial_num: str,
-                mode: BootMode,
-                must_boot: bool = False) -> bool:
+def boot_device(
+    node_id: str, serial_num: str, mode: BootMode, must_boot: bool = False
+) -> bool:
     """Boots device into desired mode via serial and fastboot.
     This function waits for at most 10 minutes for the transition.
 
@@ -55,7 +54,7 @@ def boot_device(node_id: str,
         dependencies like serialio (for serial access) and fastboot, or the
         device cannot be found may also introduce the error.
     """
-    #TODO(crbug.com/40935296): Remove the default values once the use in
+    # TODO(crbug.com/40935296): Remove the default values once the use in
     # flash_device has been migrated.
     if node_id is None:
         node_id = os.getenv('FUCHSIA_NODENAME')
@@ -64,8 +63,9 @@ def boot_device(node_id: str,
     assert node_id is not None
     assert serial_num is not None
 
-    assert mode in [BootMode.REGULAR, BootMode.BOOTLOADER
-                    ], 'Unsupported BootMode %s for serial_boot_device.' % mode
+    assert mode in [BootMode.REGULAR, BootMode.BOOTLOADER], (
+        'Unsupported BootMode %s for serial_boot_device.' % mode
+    )
     assert _env_ready()
 
     if is_in_fastboot(serial_num):
@@ -84,15 +84,27 @@ def boot_device(node_id: str,
             if not must_boot and mode == BootMode.REGULAR:
                 return True
         else:
-            logging.error('Cannot find node id %s or fastboot serial number '
-                          '%s, the os may run into panic, will try to use dm '
-                          'to reboot it anyway.',
-                          node_id, serial_num)
+            logging.error(
+                'Cannot find node id %s or fastboot serial number '
+                '%s, the os may run into panic, will try to use dm '
+                'to reboot it anyway.',
+                node_id,
+                serial_num,
+            )
         # pylint: disable=subprocess-run-check
-        if subprocess.run([
-                'serialio', node_id, 'send', 'dm', 'reboot' +
-                ('' if mode == BootMode.REGULAR else '-bootloader')
-        ]).returncode != 0:
+        if (
+            subprocess.run(
+                [
+                    'serialio',
+                    node_id,
+                    'send',
+                    'dm',
+                    'reboot'
+                    + ('' if mode == BootMode.REGULAR else '-bootloader'),
+                ]
+            ).returncode
+            != 0
+        ):
             logging.error('Failed to send dm reboot[-bootloader] via serialio')
             return False
 
@@ -105,36 +117,47 @@ def boot_device(node_id: str,
             return True
     logging.error(
         'Failed to transite node id %s or fastboot serial number %s '
-        'to expected state %s', node_id, serial_num, mode)
+        'to expected state %s',
+        node_id,
+        serial_num,
+        mode,
+    )
     return False
 
 
-def _serialio_send_and_wait(node_id: str, command: List[str],
-                            waitfor: str) -> bool:
+def _serialio_send_and_wait(
+    node_id: str, command: List[str], waitfor: str
+) -> bool:
     """Continously sends the command to the device and waits for the waitfor
     string via serialio.
     This function asserts the existence of serialio and waits at most ~30
     seconds."""
     assert shutil.which('serialio') is not None
     start_sec = time.time()
-    with subprocess.Popen(['serialio', node_id, 'wait', waitfor],
-                          stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL) as proc:
+    with subprocess.Popen(
+        ['serialio', node_id, 'wait', waitfor],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    ) as proc:
         while time.time() - start_sec < 28:
             send_command = ['serialio', node_id, 'send']
             send_command.extend(command)
             # pylint: disable=subprocess-run-check
             if subprocess.run(send_command).returncode != 0:
-                logging.error('Failed to send %s via serialio to %s', command,
-                              node_id)
+                logging.error(
+                    'Failed to send %s via serialio to %s', command, node_id
+                )
                 return False
             result = proc.poll()
             if result is not None:
                 if result == 0:
                     return True
                 logging.error(
-                    'Failed to wait %s via serial to %s, '
-                    'return code %s', waitfor, node_id, result)
+                    'Failed to wait %s via serial to %s, return code %s',
+                    waitfor,
+                    node_id,
+                    result,
+                )
                 return False
             time.sleep(2)
         proc.kill()
@@ -149,16 +172,21 @@ def is_in_fuchsia(node_id: str) -> bool:
     This function asserts the existence of serialio and waits at most ~60
     seconds."""
     if not _serialio_send_and_wait(
-            node_id, ['echo', 'yes-i-am-healthy', '|', 'sha1sum'],
-            '89d517b7db104aada669a83bc3c3a906e00671f7'):
+        node_id,
+        ['echo', 'yes-i-am-healthy', '|', 'sha1sum'],
+        '89d517b7db104aada669a83bc3c3a906e00671f7',
+    ):
         logging.error(
-            'Device %s did not respond echo, '
-            'it may not be running fuchsia', node_id)
+            'Device %s did not respond echo, it may not be running fuchsia',
+            node_id,
+        )
         return False
     if not _serialio_send_and_wait(node_id, ['ps'], 'sshd'):
         logging.warning(
             'Cannot find sshd from ps on %s, the ssh '
-            'connection may not be available.', node_id)
+            'connection may not be available.',
+            node_id,
+        )
     return True
 
 
@@ -195,12 +223,16 @@ def _run_fastboot(args: List[str], serial_num: str) -> bool:
         # Capture output to ensure we can get '< waiting for serial-num >'
         # output.
         # pylint: disable=subprocess-run-check
-        if subprocess.run(args, capture_output=True,
-                          timeout=30).returncode == 0:
+        if (
+            subprocess.run(args, capture_output=True, timeout=30).returncode
+            == 0
+        ):
             return True
     except subprocess.TimeoutExpired as timeout:
-        if timeout.stderr is not None and serial_num.lower(
-        ) in timeout.stderr.decode().lower():
+        if (
+            timeout.stderr is not None
+            and serial_num.lower() in timeout.stderr.decode().lower()
+        ):
             logging.warning('fastboot is still waiting for %s', serial_num)
             return None
     logging.error('Failed to run %s against fastboot %s', args, serial_num)
@@ -232,12 +264,16 @@ def main(action: str) -> int:
     handlers = [logging.StreamHandler()]
     if os.path.isdir('/home/swarming/'):
         handlers.append(
-            logging.FileHandler('/home/swarming/dmc.%s.log' % node_id))
-    logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s',
-                        handlers=handlers,
-                        level=logging.INFO)
-    logging.info('Running command %s against %s %s', sys.argv, node_id,
-                 serial_num)
+            logging.FileHandler('/home/swarming/dmc.%s.log' % node_id)
+        )
+    logging.basicConfig(
+        format='%(levelname)s %(asctime)s %(message)s',
+        handlers=handlers,
+        level=logging.INFO,
+    )
+    logging.info(
+        'Running command %s against %s %s', sys.argv, node_id, serial_num
+    )
 
     # Checks the environment after initializing the logging.
     if not _env_ready():
@@ -250,15 +286,23 @@ def main(action: str) -> int:
             # Print out the json result without using logging to avoid any
             # potential formatting issue.
             print(
-                json.dumps([{
-                    'nodename': node_id,
-                    'state': 'healthy',
-                    'status_message': '',
-                    'dms_state': ''
-                }]))
+                json.dumps(
+                    [
+                        {
+                            'nodename': node_id,
+                            'state': 'healthy',
+                            'status_message': '',
+                            'dms_state': '',
+                        }
+                    ]
+                )
+            )
             return 0
-        logging.error('Cannot find node id %s or fastboot serial number %s',
-                      node_id, serial_num)
+        logging.error(
+            'Cannot find node id %s or fastboot serial number %s',
+            node_id,
+            serial_num,
+        )
         return 1
     if action in ['reboot', 'after-task']:
         if action == 'after-task':
@@ -267,17 +311,22 @@ def main(action: str) -> int:
             return 0
         logging.error(
             'Cannot reboot the device with node id %s and fastboot '
-            'serial number %s', node_id, serial_num)
+            'serial number %s',
+            node_id,
+            serial_num,
+        )
         return 1
     if action == 'reboot-fastboot':
-        if boot_device(node_id,
-                       serial_num,
-                       BootMode.BOOTLOADER,
-                       must_boot=True):
+        if boot_device(
+            node_id, serial_num, BootMode.BOOTLOADER, must_boot=True
+        ):
             return 0
         logging.error(
             'Cannot reboot the device with node id %s and fastboot '
-            'serial number %s into fastboot', node_id, serial_num)
+            'serial number %s into fastboot',
+            node_id,
+            serial_num,
+        )
         return 1
     if action == 'is-in-fuchsia':
         if is_in_fuchsia(node_id):

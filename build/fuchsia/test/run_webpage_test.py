@@ -17,8 +17,9 @@ from test_runner import TestRunner
 _DEVTOOLS_PORT_FILE = 'webpage_test_runner.devtools.port'
 
 
-def capture_devtools_addr(proc: subprocess.Popen,
-                          logs_dir: str) -> Tuple[str, int]:
+def capture_devtools_addr(
+    proc: subprocess.Popen, logs_dir: str
+) -> Tuple[str, int]:
     """Returns the devtools address and port initiated by the running |proc|.
     This function should only be used when the WebpageTestRunner is executed by
     a different process."""
@@ -42,11 +43,17 @@ def capture_devtools_addr(proc: subprocess.Popen,
 class WebpageTestRunner(TestRunner):
     """Test runner for running GPU tests."""
 
-    def __init__(self, out_dir: str, test_args: List[str],
-                 target_id: Optional[str], logs_dir: Optional[str]) -> None:
+    def __init__(
+        self,
+        out_dir: str,
+        test_args: List[str],
+        target_id: Optional[str],
+        logs_dir: Optional[str],
+    ) -> None:
         super().__init__(out_dir, test_args, ['web_engine_shell'], target_id)
         self._runner = browser_runner.BrowserRunner(
-            browser_runner.WEB_ENGINE_SHELL, target_id, out_dir, logs_dir)
+            browser_runner.WEB_ENGINE_SHELL, target_id, out_dir, logs_dir
+        )
         if logs_dir:
             self.port_file = os.path.join(logs_dir, _DEVTOOLS_PORT_FILE)
         else:

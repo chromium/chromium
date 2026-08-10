@@ -20,177 +20,192 @@ import wrapper_utils
 
 
 def CollectSONAME(args):
-  """Replaces: readelf -d $sofile | grep SONAME"""
-  # TODO(crbug.com/40797404): Come up with a way to get this info without having
-  # to bundle readelf in the toolchain package.
-  toc = ''
-  readelf = subprocess.Popen(wrapper_utils.CommandToRun(
-      [args.readelf, '-d', args.output]),
-                             stdout=subprocess.PIPE,
-                             bufsize=-1,
-                             universal_newlines=True)
-  for line in readelf.stdout:
-    if 'SONAME' in line:
-      toc += line
-  return readelf.wait(), toc
+    """Replaces: readelf -d $sofile | grep SONAME"""
+    # TODO(crbug.com/40797404): Come up with a way to get this info without having
+    # to bundle readelf in the toolchain package.
+    toc = ''
+    readelf = subprocess.Popen(
+        wrapper_utils.CommandToRun([args.readelf, '-d', args.output]),
+        stdout=subprocess.PIPE,
+        bufsize=-1,
+        universal_newlines=True,
+    )
+    for line in readelf.stdout:
+        if 'SONAME' in line:
+            toc += line
+    return readelf.wait(), toc
 
 
 def CollectDynSym(args):
-  """Replaces: nm --format=posix -g -D -p $sofile | cut -f1-2 -d' '"""
-  toc = ''
-  nm = subprocess.Popen(wrapper_utils.CommandToRun(
-      [args.nm, '--format=posix', '-g', '-D', '-p', args.output]),
-                        stdout=subprocess.PIPE,
-                        bufsize=-1,
-                        universal_newlines=True)
-  for line in nm.stdout:
-    toc += ' '.join(line.split(' ', 2)[:2]) + '\n'
-  return nm.wait(), toc
+    """Replaces: nm --format=posix -g -D -p $sofile | cut -f1-2 -d' '"""
+    toc = ''
+    nm = subprocess.Popen(
+        wrapper_utils.CommandToRun(
+            [args.nm, '--format=posix', '-g', '-D', '-p', args.output]
+        ),
+        stdout=subprocess.PIPE,
+        bufsize=-1,
+        universal_newlines=True,
+    )
+    for line in nm.stdout:
+        toc += ' '.join(line.split(' ', 2)[:2]) + '\n'
+    return nm.wait(), toc
 
 
 def CollectTOC(args):
-  result, toc = CollectSONAME(args)
-  if result == 0:
-    result, dynsym = CollectDynSym(args)
-    toc += dynsym
-  return result, toc
+    result, toc = CollectSONAME(args)
+    if result == 0:
+        result, dynsym = CollectDynSym(args)
+        toc += dynsym
+    return result, toc
 
 
 def UpdateTOC(tocfile, toc):
-  if os.path.exists(tocfile):
-    old_toc = open(tocfile, 'r').read()
-  else:
-    old_toc = None
-  if toc != old_toc:
-    open(tocfile, 'w').write(toc)
+    if os.path.exists(tocfile):
+        old_toc = open(tocfile, 'r').read()
+    else:
+        old_toc = None
+    if toc != old_toc:
+        open(tocfile, 'w').write(toc)
 
 
 def CollectInputs(out, args):
-  for x in args:
-    if x.startswith('@'):
-      with open(x[1:]) as rsp:
-        CollectInputs(out, shlex.split(rsp.read()))
-    elif not x.startswith('-') and (x.endswith('.o') or x.endswith('.a')):
-      out.write(x)
-      out.write('\n')
+    for x in args:
+        if x.startswith('@'):
+            with open(x[1:]) as rsp:
+                CollectInputs(out, shlex.split(rsp.read()))
+        elif not x.startswith('-') and (x.endswith('.o') or x.endswith('.a')):
+            out.write(x)
+            out.write('\n')
 
 
 def InterceptFlag(flag, command):
-  ret = flag in command
-  if ret:
-    command.remove(flag)
-  return ret
+    ret = flag in command
+    if ret:
+        command.remove(flag)
+    return ret
 
 
 def SafeDelete(path):
-  try:
-    os.unlink(path)
-  except OSError:
-    pass
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
 
 
 def main():
-  parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--readelf',
-                      required=True,
-                      help='The readelf binary to run',
-                      metavar='PATH')
-  parser.add_argument('--nm',
-                      required=True,
-                      help='The nm binary to run',
-                      metavar='PATH')
-  parser.add_argument('--strip',
-                      help='The strip binary to run',
-                      metavar='PATH')
-  parser.add_argument('--symbols-file',
-                      help='.so file with .debug sections '
-                      '(if different from --output)',
-                      metavar='FILE')
-  parser.add_argument('--tocfile',
-                      required=True,
-                      help='Output table-of-contents file',
-                      metavar='FILE')
-  parser.add_argument('--map-file',
-                      help=('Use --Wl,-Map to generate a map file. Will be '
-                            'gzipped if extension ends with .gz'),
-                      metavar='FILE')
-  parser.add_argument('--output',
-                      required=True,
-                      help='Final output shared object file',
-                      metavar='FILE')
-  parser.add_argument('command', nargs='+',
-                      help='Linking command')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--readelf',
+        required=True,
+        help='The readelf binary to run',
+        metavar='PATH',
+    )
+    parser.add_argument(
+        '--nm', required=True, help='The nm binary to run', metavar='PATH'
+    )
+    parser.add_argument(
+        '--strip', help='The strip binary to run', metavar='PATH'
+    )
+    parser.add_argument(
+        '--symbols-file',
+        help='.so file with .debug sections (if different from --output)',
+        metavar='FILE',
+    )
+    parser.add_argument(
+        '--tocfile',
+        required=True,
+        help='Output table-of-contents file',
+        metavar='FILE',
+    )
+    parser.add_argument(
+        '--map-file',
+        help=(
+            'Use --Wl,-Map to generate a map file. Will be '
+            'gzipped if extension ends with .gz'
+        ),
+        metavar='FILE',
+    )
+    parser.add_argument(
+        '--output',
+        required=True,
+        help='Final output shared object file',
+        metavar='FILE',
+    )
+    parser.add_argument('command', nargs='+', help='Linking command')
+    args = parser.parse_args()
 
-  # Work-around for gold being slow-by-default. http://crbug.com/632230
-  fast_env = dict(os.environ)
-  fast_env['LC_ALL'] = 'C'
+    # Work-around for gold being slow-by-default. http://crbug.com/632230
+    fast_env = dict(os.environ)
+    fast_env['LC_ALL'] = 'C'
 
-  # Extract flags passed through ldflags but meant for this script.
-  # https://crbug.com/954311 tracks finding a better way to plumb these.
-  partitioned_library = InterceptFlag('--partitioned-library', args.command)
-  collect_inputs_only = InterceptFlag('--collect-inputs-only', args.command)
+    # Extract flags passed through ldflags but meant for this script.
+    # https://crbug.com/954311 tracks finding a better way to plumb these.
+    partitioned_library = InterceptFlag('--partitioned-library', args.command)
+    collect_inputs_only = InterceptFlag('--collect-inputs-only', args.command)
 
-  # Partitioned .so libraries are used only for splitting apart in a subsequent
-  # step.
-  #
-  # - The TOC file optimization isn't useful, because the partition libraries
-  #   must always be re-extracted if the combined library changes (and nothing
-  #   should be depending on the combined library's dynamic symbol table).
-  # - Stripping isn't necessary, because the combined library is not used in
-  #   production or published.
-  #
-  # Both of these operations could still be done, they're needless work, and
-  # tools would need to be updated to handle and/or not complain about
-  # partitioned libraries. Instead, to keep Ninja happy, simply create dummy
-  # files for the TOC and stripped lib.
-  if collect_inputs_only or partitioned_library:
-    open(args.tocfile, 'w').close()
+    # Partitioned .so libraries are used only for splitting apart in a subsequent
+    # step.
+    #
+    # - The TOC file optimization isn't useful, because the partition libraries
+    #   must always be re-extracted if the combined library changes (and nothing
+    #   should be depending on the combined library's dynamic symbol table).
+    # - Stripping isn't necessary, because the combined library is not used in
+    #   production or published.
+    #
+    # Both of these operations could still be done, they're needless work, and
+    # tools would need to be updated to handle and/or not complain about
+    # partitioned libraries. Instead, to keep Ninja happy, simply create dummy
+    # files for the TOC and stripped lib.
+    if collect_inputs_only or partitioned_library:
+        open(args.tocfile, 'w').close()
 
-  if partitioned_library:
-    open(args.output, 'w').close()
+    if partitioned_library:
+        open(args.output, 'w').close()
 
-  # Instead of linking, records all inputs to a file. This is used by
-  # enable_resource_allowlist_generation in order to avoid needing to
-  # link (which is slow) to build the resources allowlist.
-  if collect_inputs_only:
-    if args.map_file:
-      open(args.map_file, 'w').close()
-    if args.symbols_file:
-      open(args.symbols_file, 'w').close()
+    # Instead of linking, records all inputs to a file. This is used by
+    # enable_resource_allowlist_generation in order to avoid needing to
+    # link (which is slow) to build the resources allowlist.
+    if collect_inputs_only:
+        if args.map_file:
+            open(args.map_file, 'w').close()
+        if args.symbols_file:
+            open(args.symbols_file, 'w').close()
 
-    with open(args.output, 'w') as f:
-      CollectInputs(f, args.command)
-    return 0
+        with open(args.output, 'w') as f:
+            CollectInputs(f, args.command)
+        return 0
 
-  # Run the actual link.
-  command = wrapper_utils.CommandToRun(args.command)
-  result = wrapper_utils.RunLinkWithOptionalMapFile(command,
-                                                    env=fast_env,
-                                                    map_file=args.map_file)
-  if result != 0:
-    return result
-
-  if not partitioned_library:
-    # Strip the linked shared object file (if desired).
-    # When use_mold=true, the linker creates both stripped and symbols
-    # files directly.
-    if args.strip:
-      result = subprocess.call(
-          wrapper_utils.CommandToRun(
-              [args.strip, '-o', args.output, args.symbols_file]))
-
-    # Generate the contents of the TOC file.
-    result, toc = CollectTOC(args)
+    # Run the actual link.
+    command = wrapper_utils.CommandToRun(args.command)
+    result = wrapper_utils.RunLinkWithOptionalMapFile(
+        command, env=fast_env, map_file=args.map_file
+    )
     if result != 0:
-      return result
+        return result
 
-    # If there is an existing TOC file with identical contents, leave it alone.
-    # Otherwise, write out the TOC file.
-    UpdateTOC(args.tocfile, toc)
+    if not partitioned_library:
+        # Strip the linked shared object file (if desired).
+        # When use_mold=true, the linker creates both stripped and symbols
+        # files directly.
+        if args.strip:
+            result = subprocess.call(
+                wrapper_utils.CommandToRun(
+                    [args.strip, '-o', args.output, args.symbols_file]
+                )
+            )
 
-  return result
+        # Generate the contents of the TOC file.
+        result, toc = CollectTOC(args)
+        if result != 0:
+            return result
+
+        # If there is an existing TOC file with identical contents, leave it alone.
+        # Otherwise, write out the TOC file.
+        UpdateTOC(args.tocfile, toc)
+
+    return result
 
 
 if __name__ == "__main__":
-  sys.exit(main())
+    sys.exit(main())

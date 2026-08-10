@@ -17,13 +17,13 @@ from component_storage import ComponentStorage
 # relying on the extra docstrings.
 # pylint: disable=missing-docstring
 class ComponentStorageTest(unittest.TestCase):
-
     @mock.patch('component_storage.run_ffx_command')
     def test_retrieve_instance_id(self, mock_ffx) -> None:
         # This is the real output of a ffx component show, use it as-is - even
         # lines are fairly long.
         # pylint: disable=line-too-long
-        mock_ffx.return_value = SimpleNamespace(stdout="""{
+        mock_ffx.return_value = SimpleNamespace(
+            stdout="""{
             "moniker": "core/session-manager/session:session/cast_runner",
             "url": "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",
             "environment": null,
@@ -80,27 +80,33 @@ class ComponentStorageTest(unittest.TestCase):
                 "web_instances"
               ]
             }
-        }""")
+        }"""
+        )
         # pylint: disable=protected-access
         self.assertEqual(
             ComponentStorage(
                 "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",
-                "fuchsia-ac67-8464-ea93")._instance_id,
-            "980a67c8e6b0aa7736e69bc5e826bcc6a54f331a9d25947c2e7fb9d432576a16")
+                "fuchsia-ac67-8464-ea93",
+            )._instance_id,
+            "980a67c8e6b0aa7736e69bc5e826bcc6a54f331a9d25947c2e7fb9d432576a16",
+        )
 
     @mock.patch('component_storage.run_ffx_command')
     def test_assert_on_invalid_ffx_output(self, mock_ffx) -> None:
-        mock_ffx.return_value = SimpleNamespace(stdout="""{
+        mock_ffx.return_value = SimpleNamespace(
+            stdout="""{
             "moniker": "core/session-manager/session:session/cast_runner",
             "url": "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",
             "environment": null,
             "not_an_instance_id": "980a67c8e6b0aa7736e69bc5e826bcc6a54f331a9d25947c2e7fb9d432576a16",
             }
-        }""")
+        }"""
+        )
         with self.assertRaises(Exception):
             ComponentStorage(
                 "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",
-                "fuchsia-ac67-8464-ea93")
+                "fuchsia-ac67-8464-ea93",
+            )
 
 
 if __name__ == '__main__':

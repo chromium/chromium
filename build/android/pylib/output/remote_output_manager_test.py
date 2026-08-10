@@ -29,18 +29,19 @@ import mock  # pylint: disable=import-error
 
 @mock.patch('lib.common.google_storage_helper')
 class RemoteOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
+    def setUp(self):
+        self._output_manager = remote_output_manager.RemoteOutputManager(
+            'this-is-a-fake-bucket'
+        )
 
-  def setUp(self):
-    self._output_manager = remote_output_manager.RemoteOutputManager(
-        'this-is-a-fake-bucket')
-
-  def testUsableTempFile(self, google_storage_helper_mock):
-    del google_storage_helper_mock
-    self.assertUsableTempFile(
-        self._output_manager._CreateArchivedFile('test_file', 'test_subdir',
-                                                 output_manager.Datatype.TEXT,
-                                                 None))
+    def testUsableTempFile(self, google_storage_helper_mock):
+        del google_storage_helper_mock
+        self.assertUsableTempFile(
+            self._output_manager._CreateArchivedFile(
+                'test_file', 'test_subdir', output_manager.Datatype.TEXT, None
+            )
+        )
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

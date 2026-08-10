@@ -20,11 +20,13 @@ CAST_STREAMING_SHELL = 'cast-streaming-shell'
 class BrowserRunner:
     """Manages the browser process on the target."""
 
-    def __init__(self,
-                 browser_type: str,
-                 target_id: Optional[str] = None,
-                 output_dir: Optional[str] = None,
-                 logs_dir: Optional[str] = None):
+    def __init__(
+        self,
+        browser_type: str,
+        target_id: Optional[str] = None,
+        output_dir: Optional[str] = None,
+        logs_dir: Optional[str] = None,
+    ):
         self._browser_type = browser_type
         assert self._browser_type in [WEB_ENGINE_SHELL, CAST_STREAMING_SHELL]
         self._target_id = target_id
@@ -40,17 +42,19 @@ class BrowserRunner:
         output_root = os.path.join(self._output_dir, 'gen', 'fuchsia_web')
         if self._browser_type == WEB_ENGINE_SHELL:
             self._id_files = [
-                os.path.join(output_root, 'shell', 'web_engine_shell',
-                             'ids.txt'),
-                os.path.join(output_root, 'webengine', 'web_engine_with_webui',
-                             'ids.txt'),
+                os.path.join(
+                    output_root, 'shell', 'web_engine_shell', 'ids.txt'
+                ),
+                os.path.join(
+                    output_root, 'webengine', 'web_engine_with_webui', 'ids.txt'
+                ),
             ]
         else:  # self._browser_type == CAST_STREAMING_SHELL:
             self._id_files = [
-                os.path.join(output_root, 'shell', 'cast_streaming_shell',
-                             'ids.txt'),
-                os.path.join(output_root, 'webengine', 'web_engine',
-                             'ids.txt'),
+                os.path.join(
+                    output_root, 'shell', 'cast_streaming_shell', 'ids.txt'
+                ),
+                os.path.join(output_root, 'webengine', 'web_engine', 'ids.txt'),
             ]
 
     @property
@@ -110,49 +114,56 @@ class BrowserRunner:
         line."""
         browser_cmd = ['test', 'run']
         if self.browser_type == WEB_ENGINE_SHELL:
-            browser_cmd.extend([
-                f'fuchsia-pkg://{REPO_ALIAS}/web_engine_shell#meta/'
-                f'web_engine_shell.cm',
-                '--',
-                '--web-engine-package-name=web_engine_with_webui',
-                '--remote-debugging-port=0',
-                '--enable-web-instance-tmp',
-                '--with-webui',
-                '--enable-protected-media-identifier',
-                'about:blank',
-            ])
+            browser_cmd.extend(
+                [
+                    f'fuchsia-pkg://{REPO_ALIAS}/web_engine_shell#meta/'
+                    f'web_engine_shell.cm',
+                    '--',
+                    '--web-engine-package-name=web_engine_with_webui',
+                    '--remote-debugging-port=0',
+                    '--enable-web-instance-tmp',
+                    '--with-webui',
+                    '--enable-protected-media-identifier',
+                    'about:blank',
+                ]
+            )
         else:  # if self.browser_type == CAST_STREAMING_SHELL:
-            browser_cmd.extend([
-                f'fuchsia-pkg://{REPO_ALIAS}/cast_streaming_shell#meta/'
-                f'cast_streaming_shell.cm',
-                '--',
-                '--remote-debugging-port=0',
-            ])
+            browser_cmd.extend(
+                [
+                    f'fuchsia-pkg://{REPO_ALIAS}/cast_streaming_shell#meta/'
+                    f'cast_streaming_shell.cm',
+                    '--',
+                    '--remote-debugging-port=0',
+                ]
+            )
         # Use flags used on WebEngine in production devices.
-        browser_cmd.extend([
-            '--',
-            '--enable-low-end-device-mode',
-            '--force-gpu-mem-available-mb=64',
-            '--force-gpu-mem-discardable-limit-mb=32',
-            '--force-max-texture-size=2048',
-            '--gpu-rasterization-msaa-sample-count=0',
-            '--min-height-for-gpu-raster-tile=128',
-            '--webgl-msaa-sample-count=0',
-            '--max-decoded-image-size-mb=10',
-            '--protected-service-workers=https://[*.]',
-        ])
+        browser_cmd.extend(
+            [
+                '--',
+                '--enable-low-end-device-mode',
+                '--force-gpu-mem-available-mb=64',
+                '--force-gpu-mem-discardable-limit-mb=32',
+                '--force-max-texture-size=2048',
+                '--gpu-rasterization-msaa-sample-count=0',
+                '--min-height-for-gpu-raster-tile=128',
+                '--webgl-msaa-sample-count=0',
+                '--max-decoded-image-size-mb=10',
+                '--protected-service-workers=https://[*.]',
+            ]
+        )
         if extra_args:
             browser_cmd.extend(extra_args)
         self._browser_proc = run_continuous_ffx_command(
             cmd=browser_cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            target_id=self._target_id)
+            target_id=self._target_id,
+        )
         # The stdout will be forwarded to the symbolizer, then to the _log_fs.
         assert self._log_fs
-        self._symbolizer_proc = run_symbolizer(self._id_files,
-                                               self._browser_proc.stdout,
-                                               self._log_fs)
+        self._symbolizer_proc = run_symbolizer(
+            self._id_files, self._browser_proc.stdout, self._log_fs
+        )
         self._devtools_port = self._read_devtools_port()
 
     def stop_browser(self) -> None:

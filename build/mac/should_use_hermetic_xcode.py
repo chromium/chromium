@@ -15,7 +15,6 @@ Usage:
   python should_use_hermetic_xcode.py <target_os>
 """
 
-
 import argparse
 import os
 import sys
@@ -28,35 +27,38 @@ import mac_toolchain
 
 
 def _IsCorpMachine():
-  if sys.platform == 'darwin':
-    return os.path.isdir('/Library/GoogleCorpSupport/')
-  if sys.platform.startswith('linux'):
-    import subprocess
-    try:
-      return subprocess.check_output(['lsb_release',
-                                      '-sc']).rstrip() == b'rodete'
-    except:
-      return False
-  return False
+    if sys.platform == 'darwin':
+        return os.path.isdir('/Library/GoogleCorpSupport/')
+    if sys.platform.startswith('linux'):
+        import subprocess
+
+        try:
+            return (
+                subprocess.check_output(['lsb_release', '-sc']).rstrip()
+                == b'rodete'
+            )
+        except:
+            return False
+    return False
 
 
 def main():
-  parser = argparse.ArgumentParser(description='Download hermetic Xcode.')
-  parser.add_argument('platform')
-  args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Download hermetic Xcode.')
+    parser.add_argument('platform')
+    args = parser.parse_args()
 
-  force_toolchain = os.environ.get('FORCE_MAC_TOOLCHAIN')
-  if force_toolchain and args.platform == 'ios':
-    return "3"
-  allow_corp = args.platform == 'mac' and _IsCorpMachine()
-  if force_toolchain or allow_corp:
-    if not mac_toolchain.PlatformMeetsHermeticXcodeRequirements():
-      return "2"
-    return "1"
-  else:
-    return "0"
+    force_toolchain = os.environ.get('FORCE_MAC_TOOLCHAIN')
+    if force_toolchain and args.platform == 'ios':
+        return "3"
+    allow_corp = args.platform == 'mac' and _IsCorpMachine()
+    if force_toolchain or allow_corp:
+        if not mac_toolchain.PlatformMeetsHermeticXcodeRequirements():
+            return "2"
+        return "1"
+    else:
+        return "0"
 
 
 if __name__ == '__main__':
-  print(main())
-  sys.exit(0)
+    print(main())
+    sys.exit(0)

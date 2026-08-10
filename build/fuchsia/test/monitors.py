@@ -1,7 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" The module to provide measurements when it's supported. """
+"""The module to provide measurements when it's supported."""
 
 import os
 import sys
@@ -11,12 +11,20 @@ from contextlib import AbstractContextManager
 from common import DIR_SRC_ROOT
 
 PROTO_DIR = os.path.abspath(
-    os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'proto'))
+    os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'proto')
+)
 if os.path.isdir(PROTO_DIR):
     sys.path.append(PROTO_DIR)
     # pylint: disable=import-error, unused-import
-    from measures import average, clear, count, data_points, dump, tag, \
-            time_consumption
+    from measures import (
+        average,
+        clear,
+        count,
+        data_points,
+        dump,
+        tag,
+        time_consumption,
+    )
 else:
 
     class Dummy(AbstractContextManager):

@@ -17,27 +17,38 @@ import sys
 from util import build_utils
 
 # Assume this is stored under build/android/gyp/
-BUNDLETOOL_DIR = os.path.abspath(os.path.join(
-    __file__, '..', '..', '..', '..', 'third_party', 'android_build_tools',
-    'bundletool', 'cipd'))
+BUNDLETOOL_DIR = os.path.abspath(
+    os.path.join(
+        __file__,
+        '..',
+        '..',
+        '..',
+        '..',
+        'third_party',
+        'android_build_tools',
+        'bundletool',
+        'cipd',
+    )
+)
 
 BUNDLETOOL_JAR_PATH = os.path.join(BUNDLETOOL_DIR, 'bundletool.jar')
 
 
 def RunBundleTool(args, print_stdout=False):
-  # ASAN builds failed with the default of 1GB (crbug.com/1120202).
-  # Bug for bundletool: https://issuetracker.google.com/issues/165911616
-  cmd = build_utils.JavaCmd(xmx='4G')
-  cmd += ['-jar', BUNDLETOOL_JAR_PATH]
-  cmd += args
-  logging.debug(' '.join(cmd))
-  return build_utils.CheckOutput(
-      cmd,
-      print_stdout=print_stdout,
-      print_stderr=True,
-      fail_on_output=False,
-      stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings)
+    # ASAN builds failed with the default of 1GB (crbug.com/1120202).
+    # Bug for bundletool: https://issuetracker.google.com/issues/165911616
+    cmd = build_utils.JavaCmd(xmx='4G')
+    cmd += ['-jar', BUNDLETOOL_JAR_PATH]
+    cmd += args
+    logging.debug(' '.join(cmd))
+    return build_utils.CheckOutput(
+        cmd,
+        print_stdout=print_stdout,
+        print_stderr=True,
+        fail_on_output=False,
+        stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings,
+    )
 
 
 if __name__ == '__main__':
-  RunBundleTool(sys.argv[1:], print_stdout=True)
+    RunBundleTool(sys.argv[1:], print_stdout=True)

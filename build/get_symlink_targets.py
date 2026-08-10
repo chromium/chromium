@@ -12,16 +12,16 @@ import sys
 
 
 def main():
-  for link_name in sys.argv[1:]:
-    if not os.path.islink(link_name):
-      sys.stderr.write("%s is not a link" % link_name)
-      return 1
-    target = os.readlink(link_name)
-    if not os.path.isabs(target):
-      target = os.path.join(os.path.dirname(link_name), target)
-    print(os.path.realpath(target))
-  return 0
+    for link_name in sys.argv[1:]:
+        if not os.path.islink(link_name):
+            sys.stderr.write("%s is not a link" % link_name)
+            return 1
+        target = os.readlink(link_name)
+        if not os.path.isabs(target):
+            target = os.path.join(os.path.dirname(link_name), target)
+        print(os.path.realpath(target))
+    return 0
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

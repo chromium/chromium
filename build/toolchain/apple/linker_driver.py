@@ -85,6 +85,7 @@ LINKER_DRIVER_COMPILER_ARG_PREFIX = '-Wcrl,driver,'
 #    It would be processed both before the linker (to check reexport
 #    in old module) and after the linker (to produce TOC if needed).
 
+
 class LinkerDriver(object):
     def __init__(self, args):
         """Creates a new linker driver.
@@ -152,8 +153,9 @@ class LinkerDriver(object):
         for index, arg in enumerate(self._args[1:]):
             if arg.startswith(LINKER_DRIVER_COMPILER_ARG_PREFIX):
                 assert not self._driver_path
-                self._driver_path = arg[len(LINKER_DRIVER_COMPILER_ARG_PREFIX
-                                            ):]
+                self._driver_path = arg[
+                    len(LINKER_DRIVER_COMPILER_ARG_PREFIX) :
+                ]
             elif arg.startswith(LINKER_DRIVER_ARG_PREFIX):
                 # Convert driver actions into a map of name => lambda to invoke.
                 self._process_driver_arg(arg)
@@ -169,17 +171,20 @@ class LinkerDriver(object):
         if not self._driver_path:
             raise RuntimeError(
                 "Usage: linker_driver.py -Wcrl,driver,<compiler-driver> "
-                "[linker-args]...")
+                "[linker-args]..."
+            )
 
         if self._get_linker_output() is None:
             raise ValueError(
-                'Could not find path to linker output (-o or --output)')
+                'Could not find path to linker output (-o or --output)'
+            )
 
         # We want to link rlibs as --whole-archive if they are part of a unit
         # test target. This is determined by switch
         # `-LinkWrapper,add-whole-archive`.
         self._compiler_driver_args = whole_archive.wrap_with_whole_archive(
-            self._compiler_driver_args, is_apple=True)
+            self._compiler_driver_args, is_apple=True
+        )
 
         linker_driver_outputs = [self._get_linker_output()]
 
@@ -197,17 +202,16 @@ class LinkerDriver(object):
                     self._linker_driver_pre_actions[name]()
 
             # Run the linker by invoking the compiler driver.
-            subprocess.check_call([self._driver_path] +
-                                  self._compiler_driver_args,
-                                  env=env)
+            subprocess.check_call(
+                [self._driver_path] + self._compiler_driver_args, env=env
+            )
 
             # Run the linker driver actions, in the order specified by the
             # actions list.
             for action in self._actions:
                 name = action[0]
                 if name in self._linker_driver_actions:
-                    linker_driver_outputs += self._linker_driver_actions[name](
-                    )
+                    linker_driver_outputs += self._linker_driver_actions[name]()
         except:
             # If a linker driver action failed, remove all the outputs to make
             # the build step atomic.
@@ -239,18 +243,20 @@ class LinkerDriver(object):
                    argument and returns a list of outputs from the action.
         """
         if not arg.startswith(LINKER_DRIVER_ARG_PREFIX):
-            raise ValueError('%s is not a linker driver argument' % (arg, ))
+            raise ValueError('%s is not a linker driver argument' % (arg,))
 
-        sub_arg = arg[len(LINKER_DRIVER_ARG_PREFIX):]
+        sub_arg = arg[len(LINKER_DRIVER_ARG_PREFIX) :]
 
         found = False
         for driver_action in self._pre_actions:
             (pre_name, pre_action) = driver_action
             if sub_arg.startswith(pre_name):
-                assert pre_name not in self._linker_driver_pre_actions, \
+                assert pre_name not in self._linker_driver_pre_actions, (
                     f"Name '{pre_name}' found in linker driver pre actions"
-                self._linker_driver_pre_actions[pre_name] = \
-                    lambda: pre_action(sub_arg[len(pre_name):])
+                )
+                self._linker_driver_pre_actions[pre_name] = lambda: pre_action(
+                    sub_arg[len(pre_name) :]
+                )
                 # same sub_arg may be used in actions.
                 found = True
                 break
@@ -258,14 +264,16 @@ class LinkerDriver(object):
         for driver_action in self._actions:
             (name, action) = driver_action
             if sub_arg.startswith(name):
-                assert name not in self._linker_driver_actions, \
+                assert name not in self._linker_driver_actions, (
                     f"Name '{name}' found in linker driver actions"
-                self._linker_driver_actions[name] = \
-                        lambda: action(sub_arg[len(name):])
+                )
+                self._linker_driver_actions[name] = lambda: action(
+                    sub_arg[len(name) :]
+                )
                 return
 
         if not found:
-            raise ValueError('Unknown linker driver argument: %s' % (arg, ))
+            raise ValueError('Unknown linker driver argument: %s' % (arg,))
 
     def prepare_object_path_lto(self, arg):
         """Linker driver pre-action for -Wcrl,object_path_lto.
@@ -277,8 +285,11 @@ class LinkerDriver(object):
         # The temporary directory for intermediate LTO object files. If it
         # exists, it will clean itself up on script exit.
         self._object_path_lto = tempfile.TemporaryDirectory(dir=os.getcwd())
-        self._compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
-            os.path.relpath(self._object_path_lto.name)))
+        self._compiler_driver_args.append(
+            '-Wl,-object_path_lto,{}'.format(
+                os.path.relpath(self._object_path_lto.name)
+            )
+        )
 
     def check_reexport_in_old_module(self, tocname):
         """Linker driver pre-action for -Wcrl,tocname,<path>.
@@ -294,8 +305,7 @@ class LinkerDriver(object):
         dylib = self._get_linker_output()
         if not os.path.exists(dylib):
             return
-        p = subprocess.run(self._otool_cmd + ['-l', dylib],
-                           capture_output=True)
+        p = subprocess.run(self._otool_cmd + ['-l', dylib], capture_output=True)
         if p.returncode != 0:
             return
         if re.match(rb'\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
@@ -360,7 +370,8 @@ class LinkerDriver(object):
         dsymutil_env['PATH'] = ':'.join(tools_paths)
         subprocess.check_call(
             # Prallel dsymutil is enabled by default
-            self._dsymutil_cmd + [
+            self._dsymutil_cmd
+            + [
                 # TODO(crbug.com/513203450): Until we figure out what to do
                 # with > 4GB DWARF data, pass this flag to suppress the
                 # warning
@@ -369,7 +380,8 @@ class LinkerDriver(object):
                 dsym_out,
                 linker_output,
             ],
-            env=dsymutil_env)
+            env=dsymutil_env,
+        )
         return [dsym_out]
 
     def set_dsymutil_path(self, dsymutil_path):
@@ -399,8 +411,9 @@ class LinkerDriver(object):
             raise ValueError('Unspecified unstripped output file')
 
         base = os.path.basename(self._get_linker_output())
-        unstripped_out = os.path.join(unstripped_path_prefix,
-                                      base + '.unstripped')
+        unstripped_out = os.path.join(
+            unstripped_path_prefix, base + '.unstripped'
+        )
 
         shutil.copyfile(self._get_linker_output(), unstripped_out)
         return [unstripped_out]
@@ -479,9 +492,9 @@ class LinkerDriver(object):
 
         if self._reexport_in_old_module or new_toc != old_toc:
             # TODO: use delete_on_close in python 3.12 or later.
-            with tempfile.NamedTemporaryFile(prefix=tocname + '.',
-                                             dir='.',
-                                             delete=False) as f:
+            with tempfile.NamedTemporaryFile(
+                prefix=tocname + '.', dir='.', delete=False
+            ) as f:
                 f.write(new_toc)
                 f.close()
                 os.rename(f.name, tocname)

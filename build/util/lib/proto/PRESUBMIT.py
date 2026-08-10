@@ -11,21 +11,23 @@ import os
 
 
 def CommonChecks(input_api, output_api):
-  build_dir = input_api.PresubmitLocalPath()
+    build_dir = input_api.PresubmitLocalPath()
 
-  tests = [
-      input_api.os_path.join(build_dir, f) for f in os.listdir('.')
-      if os.path.isfile(f) and f.endswith('tests.py')
-  ]
-  return input_api.RunTests(
-      input_api.canned_checks.GetUnitTests(input_api,
-                                           output_api,
-                                           unit_tests=tests))
+    tests = [
+        input_api.os_path.join(build_dir, f)
+        for f in os.listdir('.')
+        if os.path.isfile(f) and f.endswith('tests.py')
+    ]
+    return input_api.RunTests(
+        input_api.canned_checks.GetUnitTests(
+            input_api, output_api, unit_tests=tests
+        )
+    )
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+    return CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+    return CommonChecks(input_api, output_api)

@@ -12,13 +12,18 @@ from contextlib import AbstractContextManager
 
 import monitors
 
-from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, \
-                   DIR_SRC_ROOT
+from common import (
+    run_ffx_command,
+    IMAGES_ROOT,
+    INTERNAL_IMAGES_ROOT,
+    DIR_SRC_ROOT,
+)
 from compatible_utils import get_host_arch
 
 
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
+
     # pylint: disable=too-many-branches
     def __init__(self, args: argparse.Namespace) -> None:
         if args.product:
@@ -41,8 +46,7 @@ class FfxEmulator(AbstractContextManager):
             self._node_name = 'fuchsia-everlasting-emulator'
             assert self._everlasting()
         else:
-            self._node_name = 'fuchsia-emulator-' + str(random.randint(
-                1, 9999))
+            self._node_name = 'fuchsia-emulator-' + str(random.randint(1, 9999))
         self._device_spec = args.device_spec
 
     def _everlasting(self) -> bool:
@@ -65,7 +69,8 @@ class FfxEmulator(AbstractContextManager):
             emu_command.append('-H')
         if self._logs_dir:
             emu_command.extend(
-                ('-l', os.path.join(self._logs_dir, 'emulator_log')))
+                ('-l', os.path.join(self._logs_dir, 'emulator_log'))
+            )
         if self._with_network:
             emu_command.extend(['--net', 'tap'])
         else:
@@ -79,9 +84,15 @@ class FfxEmulator(AbstractContextManager):
         # allow it using the qemu-arm64 being downloaded separately.
         if get_host_arch() == 'arm64':
             configs.append(
-                'sdk.overrides.qemu_internal=' +
-                os.path.join(DIR_SRC_ROOT, 'third_party', 'qemu-linux-arm64',
-                             'bin', 'qemu-system-aarch64'))
+                'sdk.overrides.qemu_internal='
+                + os.path.join(
+                    DIR_SRC_ROOT,
+                    'third_party',
+                    'qemu-linux-arm64',
+                    'bin',
+                    'qemu-system-aarch64',
+                )
+            )
 
         # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
         # x64 hosts with simulation.

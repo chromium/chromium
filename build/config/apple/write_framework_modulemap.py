@@ -16,13 +16,17 @@ framework module %(framework_name)s {
 
 
 def Main(framework_name, modules_dir):
-  # Find the name of the binary based on the part before the ".framework".
-  if not os.path.isdir(modules_dir):
-    os.makedirs(modules_dir)
+    # Find the name of the binary based on the part before the ".framework".
+    if not os.path.isdir(modules_dir):
+        os.makedirs(modules_dir)
 
-  with open(os.path.join(modules_dir, 'module.modulemap'), 'w') as module_file:
-    module_file.write(MODULE_MAP_TEMPLATE % {'framework_name': framework_name})
+    with open(
+        os.path.join(modules_dir, 'module.modulemap'), 'w'
+    ) as module_file:
+        module_file.write(
+            MODULE_MAP_TEMPLATE % {'framework_name': framework_name}
+        )
 
 
 if __name__ == '__main__':
-  Main(*sys.argv[1:])
+    Main(*sys.argv[1:])

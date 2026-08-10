@@ -8,13 +8,18 @@ HISTOGRAM = 'histogram'
 UNIMPORTANT_HISTOGRAM = 'unimportant-histogram'
 INFORMATIONAL = 'informational'
 
-ALL_TYPES = [DEFAULT, UNIMPORTANT, HISTOGRAM, UNIMPORTANT_HISTOGRAM,
-             INFORMATIONAL]
+ALL_TYPES = [
+    DEFAULT,
+    UNIMPORTANT,
+    HISTOGRAM,
+    UNIMPORTANT_HISTOGRAM,
+    INFORMATIONAL,
+]
 
 
 def IsValidType(datatype):
-  return datatype in ALL_TYPES
+    return datatype in ALL_TYPES
 
 
 def IsHistogram(datatype):
-  return (datatype == HISTOGRAM or datatype == UNIMPORTANT_HISTOGRAM)
+    return datatype == HISTOGRAM or datatype == UNIMPORTANT_HISTOGRAM

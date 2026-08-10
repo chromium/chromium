@@ -20,7 +20,8 @@ def dump() -> bool:
     with tempfile.TemporaryDirectory() as tmpdir:
         monitors.dump(tmpdir)
         return os.path.isfile(
-            os.path.join(tmpdir, 'test_script_metrics.jsonpb'))
+            os.path.join(tmpdir, 'test_script_metrics.jsonpb')
+        )
 
 
 class MonitorsRealTest(unittest.TestCase):

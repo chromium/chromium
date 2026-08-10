@@ -17,10 +17,12 @@ def register_fuchsia_args(parser: argparse.ArgumentParser) -> None:
     """Register common arguments for deploying to Fuchsia."""
 
     fuchsia_args = parser.add_argument_group(
-        'fuchsia', 'Arguments for working with Fuchsia checkout.')
-    fuchsia_args.add_argument('--fuchsia-out-dir',
-                              help='Path to output directory of a local '
-                              'Fuchsia checkout.')
+        'fuchsia', 'Arguments for working with Fuchsia checkout.'
+    )
+    fuchsia_args.add_argument(
+        '--fuchsia-out-dir',
+        help='Path to output directory of a local Fuchsia checkout.',
+    )
 
 
 def main():

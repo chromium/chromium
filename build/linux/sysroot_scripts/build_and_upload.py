@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Automates running sysroot_creator.py for each supported arch.
-"""
+"""Automates running sysroot_creator.py for each supported arch."""
 
 import concurrent.futures
 import json
@@ -42,8 +41,9 @@ def main():
             if not success:
                 failures += 1
             name = (
-                f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASES[arch]}" +
-                f"_{arch.lower()}-sysroot")
+                f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASES[arch]}"
+                + f"_{arch.lower()}-sysroot"
+            )
             results[name] = (success, result)
 
     globals = {"Str": lambda x: x, "Var": lambda x: x}
@@ -64,26 +64,37 @@ def main():
     print("Updating DEPS files")
     for key, objects in updates.items():
         obj = objects["objects"][0]
-        object_info = ','.join([
-            obj["object_name"],
-            obj["sha256sum"],
-            str(obj["size_bytes"]),
-            str(obj["generation"]),
-        ])
+        object_info = ','.join(
+            [
+                obj["object_name"],
+                obj["sha256sum"],
+                str(obj["size_bytes"]),
+                str(obj["generation"]),
+            ]
+        )
 
         print(f"Updating {key} in src/DEPS")
         subprocess.call(["gclient", "setdep", "-r", f"{key}@{object_info}"])
         prefix = 'src/build/'
-        substr_key = key[len(prefix):]
+        substr_key = key[len(prefix) :]
         print(f"Updating {substr_key} in src/build/DEPS")
-        subprocess.call([
-            "gclient", "setdep", "-r", f"{substr_key}@{object_info}",
-            "--deps-file", "build/DEPS"
-        ])
+        subprocess.call(
+            [
+                "gclient",
+                "setdep",
+                "-r",
+                f"{substr_key}@{object_info}",
+                "--deps-file",
+                "build/DEPS",
+            ]
+        )
 
     if not failures:
-        key = (sysroot_creator.ARCHIVE_TIMESTAMP + "-" +
-               str(sysroot_creator.SYSROOT_RELEASE))
+        key = (
+            sysroot_creator.ARCHIVE_TIMESTAMP
+            + "-"
+            + str(sysroot_creator.SYSROOT_RELEASE)
+        )
         sysroot_gni = textwrap.dedent(f"""\
             # Copyright 2024 The Chromium Authors
             # Use of this source code is governed by a BSD-style license that

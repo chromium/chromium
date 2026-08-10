@@ -13,7 +13,8 @@ PRESUBMIT_VERSION = '2.0.0'
 def _GetChromiumSrcPath(input_api):
     """Returns the path to the Chromium src directory."""
     return input_api.os_path.realpath(
-        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..'))
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..')
+    )
 
 
 def CheckUnittests(input_api, output_api):
@@ -30,7 +31,7 @@ def CheckPylint(input_api, output_api):
     """Runs pylint on all directory content and subdirectories."""
     chromium_src_path = _GetChromiumSrcPath(input_api)
     extra_path_components = [
-        ('build', ),
+        ('build',),
     ]
     extra_paths = [
         input_api.os_path.join(chromium_src_path, *component)
@@ -41,5 +42,6 @@ def CheckPylint(input_api, output_api):
         output_api,
         extra_paths_list=extra_paths,
         pylintrc='pylintrc',
-        version='3.2')
+        version='3.2',
+    )
     return input_api.RunTests(pylint_checks)

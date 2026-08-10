@@ -21,159 +21,189 @@ _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 
 
 @contextlib.contextmanager
-def _ProcessMainManifest(manifest_path,
-                         manifest_package,
-                         inject_extract_native_libs=False):
-  """Patches the main Android manifest"""
-  doc, manifest, app_node = manifest_utils.ParseManifest(manifest_path)
-  assert manifest_utils.GetPackage(manifest) or manifest_package, \
-            'Must set manifest package in GN or in AndroidManifest.xml'
-  if manifest_package:
-    manifest.set('package', manifest_package)
+def _ProcessMainManifest(
+    manifest_path, manifest_package, inject_extract_native_libs=False
+):
+    """Patches the main Android manifest"""
+    doc, manifest, app_node = manifest_utils.ParseManifest(manifest_path)
+    assert manifest_utils.GetPackage(manifest) or manifest_package, (
+        'Must set manifest package in GN or in AndroidManifest.xml'
+    )
+    if manifest_package:
+        manifest.set('package', manifest_package)
 
-  if inject_extract_native_libs:
-    if manifest_utils.NamespacedGet(app_node, 'extractNativeLibs') is None:
-      manifest_utils.NamespacedSet(app_node, 'extractNativeLibs', 'false')
+    if inject_extract_native_libs:
+        if manifest_utils.NamespacedGet(app_node, 'extractNativeLibs') is None:
+            manifest_utils.NamespacedSet(app_node, 'extractNativeLibs', 'false')
 
-  tmp_prefix = manifest_path.replace(os.path.sep, '-')
-  if len(tmp_prefix) > 100:
-    tmp_prefix = tmp_prefix[-100:]
-  with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
-    # Manifest merger requires <uses-sdk> to not exist in the main manifest.
-    manifest_utils.RemoveUsesSdk(manifest)
-    manifest_utils.SaveManifest(doc, patched_manifest.name)
-    yield patched_manifest.name, manifest_utils.GetPackage(manifest)
+    tmp_prefix = manifest_path.replace(os.path.sep, '-')
+    if len(tmp_prefix) > 100:
+        tmp_prefix = tmp_prefix[-100:]
+    with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+        # Manifest merger requires <uses-sdk> to not exist in the main manifest.
+        manifest_utils.RemoveUsesSdk(manifest)
+        manifest_utils.SaveManifest(doc, patched_manifest.name)
+        yield patched_manifest.name, manifest_utils.GetPackage(manifest)
 
 
 @contextlib.contextmanager
-def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
-                          seen_package_names):
-  """Patches non-main AndroidManifest.xml if necessary."""
-  # 1. Ensure targetSdkVersion is set to the expected value to avoid
-  #    spurious permissions being added (b/222331337).
-  # 2. Ensure all manifests have a unique package name so that the merger
-  #    does not fail when this happens.
-  doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
+def _ProcessOtherManifest(
+    manifest_path, min_sdk_version, target_sdk_version, seen_package_names
+):
+    """Patches non-main AndroidManifest.xml if necessary."""
+    # 1. Ensure targetSdkVersion is set to the expected value to avoid
+    #    spurious permissions being added (b/222331337).
+    # 2. Ensure all manifests have a unique package name so that the merger
+    #    does not fail when this happens.
+    doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
 
-  changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
+    changed_api = manifest_utils.SetTargetApiIfUnset(
+        manifest, target_sdk_version
+    )
 
-  package_name = manifest_utils.GetPackage(manifest)
-  if package_name is None:
-    if feature_name := manifest.get('featureSplit'):
-      package_name = 'split.' + feature_name
+    package_name = manifest_utils.GetPackage(manifest)
+    if package_name is None:
+        if feature_name := manifest.get('featureSplit'):
+            package_name = 'split.' + feature_name
+        else:
+            package_name = '<unnamed>'
+        manifest.set('package', package_name)
+        changed_api = True
+
+    # Ignore warnings about minSdkVersion being too low to use the library.
+    # These are generally false-positives, or apply only to our sample_apk apps.
+    if manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version):
+        changed_api = True
+
+    package_count = seen_package_names[package_name]
+    seen_package_names[package_name] += 1
+    if package_count > 0:
+        manifest.set('package', f'{package_name}_{package_count}')
+
+    if package_count > 0 or changed_api:
+        tmp_prefix = manifest_path.replace(os.path.sep, '-')
+        if len(tmp_prefix) > 100:
+            tmp_prefix = tmp_prefix[-100:]
+        with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+            manifest_utils.SaveManifest(doc, patched_manifest.name)
+            yield patched_manifest.name
     else:
-      package_name = '<unnamed>'
-    manifest.set('package', package_name)
-    changed_api = True
-
-  # Ignore warnings about minSdkVersion being too low to use the library.
-  # These are generally false-positives, or apply only to our sample_apk apps.
-  if manifest_utils.OverrideMinSdkVersionIfPresent(manifest, min_sdk_version):
-    changed_api = True
-
-  package_count = seen_package_names[package_name]
-  seen_package_names[package_name] += 1
-  if package_count > 0:
-    manifest.set('package', f'{package_name}_{package_count}')
-
-  if package_count > 0 or changed_api:
-    tmp_prefix = manifest_path.replace(os.path.sep, '-')
-    if len(tmp_prefix) > 100:
-      tmp_prefix = tmp_prefix[-100:]
-    with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
-      manifest_utils.SaveManifest(doc, patched_manifest.name)
-      yield patched_manifest.name
-  else:
-    yield manifest_path
+        yield manifest_path
 
 
 def main(argv):
-  argv = build_utils.ExpandFileArgs(argv)
-  parser = argparse.ArgumentParser(description=__doc__)
-  action_helpers.add_depfile_arg(parser)
-  parser.add_argument('--manifest-merger-jar',
-                      help='Path to SDK\'s manifest merger jar.',
-                      required=True)
-  parser.add_argument('--root-manifest',
-                      help='Root manifest which to merge into',
-                      required=True)
-  parser.add_argument('--output', help='Output manifest path', required=True)
-  parser.add_argument('--extras',
-                      help='GN list of additional manifest to merge')
-  parser.add_argument(
-      '--min-sdk-version',
-      required=True,
-      help='android:minSdkVersion for merging.')
-  parser.add_argument(
-      '--target-sdk-version',
-      required=True,
-      help='android:targetSdkVersion for merging.')
-  parser.add_argument(
-      '--max-sdk-version', help='android:maxSdkVersion for merging.')
-  parser.add_argument(
-      '--manifest-package',
-      help='Package name of the merged AndroidManifest.xml.')
-  parser.add_argument('--warnings-as-errors',
-                      action='store_true',
-                      help='Treat all warnings as errors.')
-  parser.add_argument(
-      '--inject-extract-native-libs',
-      action='store_true',
-      help='Inject android:extractNativeLibs="false" if not set.')
-  args = parser.parse_args(argv)
+    argv = build_utils.ExpandFileArgs(argv)
+    parser = argparse.ArgumentParser(description=__doc__)
+    action_helpers.add_depfile_arg(parser)
+    parser.add_argument(
+        '--manifest-merger-jar',
+        help='Path to SDK\'s manifest merger jar.',
+        required=True,
+    )
+    parser.add_argument(
+        '--root-manifest',
+        help='Root manifest which to merge into',
+        required=True,
+    )
+    parser.add_argument('--output', help='Output manifest path', required=True)
+    parser.add_argument(
+        '--extras', help='GN list of additional manifest to merge'
+    )
+    parser.add_argument(
+        '--min-sdk-version',
+        required=True,
+        help='android:minSdkVersion for merging.',
+    )
+    parser.add_argument(
+        '--target-sdk-version',
+        required=True,
+        help='android:targetSdkVersion for merging.',
+    )
+    parser.add_argument(
+        '--max-sdk-version', help='android:maxSdkVersion for merging.'
+    )
+    parser.add_argument(
+        '--manifest-package',
+        help='Package name of the merged AndroidManifest.xml.',
+    )
+    parser.add_argument(
+        '--warnings-as-errors',
+        action='store_true',
+        help='Treat all warnings as errors.',
+    )
+    parser.add_argument(
+        '--inject-extract-native-libs',
+        action='store_true',
+        help='Inject android:extractNativeLibs="false" if not set.',
+    )
+    args = parser.parse_args(argv)
 
-  with action_helpers.atomic_output(args.output) as output:
-    cmd = build_utils.JavaCmd() + [
-        '-cp',
-        args.manifest_merger_jar,
-        _MANIFEST_MERGER_MAIN_CLASS,
-        '--out',
-        output.name,
-        '--property',
-        'MIN_SDK_VERSION=' + args.min_sdk_version,
-        '--property',
-        'TARGET_SDK_VERSION=' + args.target_sdk_version,
-    ]
-
-    if args.max_sdk_version:
-      cmd += [
-          '--property',
-          'MAX_SDK_VERSION=' + args.max_sdk_version,
-      ]
-
-    extras = action_helpers.parse_gn_list(args.extras)
-
-    with contextlib.ExitStack() as stack:
-      root_manifest, package = stack.enter_context(
-          _ProcessMainManifest(args.root_manifest, args.manifest_package,
-                               args.inject_extract_native_libs))
-      if extras:
-        seen_package_names = collections.Counter()
-        extras_processed = [
-            stack.enter_context(
-                _ProcessOtherManifest(e, args.min_sdk_version,
-                                      args.target_sdk_version,
-                                      seen_package_names)) for e in extras
+    with action_helpers.atomic_output(args.output) as output:
+        cmd = build_utils.JavaCmd() + [
+            '-cp',
+            args.manifest_merger_jar,
+            _MANIFEST_MERGER_MAIN_CLASS,
+            '--out',
+            output.name,
+            '--property',
+            'MIN_SDK_VERSION=' + args.min_sdk_version,
+            '--property',
+            'TARGET_SDK_VERSION=' + args.target_sdk_version,
         ]
-        cmd += ['--libs', ':'.join(extras_processed)]
-      cmd += [
-          '--main',
-          root_manifest,
-          '--property',
-          'PACKAGE=' + package,
-          '--remove-tools-declarations',
-      ]
-      build_utils.CheckOutput(
-          cmd,
-          # https://issuetracker.google.com/issues/63514300:
-          # The merger doesn't set a nonzero exit code for failures.
-          fail_func=lambda returncode, stderr: returncode != 0 or build_utils.
-          IsTimeStale(output.name, [root_manifest] + extras),
-          fail_on_output=args.warnings_as_errors)
 
-  if args.depfile:
-    action_helpers.write_depfile(args.depfile, args.output, inputs=extras)
+        if args.max_sdk_version:
+            cmd += [
+                '--property',
+                'MAX_SDK_VERSION=' + args.max_sdk_version,
+            ]
+
+        extras = action_helpers.parse_gn_list(args.extras)
+
+        with contextlib.ExitStack() as stack:
+            root_manifest, package = stack.enter_context(
+                _ProcessMainManifest(
+                    args.root_manifest,
+                    args.manifest_package,
+                    args.inject_extract_native_libs,
+                )
+            )
+            if extras:
+                seen_package_names = collections.Counter()
+                extras_processed = [
+                    stack.enter_context(
+                        _ProcessOtherManifest(
+                            e,
+                            args.min_sdk_version,
+                            args.target_sdk_version,
+                            seen_package_names,
+                        )
+                    )
+                    for e in extras
+                ]
+                cmd += ['--libs', ':'.join(extras_processed)]
+            cmd += [
+                '--main',
+                root_manifest,
+                '--property',
+                'PACKAGE=' + package,
+                '--remove-tools-declarations',
+            ]
+            build_utils.CheckOutput(
+                cmd,
+                # https://issuetracker.google.com/issues/63514300:
+                # The merger doesn't set a nonzero exit code for failures.
+                fail_func=lambda returncode, stderr: (
+                    returncode != 0
+                    or build_utils.IsTimeStale(
+                        output.name, [root_manifest] + extras
+                    )
+                ),
+                fail_on_output=args.warnings_as_errors,
+            )
+
+    if args.depfile:
+        action_helpers.write_depfile(args.depfile, args.output, inputs=extras)
 
 
 if __name__ == '__main__':
-  main(sys.argv[1:])
+    main(sys.argv[1:])

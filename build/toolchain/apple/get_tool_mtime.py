@@ -13,6 +13,6 @@ import sys
 # each file argument on the command line.
 
 if __name__ == '__main__':
-  for f in sys.argv[1:]:
-    variable = os.path.splitext(os.path.basename(f))[0]
-    print('%s = %d' % (variable, os.path.getmtime(f)))
+    for f in sys.argv[1:]:
+        variable = os.path.splitext(os.path.basename(f))[0]
+        print('%s = %d' % (variable, os.path.getmtime(f)))

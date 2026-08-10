@@ -17,19 +17,19 @@ _EMPTY_JAR_SIZE = 22
 
 
 def main():
-  # The point of this wrapper is to use AtomicOutput so that output timestamps
-  # are not updated when outputs are unchanged.
-  if len(sys.argv) != 4:
-    raise ValueError('unexpected arguments were given. %s' % sys.argv)
-  ijar_bin, in_jar, out_jar = sys.argv[1], sys.argv[2], sys.argv[3]
-  with action_helpers.atomic_output(out_jar) as f:
-    # ijar fails on empty jars: https://github.com/bazelbuild/bazel/issues/10162
-    if os.path.getsize(in_jar) <= _EMPTY_JAR_SIZE:
-      with open(in_jar, 'rb') as in_f:
-        f.write(in_f.read())
-    else:
-      build_utils.CheckOutput([ijar_bin, in_jar, f.name])
+    # The point of this wrapper is to use AtomicOutput so that output timestamps
+    # are not updated when outputs are unchanged.
+    if len(sys.argv) != 4:
+        raise ValueError('unexpected arguments were given. %s' % sys.argv)
+    ijar_bin, in_jar, out_jar = sys.argv[1], sys.argv[2], sys.argv[3]
+    with action_helpers.atomic_output(out_jar) as f:
+        # ijar fails on empty jars: https://github.com/bazelbuild/bazel/issues/10162
+        if os.path.getsize(in_jar) <= _EMPTY_JAR_SIZE:
+            with open(in_jar, 'rb') as in_f:
+                f.write(in_f.read())
+        else:
+            build_utils.CheckOutput([ijar_bin, in_jar, f.name])
 
 
 if __name__ == '__main__':
-  main()
+    main()

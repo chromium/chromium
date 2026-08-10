@@ -8,128 +8,126 @@ from pylib.utils import test_filter
 
 
 class JunitTestInstance(test_instance.TestInstance):
+    def __init__(self, args, _):
+        super().__init__()
 
-  def __init__(self, args, _):
-    super().__init__()
+        self._coverage_dir = args.coverage_dir
+        self._debug_socket = args.debug_socket
+        self._coverage_on_the_fly = args.coverage_on_the_fly
+        self._native_libs_dir = args.native_libs_dir
+        self._package_filter = args.package_filter
+        self._resource_apk = args.resource_apk
+        self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
+        self._runner_filter = args.runner_filter
+        self._json_config = args.json_config
+        self._shadows_allowlist = args.shadows_allowlist
+        self._run_disabled = args.run_disabled
+        self._shards = args.shards
+        self._shard_filter = None
+        if args.shard_filter:
+            self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
+        # Keep a separate list of filter files to pass directly to java so we avoid
+        # long lists of filters overflowing the command line length limit on linux.
+        self._test_filter_files = []
+        if args.test_filter_files:
+            for f in args.test_filter_files:
+                self._test_filter_files.extend(f.split(';'))
+            args.test_filter_files = None
+        self._test_filters = test_filter.InitializeFiltersFromArgs(args)
+        self._test_suite = args.test_suite
+        self._quiet = args.quiet
+        self._external_shard_index = args.test_launcher_shard_index
+        self._total_external_shards = args.test_launcher_total_shards
+        self._single_variant = args.single_variant
 
-    self._coverage_dir = args.coverage_dir
-    self._debug_socket = args.debug_socket
-    self._coverage_on_the_fly = args.coverage_on_the_fly
-    self._native_libs_dir = args.native_libs_dir
-    self._package_filter = args.package_filter
-    self._resource_apk = args.resource_apk
-    self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
-    self._runner_filter = args.runner_filter
-    self._json_config = args.json_config
-    self._shadows_allowlist = args.shadows_allowlist
-    self._run_disabled = args.run_disabled
-    self._shards = args.shards
-    self._shard_filter = None
-    if args.shard_filter:
-      self._shard_filter = {int(x) for x in args.shard_filter.split(',')}
-    # Keep a separate list of filter files to pass directly to java so we avoid
-    # long lists of filters overflowing the command line length limit on linux.
-    self._test_filter_files = []
-    if args.test_filter_files:
-      for f in args.test_filter_files:
-        self._test_filter_files.extend(f.split(';'))
-      args.test_filter_files = None
-    self._test_filters = test_filter.InitializeFiltersFromArgs(args)
-    self._test_suite = args.test_suite
-    self._quiet = args.quiet
-    self._external_shard_index = args.test_launcher_shard_index
-    self._total_external_shards = args.test_launcher_total_shards
-    self._single_variant = args.single_variant
+    # override
+    def TestType(self):
+        return 'junit'
 
-  #override
-  def TestType(self):
-    return 'junit'
+    # override
+    def SetUp(self):
+        pass
 
-  #override
-  def SetUp(self):
-    pass
+    # override
+    def TearDown(self):
+        pass
 
-  #override
-  def TearDown(self):
-    pass
+    @property
+    def coverage_dir(self):
+        return self._coverage_dir
 
-  @property
-  def coverage_dir(self):
-    return self._coverage_dir
+    @property
+    def coverage_on_the_fly(self):
+        return self._coverage_on_the_fly
 
-  @property
-  def coverage_on_the_fly(self):
-    return self._coverage_on_the_fly
+    @property
+    def debug_socket(self):
+        return self._debug_socket
 
-  @property
-  def debug_socket(self):
-    return self._debug_socket
+    @property
+    def native_libs_dir(self):
+        return self._native_libs_dir
 
-  @property
-  def native_libs_dir(self):
-    return self._native_libs_dir
+    @property
+    def package_filter(self):
+        return self._package_filter
 
-  @property
-  def package_filter(self):
-    return self._package_filter
+    @property
+    def resource_apk(self):
+        return self._resource_apk
 
-  @property
-  def resource_apk(self):
-    return self._resource_apk
+    @property
+    def robolectric_runtime_deps_dir(self):
+        return self._robolectric_runtime_deps_dir
 
-  @property
-  def robolectric_runtime_deps_dir(self):
-    return self._robolectric_runtime_deps_dir
+    @property
+    def runner_filter(self):
+        return self._runner_filter
 
-  @property
-  def runner_filter(self):
-    return self._runner_filter
+    @property
+    def shadows_allowlist(self):
+        return self._shadows_allowlist
 
-  @property
-  def shadows_allowlist(self):
-    return self._shadows_allowlist
+    @property
+    def test_filters(self):
+        return self._test_filters
 
-  @property
-  def test_filters(self):
-    return self._test_filters
+    @property
+    def test_filter_files(self):
+        return self._test_filter_files
 
-  @property
-  def test_filter_files(self):
-    return self._test_filter_files
+    @property
+    def json_config(self):
+        return self._json_config
 
+    @property
+    def run_disabled(self):
+        return self._run_disabled
 
-  @property
-  def json_config(self):
-    return self._json_config
+    @property
+    def shards(self):
+        return self._shards
 
-  @property
-  def run_disabled(self):
-    return self._run_disabled
+    @property
+    def shard_filter(self):
+        return self._shard_filter
 
-  @property
-  def shards(self):
-    return self._shards
+    @property
+    def quiet(self):
+        return self._quiet
 
-  @property
-  def shard_filter(self):
-    return self._shard_filter
+    @property
+    def suite(self):
+        return self._test_suite
 
-  @property
-  def quiet(self):
-    return self._quiet
+    @property
+    def external_shard_index(self):
+        return self._external_shard_index
 
-  @property
-  def suite(self):
-    return self._test_suite
+    @property
+    def total_external_shards(self):
+        return self._total_external_shards
 
-  @property
-  def external_shard_index(self):
-    return self._external_shard_index
-
-  @property
-  def total_external_shards(self):
-    return self._total_external_shards
-
-  @property
-  def single_variant(self):
-    return self._single_variant
+    @property
+    def single_variant(self):
+        return self._single_variant

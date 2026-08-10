@@ -64,11 +64,13 @@ class IncludeArgumentForwarder(ArgumentForwarder):
     """Argument forwarder for -I and -isystem."""
 
     def __init__(self, arg_name):
-        ArgumentForwarder.__init__(self,
-                                   arg_name,
-                                   arg_join=lambda _: len(arg_name) == 1,
-                                   to_swift=lambda _: arg_name != '-isystem',
-                                   to_clang=lambda _: True)
+        ArgumentForwarder.__init__(
+            self,
+            arg_name,
+            arg_join=lambda _: len(arg_name) == 1,
+            to_swift=lambda _: arg_name != '-isystem',
+            to_clang=lambda _: True,
+        )
 
 
 class FrameworkArgumentForwarder(ArgumentForwarder):
@@ -80,18 +82,21 @@ class FrameworkArgumentForwarder(ArgumentForwarder):
             arg_name,
             arg_join=lambda _: len(arg_name) == 1,
             to_swift=lambda _: arg_name != '-iframework',
-            to_clang=lambda _: True)
+            to_clang=lambda _: True,
+        )
 
 
 class DefineArgumentForwarder(ArgumentForwarder):
     """Argument forwarder for -D."""
 
     def __init__(self, arg_name):
-        ArgumentForwarder.__init__(self,
-                                   arg_name,
-                                   arg_join=lambda _: _ == 'clang',
-                                   to_swift=lambda _: '=' not in _,
-                                   to_clang=lambda _: True)
+        ArgumentForwarder.__init__(
+            self,
+            arg_name,
+            arg_join=lambda _: _ == 'clang',
+            to_swift=lambda _: '=' not in _,
+            to_clang=lambda _: True,
+        )
 
 
 # Dictionary mapping argument names to their ArgumentForwarder.
@@ -186,7 +191,8 @@ def create_build_cache_dir(args, build_signature):
     create_stamp_file(os.path.join(args.derived_data_dir, stamp_name))
 
     return existing_directory(
-        ensure_directory(os.path.join(args.derived_data_dir, build_signature)))
+        ensure_directory(os.path.join(args.derived_data_dir, build_signature))
+    )
 
 
 def ensure_directory(path):
@@ -230,12 +236,14 @@ def generate_source_output_file_map_fragment(args, filename):
     }
 
     if not args.whole_module_optimization:
-        fragment.update({
-            'const-values': f'{out_name}.swiftconstvalues',
-            'dependencies': f'{out_name}.d',
-            'diagnostics': f'{out_name}.dia',
-            'swift-dependencies': f'{out_name}.swiftdeps',
-        })
+        fragment.update(
+            {
+                'const-values': f'{out_name}.swiftconstvalues',
+                'dependencies': f'{out_name}.d',
+                'diagnostics': f'{out_name}.dia',
+                'swift-dependencies': f'{out_name}.swiftdeps',
+            }
+        )
 
     return fragment
 
@@ -299,7 +307,6 @@ def fix_generated_header(header_path, output_path, src_dir, gen_dir):
 
     header_contents = []
     with open(header_path, 'r', encoding='utf8') as header_file:
-
         imports_section = None
         for line in header_file:
             # Handle #import lines.
@@ -311,7 +318,7 @@ def fix_generated_header(header_path, output_path, src_dir, gen_dir):
                         import_path = os.path.relpath(import_path, root)
                 if import_path != match.group(1):
                     span = match.span(1)
-                    line = line[:span[0]] + import_path + line[span[1]:]
+                    line = line[: span[0]] + import_path + line[span[1] :]
 
             # Handle @import lines.
             if line.startswith('#if __has_feature(objc_modules)'):
@@ -334,7 +341,8 @@ def fix_generated_header(header_path, output_path, src_dir, gen_dir):
                                 name = l.split()[1].split(';')[0]
                                 if name != 'ObjectiveC':
                                     header_contents.append(
-                                        f'#import <{name}/{name}.h>\n')
+                                        f'#import <{name}/{name}.h>\n'
+                                    )
                             else:
                                 header_contents.append(l)
 
@@ -359,8 +367,9 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
     """
 
     # Write the $module.SwiftFileList file.
-    swift_file_list_path = os.path.join(args.target_out_dir,
-                                        f'{args.module_name}.SwiftFileList')
+    swift_file_list_path = os.path.join(
+        args.target_out_dir, f'{args.module_name}.SwiftFileList'
+    )
 
     with FileWriter(swift_file_list_path) as stream:
         for filename in sorted(args.sources):
@@ -368,8 +377,9 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
 
     header_path = args.header_path
     if args.fix_generated_header:
-        header_path = os.path.join(build_cache_dir,
-                                   os.path.basename(header_path))
+        header_path = os.path.join(
+            build_cache_dir, os.path.basename(header_path)
+        )
 
     # Convert the SDK path by removing symlinks so that the swift compiler can
     # resolve the paths of compiler components whose paths are defined
@@ -419,17 +429,20 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
 
     # Handle swift const values extraction.
     swiftc_args.extend(['-emit-const-values'])
-    swiftc_args.extend([
-        '-Xfrontend',
-        '-const-gather-protocols-file',
-        '-Xfrontend',
-        args.const_gather_protocols_file,
-    ])
+    swiftc_args.extend(
+        [
+            '-Xfrontend',
+            '-const-gather-protocols-file',
+            '-Xfrontend',
+            args.const_gather_protocols_file,
+        ]
+    )
 
     # Handle -I, -F, -isystem, -Fsystem and -D arguments.
-    for (attr_name, forwarder) in ARGUMENT_FORWARDER_FOR_ATTR:
-        forwarder.forward(swiftc_args, getattr(args, attr_name),
-                          args.target_triple)
+    for attr_name, forwarder in ARGUMENT_FORWARDER_FOR_ATTR:
+        forwarder.forward(
+            swiftc_args, getattr(args, attr_name), args.target_triple
+        )
 
     # Handle optional -Xcc arguments.
     if args.xcc_args:
@@ -439,33 +452,40 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
     # Handle -whole-module-optimization flag.
     num_threads = max(1, multiprocessing.cpu_count() // 2)
     if args.whole_module_optimization:
-        swiftc_args.extend([
-            '-whole-module-optimization',
-            '-no-emit-module-separately-wmo',
-            '-num-threads',
-            f'{num_threads}',
-        ])
+        swiftc_args.extend(
+            [
+                '-whole-module-optimization',
+                '-no-emit-module-separately-wmo',
+                '-num-threads',
+                f'{num_threads}',
+            ]
+        )
     else:
-        swiftc_args.extend([
-            '-enable-batch-mode',
-            '-incremental',
-            '-experimental-emit-module-separately',
-            '-disable-cmo',
-            f'-j{num_threads}',
-        ])
+        swiftc_args.extend(
+            [
+                '-enable-batch-mode',
+                '-incremental',
+                '-experimental-emit-module-separately',
+                '-disable-cmo',
+                f'-j{num_threads}',
+            ]
+        )
 
     # Handle -file-prefix-map flag unless --swift-keep-intermediate-files is
     # set.
     if args.file_prefix_map and not args.swift_keep_intermediate_files:
-        swiftc_args.extend([
-            '-file-prefix-map',
-            args.file_prefix_map,
-        ])
+        swiftc_args.extend(
+            [
+                '-file-prefix-map',
+                args.file_prefix_map,
+            ]
+        )
 
     swift_toolchain_path = args.swift_toolchain_path
     if not swift_toolchain_path:
-        swift_toolchain_path = os.path.join(os.path.dirname(args.sdk_path),
-                                            'XcodeDefault.xctoolchain')
+        swift_toolchain_path = os.path.join(
+            os.path.dirname(args.sdk_path), 'XcodeDefault.xctoolchain'
+        )
         if not os.path.isdir(swift_toolchain_path):
             swift_toolchain_path = ''
 
@@ -484,7 +504,8 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
             header_path,
             args.header_path,
             src_dir=os.path.abspath(args.src_dir) + os.path.sep,
-            gen_dir=os.path.abspath(args.gen_dir) + os.path.sep)
+            gen_dir=os.path.abspath(args.gen_dir) + os.path.sep,
+        )
 
 
 def generate_depfile(args, output_file_map):
@@ -503,8 +524,9 @@ def generate_depfile(args, output_file_map):
         for link_name in os.listdir(xcode_links):
             link_path = os.path.join(xcode_links, link_name)
             if os.path.islink(link_path):
-                xcode_paths[os.path.realpath(link_path) +
-                            os.sep] = (link_path + os.sep)
+                xcode_paths[os.path.realpath(link_path) + os.sep] = (
+                    link_path + os.sep
+                )
 
     out_dir = os.getcwd() + os.path.sep
     src_dir = os.path.abspath(args.src_dir) + os.path.sep
@@ -523,10 +545,11 @@ def generate_depfile(args, output_file_map):
                     for path in re.split(r'(?<!\\) ', inputs):
                         for xcode_path in xcode_paths:
                             if path.startswith(xcode_path):
-                                path = (xcode_paths[xcode_path] +
-                                        path[len(xcode_path):])
-                        if path.startswith(src_dir) or path.startswith(
-                                out_dir):
+                                path = (
+                                    xcode_paths[xcode_path]
+                                    + path[len(xcode_path) :]
+                                )
+                        if path.startswith(src_dir) or path.startswith(out_dir):
                             path = os.path.relpath(path, out_dir)
                         depfile_content[output].add(path)
 
@@ -543,17 +566,20 @@ def compile_module(args, extras_args, build_signature):
     # Write the $module-OutputFileMap.json file.
     output_file_map = generate_output_file_map(args)
     output_file_map_path = os.path.join(
-        args.target_out_dir, f'{args.module_name}-OutputFileMap.json')
+        args.target_out_dir, f'{args.module_name}-OutputFileMap.json'
+    )
 
     with FileWriter(output_file_map_path) as stream:
         json.dump(output_file_map, stream, indent=' ', sort_keys=True)
 
     # Invoke Swift compiler.
     with create_build_cache_dir(args, build_signature) as build_cache_dir:
-        invoke_swift_compiler(args,
-                              extras_args,
-                              build_cache_dir=build_cache_dir,
-                              output_file_map=output_file_map_path)
+        invoke_swift_compiler(
+            args,
+            extras_args,
+            build_cache_dir=build_cache_dir,
+            output_file_map=output_file_map_path,
+        )
 
     # Generate the depfile.
     generate_depfile(args, output_file_map)
@@ -563,120 +589,148 @@ def main(args):
     parser = argparse.ArgumentParser(allow_abbrev=False, add_help=False)
 
     # Required arguments.
-    parser.add_argument('--module-name',
-                        required=True,
-                        help='name of the Swift module')
+    parser.add_argument(
+        '--module-name', required=True, help='name of the Swift module'
+    )
 
-    parser.add_argument('--src-dir',
-                        required=True,
-                        help='path to the source directory')
+    parser.add_argument(
+        '--src-dir', required=True, help='path to the source directory'
+    )
 
-    parser.add_argument('--gen-dir',
-                        required=True,
-                        help='path to the gen directory root')
+    parser.add_argument(
+        '--gen-dir', required=True, help='path to the gen directory root'
+    )
 
-    parser.add_argument('--target-out-dir',
-                        required=True,
-                        help='path to the object directory')
+    parser.add_argument(
+        '--target-out-dir', required=True, help='path to the object directory'
+    )
 
-    parser.add_argument('--header-path',
-                        required=True,
-                        help='path to the generated header file')
+    parser.add_argument(
+        '--header-path', required=True, help='path to the generated header file'
+    )
 
-    parser.add_argument('--bridge-header',
-                        required=True,
-                        help='path to the Objective-C bridge header file')
+    parser.add_argument(
+        '--bridge-header',
+        required=True,
+        help='path to the Objective-C bridge header file',
+    )
 
-    parser.add_argument('--depfile-path',
-                        required=True,
-                        help='path to the output dependency file')
+    parser.add_argument(
+        '--depfile-path',
+        required=True,
+        help='path to the output dependency file',
+    )
 
-    parser.add_argument('--const-gather-protocols-file',
-                        required=True,
-                        help='path to file containing const values protocols')
+    parser.add_argument(
+        '--const-gather-protocols-file',
+        required=True,
+        help='path to file containing const values protocols',
+    )
 
     # Optional arguments.
-    parser.add_argument('--derived-data-dir',
-                        help='path to the derived data directory')
+    parser.add_argument(
+        '--derived-data-dir', help='path to the derived data directory'
+    )
 
-    parser.add_argument('--fix-generated-header',
-                        default=False,
-                        action='store_true',
-                        help='fix imports in generated header')
+    parser.add_argument(
+        '--fix-generated-header',
+        default=False,
+        action='store_true',
+        help='fix imports in generated header',
+    )
 
-    parser.add_argument('--swift-toolchain-path',
-                        default='',
-                        help='path to the Swift toolchain to use')
+    parser.add_argument(
+        '--swift-toolchain-path',
+        default='',
+        help='path to the Swift toolchain to use',
+    )
 
-    parser.add_argument('--whole-module-optimization',
-                        default=False,
-                        action='store_true',
-                        help='enable whole module optimisation')
+    parser.add_argument(
+        '--whole-module-optimization',
+        default=False,
+        action='store_true',
+        help='enable whole module optimisation',
+    )
 
-    parser.add_argument('--swift-keep-intermediate-files',
-                        default=False,
-                        action='store_true',
-                        help='keep intermediate files')
+    parser.add_argument(
+        '--swift-keep-intermediate-files',
+        default=False,
+        action='store_true',
+        help='keep intermediate files',
+    )
 
     # Required arguments (forwarded to the Swift compiler).
-    parser.add_argument('-target',
-                        required=True,
-                        dest='target_triple',
-                        help='generate code for the given target')
+    parser.add_argument(
+        '-target',
+        required=True,
+        dest='target_triple',
+        help='generate code for the given target',
+    )
 
-    parser.add_argument('-sdk',
-                        required=True,
-                        dest='sdk_path',
-                        help='path to the iOS SDK')
+    parser.add_argument(
+        '-sdk', required=True, dest='sdk_path', help='path to the iOS SDK'
+    )
 
     # Optional arguments (forwarded to the Swift compiler).
-    parser.add_argument('-I',
-                        action='append',
-                        dest='include_dirs',
-                        help='add directory to header search path')
+    parser.add_argument(
+        '-I',
+        action='append',
+        dest='include_dirs',
+        help='add directory to header search path',
+    )
 
-    parser.add_argument('-isystem',
-                        action='append',
-                        dest='system_include_dirs',
-                        help='add directory to system header search path')
+    parser.add_argument(
+        '-isystem',
+        action='append',
+        dest='system_include_dirs',
+        help='add directory to system header search path',
+    )
 
-    parser.add_argument('-F',
-                        action='append',
-                        dest='framework_dirs',
-                        help='add directory to framework search path')
+    parser.add_argument(
+        '-F',
+        action='append',
+        dest='framework_dirs',
+        help='add directory to framework search path',
+    )
 
-    parser.add_argument('-Fsystem',
-                        action='append',
-                        dest='system_framework_dirs',
-                        help='add directory to system framework search path')
+    parser.add_argument(
+        '-Fsystem',
+        action='append',
+        dest='system_framework_dirs',
+        help='add directory to system framework search path',
+    )
 
-    parser.add_argument('-iframework',
-                        action='append',
-                        dest='iframework_dirs',
-                        help='add directory to system framework search path')
+    parser.add_argument(
+        '-iframework',
+        action='append',
+        dest='iframework_dirs',
+        help='add directory to system framework search path',
+    )
 
-    parser.add_argument('-D',
-                        action='append',
-                        dest='defines',
-                        help='add preprocessor define')
+    parser.add_argument(
+        '-D', action='append', dest='defines', help='add preprocessor define'
+    )
 
-    parser.add_argument('-swift-version',
-                        default='6',
-                        help='version of the Swift language')
+    parser.add_argument(
+        '-swift-version', default='6', help='version of the Swift language'
+    )
 
     parser.add_argument(
         '-file-prefix-map',
-        help='remap source paths in debug, coverage, and index info')
+        help='remap source paths in debug, coverage, and index info',
+    )
 
     # Positional arguments.
-    parser.add_argument('sources',
-                        nargs='+',
-                        help='Swift source files to compile')
+    parser.add_argument(
+        'sources', nargs='+', help='Swift source files to compile'
+    )
 
-    parser.add_argument('-Xcc',
-                        action='append',
-                        dest='xcc_args',
-                        help='add argument to the clang compiler')
+    parser.add_argument(
+        '-Xcc',
+        action='append',
+        dest='xcc_args',
+        help='add argument to the clang compiler',
+    )
 
     parsed, extras = parser.parse_known_args(args)
     compile_module(parsed, extras, build_signature(os.environ, args))

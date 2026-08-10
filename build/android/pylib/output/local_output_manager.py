@@ -7,43 +7,43 @@ import os
 import shutil
 
 try:
-  from urllib.parse import quote
+    from urllib.parse import quote
 except ImportError:
-  from urllib import quote
+    from urllib import quote
 
 from pylib.base import output_manager
 
 
 class LocalOutputManager(output_manager.OutputManager):
-  """Saves and manages test output files locally in output directory.
+    """Saves and manages test output files locally in output directory.
 
-  Location files will be saved in {output_dir}/TEST_RESULTS_{timestamp}.
-  """
+    Location files will be saved in {output_dir}/TEST_RESULTS_{timestamp}.
+    """
 
-  def __init__(self, output_dir):
-    super().__init__()
-    timestamp = time.strftime(
-        '%Y_%m_%dT%H_%M_%S', time.localtime())
-    self._output_root = os.path.abspath(os.path.join(
-        output_dir, 'TEST_RESULTS_%s' % timestamp))
+    def __init__(self, output_dir):
+        super().__init__()
+        timestamp = time.strftime('%Y_%m_%dT%H_%M_%S', time.localtime())
+        self._output_root = os.path.abspath(
+            os.path.join(output_dir, 'TEST_RESULTS_%s' % timestamp)
+        )
 
-  #override
-  def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
-    del package
-    return LocalArchivedFile(
-        out_filename, out_subdir, datatype, self._output_root)
+    # override
+    def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
+        del package
+        return LocalArchivedFile(
+            out_filename, out_subdir, datatype, self._output_root
+        )
 
 
 class LocalArchivedFile(output_manager.ArchivedFile):
+    def __init__(self, out_filename, out_subdir, datatype, out_root):
+        super().__init__(out_filename, out_subdir, datatype)
+        self._output_path = os.path.join(out_root, out_subdir, out_filename)
 
-  def __init__(self, out_filename, out_subdir, datatype, out_root):
-    super().__init__(out_filename, out_subdir, datatype)
-    self._output_path = os.path.join(out_root, out_subdir, out_filename)
+    def _Link(self):
+        return 'file://%s' % quote(self._output_path)
 
-  def _Link(self):
-    return 'file://%s' % quote(self._output_path)
-
-  def _Archive(self):
-    if not os.path.exists(os.path.dirname(self._output_path)):
-      os.makedirs(os.path.dirname(self._output_path))
-    shutil.copy(self.name, self._output_path)
+    def _Archive(self):
+        if not os.path.exists(os.path.dirname(self._output_path)):
+            os.makedirs(os.path.dirname(self._output_path))
+        shutil.copy(self.name, self._output_path)

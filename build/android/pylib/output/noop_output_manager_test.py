@@ -13,16 +13,16 @@ from pylib.output import noop_output_manager
 
 
 class NoopOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
+    def setUp(self):
+        self._output_manager = noop_output_manager.NoopOutputManager()
 
-  def setUp(self):
-    self._output_manager = noop_output_manager.NoopOutputManager()
-
-  def testUsableTempFile(self):
-    self.assertUsableTempFile(
-        self._output_manager._CreateArchivedFile('test_file', 'test_subdir',
-                                                 output_manager.Datatype.TEXT,
-                                                 None))
+    def testUsableTempFile(self):
+        self.assertUsableTempFile(
+            self._output_manager._CreateArchivedFile(
+                'test_file', 'test_subdir', output_manager.Datatype.TEXT, None
+            )
+        )
 
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()
