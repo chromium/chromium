@@ -1465,8 +1465,9 @@ void AutofillAgent::ApplyFieldAction(
                 << "Previewing replacement of selection is not implemented";
             break;
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            const std::optional<AtMemoryState::AskForValuesToFillInfo> info =
-                at_memory_.FindAskForValuesToFill(form_control, /*pop=*/false);
+            const std::optional<AtMemoryHandler::AskForValuesToFillInfo> info =
+                at_memory_handler_.FindAskForValuesToFill(form_control,
+                                                          /*pop=*/false);
             if (!info) {
               return;
             }
@@ -1515,8 +1516,9 @@ void AutofillAgent::ApplyFieldAction(
             break;
           }
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            const std::optional<AtMemoryState::AskForValuesToFillInfo> info =
-                at_memory_.FindAskForValuesToFill(form_control, /*pop=*/true);
+            const std::optional<AtMemoryHandler::AskForValuesToFillInfo> info =
+                at_memory_handler_.FindAskForValuesToFill(form_control,
+                                                          /*pop=*/true);
             if (!info) {
               return;
             }
@@ -1590,9 +1592,9 @@ void AutofillAgent::ApplyFieldAction(
                                        /*smart_replace=*/true);
             break;
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            const std::optional<AtMemoryState::AskForValuesToFillInfo> info =
-                at_memory_.FindAskForValuesToFill(content_editable,
-                                                  /*pop=*/true);
+            const std::optional<AtMemoryHandler::AskForValuesToFillInfo> info =
+                at_memory_handler_.FindAskForValuesToFill(content_editable,
+                                                          /*pop=*/true);
             if (!info) {
               return;
             }
@@ -1771,73 +1773,6 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
   return false;
 }
 
-std::optional<AutofillAgent::AtMemoryState::AskForValuesToFillInfo>
-AutofillAgent::AtMemoryState::FindAskForValuesToFill(const WebElement& element,
-                                                     bool pop) {
-  // This function is intended only for WebFormControlElements and for
-  // contenteditables that aren't WebFormElement. See
-  // form_util::GetFieldRendererId().
-  CHECK(!element.DynamicTo<WebFormElement>());
-  auto it = std::ranges::find(last_at_memory_ask_for_values_to_fills_,
-                              form_util::GetFieldRendererId(element),
-                              &AskForValuesToFillInfo::field_id);
-  if (it == last_at_memory_ask_for_values_to_fills_.end()) {
-    return std::nullopt;
-  }
-  AskForValuesToFillInfo info = *it;
-  if (pop) {
-    last_at_memory_ask_for_values_to_fills_.erase(it);
-  }
-
-  WebString value = [&] {
-    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
-      return form_control.Value();
-    }
-    return element.TextContent();
-  }();
-  if (info.value_hash != base::FastHash(base::as_byte_span(value.Utf16()))) {
-    return std::nullopt;
-  }
-
-  return info;
-}
-
-AutofillAgent::AtMemoryState::AtMemoryState() = default;
-
-AutofillAgent::AtMemoryState::~AtMemoryState() = default;
-
-void AutofillAgent::AtMemoryState::MaybeUpdateAskForValuesToFill(
-    const WebElement& element,
-    AutofillSuggestionTriggerSource trigger_source) {
-  // This function is intended only for WebFormControlElements and for
-  // contenteditables that aren't WebFormElement. See
-  // form_util::GetFieldRendererId().
-  CHECK(!element.DynamicTo<WebFormElement>());
-  if (!IsAtMemoryTriggerSource(trigger_source)) {
-    return;
-  }
-
-  FindAskForValuesToFill(element, /*pop=*/true);
-
-  static constexpr size_t kMaxSize = 10;
-  while (last_at_memory_ask_for_values_to_fills_.size() >= kMaxSize) {
-    last_at_memory_ask_for_values_to_fills_.pop_front();
-  }
-
-  WebString value = [&] {
-    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
-      return form_control.Value();
-    }
-    return element.TextContent();
-  }();
-
-  last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
-      .field_id = form_util::GetFieldRendererId(element),
-      .caused_by_trigger_string =
-          trigger_source ==
-          AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      .value_hash = base::FastHash(base::as_byte_span(value.Utf16()))});
-}
 
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
@@ -1933,7 +1868,7 @@ void AutofillAgent::ShowSuggestions(
       autofill_driver->AskForValuesToFill(form, field->renderer_id(),
                                           GetCaretBounds(*render_frame),
                                           trigger_source, password_request);
-      at_memory_.MaybeUpdateAskForValuesToFill(element, trigger_source);
+      at_memory_handler_.MaybeUpdateAskForValuesToFill(element, trigger_source);
     }
   }
 }
@@ -1959,7 +1894,7 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
       autofill_driver->AskForValuesToFill(*form, field.renderer_id(),
                                           GetCaretBounds(*render_frame),
                                           trigger_source, std::nullopt);
-      at_memory_.MaybeUpdateAskForValuesToFill(element, trigger_source);
+      at_memory_handler_.MaybeUpdateAskForValuesToFill(element, trigger_source);
     }
   }
 }

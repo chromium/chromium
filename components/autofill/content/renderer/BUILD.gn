@@ -6,6 +6,8 @@ static_library("renderer") {
   sources = [
     "a11y_utils.cc",
     "a11y_utils.h",
+    "at_memory_handler.cc",
+    "at_memory_handler.h",
     "autofill_agent.cc",
     "autofill_agent.h",
     "email_verification_handler.cc",
