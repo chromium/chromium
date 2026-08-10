@@ -9,12 +9,27 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
+
+@interface FakeSettingsCommands : NSObject
+@property(nonatomic, assign) BOOL wasCalled;
+@end
+
+@implementation FakeSettingsCommands
+
+- (void)showPasswordDetailsForCredential:
+            (password_manager::CredentialUIEntry)credential
+                              inEditMode:(BOOL)editMode {
+  self.wasCalled = YES;
+}
+
+@end
 
 namespace {
 
@@ -23,9 +38,13 @@ constexpr char16_t kTestAccount[] = u"user@example.com";
 class IOSChromePasswordSavedInfoBarDelegateTest : public PlatformTest {
  protected:
   IOSChromePasswordSavedInfoBarDelegateTest() {
-    delegate_ =
-        std::make_unique<IOSChromePasswordSavedInfoBarDelegate>(kTestAccount);
+    settings_commands_handler_ = [[FakeSettingsCommands alloc] init];
+    delegate_ = std::make_unique<IOSChromePasswordSavedInfoBarDelegate>(
+        kTestAccount, (id<SettingsCommands>)settings_commands_handler_,
+        password_manager::CredentialUIEntry());
   }
+
+  FakeSettingsCommands* settings_commands_handler_;
   std::unique_ptr<IOSChromePasswordSavedInfoBarDelegate> delegate_;
 };
 
@@ -59,6 +78,15 @@ TEST_F(IOSChromePasswordSavedInfoBarDelegateTest, Buttons) {
 // Tests that GetIcon returns a non-empty image model.
 TEST_F(IOSChromePasswordSavedInfoBarDelegateTest, Icon) {
   EXPECT_FALSE(delegate_->GetIcon().IsEmpty());
+}
+
+// Tests that Accept() correctly routes to the settings commands handler.
+TEST_F(IOSChromePasswordSavedInfoBarDelegateTest,
+       AcceptTriggersSettingsCommand) {
+  ASSERT_FALSE(settings_commands_handler_.wasCalled);
+  EXPECT_TRUE(delegate_->Accept());
+  EXPECT_TRUE(settings_commands_handler_.wasCalled);
+  EXPECT_FALSE(delegate_->Accept());
 }
 
 }  // namespace

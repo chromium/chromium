@@ -52,14 +52,15 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-using password_manager::MockPasswordFormManagerForUI;
-using password_manager::PasswordFormManager;
-using password_manager::PasswordFormManagerForUI;
-using password_manager::PasswordManagerClient;
-using password_manager::prefs::kCredentialsEnableService;
+using ::password_manager::MockPasswordFormManagerForUI;
+using ::password_manager::PasswordFormManager;
+using ::password_manager::PasswordFormManagerForUI;
+using ::password_manager::PasswordManagerClient;
+using ::password_manager::prefs::kCredentialsEnableService;
 using ::testing::_;
-using testing::NiceMock;
-using testing::Return;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
 
 class MockRouter : public enterprise_connectors::ReportingEventRouter {
  public:
@@ -321,7 +322,14 @@ TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
 
-  client->AutomaticPasswordSave(nullptr, /*is_update_confirmation=*/false);
+  password_manager::PasswordForm form;
+  auto mock_form_manager =
+      std::make_unique<password_manager::MockPasswordFormManagerForUI>();
+  EXPECT_CALL(*mock_form_manager, GetPendingCredentials())
+      .WillOnce(ReturnRef(form));
+
+  client->AutomaticPasswordSave(std::move(mock_form_manager),
+                                /*is_update_confirmation=*/false);
 
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());

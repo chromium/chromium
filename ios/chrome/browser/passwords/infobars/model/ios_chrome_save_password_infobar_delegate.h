@@ -19,6 +19,7 @@
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
 @protocol SyncPresenterCommands;
+@protocol SettingsCommands;
 
 namespace password_manager {
 class PasswordFormManagerForUI;
@@ -42,6 +43,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
       ukm::SourceId ukm_source_id,
       bool is_replacement,
       id<SyncPresenterCommands> sync_presenter_handler,
+      id<SettingsCommands> settings_commands_handler,
       password_manager::PasswordStoreInterface* profile_store,
       password_manager::PasswordStoreInterface* account_store,
       const syncer::SyncService* sync_service);
@@ -136,6 +138,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Handler for sync presenter commands.
   __weak id<SyncPresenterCommands> sync_presenter_handler_ = nil;
+
+  // Handler for settings commands.
+  __weak id<SettingsCommands> settings_commands_handler_ = nil;
 
   // The password_manager::PasswordFormManager managing the form we're asking
   // the user about, and should save as per their decision.
