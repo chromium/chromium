@@ -133,7 +133,8 @@ void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
   CHECK(!otp_frame_origin_.opaque());
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever checking sender domain match: sender_address="
-      << sender_address << ", sender_domain=" << sender_domain;
+      << sender_address << ", sender_domain=" << sender_domain
+      << ", otp_frame_origin=" << otp_frame_origin_;
   domain_relation_checker_->Check(
       otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque(),
       url::SchemeHostPort(url::kHttpsScheme, std::move(sender_domain),
@@ -171,12 +172,18 @@ bool GmailOtpRetriever::IsMatchTypeAllowed(
       (static_cast<int>(*match_type) &
        static_cast<int>(affiliations::MatchType::kAffiliated));
   if (is_exact_or_affiliated) {
+    LOG_OTT(one_time_token_service_->log_sink())
+        << "GmailOtpRetriever exact or affiliated match";
     return true;
   }
   bool is_psl = static_cast<int>(*match_type) &
                 static_cast<int>(affiliations::MatchType::kPSL);
   // PSL matches are allowed for login flows because the user already expressed
   // the intention to fill the target frame, by approving the login flow.
+  if (is_psl && is_login_flow_) {
+    LOG_OTT(one_time_token_service_->log_sink())
+        << "GmailOtpRetriever PSL match during login flow";
+  }
   return is_psl && is_login_flow_;
 }
 
