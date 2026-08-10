@@ -3504,6 +3504,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testActuationOnWebSetting) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testSetContextAccessIndicator) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

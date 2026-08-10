@@ -1404,6 +1404,11 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setActuationOnWebSetting(true);
     assertTrue(await actuationOnWebState.next());
   }
+
+  async testSetContextAccessIndicator() {
+    assertDefined(this.host.setContextAccessIndicator);
+    await this.host.setContextAccessIndicator(true);
+  }
 }
 
 class FaviconTest extends ApiTests {

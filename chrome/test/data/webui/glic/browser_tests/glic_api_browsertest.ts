@@ -534,12 +534,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testSetContextAccessIndicator() {
-    assertDefined(this.host.setContextAccessIndicator);
-
-    await this.host.setContextAccessIndicator(true);
-  }
-
   async testSetAudioDucking() {
     assertDefined(this.host.setAudioDucking);
 
