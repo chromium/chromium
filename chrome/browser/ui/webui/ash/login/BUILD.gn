@@ -349,7 +349,6 @@ static_library("login") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/optin",
-    "//chrome/browser/ash/customization",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/enrollment",
