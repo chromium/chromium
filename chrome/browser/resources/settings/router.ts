@@ -237,6 +237,8 @@ export class Router {
 
   private wasLastRouteChangePopstate_: boolean = false;
 
+  private previousRoute_: Route|null = null;
+
   private initializeRouteFromUrlCalled_: boolean = false;
 
   private routeObservers_: Set<RouteObserverMixinInterface> = new Set();
@@ -289,6 +291,7 @@ export class Router {
     this.recordMetrics(route.path);
 
     const oldRoute = this.currentRoute;
+    this.previousRoute_ = oldRoute;
     this.currentRoute = route;
     this.currentQueryParameters_ = queryParameters;
     this.wasLastRouteChangePopstate_ = isPopstate;
@@ -320,6 +323,10 @@ export class Router {
 
   getCurrentRoute(): Route {
     return this.currentRoute;
+  }
+
+  getPreviousRoute(): Route|null {
+    return this.previousRoute_;
   }
 
   getQueryParameters(): URLSearchParams {
@@ -472,6 +479,7 @@ export class Router {
   resetRouteForTesting() {
     this.initializeRouteFromUrlCalled_ = false;
     this.wasLastRouteChangePopstate_ = false;
+    this.previousRoute_ = null;
     this.currentRoute = this.routes_.BASIC;
     this.currentQueryParameters_ = new URLSearchParams();
   }
