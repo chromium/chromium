@@ -9,6 +9,7 @@
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -44,6 +45,7 @@ CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
+  DependsOn(IOSSignalsAggregatorFactory::GetInstance());
 }
 
 CloudProfileReportingServiceFactoryIOS::

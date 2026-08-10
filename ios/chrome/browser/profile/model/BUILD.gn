@@ -216,6 +216,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/personal_context/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:cloud_profile_reporting",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/prerender/model",

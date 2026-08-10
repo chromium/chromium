@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/enterprise/client_certificates",
   "+ios/chrome/browser/enterprise/groups/model",
   "+ios/chrome/browser/enterprise/identifiers",
+  "+ios/chrome/browser/enterprise/signals/model",
   "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/signin/model",
   # keep-sorted end

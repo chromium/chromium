@@ -27,6 +27,7 @@ source_set("policy") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:cloud_profile_reporting",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",

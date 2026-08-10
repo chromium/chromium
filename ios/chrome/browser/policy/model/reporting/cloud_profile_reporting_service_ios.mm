@@ -14,6 +14,7 @@
 #import "components/enterprise/browser/reporting/report_scheduler.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
@@ -55,12 +56,11 @@ void CloudProfileReportingServiceIOS::CreateReportScheduler() {
   // Only start scheduling reports if kPoliciesEverFetchedWithProfileId is true
   // or when it flips to true.
   params.require_policy_fetch_with_profile_id = true;
-  // TODO(crbug.com/421927804): Add signals aggregator here.
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
           base::FilePath(SanitizeProfilePath(profile_->GetProfileName())),
           &delegate_factory,
-          /*signals_aggregator=*/nullptr);
+          IOSSignalsAggregatorFactory::GetForProfile(profile_));
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
 }
 

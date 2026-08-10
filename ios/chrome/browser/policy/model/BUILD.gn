@@ -46,10 +46,6 @@ source_set("model") {
     "profile_policy_connector_factory.mm",
     "reporting/browser_report_generator_ios.h",
     "reporting/browser_report_generator_ios.mm",
-    "reporting/cloud_profile_reporting_service_factory_ios.h",
-    "reporting/cloud_profile_reporting_service_factory_ios.mm",
-    "reporting/cloud_profile_reporting_service_ios.h",
-    "reporting/cloud_profile_reporting_service_ios.mm",
     "reporting/features.h",
     "reporting/features.mm",
     "reporting/profile_report_generator_ios.h",
@@ -136,6 +132,30 @@ source_set("model") {
   ]
 
   public_deps = [ "//components/policy/core/browser" ]
+}
+
+source_set("cloud_profile_reporting") {
+  sources = [
+    "reporting/cloud_profile_reporting_service_factory_ios.h",
+    "reporting/cloud_profile_reporting_service_factory_ios.mm",
+    "reporting/cloud_profile_reporting_service_ios.h",
+    "reporting/cloud_profile_reporting_service_ios.mm",
+  ]
+
+  deps = [
+    ":model",
+    "//base",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
+    "//ios/chrome/browser/enterprise/signals/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//services/network/public/cpp",
+  ]
 }
 
 source_set("browser_agent") {
