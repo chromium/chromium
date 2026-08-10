@@ -4803,7 +4803,7 @@
     "owners": [
       "masonf@chromium.org"
     ],
-    "expires": "Aug 1, 2026"
+    "expires": "Dec 1, 2027"
   },
   "This suite just verifies that both XSLT-disabled flags work. The main ToT",
   "code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing",
@@ -4823,7 +4823,7 @@
     "owners": [
       "masonf@chromium.org"
     ],
-    "expires": "Aug 1, 2026"
+    "expires": "Dec 1, 2027"
   },
   {
     "prefix": "rust-xml",
