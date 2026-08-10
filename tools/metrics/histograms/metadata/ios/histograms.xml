@@ -3048,6 +3048,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.MultiTabUsed" enum="Boolean"
+    expires_after="2027-01-14">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a prompt sent to Gemini used multi-tab. This is defined as
+    having at least one attached tab that is not the active tab.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Prompt.SubmissionMethod"
     enum="IOSGeminiFirstPromptSubmissionMethod" expires_after="2026-12-16">
   <owner>kanouche@google.com</owner>
@@ -3062,16 +3072,6 @@ chromium-metrics-reviews@google.com.
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the number of tabs attached to a Gemini prompt on iOS.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Gemini.Prompt.UsedMultiTab" enum="Boolean"
-    expires_after="2027-01-14">
-  <owner>joepeplowski@google.com</owner>
-  <owner>bling-alchemy-eng@google.com</owner>
-  <summary>
-    Records whether a prompt sent to Gemini used multi-tab. This is defined as
-    having at least one attached tab that is not the active tab.
   </summary>
 </histogram>
 
