@@ -110,10 +110,14 @@ Please provide all of the requested information in the issue template, and
 mention **"I want the autoroller to update both the DEPS entry and the
 README.chromium file"**.
 
-**Additionally**, mention how the autoroller should check for new releases.
+**Additionally**, mention how the autoroller should check for new releases. Two
+options are supported.
+
+  * Roll by Git tag
+  * Roll by latest commit
 
 In general, we recommend to roll to latest Git tag (usually corresponds to a
-versioned release). You need to provide a regular expression to extract a
+versioned release). You need to provide a regular expression to extract an
 integer tuple from the tag name. The autoroller will roll to the Git tag
 with the largest tuple (e.g. `(1,2,3)` is greater than `(1,1,2)`).
 
@@ -122,7 +126,12 @@ For example, the following regular expression matches semantic version style
 `^upstream/v(\\d+)\\.(\\d+)\\.(\\d+)$`.
 
 Alternatively, you can request to track the latest commit in a branch (e.g.
-`main`). This is commonly used for Google maintained projects.
+`main`). This is commonly used for Google maintained projects. **If you use this
+option, either by preference or because your upstream does not tag versions,
+we RECOMMEND specifying `roll_cooldown: 2w` in your Skia Autoroller request**.
+This will introduce a minimum of two weeks between updates and will reduce churn
+in your dependency, and give upgrades time to bake. This is especially useful if
+your upstream is a busy repo.
 
 You CAN request extra trybots to run on a roll (e.g. macOS bots).
 
