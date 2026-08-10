@@ -14,10 +14,29 @@ import re
 import sys
 import typing
 """This module contains the utilities necessary to read Dtrace result files and
-convert them other format for flamegraph generation, such as pprof profiles.
+convert them to another format for flamegraph generation, like pprof profiles.
 """
 
-from protos.third_party.pprof import profile_pb2
+try:
+    from protos.third_party.pprof import profile_pb2
+except ImportError:
+    import subprocess
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    try:
+        subprocess.check_call([
+            'protoc', '--python_out=protos/third_party/pprof',
+            '--proto_path=protos/third_party/pprof/src',
+            'protos/third_party/pprof/src/profile.proto'
+        ],
+                              cwd=script_dir)
+        from protos.third_party.pprof import profile_pb2
+    except FileNotFoundError:
+        logging.error("protoc not found. Please install protobuf compiler "
+                      "(e.g. 'brew install protobuf').")
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to compile profile.proto: {e}")
+        sys.exit(1)
 
 
 def pairwise(iterable):
