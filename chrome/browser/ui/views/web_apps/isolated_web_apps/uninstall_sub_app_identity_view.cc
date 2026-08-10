@@ -1,55 +1,76 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/uninstall_sub_app_identity_view.h"
 
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/version.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "chrome/grit/generated_resources.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
-#include "url/gurl.h"
 
-namespace web_app {
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppTitle);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogIconView);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppInfoLabel);
-}  // namespace web_app
+namespace {
 
-std::unique_ptr<WebAppIconNameAndOriginView>
-WebAppIconNameAndOriginView::Create(const gfx::ImageSkia& icon_image,
-                                    std::u16string app_title,
-                                    const GURL& start_url,
-                                    bool should_mask_icon) {
-  return base::WrapUnique(new WebAppIconNameAndOriginView(
-      icon_image, app_title, StartUrl(start_url), should_mask_icon));
+std::unique_ptr<views::Label> CreateSubAppUninstallInfoLabel(
+    const std::u16string& parent_app_name,
+    const std::u16string& sub_app_name) {
+  auto uninstall_info_label = std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_IWA_SUB_APPS_UNINSTALL_INFO,
+                                 parent_app_name, sub_app_name),
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+  uninstall_info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  uninstall_info_label->SetMultiLine(true);
+  return uninstall_info_label;
 }
 
-WebAppIconNameAndOriginView::~WebAppIconNameAndOriginView() = default;
+}  // namespace
 
-WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UninstallSubAppIdentityView,
+                                      kUninstallSubAppIdentityViewId);
+
+std::unique_ptr<UninstallSubAppIdentityView>
+UninstallSubAppIdentityView::Create(const gfx::ImageSkia& icon_image,
+                                    std::u16string app_title,
+                                    std::u16string parent_app_title,
+                                    bool should_mask_icon) {
+  return base::WrapUnique(new UninstallSubAppIdentityView(
+      icon_image, std::move(app_title), std::move(parent_app_title),
+      should_mask_icon));
+}
+
+UninstallSubAppIdentityView::~UninstallSubAppIdentityView() = default;
+
+UninstallSubAppIdentityView::UninstallSubAppIdentityView(
     const gfx::ImageSkia& icon_image,
     std::u16string app_title,
-    AppInfo app_info,
+    std::u16string parent_app_title,
     bool should_mask_icon) {
+  SetProperty(views::kElementIdentifierKey, kUninstallSubAppIdentityViewId);
+
   base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
   int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
@@ -61,7 +82,7 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
   if (should_mask_icon) {
     web_app::MaskIconOnOs(
         *icon_image.bitmap(),
-        base::BindOnce(&WebAppIconNameAndOriginView::OnIconMaskingComplete,
+        base::BindOnce(&UninstallSubAppIdentityView::OnIconMaskingComplete,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -78,26 +99,19 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
                           web_app::kSimpleInstallDialogAppTitle);
   labels_ptr->AddChildView(std::move(name_label));
 
-  std::unique_ptr<views::Label> app_info_label = std::visit(
-      absl::Overload{[](const StartUrl& start_url) {
-                       return web_app::CreateOriginLabelFromStartUrl(
-                           start_url.value(), /*is_primary_text=*/false);
-                     },
-                     [](const base::Version& version) {
-                       return web_app::CreateVersionLabel(version);
-                     }},
-      app_info);
+  auto app_info_label =
+      CreateSubAppUninstallInfoLabel(parent_app_title, app_title);
   app_info_label->SetProperty(views::kElementIdentifierKey,
                               web_app::kSimpleInstallDialogAppInfoLabel);
   labels_ptr->AddChildView(std::move(app_info_label));
 }
 
-void WebAppIconNameAndOriginView::OnIconMaskingComplete(
+void UninstallSubAppIdentityView::OnIconMaskingComplete(
     SkBitmap masked_bitmap) {
   CHECK(icon_view_);
   gfx::Image masked_image = gfx::Image::CreateFrom1xBitmap(masked_bitmap);
   icon_view_->SetImage(ui::ImageModel::FromImage(masked_image));
 }
 
-BEGIN_METADATA(WebAppIconNameAndOriginView)
+BEGIN_METADATA(UninstallSubAppIdentityView)
 END_METADATA

@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_identity_view.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/sub_app_identity_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/uninstall_sub_app_identity_view.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -58,6 +59,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -270,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
-                       UninstallSubAppShowsSubAppIdentityView) {
+                       UninstallSubAppShowsUninstallSubAppIdentityView) {
   // Install parent IWA that supports sub-apps.
   auto parent_bundle =
       web_app::IsolatedWebAppBuilder(
@@ -338,10 +340,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(uninstall_widget);
 
-  // Verify SubAppIdentityView is present.
-  EXPECT_NE(tracker_views->GetUniqueView(
-                SubAppIdentityView::kSubAppIdentityViewId, context),
-            nullptr);
+  // Verify UninstallSubAppIdentityView is present.
+  EXPECT_NE(
+      tracker_views->GetUniqueView(
+          UninstallSubAppIdentityView::kUninstallSubAppIdentityViewId, context),
+      nullptr);
   EXPECT_EQ(
       tracker_views->GetUniqueView(
           WebAppUninstallDialogDelegateView::kUninstallCheckboxId, context),
@@ -357,9 +360,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
   views::View* info_view = tracker_views->GetUniqueView(
       web_app::kSimpleInstallDialogAppInfoLabel, context);
   ASSERT_NE(info_view, nullptr);
+
+  std::u16string expected_info_text = l10n_util::GetStringFUTF16(
+      IDS_IWA_SUB_APPS_UNINSTALL_INFO, u"Parent IWA", u"Sub App");
+
   EXPECT_THAT(
       base::UTF16ToUTF8(views::AsViewClass<views::Label>(info_view)->GetText()),
-      testing::HasSubstr("Parent IWA"));
+      testing::HasSubstr(base::UTF16ToUTF8(expected_info_text)));
 
   uninstall_widget->CloseNow();
 }
