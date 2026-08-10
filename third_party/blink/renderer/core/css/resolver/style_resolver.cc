@@ -166,6 +166,7 @@ bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
     case kPseudoIdViewTransitionImagePair:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdViewTransitionNew:
+    case kPseudoIdSkeleton:
       return true;
     default:
       return false;

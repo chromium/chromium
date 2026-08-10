@@ -437,6 +437,9 @@ class CORE_EXPORT CSSSelector {
     // https://drafts.csswg.org/selectors/#sound-state
     kPseudoMuted,
     kPseudoVolumeLocked,
+
+    // ::skeleton for preview rendering
+    kPseudoSkeleton,
   };
 
   enum class AttributeMatchType : int {

@@ -25,16 +25,20 @@ namespace blink {
 
 namespace {
 
-HeapVector<CSSSelector> ParseSelector(String s) {
+HeapVector<CSSSelector> ParseSelector(String s, CSSParserMode mode) {
   HeapVector<CSSSelector> arena;
   CSSParserTokenStream stream(s);
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
       stream,
       MakeGarbageCollected<CSSParserContext>(
-          kUASheetMode, SecureContextMode::kInsecureContext),
+          mode, SecureContextMode::kInsecureContext),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
       /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
   return HeapVector<CSSSelector>(vector);
+}
+
+HeapVector<CSSSelector> ParseSelector(String s) {
+  return ParseSelector(s, kUASheetMode);
 }
 
 }  // namespace
@@ -3345,6 +3349,32 @@ TEST(CSSSelectorParserTest, UnparsedInvalid) {
         EXPECT_FALSE(arg);
       }
     }
+  }
+}
+
+TEST(CSSSelectorParserTest, SkeletonPseudo) {
+  ScopedDeclarativeSkeletonsForTest scoped_feature(true);
+
+  test::TaskEnvironment task_environment;
+
+  struct TestCase {
+    const char* selector;
+    CSSParserMode mode;
+    bool valid;
+  };
+
+  TestCase test_cases[] = {
+      {"::skeleton", kUASheetMode, true},
+      {":root::skeleton", kUASheetMode, true},
+      {"html::skeleton", kUASheetMode, true},
+      {"::skeleton", kHTMLStandardMode, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.selector);
+    HeapVector<CSSSelector> vector =
+        ParseSelector(test_case.selector, test_case.mode);
+    EXPECT_EQ(!vector.empty(), test_case.valid);
   }
 }
 

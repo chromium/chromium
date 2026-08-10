@@ -843,6 +843,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionOld:
     case kPseudoIdColumn:
     case kPseudoIdOverscrollAreaParent:
+    case kPseudoIdSkeleton:
       return true;
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:

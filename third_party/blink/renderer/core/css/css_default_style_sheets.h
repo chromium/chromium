@@ -108,6 +108,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* DefaultViewTransitionStyleSheet() {
     return default_view_transition_style_sheet_.Get();
   }
+  StyleSheetContents* SkeletonStyleSheet() {
+    return skeleton_style_sheet_.Get();
+  }
 
   CORE_EXPORT void ResetTextTrackStyleSheet();
 
@@ -200,6 +203,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> view_source_style_sheet_;
   Member<StyleSheetContents> json_style_sheet_;
   Member<StyleSheetContents> default_view_transition_style_sheet_;
+  Member<StyleSheetContents> skeleton_style_sheet_;
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
 
   // This is used by StyleResolver to avoid building up MatchRequests

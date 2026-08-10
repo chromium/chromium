@@ -21,23 +21,6 @@ SkeletonPseudoElement::SkeletonPseudoElement(Element* originating_element)
            originating_element->GetDocument().documentElement());
 }
 
-bool SkeletonPseudoElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
-  // The ::skeleton pseudo-element always generates a box. It is a container for
-  // the skeleton document tree inside its UA shadow root. The skeleton root
-  // element under the shadow root will generate a child box of this
-  // pseudo-element's box, and this pseudo-element's box will have LayoutView as
-  // its parent.
-  return true;
-}
-
-const ComputedStyle* SkeletonPseudoElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext&) {
-  // Use initial styles without inheriting from the originating element so that
-  // any implicitly or explicitly inherited properties in the root element of
-  // the shadow tree will inherit the initial value.
-  return GetDocument().GetStyleResolver().InitialStyleForElement();
-}
-
 void SkeletonPseudoElement::AttachLayoutTree(AttachContext& context) {
   AttachContext skeleton_context(context);
   skeleton_context.parent = GetDocument().GetLayoutView();
@@ -95,20 +78,12 @@ const ComputedStyle* SkeletonPseudoElement::AdjustedLayoutStyle(
   // a box for it which serves as a canvas for the skeleton document so that
   // the page we are navigating from is not seen through the skeleton.
   // SetCanvasAndColorScheme() sets the opaque background.
-  ComputedStyleBuilder builder =
-      GetDocument().GetStyleResolver().InitialStyleBuilderForElement();
-  builder.SetZIndex(0);
-  builder.SetForcesStackingContext(true);
-  builder.SetDisplay(EDisplay::kBlock);
-  builder.SetPosition(EPosition::kFixed);
-  builder.SetContain(kContainsStrict);
-  builder.SetTop(Length::Fixed(0));
-  builder.SetLeft(Length::Fixed(0));
-  builder.SetBottom(Length::Fixed(0));
-  builder.SetRight(Length::Fixed(0));
-
-  SetCanvasAndColorScheme(GetDocument(), builder, SkeletonUsedColorScheme());
-
+  mojom::blink::ColorScheme used_color_scheme = SkeletonUsedColorScheme();
+  if (style.UsedColorScheme() == used_color_scheme) {
+    return nullptr;
+  }
+  ComputedStyleBuilder builder(style);
+  SetCanvasAndColorScheme(GetDocument(), builder, used_color_scheme);
   return builder.TakeStyle();
 }
 

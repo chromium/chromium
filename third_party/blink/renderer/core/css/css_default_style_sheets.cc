@@ -179,6 +179,7 @@ void CSSDefaultStyleSheets::Reset() {
   view_source_style_sheet_.Clear();
   json_style_sheet_.Clear();
   default_view_transition_style_sheet_.Clear();
+  skeleton_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules =
       StrCat({UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS),
@@ -227,7 +228,8 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
   }
 
   if (marker_style_sheet_ || scroll_button_style_sheet_ ||
-      scroll_marker_style_sheet_ || overscroll_style_sheet_) {
+      scroll_marker_style_sheet_ || overscroll_style_sheet_ ||
+      skeleton_style_sheet_) {
     default_pseudo_element_style_->CompactRulesIfNeeded();
     size_t expected_rule_count = 0u;
     if (marker_style_sheet_) {
@@ -244,6 +246,9 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
     }
     if (default_view_transition_style_sheet_) {
       expected_rule_count += 11u;
+    }
+    if (skeleton_style_sheet_) {
+      expected_rule_count += 2u;
     }
     DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(),
               expected_rule_count);
@@ -554,6 +559,20 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
+    case kPseudoIdSkeleton: {
+      if (skeleton_style_sheet_) {
+        return false;
+      }
+      skeleton_style_sheet_ = ParseUASheet(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_SKELETON_CSS));
+      if (!default_pseudo_element_style_) {
+        default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
+      default_pseudo_element_style_->AddRulesFromSheet(
+          SkeletonStyleSheet(), ScreenEval(), /*mixins=*/{});
+      default_pseudo_element_style_->CompactRulesIfNeeded();
+      return true;
+    }
     default:
       return false;
   }
@@ -720,6 +739,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(view_source_style_sheet_);
   visitor->Trace(json_style_sheet_);
   visitor->Trace(default_view_transition_style_sheet_);
+  visitor->Trace(skeleton_style_sheet_);
 
   visitor->Trace(rule_set_group_cache_);
 }

@@ -423,6 +423,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdOverscrollAreaParent;
     case kPseudoOverscrollBackdrop:
       return kPseudoIdOverscrollBackdrop;
+    case kPseudoSkeleton:
+      return kPseudoIdSkeleton;
     case kPseudoAnimatedImage:
     case kPseudoActive:
     case kPseudoActiveOption:
@@ -725,6 +727,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"select-listbox", CSSSelector::kPseudoSelectListbox},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
+    {"skeleton", CSSSelector::kPseudoSkeleton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
     {"stalled", CSSSelector::kPseudoStalled},
     {"start", CSSSelector::kPseudoStart},
@@ -923,6 +926,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoSkeleton &&
+      !RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
@@ -1047,6 +1055,11 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       break;
     case kPseudoOverscrollAreaParent:
     case kPseudoBlinkInternalElement:
+      if (Match() != kPseudoElement || mode != kUASheetMode) {
+        bits_.set<PseudoTypeField>(kPseudoUnknown);
+      }
+      break;
+    case kPseudoSkeleton:
       if (Match() != kPseudoElement || mode != kUASheetMode) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
@@ -1789,6 +1802,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
           GetPseudoType() == kPseudoOverscrollAreaParent ||
+          GetPseudoType() == kPseudoSkeleton ||
           IsElementBackedPseudoElement(GetPseudoType()));
 }
 
@@ -2024,6 +2038,11 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHostContext:
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoScope:
+      return false;
+
+    // ::skeleton is only generated on the document root element, which makes
+    // ::part()::skeleton useless.
+    case kPseudoSkeleton:
       return false;
 
     case kPseudoUnparsed:

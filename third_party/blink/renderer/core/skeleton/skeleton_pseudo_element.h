@@ -22,22 +22,13 @@ namespace blink {
 //   HEAD
 //   BODY
 //
-// The generated box tree does not have a box for ::skeleton, and uses the main
-// document LayoutView as the parent of the box for the HTML root of the shadow
-// tree.
-//
 class SkeletonPseudoElement : public PseudoElement {
  public:
   // The originating_element is always the HTML root element
   explicit SkeletonPseudoElement(Element* originating_element);
 
-  bool LayoutObjectIsNeeded(const DisplayStyle&) const final;
-
   void AttachLayoutTree(AttachContext&) final;
   void DidRecalcStyle(const StyleRecalcChange) final;
-
-  const ComputedStyle* CustomStyleForLayoutObject(
-      const StyleRecalcContext&) final;
 
   const ComputedStyle* AdjustedLayoutStyle(
       const ComputedStyle& style,

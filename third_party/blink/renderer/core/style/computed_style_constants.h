@@ -98,6 +98,7 @@ enum PseudoId : uint8_t {
   kPseudoIdViewTransitionOld,
   kPseudoIdViewTransitionNew,
 
+  kPseudoIdSkeleton,
   kPseudoIdOverscrollAreaParent,
 
   // Internal IDs follow:
@@ -121,7 +122,6 @@ enum PseudoId : uint8_t {
   kPseudoIdPickerSelect,
   kPseudoIdSelectListbox,
   kPseudoIdPermissionIcon,
-  kPseudoIdSkeleton,
 
   // Special values follow:
   kAfterLastInternalPseudoId,
