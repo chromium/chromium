@@ -523,13 +523,12 @@ TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareNV12Frame) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
-TEST_F(MappableSharedImageVideoFramePoolTest, YV12AllowOverlay) {
+TEST_F(MappableSharedImageVideoFramePoolTest, YV12Frame) {
   gpu::SharedImageCapabilities caps;
   caps.supports_scanout_shared_images = true;
   sii_->SetCapabilities(caps);
 
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
-  software_frame->metadata().allow_overlay = true;
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::YV12);
@@ -545,35 +544,10 @@ TEST_F(MappableSharedImageVideoFramePoolTest, YV12AllowOverlay) {
   // Windows Direct Composition path only supports NV12 overlays.
   EXPECT_FALSE(
       frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
-  EXPECT_FALSE(frame->metadata().allow_overlay);
 #else
   EXPECT_TRUE(
       frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
-  EXPECT_TRUE(frame->metadata().allow_overlay);
 #endif
-}
-
-TEST_F(MappableSharedImageVideoFramePoolTest, YV12DisallowOverlay) {
-  gpu::SharedImageCapabilities caps;
-  caps.supports_scanout_shared_images = true;
-  sii_->SetCapabilities(caps);
-
-  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
-  software_frame->metadata().allow_overlay = false;
-  scoped_refptr<VideoFrame> frame;
-  mock_gpu_factories_->SetVideoFrameOutputFormat(
-      media::GpuVideoAcceleratorFactories::OutputFormat::YV12);
-  mappable_shared_image_pool_->MaybeCreateHardwareFrame(
-      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
-
-  RunUntilIdle();
-
-  EXPECT_NE(software_frame.get(), frame.get());
-  EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
-  EXPECT_TRUE(frame->HasSharedImage());
-  EXPECT_FALSE(
-      frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
-  EXPECT_FALSE(frame->metadata().allow_overlay);
 }
 
 TEST_F(MappableSharedImageVideoFramePoolTest,

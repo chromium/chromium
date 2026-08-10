@@ -54,9 +54,6 @@ CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  // A SCANOUT usage was requested for the allocated |frame|, so there's a
-  // possibility that it can be promoted to overlay, mark it so.
-  frame->metadata().allow_overlay = true;
   frame->metadata().protected_video = use_protected;
   frame->metadata().hw_protected = use_protected;
 

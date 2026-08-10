@@ -234,8 +234,7 @@ class MappableSharedImageVideoFramePool::PoolImpl
   // This also drops the LRU resource that can't be reuse for this frame.
   FrameResource* GetOrCreateFrameResource(const gfx::Size& size,
                                           gfx::BufferUsage usage,
-                                          const gfx::ColorSpace& color_space,
-                                          bool allow_overlay);
+                                          const gfx::ColorSpace& color_space);
 
   // Calls the FrameReadyCB of the first entry in |frame_copy_requests_|, with
   // the provided |video_frame|, then deletes the entry from
@@ -875,8 +874,7 @@ void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
     // Acquire resource. Incompatible one will be dropped from the pool.
     FrameResource* frame_resource = GetOrCreateFrameResource(
         CodedSize(request.video_frame.get(), output_format_),
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space,
-        request.video_frame->metadata().allow_overlay);
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space);
     if (!frame_resource || !frame_resource->shared_image ||
         !(frame_resource->scoped_mapping =
               frame_resource->shared_image->Map())) {
@@ -1061,12 +1059,10 @@ void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     return;
   }
 
-  bool new_allow_overlay = frame->metadata().allow_overlay;
   bool new_read_lock_fences_enabled =
       frame->metadata().read_lock_fences_enabled;
   frame->set_hdr_metadata(video_frame->hdr_metadata());
   frame->metadata().MergeMetadataFrom(video_frame->metadata());
-  frame->metadata().allow_overlay = new_allow_overlay;
   frame->metadata().read_lock_fences_enabled = new_read_lock_fences_enabled;
   CompleteCopyRequestAndMaybeStartNextCopy(std::move(frame));
 }
@@ -1213,8 +1209,7 @@ MappableSharedImageVideoFramePool::PoolImpl::FrameResource*
 MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
     const gfx::Size& size,
     gfx::BufferUsage usage,
-    const gfx::ColorSpace& color_space,
-    bool allow_overlay) {
+    const gfx::ColorSpace& color_space) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   auto* sii = gpu_factories_->SharedImageInterface();
@@ -1235,8 +1230,6 @@ MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
   add_scanout_usage = si_caps.supports_scanout_shared_images;
   switch (output_format_) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
-      add_scanout_usage &= allow_overlay;
-      break;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       break;
