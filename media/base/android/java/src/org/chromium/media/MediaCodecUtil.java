@@ -400,6 +400,20 @@ class MediaCodecUtil {
         return false;
     }
 
+    @CalledByNative
+    public static boolean requiresSecureDecoderComponent(
+            @Nullable MediaCrypto mediaCrypto, String mimeType) {
+        if (mediaCrypto == null) {
+            return false;
+        }
+        try {
+            return mediaCrypto.requiresSecureDecoderComponent(mimeType);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed requiresSecureDecoderComponent check for " + mimeType, e);
+            return false;
+        }
+    }
+
     @NativeMethods
     interface Natives {
         boolean isDecoderSupportedForDevice(@JniType("std::string") String mimeType);

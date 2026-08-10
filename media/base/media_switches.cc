@@ -1371,6 +1371,12 @@ BASE_FEATURE(kRequestSystemAudioFocus, base::FEATURE_ENABLED_BY_DEFAULT);
 // are already met.
 BASE_FEATURE(kSkipMediaCodecReallocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow the video decoder (MediaCodecVideoDecoder) to query the MediaCrypto
+// object with a mime type to see if a secure decoder component is required.
+// If disabled, we use the fallback Widevine L1/L3 security level check.
+BASE_FEATURE(kUseMediaCryptoRequiresSecureDecoderComponent,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use the (hacky) AudioManager.getOutputLatency() call to get the estimated
 // hardware latency for a stream for OpenSLES playback.  This is normally not
 // needed, except for some Android TV devices.

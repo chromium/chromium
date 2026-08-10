@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "media/base/android/media_codec_direction.h"
 #include "media/base/audio_codecs.h"
@@ -62,6 +63,12 @@ class MEDIA_EXPORT MediaCodecUtil {
   // *** THE FOLLOWING METHODS CAN'T BE CALLED FROM THE RENDERER ***
   // ***************************************************************
   //
+
+  // Returns true if the decoder requires a secure decoder component for the
+  // given |mime_type| based on the MediaCrypto session.
+  static bool RequiresSecureDecoderComponent(
+      const base::android::JavaRef<jobject>& media_crypto,
+      std::string_view mime_type);
 
   // Returns whether it's possible to create a MediaCodec for the given codec
   // and secureness.

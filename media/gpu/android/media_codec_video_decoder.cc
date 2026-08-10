@@ -484,7 +484,8 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
     bool requires_secure_video_codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << __func__
-           << ": requires_secure_video_codec = " << requires_secure_video_codec;
+           << ": requires_secure_video_codec = " << requires_secure_video_codec
+           << " for codec " << GetCodecName(decoder_config_.codec());
 
   DCHECK(state_ == State::kInitializing);
 
@@ -508,12 +509,18 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
   }
 
   media_crypto_ = std::move(media_crypto);
-  requires_secure_codec_ = requires_secure_video_codec;
+  requires_secure_codec_ =
+      base::FeatureList::IsEnabled(
+          kUseMediaCryptoRequiresSecureDecoderComponent)
+          ? MediaCodecUtil::RequiresSecureDecoderComponent(
+                media_crypto_,
+                MediaCodecUtil::CodecToAndroidMimeType(decoder_config_.codec()))
+          : requires_secure_video_codec;
 
   // Request a secure surface in all cases.  For L3, it's okay if we fall back
   // to TextureOwner rather than fail composition.  For L1, it's required.
   surface_chooser_helper_.SetSecureSurfaceMode(
-      requires_secure_video_codec
+      requires_secure_codec_
           ? SurfaceChooserHelper::SecureSurfaceMode::kRequired
           : SurfaceChooserHelper::SecureSurfaceMode::kRequested);
 

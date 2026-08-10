@@ -146,7 +146,10 @@ class MockVideoFrameFactory : public VideoFrameFactory {
 
 class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
  public:
-  MediaCodecVideoDecoderTest() : codec_(GetParam()) {}
+  MediaCodecVideoDecoderTest() : codec_(GetParam()) {
+    scoped_feature_list_.InitAndDisableFeature(
+        kUseMediaCryptoRequiresSecureDecoderComponent);
+  }
 
   void SetUp() override {
     uint8_t data = 0;
@@ -340,6 +343,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   const VideoCodec codec_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
