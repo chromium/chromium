@@ -17,12 +17,12 @@ namespace storage {
 // bytes are consumed.
 class MockBytesProvider : public blink::mojom::BytesProvider {
  public:
-  explicit MockBytesProvider(
-      std::vector<uint8_t> data,
-      size_t* reply_request_count = nullptr,
-      size_t* stream_request_count = nullptr,
-      size_t* file_request_count = nullptr,
-      std::optional<base::Time> file_modification_time = base::Time());
+  explicit MockBytesProvider(std::vector<uint8_t> data,
+                             size_t* reply_request_count = nullptr,
+                             size_t* stream_request_count = nullptr,
+                             size_t* file_request_count = nullptr,
+                             std::optional<base::Time> file_modification_time =
+                                 base::Time::FromSecondsSinceUnixEpoch(1));
   ~MockBytesProvider() override;
 
   // BytesProvider implementation:

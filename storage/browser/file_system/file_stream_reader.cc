@@ -18,10 +18,12 @@ const int kModificationTimeAllowedDeltaMicroseconds = 10;
 bool FileStreamReader::VerifySnapshotTime(
     const base::Time& expected_modification_time,
     const base::File::Info& file_info) {
-  return expected_modification_time.is_null() ||
-         (expected_modification_time - file_info.last_modified)
-                 .magnitude()
-                 .InMicroseconds() < kModificationTimeAllowedDeltaMicroseconds;
+  if (expected_modification_time.is_null()) {
+    return false;
+  }
+  return (expected_modification_time - file_info.last_modified)
+             .magnitude()
+             .InMicroseconds() < kModificationTimeAllowedDeltaMicroseconds;
 }
 
 }  // namespace storage

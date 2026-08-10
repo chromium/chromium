@@ -45,7 +45,8 @@ int MemoryFileStreamReader::Read(net::IOBuffer* buf,
             if (util->GetFileInfo(path, &file_info) != base::File::FILE_OK)
               return net::ERR_FILE_NOT_FOUND;
 
-            if (!FileStreamReader::VerifySnapshotTime(
+            if (!expected_modification_time.is_null() &&
+                !FileStreamReader::VerifySnapshotTime(
                     expected_modification_time, file_info)) {
               return net::ERR_UPLOAD_FILE_CHANGED;
             }
@@ -83,7 +84,8 @@ int64_t MemoryFileStreamReader::GetLength(GetLengthCallback callback) {
               return base::unexpected(net::ERR_FILE_NOT_FOUND);
             }
 
-            if (!FileStreamReader::VerifySnapshotTime(
+            if (!expected_modification_time.is_null() &&
+                !FileStreamReader::VerifySnapshotTime(
                     expected_modification_time, file_info)) {
               return base::unexpected(net::ERR_UPLOAD_FILE_CHANGED);
             }
