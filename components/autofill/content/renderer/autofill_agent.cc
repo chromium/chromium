@@ -69,6 +69,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/webid/email_verification_state.h"
@@ -1702,8 +1703,13 @@ void AutofillAgent::SetSuggestionAvailability(
     return;
   }
 
-  SetAutofillSuggestionAvailability(form_control.DynamicTo<WebInputElement>(),
-                                    suggestion_availability);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSelectAutofillPopoverPreview)) {
+    SetAutofillSuggestionAvailability(form_control, suggestion_availability);
+  } else {
+    SetAutofillSuggestionAvailability(form_control.DynamicTo<WebInputElement>(),
+                                      suggestion_availability);
+  }
 }
 
 void AutofillAgent::AcceptDataListSuggestion(

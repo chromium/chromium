@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/ax_mode.h"
@@ -60,6 +61,51 @@ TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
   EXPECT_TRUE(
+      node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
+
+  // kNoSuggestions.
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kNoSuggestions);
+  ax_context->UpdateAXForAllDocuments();
+
+  node_data = ui::AXNodeData();
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
+  EXPECT_FALSE(
+      node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
+}
+
+TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability_Select) {
+  LoadHTML("<select id='select_id'><option>option</option></select>");
+  blink::WebDocument document = GetMainFrame()->GetDocument();
+
+  // Creating context imitates a screen reader enabled, so that all ax nodes
+  // are created and attributes/state are updatable.
+  auto ax_context = std::make_unique<blink::WebAXContext>(
+      document, ui::kAXModeDefaultForTests);
+  ax_context->UpdateAXForAllDocuments();
+
+  blink::WebFormControlElement element =
+      document.GetElementById("select_id").To<blink::WebFormControlElement>();
+  blink::WebAXObject element_ax_object =
+      blink::WebAXObject::FromWebNode(element);
+
+  // kNoSuggestions by default.
+  ui::AXNodeData node_data;
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
+  EXPECT_FALSE(
+      node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
+
+  // kAutofillAvailable.
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kAutofillAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
+  node_data = ui::AXNodeData();
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
+  EXPECT_FALSE(
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kNoSuggestions.
