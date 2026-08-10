@@ -1085,7 +1085,8 @@ bool ChromeDownloadManagerDelegate::ShouldOpenDownload(
     content::DownloadOpenDelayedCallback callback) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extensions::util::IsExtensionDownload(*item) &&
-      !extensions::WebstoreInstaller::GetAssociatedApproval(*item)) {
+      !extensions::WebstoreInstaller::GetAssociatedApproval(*item) &&
+      !profile_->IsOffTheRecord()) {
     scoped_refptr<CrxInstaller> installer(
         download_crx_util::CreateCrxInstaller(profile_, *item));
 
