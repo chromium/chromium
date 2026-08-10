@@ -294,11 +294,14 @@ TEST(MemoryPressureListenerTest, AsyncIgnoreRepeatedNotifications) {
 
 TEST(MemoryPressureListenerTest, SuppressMemoryListenersSyncInitial) {
   test::ScopedFeatureList feature_list;
+  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine
+  // because the former will disable param caching for the feature. Param
+  // caching is global state that can cause test failures when tests running in
+  // the same process use different param values.
   // Suppress kTest (tag 0) for MODERATE.
   // Mask '1' suppresses non-critical (MODERATE).
-  feature_list.InitFromCommandLine(
-      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
-      "");
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
 
   MemoryPressureListenerRegistry registry;
   MockMemoryPressureListener listener;
@@ -319,10 +322,11 @@ TEST(MemoryPressureListenerTest, SuppressMemoryListenersSyncInitial) {
 TEST(MemoryPressureListenerTest,
      SuppressMemoryListenersSyncInitialCriticalNotSuppressed) {
   test::ScopedFeatureList feature_list;
+  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine -see
+  // SuppressMemoryListenersSyncInitial for why.
   // Suppress kTest (tag 0) for MODERATE only (mask '1').
-  feature_list.InitFromCommandLine(
-      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
-      "");
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
 
   MemoryPressureListenerRegistry registry;
   MockMemoryPressureListener listener;
@@ -343,10 +347,11 @@ TEST(MemoryPressureListenerTest,
 
 TEST(MemoryPressureListenerTest, SuppressMemoryListenersAsyncInitial) {
   test::ScopedFeatureList feature_list;
+  // Use InitAndEnableFeatureWithParameters instead of InitWithCommandLine -see
+  // SuppressMemoryListenersSyncInitial for why.
   // Suppress kTest (tag 0) for MODERATE.
-  feature_list.InitFromCommandLine(
-      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
-      "");
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSuppressMemoryListeners, {{"suppress_memory_listeners_mask", "1"}});
 
   MemoryPressureListenerRegistry registry;
   test::TaskEnvironment task_env;

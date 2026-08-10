@@ -6,6 +6,7 @@
 #define BASE_MEMORY_MEMORY_PRESSURE_LISTENER_REGISTRY_H_
 
 #include "base/base_export.h"
+#include "base/feature.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -13,6 +14,8 @@
 #include "base/threading/thread_checker.h"
 
 namespace base {
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kSuppressMemoryListeners);
 
 class BASE_EXPORT MemoryPressureListenerRegistry {
  public:

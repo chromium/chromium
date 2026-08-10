@@ -18,10 +18,6 @@
 
 namespace base {
 
-namespace {
-
-MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
-
 BASE_FEATURE(kSuppressMemoryListeners,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
@@ -30,6 +26,10 @@ BASE_FEATURE(kSuppressMemoryListeners,
              FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+namespace {
+
+MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
 
 BASE_FEATURE_PARAM(std::string,
                    kSuppressMemoryListenersMask,
