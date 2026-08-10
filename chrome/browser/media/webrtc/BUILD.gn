@@ -313,8 +313,6 @@ source_set("webrtc") {
     ]
     allow_circular_includes_from = [
       "//chrome/browser/ash/policy/handlers",
-      "//chrome/browser/ash/profiles",
-      "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/policy/uploading",
       "//chrome/browser/ui/ash/keyboard",
