@@ -10,7 +10,6 @@
 # can be used for fuzzing outside of fuzzing builds. It also defines a normal
 # proto_library "${target_name}" optimized for LITE_RUNTIME so consumers in
 # Chrome can depend on it without pulling in the full protobuf runtime.
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # TODO(https://crbug.com/1197634): Fold this into proto_library.
@@ -72,7 +71,6 @@ template("fuzzable_proto_library") {
                              "proto_in_dir",
                              "proto_out_dir",
                              "component_build_force_source_set",
-                             "use_experimental_fuzzable_proto",
                              "import_dirs",
                            ])
 
@@ -143,6 +141,6 @@ template("fuzzable_proto_library") {
 
   # Also define original proto target so consumers can still depend on it.
   proto_library(target_name) {
-    forward_variables_from(invoker, "*", [ "use_experimental_fuzzable_proto" ])
+    forward_variables_from(invoker, "*")
   }
 }
