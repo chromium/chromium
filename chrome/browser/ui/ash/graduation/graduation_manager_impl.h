@@ -45,8 +45,6 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
   // ash::graduation::GraduationManager:
   std::string GetLanguageCode() const override;
 
-  signin::IdentityManager* GetIdentityManager(
-      content::BrowserContext* context) override;
   content::StoragePartition* GetStoragePartition(
       content::BrowserContext* context,
       const content::StoragePartitionConfig& storage_partition_config) override;

@@ -12,6 +12,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -78,9 +83,7 @@ std::string GetResponseFromResult(signin::SetAccountsInCookieResult result) {
 class TestGraduationManager : public GraduationManager {
  public:
   explicit TestGraduationManager(
-      signin::IdentityManager* identity_manager,
-      network::TestURLLoaderFactory* url_loader_factory)
-      : test_identity_manager_(identity_manager) {
+      network::TestURLLoaderFactory* url_loader_factory) {
     test_storage_partition_.set_cookie_manager_for_browser_process(
         &test_cookie_manager_);
     test_storage_partition_.set_url_loader_factory_for_browser_process(
@@ -90,11 +93,6 @@ class TestGraduationManager : public GraduationManager {
   ~TestGraduationManager() override = default;
 
   // GraduationManagerImpl:
-  signin::IdentityManager* GetIdentityManager(
-      content::BrowserContext* context) override {
-    return test_identity_manager_;
-  }
-
   content::StoragePartition* GetStoragePartition(
       content::BrowserContext* context,
       const content::StoragePartitionConfig& storage_partition_config)
@@ -113,8 +111,21 @@ class TestGraduationManager : public GraduationManager {
  private:
   content::TestStoragePartition test_storage_partition_;
   network::TestCookieManager test_cookie_manager_;
+};
 
-  const raw_ptr<signin::IdentityManager> test_identity_manager_;
+// IdentityManagerProvider for tests that returns the injected identity manager.
+class TestIdentityManagerProvider : public IdentityManagerProvider {
+ public:
+  explicit TestIdentityManagerProvider(
+      signin::IdentityManager* identity_manager)
+      : identity_manager_(identity_manager) {}
+
+  signin::IdentityManager* Find(const AccountId& account_id) override {
+    return identity_manager_;
+  }
+
+ private:
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 class WebviewAuthHandlerTest : public testing::Test {
@@ -141,6 +152,8 @@ class WebviewAuthHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
+    AnnotatedAccountId::Set(&test_context_,
+                            AccountId::FromUserEmail(kTestAccountEmail));
     identity_test_env_.MakePrimaryAccountAvailable(
         kTestAccountEmail, signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
@@ -150,13 +163,21 @@ class WebviewAuthHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext test_context_;
 
+  // AnnotatedAccountId::Set() (called in SetUp with the default for_test=true)
+  // reaches BrowserContextHelper::Get(), so the test needs a live instance.
+  std::unique_ptr<BrowserContextHelper> browser_context_helper_{
+      std::make_unique<BrowserContextHelper>(
+          std::make_unique<FakeBrowserContextHelperDelegate>())};
+
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient test_signin_client_{&prefs_};
   signin::IdentityTestEnvironment identity_test_env_{
       /*test_url_loader_factory=*/nullptr, &prefs_, &test_signin_client_};
 
+  TestIdentityManagerProvider identity_manager_provider_{
+      identity_test_env_.identity_manager()};
+
   TestGraduationManager test_graduation_manager_{
-      identity_test_env_.identity_manager(),
       test_signin_client_.GetTestURLLoaderFactory()};
 
   WebviewAuthHandler auth_handler_{&test_context_, kWebviewHostName};
