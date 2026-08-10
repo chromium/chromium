@@ -52,10 +52,6 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_mac_utils.h"
-#endif
-
 namespace omnibox_everywhere {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
@@ -245,7 +241,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     widget_delegate_->SetDraggableRegion(draggable_region_);
   }
   params.delegate = widget_delegate_.get();
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
   if (context) {
     params.context = context;
   }
@@ -276,6 +272,11 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   widget_delegate_->SetContentsView(std::move(web_view));
 
   widget_->Init(std::move(params));
+#if BUILDFLAG(IS_MAC)
+  widget_->SetActivationIndependence(true);
+  widget_->SetVisibleOnAllWorkspaces(true);
+  widget_->SetCanAppearInExistingFullscreenSpaces(true);
+#endif
   widget_->MakeCloseSynchronous(base::BindOnce(
       &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
   widget_observation_.Observe(widget_.get());
@@ -296,11 +297,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
     return;
   }
   widget_->Show();
-#if BUILDFLAG(IS_MAC)
-  OrderOmniboxEverywhereFrontOnMac(widget_.get());
-#else
   widget_->Activate();
-#endif
 
   if (widget_->GetContentsView()) {
     widget_->GetContentsView()->RequestFocus();

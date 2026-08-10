@@ -117,14 +117,9 @@ void OmniboxEverywhereController::ShowProfilePicker() {
 
 void OmniboxEverywhereController::InvokeForActiveBrowserProfile(
     InvocationSource source) {
-  BrowserWindowInterface* active_bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   Profile* target_profile = GetTargetProfile();
   if (target_profile) {
-    gfx::NativeWindow context = active_bwi && active_bwi->GetWindow()
-                                    ? active_bwi->GetWindow()->GetNativeWindow()
-                                    : gfx::NativeWindow();
-    OnInvoke(source, target_profile, context);
+    OnInvoke(source, target_profile, gfx::NativeWindow());
   }
 }
 

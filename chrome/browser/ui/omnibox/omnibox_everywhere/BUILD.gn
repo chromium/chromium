@@ -19,9 +19,6 @@ source_set("omnibox_everywhere") {
     "omnibox_everywhere_controller.h",
     "omnibox_everywhere_ui_manager.h",
   ]
-  if (is_mac) {
-    public += [ "omnibox_everywhere_mac_utils.h" ]
-  }
   public_deps = [
     ":prefs",
     "//base",
@@ -69,13 +66,6 @@ source_set("impl") {
       "omnibox_everywhere_event_handler_aura.cc",
       "omnibox_everywhere_event_handler_aura.h",
     ]
-  }
-  if (is_mac) {
-    sources += [
-      "omnibox_everywhere_mac_utils.h",
-      "omnibox_everywhere_mac_utils.mm",
-    ]
-    deps += [ "//components/remote_cocoa/app_shim" ]
   }
 }
 
