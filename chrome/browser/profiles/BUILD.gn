@@ -53,10 +53,6 @@ source_set("misc") {
     "profile_impl.h",
     "profile_key.cc",
     "profiles_state.cc",
-    "renderer_updater.cc",
-    "renderer_updater.h",
-    "renderer_updater_factory.cc",
-    "renderer_updater_factory.h",
     "sql_init_error_message_ids.cc",
     "storage_partition_descriptor.h",
   ]
@@ -330,6 +326,55 @@ source_set("policy_handlers") {
       "//chrome/browser/policy",
       "//chrome/common:constants",
     ]
+  }
+}
+
+source_set("renderer_updater") {
+  public = [
+    "renderer_updater.h",
+    "renderer_updater_factory.h",
+  ]
+
+  sources = [
+    "renderer_updater.cc",
+    "renderer_updater_factory.cc",
+  ]
+
+  public_deps = [
+    ":profile",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/common",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/signin",
+    "//chrome/common:constants",
+    "//components/content_settings/common:mojom",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/content",
+    "//components/policy/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//ipc",
+    "//services/network/public/cpp",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/login/signin" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
   }
 }
 
@@ -664,6 +709,7 @@ source_set("profiles_extra_parts_impl") {
     ":profile_manager",
     ":profile_util",
     ":profiles_extra_parts",
+    ":renderer_updater",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:chrome_browser_main",
