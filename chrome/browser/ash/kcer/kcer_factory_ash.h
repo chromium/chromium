@@ -101,7 +101,7 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory {
 
   void StartInitializingKcerInstance(
       base::WeakPtr<internal::KcerImpl> kcer_service,
-      content::BrowserContext* context);
+      base::WeakPtr<Profile> profile);
 
   void StartInitializingKcerWithoutNss(
       base::WeakPtr<internal::KcerImpl> kcer_service,
