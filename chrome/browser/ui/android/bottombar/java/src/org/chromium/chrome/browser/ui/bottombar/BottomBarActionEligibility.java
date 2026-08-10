@@ -75,11 +75,12 @@ public class BottomBarActionEligibility {
             return ACTION_NONE;
         }
 
-        // 3. AI Mode Fallback: If DSE is Google AND (country is AIM Allowed OR bypass is true) ->
-        // Show AI Mode.
+        // 3. AI Mode Fallback: If DSE is Google AND AIM feature flag is enabled AND (country is
+        // AIM Allowed OR bypass is true) -> Show AI Mode.
         boolean bypassAim = BottomBarConfigUtils.bypassAimGeofencing();
         boolean isDseGoogle = isDefaultSearchEngineGoogle(profile);
         if (isDseGoogle
+                && BottomBarConfigUtils.isAimEnabled()
                 && (bypassAim
                         || BottomBarGeofencingConfig.AIM_ALLOWED_COUNTRIES.contains(country))) {
             return ActionId.AI_MODE;

@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,6 +68,7 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
     public void testGetEligibleExtraAction_GlicEnabled_NonUS() {
         mCountry = "au"; // Australia (Not allowed for Glic, but allowed for AIM)
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
@@ -85,10 +87,21 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
     public void testGetEligibleExtraAction_AiMode_Eligible() {
         mCountry = "au"; // Australia (AIM allowed)
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         assertEquals(ActionId.AI_MODE, BottomBarActionEligibility.getEligibleExtraAction(mProfile));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
+    public void testGetEligibleExtraAction_AiMode_DisabledByFeatureFlag() {
+        mCountry = "au"; // Australia (AIM allowed)
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        assertEquals(
+                BottomBarActionEligibility.ACTION_NONE,
+                BottomBarActionEligibility.getEligibleExtraAction(mProfile));
     }
 
     @Test
@@ -144,7 +157,10 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true")
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
+    })
     public void testGetEligibleExtraAction_AiModeBypassGeofencing() {
         // France (Not allowed for AI Mode).
         mCountry = "fr";
