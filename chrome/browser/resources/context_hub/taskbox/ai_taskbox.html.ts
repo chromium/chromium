@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, repeat} from '//resources/lit/v3_0/lit.rollup.js';
-
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AiTaskboxElement} from './ai_taskbox.js';
 import {TodoItemVariant} from './todo_item.js';
 
@@ -24,45 +23,36 @@ export function getHtml(this: AiTaskboxElement) {
                 <div class="column-header">
                     <h2>Workspace Todos</h2>
                     <cr-button class="tonal-button"
-                        ?disabled="${
-      !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
+                        ?disabled="${!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
                         @click="${this.onGenerateGmailTodosClick_}">
-                      ${
-      this.isGeneratingGmailTodos_ ? 'Generating...' :
-                                     'Generate Workspace Todos'}
+                      ${this.isGeneratingGmailTodos_ ? 'Generating...' : 'Generate Workspace Todos'}
                     </cr-button>
                 </div>
 
                 <div class="todo-list">
                     ${
-      this.todos && this.todos.length > 0 ?
-          repeat(
-              this.todos, todo => todo.id,
-              todo => html`
+      this.todos &&
+      this.todos.length > 0 ? this.todos.map(todo => html`
                       <todo-item
                           .id="${todo.id}"
                           .heading="${todo.title}"
                           .description="${todo.description}"
-                          .status="${todo.status}"
                           .actionableUrl="${
                   todo.data.firstParty?.actionableUrl || ''}"
                           .sourceReferences="${
                   todo.data.firstParty?.sourceReferences || []}"
-                          .score="${todo.score}"
-                          .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                          .score="${todo.score}">
                       </todo-item>
                     `) :
-          this.hasGmailGenerationError_ ? html`
+                              this.hasGmailGenerationError_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
-                    ` :
-          this.hasGeneratedGmail_       ? html`
+                    ` : this.hasGeneratedGmail_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text">You're all caught up!</p>
                       </div>
-                    ` :
-                                          html`
+                    ` : html`
                       <div class="placeholder-card">
                         <p class="placeholder-text">No Workspace Todos yet.</p>
                       </div>
@@ -76,35 +66,30 @@ export function getHtml(this: AiTaskboxElement) {
                     <h2>Browser Todos</h2>
                     <cr-button class="tonal-button" disabled
                         @click="${this.onGenerateTabTodosClick_}">
-                      ${
-      this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate Browser Todos'}
+                      ${this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate Browser Todos'}
                     </cr-button>
                 </div>
 
                 <div class="todo-list">
                     ${
-      this.tabTodos && this.tabTodos.length > 0 ?
-          repeat(this.tabTodos, todo => todo.id, todo => html`
+      this.tabTodos &&
+      this.tabTodos.length > 0 ? this.tabTodos.map(todo => html`
                       <todo-item
                           .id="${todo.id}"
                           .heading="${todo.title}"
                           .description="${todo.description}"
-                          .status="${todo.status}"
-                          .variant="${TodoItemVariant.TAB}"
-                          .disable_state_mgmt="${this.isGeneratingTabTodos_}">
+                          .variant="${TodoItemVariant.TAB}">
                       </todo-item>
                     `) :
-          this.hasTabGenerationError_ ? html`
+      this.hasTabGenerationError_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text error-text">Failed to generate. Please try again.</p>
                       </div>
-                    ` :
-          this.hasGeneratedTab_       ? html`
+                    ` : this.hasGeneratedTab_ ? html`
                       <div class="placeholder-card">
                         <p class="placeholder-text">You're all caught up!</p>
                       </div>
-                    ` :
-                                        html`
+                    ` : html`
                       <div class="placeholder-card">
                         <p class="placeholder-text">No Browser Todos yet.</p>
                       </div>

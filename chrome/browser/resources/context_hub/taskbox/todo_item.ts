@@ -12,8 +12,7 @@ import '//resources/cr_elements/icons.html.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
-import type {AutoTodoItem, SourceReference} from '../context_hub.mojom-webui.js';
+import type {SourceReference} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './todo_item.css.js';
 import {getHtml} from './todo_item.html.js';
@@ -54,28 +53,24 @@ export class TodoItemElement extends CrLitElement {
       id: {type: String},
       heading: {type: String},
       description: {type: String},
-      status: {type: Number},
       actionableUrl: {type: String},
       sourceReferences: {type: Array},
       score: {type: Number},
       expanded_: {type: Boolean},
       liked: {type: Boolean},
       variant: {type: String},
-      disable_state_mgmt: {type: Boolean},
     };
   }
 
   override accessor id: string = '';
   accessor heading: string = '';
   accessor description: string = '';
-  accessor status: AutoTodoStatus = AutoTodoStatus.kActive;
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
   accessor score: number|null = null;
   protected accessor expanded_: boolean = false;
   accessor liked: boolean|null = null;
   accessor variant: TodoItemVariant = TodoItemVariant.DEFAULT;
-  accessor disable_state_mgmt: boolean = false;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded_ = e.detail.value;
@@ -119,42 +114,14 @@ export class TodoItemElement extends CrLitElement {
     window.open(`${FORM_URL}?${params.toString()}`, '_blank');
   }
 
-  private async updateStatus_(status: AutoTodoStatus) {
-    if (this.disable_state_mgmt) {
-      return;
-    }
-    // TODO(crbug.com/543981198): Add support for tab todos.
-    const todo: AutoTodoItem = {
-      id: this.id,
-      title: this.heading,
-      description: this.description,
-      status,
-      score: this.score ?? 0,
-      data: {
-        firstParty: {
-          actionableUrl: this.actionableUrl,
-          sourceReferences: this.sourceReferences,
-        },
-      },
-    };
-    try {
-      await browserProxyFactory.getInstance().handler.updateAutoTodo(todo);
-    } catch (e) {
-      console.error('Failed to update auto todo status:', e);
-    }
+  protected onCheckCircleClick_(e: Event) {
+    e.stopPropagation();
+    // TODO(crbug.com/541016246): Implement check circle click.
   }
 
-  protected async onCheckCircleClick_(e: Event) {
+  protected onDismissClick_(e: Event) {
     e.stopPropagation();
-    const nextStatus = this.status === AutoTodoStatus.kCompleted ?
-        AutoTodoStatus.kActive :
-        AutoTodoStatus.kCompleted;
-    await this.updateStatus_(nextStatus);
-  }
-
-  protected async onDismissClick_(e: Event) {
-    e.stopPropagation();
-    await this.updateStatus_(AutoTodoStatus.kDismissed);
+    // TODO(crbug.com/541016246): Implement dismiss click.
   }
 
   protected onMoreClick_(e: Event) {

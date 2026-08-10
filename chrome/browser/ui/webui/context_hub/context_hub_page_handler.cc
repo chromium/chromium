@@ -114,16 +114,7 @@ ContextHubPageHandler::~ContextHubPageHandler() = default;
 
 void ContextHubPageHandler::OnAutoTodosChanged(
     base::span<const context_hub::AutoTodoEntry> entries) {
-  std::vector<context_hub::AutoTodoEntry> visible_entries;
-  for (const auto& entry : entries) {
-    // TODO(crbug.com/540562062): Consider showing dismissed todos in a separate
-    // section.
-    if (entry.status != context_hub::AutoTodoEntry::Status::kDismissed) {
-      continue;
-    }
-    visible_entries.push_back(entry);
-  }
-  page_->OnAutoTodosChanged(std::move(visible_entries));
+  page_->OnAutoTodosChanged(std::vector(std::from_range, entries));
 }
 
 void ContextHubPageHandler::GenerateFirstPartyAutoTodos(
@@ -152,9 +143,6 @@ void ContextHubPageHandler::GetAutoTodos(GetAutoTodosCallback callback) {
         std::vector<context_hub::AutoTodoEntry> first_party_todos;
         std::vector<context_hub::AutoTodoEntry> third_party_todos;
         for (auto& entry : entries) {
-          if (entry.status == context_hub::AutoTodoEntry::Status::kDismissed) {
-            continue;
-          }
           if (entry.is_first_party()) {
             first_party_todos.push_back(std::move(entry));
           } else if (entry.is_third_party()) {
