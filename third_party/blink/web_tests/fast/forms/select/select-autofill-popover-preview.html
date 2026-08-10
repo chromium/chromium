@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jochen@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/40060525">
+<link rel=help href="https://issues.chromium.org/issues/40057398">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<style>
+  @font-face {
+    font-family: Ahem;
+    src: url(../../../resources/Ahem.ttf);
+  }
+  .use-ahem {
+    font-family: Ahem;
+    font-size: 40px;
+    font-feature-settings: "case", "ss01";
+    width: 200px;
+    height: 100px;
+  }
+</style>
+
+<select id="menulist" class="use-ahem">
+  <option value="v1">Value 1</option>
+  <option value="v2">Value 2</option>
+</select>
+
+<select id="listbox" class="use-ahem" size="4">
+  <option value="v1">Value 1</option>
+  <option value="v2">Value 2</option>
+</select>
+
+<select id="listbox-scrollable" size="4">
+  <option value="v1">Value 1</option>
+  <option value="v2">Value 2</option>
+  <option value="v3">Value 3</option>
+  <option value="v4">Value 4</option>
+  <option value="v5">Value 5</option>
+  <option value="v6">Value 6</option>
+  <option value="v7">Value 7</option>
+  <option value="v8">Value 8</option>
+</select>
+
+<script>
+function testAutofillPopoverPreview(id, description) {
+  promise_test(async () => {
+    await document.fonts.ready;
+    const select = document.getElementById(id);
+    assert_true(!!select, `Element ${id} should exist`);
+
+    const initialStyle = window.getComputedStyle(select);
+    assert_equals(initialStyle.fontFamily, 'Ahem', `${id} should use author font initially`);
+
+    internals.setSuggestedValue(select, 'v2');
+
+    const shadowRoot = internals.shadowRoot(select);
+    const popover = getElementByPseudoId(shadowRoot, '-internal-select-autofill-preview');
+    assert_true(!!popover, `${id} autofill_popover_ element should exist in shadow DOM`);
+    assert_true(popover.matches(':popover-open'), `${id} autofill_popover_ should be open in preview state`);
+    assert_equals(window.getComputedStyle(popover).display, 'grid', `${id} autofill_popover_ display should be grid when open`);
+
+    // Full-element anchor sizing dimensions
+    assert_equals(window.getComputedStyle(popover).positionArea, 'center', `${id} autofill_popover_ position-area should be center`);
+    assert_equals(popover.offsetWidth, select.offsetWidth, `${id} autofill_popover_ width should match anchor select width`);
+    assert_equals(popover.offsetHeight, select.offsetHeight, `${id} autofill_popover_ height should match anchor select height`);
+
+    // Text-align start and text content
+    const popoverText = getElementByPseudoId(shadowRoot, '-internal-select-autofill-preview-text');
+    assert_true(!!popoverText, `${id} autofill_popover_text_ should exist in shadow DOM`);
+    assert_equals(popoverText.textContent, 'Value 2', `${id} autofill_popover_text_ should contain the label of the previewed option`);
+    const textStyle = window.getComputedStyle(popoverText);
+    assert_equals(textStyle.textAlign, 'start', `${id} autofill_popover_text_ should have text-align: start`);
+
+    // -webkit-small-control font pinning
+    assert_not_equals(textStyle.fontFamily, 'Ahem', `${id} autofill_popover_text_ should not use author font family in preview state`);
+    assert_not_equals(textStyle.fontSize, '40px', `${id} autofill_popover_text_ should pin font size to -webkit-small-control`);
+    assert_equals(textStyle.fontFeatureSettings, 'normal', `${id} autofill_popover_text_ should pin font-feature-settings to normal`);
+
+    // End preview
+    internals.setSuggestedValue(select, '');
+    assert_false(popover.matches(':popover-open'), `${id} autofill_popover_ should close when preview ends`);
+    assert_equals(window.getComputedStyle(popover).display, 'none', `${id} autofill_popover_ display should be none when closed`);
+  }, description);
+}
+
+testAutofillPopoverPreview('menulist', 'Autofill popover preview on menulist <select>');
+testAutofillPopoverPreview('listbox', 'Autofill popover preview on listbox <select>');
+
+test(() => {
+  const select = document.getElementById('listbox-scrollable');
+  assert_equals(select.scrollTop, 0);
+
+  // Previewing an option beyond the visible items does not scroll the listbox.
+  internals.setSuggestedValue(select, 'v8');
+  assert_equals(select.scrollTop, 0, 'scrollTop should remain 0 when previewing off-screen option');
+
+  internals.setSuggestedValue(select, '');
+  assert_equals(select.scrollTop, 0, 'scrollTop should remain 0 after clearing preview');
+
+  // User scrolls the listbox.
+  select.scrollTop = 30;
+  const userScrollTop = select.scrollTop;
+  assert_greater_than(userScrollTop, 0, 'listbox should be scrolled');
+
+  // Previewing does not modify or mask the user scroll position.
+  internals.setSuggestedValue(select, 'v8');
+  assert_equals(select.scrollTop, userScrollTop, 'scrollTop should match user scroll position during preview');
+
+  // Ending preview preserves the user scroll position without resetting.
+  internals.setSuggestedValue(select, '');
+  assert_equals(select.scrollTop, userScrollTop, 'scrollTop should be preserved after clearing preview');
+}, 'Autofill popover preview does not scroll or reset listbox scroll position');
+</script>
+

@@ -210,7 +210,7 @@ Input after setting suggestedValue:
 |       aria-hidden="true"
 |       pseudo="-internal-select-inner-element"
 |       shadow:pseudoId="-internal-select-inner-element"
-|       "TX"
+|       ""
 |     <slot>
 |       pseudo="-internal-select-button-slot"
 |       shadow:pseudoId="-internal-select-button-slot"
@@ -227,6 +227,7 @@ Input after setting suggestedValue:
 |       <div>
 |         pseudo="-internal-select-autofill-preview-text"
 |         shadow:pseudoId="-internal-select-autofill-preview-text"
+|         "TX"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

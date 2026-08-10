@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -590,9 +591,11 @@ Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
     // Form controls in autofill preview state may have been scrolled to bring
     // the previewed value into view. Keep the current selection so that the
     // suggested value cannot be observed via the selected scroll marker.
-    if (auto* form_control = DynamicTo<HTMLFormControlElement>(scroller);
-        form_control && form_control->IsPreviewed()) {
-      return selected_marker_;
+    if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
+      if (auto* form_control = DynamicTo<HTMLFormControlElement>(scroller);
+          form_control && form_control->IsPreviewed()) {
+        return selected_marker_;
+      }
     }
     LayoutBox* scroller_box = scroller->GetLayoutBox();
     DCHECK(scroller_box);

@@ -2355,7 +2355,8 @@ select::-internal-select-autofill-preview[popover]:popover-open {
 select::-internal-select-autofill-preview-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: center;
+  text-align: start;
+  padding-inline: -internal-auto-base(2px, 0.5em);
   white-space: nowrap;
   font: -webkit-small-control !important;
   /* See input::-internal-input-suggested: pin a generic family so an author

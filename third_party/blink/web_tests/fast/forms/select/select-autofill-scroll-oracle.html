@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:jochen@chromium.org">
+<link rel="help" href="https://issues.chromium.org/issues/40060525">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<style>
+  select {
+    width: 200px;
+    height: 100px;
+  }
+</style>
+
+<select id="listbox" size="4">
+  <option value="v1">Value 1</option>
+  <option value="v2">Value 2</option>
+  <option value="v3">Value 3</option>
+  <option value="v4">Value 4</option>
+  <option value="v5">Value 5</option>
+  <option value="v6">Value 6</option>
+  <option value="v7">Value 7</option>
+  <option value="v8">Value 8</option>
+  <option value="v9">Value 9</option>
+  <option value="v10" id="preview-option">Value 10</option>
+</select>
+
+<script>
+promise_test(async () => {
+  await document.fonts.ready;
+  const select = document.getElementById('listbox');
+  const previewOption = document.getElementById('preview-option');
+  assert_true(!!select, 'listbox select element should exist');
+  assert_true(!!previewOption, 'preview option element should exist');
+
+  select.scrollTop = 0;
+  assert_equals(select.scrollTop, 0, 'select should initially be scrolled to the top');
+
+  let scrollEventCount = 0;
+  const scrollListener = () => {
+    scrollEventCount++;
+  };
+  select.addEventListener('scroll', scrollListener);
+
+  // Trigger autofill preview on an out-of-view option (v10).
+  internals.setSuggestedValue(select, 'v10');
+
+  // Wait a short delay to allow any potential asynchronous scroll events to fire.
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
+
+  assert_equals(scrollEventCount, 0, 'Zero scroll events should fire during autofill preview start');
+
+  // End autofill preview.
+  internals.setSuggestedValue(select, '');
+
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
+
+  assert_equals(scrollEventCount, 0, 'Zero scroll events should fire during autofill preview end');
+  assert_equals(select.scrollTop, 0, 'select.scrollTop should remain invariant (0) after autofill preview start and end');
+
+  select.removeEventListener('scroll', scrollListener);
+}, 'Autofill preview on a multi-line <select size="4"> should not scroll or emit scroll events during preview start and end');
+
+promise_test(async () => {
+  await document.fonts.ready;
+  const select = document.getElementById('listbox');
+  const previewOption = document.getElementById('preview-option');
+  assert_true(!!select, 'listbox select element should exist');
+  assert_true(!!previewOption, 'preview option element should exist');
+
+  select.scrollTop = 0;
+  assert_equals(select.scrollTop, 0, 'select should initially be scrolled to the top');
+
+  let scrollEventCount = 0;
+  const scrollListener = () => {
+    scrollEventCount++;
+  };
+  select.addEventListener('scroll', scrollListener);
+
+  // Trigger autofill preview on an out-of-view option (v10).
+  internals.setSuggestedValue(select, 'v10');
+
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
+
+  assert_equals(scrollEventCount, 0, 'Zero scroll events should fire during autofill preview start');
+
+  // Verify that calling scrollIntoViewIfNeeded() on the previewed option from JavaScript
+  // scrolls the control and emits a scroll event.
+  previewOption.scrollIntoViewIfNeeded();
+
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
+
+  assert_greater_than(scrollEventCount, 0, 'Calling scrollIntoViewIfNeeded() on previewed option should emit a scroll event');
+
+  // End autofill preview.
+  internals.setSuggestedValue(select, '');
+
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 50)));
+
+  assert_greater_than(select.scrollTop, 0, 'Calling scrollIntoViewIfNeeded() on previewed option should scroll the control');
+
+  select.removeEventListener('scroll', scrollListener);
+}, 'During autofill preview on a multi-line <select size="4">, calling scrollIntoViewIfNeeded() on the previewed option should scroll the control and emit a scroll event');
+</script>
