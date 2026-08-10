@@ -820,28 +820,32 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
 
 TEST_F(AutofillAiPermissionUtilsTest, OptInStatusWithUsePrivateAi) {
   base::test::ScopedFeatureList feature_list{features::kAutofillAiUsePrivateAi};
+  base::HistogramTester histogram_tester;
 
-  // By default, neither the opt-in pref nor the notice shown timestamp is set.
+  // By default, opt-in status is false.
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
 
-  client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
-                                  true);
-  // Setting only `kAutofillAiPrivateInferenceOptInStatus` is not sufficient
-  // without `kAutofillAiPrivateInferenceNoticeShownTimestamp` being set.
-  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
-
-  client().GetPrefs()->SetTime(
-      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
-      base::Time::Now());
-  // Both `kAutofillAiPrivateInferenceOptInStatus` is true and
-  // `kAutofillAiPrivateInferenceNoticeShownTimestamp` is set.
+  // `SetAutofillAiOptInStatus` with `kOptedIn` sets both the opt-in pref and
+  // notice shown timestamp.
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+  EXPECT_FALSE(
+      client()
+          .GetPrefs()
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp)
+          .is_null());
 
-  client().GetPrefs()->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
-                                  false);
-  // Setting `kAutofillAiPrivateInferenceOptInStatus` to false returns false
-  // even if `kAutofillAiPrivateInferenceNoticeShownTimestamp` remains set.
+  // `SetAutofillAiOptInStatus` with `kOptedOut` sets
+  // `kAutofillAiPrivateInferenceOptInStatus` to false.
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut));
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  histogram_tester.ExpectBucketCount("Autofill.Ai.OptIn.Change",
+                                     AutofillAiOptInStatus::kOptedIn, 1);
+  histogram_tester.ExpectBucketCount("Autofill.Ai.OptIn.Change",
+                                     AutofillAiOptInStatus::kOptedOut, 1);
 }
 
 TEST_F(AutofillAiPermissionUtilsTest,

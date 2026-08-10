@@ -852,13 +852,23 @@ bool SetAutofillAiOptInStatus(
     return false;
   }
 
-  const std::optional<GaiaIdHash> signed_in_hash =
-      GetAccountGaiaIdHash(identity_manager);
-  // Guaranteed by MayPerformAutofillAiAction(kOptIn).
-  CHECK(signed_in_hash.has_value());
-  syncer::SetAccountKeyedPrefValue(
-      prefs, prefs::kAutofillAiOptInStatus, *signed_in_hash,
-      base::Value(opt_in_status == AutofillAiOptInStatus::kOptedIn));
+  if (base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)) {
+    // If the user manually opted-in or out it is because they manually
+    // navigated to the settings UI and were shown privacy information about the
+    // feature. Therefore, later displaying the the notice is unnecessary.
+    prefs->SetTime(prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+                   base::Time::Now());
+    prefs->SetBoolean(prefs::kAutofillAiPrivateInferenceOptInStatus,
+                      opt_in_status == AutofillAiOptInStatus::kOptedIn);
+  } else {
+    const std::optional<GaiaIdHash> signed_in_hash =
+        GetAccountGaiaIdHash(identity_manager);
+    // Guaranteed by MayPerformAutofillAiAction(kOptIn).
+    CHECK(signed_in_hash.has_value());
+    syncer::SetAccountKeyedPrefValue(
+        prefs, prefs::kAutofillAiOptInStatus, *signed_in_hash,
+        base::Value(opt_in_status == AutofillAiOptInStatus::kOptedIn));
+  }
 
   base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Change", opt_in_status);
   return true;
