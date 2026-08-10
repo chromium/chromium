@@ -236,6 +236,34 @@ TEST_F(VerticalTabStripStateControllerTest, UncollapsedWidth) {
   EXPECT_EQ(1, call_count);
 }
 
+TEST_F(VerticalTabStripStateControllerTest, Resizing) {
+  int call_count = 0;
+  bool is_resizing = false;
+  auto subscription =
+      controller()->RegisterOnResizingChanged(base::BindRepeating(
+          [](int* call_count, bool* is_resizing, bool resizing) {
+            (*call_count)++;
+            *is_resizing = resizing;
+          },
+          &call_count, &is_resizing));
+
+  EXPECT_FALSE(controller()->is_resizing());
+
+  controller()->SetIsResizing(true);
+  EXPECT_TRUE(controller()->is_resizing());
+  EXPECT_TRUE(is_resizing);
+  EXPECT_EQ(1, call_count);
+
+  // Setting the same value should not trigger notifications.
+  controller()->SetIsResizing(true);
+  EXPECT_EQ(1, call_count);
+
+  controller()->SetIsResizing(false);
+  EXPECT_FALSE(controller()->is_resizing());
+  EXPECT_FALSE(is_resizing);
+  EXPECT_EQ(2, call_count);
+}
+
 TEST_F(VerticalTabStripStateControllerTest, ExpandOnHover) {
   controller()->SetExpandOnHoverEnabled(true);
   EXPECT_TRUE(controller()->IsExpandOnHoverEnabled());

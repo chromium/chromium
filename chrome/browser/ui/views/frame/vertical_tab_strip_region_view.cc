@@ -595,11 +595,13 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   tab_strip_view()->SetIsAnimatingSize(!done_resizing);
   if (!starting_width_on_resize_.has_value()) {
     starting_width_on_resize_ = width();
+    state_controller_->SetIsResizing(true);
   }
   bool previously_collapsed = target_collapse_state_.collapsed;
   const int proposed_width = starting_width_on_resize_.value() + resize_amount;
   if (done_resizing) {
     starting_width_on_resize_ = std::nullopt;
+    state_controller_->SetIsResizing(false);
   }
 
   tabs::VerticalTabStripState new_state;

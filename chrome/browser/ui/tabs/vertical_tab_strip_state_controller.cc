@@ -266,6 +266,20 @@ void VerticalTabStripStateController::SetExpandOnHoverEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kVerticalTabsExpandOnHoverEnabled, enabled);
 }
 
+void VerticalTabStripStateController::SetIsResizing(bool is_resizing) {
+  if (is_resizing_ == is_resizing) {
+    return;
+  }
+  is_resizing_ = is_resizing;
+  on_resizing_changed_callback_list_.Notify(is_resizing_);
+}
+
+base::CallbackListSubscription
+VerticalTabStripStateController::RegisterOnResizingChanged(
+    ResizingChangeCallback callback) {
+  return on_resizing_changed_callback_list_.Add(std::move(callback));
+}
+
 base::CallbackListSubscription
 VerticalTabStripStateController::RegisterOnCollapseChanged(
     CollapseChangeCallback callback) {

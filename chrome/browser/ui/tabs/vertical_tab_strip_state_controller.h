@@ -113,7 +113,15 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   bool IsExpandOnHoverEnabled() const;
   void SetExpandOnHoverEnabled(bool enabled);
 
+  bool is_resizing() const { return is_resizing_; }
+  void SetIsResizing(bool is_resizing);
+
   const VerticalTabStripState& GetState() const { return state_; }
+
+  using ResizingChangeCallback =
+      base::RepeatingCallback<void(bool is_resizing)>;
+  base::CallbackListSubscription RegisterOnResizingChanged(
+      ResizingChangeCallback callback);
 
   using CollapseChangeCallback =
       base::RepeatingCallback<void(VerticalTabStripCollapseState)>;
@@ -186,6 +194,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   base::RepeatingCallbackList<void(VerticalTabStripCollapseState)>
       on_collapse_changed_callback_list_;
+  base::RepeatingCallbackList<void(bool)> on_resizing_changed_callback_list_;
   base::RepeatingCallbackList<void(bool)>
       on_expand_on_hover_enabled_changed_callback_list_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
@@ -202,6 +211,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   int enable_state_lock_count_ = 0;
 
   bool is_expand_on_hover_enabled_ = false;
+  bool is_resizing_ = false;
 
   base::OneShotTimer expand_on_hover_iph_startup_timer_;
   base::OneShotTimer expand_on_hover_iph_collapse_timer_;
