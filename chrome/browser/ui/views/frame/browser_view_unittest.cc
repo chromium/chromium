@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -195,8 +196,8 @@ namespace {
 class ScopedBrowser {
  public:
   explicit ScopedBrowser(Profile* profile) {
-    Browser::CreateParams params(profile, true);
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    BrowserWindowCreateParams params(profile, true);
+    browser_ = DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_.get());
   }
   ScopedBrowser(const ScopedBrowser&) = delete;

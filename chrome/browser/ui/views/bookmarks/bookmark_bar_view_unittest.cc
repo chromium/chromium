@@ -21,6 +21,7 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/grit/generated_resources.h"
@@ -90,10 +91,10 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get())
         ->LoadForTesting({});
 
-    Browser::CreateParams params(profile(), true);
+    BrowserWindowCreateParams params(profile(), true);
     auto browser_window = std::make_unique<TestBrowserWindow>();
     params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    browser_ = DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
   }
 
   void TearDown() override {

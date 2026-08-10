@@ -32,6 +32,7 @@
 class LocationBarTesting;
 class GlobalBrowserCollection;
 class OmniboxView;
+struct BrowserWindowCreateParams;
 
 // WARNING WARNING WARNING WARNING
 // Do not use this class. See docs/chrome_browser_design_principles.md for
@@ -287,5 +288,12 @@ class TestBrowserWindow : public BrowserWindow,
 // Helper that handle the lifetime of TestBrowserWindow instances.
 std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
     Browser::CreateParams params);
+std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
+    BrowserWindowCreateParams params);
+
+// Helper that creates BrowserWindowCreateParams from Browser::CreateParams for
+// test code.
+BrowserWindowCreateParams CreateBrowserWindowCreateParams(
+    const Browser::CreateParams& params);
 
 #endif  // CHROME_TEST_BASE_TEST_BROWSER_WINDOW_H_

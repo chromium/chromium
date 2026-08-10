@@ -281,13 +281,6 @@ class Browser : public TabStripModelObserver,
 
   // Constructors, Creation, Showing //////////////////////////////////////////
 
-  // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
-  // browser unittests.
-  // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
-  // has been eliminated.
-  static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
-      const CreateParams& params);
-
   Browser(const Browser&) = delete;
   Browser& operator=(const Browser&) = delete;
 
@@ -404,6 +397,8 @@ class Browser : public TabStripModelObserver,
   friend class FullscreenControllerInteractiveTest;
   friend BrowserWindowInterface* CreateBrowserWindow(
       BrowserWindowCreateParams create_params);
+  friend std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+      BrowserWindowCreateParams create_params);
   FRIEND_TEST_ALL_PREFIXES(AppModeTest, EnableAppModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastIncognito);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastRegular);
@@ -441,6 +436,13 @@ class Browser : public TabStripModelObserver,
   // If |params.window| is set, the caller is expected to take the ownership
   // of the created Browser instance.
   static Browser* Create(const CreateParams& params);
+
+  // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
+  // browser unittests.
+  // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
+  // has been eliminated.
+  static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
+      const CreateParams& params);
 
   explicit Browser(const CreateParams& params);
 

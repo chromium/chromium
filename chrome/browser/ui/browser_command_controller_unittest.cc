@@ -23,6 +23,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
@@ -178,12 +179,13 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   auto browser_window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+  BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
       "app",
       /*trusted_source=*/true, browser_window->GetBounds(), profile(),
       /*user_gesture=*/true);
   params.window = browser_window.release();
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
+  auto browser =
+      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
 
   ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
@@ -268,12 +270,13 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
 
   // Enabled for app windows.
   auto browser_window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+  BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
       "app",
       /*trusted_source=*/true, browser_window->GetBounds(), profile(),
       /*user_gesture=*/true);
   params.window = browser_window.release();
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
+  auto browser =
+      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
   ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   chrome::BrowserCommandController::From(browser.get())
       ->FullscreenStateChanged();

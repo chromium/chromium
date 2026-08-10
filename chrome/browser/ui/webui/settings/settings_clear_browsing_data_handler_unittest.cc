@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/common/chrome_features.h"
@@ -132,10 +133,10 @@ void ClearBrowsingDataHandlerUnitTest::SetUp() {
       kTestingDatatypePref, true);
 
   auto browser_window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
-  params.type = Browser::TYPE_NORMAL;
+  BrowserWindowCreateParams params(profile_.get(), /*from_user_gesture=*/true);
+  params.type = BrowserWindowInterface::Type::TYPE_NORMAL;
   params.window = browser_window.release();
-  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+  browser_ = DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
 
   std::unique_ptr<tabs::TabModel> tab_model = std::make_unique<tabs::TabModel>(
       content::WebContents::Create(

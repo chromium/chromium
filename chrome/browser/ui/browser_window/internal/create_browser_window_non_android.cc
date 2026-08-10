@@ -174,13 +174,8 @@ bool IsOnKioskSplashScreen() {
 }
 #endif
 
-}  // namespace
-
-BrowserWindowInterface* CreateBrowserWindow(
+Browser::CreateParams ConvertToBrowserCreateParams(
     BrowserWindowCreateParams create_params) {
-  CHECK_EQ(BrowserWindowInterface::CreationStatus::kOk,
-           GetBrowserWindowCreationStatusForProfile(*create_params.profile));
-
   Browser::CreateParams browser_params =
       (!create_params.app_name.empty() &&
        (create_params.type == BrowserWindowInterface::TYPE_APP ||
@@ -201,10 +196,29 @@ BrowserWindowInterface* CreateBrowserWindow(
   browser_params.initial_bounds = std::move(create_params.initial_bounds);
   browser_params.initial_show_state = create_params.initial_show_state;
   CopyDesktopParamsToBrowserParams(create_params, browser_params);
+  return browser_params;
+}
+
+}  // namespace
+
+BrowserWindowInterface* CreateBrowserWindow(
+    BrowserWindowCreateParams create_params) {
+  CHECK_EQ(BrowserWindowInterface::CreationStatus::kOk,
+           GetBrowserWindowCreationStatusForProfile(*create_params.profile));
+
+  Browser::CreateParams browser_params =
+      ConvertToBrowserCreateParams(std::move(create_params));
 
   return Browser::Create(browser_params);
 }
 
+std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params) {
+  Browser::CreateParams browser_params =
+      ConvertToBrowserCreateParams(std::move(create_params));
+
+  return Browser::DeprecatedCreateOwnedForTesting(browser_params);
+}
 
 void CreateBrowserWindow(
     BrowserWindowCreateParams create_params,

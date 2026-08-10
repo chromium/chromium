@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
@@ -84,12 +85,19 @@ gfx::Rect TestBrowserWindowAura::GetBounds() const {
 }
 
 std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
-    Browser::CreateParams* params) {
+    BrowserWindowCreateParams params) {
   // Resulting Browser owns `this`.
-  params->window = this;
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(std::move(*params));
+  params.window = this;
+  auto browser =
+      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
   browser_ = browser.get();
   return browser;
+}
+
+std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
+    Browser::CreateParams* params) {
+  params->window = this;
+  return CreateBrowser(CreateBrowserWindowCreateParams(*params));
 }
 
 TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)
@@ -133,10 +141,17 @@ gfx::Rect TestBrowserWindowViews::GetBounds() const {
 }
 
 std::unique_ptr<Browser> TestBrowserWindowViews::CreateBrowser(
-    Browser::CreateParams params) {
+    BrowserWindowCreateParams params) {
   // Resulting Browser owns `this`.
   params.window = this;
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(std::move(params));
+  auto browser =
+      DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
   browser_ = browser.get();
   return browser;
+}
+
+std::unique_ptr<Browser> TestBrowserWindowViews::CreateBrowser(
+    Browser::CreateParams params) {
+  params.window = this;
+  return CreateBrowser(CreateBrowserWindowCreateParams(params));
 }

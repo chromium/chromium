@@ -32,6 +32,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -319,10 +320,11 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
 
     auto browser_window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams browser_params(profile_.get(), true);
-    browser_params.type = Browser::TYPE_NORMAL;
+    BrowserWindowCreateParams browser_params(profile_.get(), true);
+    browser_params.type = BrowserWindowInterface::Type::TYPE_NORMAL;
     browser_params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(browser_params);
+    browser_ =
+        DeprecatedCreateOwnedBrowserWindowForTesting(std::move(browser_params));
 
     application_locale_storage_->Set("foo");
 

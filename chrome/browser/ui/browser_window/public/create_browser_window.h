@@ -29,6 +29,7 @@ class WebContents;
 }  // namespace content
 
 #if !BUILDFLAG(IS_ANDROID)
+class Browser;
 class BrowserWindow;
 #endif
 
@@ -252,6 +253,15 @@ BrowserWindowInterface* CreateBrowserWindow(
 void CreateBrowserWindow(
     BrowserWindowCreateParams create_params,
     base::OnceCallback<void(BrowserWindowInterface*)> callback);
+
+#if !BUILDFLAG(IS_ANDROID)
+// WARNING: Use of this is DEPRECATED and exists only to support pre-existing
+// browser unittests.
+// TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
+// has been eliminated.
+std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
+    BrowserWindowCreateParams create_params);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns whether a browser window can currently be created for the specified
 // // profile. This condition may change during runtime for a given `profile`

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -93,8 +94,9 @@ constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 // close callback on the `TestBrowserWindow`.
 class FakeBrowser {
  public:
-  explicit FakeBrowser(Browser::CreateParams params)
-      : FakeBrowser(Browser::DeprecatedCreateOwnedForTesting(std::move(params))) {}
+  explicit FakeBrowser(BrowserWindowCreateParams params)
+      : FakeBrowser(
+            DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params))) {}
 
   explicit FakeBrowser(std::unique_ptr<Browser> browser)
       : browser_(std::move(browser)) {
@@ -193,7 +195,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
 };
 
 std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
-    Browser::CreateParams params,
+    BrowserWindowCreateParams params,
     TestingProfile* profile,
     bool is_main_browser = false) {
   // The main browser window for the kiosk is always fullscreen in the
@@ -267,27 +269,29 @@ class KioskBrowserSessionBaseTest
 
   std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindow() {
     return CreateBrowserWithFullscreenTestWindowForParams(
-        Browser::CreateParams(profile(), true), profile());
+        BrowserWindowCreateParams(profile(), true), profile());
   }
 
   std::unique_ptr<FakeBrowser> CreateBrowserForWebApp(
       const std::string& web_app_name,
-      std::optional<Browser::Type> browser_type = std::nullopt) {
-    Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
-        /*app_name=*/web_app_name, /*trusted_source=*/true,
-        /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
-        /*user_gesture=*/true);
+      std::optional<BrowserWindowInterface::Type> browser_type = std::nullopt) {
+    BrowserWindowCreateParams params =
+        BrowserWindowCreateParams::CreateForAppPopup(
+            /*app_name=*/web_app_name, /*trusted_source=*/true,
+            /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
+            /*user_gesture=*/true);
     if (browser_type.has_value()) {
       params.type = browser_type.value();
     }
-    return CreateBrowserWithFullscreenTestWindowForParams(params, profile());
+    return CreateBrowserWithFullscreenTestWindowForParams(std::move(params),
+                                                          profile());
   }
 
   // Create the main kiosk browser window, which is normally auto-created when a
   // web kiosk session starts.
   void CreateWebKioskMainBrowser(const std::string& web_app_name) {
     web_kiosk_main_browser_ = CreateBrowserWithFullscreenTestWindowForParams(
-        Browser::CreateParams::CreateForApp(
+        BrowserWindowCreateParams::CreateForApp(
             /*app_name=*/web_app_name, /*trusted_source=*/true,
             /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
             /*user_gesture=*/true),
@@ -718,24 +722,28 @@ class KioskBrowserSessionTroubleshootingTest
   }
 
   std::unique_ptr<FakeBrowser> CreateDevToolsBrowserWithTestWindow() {
-    auto params = Browser::CreateParams::CreateForDevTools(profile());
+    auto params = BrowserWindowCreateParams::CreateForDevTools(profile());
 
     auto test_window = std::make_unique<TestBrowserWindow>();
     params.window = test_window.release();
 
-    return std::make_unique<FakeBrowser>(params);
+    return std::make_unique<FakeBrowser>(std::move(params));
   }
 
   std::unique_ptr<FakeBrowser> CreateRegularBrowserWithTestWindow() {
-    return CreateBrowserWithTestWindowAndType(Browser::TYPE_NORMAL);
+    return CreateBrowserWithTestWindowAndType(
+        BrowserWindowInterface::Type::TYPE_NORMAL);
   }
 
   std::unique_ptr<FakeBrowser> CreateBrowserWithTestWindowAndType(
-      Browser::Type type) {
-    Browser::CreateParams params(profile(), /*user_gesture=*/true);
+      BrowserWindowInterface::Type type) {
+    BrowserWindowCreateParams params(profile(), /*from_user_gesture=*/true);
     params.type = type;
-    return std::make_unique<FakeBrowser>(
-        CreateBrowserWithTestWindowForParams(params));
+    // Note: Browser takes owner of the `window` param.
+    // TODO(crbug.com/542827630): Eliminate this once create params are
+    // move-only.
+    params.window = std::make_unique<TestBrowserWindow>().release();
+    return std::make_unique<FakeBrowser>(std::move(params));
   }
 
  private:

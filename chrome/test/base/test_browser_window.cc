@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -27,8 +28,53 @@
 
 // Helpers --------------------------------------------------------------------
 
+BrowserWindowCreateParams CreateBrowserWindowCreateParams(
+    const Browser::CreateParams& params) {
+  BrowserWindowCreateParams create_params(params.type, params.profile,
+                                          params.user_gesture);
+  create_params.initial_bounds = params.initial_bounds;
+  create_params.is_trusted_source = params.trusted_source;
+  create_params.app_name = params.app_name;
+  create_params.initial_show_state = params.initial_show_state;
+  create_params.omit_from_session_restore = params.omit_from_session_restore;
+  create_params.should_trigger_session_restore =
+      params.should_trigger_session_restore;
+  create_params.initial_origin_specified =
+      static_cast<BrowserWindowCreateParams::ValueSpecified>(
+          params.initial_origin_specified);
+  create_params.initial_workspace = params.initial_workspace;
+  create_params.initial_visible_on_all_workspaces_state =
+      params.initial_visible_on_all_workspaces_state;
+  create_params.creation_source =
+      static_cast<BrowserWindowCreateParams::CreationSource>(
+          params.creation_source);
+  create_params.in_tab_dragging = params.in_tab_dragging;
+  create_params.window = params.window;
+  create_params.user_title = params.user_title;
+  create_params.can_resize = params.can_resize;
+  create_params.can_maximize = params.can_maximize;
+  create_params.can_fullscreen = params.can_fullscreen;
+  create_params.pip_options = params.pip_options;
+  create_params.vertical_tab_strip_collapsed =
+      params.vertical_tab_strip_collapsed;
+  create_params.vertical_tab_strip_uncollapsed_width =
+      params.vertical_tab_strip_uncollapsed_width;
+  create_params.focused_tab_group_id = params.focused_tab_group_id;
+#if BUILDFLAG(IS_CHROMEOS)
+  create_params.display_id = params.display_id;
+#endif
+#if BUILDFLAG(IS_LINUX)
+  create_params.startup_id = params.startup_id;
+#endif
+#if BUILDFLAG(IS_OZONE)
+  create_params.restore_id = params.restore_id;
+#endif
+
+  return create_params;
+}
+
 std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
-    Browser::CreateParams params) {
+    BrowserWindowCreateParams params) {
   DCHECK(!params.window);
   auto window = std::make_unique<TestBrowserWindow>();
   window->set_is_minimized(params.initial_show_state ==
@@ -40,7 +86,13 @@ std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
       params.initial_show_state != ui::mojom::WindowShowState::kMinimized);
   params.window = window.release();
 
-  return Browser::DeprecatedCreateOwnedForTesting(std::move(params));
+  return DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
+}
+
+std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
+    Browser::CreateParams params) {
+  return CreateBrowserWithTestWindowForParams(
+      CreateBrowserWindowCreateParams(params));
 }
 
 // TestBrowserWindow::TestLocationBar -----------------------------------------

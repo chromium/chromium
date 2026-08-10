@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -1466,12 +1467,12 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
 class V1App {
  public:
   V1App(Profile* profile, const std::string& app_name) {
-    Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+    BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
         kCrxAppPrefix + app_name, true /* trusted_source */, gfx::Rect(),
         profile, true);
     auto window = std::make_unique<TestBrowserWindow>();
     params.window = window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    browser_ = DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
     chrome::AddTabAt(browser_.get(), GURL(), 0, true);
   }
   V1App(const V1App&) = delete;

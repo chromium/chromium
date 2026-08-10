@@ -163,7 +163,7 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
 void BrowserManagerService::AddBrowserForTesting(
     BrowserWindowInterface* browser) {
   // Tests manually creating owned browsers must create all their instances
-  // via `Browser::DeprecatedCreateOwnedForTesting()`, which calls into this
+  // via `DeprecatedCreateOwnedBrowserWindowForTesting()`, which calls into this
   // method.
   CHECK(browsers_and_subscriptions_.empty());
   // Prefer push_back, see totw/112.
@@ -257,7 +257,7 @@ void BrowserManagerService::OnBrowserClosed(BrowserWindowInterface* browser) {
 void BrowserManagerService::OnBrowserClosedForTesting(
     BrowserWindowInterface* browser) {
   // Tests manually creating owned browsers must create all their instances
-  // via `Browser::DeprecatedCreateOwnedForTesting()`.
+  // via `DeprecatedCreateOwnedBrowserWindowForTesting()`.
   CHECK(browsers_and_subscriptions_.empty());
   auto it = std::ranges::find_if(
       browsers_and_subscriptions_for_testing_,
