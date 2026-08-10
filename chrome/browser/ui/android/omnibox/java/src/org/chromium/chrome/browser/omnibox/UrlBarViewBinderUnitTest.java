@@ -27,8 +27,12 @@ import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
@@ -45,6 +49,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Unit tests for {@link UrlBarViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UrlBarViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private OnLongClickListener mOnLongClickListener;
+    @Mock private Runnable mRunnable;
+    @Mock private UrlBar mMockView;
     private Activity mActivity;
     PropertyModel mModel;
     UrlBarMediator mMediator;
@@ -96,12 +104,11 @@ public class UrlBarViewBinderUnitTest {
     @Test
     @SmallTest
     public void testOnLongClick() {
-        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        doReturn(true).when(longClickListener).onLongClick(any());
+        doReturn(true).when(mOnLongClickListener).onLongClick(any());
 
-        mModel.set(UrlBarProperties.LONG_CLICK_LISTENER, longClickListener);
+        mModel.set(UrlBarProperties.LONG_CLICK_LISTENER, mOnLongClickListener);
         mUrlBar.performLongClick();
-        verify(longClickListener).onLongClick(any());
+        verify(mOnLongClickListener).onLongClick(any());
     }
 
     @Test
@@ -162,19 +169,17 @@ public class UrlBarViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetManageSearchEnginesCallback() {
-        Runnable mockCallback = mock(Runnable.class);
-        mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mockCallback);
-        assertEquals(mockCallback, mUrlBar.getManageSearchEnginesCallback());
+        mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mRunnable);
+        assertEquals(mRunnable, mUrlBar.getManageSearchEnginesCallback());
     }
 
     @Test
     @SmallTest
     public void testTextState_reverseSelection() {
-        UrlBar mockView = mock(UrlBar.class);
         android.text.Editable editable = mock(android.text.Editable.class);
         doReturn(10).when(editable).length();
-        doReturn(editable).when(mockView).getText();
-        doReturn(true).when(mockView).hasFocus();
+        doReturn(editable).when(mMockView).getText();
+        doReturn(true).when(mMockView).hasFocus();
 
         UrlBarTextState state =
                 new UrlBarTextState(
@@ -186,8 +191,8 @@ public class UrlBarViewBinderUnitTest {
                         false);
 
         mModel.set(UrlBarProperties.TEXT_STATE, state);
-        UrlBarViewBinder.bind(mModel, mockView, UrlBarProperties.TEXT_STATE);
+        UrlBarViewBinder.bind(mModel, mMockView, UrlBarProperties.TEXT_STATE);
 
-        verify(mockView).setSelection(10, 0);
+        verify(mMockView).setSelection(10, 0);
     }
 }

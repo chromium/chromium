@@ -138,6 +138,10 @@ public class UrlBarUnitTest {
     @Mock private TextPaint mPaint;
     @Mock private Clipboard mClipboard;
     @Mock private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
+    @Mock private View.OnKeyListener mViewOnKeyListener;
+    @Mock private AutocompleteEditTextModelBase mAutocompleteEditTextModelBase;
+    @Mock private Runnable mRunnable;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private ActivityController<TestActivity> mController;
     private Activity mActivity;
@@ -924,23 +928,22 @@ public class UrlBarUnitTest {
                         KeyEvent.KEYCODE_C,
                         KeyEvent.KEYCODE_D);
 
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
+        mUrlBar.setKeyDownListener(mViewOnKeyListener);
 
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
             doReturn(false).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertFalse(mUrlBar.onKeyDown(keyCode, event));
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
 
             doReturn(true).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
         }
     }
 
@@ -948,29 +951,28 @@ public class UrlBarUnitTest {
     public void keyEvents_enterActionDownKeyHandling() {
         var keysToCheck = List.of(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER);
 
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
+        mUrlBar.setKeyDownListener(mViewOnKeyListener);
 
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
             // Post-IME Key Down: consumed keys not passed to View.
-            doReturn(true).when(listener).onKey(any(), anyInt(), any());
+            doReturn(true).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mViewOnKeyListener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar, never()).super_onKeyDown(anyInt(), any());
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
 
             // Post-IME Key Down: not consumed keys passed to View.
-            doReturn(false).when(listener).onKey(any(), anyInt(), any());
+            doReturn(false).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mViewOnKeyListener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar).super_onKeyDown(keyCode, event);
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
         }
     }
 
@@ -985,29 +987,28 @@ public class UrlBarUnitTest {
                         KeyEvent.KEYCODE_DPAD_RIGHT,
                         KeyEvent.KEYCODE_DEL);
 
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
+        mUrlBar.setKeyDownListener(mViewOnKeyListener);
 
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
-            doReturn(true).when(listener).onKey(any(), anyInt(), any());
+            doReturn(true).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mViewOnKeyListener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar, never()).super_onKeyDown(anyInt(), any());
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
 
             // Post-IME Key Down: not consumed keys passed to View.
-            doReturn(false).when(listener).onKey(any(), anyInt(), any());
+            doReturn(false).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
             doReturn(true).when(mUrlBar).super_onKeyDown(anyInt(), any());
             assertTrue(mUrlBar.onKeyDown(keyCode, event));
-            verify(listener).onKey(mUrlBar, keyCode, event);
+            verify(mViewOnKeyListener).onKey(mUrlBar, keyCode, event);
             verify(mUrlBar).super_onKeyDown(keyCode, event);
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
-            clearInvocations(listener, mUrlBar);
+            clearInvocations(mViewOnKeyListener, mUrlBar);
         }
     }
 
@@ -1016,25 +1017,24 @@ public class UrlBarUnitTest {
     public void dispatchKeyEvent_tabInterceptionByKeyDownListener() {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
 
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
+        mUrlBar.setKeyDownListener(mViewOnKeyListener);
 
         // Scenario 1: Listener consumes the TAB event.
         // We verify that dispatchKeyEvent returns true and the listener is called.
-        doReturn(true).when(listener).onKey(any(), anyInt(), any());
+        doReturn(true).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
         assertTrue(mUrlBar.dispatchKeyEvent(event));
-        verify(listener).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
+        verify(mViewOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
 
-        clearInvocations(listener, mUrlBar);
+        clearInvocations(mViewOnKeyListener, mUrlBar);
 
         // Scenario 2: Listener does NOT consume the TAB event.
         // We verify that dispatchKeyEvent returns false, and the event falls through to standard
         // key handling (which might call the listener again in onKeyDown).
-        doReturn(false).when(listener).onKey(any(), anyInt(), any());
+        doReturn(false).when(mViewOnKeyListener).onKey(any(), anyInt(), any());
         assertFalse(mUrlBar.dispatchKeyEvent(event));
         // It gets called once in dispatchKeyEvent, and once in onKeyDown (via
         // super.dispatchKeyEvent).
-        verify(listener, times(2)).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
+        verify(mViewOnKeyListener, times(2)).onKey(mUrlBar, KeyEvent.KEYCODE_TAB, event);
     }
 
     @Test
@@ -1049,14 +1049,13 @@ public class UrlBarUnitTest {
                         KeyEvent.KEYCODE_DPAD_DOWN,
                         KeyEvent.KEYCODE_DEL);
 
-        var listener = mock(View.OnKeyListener.class);
-        mUrlBar.setKeyDownListener(listener);
+        mUrlBar.setKeyDownListener(mViewOnKeyListener);
 
         for (int keyCode : keysToCheck) {
             var event = new KeyEvent(KeyEvent.ACTION_UP, keyCode);
 
             assertFalse(mUrlBar.onKeyUp(keyCode, event));
-            verifyNoMoreInteractions(listener);
+            verifyNoMoreInteractions(mViewOnKeyListener);
 
             clearInvocations(mUrlBar);
         }
@@ -1230,19 +1229,21 @@ public class UrlBarUnitTest {
 
     @Test
     public void getTextWithAutocomplete_modelInitialized() {
-        AutocompleteEditTextModelBase model = mock(AutocompleteEditTextModelBase.class);
-        doReturn("model autocomplete text").when(model).getTextWithAutocomplete();
+        doReturn("model autocomplete text")
+                .when(mAutocompleteEditTextModelBase)
+                .getTextWithAutocomplete();
         mUrlBar.setText("user input");
-        mUrlBar.setModelForTesting(model);
+        mUrlBar.setModelForTesting(mAutocompleteEditTextModelBase);
         assertEquals("model autocomplete text", mUrlBar.getTextWithAutocomplete());
     }
 
     @Test
     public void getTextWithoutAutocomplete_modelInitialized() {
-        AutocompleteEditTextModelBase model = mock(AutocompleteEditTextModelBase.class);
-        doReturn("model non-autocomplete text").when(model).getTextWithoutAutocomplete();
+        doReturn("model non-autocomplete text")
+                .when(mAutocompleteEditTextModelBase)
+                .getTextWithoutAutocomplete();
         mUrlBar.setText("user input");
-        mUrlBar.setModelForTesting(model);
+        mUrlBar.setModelForTesting(mAutocompleteEditTextModelBase);
         assertEquals("model non-autocomplete text", mUrlBar.getTextWithoutAutocomplete());
     }
 
@@ -1583,10 +1584,9 @@ public class UrlBarUnitTest {
 
     @Test
     public void onTextContextMenuItem_manageSearchEngines() {
-        Runnable callback = mock(Runnable.class);
-        mUrlBar.setManageSearchEnginesCallback(callback);
+        mUrlBar.setManageSearchEnginesCallback(mRunnable);
         assertTrue(mUrlBar.onTextContextMenuItem(R.id.url_bar_manage_search_engines));
-        verify(callback).run();
+        verify(mRunnable).run();
     }
 
     @Test
@@ -1607,30 +1607,26 @@ public class UrlBarUnitTest {
 
     @Test
     public void testWindowFocusChanged_keyboardSuppressed() {
-        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
-                mock(KeyboardVisibilityDelegate.class);
-        KeyboardVisibilityDelegate.setInstanceForTesting(keyboardVisibilityDelegate);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
 
         doReturn(true).when(mUrlBar).isFocused();
         doReturn(true).when(mUrlBarDelegate).isKeyboardSuppressed();
 
         mUrlBar.onWindowFocusChanged(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(keyboardVisibilityDelegate, never()).showKeyboard(any());
+        verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
     }
 
     @Test
     public void testWindowFocusChanged_keyboardNotSuppressed() {
-        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
-                mock(KeyboardVisibilityDelegate.class);
-        KeyboardVisibilityDelegate.setInstanceForTesting(keyboardVisibilityDelegate);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
 
         doReturn(true).when(mUrlBar).isFocused();
         doReturn(false).when(mUrlBarDelegate).isKeyboardSuppressed();
 
         mUrlBar.onWindowFocusChanged(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(keyboardVisibilityDelegate).showKeyboard(mUrlBar);
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
     }
 
     @Test

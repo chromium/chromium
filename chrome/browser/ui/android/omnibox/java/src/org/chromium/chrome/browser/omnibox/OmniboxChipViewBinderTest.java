@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -25,8 +24,12 @@ import com.google.android.material.button.MaterialButton;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -45,6 +48,8 @@ public class OmniboxChipViewBinderTest {
 
     private static Activity sActivity;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Runnable mRunnable;
     private MaterialButton mView;
     private PropertyModel mModel;
 
@@ -110,9 +115,8 @@ public class OmniboxChipViewBinderTest {
     @Test
     @SmallTest
     public void testOnClick() {
-        var onClick = mock(Runnable.class);
-        runOnUiThreadBlocking(() -> mModel.set(OmniboxChipProperties.ON_CLICK, onClick));
+        runOnUiThreadBlocking(() -> mModel.set(OmniboxChipProperties.ON_CLICK, mRunnable));
         runOnUiThreadBlocking(() -> mView.performClick());
-        verify(onClick).run();
+        verify(mRunnable).run();
     }
 }

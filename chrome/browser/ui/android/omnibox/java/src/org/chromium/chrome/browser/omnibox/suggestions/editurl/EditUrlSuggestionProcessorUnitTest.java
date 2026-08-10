@@ -12,7 +12,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -107,6 +106,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock private AutocompleteInput mInput;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private SadTab mSadTab;
 
     private final UserDataHost mTabUserData = new UserDataHost();
     private final Supplier<Tab> mTabSupplier = () -> mTab;
@@ -237,9 +237,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchForSadTab() {
-        SadTab mockSadTab = mock(SadTab.class);
-        doReturn(true).when(mockSadTab).isShowing();
-        mTabUserData.setUserData(SadTab.class, mockSadTab);
+        doReturn(true).when(mSadTab).isShowing();
+        mTabUserData.setUserData(SadTab.class, mSadTab);
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

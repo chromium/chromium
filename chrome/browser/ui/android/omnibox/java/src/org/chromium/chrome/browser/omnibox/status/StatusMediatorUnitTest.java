@@ -133,6 +133,7 @@ public final class StatusMediatorUnitTest {
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private Drawable mMockFaviconDrawable;
+    @Mock private TemplateUrl mTemplateUrl;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -1291,15 +1292,14 @@ public final class StatusMediatorUnitTest {
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
-        TemplateUrl geminiTemplate = mock(TemplateUrl.class);
-        doReturn(geminiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
+        doReturn(mTemplateUrl).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
         SiteSearchData geminiData = new SiteSearchData("gemini", "Gemini");
         siteSearchDataSupplier.set(geminiData);
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         verify(mSearchEngineService)
-                .retrieveFavicon(eq(geminiTemplate), mFaviconCallbackCaptor.capture());
+                .retrieveFavicon(eq(mTemplateUrl), mFaviconCallbackCaptor.capture());
 
         StatusIconResource geminiIcon = new StatusIconResource("gemini_icon", null, 0);
         mFaviconCallbackCaptor.getValue().onResult(geminiIcon);

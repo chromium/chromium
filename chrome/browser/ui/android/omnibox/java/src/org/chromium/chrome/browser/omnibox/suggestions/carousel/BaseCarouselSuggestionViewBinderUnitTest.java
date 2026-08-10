@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -21,8 +20,12 @@ import android.graphics.Color;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,6 +47,9 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseCarouselSuggestionViewBinderUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private PropertyModel mPropertyModel;
+    @Mock private BaseCarouselSuggestionView mBaseCarouselSuggestionView;
     private BaseCarouselSuggestionView mView;
     private Context mContext;
     private Resources mResources;
@@ -71,10 +77,9 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     public void modelList_setItems() {
         final List<ListItem> tiles = new ArrayList<>();
-        PropertyModel tileModel = mock(PropertyModel.class);
-        tiles.add(new ListItem(0, tileModel));
-        tiles.add(new ListItem(0, tileModel));
-        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, mPropertyModel));
+        tiles.add(new ListItem(0, mPropertyModel));
+        tiles.add(new ListItem(0, mPropertyModel));
 
         assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
@@ -87,10 +92,9 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     public void modelList_clearItems() {
         final List<ListItem> tiles = new ArrayList<>();
-        PropertyModel tileModel = mock(PropertyModel.class);
-        tiles.add(new ListItem(0, tileModel));
-        tiles.add(new ListItem(0, tileModel));
-        tiles.add(new ListItem(0, tileModel));
+        tiles.add(new ListItem(0, mPropertyModel));
+        tiles.add(new ListItem(0, mPropertyModel));
+        tiles.add(new ListItem(0, mPropertyModel));
 
         assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
@@ -106,25 +110,24 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Test
     public void createModel_noPaddingValues() {
-        var view = mock(BaseCarouselSuggestionView.class);
         var model =
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(model, view, mBinder);
+        PropertyModelChangeProcessor.create(model, mBaseCarouselSuggestionView, mBinder);
 
-        verify(view, never()).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
+        verify(mBaseCarouselSuggestionView, never())
+                .setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void createModel_specificPaddingValues() {
-        var view = mock(BaseCarouselSuggestionView.class);
         var model =
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                         .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, 13)
                         .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, 75)
                         .build();
-        PropertyModelChangeProcessor.create(model, view, mBinder);
+        PropertyModelChangeProcessor.create(model, mBaseCarouselSuggestionView, mBinder);
 
-        verify(view, atLeastOnce()).setPaddingRelative(0, 13, 0, 75);
+        verify(mBaseCarouselSuggestionView, atLeastOnce()).setPaddingRelative(0, 13, 0, 75);
     }
 
     @Test

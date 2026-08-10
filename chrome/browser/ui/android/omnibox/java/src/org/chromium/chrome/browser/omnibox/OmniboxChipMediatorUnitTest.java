@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,6 +22,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link OmniboxChipMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxChipMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Drawable mDrawable;
     private PropertyModel mModel;
     private OmniboxChipMediator mMediator;
 
@@ -31,14 +36,13 @@ public class OmniboxChipMediatorUnitTest {
     @Test
     public void updateChip() {
         String text = "text";
-        Drawable icon = mock(Drawable.class);
         String contentDesc = "contentDesc";
         Runnable onClick = () -> {};
 
-        mMediator.updateChip(text, icon, contentDesc, onClick);
+        mMediator.updateChip(text, mDrawable, contentDesc, onClick);
 
         assertEquals(text, mModel.get(OmniboxChipProperties.TEXT));
-        assertEquals(icon, mModel.get(OmniboxChipProperties.ICON));
+        assertEquals(mDrawable, mModel.get(OmniboxChipProperties.ICON));
         assertEquals(contentDesc, mModel.get(OmniboxChipProperties.CONTENT_DESC));
         assertEquals(onClick, mModel.get(OmniboxChipProperties.ON_CLICK));
     }

@@ -61,6 +61,14 @@ public class LocationBarDragDropHandlerTest {
     @Mock private LocationBarDataProvider mDataProvider;
     @Mock private Tab mTab;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private DragEvent mDragEvent;
+    @Mock private ClipDescription mClipDescription;
+    @Mock private ClipData mClipData;
+    @Mock private ClipData.Item mClipDataItem;
+    @Mock private Activity mActivity;
+    @Mock private DragAndDropPermissions mDragAndDropPermissions;
+    @Mock private ContentProvider mContentProvider;
+    @Mock private Intent mIntent;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mLoadUrlParamsCaptor;
@@ -84,77 +92,65 @@ public class LocationBarDragDropHandlerTest {
 
     @Test
     public void testOnDrag_DragStarted_ValidMimeType() {
-        DragEvent event = mock(DragEvent.class);
-        ClipDescription desc = mock(ClipDescription.class);
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
-        when(event.getClipDescription()).thenReturn(desc);
-        when(desc.getMimeTypeCount()).thenReturn(1);
-        when(desc.getMimeType(0)).thenReturn("text/plain");
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(mClipDescription);
+        when(mClipDescription.getMimeTypeCount()).thenReturn(1);
+        when(mClipDescription.getMimeType(0)).thenReturn("text/plain");
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
     }
 
     @Test
     public void testOnDrag_DragStarted_ChromeInternalMimeType() {
-        DragEvent event = mock(DragEvent.class);
-        ClipDescription desc = mock(ClipDescription.class);
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
-        when(event.getClipDescription()).thenReturn(desc);
-        when(desc.getMimeTypeCount()).thenReturn(1);
-        when(desc.getMimeType(0)).thenReturn("chrome/tab");
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(mClipDescription);
+        when(mClipDescription.getMimeTypeCount()).thenReturn(1);
+        when(mClipDescription.getMimeType(0)).thenReturn("chrome/tab");
 
         View view = new View(mContext);
-        assertFalse(mHandler.onDrag(view, event));
+        assertFalse(mHandler.onDrag(view, mDragEvent));
     }
 
     @Test
     public void testOnDrag_DragStarted_InvalidMimeType() {
-        DragEvent event = mock(DragEvent.class);
-        ClipDescription desc = mock(ClipDescription.class);
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
-        when(event.getClipDescription()).thenReturn(desc);
-        when(desc.getMimeTypeCount()).thenReturn(1);
-        when(desc.getMimeType(0)).thenReturn("video/mp4");
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(mClipDescription);
+        when(mClipDescription.getMimeTypeCount()).thenReturn(1);
+        when(mClipDescription.getMimeType(0)).thenReturn("video/mp4");
 
         View view = new View(mContext);
-        assertFalse(mHandler.onDrag(view, event));
+        assertFalse(mHandler.onDrag(view, mDragEvent));
     }
 
     @Test
     public void testOnDrag_DragStarted_TabDragWithUriList_Accepted() {
-        DragEvent event = mock(DragEvent.class);
-        ClipDescription desc = mock(ClipDescription.class);
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
-        when(event.getClipDescription()).thenReturn(desc);
-        when(desc.getMimeTypeCount()).thenReturn(2);
-        when(desc.getMimeType(0)).thenReturn("chrome/tab");
-        when(desc.getMimeType(1)).thenReturn("text/uri-list");
-        when(desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)).thenReturn(true);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(mClipDescription);
+        when(mClipDescription.getMimeTypeCount()).thenReturn(2);
+        when(mClipDescription.getMimeType(0)).thenReturn("chrome/tab");
+        when(mClipDescription.getMimeType(1)).thenReturn("text/uri-list");
+        when(mClipDescription.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)).thenReturn(true);
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
     }
 
     @Test
     public void testOnDrag_Drop_FileUri() {
-        DragEvent event = mock(DragEvent.class);
-        ClipData clipData = mock(ClipData.class);
-        ClipData.Item item = mock(ClipData.Item.class);
-        Activity activity = mock(Activity.class);
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(clipData.getItemCount()).thenReturn(1);
-        when(clipData.getItemAt(0)).thenReturn(item);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
 
         Uri fileUri = Uri.parse("file:///path/to/file.txt");
-        when(item.getUri()).thenReturn(fileUri);
+        when(mClipDataItem.getUri()).thenReturn(fileUri);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
 
         verify(mTab, never()).addObserver(any());
         verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
@@ -163,108 +159,93 @@ public class LocationBarDragDropHandlerTest {
 
     @Test
     public void testOnDrag_Drop_ContentUri() {
-        DragEvent event = mock(DragEvent.class);
-        ClipData clipData = mock(ClipData.class);
-        ClipData.Item item = mock(ClipData.Item.class);
-        Activity activity = mock(Activity.class);
-        DragAndDropPermissions permissions = mock(DragAndDropPermissions.class);
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(clipData.getItemCount()).thenReturn(1);
-        when(clipData.getItemAt(0)).thenReturn(item);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
 
         Uri contentUri = Uri.parse("content://com.example.provider/document.pdf");
-        when(item.getUri()).thenReturn(contentUri);
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
 
-        ContentProvider mockProvider = mock(ContentProvider.class);
-        when(mockProvider.getType(contentUri)).thenReturn("application/pdf");
-        ShadowContentResolver.registerProviderInternal("com.example.provider", mockProvider);
+        when(mContentProvider.getType(contentUri)).thenReturn("application/pdf");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(activity.requestDragAndDropPermissions(event)).thenReturn(permissions);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
         assertEquals(
                 "content://com.example.provider/document.pdf", mLoadUrlParamsCaptor.getValue().url);
 
-        verify(permissions, never()).release();
+        verify(mDragAndDropPermissions, never()).release();
 
         mTabObserverCaptor.getValue().onPageLoadFinished(mTab, new GURL(contentUri.toString()));
 
-        verify(permissions).release();
+        verify(mDragAndDropPermissions).release();
         verify(mTab).removeObserver(mTabObserverCaptor.getValue());
     }
 
     @Test
     public void testOnDrag_Drop_ContentUri_LoadFailed() {
-        DragEvent event = mock(DragEvent.class);
-        ClipData clipData = mock(ClipData.class);
-        ClipData.Item item = mock(ClipData.Item.class);
-        Activity activity = mock(Activity.class);
-        DragAndDropPermissions permissions = mock(DragAndDropPermissions.class);
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(clipData.getItemCount()).thenReturn(1);
-        when(clipData.getItemAt(0)).thenReturn(item);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
 
         Uri contentUri = Uri.parse("content://com.example.provider/document.pdf");
-        when(item.getUri()).thenReturn(contentUri);
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
 
-        ContentProvider mockProvider = mock(ContentProvider.class);
-        when(mockProvider.getType(contentUri)).thenReturn("application/pdf");
-        ShadowContentResolver.registerProviderInternal("com.example.provider", mockProvider);
+        when(mContentProvider.getType(contentUri)).thenReturn("application/pdf");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(activity.requestDragAndDropPermissions(event)).thenReturn(permissions);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
         mTabObserverCaptor.getValue().onPageLoadFailed(mTab, 0);
 
-        verify(permissions).release();
+        verify(mDragAndDropPermissions).release();
         verify(mTab).removeObserver(mTabObserverCaptor.getValue());
     }
 
     @Test
     public void testOnDrag_Drop_ContentUri_TabDestroyed() {
-        DragEvent event = mock(DragEvent.class);
-        ClipData clipData = mock(ClipData.class);
-        ClipData.Item item = mock(ClipData.Item.class);
-        Activity activity = mock(Activity.class);
-        DragAndDropPermissions permissions = mock(DragAndDropPermissions.class);
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(clipData.getItemCount()).thenReturn(1);
-        when(clipData.getItemAt(0)).thenReturn(item);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
 
         Uri contentUri = Uri.parse("content://com.example.provider/document.pdf");
-        when(item.getUri()).thenReturn(contentUri);
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
 
-        ContentProvider mockProvider = mock(ContentProvider.class);
-        when(mockProvider.getType(contentUri)).thenReturn("application/pdf");
-        ShadowContentResolver.registerProviderInternal("com.example.provider", mockProvider);
+        when(mContentProvider.getType(contentUri)).thenReturn("application/pdf");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(activity.requestDragAndDropPermissions(event)).thenReturn(permissions);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.requestDragAndDropPermissions(mDragEvent))
+                .thenReturn(mDragAndDropPermissions);
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
         mTabObserverCaptor.getValue().onDestroyed(mTab);
 
-        verify(permissions).release();
+        verify(mDragAndDropPermissions).release();
     }
 
     @Test
@@ -281,9 +262,8 @@ public class LocationBarDragDropHandlerTest {
     public void testGetMimeType() {
         // Content URI
         Uri contentUri = Uri.parse("content://com.example.provider/doc");
-        ContentProvider mockProvider = mock(ContentProvider.class);
-        when(mockProvider.getType(contentUri)).thenReturn("image/jpeg");
-        ShadowContentResolver.registerProviderInternal("com.example.provider", mockProvider);
+        when(mContentProvider.getType(contentUri)).thenReturn("image/jpeg");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
         assertEquals("image/jpeg", mHandler.getMimeType(mContext, contentUri));
 
         // File URI
@@ -301,48 +281,44 @@ public class LocationBarDragDropHandlerTest {
 
     @Test
     public void testHasContentUri() {
-        ClipData clipData = mock(ClipData.class);
         ClipData.Item item1 = mock(ClipData.Item.class);
         ClipData.Item item2 = mock(ClipData.Item.class);
 
-        when(clipData.getItemCount()).thenReturn(2);
-        when(clipData.getItemAt(0)).thenReturn(item1);
-        when(clipData.getItemAt(1)).thenReturn(item2);
+        when(mClipData.getItemCount()).thenReturn(2);
+        when(mClipData.getItemAt(0)).thenReturn(item1);
+        when(mClipData.getItemAt(1)).thenReturn(item2);
 
         // No content URIs
         when(item1.getUri()).thenReturn(Uri.parse("file:///path/to/file.txt"));
         when(item2.getUri()).thenReturn(null);
-        assertFalse(mHandler.hasContentUri(clipData));
+        assertFalse(mHandler.hasContentUri(mClipData));
 
         // One content URI
         when(item2.getUri()).thenReturn(Uri.parse("content://com.example/doc"));
-        assertTrue(mHandler.hasContentUri(clipData));
+        assertTrue(mHandler.hasContentUri(mClipData));
     }
 
     @Test
     public void testGetFallbackMimeType() {
-        ClipDescription desc = mock(ClipDescription.class);
-        when(desc.getMimeTypeCount()).thenReturn(2);
-        when(desc.getMimeType(0)).thenReturn("text/uri-list");
-        when(desc.getMimeType(1)).thenReturn("image/png");
+        when(mClipDescription.getMimeTypeCount()).thenReturn(2);
+        when(mClipDescription.getMimeType(0)).thenReturn("text/uri-list");
+        when(mClipDescription.getMimeType(1)).thenReturn("image/png");
 
-        assertEquals("image/png", mHandler.getFallbackMimeType(desc));
+        assertEquals("image/png", mHandler.getFallbackMimeType(mClipDescription));
 
         // No acceptable types
-        when(desc.getMimeType(1)).thenReturn("video/mp4");
-        assertNull(mHandler.getFallbackMimeType(desc));
+        when(mClipDescription.getMimeType(1)).thenReturn("video/mp4");
+        assertNull(mHandler.getFallbackMimeType(mClipDescription));
     }
 
     @Test
     public void testFindUriToLoad() {
-        ClipData clipData = mock(ClipData.class);
         ClipData.Item item1 = mock(ClipData.Item.class);
         ClipData.Item item2 = mock(ClipData.Item.class);
-        ClipDescription desc = mock(ClipDescription.class);
 
-        when(clipData.getItemCount()).thenReturn(2);
-        when(clipData.getItemAt(0)).thenReturn(item1);
-        when(clipData.getItemAt(1)).thenReturn(item2);
+        when(mClipData.getItemCount()).thenReturn(2);
+        when(mClipData.getItemAt(0)).thenReturn(item1);
+        when(mClipData.getItemAt(1)).thenReturn(item2);
 
         // Item 1 is unacceptable, Item 2 is acceptable file
         Uri fileUri1 = Uri.parse("file:///path/to/video.mp4");
@@ -350,46 +326,40 @@ public class LocationBarDragDropHandlerTest {
         when(item1.getUri()).thenReturn(fileUri1);
         when(item2.getUri()).thenReturn(fileUri2);
 
-        assertEquals(fileUri2, mHandler.findUriToLoad(mContext, clipData, desc));
+        assertEquals(fileUri2, mHandler.findUriToLoad(mContext, mClipData, mClipDescription));
 
         // Single item, getMimeType returns null, fallback to desc
-        when(clipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemCount()).thenReturn(1);
         Uri contentUri = Uri.parse("content://com.example/doc");
         when(item1.getUri()).thenReturn(contentUri);
-        ContentProvider mockProvider = mock(ContentProvider.class);
-        when(mockProvider.getType(contentUri)).thenReturn(null);
-        ShadowContentResolver.registerProviderInternal("com.example", mockProvider);
+        when(mContentProvider.getType(contentUri)).thenReturn(null);
+        ShadowContentResolver.registerProviderInternal("com.example", mContentProvider);
 
-        when(desc.getMimeTypeCount()).thenReturn(2);
-        when(desc.getMimeType(0)).thenReturn("text/uri-list");
-        when(desc.getMimeType(1)).thenReturn("application/pdf");
+        when(mClipDescription.getMimeTypeCount()).thenReturn(2);
+        when(mClipDescription.getMimeType(0)).thenReturn("text/uri-list");
+        when(mClipDescription.getMimeType(1)).thenReturn("application/pdf");
 
-        assertEquals(contentUri, mHandler.findUriToLoad(mContext, clipData, desc));
+        assertEquals(contentUri, mHandler.findUriToLoad(mContext, mClipData, mClipDescription));
     }
 
     @Test
     public void testOnDrag_Drop_BrowsableIntent() {
-        DragEvent event = mock(DragEvent.class);
-        ClipData clipData = mock(ClipData.class);
-        ClipData.Item item = mock(ClipData.Item.class);
-        Activity activity = mock(Activity.class);
-        Intent intent = mock(Intent.class);
 
-        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
-        when(event.getClipData()).thenReturn(clipData);
-        when(clipData.getItemCount()).thenReturn(1);
-        when(clipData.getItemAt(0)).thenReturn(item);
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
 
-        when(item.getUri()).thenReturn(null);
-        when(item.getIntent()).thenReturn(intent);
-        when(intent.hasCategory(Intent.CATEGORY_BROWSABLE)).thenReturn(true);
+        when(mClipDataItem.getUri()).thenReturn(null);
+        when(mClipDataItem.getIntent()).thenReturn(mIntent);
+        when(mIntent.hasCategory(Intent.CATEGORY_BROWSABLE)).thenReturn(true);
         Uri webUri = Uri.parse("https://www.example.com");
-        when(intent.getData()).thenReturn(webUri);
+        when(mIntent.getData()).thenReturn(webUri);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         View view = new View(mContext);
-        assertTrue(mHandler.onDrag(view, event));
+        assertTrue(mHandler.onDrag(view, mDragEvent));
 
         verify(mTab, never()).addObserver(any());
         verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());

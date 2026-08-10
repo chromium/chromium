@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -87,6 +86,7 @@ public class FuseboxViewBinderUnitTest {
     @Mock private DynamicRectProvider mDynamicRectProvider;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Runnable mRunnable;
+    @Mock private SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
 
     private final PropertyModel mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
@@ -183,62 +183,55 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void adapter_isSet() {
-        SimpleRecyclerViewAdapter adapter = mock(SimpleRecyclerViewAdapter.class);
-        mModel.set(FuseboxProperties.ADAPTER, adapter);
-        assertEquals(adapter, mViewHolder.attachmentsView.getAdapter());
+        mModel.set(FuseboxProperties.ADAPTER, mSimpleRecyclerViewAdapter);
+        assertEquals(mSimpleRecyclerViewAdapter, mViewHolder.attachmentsView.getAdapter());
     }
 
     @Test
     public void plusButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.PLUS_BUTTON_CLICKED, runnable);
+        mModel.set(FuseboxProperties.PLUS_BUTTON_CLICKED, mRunnable);
 
         mViewHolder.plusButton.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void cameraButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, mRunnable);
 
         mPopup.mCameraButton.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void galleryButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, mRunnable);
 
         mPopup.mGalleryButton.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void fileButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, mRunnable);
 
         mPopup.mFileButton.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void tabPickerButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, runnable);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, mRunnable);
 
         mPopup.mTabButton.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
     public void requestTypeButtonClicked_setsListener() {
-        Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED, runnable);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED, mRunnable);
         mViewHolder.requestType.performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test
@@ -382,13 +375,12 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void modelButtonClickListener_isCalled() {
-        Runnable runnable = mock(Runnable.class);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
-                List.of(new PopupButtonDataBuilder().withOnClicked(runnable).build()));
+                List.of(new PopupButtonDataBuilder().withOnClicked(mRunnable).build()));
 
         getDynamicButton(0).performClick();
-        verify(runnable).run();
+        verify(mRunnable).run();
     }
 
     @Test

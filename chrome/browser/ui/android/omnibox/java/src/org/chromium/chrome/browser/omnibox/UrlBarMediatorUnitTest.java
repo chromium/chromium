@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,8 +24,12 @@ import android.text.Selection;
 import android.text.SpannableStringBuilder;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -46,7 +49,6 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.components.omnibox.TextSelection;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.url.GURL;
@@ -55,6 +57,10 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UrlBarMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private PropertyObserver mPropertyObserver;
+    @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private UrlBarDelegate mUrlBarDelegate;
     Context mContext;
     PropertyModel mModel;
     UrlBarMediator mMediator;
@@ -78,7 +84,7 @@ public class UrlBarMediatorUnitTest {
                         return text.trim();
                     }
                 };
-        mDelegate = mock(UrlBarDelegate.class);
+        mDelegate = mUrlBarDelegate;
         mModel.set(UrlBarProperties.DELEGATE, mDelegate);
     }
 
@@ -111,9 +117,8 @@ public class UrlBarMediatorUnitTest {
                 mMediator.setUrlBarData(
                         baseData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
-        PropertyObserver<PropertyKey> observer = mock(PropertyObserver.class);
-        mModel.addObserver(observer);
-        reset(observer);
+        mModel.addObserver(mPropertyObserver);
+        reset(mPropertyObserver);
 
         assertTrue(
                 mMediator.setUrlBarData(
@@ -131,7 +136,7 @@ public class UrlBarMediatorUnitTest {
                         UrlBar.ScrollType.SCROLL_TO_BEGINNING,
                         TextSelection.SELECT_END));
 
-        verify(observer, times(3)).onPropertyChanged(mModel, UrlBarProperties.TEXT_STATE);
+        verify(mPropertyObserver, times(3)).onPropertyChanged(mModel, UrlBarProperties.TEXT_STATE);
     }
 
     @Test
@@ -156,9 +161,8 @@ public class UrlBarMediatorUnitTest {
                 mMediator.setUrlBarData(
                         data1, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
-        PropertyObserver<PropertyKey> observer = mock(PropertyObserver.class);
-        mModel.addObserver(observer);
-        reset(observer);
+        mModel.addObserver(mPropertyObserver);
+        reset(mPropertyObserver);
 
         assertFalse(
                 mMediator.setUrlBarData(
@@ -167,7 +171,7 @@ public class UrlBarMediatorUnitTest {
                 mMediator.setUrlBarData(
                         data2, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
 
-        verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(mPropertyObserver);
     }
 
     @Test
@@ -489,27 +493,25 @@ public class UrlBarMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
     public void testManageSearchEnginesCallback_featureEnabled() {
-        SettingsNavigation settingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(settingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
         assertNotNull(callback);
 
         callback.run();
-        verify(settingsNavigation).startSettings(eq(mContext), eq(SiteSearchSettings.class));
+        verify(mSettingsNavigation).startSettings(eq(mContext), eq(SiteSearchSettings.class));
     }
 
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
     public void testManageSearchEnginesCallback_featureDisabled() {
-        SettingsNavigation settingsNavigation = mock(SettingsNavigation.class);
-        SettingsNavigationFactory.setInstanceForTesting(settingsNavigation);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
         assertNotNull(callback);
 
         callback.run();
-        verify(settingsNavigation).startSettings(eq(mContext), eq(SearchEngineSettings.class));
+        verify(mSettingsNavigation).startSettings(eq(mContext), eq(SearchEngineSettings.class));
     }
 
     @Test

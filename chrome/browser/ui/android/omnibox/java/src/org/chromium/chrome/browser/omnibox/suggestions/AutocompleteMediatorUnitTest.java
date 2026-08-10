@@ -186,6 +186,8 @@ public class AutocompleteMediatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
     private PropertyModel mListModel;
     private OmniboxResourceProvider mResourceProvider;
     private AutocompleteMediator mMediator;
@@ -491,10 +493,9 @@ public class AutocompleteMediatorUnitTest {
                 .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
         doReturn("bing").when(mTextStateProvider).getTextWithoutAutocomplete();
         doReturn(true).when(mTemplateUrlService).isLoaded();
-        var mockTemplateUrl = mock(TemplateUrl.class);
-        doReturn("bing").when(mockTemplateUrl).getKeyword();
-        doReturn("Bing").when(mockTemplateUrl).getShortName();
-        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
+        doReturn("bing").when(mTemplateUrl).getKeyword();
+        doReturn("Bing").when(mTemplateUrl).getShortName();
+        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
@@ -523,10 +524,9 @@ public class AutocompleteMediatorUnitTest {
                 .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
         doReturn("bing").when(mTextStateProvider).getTextWithoutAutocomplete();
         doReturn(true).when(mTemplateUrlService).isLoaded();
-        var mockTemplateUrl = mock(TemplateUrl.class);
-        doReturn("bing").when(mockTemplateUrl).getKeyword();
-        doReturn("Bing").when(mockTemplateUrl).getShortName();
-        doReturn(mockTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
+        doReturn("bing").when(mTemplateUrl).getKeyword();
+        doReturn("Bing").when(mTemplateUrl).getShortName();
+        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
     }
@@ -865,13 +865,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createEmptySession());
 
         when(mPreloadingFeatureMap.shouldPrewarmOnAutocomplete()).thenReturn(true);
-        Tab tab = mock(Tab.class);
-        WebContents webContents = mock(WebContents.class);
-        when(mLocationBarDataProvider.getTab()).thenReturn(tab);
-        when(tab.getWebContents()).thenReturn(webContents);
+        when(mLocationBarDataProvider.getTab()).thenReturn(mTab);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
-        verify(mAutocompleteController).startPrewarm(eq(webContents));
+        verify(mAutocompleteController).startPrewarm(eq(mWebContents));
     }
 
     @Test
@@ -2656,11 +2654,10 @@ public class AutocompleteMediatorUnitTest {
         var session = createEmptySession();
         mMediator.beginInput(session);
 
-        AutocompleteMatch match = mock(AutocompleteMatch.class);
-        doReturn(true).when(match).isDeletable();
-        doReturn(1L).when(match).getNativeObjectRef();
+        doReturn(true).when(mAutocompleteMatch).isDeletable();
+        doReturn(1L).when(mAutocompleteMatch).getNativeObjectRef();
 
-        mMediator.showDeleteDialog(match, "Title", () -> {});
+        mMediator.showDeleteDialog(mAutocompleteMatch, "Title", () -> {});
 
         // Verify dialog is shown.
         verify(mModalDialogManager).showDialog(any(), eq(ModalDialogManager.ModalDialogType.APP));

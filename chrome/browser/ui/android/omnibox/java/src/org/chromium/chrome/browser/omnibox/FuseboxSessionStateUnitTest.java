@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -51,6 +50,7 @@ public class FuseboxSessionStateUnitTest {
     @Mock private Profile mProfile;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private AutocompleteController mAutocompleteController;
+    @Mock private Runnable mRunnable;
 
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 
@@ -136,9 +136,7 @@ public class FuseboxSessionStateUnitTest {
         assertFalse(session.isSessionActive());
         assertNull(session.getProfile());
 
-        Runnable onFullyActivated = mock(Runnable.class);
-        session.activate(
-                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, mRunnable);
 
         assertTrue(session.isSessionActive());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -148,14 +146,13 @@ public class FuseboxSessionStateUnitTest {
         assertEquals(
                 mComposeboxQueryControllerBridge, session.getComposeboxQueryControllerBridge());
         assertNotNull(session.getFuseboxAttachmentModelList());
-        verify(onFullyActivated).run();
+        verify(mRunnable).run();
         verify(mAutocompleteController)
                 .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
 
         // Simulate re-activation
         clearInvocations(mAutocompleteController);
-        session.activate(
-                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, mRunnable);
         verify(mAutocompleteController)
                 .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
     }
@@ -167,9 +164,7 @@ public class FuseboxSessionStateUnitTest {
         assertFalse(session.isSessionActive());
         assertNull(session.getProfile());
 
-        Runnable onFullyActivated = mock(Runnable.class);
-        session.activate(
-                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, mRunnable);
 
         assertTrue(session.isSessionActive());
         RobolectricUtil.runAllBackgroundAndUi();
@@ -178,14 +173,13 @@ public class FuseboxSessionStateUnitTest {
         assertEquals(mAutocompleteController, session.getAutocompleteController());
         assertNull(session.getComposeboxQueryControllerBridge());
         assertNull(session.getFuseboxAttachmentModelList());
-        verify(onFullyActivated).run();
+        verify(mRunnable).run();
 
         verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
 
         // Simulate re-activation
         clearInvocations(mAutocompleteController);
-        session.activate(
-                ContextUtils.getApplicationContext(), null, mProfileSupplier, onFullyActivated);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, mRunnable);
         verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
     }
 

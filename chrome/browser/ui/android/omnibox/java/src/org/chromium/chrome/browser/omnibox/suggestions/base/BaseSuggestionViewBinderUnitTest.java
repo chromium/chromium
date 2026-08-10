@@ -29,9 +29,13 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -60,6 +64,9 @@ import java.util.List;
 /** Tests for {@link BaseSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Runnable mRunnable;
+    @Mock private View mView;
     private Context mBareContext;
     private Context mContext;
     private Resources mResources;
@@ -135,14 +142,13 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void actionIcon_showIcon() {
-        Runnable callback = mock(Runnable.class);
         List<Action> list =
                 Arrays.asList(
                         new Action(
                                 mContext,
                                 OmniboxDrawableState.forColor(0),
                                 R.string.accessibility_omnibox_btn_refine,
-                                callback));
+                                mRunnable));
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ActionButtonView> actionButtons = mBaseView.getActionButtons();
@@ -155,7 +161,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertTrue(actionButtons.get(0).performClick());
         assertTrue(actionButtons.get(0).performClick());
         assertTrue(actionButtons.get(0).performClick());
-        verify(callback, times(3)).run();
+        verify(mRunnable, times(3)).run();
     }
 
     @Test
@@ -379,10 +385,8 @@ public class BaseSuggestionViewBinderUnitTest {
 
         var bgCaptor = ArgumentCaptor.forClass(Drawable.class);
 
-        var viewWithNoContext = mock(View.class);
-        BaseSuggestionViewBinder.applySelectableBackground(
-                mModel, viewWithNoContext, mResourceProvider);
-        verify(viewWithNoContext).setBackground(bgCaptor.capture());
+        BaseSuggestionViewBinder.applySelectableBackground(mModel, mView, mResourceProvider);
+        verify(mView).setBackground(bgCaptor.capture());
 
         var color = ((ColorDrawable) bgCaptor.getValue()).getColor();
 
