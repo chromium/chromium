@@ -290,12 +290,27 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    public void testIsMaximized() {
+    public void testIsNotPeeking() {
         mMediator.onSheetStateChanged(SheetState.PEEK);
-        Assert.assertFalse(mMediator.isMaximized());
+        Assert.assertFalse(mMediator.isNotPeeking());
+
+        mMediator.onSheetStateChanged(SheetState.HALF);
+        Assert.assertTrue(mMediator.isNotPeeking());
 
         mMediator.onSheetStateChanged(SheetState.FULL);
-        Assert.assertTrue(mMediator.isMaximized());
+        Assert.assertTrue(mMediator.isNotPeeking());
+    }
+
+    @Test
+    public void testInterceptBySheetInGestureZone_HalfState() {
+        mMediator.onSheetStateChanged(SheetState.HALF);
+        mMediator.setPeekHeight(100);
+
+        MotionEvent down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+        boolean handled = mMediator.getWebUiTouchHandler().handleTouchEvent(mView, down);
+
+        Assert.assertFalse("Should fallback to sheet since it is in gesture zone", handled);
+        verify(mParent, atLeastOnce()).requestDisallowInterceptTouchEvent(false);
     }
 
     @Test
