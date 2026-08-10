@@ -327,9 +327,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   init_params.delegate = GetWeakPtr();
 
   init_params.corner_radius = kQsToastCornerRadius;
-  // `bubble_view_` is fully rounded, so sets it to be true and paints the
-  // shadow on texture layer.
-  init_params.has_large_corner_radius = true;
+  init_params.has_shadow = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);

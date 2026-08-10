@@ -193,7 +193,8 @@ TrayBubbleView::Delegate::GetAcceleratorAction() const {
   return std::nullopt;
 }
 
-TrayBubbleView::InitParams::InitParams() = default;
+TrayBubbleView::InitParams::InitParams()
+    : has_shadow(features::IsSystemTrayShadowEnabled()) {}
 
 TrayBubbleView::InitParams::~InitParams() = default;
 
@@ -375,15 +376,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   if (params_.has_shadow) {
-    // Draws shadow on texture layer for large corner radius bubbles.
-    if (params_.has_large_corner_radius) {
-      shadow_ = SystemShadow::CreateShadowOnTextureLayer(params_.shadow_type);
-      shadow_->SetRoundedCornerRadius(params_.corner_radius);
-    } else if (features::IsSystemTrayShadowEnabled()) {
-      shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-          this, params_.shadow_type);
-      shadow_->SetRoundedCornerRadius(params_.corner_radius);
-    }
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+        this, params_.shadow_type);
+    shadow_->SetRoundedCornerRadius(params_.corner_radius);
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
@@ -430,13 +425,6 @@ void TrayBubbleView::InitializeAndShowBubble() {
   UpdateBubble();
   UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
-
-  // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
-  // constructs the shadow but doesn't deal with shadow positioning.
-  if (params_.has_shadow && params_.has_large_corner_radius) {
-    AddLayerToRegion(shadow_->GetLayer(), views::LayerRegion::kBelow);
-    shadow_->SetContentBounds(layer()->bounds());
-  }
 
   // Register pre target event handler to reroute key
   // events to the widget for activating the view or closing it.
@@ -585,15 +573,6 @@ std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {
     return delegate_->GetAccessibleNameForBubble();
   } else {
     return std::u16string();
-  }
-}
-
-void TrayBubbleView::AddedToWidget() {
-  // If the view has a shadow on texture layer, should make it observe widget
-  // theme change to update its colors. The function is called here since we
-  // should guarantee that `GetWidget()` returns non-nullptr.
-  if (params_.has_shadow && params_.has_large_corner_radius) {
-    shadow_->ObserveColorProviderSource(GetWidget());
   }
 }
 
