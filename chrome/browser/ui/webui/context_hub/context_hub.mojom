@@ -189,7 +189,7 @@ interface PageHandler {
   // Deletes entries from the memory bank.
   DeleteMemoryBankEntries(array<int64> ids) => ();
 
-  // Returns the list of tabs in the current window.
+  // Returns the list of open ungrouped tabs in the current window.
   [RuntimeFeature=kAutoTabGroups]
   GetTabs() => (array<TabInfo> tabs);
 
