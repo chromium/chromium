@@ -53,6 +53,9 @@ CONTENT_EXPORT perfetto::StateTrack GetWebContentsTracingTrack(
 // Returns a global tracing flow for `navigation_id`.
 CONTENT_EXPORT perfetto::Flow GetNavigationTracingFlow(int64_t navigation_id);
 
+// Resets the static WebContentsList track registration for testing.
+CONTENT_EXPORT void ResetWebContentsListTrackRegistrationForTesting();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_TRACING_SUPPORT_H_
