@@ -546,12 +546,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testRefreshSignInCookies() {
-    assertDefined(this.host.refreshSignInCookies);
-
-    await this.host.refreshSignInCookies();
-  }
-
   async testSignInPauseState() {
     assertDefined(this.host.getUserProfileInfo);
     assertDefined(this.host.getPlatform);

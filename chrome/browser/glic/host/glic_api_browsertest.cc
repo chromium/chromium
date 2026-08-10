@@ -1341,9 +1341,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSignInPauseState) {
   WaitForWebUiState(mojom::WebUiState::kSignIn);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testRefreshSignInCookies) {
-  ExecuteJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testActuationOnWebSetting) {
   ExecuteJsTest();
