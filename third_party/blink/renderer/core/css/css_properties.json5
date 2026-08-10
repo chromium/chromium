@@ -5823,7 +5823,7 @@
       getter: "GetScrollSnapType",
       type_name: "cc::ScrollSnapType",
       converter: "ConvertSnapType",
-      keywords: ["none", "x", "y", "block", "inline", "both", "mandatory", "proximity"],
+      keywords: ["none", "x", "y", "block", "inline", "both", "mandatory", "proximity", "pair"],
       typedom_types: ["Keyword"],
     },
     {

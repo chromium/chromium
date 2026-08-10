@@ -1663,6 +1663,7 @@
     // both
     "mandatory",
     "proximity",
+    "pair",
 
     // scroll-snap-align
     // none

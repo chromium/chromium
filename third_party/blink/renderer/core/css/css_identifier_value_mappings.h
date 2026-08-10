@@ -1552,6 +1552,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(cc::SnapAxis axis)
     case cc::SnapAxis::kBoth:
       value_id_ = CSSValueID::kBoth;
       break;
+    case cc::SnapAxis::kPair:
+      value_id_ = CSSValueID::kPair;
+      break;
   }
 }
 
@@ -1568,6 +1571,8 @@ inline cc::SnapAxis CSSIdentifierValue::ConvertTo() const {
       return cc::SnapAxis::kInline;
     case CSSValueID::kBoth:
       return cc::SnapAxis::kBoth;
+    case CSSValueID::kPair:
+      return cc::SnapAxis::kPair;
     default:
       break;
   }

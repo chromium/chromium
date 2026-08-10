@@ -28,6 +28,7 @@ enum class SnapAxis : unsigned {
   kY,
   kBlock,
   kInline,
+  kPair,
 };
 
 // A helper enum to specify the the axis when doing calculations.

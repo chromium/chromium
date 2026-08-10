@@ -9147,7 +9147,12 @@ const CSSValue* ScrollSnapType::ParseSingleValue(
   CSSValueID axis_id = stream.Peek().Id();
   if (axis_id != CSSValueID::kNone && axis_id != CSSValueID::kX &&
       axis_id != CSSValueID::kY && axis_id != CSSValueID::kBlock &&
-      axis_id != CSSValueID::kInline && axis_id != CSSValueID::kBoth) {
+      axis_id != CSSValueID::kInline && axis_id != CSSValueID::kBoth &&
+      axis_id != CSSValueID::kPair) {
+    return nullptr;
+  }
+  if (!RuntimeEnabledFeatures::CSSScrollSnapTypePairEnabled() &&
+      axis_id == CSSValueID::kPair) {
     return nullptr;
   }
   CSSValue* axis_value = css_parsing_utils::ConsumeIdent(stream);
