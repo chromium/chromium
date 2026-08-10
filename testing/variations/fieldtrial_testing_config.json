@@ -2477,6 +2477,7 @@
                     },
                     "enable_features": [
                         "AutofillAtMemory",
+                        "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
                         "AutofillKeydownEditableElement",
                         "IPH_AutofillAtMemory",
