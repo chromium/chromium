@@ -33,69 +33,67 @@ import org.chromium.ui.util.ColorUtils
 
 /** Coordinator for Bricks feature, manages [ComposeView]. */
 class BricksCoordinator(context: Context) : BricksCoordinatorInterface {
-    private val mProvider = VibesProgressProvider()
-    private val mProgressCoordinator = ProgressCoordinator(mProvider)
+  private val mProvider = VibesProgressProvider()
+  private val mProgressCoordinator = ProgressCoordinator(mProvider)
 
-    private val mComposeView: ComposeView = ComposeView(context).apply {
-        setBackgroundColor(
-            ChromeColors.getPrimaryBackgroundColor(context, /* isIncognito= */ false)
-        )
-        setContent {
-            BricksContent()
-        }
+  private val mComposeView: ComposeView =
+    ComposeView(context).apply {
+      setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(context, /* isIncognito= */ false))
+      setContent {
+        BricksContent()
+      }
     }
 
-    override fun getView(): View = mComposeView
+  override fun getView(): View = mComposeView
 
-    override fun destroy() {
-        mProgressCoordinator.destroy()
-        mProvider.destroy()
-    }
+  override fun destroy() {
+    mProgressCoordinator.destroy()
+    mProvider.destroy()
+  }
 
-    @Composable
-    private fun BricksContent() {
-        val context = LocalContext.current
-        val isDark = ColorUtils.inNightMode(context)
-        // TODO(crbug.com/518038940): Come up with a way to use the color scheme from the activity
-        // context. We will need to figure this out for the whole app at some point.
-        val colorScheme = when {
-            DynamicColors.isDynamicColorAvailable() -> {
-                if (isDark) {
-                    dynamicDarkColorScheme(context)
-                } else {
-                    dynamicLightColorScheme(context)
-                }
-            }
-            isDark -> darkColorScheme()
-            else -> lightColorScheme()
+  @Composable
+  private fun BricksContent() {
+    val context = LocalContext.current
+    val isDark = ColorUtils.inNightMode(context)
+    // TODO(crbug.com/518038940): Come up with a way to use the color scheme from the activity
+    // context. We will need to figure this out for the whole app at some point.
+    val colorScheme =
+      when {
+        DynamicColors.isDynamicColorAvailable() -> {
+          if (isDark) {
+            dynamicDarkColorScheme(context)
+          } else {
+            dynamicLightColorScheme(context)
+          }
         }
-        MaterialTheme(colorScheme = colorScheme) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Hello from Bricks Compose native page!",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+        isDark -> darkColorScheme()
+        else -> lightColorScheme()
+      }
+    MaterialTheme(colorScheme = colorScheme) {
+      Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface,
+      ) {
+        Column(
+          modifier = Modifier.fillMaxSize().padding(16.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          Text(
+            text = "Hello from Bricks Compose native page!",
+            style = MaterialTheme.typography.titleMedium,
+          )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(onClick = mProvider::triggerProgress) {
-                        Text("Trigger Progress")
-                    }
+          Button(onClick = mProvider::triggerProgress) {
+            Text("Trigger Progress")
+          }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+          Spacer(modifier = Modifier.height(16.dp))
 
-                    mProgressCoordinator.Content()
-                }
-            }
+          mProgressCoordinator.Content()
         }
+      }
     }
+  }
 }

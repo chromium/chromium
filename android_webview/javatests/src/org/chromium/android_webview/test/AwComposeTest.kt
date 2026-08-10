@@ -14,112 +14,112 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.test.filters.MediumTest
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.chromium.android_webview.test.util.CommonResources
 import org.chromium.base.ThreadUtils
 import org.chromium.base.test.util.Batch
 import org.chromium.base.test.util.Feature
 import org.chromium.base.test.util.HistogramWatcher
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 
-/**
- * Reusable Composable wrapper for embedding AwTestContainerView.
- */
+/** Reusable Composable wrapper for embedding AwTestContainerView. */
 @Composable
 fun WebViewHost(
-    containerView: AwTestContainerView,
-    modifier: Modifier = Modifier.fillMaxSize(),
-    visible: Boolean = true,
+  containerView: AwTestContainerView,
+  modifier: Modifier = Modifier.fillMaxSize(),
+  visible: Boolean = true,
 ) {
-    if (visible) {
-        AndroidView(
-            modifier = modifier,
-            factory = { containerView }
-        )
-    }
+  if (visible) {
+    AndroidView(
+      modifier = modifier,
+      factory = { containerView },
+    )
+  }
 }
 
 @RunWith(AwJUnit4ClassRunner::class)
 @Batch(Batch.PER_CLASS)
 class AwComposeTest {
 
-    @get:Rule
-    val mActivityTestRule = AwActivityTestRule()
+  @get:Rule val mActivityTestRule = AwActivityTestRule()
 
-    @get:Rule
-    val mComposeTestRule = createEmptyComposeRule()
+  @get:Rule val mComposeTestRule = createEmptyComposeRule()
 
-    private fun setComposeContent(content: @Composable () -> Unit) {
-        ThreadUtils.runOnUiThreadBlocking {
-            val composeView = ComposeView(mActivityTestRule.activity).apply { setContent(content) }
-            mActivityTestRule.activity.addView(composeView)
-        }
+  private fun setComposeContent(content: @Composable () -> Unit) {
+    ThreadUtils.runOnUiThreadBlocking {
+      val composeView = ComposeView(mActivityTestRule.activity).apply { setContent(content) }
+      mActivityTestRule.activity.addView(composeView)
+    }
+  }
+
+  private fun loadPage(containerView: AwTestContainerView, helper: OnPageFinishedHelper) {
+    mActivityTestRule.loadDataAsync(
+      containerView.awContents,
+      CommonResources.ABOUT_HTML,
+      "text/html",
+      false,
+    )
+    helper.waitForNext()
+  }
+
+  @Test
+  @MediumTest
+  @Feature("AndroidWebView")
+  fun testWebViewInCompose() {
+    val histogramWatcher =
+      HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 1)
+    val client = TestAwContentsClient()
+    val containerView =
+      ThreadUtils.runOnUiThreadBlocking<AwTestContainerView> {
+        mActivityTestRule.createDetachedAwTestContainerView(client)
+      }
+
+    setComposeContent { WebViewHost(containerView = containerView) }
+
+    loadPage(containerView, client.onPageFinishedHelper)
+    histogramWatcher.assertExpected()
+  }
+
+  @Test
+  @MediumTest
+  @Feature("AndroidWebView")
+  fun testWebViewNotInCompose() {
+    val histogramWatcher =
+      HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 0)
+    val client = TestAwContentsClient()
+    val containerView = mActivityTestRule.createAwTestContainerViewOnMainSync(client)
+
+    loadPage(containerView, client.onPageFinishedHelper)
+    histogramWatcher.assertExpected()
+  }
+
+  @Test
+  @MediumTest
+  @Feature("AndroidWebView")
+  fun testToggleWebViewVisibility() {
+    val client = TestAwContentsClient()
+    val containerView =
+      ThreadUtils.runOnUiThreadBlocking<AwTestContainerView> {
+        mActivityTestRule.createDetachedAwTestContainerView(client)
+      }
+    var showWebView by mutableStateOf(true)
+
+    setComposeContent {
+      WebViewHost(containerView = containerView, visible = showWebView)
     }
 
-    private fun loadPage(containerView: AwTestContainerView, helper: OnPageFinishedHelper) {
-        mActivityTestRule.loadDataAsync(containerView.awContents, CommonResources.ABOUT_HTML, "text/html", false)
-        helper.waitForNext()
-    }
+    loadPage(containerView, client.onPageFinishedHelper)
 
-    @Test
-    @MediumTest
-    @Feature("AndroidWebView")
-    fun testWebViewInCompose() {
-        val histogramWatcher =
-            HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 1)
-        val client = TestAwContentsClient()
-        val containerView = ThreadUtils.runOnUiThreadBlocking<AwTestContainerView> {
-            mActivityTestRule.createDetachedAwTestContainerView(client)
-        }
+    // Hide WebView (detaches from window)
+    ThreadUtils.runOnUiThreadBlocking { showWebView = false }
+    mComposeTestRule.waitForIdle()
 
-        setComposeContent {
-            WebViewHost(containerView = containerView)
-        }
+    // Show WebView (reattaches to window)
+    ThreadUtils.runOnUiThreadBlocking { showWebView = true }
+    mComposeTestRule.waitForIdle()
 
-        loadPage(containerView, client.onPageFinishedHelper)
-        histogramWatcher.assertExpected()
-    }
-
-    @Test
-    @MediumTest
-    @Feature("AndroidWebView")
-    fun testWebViewNotInCompose() {
-        val histogramWatcher =
-            HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 0)
-        val client = TestAwContentsClient()
-        val containerView = mActivityTestRule.createAwTestContainerViewOnMainSync(client)
-
-        loadPage(containerView, client.onPageFinishedHelper)
-        histogramWatcher.assertExpected()
-    }
-
-    @Test
-    @MediumTest
-    @Feature("AndroidWebView")
-    fun testToggleWebViewVisibility() {
-        val client = TestAwContentsClient()
-        val containerView = ThreadUtils.runOnUiThreadBlocking<AwTestContainerView> {
-            mActivityTestRule.createDetachedAwTestContainerView(client)
-        }
-        var showWebView by mutableStateOf(true)
-
-        setComposeContent {
-            WebViewHost(containerView = containerView, visible = showWebView)
-        }
-
-        loadPage(containerView, client.onPageFinishedHelper)
-
-        // Hide WebView (detaches from window)
-        ThreadUtils.runOnUiThreadBlocking { showWebView = false }
-        mComposeTestRule.waitForIdle()
-
-        // Show WebView (reattaches to window)
-        ThreadUtils.runOnUiThreadBlocking { showWebView = true }
-        mComposeTestRule.waitForIdle()
-
-        loadPage(containerView, client.onPageFinishedHelper)
-    }
+    loadPage(containerView, client.onPageFinishedHelper)
+  }
 }
-

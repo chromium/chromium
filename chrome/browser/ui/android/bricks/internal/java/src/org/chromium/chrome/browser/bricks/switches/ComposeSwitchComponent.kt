@@ -23,69 +23,71 @@ import org.chromium.chrome.browser.bricks.theme.ChromeTypography
 /** Composable switch row displaying text label alongside Compose [Switch]. */
 @Composable
 fun ComposeSwitchWithText(
-    text: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    scaleFraction: Float = ChromeDimens.SWITCH_SCALE_FRACTION
+  text: String,
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  scaleFraction: Float = ChromeDimens.SWITCH_SCALE_FRACTION,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = ChromeDimens.MIN_TOUCH_TARGET_HEIGHT)
-            .clickable(enabled = enabled) { onCheckedChange(!checked) },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = text,
-            style = ChromeTypography.textLargePrimary(enabled),
-            modifier = Modifier.weight(1f)
-        )
-        Spacer(modifier = Modifier.width(ChromeDimens.SWITCH_TEXT_GAP))
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-            modifier = if (scaleFraction != 1.0f) Modifier.scale(scaleFraction) else Modifier
-        )
-    }
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .defaultMinSize(minHeight = ChromeDimens.MIN_TOUCH_TARGET_HEIGHT)
+        .clickable(enabled = enabled) { onCheckedChange(!checked) },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Text(
+      text = text,
+      style = ChromeTypography.textLargePrimary(enabled),
+      modifier = Modifier.weight(1f),
+    )
+    Spacer(modifier = Modifier.width(ChromeDimens.SWITCH_TEXT_GAP))
+    Switch(
+      checked = checked,
+      onCheckedChange = onCheckedChange,
+      enabled = enabled,
+      modifier = if (scaleFraction != 1.0f) Modifier.scale(scaleFraction) else Modifier,
+    )
+  }
 }
 
 /** Composable switch row displaying title and summary alongside Compose [Switch]. */
 @Composable
 fun ComposeSwitchWithTitleAndSummary(
-    title: String,
-    summary: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    scaleFraction: Float = ChromeDimens.SWITCH_SCALE_FRACTION
+  title: String,
+  summary: String,
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  scaleFraction: Float = ChromeDimens.SWITCH_SCALE_FRACTION,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = ChromeDimens.MIN_TOUCH_TARGET_HEIGHT)
-            .clickable(enabled = enabled) { onCheckedChange(!checked) },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = ChromeTypography.textLargePrimary(enabled)
-            )
-            Text(
-                text = summary,
-                style = ChromeTypography.textMediumSecondary(enabled)
-            )
-        }
-        Spacer(modifier = Modifier.width(ChromeDimens.SWITCH_TEXT_GAP))
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-            modifier = if (scaleFraction != 1.0f) Modifier.scale(scaleFraction) else Modifier
-        )
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .defaultMinSize(minHeight = ChromeDimens.MIN_TOUCH_TARGET_HEIGHT)
+        .clickable(enabled = enabled) { onCheckedChange(!checked) },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = title,
+        style = ChromeTypography.textLargePrimary(enabled),
+      )
+      Text(
+        text = summary,
+        style = ChromeTypography.textMediumSecondary(enabled),
+      )
     }
+    Spacer(modifier = Modifier.width(ChromeDimens.SWITCH_TEXT_GAP))
+    Switch(
+      checked = checked,
+      onCheckedChange = onCheckedChange,
+      enabled = enabled,
+      modifier = if (scaleFraction != 1.0f) Modifier.scale(scaleFraction) else Modifier,
+    )
+  }
 }

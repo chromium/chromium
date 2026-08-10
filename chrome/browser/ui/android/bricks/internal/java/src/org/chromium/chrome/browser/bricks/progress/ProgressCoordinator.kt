@@ -12,19 +12,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 /** Coordinator for the [ProgressBar] component. */
 class ProgressCoordinator(provider: ProgressProvider) {
-    private val mStateFlow = MutableStateFlow(ProgressUiState())
-    private val mProvider = provider
-    private val mMediator = ProgressMediator(mStateFlow, mProvider)
+  private val mStateFlow = MutableStateFlow(ProgressUiState())
+  private val mProvider = provider
+  private val mMediator = ProgressMediator(mStateFlow, mProvider)
 
-    /** Composable content for the progress bar. */
-    @Composable
-    fun Content(modifier: Modifier = Modifier) {
-        val state by mStateFlow.collectAsStateWithLifecycle()
-        ProgressBar(state = state, modifier = modifier)
-    }
+  /** Composable content for the progress bar. */
+  @Composable
+  fun Content(modifier: Modifier = Modifier) {
+    val state by mStateFlow.collectAsStateWithLifecycle()
+    ProgressBar(state = state, modifier = modifier)
+  }
 
-    /** Destroys the [ProgressCoordinator] and its dependencies. */
-    fun destroy() {
-        mMediator.destroy()
-    }
+  /** Destroys the [ProgressCoordinator] and its dependencies. */
+  fun destroy() {
+    mMediator.destroy()
+  }
 }

@@ -4,7 +4,6 @@
 package org.chromium.chrome.browser.tabmodel
 
 import android.util.SparseArray
-
 import org.chromium.chrome.browser.tab.Tab
 
 /**
@@ -31,7 +30,9 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
   override fun hasParamsForTabId(tabId: Int) = mAsyncTabParams[tabId] != null
 
   override fun hasParamsWithTabToReparent(): Boolean {
-    forEachTab { return true }
+    forEachTab {
+      return true
+    }
     return false
   }
 

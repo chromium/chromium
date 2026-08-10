@@ -6,6 +6,6 @@ package org.chromium.chrome.browser.bricks.progress
 
 /** State for the progress bar. */
 data class ProgressUiState(
-    val progressFraction: Float = 0f,
-    val isRunning: Boolean = false
+  val progressFraction: Float = 0f,
+  val isRunning: Boolean = false,
 )

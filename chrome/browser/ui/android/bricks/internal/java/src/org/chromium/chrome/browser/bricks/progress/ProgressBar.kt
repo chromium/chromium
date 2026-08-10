@@ -22,40 +22,41 @@ import androidx.compose.ui.unit.dp
 /** Composable progress bar displaying [ProgressUiState]. */
 @Composable
 fun ProgressBar(
-    state: ProgressUiState,
-    modifier: Modifier = Modifier
+  state: ProgressUiState,
+  modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        // Track
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = CircleShape
-                )
-        ) {
-            // Fill
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(state.progressFraction.coerceIn(0f, 1f))
-                    .fillMaxHeight()
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
+  Column(modifier = modifier.padding(16.dp)) {
+    // Track
+    Box(
+      modifier =
+        Modifier.fillMaxWidth()
+          .height(8.dp)
+          .background(
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            shape = CircleShape,
+          )
+    ) {
+      // Fill
+      Box(
+        modifier =
+          Modifier.fillMaxWidth(state.progressFraction.coerceIn(0f, 1f))
+            .fillMaxHeight()
+            .background(
+              color = MaterialTheme.colorScheme.primary,
+              shape = CircleShape,
             )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = when {
-                state.isRunning -> "Running... ${(state.progressFraction * 100).toInt()}%"
-                state.progressFraction >= 1f -> "Done!"
-                else -> "Idle"
-            }
-        )
+      )
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Text(
+      text =
+        when {
+          state.isRunning -> "Running... ${(state.progressFraction * 100).toInt()}%"
+          state.progressFraction >= 1f -> "Done!"
+          else -> "Idle"
+        }
+    )
+  }
 }

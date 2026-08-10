@@ -9,27 +9,27 @@ import kotlinx.coroutines.flow.update
 
 /** Mediator that manages [ProgressUiState] based on progress provided by a [ProgressProvider]. */
 class ProgressMediator(
-    uiState: MutableStateFlow<ProgressUiState>,
-    provider: ProgressProvider
+  uiState: MutableStateFlow<ProgressUiState>,
+  provider: ProgressProvider,
 ) : ProgressProvider.Observer {
-    private val mUiState = uiState
-    private val mProvider = provider
+  private val mUiState = uiState
+  private val mProvider = provider
 
-    init {
-        mProvider.addObserver(this)
-    }
+  init {
+    mProvider.addObserver(this)
+  }
 
-    override fun onProgressChanged(progress: Float) {
-        mUiState.update {
-            it.copy(
-                progressFraction = progress,
-                isRunning = progress > 0f && progress < 1f
-            )
-        }
+  override fun onProgressChanged(progress: Float) {
+    mUiState.update {
+      it.copy(
+        progressFraction = progress,
+        isRunning = progress > 0f && progress < 1f,
+      )
     }
+  }
 
-    /** Destroys the mediator and its dependencies. */
-    fun destroy() {
-        mProvider.removeObserver(this)
-    }
+  /** Destroys the mediator and its dependencies. */
+  fun destroy() {
+    mProvider.removeObserver(this)
+  }
 }
