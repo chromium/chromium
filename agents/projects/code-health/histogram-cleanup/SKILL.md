@@ -156,6 +156,11 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 
 2. **Upload Pipeline:**
 
+   - Determine the obsoletion tag:
+     - If `<ExpiryDate>` is in the past: Set `customObsoletionMessage` to
+       `OBSOLETE_HISTOGRAMS[<HistogramName>]=expired`.
+     - If `<ExpiryDate>` is in the future: Set `customObsoletionMessage` to
+       `OBSOLETE_HISTOGRAMS[<HistogramName>]=<reason>`.
    - Invoke the [Submission](../hub/references/submission.md) workflow. Pass the
      following context variables to the workflow:
      - **Skill Name:** `histogram-cleanup`
@@ -163,7 +168,7 @@ Follow the [Verification](../hub/references/verification.md) workflow.
      - **Commit Hashtag:** `histogram-cleanup`
      - **Cleanup Title:** `Remove expired histogram: <HistogramName>`
      - **Cleanup Description:**
-       `Remove expired histogram <HistogramName> which expired on <ExpiryDate> and has no recording sites.`
+       `Remove expired histogram <HistogramName> which expired on <ExpiryDate> and has no recording sites.\n\n<customObsoletionMessage>`
      - **Parent Bug:** `499059525`
      - **Bug ID:** The resolved `<Bug ID>` from the Bug Tracking step.
      - **Cleaned Component:** `histograms.xml`
