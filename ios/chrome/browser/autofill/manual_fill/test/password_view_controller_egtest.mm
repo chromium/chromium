@@ -633,8 +633,7 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Dismiss Other Passwords via swipe.
-  [[EarlGrey
-      selectElementWithMatcher:manual_fill::OtherPasswordsDismissMatcher()]
+  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
