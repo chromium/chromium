@@ -49,8 +49,21 @@ OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
-  SetWebUIContent(std::make_unique<OmniboxFullPopupWebUIContent>(
-      this, this->location_bar(), controller));
+  // `location_bar` may be null in unit tests.
+  if (location_bar) {
+    SetWebUIContent(std::make_unique<OmniboxFullPopupWebUIContent>(
+        this, this->location_bar(), controller));
+  }
+  // By initializing `content_height_` to 1, we ensure the widget starts 1px
+  // taller than the location bar on first show. This creates a tiny visible
+  // area that forces the renderer to run layout and submit a frame (carrying
+  // size metadata) instead of skipping it. This ensures auto-resizes are
+  // triggered reliably.
+  // Only needed if `ShouldDeferUntilVisualStateReady()` has no value,
+  // as waiting for the visual state callback fixes the issue.
+  if (!ShouldDeferUntilVisualStateReady().has_value()) {
+    content_height_ = 1;
+  }
 }
 
 OmniboxPopupFullPresenter::~OmniboxPopupFullPresenter() = default;
@@ -121,6 +134,15 @@ void OmniboxPopupFullPresenter::Hide() {
   forward_events_timer_.Stop();
   popup_widget_observation_.Reset();
   OmniboxPopupPresenterBase::Hide();
+  // Reset the cached height to force a layout update when the popup is
+  // reshown. This prevents the popup from temporarily using a stale size
+  // from its previous state.
+  // This is required even if `kOmniboxAimDeferShowUntilVisualStateReady` is
+  // enabled, otherwise stale values may still show in the WebUI's input.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIPopupStabilizeStartupShow)) {
+    content_height_ = 1;
+  }
 }
 
 void OmniboxPopupFullPresenter::RequestFocus() {
@@ -157,6 +179,12 @@ OmniboxPopupFullPresenter::ShouldDeferUntilVisualStateReady() const {
 bool OmniboxPopupFullPresenter::ShouldDetachWebContentsOnHide() const {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxAimDetachWebContentsOnHide);
+}
+
+bool OmniboxPopupFullPresenter::ShouldHideForInitialLayout() const {
+  return base::FeatureList::IsEnabled(
+             omnibox::kOmniboxWebUIPopupStabilizeStartupShow) &&
+         !ShouldDeferUntilVisualStateReady().has_value();
 }
 
 std::unique_ptr<RoundedOmniboxResultsFrame>

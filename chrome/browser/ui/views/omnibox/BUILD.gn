@@ -179,6 +179,7 @@ source_set("unit_tests") {
 
   sources = [
     "omnibox_match_cell_view_unittest.cc",
+    "omnibox_popup_full_presenter_unittest.cc",
     "omnibox_popup_presenter_base_unittest.cc",
     "omnibox_result_view_unittest.cc",
     "omnibox_view_views_unittest.cc",
