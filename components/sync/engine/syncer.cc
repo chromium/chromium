@@ -288,7 +288,7 @@ SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
     std::unique_ptr<Commit> commit = Commit::Init(
         cycle->context()->GetConnectedTypes(),
         cycle->context()->max_commit_batch_size(),
-        cycle->context()->account_name(), cycle->context()->cache_guid(),
+        cycle->context()->account_email(), cycle->context()->cache_guid(),
         cycle->context()->cookie_jar_mismatch(), GetInvalidationInfo(cycle),
         &commit_processor, cycle->context()->extensions_activity());
     if (!commit) {

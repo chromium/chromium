@@ -233,8 +233,7 @@ SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
 }
 
 SyncCredentials SyncAuthManager::GetCredentials() const {
-  return {.email = sync_account_.Get().account_info.email,
-          .access_token_info = access_token_info_};
+  return {.access_token_info = access_token_info_};
 }
 
 void SyncAuthManager::ConnectionOpened() {

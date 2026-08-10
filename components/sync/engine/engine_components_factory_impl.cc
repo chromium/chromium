@@ -49,11 +49,12 @@ std::unique_ptr<SyncCycleContext> EngineComponentsFactoryImpl::BuildContext(
     const std::string& store_birthday,
     const std::string& bag_of_chips,
     base::TimeDelta poll_interval,
+    const std::string& account_email,
     SyncAccessTokenFetcher* sync_access_token_fetcher) {
   return std::make_unique<SyncCycleContext>(
       connection_manager, extensions_activity, listeners, debug_info_getter,
       data_type_registry, cache_guid, store_birthday, bag_of_chips,
-      poll_interval, sync_access_token_fetcher);
+      poll_interval, account_email, sync_access_token_fetcher);
 }
 
 }  // namespace syncer

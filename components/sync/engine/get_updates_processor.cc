@@ -159,7 +159,7 @@ void PartitionContextMutationsByType(
 // to test.
 void InitDownloadUpdatesContext(SyncCycle* cycle,
                                 sync_pb::ClientToServerMessage* message) {
-  message->set_share(cycle->context()->account_name());
+  message->set_share(cycle->context()->account_email());
   message->set_message_contents(sync_pb::ClientToServerMessage::GET_UPDATES);
 
   sync_pb::GetUpdatesMessage* get_updates = message->mutable_get_updates();

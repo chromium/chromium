@@ -190,7 +190,7 @@ void SyncManagerImpl::Init(InitArgs* args) {
       connection_manager_.get(), args->extensions_activity, listeners,
       &debug_info_event_listener_, data_type_registry_.get(), args->cache_guid,
       args->birthday, args->bag_of_chips, args->poll_interval,
-      args->sync_access_token_fetcher);
+      args->account_email, args->sync_access_token_fetcher);
   scheduler_ = args->engine_components_factory->BuildScheduler(
       name_, cycle_context_.get(), args->cancelation_signal,
       args->enable_local_sync_backend);
@@ -274,8 +274,6 @@ void SyncManagerImpl::UpdateCredentials(const SyncCredentials& credentials) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken));
   DCHECK(initialized_);
-
-  cycle_context_->set_account_name(credentials.email);
 
   observing_network_connectivity_changes_ = true;
   if (!connection_manager_->SetAccessTokenInfo(credentials.access_token_info)) {

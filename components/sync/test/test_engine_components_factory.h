@@ -37,6 +37,7 @@ class TestEngineComponentsFactory : public EngineComponentsFactory {
       const std::string& store_birthday,
       const std::string& bag_of_chips,
       base::TimeDelta poll_interval,
+      const std::string& account_email,
       SyncAccessTokenFetcher* sync_access_token_fetcher) override;
 };
 

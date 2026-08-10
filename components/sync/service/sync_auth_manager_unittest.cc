@@ -74,7 +74,6 @@ TEST_P(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
       CreateAuthManagerForLocalSync();
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().account_info.IsEmpty());
   syncer::SyncCredentials credentials = auth_manager->GetCredentials();
-  EXPECT_TRUE(credentials.email.empty());
   EXPECT_TRUE(credentials.access_token_info.token.empty());
   // Note: Calling RegisterForAuthNotifications or any of the Connection*()
   // methods is illegal in local Sync mode, so we don't test that.

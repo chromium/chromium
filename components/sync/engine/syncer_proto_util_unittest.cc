@@ -78,6 +78,7 @@ class SyncerProtoUtilTest : public testing::Test {
         /*birthday=*/"",
         /*bag_of_chips=*/"",
         /*poll_internal=*/base::Seconds(1),
+        /*account_email=*/"",
         /*sync_access_token_fetcher=*/nullptr);
   }
 

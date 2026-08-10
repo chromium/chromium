@@ -50,6 +50,7 @@ class SyncCycleContext {
                    const std::string& birthday,
                    const std::string& bag_of_chips,
                    base::TimeDelta poll_interval,
+                   const std::string& account_email,
                    SyncAccessTokenFetcher* sync_access_token_fetcher);
 
   SyncCycleContext(const SyncCycleContext&) = delete;
@@ -81,8 +82,7 @@ class SyncCycleContext {
   void set_bag_of_chips(const std::string& bag_of_chips);
   const std::string& bag_of_chips() const { return bag_of_chips_; }
 
-  void set_account_name(const std::string& name) { account_name_ = name; }
-  const std::string& account_name() const { return account_name_; }
+  const std::string& account_email() const { return account_email_; }
 
   void set_max_commit_batch_size(int batch_size) {
     max_commit_batch_size_ = batch_size;
@@ -146,9 +146,6 @@ class SyncCycleContext {
 
   std::string bag_of_chips_;
 
-  // The name of the account being synced.
-  std::string account_name_;
-
   // The server limits the number of items a client can commit in one batch.
   int max_commit_batch_size_ = kDefaultMaxCommitBatchSize;
 
@@ -157,8 +154,6 @@ class SyncCycleContext {
   const raw_ptr<DebugInfoGetter, DanglingUntriaged> debug_info_getter_;
 
   const raw_ptr<DataTypeRegistry> data_type_registry_;
-
-  const raw_ptr<SyncAccessTokenFetcher> sync_access_token_fetcher_;
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;
@@ -172,6 +167,11 @@ class SyncCycleContext {
       ActiveDevicesInvalidationInfo::CreateUninitialized();
 
   base::TimeDelta poll_interval_;
+
+  // The email of the account being synced.
+  const std::string account_email_;
+
+  const raw_ptr<SyncAccessTokenFetcher> sync_access_token_fetcher_;
 };
 
 }  // namespace syncer

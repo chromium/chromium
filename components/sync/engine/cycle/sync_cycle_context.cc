@@ -20,6 +20,7 @@ SyncCycleContext::SyncCycleContext(
     const std::string& birthday,
     const std::string& bag_of_chips,
     base::TimeDelta poll_interval,
+    const std::string& account_email,
     SyncAccessTokenFetcher* sync_access_token_fetcher)
     : connection_manager_(connection_manager),
       extensions_activity_(extensions_activity),
@@ -28,8 +29,9 @@ SyncCycleContext::SyncCycleContext(
       bag_of_chips_(bag_of_chips),
       debug_info_getter_(debug_info_getter),
       data_type_registry_(data_type_registry),
-      sync_access_token_fetcher_(sync_access_token_fetcher),
-      poll_interval_(poll_interval) {
+      poll_interval_(poll_interval),
+      account_email_(account_email),
+      sync_access_token_fetcher_(sync_access_token_fetcher) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;
   for (it = listeners.begin(); it != listeners.end(); ++it) {

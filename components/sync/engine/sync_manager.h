@@ -111,6 +111,8 @@ class SyncManager {
     std::string cache_guid;
     std::string birthday;
     std::string bag_of_chips;
+
+    std::string account_email;
   };
 
   // The state of sync the feature. If the user turned on sync explicitly, it

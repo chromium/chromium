@@ -324,6 +324,7 @@ void SyncEngineBackend::DoInitialize(
   if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
     args.sync_access_token_fetcher = this;
   }
+  args.account_email = params.authenticated_account_info.email;
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();
