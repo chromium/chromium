@@ -6,12 +6,16 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 @interface NewTabPageBottomSheetViewController (Testing)
 - (void)updateContentContainerInsetForOffset:(CGFloat)topOffset;
+- (void)voiceOverStatusDidChange;
+- (BOOL)isVoiceOverRunning;
 @end
 
 class NewTabPageBottomSheetViewControllerTest : public PlatformTest {
@@ -153,4 +157,31 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_
       updateContentContainerInsetForOffset:(expanded + resting) / 2.0];
   EXPECT_FLOAT_EQ(0.5, mvtContainer.alpha);
+}
+
+// Tests that the scroll delegate proxy is injected when VoiceOver is enabled.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestVoiceOverProxyInjection) {
+  UIViewController* child_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view = [[UIScrollView alloc] init];
+  [child_vc.view addSubview:scroll_view];
+
+  view_controller_.feedViewController = child_vc;
+  [view_controller_ loadViewIfNeeded];
+
+  __block BOOL isVoiceOver = YES;
+  ScopedBlockSwizzler swizzler([NewTabPageBottomSheetViewController class],
+                               @selector(isVoiceOverRunning),
+                               ^BOOL(id self) { return isVoiceOver; });
+
+  // Simulate VoiceOver ON.
+  [view_controller_ voiceOverStatusDidChange];
+
+  UIScrollView* feedScrollView = [view_controller_ valueForKey:@"_feedScrollView"];
+  EXPECT_NE(nil, feedScrollView.delegate);
+
+  // Simulate VoiceOver OFF.
+  isVoiceOver = NO;
+  [view_controller_ voiceOverStatusDidChange];
+
+  EXPECT_EQ(nil, feedScrollView.delegate);
 }

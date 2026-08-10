@@ -498,6 +498,14 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   [self.view layoutIfNeeded];
 }
 
+- (void)bottomSheetViewControllerDidEscape:
+    (NewTabPageBottomSheetViewController*)bottomSheetViewController {
+  if (_fakeLocationBar) {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    _fakeLocationBar);
+  }
+}
+
 #pragma mark - ContentSuggestionsConsumer
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
@@ -713,7 +721,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
         content_suggestions::DoodleHeight(_logoState, self.traitCollection);
     return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
   }
-  return screenHeight * 0.35;
+  return screenHeight * 0.25;
 }
 
 
