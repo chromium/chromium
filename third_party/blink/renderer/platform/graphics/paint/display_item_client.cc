@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
+
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -13,9 +15,9 @@ namespace blink {
 
 String DisplayItemClient::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%p:%s", this, DebugName().Utf8().c_str());
+  return Format("{}:{}", this, DebugName());
 #else
-  return String::Format("%p", this);
+  return Format("{}", this);
 #endif
 }
 

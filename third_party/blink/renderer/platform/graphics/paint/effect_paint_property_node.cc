@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -249,8 +250,8 @@ const ClipPaintPropertyNode& EffectPaintPropertyNode::CanvasChildContentClip()
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
   auto json = EffectPaintPropertyNodeOrAlias::ToJSON();
   json->SetString("localTransformSpace",
-                  String::Format("%p", state_.local_transform_space.Get()));
-  json->SetString("outputClip", String::Format("%p", state_.output_clip.Get()));
+                  Format("{}", state_.local_transform_space.Get()));
+  json->SetString("outputClip", Format("{}", state_.output_clip.Get()));
   if (state_.filter_info) {
     json->SetString("filter", state_.filter_info->operations.ToString());
   }

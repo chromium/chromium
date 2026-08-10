@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -457,10 +458,9 @@ cc::Layer* ForeignLayer(const PaintChunk& chunk,
 
 std::string DescribePaintPropertyNode(const PaintPropertyNode& node,
                                       const PaintPropertyNode* parent) {
-  return String::Format(
-             "Parent %p : (%s) \n Self %p : (%s)", parent,
-             parent ? parent->ToJSON()->ToJSONString().Utf8().c_str() : "",
-             &node, node.ToJSON()->ToJSONString().Utf8().c_str())
+  return Format("Parent {} : ({}) \n Self {} : ({})", parent,
+                parent ? parent->ToJSON()->ToJSONString() : "", &node,
+                node.ToJSON()->ToJSONString())
       .Utf8();
 }
 

@@ -58,6 +58,34 @@ void FormatHex(uint64_t abs_val,
   }
 }
 
+void FormatPointer(const void* ptr,
+                   bool is_uppercase,
+                   bool zero_pad,
+                   uint32_t width,
+                   StringBuilder& builder) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  auto append_ptr = [&](auto conv) {
+    StringView hex_str(conv.Span());
+    wtf_size_t total_len = 2 + hex_str.length();
+    const char* prefix = is_uppercase ? "0X" : "0x";
+    if (zero_pad) {
+      builder.Append(prefix);
+      Pad('0', width, total_len, builder);
+      builder.Append(hex_str);
+    } else {
+      Pad(' ', width, total_len, builder);
+      builder.Append(prefix);
+      builder.Append(hex_str);
+    }
+  };
+
+  if (is_uppercase) {
+    append_ptr(IntegerToStringConverter<uintptr_t, 16, true>(addr));
+  } else {
+    append_ptr(IntegerToStringConverter<uintptr_t, 16, false>(addr));
+  }
+}
+
 }  // namespace
 
 StringBuilder& VFormatTo(StringBuilder& builder,
@@ -148,6 +176,10 @@ StringBuilder& VFormatTo(StringBuilder& builder,
                       << "Invalid type specifier for string argument";
                   builder.Append(val);
                   Pad(' ', width, val.length(), builder);
+                } else if constexpr (std::is_same_v<T, const void*>) {
+                  CHECK(type == '\0' || type == 'p' || type == 'P')
+                      << "Invalid type specifier for pointer argument";
+                  FormatPointer(val, type == 'P', zero_pad, width, builder);
                 }
               },
               arg.GetValue());

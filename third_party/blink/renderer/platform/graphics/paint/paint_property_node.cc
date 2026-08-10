@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -65,7 +66,7 @@ const PaintPropertyNode& PaintPropertyNode::LowestCommonAncestorInternal(
 String PaintPropertyNode::ToString() const {
   String s = ToJSON()->ToJSONString();
 #if DCHECK_IS_ON()
-  return StrCat({debug_name_, String::Format(" %p ", this), s});
+  return Format("{} {} {}", debug_name_, this, s);
 #else
   return s;
 #endif
@@ -74,7 +75,7 @@ String PaintPropertyNode::ToString() const {
 std::unique_ptr<JSONObject> PaintPropertyNode::ToJSON() const {
   auto json = std::make_unique<JSONObject>();
   if (Parent()) {
-    json->SetString("parent", String::Format("%p", Parent()));
+    json->SetString("parent", Format("{}", Parent()));
   }
   if (IsParentAlias()) {
     json->SetBoolean("is_alias", true);
@@ -136,7 +137,7 @@ void PropertyTreePrinter::BuildTreeString(StringBuilder& string_builder,
   }
 
   string_builder.Append(node.DebugName());
-  string_builder.Append(String::Format(" %p ", &node));
+  FormatTo(string_builder, " {} ", &node);
   auto json = node.ToJSON();
   json->Remove("parent");
   string_builder.Append(json->ToJSONString());

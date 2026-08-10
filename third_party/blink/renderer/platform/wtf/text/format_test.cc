@@ -161,17 +161,59 @@ TEST(FormatTest, TypeSpecifierString) {
   EXPECT_EQ("abc  ", Format("{:5s}", StringView("abc")));
 }
 
+TEST(FormatTest, TypeSpecifierPointer) {
+  void* ptr = reinterpret_cast<void*>(0x12ab);
+  const void* cptr = ptr;
+  EXPECT_EQ("0x12ab", Format("{}", ptr));
+  EXPECT_EQ("0x12ab", Format("{}", cptr));
+  EXPECT_EQ("0x12ab", Format("{:}", ptr));
+  EXPECT_EQ("0x12ab", Format("{:p}", ptr));
+  EXPECT_EQ("0x12ab", Format("{:p}", cptr));
+  EXPECT_EQ("0X12AB", Format("{:P}", ptr));
+  EXPECT_EQ("0X12AB", Format("{:P}", cptr));
+  EXPECT_EQ("0x0", Format("{}", nullptr));
+  EXPECT_EQ("0x0", Format("{:}", nullptr));
+  EXPECT_EQ("0x0", Format("{:p}", nullptr));
+  EXPECT_EQ("0X0", Format("{:P}", nullptr));
+  EXPECT_EQ("0x0", Format("{}", static_cast<void*>(nullptr)));
+  EXPECT_EQ("0x0", Format("{:p}", static_cast<void*>(nullptr)));
+  EXPECT_EQ("0X0", Format("{:P}", static_cast<void*>(nullptr)));
+
+  // Width and padding
+  EXPECT_EQ("  0x12ab", Format("{:8p}", ptr));
+  EXPECT_EQ("  0X12AB", Format("{:8P}", ptr));
+  EXPECT_EQ("0x0012ab", Format("{:08p}", ptr));
+  EXPECT_EQ("0X0012AB", Format("{:08P}", ptr));
+  EXPECT_EQ("0x12ab", Format("{:2p}", ptr));
+  EXPECT_EQ("0X12AB", Format("{:2P}", ptr));
+  EXPECT_EQ("   0x0", Format("{:6p}", nullptr));
+  EXPECT_EQ("0x0000", Format("{:06p}", nullptr));
+  EXPECT_EQ("   0X0", Format("{:6P}", nullptr));
+  EXPECT_EQ("0X0000", Format("{:06P}", nullptr));
+}
+
 TEST(FormatTest, TypeSpecifierDeathTest) {
   FormatArg int_args[] = {FormatArg(42)};
   FormatArg str_args[] = {FormatArg(StringView("abc"))};
+  FormatArg ptr_args[] = {FormatArg(static_cast<const void*>(nullptr))};
 
-  // String argument with integer type specifiers
+  // String argument with integer/pointer type specifiers
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:d}", FormatArgs(str_args)), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:x}", FormatArgs(str_args)), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:X}", FormatArgs(str_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:p}", FormatArgs(str_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:P}", FormatArgs(str_args)), "");
 
-  // Integer argument with string type specifier
+  // Integer argument with string/pointer type specifiers
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:s}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:p}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:P}", FormatArgs(int_args)), "");
+
+  // Pointer argument with integer/string type specifiers
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:d}", FormatArgs(ptr_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:x}", FormatArgs(ptr_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:X}", FormatArgs(ptr_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:s}", FormatArgs(ptr_args)), "");
 
   // Unsupported type specifier
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:z}", FormatArgs(int_args)), "");

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -256,12 +257,12 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
                     String(state_.compositor_element_id.ToString()));
   }
   if (state_.scroll)
-    json->SetString("scroll", String::Format("%p", state_.scroll.Get()));
+    json->SetString("scroll", Format("{}", state_.scroll.Get()));
 
   if (state_.scroll_parent_scroll_translation) {
     json->SetString(
         "scroll_parent_scroll_translation",
-        String::Format("%p", state_.scroll_parent_scroll_translation.Get()));
+        Format("{}", state_.scroll_parent_scroll_translation.Get()));
   }
   return json;
 }

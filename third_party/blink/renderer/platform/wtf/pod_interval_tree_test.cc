@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_tree_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -42,9 +43,7 @@ using tree_test_helpers::NextRandom;
 #ifndef NDEBUG
 template <>
 struct ValueToString<void*> {
-  static String ToString(void* const& value) {
-    return String::Format("0x%p", value);
-  }
+  static String ToString(void* const& value) { return Format("0x{}", value); }
 };
 #endif
 
@@ -94,9 +93,7 @@ TEST(PodIntevalTreeTest, TestQueryAgainstZeroSizeInterval) {
 #ifndef NDEBUG
 template <>
 struct ValueToString<int*> {
-  static String ToString(int* const& value) {
-    return String::Format("0x%p", value);
-  }
+  static String ToString(int* const& value) { return Format("0x{}", value); }
 };
 #endif
 

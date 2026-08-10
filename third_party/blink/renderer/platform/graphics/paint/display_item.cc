@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -243,12 +244,11 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
-                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
-                        fragment);
+  return Format("{}:{}:{}", reinterpret_cast<void*>(client_id),
+                DisplayItem::TypeAsDebugString(type), fragment);
 #else
-  return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),
-                        static_cast<int>(type), fragment);
+  return Format("{}:{}:{}", reinterpret_cast<void*>(client_id),
+                static_cast<int>(type), fragment);
 #endif
 }
 

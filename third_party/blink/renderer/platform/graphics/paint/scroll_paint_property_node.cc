@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -84,7 +85,7 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
   }
   if (state_.overflow_clip_node) {
     json->SetString("overflowClipNode",
-                    String::Format("%p", state_.overflow_clip_node.Get()));
+                    Format("{}", state_.overflow_clip_node.Get()));
   }
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(

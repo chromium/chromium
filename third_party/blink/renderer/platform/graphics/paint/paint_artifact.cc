@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -52,10 +53,9 @@ String PaintArtifact::IdAsString(const DisplayItem::Id& id) const {
 #if DCHECK_IS_ON()
   String debug_name = ClientDebugName(id.client_id);
   if (!debug_name.empty()) {
-    return String::Format(
-        "%p:%s:%s:%d", reinterpret_cast<void*>(id.client_id),
-        ClientDebugName(id.client_id).Utf8().c_str(),
-        DisplayItem::TypeAsDebugString(id.type).Utf8().c_str(), id.fragment);
+    return Format("{}:{}:{}:{}", reinterpret_cast<void*>(id.client_id),
+                  ClientDebugName(id.client_id),
+                  DisplayItem::TypeAsDebugString(id.type), id.fragment);
   }
 #endif
   return id.ToString();

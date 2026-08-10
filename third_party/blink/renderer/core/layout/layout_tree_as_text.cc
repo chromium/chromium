@@ -177,7 +177,7 @@ void WriteLayoutObject(StringBuilder& ts,
   ts << o.DecoratedName();
 
   if (behavior & kLayoutAsTextShowAddresses)
-    ts << String::Format(" %p", &o);
+    FormatTo(ts, " {}", &o);
 
   if (o.Style() && o.StyleRef().ZIndex())
     ts << " zI: " << o.StyleRef().ZIndex();
@@ -478,7 +478,7 @@ static void Write(StringBuilder& ts,
   ts << "layer ";
 
   if (behavior & kLayoutAsTextShowAddresses)
-    ts << String::Format("%p ", &layer);
+    FormatTo(ts, "{} ", &layer);
 
   ts << "at " << adjusted_layer_offset;
 

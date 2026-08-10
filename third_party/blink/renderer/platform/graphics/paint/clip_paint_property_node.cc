@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -84,7 +85,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
     json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
-                  String::Format("%p", state_.local_transform_space.Get()));
+                  Format("{}", state_.local_transform_space.Get()));
   json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
   if (state_.layout_clip_rect_excluding_overlay_scrollbars &&
       *state_.layout_clip_rect_excluding_overlay_scrollbars !=
@@ -107,7 +108,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   }
   if (state_.pixel_moving_filter) {
     json->SetString("pixelMovingFilter",
-                    String::Format("%p", state_.pixel_moving_filter.Get()));
+                    Format("{}", state_.pixel_moving_filter.Get()));
   }
   return json;
 }

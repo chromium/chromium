@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_data.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -85,7 +86,7 @@ String HitTestData::ToString() const {
 
   if (scroll_translation) {
     append_field("scroll_translation: ",
-                 String::Format("%p", scroll_translation.Get()));
+                 Format("{}", scroll_translation.Get()));
     if (!RuntimeEnabledFeatures::
             ScrollingContentsCullRectOnScrollNodeEnabled() &&
         scrolling_contents_cull_rect != InfiniteIntRect()) {

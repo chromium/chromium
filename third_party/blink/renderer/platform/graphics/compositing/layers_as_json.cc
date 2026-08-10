@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
@@ -16,7 +17,7 @@ namespace blink {
 namespace {
 
 String PointerAsString(const void* ptr) {
-  return String::Format("%p", ptr);
+  return Format("{}", ptr);
 }
 
 double RoundCloseToZero(double number) {

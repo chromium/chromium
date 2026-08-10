@@ -44,7 +44,7 @@ consteval void FormatStringError(const char* message) {
 // `VFormat()`, and `VFormatTo()` and is not intended for direct public usage.
 class WTF_EXPORT FormatArg {
  public:
-  using Value = std::variant<int64_t, uint64_t, StringView>;
+  using Value = std::variant<int64_t, uint64_t, StringView, const void*>;
 
   // NOLINTBEGIN(google-explicit-constructor)
   FormatArg(int v) : value_(static_cast<int64_t>(v)) {}
@@ -53,6 +53,8 @@ class WTF_EXPORT FormatArg {
   FormatArg(unsigned long v) : value_(static_cast<uint64_t>(v)) {}
   FormatArg(long long v) : value_(v) {}
   FormatArg(unsigned long long v) : value_(v) {}
+  FormatArg(const void* v) : value_(v) {}
+  FormatArg(std::nullptr_t) : value_(static_cast<const void*>(nullptr)) {}
   template <typename T>
     requires std::convertible_to<const T&, StringView>
   FormatArg(const T& v) : value_(StringView(v)) {}
@@ -145,7 +147,7 @@ constexpr std::optional<ParsedFormatSpec> ParseFormatSpec(
   }
 
   if (type != '\0' && type != 'd' && type != 'x' && type != 'X' &&
-      type != 's') {
+      type != 's' && type != 'p' && type != 'P') {
     return std::nullopt;
   }
 
@@ -227,6 +229,10 @@ class FormatString {
           valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
         } else if (type == 's') {
           valid = std::convertible_to<const RawT&, StringView>;
+        } else if (type == 'p' || type == 'P') {
+          valid = (std::convertible_to<RawT, const void*> &&
+                   !std::convertible_to<const RawT&, StringView>) ||
+                  std::is_same_v<RawT, std::nullptr_t>;
         }
       }
       current++;
@@ -277,9 +283,9 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   convertible types.
 // - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}` or
 //   zero-padded `{:0width}` (where width is a 32-bit unsigned integer) with
-//   optional type specifier `d`, `x`, `X`, `s` (e.g. `{:d}`, `{:08x}`, `{:s}`)
-//   are supported. Positional (e.g. `{0}`) format specifiers are currently
-//   not supported.
+//   optional type specifier `d`, `x`, `X`, `s`, `p`, `P` (e.g. `{:d}`,
+//   `{:08x}`, `{:p}`, `{:P}`) are supported. Positional (e.g. `{0}`) format
+//   specifiers are currently not supported.
 // - Escaping: `{{` outputs `{`, and `}}` outputs `}`.
 //
 // Supported Argument Types:
@@ -287,6 +293,8 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   implicitly convertible types).
 // - String types: `blink::StringView`, `blink::String`, `blink::AtomicString`,
 //   `const char[N]`.
+// - Pointer types: `const void*`, `std::nullptr_t` (and implicitly
+//   convertible types).
 //
 // Usage Examples:
 //   // Basic formatting:

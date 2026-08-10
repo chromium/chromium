@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -126,7 +127,7 @@ bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(
 #if DCHECK_IS_ON()
 void ScrollbarDisplayItem::PropertiesAsJSONImpl(JSONObject& json) const {
   json.SetString("scrollTranslation",
-                 String::Format("%p", data_->scroll_translation_.Get()));
+                 Format("{}", data_->scroll_translation_.Get()));
 }
 #endif
 
