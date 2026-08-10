@@ -234,6 +234,10 @@ crbug.com/365565140 [ amd-0x7340 debug arch-x86_64 no-asan no-clang-coverage son
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 
+# Renderer crash on getting WebGPU Device
+crbug.com/544575764 [ mac passthrough ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
+crbug.com/544575764 [ win passthrough ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
+
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Failure ]
