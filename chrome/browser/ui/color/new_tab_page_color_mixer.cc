@@ -284,6 +284,10 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
   mixer[kColorNewTabPageRealboxNextIconHover] = {
       kColorSysStateHoverOnSubtle_Light};
 
+#if BUILDFLAG(IS_ANDROID)
+  mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+#else
   if (base::FeatureList::IsEnabled(ntp_features::kEnergyEffect)) {
     mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
         SkColorSetRGB(0x33, 0x6E, 0xF3)};
@@ -291,6 +295,7 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
     mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
         SkColorSetRGB(0x34, 0x6B, 0xF1)};
   }
+#endif
 
   mixer[kColorComposeboxBackground] = {SK_ColorWHITE};
   mixer[kColorComposeboxFileChipSpinner] = {kColorSysPrimary_Light};
