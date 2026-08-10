@@ -11,13 +11,13 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-te
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
-import {createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
+import {createAddressDialog, expectEvent} from './contact_info_page_test_utils.js';
 import {TestCountryDetailManagerProxy} from './test_country_detail_manager_proxy.js';
 // clang-format on
 
 const FieldType = chrome.autofillPrivate.FieldType;
 
-suite('AutofillSectionAddressValidationTests', () => {
+suite('ContactInfoPageAddressValidationTests', () => {
   let countryDetailManager: TestCountryDetailManagerProxy;
 
   setup(() => {

@@ -9,7 +9,7 @@ import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
 import './ai_page/skills_page.js';
 import './appearance_page/appearance_fonts_page.js';
-import './autofill_page/autofill_section.js';
+import './autofill_page/contact_info/contact_info_page.js';
 import './autofill_page/identity_docs_page.js';
 import './autofill_page/shopping_page.js';
 import './autofill_page/suggestions_from_gemini_subpage.js';
@@ -169,13 +169,13 @@ export {OnDeviceAiBrowserProxyImpl} from './ai_page/on_device_ai_browser_proxy.j
 // </if>
 export {SettingsSkillsPageElement} from './ai_page/skills_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
-export {SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
-export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
+export {SettingsAddressEditDialogElement} from './autofill_page/contact_info/address_edit_dialog.js';
+export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/contact_info/address_remove_confirmation_dialog.js';
 export {SettingsAutofillAiAddOrEditDialogElement} from './autofill_page/autofill_ai_add_or_edit_dialog.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
 export {AutofillManagerImpl} from './autofill_page/autofill_manager_proxy.js';
 export type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
-export {AutofillAddressOptInChange, SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
+export {AutofillAddressOptInChange, SettingsContactInfoPageElement} from './autofill_page/contact_info/contact_info_page.js';
 export {CountryDetailManagerProxyImpl} from './autofill_page/country_detail_manager_proxy.js';
 export type {CountryDetailManagerProxy} from './autofill_page/country_detail_manager_proxy.js';
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';

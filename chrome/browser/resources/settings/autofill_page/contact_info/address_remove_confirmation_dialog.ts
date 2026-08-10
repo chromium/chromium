@@ -14,7 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
+import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './address_remove_confirmation_dialog.html.js';
 

@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrActionMenuElement} from 'chrome://settings/settings.js';
-import type { CrInputElement, CrTextareaElement, SettingsAutofillSectionElement, SettingsSimpleConfirmationDialogElement } from 'chrome://settings/lazy_load.js';
+import type { CrInputElement, CrTextareaElement, SettingsContactInfoPageElement, SettingsSimpleConfirmationDialogElement } from 'chrome://settings/lazy_load.js';
 import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -19,7 +19,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './autofill_fake_data.js';
-import {createAutofillSection, initiateRemoving, initiateEditing, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, getAddressFieldValue} from './autofill_section_test_utils.js';
+import {createContactInfoPage, initiateRemoving, initiateEditing, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, getAddressFieldValue} from './contact_info_page_test_utils.js';
 import {TestCountryDetailManagerProxy} from './test_country_detail_manager_proxy.js';
 // clang-format on
 
@@ -141,7 +141,7 @@ const ADDRESS_COMPONENTS_IL = {
   languageCode: 'iw',
 };
 
-suite('AutofillSectionUiTest', function() {
+suite('ContactInfoPageUiTest', function() {
   setup(function() {
     loadTimeData.overrideValues({
       emailVerificationProtocolEnabled: false,
@@ -152,8 +152,8 @@ suite('AutofillSectionUiTest', function() {
 
   test('AutofillExtensionIndicator', function() {
     // Initializing with fake prefs
-    const section = document.createElement('settings-autofill-section');
-    section.prefs = {
+    const page = document.createElement('settings-contact-info-page');
+    page.prefs = {
       autofill: {
         profile_enabled: {},
         email_verification_state: {
@@ -162,29 +162,29 @@ suite('AutofillSectionUiTest', function() {
         },
       },
     };
-    document.body.appendChild(section);
+    document.body.appendChild(page);
 
     assertFalse(
-        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
-    section.set('prefs.autofill.profile_enabled.extensionId', 'test-id');
+        !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+    page.set('prefs.autofill.profile_enabled.extensionId', 'test-id');
     flush();
 
     assertTrue(
-        !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+        !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
   });
 
   test('EmailVerificationToggle', async function() {
     loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
 
-    const section = await createAutofillSection([], {
+    const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
       email_verification_enabled: {value: true},
     });
     const toggle =
-        section.shadowRoot!.querySelector('#autofillEmailVerificationToggle');
+        page.shadowRoot!.querySelector('#autofillEmailVerificationToggle');
     assertTrue(!!toggle);
 
-    const noEmailsLabel = section.shadowRoot!.querySelector('#noEmailsLabel');
+    const noEmailsLabel = page.shadowRoot!.querySelector('#noEmailsLabel');
     assertTrue(!!noEmailsLabel);
     assertFalse((noEmailsLabel as HTMLElement).hidden);
   });
@@ -197,7 +197,7 @@ suite('AutofillSectionUiTest', function() {
       'test2@example.com': {allowed: false, issuer_site: 'https://yahoo.com'},
     };
 
-    const section = await createAutofillSection([], {
+    const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
       email_verification_enabled: {value: true},
       email_verification_state: {
@@ -209,7 +209,7 @@ suite('AutofillSectionUiTest', function() {
     flush();
 
     const menuButtons =
-        section.shadowRoot!.querySelectorAll<HTMLElement>('.email-menu');
+        page.shadowRoot!.querySelectorAll<HTMLElement>('.email-menu');
     assertEquals(2, menuButtons.length);
 
     const button0 = menuButtons[0]!;
@@ -238,7 +238,7 @@ suite('AutofillSectionUiTest', function() {
     button0.click();
     await flushTasks();
 
-    const actionMenu = section.shadowRoot!.querySelector<CrActionMenuElement>(
+    const actionMenu = page.shadowRoot!.querySelector<CrActionMenuElement>(
         '#emailSharedMenu')!;
     assertTrue(actionMenu.open);
 
@@ -249,7 +249,7 @@ suite('AutofillSectionUiTest', function() {
     removeButton.click();
     await flushTasks();
 
-    const dialog = section.shadowRoot!
+    const dialog = page.shadowRoot!
                        .querySelector<SettingsSimpleConfirmationDialogElement>(
                            '#emailRemoveConfirmationDialog');
     assertTrue(!!dialog);
@@ -259,7 +259,7 @@ suite('AutofillSectionUiTest', function() {
     await flushTasks();
 
     // Verify pref was updated.
-    const updatedPrefs = section
+    const updatedPrefs = page
                              .getPref<Record<string, unknown>>(
                                  'autofill.email_verification_state')
                              .value;
@@ -267,7 +267,7 @@ suite('AutofillSectionUiTest', function() {
     assertTrue('test2@example.com' in updatedPrefs);
 
     // Verify UI updated.
-    const newMenuButtons = section.shadowRoot!.querySelectorAll('.email-menu');
+    const newMenuButtons = page.shadowRoot!.querySelectorAll('.email-menu');
     assertEquals(1, newMenuButtons.length);
     const newButton0 = newMenuButtons[0]!;
     const newItem0 = newButton0.parentElement!;
@@ -291,14 +291,14 @@ suite('AutofillSectionUiTest', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
 
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const expectedMessage =
           loadTimeData.getString('removeSyncAddressConfirmationDescription');
       assertEquals(
@@ -315,7 +315,7 @@ suite('AutofillSectionUiTest', function() {
         autofillManager.lastCallback.setPersonalDataManagerListener;
     assertTrue(
         !!changeListener,
-        'PersonalDataChangedListener should be set in the section element');
+        'PersonalDataChangedListener should be set in the page element');
 
     // Imitate disabling sync.
     changeListener(autofillManager.data.addresses, [], [], [], {
@@ -323,7 +323,7 @@ suite('AutofillSectionUiTest', function() {
     });
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const expectedMessage =
           loadTimeData.getString('removeLocalAddressConfirmationDescription');
       assertEquals(
@@ -340,7 +340,7 @@ suite('AutofillSectionUiTest', function() {
     changeListener(autofillManager.data.addresses, [], [], [], undefined);
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const expectedMessage =
           loadTimeData.getString('removeLocalAddressConfirmationDescription');
       assertEquals(
@@ -359,7 +359,7 @@ suite('AutofillSectionUiTest', function() {
     });
 
     {
-      const dialog = await initiateRemoving(section, 1);
+      const dialog = await initiateRemoving(page, 1);
       const expectedMessage = loadTimeData.getStringF(
           'deleteAccountAddressRecordTypeNotice', STUB_USER_ACCOUNT_INFO.email);
       assertEquals(
@@ -384,13 +384,13 @@ suite('AutofillSectionUiTest', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const homeUrl = loadTimeData.getString('googleAccountHomeAddressUrl')
                           .replace(/&/g, '&amp;');
       const expectedMessage = loadTimeData.getStringF(
@@ -417,13 +417,13 @@ suite('AutofillSectionUiTest', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const workUrl = loadTimeData.getString('googleAccountWorkAddressUrl')
                           .replace(/&/g, '&amp;');
       const expectedMessage = loadTimeData.getStringF(
@@ -450,13 +450,13 @@ suite('AutofillSectionUiTest', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
     {
-      const dialog = await initiateRemoving(section, 0);
+      const dialog = await initiateRemoving(page, 0);
       const nameEmailUrl =
           loadTimeData.getString('googleAccountNameEmailAddressEditUrl')
               .replace(/&/g, '&amp;');
@@ -493,13 +493,13 @@ suite('AutofillSectionUiTest', function() {
     const accountAddress = createAddressEntry();
     accountAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT;
-    const section = await createAutofillSection([address, accountAddress], {}, {
+    const page = await createContactInfoPage([address, accountAddress], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email,
     });
 
     {
-      const dialog = await initiateEditing(section, 0);
+      const dialog = await initiateEditing(page, 0);
       assertFalse(
           isVisible(dialog.$.accountRecordTypeNotice),
           'account notice should be invisible for non-account address');
@@ -511,14 +511,14 @@ suite('AutofillSectionUiTest', function() {
     await flushTasks();
 
     {
-      const dialog = await initiateEditing(section, 1);
+      const dialog = await initiateEditing(page, 1);
       assertTrue(
           isVisible(dialog.$.accountRecordTypeNotice),
           'account notice should be visible for account address');
 
       assertEquals(
           dialog.$.accountRecordTypeNotice.innerText,
-          section.i18n('editAccountAddressRecordTypeNotice', email));
+          page.i18n('editAccountAddressRecordTypeNotice', email));
 
       dialog.$.dialog.close();
       // Make sure closing clean-ups are finished.
@@ -532,17 +532,17 @@ suite('AutofillSectionUiTest', function() {
     accountInfo?: chrome.autofillPrivate.AccountInfo|null;
   }
 
-  interface AutofillSectionElementWithToggle {
-    section: SettingsAutofillSectionElement;
+  interface ContactInfoPageElementWithToggle {
+    page: SettingsContactInfoPageElement;
     toggle: SettingsToggleButtonElement|null;
   }
 
-  async function createAutofillSectionForGmailOtpFilling({
+  async function createContactInfoPageForGmailOtpFilling({
     profileEnabled = true,
     gmailOtpFilling = false,
     accountInfo,
-  }: GmailOtpFillingOptions = {}): Promise<AutofillSectionElementWithToggle> {
-    const section = await createAutofillSection(
+  }: GmailOtpFillingOptions = {}): Promise<ContactInfoPageElementWithToggle> {
+    const page = await createContactInfoPage(
         [], {
           profile_enabled: {
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -558,14 +558,14 @@ suite('AutofillSectionUiTest', function() {
         accountInfo);
     await flushTasks();
     const toggle =
-        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#autofillOtpFillingToggle');
-    return {section, toggle};
+    return {page, toggle};
   }
 
   test('OtpFillingToggleShown', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
-    const {toggle} = await createAutofillSectionForGmailOtpFilling();
+    const {toggle} = await createContactInfoPageForGmailOtpFilling();
 
     assertTrue(!!toggle);
   });
@@ -573,14 +573,14 @@ suite('AutofillSectionUiTest', function() {
   test('OtpFillingToggleHiddenWhenSignedOut', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const {toggle} =
-        await createAutofillSectionForGmailOtpFilling({accountInfo: null});
+        await createContactInfoPageForGmailOtpFilling({accountInfo: null});
 
     assertFalse(!!toggle);
   });
 
   test('OtpFillingToggleHiddenWhenFlagDisabled', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: false});
-    const {toggle} = await createAutofillSectionForGmailOtpFilling();
+    const {toggle} = await createContactInfoPageForGmailOtpFilling();
 
     assertFalse(!!toggle);
   });
@@ -588,20 +588,20 @@ suite('AutofillSectionUiTest', function() {
   test('OtpFillingToggleDisabledThenToggledAndEnabled', async function() {
     const metricsTracker = fakeMetricsPrivate();
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
-    const {section, toggle} = await createAutofillSectionForGmailOtpFilling();
+    const {page, toggle} = await createContactInfoPageForGmailOtpFilling();
     assertTrue(!!toggle);
 
     assertTrue(isVisible(toggle));
     assertFalse(toggle.checked);
     assertFalse(
-        section.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
+        page.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
 
     toggle.click();
 
     assertTrue(isVisible(toggle));
     assertTrue(toggle.checked);
     assertTrue(
-        section.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
+        page.getPref<boolean>('autofill.gmail_otp_filling.enabled').value);
     assertEquals(
         1, metricsTracker.count('Autofill.GmailOtpOptIn.SettingsChange', true));
 
@@ -613,7 +613,7 @@ suite('AutofillSectionUiTest', function() {
   });
 });
 
-suite('AutofillSectionAddressTests', function() {
+suite('ContactInfoPageAddressTests', function() {
   let countryDetailManager: TestCountryDetailManagerProxy;
   let metricsTracker: MetricsTracker;
 
@@ -633,9 +633,9 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyAutofillAddressToggleMetric', async function() {
-    const section =
-        await createAutofillSection([], {profile_enabled: {value: true}});
-    const button = section.$.autofillProfileToggle;
+    const page =
+        await createContactInfoPage([], {profile_enabled: {value: true}});
+    const button = page.$.autofillProfileToggle;
     assertTrue(!!button);
 
     // The address profile toggle is on by default.
@@ -662,17 +662,17 @@ suite('AutofillSectionAddressTests', function() {
   });
 
   test('verifyNoAddresses', async function() {
-    const section =
-        await createAutofillSection([], {profile_enabled: {value: true}});
+    const page =
+        await createContactInfoPage([], {profile_enabled: {value: true}});
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     assertTrue(!!addressList);
     // 1 for the template element.
     assertEquals(1, addressList.children.length);
 
-    assertFalse(section.$.noAddressesLabel.hidden);
-    assertFalse(section.$.addAddress.disabled);
-    assertFalse(section.$.autofillProfileToggle.disabled);
+    assertFalse(page.$.noAddressesLabel.hidden);
+    assertFalse(page.$.addAddress.disabled);
+    assertFalse(page.$.autofillProfileToggle.disabled);
   });
 
   test('verifyAddressCount', async function() {
@@ -684,32 +684,32 @@ suite('AutofillSectionAddressTests', function() {
       createAddressEntry(),
     ];
 
-    const section = await createAutofillSection(
+    const page = await createContactInfoPage(
         addresses, {profile_enabled: {value: true}});
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     assertTrue(!!addressList);
     assertEquals(
         addresses.length, addressList.querySelectorAll('.list-item').length);
 
-    assertTrue(section.$.noAddressesLabel.hidden);
-    assertFalse(section.$.autofillProfileToggle.disabled);
-    assertFalse(section.$.addAddress.disabled);
+    assertTrue(page.$.noAddressesLabel.hidden);
+    assertFalse(page.$.autofillProfileToggle.disabled);
+    assertFalse(page.$.addAddress.disabled);
   });
 
   test('verifyAddressDisabled', async function() {
-    const section =
-        await createAutofillSection([], {profile_enabled: {value: false}});
+    const page =
+        await createContactInfoPage([], {profile_enabled: {value: false}});
 
-    assertFalse(section.$.autofillProfileToggle.disabled);
-    assertFalse(section.$.addAddress.hidden);
-    assertTrue(section.$.addAddress.disabled);
+    assertFalse(page.$.autofillProfileToggle.disabled);
+    assertFalse(page.$.addAddress.hidden);
+    assertTrue(page.$.addAddress.disabled);
   });
 
   test('verifyAddressFields', async function() {
     const address = createAddressEntry();
-    const section = await createAutofillSection([address], {});
-    const addressList = section.$.addressList;
+    const page = await createContactInfoPage([address], {});
+    const addressList = page.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
 
@@ -736,12 +736,12 @@ suite('AutofillSectionAddressTests', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     const getIcon = () => addressList.children[0]!.querySelector<HTMLElement>(
         '#address-row-icon');
 
@@ -764,7 +764,7 @@ suite('AutofillSectionAddressTests', function() {
         isVisible(getIcon()),
         'Sync is disabled but the feature is on, the icon should be visible.');
 
-    document.body.removeChild(section);
+    document.body.removeChild(page);
   });
 
   test('verifyNoAddressLocalIndicationForAccountNameEmail', async () => {
@@ -779,25 +779,25 @@ suite('AutofillSectionAddressTests', function() {
     };
     AutofillManagerImpl.setInstance(autofillManager);
 
-    const section = document.createElement('settings-autofill-section');
-    document.body.appendChild(section);
+    const page = document.createElement('settings-contact-info-page');
+    document.body.appendChild(page);
     await autofillManager.whenCalled('getAddressList');
     await flushTasks();
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     const getIcon = () => addressList.children[0]!.querySelector<HTMLElement>(
         '#address-row-icon');
     const iconName = getIcon()!.getAttribute('icon');
     assertFalse(
         !!iconName && iconName.includes('cloud-off'),
         'Local indicator should not be shown on account name email profile');
-    document.body.removeChild(section);
+    document.body.removeChild(page);
   });
 
   test('verifyAddressRowButtonTriggersDropdown', async function() {
     const address = createAddressEntry();
-    const section = await createAutofillSection([address], {});
-    const addressList = section.$.addressList;
+    const page = await createContactInfoPage([address], {});
+    const addressList = page.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
@@ -805,7 +805,7 @@ suite('AutofillSectionAddressTests', function() {
     menuButton.click();
     flush();
 
-    assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
+    assertTrue(!!page.shadowRoot!.querySelector('#menuEditAddress'));
   });
 
   test('verifyAccountHomeAddressEdit', async function() {
@@ -814,9 +814,9 @@ suite('AutofillSectionAddressTests', function() {
     const homeAddress = createAddressEntry();
     homeAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
-    const section = await createAutofillSection([homeAddress], {});
+    const page = await createContactInfoPage([homeAddress], {});
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
@@ -825,7 +825,7 @@ suite('AutofillSectionAddressTests', function() {
     flush();
 
     const editButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -839,9 +839,9 @@ suite('AutofillSectionAddressTests', function() {
     const workAddress = createAddressEntry();
     workAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
-    const section = await createAutofillSection([workAddress], {});
+    const page = await createContactInfoPage([workAddress], {});
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
@@ -850,7 +850,7 @@ suite('AutofillSectionAddressTests', function() {
     flush();
 
     const editButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -864,9 +864,9 @@ suite('AutofillSectionAddressTests', function() {
     const nameEmailAddress = createAddressEntry();
     nameEmailAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
-    const section = await createAutofillSection([nameEmailAddress], {});
+    const page = await createContactInfoPage([nameEmailAddress], {});
 
-    const addressList = section.$.addressList;
+    const addressList = page.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
@@ -875,7 +875,7 @@ suite('AutofillSectionAddressTests', function() {
     flush();
 
     const editButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -1246,32 +1246,32 @@ suite('AutofillSectionAddressTests', function() {
       });
 
   test('verifySyncRecordTypeNoticeForNewAddress', async () => {
-    const section = await createAutofillSection([], {}, {
+    const page = await createContactInfoPage([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email: 'stub-user@example.com',
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: false,
     });
 
-    const dialog = await openAddressDialog(section);
+    const dialog = await openAddressDialog(page);
 
     assertTrue(
         !isVisible(dialog.$.accountRecordTypeNotice),
         'account notice should be invisible for non-account address');
 
-    document.body.removeChild(section);
+    document.body.removeChild(page);
   });
 
   test('verifyAccountRecordTypeNoticeForNewAddress', async () => {
     const email = 'stub-user@example.com';
-    const section = await createAutofillSection([], {}, {
+    const page = await createContactInfoPage([], {}, {
       ...STUB_USER_ACCOUNT_INFO,
       email,
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
     });
 
-    const dialog = await openAddressDialog(section);
+    const dialog = await openAddressDialog(page);
 
     assertTrue(
         isVisible(dialog.$.accountRecordTypeNotice),
@@ -1279,13 +1279,13 @@ suite('AutofillSectionAddressTests', function() {
 
     assertEquals(
         dialog.$.accountRecordTypeNotice.innerText,
-        section.i18n('newAccountAddressRecordTypeNotice', email));
+        page.i18n('newAccountAddressRecordTypeNotice', email));
 
-    document.body.removeChild(section);
+    document.body.removeChild(page);
   });
 });
 
-suite('AutofillSectionAddressLocaleTests', function() {
+suite('ContactInfoPageAddressLocaleTests', function() {
   let countryDetailManager: TestCountryDetailManagerProxy;
 
   setup(function() {

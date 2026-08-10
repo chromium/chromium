@@ -6,7 +6,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsContactInfoPageElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -27,18 +27,18 @@ export function expectEvent(
 }
 
 /**
- * Creates the autofill section for the given list.
+ * Creates the contact info page for the given list.
  *
  * When @accountInfo is provided, it is set on the autofill manager. The value
  * `null` removes the accountInfo on the autofill manager property. The value
  * `undefined` doesn't set or change the accountInfo on the autofill manager
  * property.
  */
-export async function createAutofillSection(
+export async function createContactInfoPage(
     addresses: chrome.autofillPrivate.AddressEntry[],
     prefValues: Record<string, unknown>,
     accountInfo?: chrome.autofillPrivate.AccountInfo|
-    null): Promise<SettingsAutofillSectionElement> {
+    null): Promise<SettingsContactInfoPageElement> {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
@@ -47,8 +47,8 @@ export async function createAutofillSection(
   }
   AutofillManagerImpl.setInstance(autofillManager);
 
-  const section = document.createElement('settings-autofill-section');
-  section.prefs = {
+  const page = document.createElement('settings-contact-info-page');
+  page.prefs = {
     autofill: {
       profile_enabled: {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -61,10 +61,10 @@ export async function createAutofillSection(
       ...prefValues,
     },
   };
-  document.body.appendChild(section);
+  document.body.appendChild(page);
   await autofillManager.whenCalled('getAddressList');
 
-  return section;
+  return page;
 }
 
 /**
@@ -75,28 +75,28 @@ export async function createAddressDialog(
     address: chrome.autofillPrivate.AddressEntry,
     accountInfo?: chrome.autofillPrivate.AccountInfo):
     Promise<SettingsAddressEditDialogElement> {
-  const section = document.createElement('settings-address-edit-dialog');
-  section.address = address;
-  section.accountInfo = accountInfo;
-  document.body.appendChild(section);
-  await eventToPromise('on-update-address-wrapper', section);
-  return section;
+  const dialog = document.createElement('settings-address-edit-dialog');
+  dialog.address = address;
+  dialog.accountInfo = accountInfo;
+  document.body.appendChild(dialog);
+  await eventToPromise('on-update-address-wrapper', dialog);
+  return dialog;
 }
 
 export async function openAddressDialog(
-    section: SettingsAutofillSectionElement):
+    page: SettingsContactInfoPageElement):
     Promise<SettingsAddressEditDialogElement> {
   let dialog =
-      section.shadowRoot!.querySelector('settings-address-edit-dialog');
+      page.shadowRoot!.querySelector('settings-address-edit-dialog');
   assertFalse(!!dialog, 'stale dialog found');
 
-  section.$.addAddress.click();
+  page.$.addAddress.click();
 
   flush();
 
-  dialog = section.shadowRoot!.querySelector('settings-address-edit-dialog');
+  dialog = page.shadowRoot!.querySelector('settings-address-edit-dialog');
 
-  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+  assertTrue(!!dialog, 'the dialog element should be in the page subtree');
 
   await eventToPromise('on-update-address-wrapper', dialog);
   return dialog;
@@ -104,17 +104,17 @@ export async function openAddressDialog(
 
 /**
  * Opens and returns the address edit dialog element for specified
- * by |index| address in the |section| list.
+ * by |index| address in the |page| list.
  */
 export async function initiateEditing(
-    section: SettingsAutofillSectionElement,
+    page: SettingsContactInfoPageElement,
     index: number): Promise<SettingsAddressEditDialogElement> {
   let dialog =
-      section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
+      page.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
           'settings-address-edit-dialog');
   assertFalse(!!dialog, 'stale dialog found');
 
-  const addressElements = section.$.addressList.children;
+  const addressElements = page.$.addressList.children;
 
   assertGT(
       addressElements.length, index,
@@ -132,16 +132,16 @@ export async function initiateEditing(
 
   // Find and click the Edit button.
   const editButton =
-      section.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+      page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
   assertTrue(!!editButton, 'Edit button not found');
   editButton.click();
 
   flush();
 
-  dialog = section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
+  dialog = page.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
       'settings-address-edit-dialog');
 
-  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+  assertTrue(!!dialog, 'the dialog element should be in the page subtree');
 
   await eventToPromise('on-update-address-wrapper', dialog);
   return dialog;
@@ -149,18 +149,18 @@ export async function initiateEditing(
 
 /**
  * Opens and returns the remove confirmation dialog element for specified
- * by |index| address in the |section| list.
+ * by |index| address in the |page| list.
  */
 export function initiateRemoving(
-    section: SettingsAutofillSectionElement,
+    page: SettingsContactInfoPageElement,
     index: number): SettingsAddressRemoveConfirmationDialogElement {
   let dialog =
-      section.shadowRoot!
+      page.shadowRoot!
           .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
               'settings-address-remove-confirmation-dialog');
   assertFalse(!!dialog, 'stale dialog found');
 
-  const addressElements = section.$.addressList.children;
+  const addressElements = page.$.addressList.children;
 
   assertGT(
       addressElements.length, index,
@@ -175,24 +175,24 @@ export function initiateRemoving(
   menu.click();
   flush();
   const removeButton =
-      section.shadowRoot!.querySelector<HTMLElement>('#menuRemoveAddress');
+      page.shadowRoot!.querySelector<HTMLElement>('#menuRemoveAddress');
   assertTrue(!!removeButton, 'Remove button not found');
   removeButton.click();
 
   flush();
 
-  dialog = section.shadowRoot!
+  dialog = page.shadowRoot!
                .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
                    'settings-address-remove-confirmation-dialog');
 
-  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
+  assertTrue(!!dialog, 'the dialog element should be in the page subtree');
 
   return dialog;
 }
 
 /**
  * Creates the remove address dialog. Simulate clicking "Remove" button in
- * autofill section.
+ * contact info page.
  */
 export async function createRemoveAddressDialog(
     autofillManager: TestAutofillManager):
@@ -206,20 +206,20 @@ export async function createRemoveAddressDialog(
   AutofillManagerImpl.setInstance(autofillManager);
 
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const section = document.createElement('settings-autofill-section');
-  document.body.appendChild(section);
+  const page = document.createElement('settings-contact-info-page');
+  document.body.appendChild(page);
   await flushTasks();
 
-  return initiateRemoving(section, 0);
+  return initiateRemoving(page, 0);
 }
 
 /**
  * Performs some UI and manager manipulations to simulate the address removal.
  */
 export async function deleteAddress(
-    section: SettingsAutofillSectionElement, manager: TestAutofillManager,
+    page: SettingsContactInfoPageElement, manager: TestAutofillManager,
     index: number) {
-  const dialog = await initiateRemoving(section, index);
+  const dialog = await initiateRemoving(page, index);
   const closePromise = eventToPromise('close', dialog.$.dialog);
   dialog.$.remove.click();
   await closePromise;

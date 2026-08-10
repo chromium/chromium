@@ -13,8 +13,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
+import '../../settings_shared.css.js';
+import '../../settings_vars.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -24,8 +24,8 @@ import {flush, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/
 
 import {getTemplate} from './address_edit_dialog.html.js';
 import * as uiComponents from './address_edit_dialog_components.js';
-import type {CountryDetailManagerProxy} from './country_detail_manager_proxy.js';
-import {CountryDetailManagerProxyImpl} from './country_detail_manager_proxy.js';
+import type {CountryDetailManagerProxy} from '../country_detail_manager_proxy.js';
+import {CountryDetailManagerProxyImpl} from '../country_detail_manager_proxy.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {

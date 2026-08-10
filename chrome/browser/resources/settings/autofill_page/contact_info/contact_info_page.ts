@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-autofill-section' is the section containing saved
+ * @fileoverview 'settings-contact-info-page' is the page containing saved
  * addresses for use in autofill and payments APIs.
  */
 
@@ -16,15 +16,15 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import '../controls/settings_toggle_button.js';
-import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
-import '../simple_confirmation_dialog.js';
-import '../site_favicon.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import '../../simple_confirmation_dialog.js';
+import '../../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
-import './passwords_shared.css.js';
-import './autofill_shared.css.js';
+import '../passwords_shared.css.js';
+import '../autofill_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -37,14 +37,14 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
 
-import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
-import {AutofillManagerImpl} from './autofill_manager_proxy.js';
-import {getTemplate} from './autofill_section.html.js';
+import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_manager_proxy.js';
+import {AutofillManagerImpl} from '../autofill_manager_proxy.js';
+import {getTemplate} from './contact_info_page.html.js';
 
 
 /**
@@ -68,7 +68,7 @@ declare global {
   }
 }
 
-export interface SettingsAutofillSectionElement {
+export interface SettingsContactInfoPageElement {
   $: {
     addAddress: CrButtonElement,
     addressList: HTMLElement,
@@ -81,13 +81,13 @@ export interface SettingsAutofillSectionElement {
   };
 }
 
-const SettingsAutofillSectionElementBase =
+const SettingsContactInfoPageElementBase =
     PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
-export class SettingsAutofillSectionElement extends
-    SettingsAutofillSectionElementBase {
+export class SettingsContactInfoPageElement extends
+    SettingsContactInfoPageElementBase {
   static get is() {
-    return 'settings-autofill-section';
+    return 'settings-contact-info-page';
   }
 
   static get template() {
@@ -586,9 +586,9 @@ export class SettingsAutofillSectionElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-autofill-section': SettingsAutofillSectionElement;
+    'settings-contact-info-page': SettingsContactInfoPageElement;
   }
 }
 
 customElements.define(
-    SettingsAutofillSectionElement.is, SettingsAutofillSectionElement);
+    SettingsContactInfoPageElement.is, SettingsContactInfoPageElement);

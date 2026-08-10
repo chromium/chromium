@@ -117,14 +117,14 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AppearancePage) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAddressValidation) {
-  RunTest("settings/autofill_section_address_validation_test.js",
+IN_PROC_BROWSER_TEST_F(SettingsTest, ContactInfoAddressValidation) {
+  RunTest("settings/contact_info_page_address_validation_test.js",
           "mocha.run()");
 }
 
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
-  RunTest("settings/autofill_section_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, ContactInfoPage) {
+  RunTest("settings/contact_info_page_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiEntriesList) {
