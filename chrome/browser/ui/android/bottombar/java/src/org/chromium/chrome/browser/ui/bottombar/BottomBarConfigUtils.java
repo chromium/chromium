@@ -27,6 +27,11 @@ public class BottomBarConfigUtils {
     }
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java:isToolbarUiRefactorEnabled)
 
+    /** Whether AI Mode is enabled in the bottom bar. */
+    public static boolean isAimEnabled() {
+        return ChromeFeatureList.sAndroidBottomBarAim.isEnabled();
+    }
+
     /** Whether to include the home button in the bottom bar if the flag is enabled. */
     public static boolean shouldIncludeHomeButtonIfEnabled() {
         return !ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
