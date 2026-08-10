@@ -523,6 +523,9 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature =
           WebFeature::kV8ModuleNamespaceMissingDefaultWithStarExport;
       break;
+    case v8::Isolate::kWasmGCAllocation:
+      blink_feature = WebFeature::kV8WasmGCAllocation;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
