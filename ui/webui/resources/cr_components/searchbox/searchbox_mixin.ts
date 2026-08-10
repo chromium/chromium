@@ -9,13 +9,19 @@ import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, KeywordType, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionLineState, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
 
 /* @fileoverview Helper functions for implementing a custom searchbox. */
+
+export interface InputKeywordModel {
+  type: KeywordType;
+  keyword: string;
+  displayText: string;
+}
 
 export enum ControlKeyState {
   UP,
@@ -57,6 +63,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           type: Number,
         },
 
+        inputKeywordModel: {
+          type: Object,
+        },
+
         /** The aria description to include on the input element. */
         searchboxAriaDescription: {
           type: String,
@@ -89,6 +99,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     accessor result: AutocompleteResult|null = null;
     accessor selectedMatch: AutocompleteMatch|null = null;
     accessor selectedMatchIndex: number = -1;
+    accessor inputKeywordModel: InputKeywordModel|null = null;
     accessor inputAriaLive: string = '';
     accessor searchboxIcon: string = '';
     accessor showThumbnail: boolean = false;
@@ -128,6 +139,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (changedPrivateProperties.has('result') ||
           changedPrivateProperties.has('selectedMatchIndex')) {
         this.selectedMatch = this.computeSelectedMatch_();
+      }
+      if (changedPrivateProperties.has('result') ||
+          changedPrivateProperties.has('selectedMatchIndex') ||
+          changedPrivateProperties.has('selectedMatch')) {
+        this.inputKeywordModel = this.computeInputKeywordModelFromMatch_();
       }
     }
 
@@ -579,6 +595,17 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return this.result.matches[this.selectedMatchIndex] || null;
     }
 
+    private computeInputKeywordModelFromMatch_(): InputKeywordModel|null {
+      if (!this.selectedMatch?.keywordModel) {
+        return null;
+      }
+      return {
+        type: this.selectedMatch.keywordModel.type,
+        keyword: this.selectedMatch.keywordModel.keyword,
+        displayText: this.selectedMatch.keywordModel.chipHint,
+      };
+    }
+
     private computeInputAriaLive_(): string {
       return this.selectedMatch ? 'off' : 'polite';
     }
@@ -599,6 +626,7 @@ export interface SearchboxMixinInterface {
   searchboxAriaDescription: string;
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
+  inputKeywordModel: InputKeywordModel|null;
   showThumbnail: boolean;
 
   clearAutocompleteMatches(): void;

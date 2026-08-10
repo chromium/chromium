@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {SearchboxInputElement} from './searchbox_input.js';
 
@@ -15,6 +16,8 @@ export function getHtml(this: SearchboxInputElement) {
         default-icon="${this.searchboxIcon}" in-searchbox part="icon">
     </cr-searchbox-icon>
     <slot name="thumbnail"></slot>
+    ${this.inputKeywordModel?.type === KeywordType.kInKeyword ?
+      html`<span>${this.inputKeywordModel.displayText}</span>` : ''}
     ${this.multiLineEnabled ? html`
       <textarea id="input" autocomplete="off"
           part="searchbox-input"

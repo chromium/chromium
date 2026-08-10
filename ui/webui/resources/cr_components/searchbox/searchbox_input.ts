@@ -16,6 +16,7 @@ import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_input.css.js';
 import {getHtml} from './searchbox_input.html.js';
+import type {InputKeywordModel} from './searchbox_mixin.js';
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -69,6 +70,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       searchboxAriaDescription: {type: String},
       searchboxIcon: {type: String},
       selectedMatch: {type: Object},
+      inputKeywordModel: {type: Object},
       inputHasMatches: {type: Boolean},
       allowFilePaste: {type: Boolean},
     };
@@ -81,6 +83,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   accessor searchboxAriaDescription: string = '';
   accessor searchboxIcon: string = '';
   accessor selectedMatch: AutocompleteMatch|null = null;
+  accessor inputKeywordModel: InputKeywordModel|null = null;
   accessor inputHasMatches: boolean = false;
   accessor allowFilePaste: boolean = false;
 
