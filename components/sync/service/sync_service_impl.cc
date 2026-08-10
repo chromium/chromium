@@ -382,7 +382,9 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   const bool is_sync_feature_requested_for_metrics =
       IsLocalSyncEnabled() ||
 #if BUILDFLAG(IS_CHROMEOS)
-      !user_settings_->IsSyncFeatureDisabledViaDashboard();
+      (!user_settings_->IsSyncFeatureDisabledViaDashboard() &&
+       (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
+        HasSyncConsent()));
 #else
       HasSyncConsent();
 #endif  // BUILDFLAG(IS_CHROMEOS)
