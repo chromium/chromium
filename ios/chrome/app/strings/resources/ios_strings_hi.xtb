@@ -478,6 +478,7 @@
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2496626742194544812">पहले टैब पर जाएं</translation>
 <translation id="2499505845365628575">आपको अपना पूरा ब्राउज़िंग इतिहास, <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> से मिल सकता है.</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />डेटा और निजता से जुड़ी प्राथमिकताएं<ph name="END_LINK" /> मैनेज करने के लिए, Google Wallet पर जाएं.</translation>
 <translation id="2511117522375201202">आपके <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं. इनसे आपकी सुरक्षा को खतरा हो सकता है.</translation>
 <translation id="2512709994717613803">लेवल <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">आपको अपने टैब ग्रुप यहां दिखेंगे</translation>
@@ -693,6 +694,7 @@
 <translation id="3259451381796379533">इस खाते से Gemini का इस्तेमाल नहीं किया जा सकता. किसी अन्य Google खाते से साइन इन करें.</translation>
 <translation id="3265736395246760288">सिंक किए गए किसी भी डिवाइस में तेज़ी से साइन इन करें.</translation>
 <translation id="3272527697863656322">अभी नहीं</translation>
+<translation id="3272955648592358996">आपके डेटा का इस्तेमाल, Google के एआई को और बेहतर बनाने के लिए किया जाता है</translation>
 <translation id="3273510436356991673">होम स्क्रीन को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="3277021493514034324">साइट का पता कॉपी किया गया</translation>
 <translation id="3280562213547448728">वॉइस सर्च</translation>
@@ -861,6 +863,7 @@
 <translation id="3888863481921783344">इसका इस्तेमाल, आपको इवेंट में बुलाए गए संभावित लोगों की जानकारी को दिखाने के लिए किया जाएगा.</translation>
 <translation id="3891414008432200754">कीमत</translation>
 <translation id="3892144330757387737">आपको अपनी गतिविधि का इतिहास यहां मिलेगा</translation>
+<translation id="3892695492576181257">यह सेटिंग चालू होने पर, Gemini Apps में की गई गतिविधि का डेटा 18 महीनों तक सेव रहेगा. हालांकि, इस अवधि को बदलकर 3 या 36 महीने किया जा सकता है. Google आपकी गतिविधि के डेटा का इस्तेमाल, अपनी सेवाओं को तैयार करने और उन्हें बेहतर बनाने के लिए करता है. इनमें Gemini मॉडल भी शामिल हैं. इस डेटा का इस्तेमाल, Google, इसके उपयोगकर्ताओं, और अन्य लोगों को सुरक्षित रखने के लिए भी किया जाता है. इसके लिए, समीक्षा करने वाले लोगों की मदद ली जाती है. सेवा देने वाले लोग या कंपनियां जिस डेटा की समीक्षा करती हैं उसे आपके खाते से अलग कर दिया जाता है और तीन सालों तक सेव रखा जाता है.</translation>
 <translation id="3893858854379998374">अपने खाते में बुकमार्क सेव करने के लिए, इस्तेमाल न किए जा रहे बुकमार्क मिटाएं</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
 <translation id="3904270275864974753">कैरसेल में बदलाव करें</translation>
@@ -1497,6 +1500,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5971459446352190251">क्यूआर कोड की मदद से सर्च करने की सुविधा</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 बुकमार्क मिटाया गया}one{{count} बुकमार्क मिटाया गया}other{{count} बुकमार्क मिटाए गए}}</translation>
 <translation id="5972844218283131174">सभी टैब से चुने हुए का निशान हटाएं</translation>
+<translation id="597482816780655631">Gemini एक एआई है और इससे गलतियां हो सकती हैं. जैसे, यह लोगों के बारे में गलत जानकारी दे सकता है. ऐसा हो सकता है कि कोई कॉन्टेंट हर किसी के लिए सही न हो. Google के एआई को और बेहतर बनाने के लिए, चैट की समीक्षा की जाती है और उनका इस्तेमाल किया जाता है. <ph name="BEGIN_LINK" />अपने लिए मौजूद विकल्पों के बारे में जानें<ph name="END_LINK" />. हमारी <ph name="BEGIN_LINK" />शर्तें<ph name="END_LINK" /> और <ph name="BEGIN_LINK" />निजता नोटिस<ph name="END_LINK" /> में बताए गए नियम लागू होते हैं.</translation>
 <translation id="5976160379964388480">अन्य</translation>
 <translation id="5977976211062815271">इस डिवाइस पर</translation>
 <translation id="5986043348928676121">आगे बढ़ें</translation>
@@ -1865,6 +1869,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7102005569666697658">डाउनलोड हो रही है… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">मेन्यू → सेटिंग → पेमेंट का तरीका</translation>
 <translation id="7108338896283013870">छुपाएं</translation>
+<translation id="7119533351103192286">Gemini का इस्तेमाल करें</translation>
 <translation id="7127922377013221748">टूलबार छिपाएं</translation>
 <translation id="7128693485119315539">आपके संगठन को, मैनेज किए जा रहे आपके खाते का ब्राउज़िंग डेटा देखने और मैनेज करने की ज़रूरत पड़ सकती है. जैसे, आपका ब्राउज़िंग इतिहास और पासवर्ड.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2391,6 +2396,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8796634520835503150">रीडिंग मोड उपलब्ध है</translation>
 <translation id="8803526663383843427">यह सुविधा चालू होने पर</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> की सदस्यता</translation>
 <translation id="8813277370772331957">मुझे बाद में याद दिलाएं</translation>
 <translation id="8814308045751067027">Live बातचीत की सुविधा इस्तेमाल करने के लिए, सेटिंग में जाकर Chrome को माइक्रोफ़ोन का ऐक्सेस दें</translation>
 <translation id="8814719628147284151">जारी रखें</translation>
@@ -2402,6 +2408,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="882557203579758546">पेज में ढूंढें…</translation>
 <translation id="8829809207373502270">यह पासकी अब काम नहीं करती है. इसे <ph name="WEBSITE" /> से मिटा दिया गया है और जल्द ही इसे यहां से भी मिटा दिया जाएगा. <ph name="BEGIN_LINK" />पासकी के बारे में जानकारी<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">जिन बटन का इस्तेमाल नहीं किया जा रहा है उन्हें बंद करें</translation>
+<translation id="8831871601813227635">हमारी <ph name="BEGIN_LINK" />शर्तें<ph name="END_LINK" />, <ph name="BEGIN_LINK" />कोरिया के लिए जगह की जानकारी के बारे में सेवा की शर्तें<ph name="END_LINK" />, और <ph name="BEGIN_LINK" />निजता नोटिस<ph name="END_LINK" /> में बताए गए नियम लागू होते हैं. Google के एआई को और बेहतर बनाने के लिए, चैट की समीक्षा की जाती है और उनका इस्तेमाल किया जाता है. Gemini एक एआई है और इससे गलतियां हो सकती हैं. जैसे, यह लोगों के बारे में गलत जानकारी दे सकता है. ऐसा हो सकता है कि कोई कॉन्टेंट हर किसी के लिए सही न हो. <ph name="BEGIN_LINK" />अपनी गतिविधि का डेटा मैनेज<ph name="END_LINK" /> किया जा सकता है. इसमें आपकी जगह की जानकारी भी शामिल है. <ph name="BEGIN_LINK" />आपके लिए मौजूद विकल्पों के बारे में जानें<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">पब्लिशर के मुताबिक क्रम से लगाएं</translation>
 <translation id="884351711508006491">आपकी जानकारी आपके डिवाइस में सेव हो गई है.</translation>
 <translation id="8844136307393039959">आपके ट्रैक किए गए प्रॉडक्ट की कीमत में गिरावट</translation>

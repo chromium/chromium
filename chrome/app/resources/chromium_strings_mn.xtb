@@ -679,6 +679,7 @@
 <translation id="8286943863733751221">Аюултай сайт болон татаж авсан файлын талаар <ph name="BEGIN_LINK" />Chromium танд сануулна<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION" />-г хассан.</translation>
 <translation id="8296236834352487533">Chromium iOS апп дээр харж буй зүйлээ камераараа худалдан авч, орчуулж, тодорхойлоорой</translation>
+<translation id="8310603974518734211"><ph name="USER_NAME" />-р Chromium-д нэвтрэх QR код</translation>
 <translation id="8313851650939857356">Эхлэхэд алдаа гарлаа: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Танай байгууллага Chromium-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед хаадаг.</translation>
 <translation id="8321888067342493336">Зургаар хадгалах</translation>

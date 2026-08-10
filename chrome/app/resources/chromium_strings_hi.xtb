@@ -682,6 +682,7 @@
 <translation id="8286943863733751221">असुरक्षित साइटों और डाउनलोड की गई फ़ाइलों के बारे में, <ph name="BEGIN_LINK" />Chromium आपको चेतावनी देता है<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">आपने हाल ही में इस वेबसाइट का इस्तेमाल नहीं किया है. Chromium ने <ph name="PERMISSION" /> की अनुमति हटा दी है.</translation>
 <translation id="8296236834352487533">iOS पर Chromium में, कैमरे से दिख रही चीज़ों को पहचानें, खरीदें, और अपने सामने दिख रहे कॉन्टेंट का अनुवाद भी पाएं</translation>
+<translation id="8310603974518734211">Chromium में <ph name="USER_NAME" /> के तौर पर साइन इन करने के लिए क्यूआर कोड</translation>
 <translation id="8313851650939857356">स्टार्टअप में गड़बड़ी हुई: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> तक Chromium का इस्तेमाल न करने पर, आपका संगठन इसे बंद कर देता है.</translation>
 <translation id="8321888067342493336">इमेज के तौर पर सेव करें</translation>
