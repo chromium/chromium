@@ -135,23 +135,32 @@
   <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" desc="Message shown when Gemini is disabled by enterprise policy.">
     This feature is disabled by your organization
   </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_INLINE_CUE_MENU" desc="Label for the inline cue menu content setting.">
-    Select text to ask Gemini
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_INLINE_CUE_MENU_MID_SENTENCE" desc="Label for the inline cue menu content setting when referenced mid-sentence.">
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_MID_SENTENCE" desc="Label for the inline cue menu content setting when referenced mid-sentence.">
     select text to ask Gemini
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_ALLOWED" desc="Label for the enabled option of the inline cue menu content setting.">
-    Show the floating menu when text is selected
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU" desc="Label for the inline cue menu setting and toggle.">
+    Select text to ask Gemini
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_BLOCKED" desc="Label for the disabled option of the inline cue menu content setting.">
-    Don't show the floating menu when text is selected
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_DESCRIPTION" desc="Description for the inline cue menu setting page.">
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_DESCRIPTION" desc="Description for the inline cue menu setting page.">
     Get a definition or learn more about a topic
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INLINE_CUE_MENU_BLOCKED_EXCEPTIONS" desc="Header for the list of sites blocked from showing the inline cue menu.">
-    Sites where the floating menu is blocked
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_TOGGLE_SUBLABEL" desc="Sublabel for the main toggle on the inline cue menu settings page.">
+    Get a definition or learn more about a topic by selecting text on a page
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_PREVIEW" desc="Header for the preview section of the inline cue menu settings page.">
+    Preview
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_PREVIEW_TEXT" desc="Text displayed in the preview box with highlighted words.">
+    Chrome is made possible by the Chromium open source project and other <ph name="BEGIN_HIGHLIGHT">&lt;span class="preview-highlight-box"&gt;&lt;span class="preview-highlight-text"&gt;</ph>open source<ph name="END_HIGHLIGHT">&lt;/span&gt;&lt;/span&gt;</ph> software.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_PREVIEW_PILL" desc="Text inside the floating pill in the preview box.">
+    Explain
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_BLOCKED_EXCEPTIONS" desc="Header for the list of sites blocked from showing the inline cue menu.">
+    Not allowed to show text actions
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INLINE_CUE_MENU_ADD_SITE" desc="Label for the Add Site button on the inline cue menu exceptions list.">
+    Add site
   </message>
   <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" desc="Heading on settings page for basic preferences." formatter_data="android_java">
     Preferences

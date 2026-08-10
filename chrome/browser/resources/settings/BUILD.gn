@@ -14,6 +14,7 @@ build_webui("build") {
   static_files = [
     "images/cvc.svg",
     "images/cvc_amex.svg",
+    "images/gemini_spark.svg",
     "images/googleg_standard_clr_32px.svg",
     "images/iban.svg",
     "images/iban_old.svg",

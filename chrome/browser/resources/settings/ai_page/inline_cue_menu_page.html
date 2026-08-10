@@ -1,21 +1,241 @@
-<style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared">
+  .preview-container {
+    background-color: var(--cr-card-background-color);
+    border-radius: 12px;
+    margin-bottom: 0;
+    padding: 12px 16px 4px 16px;
+    position: relative;
+  }
+
+  .preview-label {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    padding: 0px;
+  }
+
+  .preview-box {
+    background-color: var(--google-blue-50);
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color);
+    max-width: 640px;
+    min-height: 99px;
+    overflow: hidden;
+    padding: 13px 16px;
+    position: relative;
+    user-select: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .preview-box {
+      background-color: var(--google-grey-800);
+    }
+  }
+
+  .preview-text-block {
+    background-clip: text;
+    background-image: linear-gradient(
+        0deg, var(--google-grey-800) 0%, var(--google-grey-300) 86%);
+    color: transparent;
+    display: block;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 35px;
+    margin-inline-start: -27px;
+    max-width: 580px;
+    min-height: 69px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .preview-text-block {
+      background-image: linear-gradient(
+          0deg, var(--google-grey-200) 0%, var(--google-grey-500) 86%);
+    }
+  }
+
+  .preview-highlight-box {
+    anchor-name: --highlight-box;
+    background-color: var(--google-blue-200);
+    border-radius: 2px;
+    display: inline-block;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .preview-highlight-box {
+      background-color: var(--cr-fallback-color-secondary-container);
+    }
+  }
+
+  .preview-highlight-text {
+    background-clip: text;
+    background-image: linear-gradient(
+        0deg, var(--google-grey-800) 0%, var(--google-grey-300) 86%);
+    background-position: 0 bottom;
+    background-size: 100% 69px;
+    color: transparent;
+    display: inline-block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .preview-highlight-text {
+      background-image: linear-gradient(
+          0deg, var(--google-grey-200) 0%, var(--google-grey-500) 86%);
+    }
+  }
+
+  .preview-pill {
+    align-items: center;
+    background: var(--cr-card-background-color);
+    border-radius: 12px;
+    box-shadow:
+        0 1px 3px 0 rgba(var(--google-grey-900-rgb), 0.15),
+        0 2px 7px 0 rgba(var(--google-blue-600-rgb), 0.25);
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color);
+    display: inline-flex;
+    gap: 7px;
+    height: 36px;
+    left: calc(anchor(right) - 4px);
+    padding-inline-end: 10px;
+    padding-inline-start: 10px;
+    position: absolute;
+    position-anchor: --highlight-box;
+    top: calc(anchor(top) - 22px);
+    white-space: nowrap;
+    z-index: 4;
+  }
+
+  :host-context([dir=rtl]) .preview-pill {
+    left: calc(anchor(left) - 16px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .preview-pill {
+      box-shadow:
+          0 1px 3px 0 rgba(var(--google-blue-300-rgb), 0.3),
+          0 2px 7px 0 rgba(var(--google-grey-900-rgb), 0.5);
+    }
+  }
+
+  .preview-spark-icon {
+    background-image:
+        url("chrome://settings/images/gemini_spark.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    flex-shrink: 0;
+    height: 17px;
+    width: 17px;
+  }
+
+  .preview-pill-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  .preview-cursor {
+    --iron-icon-height: 28px;
+    --iron-icon-width: 16px;
+    filter: drop-shadow(0 1px 4px rgba(var(--google-grey-900-rgb), 0.4));
+    height: 28px;
+    left: calc(anchor(right) - 4px);
+    pointer-events: none;
+    position: absolute;
+    position-anchor: --highlight-box;
+    top: calc(anchor(top) + 13px);
+    width: 16px;
+    z-index: 5;
+  }
+
+  :host-context([dir=rtl]) .preview-cursor {
+    left: calc(anchor(left) - 16px);
+  }
+
+  #mainToggle {
+    font-weight: 500;
+    padding-top: 8px;
+  }
+
+  .exceptions-header-row {
+    border-top: none;
+    margin-top: 16px;
+  }
+
+  .exceptions-header {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .list-frame {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .cr-padded-text {
+    flex: 1;
+  }
+
+  site-favicon {
+    margin-inline-end: 16px;
+  }
+</style>
 <settings-subpage page-title="$i18n{siteSettingsInlineCueMenu}"
-    search-label="$i18n{siteSettingsAllSitesFilter}"
-    search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
-  <div class="content-settings-header secondary">
-    $i18n{siteSettingsInlineCueMenuDescription}
+    route-path$="[[routePath]]">
+  <div class="preview-container">
+    <h2 class="preview-label">$i18n{siteSettingsInlineCueMenuPreview}</h2>
+    <div class="preview-box">
+      <div class="preview-text-block"
+          inner-h-t-m-l="[[getPreviewText_()]]">
+      </div>
+    </div>
+    <div class="preview-pill">
+      <div class="preview-spark-icon"></div>
+      <span class="preview-pill-text">
+        $i18n{siteSettingsInlineCueMenuPreviewPill}
+      </span>
+    </div>
+    <cr-icon class="preview-cursor" icon="settings20:text-select-cursor"
+        aria-hidden="true">
+    </cr-icon>
   </div>
-  <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.INLINE_CUE_MENU]]"
-      allow-option-label="$i18n{siteSettingsInlineCueMenuAllowed}"
-      allow-option-icon="settings20:text-analysis"
-      block-option-label="$i18n{siteSettingsInlineCueMenuBlocked}"
-      block-option-icon="[[getOpenInNewOffIcon_()]]">
-  </settings-category-default-radio-group>
-  <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.INLINE_CUE_MENU]]"
-      block-header="$i18n{siteSettingsInlineCueMenuBlockedExceptions}"
-      search-filter="[[searchTerm]]">
-  </category-setting-exceptions>
+  <settings-toggle-button id="mainToggle" pref="{{pref_}}" no-set-pref
+      label="$i18n{siteSettingsInlineCueMenuToggleLabel}"
+      sub-label="$i18n{siteSettingsInlineCueMenuToggleSublabel}"
+      on-settings-boolean-control-change="onMainToggleChange_">
+  </settings-toggle-button>
+
+  <div class="cr-row exceptions-header-row">
+    <h2 class="flex cr-padded-text exceptions-header">
+      $i18n{siteSettingsInlineCueMenuBlockedExceptions}
+    </h2>
+    <cr-button id="addSite" on-click="onAddSiteClick_">
+      $i18n{siteSettingsInlineCueMenuAddSite}
+    </cr-button>
+  </div>
+  <div class="list-frame" hidden$="[[hasSites_(sites_.*)]]">
+    <div class="list-item secondary">$i18n{noSitesAdded}</div>
+  </div>
+  <div class="list-frame" hidden$="[[!hasSites_(sites_.*)]]" role="list">
+    <template is="dom-repeat" items="[[sites_]]">
+      <div class="list-item" role="listitem">
+        <site-favicon url="[[item.origin]]"></site-favicon>
+        <div class="flex cr-padded-text">[[item.displayName]]</div>
+        <cr-icon-button iron-icon="cr:delete" aria-label="$i18n{delete}"
+            on-click="onDeleteSiteClick_">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
+  <template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
+    <add-site-dialog category="[[contentSettingsTypesEnum_.INLINE_CUE_MENU]]"
+        content-setting="[[contentSettingEnum_.BLOCK]]"
+        has-incognito="[[hasIncognito_]]"
+        on-close="onAddSiteDialogClosed_">
+    </add-site-dialog>
+  </template>
 </settings-subpage>
