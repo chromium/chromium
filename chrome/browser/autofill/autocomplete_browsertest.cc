@@ -173,15 +173,15 @@ class AutocompleteTest : public InProcessBrowserTest {
   }
 
   // The retention policy clean-up is run once per major version during
-  // initialization. This function triggers it by reinitializing the
-  // `autocomplete_history_manager()` and waiting for the cleanup to complete.
+  // initialization. This function triggers it by instantiating an
+  // `AutocompleteHistoryManager` and waiting for the cleanup to complete.
   void TriggerRetentionPolicyCleanup() {
     pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                                version_info::GetMajorVersionNumberAsInt() - 1);
-    autocomplete_history_manager()->Init(
+    AutocompleteHistoryManager manager(
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             current_profile(), ServiceAccessType::EXPLICIT_ACCESS),
-        pref_service(), current_profile()->IsOffTheRecord());
+        pref_service());
     WaitForPendingDBTasks(*GetWebDataService());
   }
 

@@ -49,7 +49,7 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
       ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewAutocompleteHistoryManagerFactory::
-          GetForBrowserState(browser_state),
+          GetForBrowserState(browser_state->GetRecordingBrowserState()),
       web_state, bridge,
       ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),

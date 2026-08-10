@@ -982,8 +982,10 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
-    client().GetSingleFieldFillRouter().OnWillSubmitForm(
-        form, nullptr, client().IsAutocompleteEnabled());
+    if (!client().IsOffTheRecord()) {
+      client().GetSingleFieldFillRouter().OnWillSubmitForm(
+          form, nullptr, client().IsAutocompleteEnabled());
+    }
     return;
   }
 

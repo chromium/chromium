@@ -33,7 +33,9 @@ namespace autofill {
 // through WebDataServiceBase.
 class AutocompleteHistoryManager : public KeyedService {
  public:
-  AutocompleteHistoryManager();
+  AutocompleteHistoryManager(
+      scoped_refptr<AutofillWebDataService> profile_database,
+      PrefService* pref_service);
 
   AutocompleteHistoryManager(const AutocompleteHistoryManager&) = delete;
   AutocompleteHistoryManager& operator=(const AutocompleteHistoryManager&) =
@@ -61,8 +63,8 @@ class AutocompleteHistoryManager : public KeyedService {
 
   // Saves the `fields` of `form` that are eligible to be saved as new or
   // updated Autocomplete entries, which can then be served in the future as
-  // suggestions. This update is dependent on whether we are running in
-  // incognito and if Autocomplete is enabled or not. `fields` may be empty.
+  // suggestions. This update is dependent on if Autocomplete is enabled or not.
+  // `fields` may be empty.
   virtual void OnWillSubmitFormWithFields(
       const std::vector<FormFieldData>& fields,
       const FormStructure* form,
@@ -77,14 +79,6 @@ class AutocompleteHistoryManager : public KeyedService {
       SuggestionType type);
 
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
-
-  // Initializes the instance with the given parameters.
-  // |profile_database_| is a profile-scope DB used to access autocomplete data.
-  // |is_off_the_record| indicates wheter the user is currently operating in an
-  // off-the-record context (i.e. incognito).
-  void Init(scoped_refptr<AutofillWebDataService> profile_database,
-            PrefService* pref_service,
-            bool is_off_the_record);
 
   // Returns true if the field has a meaningful `name`.
   // An input field name 'field_2' bears no semantic meaning and there is a
@@ -108,7 +102,7 @@ class AutocompleteHistoryManager : public KeyedService {
   friend class AutocompleteHistoryManagerTest;
 
   // Must outlive this object.
-  scoped_refptr<AutofillWebDataService> profile_database_;
+  const scoped_refptr<AutofillWebDataService> profile_database_;
 
   // Stores the currently used `AutocompleteSuggestionGenerator`.
   // If a new `GetSingleFieldSuggestions` request is received, the previous
@@ -116,11 +110,7 @@ class AutocompleteHistoryManager : public KeyedService {
   std::unique_ptr<AutocompleteSuggestionGenerator> suggestion_generator_;
 
   // The PrefService that this instance uses. Must outlive this instance.
-  raw_ptr<PrefService> pref_service_;
-
-
-  // Whether the service is associated with an off-the-record browser context.
-  bool is_off_the_record_ = false;
+  const raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
 };

@@ -101,8 +101,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
     task_environment_.AdvanceClock(
         base::Time::FromSecondsSinceUnixEpoch(1546889367) - base::Time::Now());
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
-    autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
-    autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
+    autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>(
+        web_data_service_, prefs_.get());
     ON_CALL(autofill_client_, GetAutocompleteHistoryManager())
         .WillByDefault(Return(autocomplete_manager_.get()));
     test_field_ =
@@ -337,30 +337,6 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
       /*is_autocomplete_enabled=*/true);
 }
 
-// Shouldn't save entries when in Incognito mode.
-TEST_F(AutocompleteHistoryManagerTest, Incognito) {
-  autocomplete_manager_->Init(web_data_service_, prefs_.get(),
-                              /*is_off_the_record_=*/true);
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("http://myform.com/form.html"));
-  form.set_action(GURL("http://myform.com/submit.html"));
-
-  // Search field.
-  FormFieldData search_field;
-  search_field.set_label(u"Search");
-  search_field.set_name(u"search");
-  search_field.set_value(u"my favorite query");
-  search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
-  search_field.set_form_control_type(FormControlType::kInputSearch);
-  form.set_fields({search_field});
-
-  EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
-}
-
 #if !BUILDFLAG(IS_IOS)
 // Tests that fields that are no longer focusable but still have user typed
 // input are sent to the WebDatabase to be saved. Will not work for iOS
@@ -412,53 +388,41 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
       /*is_autocomplete_enabled=*/true);
 }
 
-// Tests that the Init function will trigger the Autocomplete Retention Policy
-// cleanup if the flag is enabled, we're not in OTR and it hadn't run in the
-// current major version.
-TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
+// Tests that creating an AutocompleteHistoryManager will trigger the
+// Autocomplete Retention Policy cleanup if it hadn't run in the current major
+// version.
+TEST_F(AutocompleteHistoryManagerTest, RetentionPolicy_TriggersCleanup) {
   // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      version_info::GetMajorVersionNumberAsInt() - 1);
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(1);
-  autocomplete_manager_->Init(web_data_service_, prefs_.get(),
-                              /*is_off_the_record=*/false);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
 }
 
-// Tests that the Init function will not trigger the Autocomplete Retention
-// Policy when running in OTR.
-TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
+// Tests that creating an AutocompleteHistoryManager will not crash even if we
+// don't have a DB.
+TEST_F(AutocompleteHistoryManagerTest, RetentionPolicy_NullDB_NoCrash) {
   // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      version_info::GetMajorVersionNumberAsInt() - 1);
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
-  autocomplete_manager_->Init(web_data_service_, prefs_.get(),
-                              /*is_off_the_record=*/true);
+  AutocompleteHistoryManager manager(/*profile_database=*/nullptr,
+                                     prefs_.get());
 }
 
-// Tests that the Init function will not crash even if we don't have a DB.
-TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
-  // Set the retention policy cleanup to a past major version.
-  prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                     version_info::GetMajorVersionNumberAsInt() - 1);
-
-  EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
-  autocomplete_manager_->Init(nullptr, prefs_.get(),
-                              /*is_off_the_record=*/false);
-}
-
-// Tests that the Init function will not trigger the Autocomplete Retention
-// Policy when running in a major version that was already cleaned.
+// Tests that creating an AutocompleteHistoryManager will not trigger the
+// Autocomplete Retention Policy when running in a major version that was
+// already cleaned.
 TEST_F(AutocompleteHistoryManagerTest,
-       Init_SameMajorVersion_Not_TriggersCleanup) {
+       RetentionPolicy_SameMajorVersion_Not_TriggersCleanup) {
   // Set the retention policy cleanup to the current major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      version_info::GetMajorVersionNumberAsInt());
 
   EXPECT_CALL(*web_data_service_, RemoveExpiredAutocompleteEntries).Times(0);
-  autocomplete_manager_->Init(web_data_service_, prefs_.get(),
-                              /*is_off_the_record=*/false);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
 }
 
 // Make sure suggestions are not returned if the field should not autocomplete.

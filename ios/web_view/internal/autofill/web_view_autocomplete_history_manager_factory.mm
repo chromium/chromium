@@ -49,22 +49,11 @@ WebViewAutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
-  std::unique_ptr<autofill::AutocompleteHistoryManager> service(
-      new autofill::AutocompleteHistoryManager());
   auto profile_db =
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  service->Init(profile_db, browser_state->GetPrefs(),
-                browser_state->IsOffTheRecord());
-  return service;
-}
-
-web::BrowserState*
-WebViewAutocompleteHistoryManagerFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  WebViewBrowserState* browser_state =
-      WebViewBrowserState::FromBrowserState(context);
-  return browser_state;
+  return std::make_unique<autofill::AutocompleteHistoryManager>(
+      profile_db, browser_state->GetPrefs());
 }
 
 }  // namespace ios_web_view

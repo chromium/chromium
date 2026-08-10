@@ -8,7 +8,9 @@
 
 namespace autofill {
 
-MockAutocompleteHistoryManager::MockAutocompleteHistoryManager() = default;
+MockAutocompleteHistoryManager::MockAutocompleteHistoryManager()
+    : AutocompleteHistoryManager(/*profile_database=*/nullptr,
+                                 /*pref_service=*/nullptr) {}
 
 MockAutocompleteHistoryManager::~MockAutocompleteHistoryManager() = default;
 

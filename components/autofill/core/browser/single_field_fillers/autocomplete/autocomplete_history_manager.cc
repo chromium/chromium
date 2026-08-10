@@ -301,7 +301,27 @@ bool IsFieldValueSaveable(const FormFieldData& field,
 
 }  // namespace
 
-AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
+AutocompleteHistoryManager::AutocompleteHistoryManager(
+    scoped_refptr<AutofillWebDataService> profile_database,
+    PrefService* pref_service)
+    : profile_database_(std::move(profile_database)),
+      pref_service_(pref_service) {
+  if (!profile_database_ || !pref_service_) {
+    // In some tests, there is no database or pref service.
+    return;
+  }
+
+  // Upon successful cleanup, the last cleaned-up major version is being
+  // stored in this pref.
+  int last_cleaned_version =
+      pref_service_->GetInteger(prefs::kAutocompleteLastVersionRetentionPolicy);
+  if (version_info::GetMajorVersionNumberAsInt() > last_cleaned_version) {
+    // Trigger the cleanup.
+    profile_database_->RemoveExpiredAutocompleteEntries(
+        base::BindOnce(&AutocompleteHistoryManager::OnAutofillCleanupReturned,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() = default;
 
@@ -340,7 +360,7 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     const FormStructure* form,
     bool is_autocomplete_enabled) {
-  if (!is_autocomplete_enabled || is_off_the_record_) {
+  if (!is_autocomplete_enabled) {
     return;
   }
   std::vector<FormFieldData> autocomplete_saveable_fields;
@@ -391,34 +411,6 @@ void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     field.set_name(entry.key().name());
     field.set_value(entry.key().value());
     profile_database_->AddFormFields({field});
-  }
-}
-
-void AutocompleteHistoryManager::Init(
-    scoped_refptr<AutofillWebDataService> profile_database,
-    PrefService* pref_service,
-    bool is_off_the_record) {
-  profile_database_ = profile_database;
-  pref_service_ = pref_service;
-  is_off_the_record_ = is_off_the_record;
-
-  if (!profile_database_) {
-    // In some tests, there are no dbs.
-    return;
-  }
-
-  // No need to run the retention policy in OTR.
-  if (!is_off_the_record_) {
-    // Upon successful cleanup, the last cleaned-up major version is being
-    // stored in this pref.
-    int last_cleaned_version = pref_service_->GetInteger(
-        prefs::kAutocompleteLastVersionRetentionPolicy);
-    if (version_info::GetMajorVersionNumberAsInt() > last_cleaned_version) {
-      // Trigger the cleanup.
-      profile_database_->RemoveExpiredAutocompleteEntries(
-          base::BindOnce(&AutocompleteHistoryManager::OnAutofillCleanupReturned,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
   }
 }
 
