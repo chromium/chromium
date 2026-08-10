@@ -244,6 +244,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicUiHelperUnitTest.java",
   ]
   deps = [
     ":common_java",
@@ -284,6 +285,7 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//net/android:net_java",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
     "//third_party/androidx:androidx_preference_preference_java",
