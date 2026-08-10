@@ -59,10 +59,6 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   std::u16string_view GetText() const;
 
  private:
-  // views::View:
-  void AddedToWidget() override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
   // Owned by the views hierarchy.
   raw_ptr<views::Label> label_ = nullptr;
   // Button which either contains text or an icon depending on the toast's

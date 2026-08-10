@@ -168,10 +168,8 @@ SystemToastView::SystemToastView(const std::u16string& text,
       rounded_corner_radius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
-  // Since toasts have a large corner radius, we use the shadow on texture
-  // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
-  shadow_ =
-      SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation4);
   shadow_->SetRoundedCornerRadius(rounded_corner_radius);
 
   SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);
@@ -185,21 +183,6 @@ void SystemToastView::SetText(std::u16string_view text) {
 
 std::u16string_view SystemToastView::GetText() const {
   return label_->GetText();
-}
-
-void SystemToastView::AddedToWidget() {
-  shadow_->ObserveColorProviderSource(GetWidget());
-
-  // Attach the shadow at the bottom of the widget so it shows behind the view.
-  auto* shadow_layer = shadow_->GetLayer();
-  auto* widget_layer = GetWidget()->GetLayer();
-  widget_layer->Add(shadow_layer);
-  widget_layer->StackAtBottom(shadow_layer);
-}
-
-void SystemToastView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // `shadow_` should have the same bounds as the view's layer.
-  shadow_->SetContentBounds(layer()->bounds());
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemToastView,
