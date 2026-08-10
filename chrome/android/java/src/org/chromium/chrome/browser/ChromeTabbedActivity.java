@@ -1473,7 +1473,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             /* itemDelegate= */ null,
                             getShareDelegateSupplier(),
                             ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
-                            /* customContentActions= */ Collections.emptyList());
+                            /* customContentActions= */ Collections.emptyList(),
+                            mRootUiCoordinator.getLeftSideUiWidthSupplier());
             getToolbarManager()
                     .initializeWithNative(
                             mLayoutManager,
@@ -3910,7 +3911,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager(),
                             mBackPressManager,
-                            mRecentlyClosedEntriesManager);
+                            mRecentlyClosedEntriesManager,
+                            mRootUiCoordinator.getLeftSideUiWidthSupplier());
         }
         return mTabDelegateFactory;
     }

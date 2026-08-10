@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 
 /** Data class defining UI overrides for the {@link LocationBar}. */
 @NullMarked
@@ -14,6 +16,7 @@ public class LocationBarEmbedderUiOverrides {
     private boolean mVoiceEntrypointAllowed;
     private boolean mIsEmbedderControlledHint;
     private boolean mIsMainBrowserOmnibox;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     public LocationBarEmbedderUiOverrides() {
         mLensEntrypointAllowed = true;
@@ -107,5 +110,19 @@ public class LocationBarEmbedderUiOverrides {
     public LocationBarEmbedderUiOverrides setEmbedderControlledHint(boolean isControlled) {
         mIsEmbedderControlledHint = isControlled;
         return this;
+    }
+
+    /** Returns the {@link SideUiStateProvider}. */
+    public @Nullable SideUiStateProvider getSideUiStateProvider() {
+        return mSideUiStateProvider;
+    }
+
+    /**
+     * Specify the {@link SideUiStateProvider}.
+     *
+     * @param sideUiStateProvider The {@link SideUiStateProvider} object.
+     */
+    public void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
+        mSideUiStateProvider = sideUiStateProvider;
     }
 }

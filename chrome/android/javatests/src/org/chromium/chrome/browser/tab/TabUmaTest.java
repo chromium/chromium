@@ -100,7 +100,8 @@ public class TabUmaTest {
                 cta.getStartupMetricsTracker(),
                 /* exclusiveAccessManager= */ null,
                 /* backPressManager= */ null,
-                /* recentlyClosedEntriesManager= */ null);
+                /* recentlyClosedEntriesManager= */ null,
+                /* leftSideUiWidthSupplier= */ null);
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

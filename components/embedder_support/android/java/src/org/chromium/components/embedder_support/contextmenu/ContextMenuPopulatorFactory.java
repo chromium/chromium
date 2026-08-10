@@ -9,16 +9,19 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /** Factory interface for creating {@link ContextMenuPopulator}s. */
 @NullMarked
 public interface ContextMenuPopulatorFactory {
+
     /**
-     * Creates a {@ContextMenuPopulator}.
+     * Creates a {@link ContextMenuPopulator}.
      *
      * @param context The {@link Context} used to retrieve the strings.
      * @param params The {@link ContextMenuParams} used to build the context menu.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} for the context menu.
-     * @return The new {@ContextMenuPopulator}.
+     * @return The new {@link ContextMenuPopulator}.
      */
     ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
@@ -36,6 +39,11 @@ public interface ContextMenuPopulatorFactory {
      */
     default boolean isEnabled() {
         return true;
+    }
+
+    /** Returns a supplier providing the left side UI width in px. */
+    default Supplier<Integer> getLeftSideUiWidthSupplier() {
+        return () -> 0;
     }
 
     void onDestroy();

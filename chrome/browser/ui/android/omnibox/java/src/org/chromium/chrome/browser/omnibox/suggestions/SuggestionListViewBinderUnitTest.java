@@ -220,12 +220,20 @@ public class SuggestionListViewBinderUnitTest {
 
     @Test
     public void applyMarginForLeftSideBarProperty_updatesContainerMargin() {
+        int widthPx = ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
+        int collapsedWidthPx =
+                ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+
         mListModel.set(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR, true);
+        mListModel.set(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX, widthPx);
         ViewGroup.MarginLayoutParams layoutParams =
                 (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
         assertNotNull(layoutParams);
-        assertEquals(
-                ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP),
-                layoutParams.leftMargin);
+        assertEquals(widthPx, layoutParams.leftMargin);
+
+        mListModel.set(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX, collapsedWidthPx);
+        layoutParams = (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
+        assertNotNull(layoutParams);
+        assertEquals(collapsedWidthPx, layoutParams.leftMargin);
     }
 }

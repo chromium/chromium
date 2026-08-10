@@ -87,7 +87,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
@@ -111,6 +114,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -164,6 +168,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Mock FuseboxCoordinator mFuseboxCoordinator;
     private @Mock LocationBarEmbedderUiOverrides mUiOverrides;
+    private @Mock SideUiStateProvider mSideUiStateProvider;
     private @Mock PreloadingFeatureMap mPreloadingFeatureMap;
     private @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Mock Callback<GURL> mGurlCallback;
@@ -206,6 +211,10 @@ public class AutocompleteMediatorUnitTest {
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mFuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
         mFuseboxLayoutModeSupplier = ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
+        lenient()
+                .doReturn(new SideUiSpecs(0, 0))
+                .when(mSideUiStateProvider)
+                .getCurrentSideUiSpecs();
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -233,6 +242,7 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mFuseboxLayoutModeSupplier)
                 .when(mFuseboxCoordinator)
                 .getFuseboxLayoutModeSupplier();
+        lenient().doReturn(mSideUiStateProvider).when(mUiOverrides).getSideUiStateProvider();
 
         mMediator =
                 new AutocompleteMediator(
@@ -2829,11 +2839,35 @@ public class AutocompleteMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     public void propagateOmniboxSessionStateChange_verticalTabsEnabledAndMainBrowser() {
         when(mUiOverrides.isMainBrowserOmnibox()).thenReturn(true);
+        int widthPx = ViewUtils.dpToPx(mContext, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(new SideUiSpecs(widthPx, /* rightContainerWidth= */ 0));
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
         mMediator.beginInput(createEmptySession());
         mMediator.propagateOmniboxSessionStateChange(true);
         assertEquals(true, mListModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
+        assertEquals(widthPx, mListModel.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void
+            propagateOmniboxSessionStateChange_verticalTabsEnabledAndMainBrowser_railCollapsed() {
+        when(mUiOverrides.isMainBrowserOmnibox()).thenReturn(true);
+        int collapsedWidthPx =
+                ViewUtils.dpToPx(mContext, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(new SideUiSpecs(collapsedWidthPx, /* rightContainerWidth= */ 0));
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+        mMediator.beginInput(createEmptySession());
+        mMediator.propagateOmniboxSessionStateChange(true);
+        assertEquals(true, mListModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
+        assertEquals(
+                collapsedWidthPx, mListModel.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX));
     }
 
     @Test
