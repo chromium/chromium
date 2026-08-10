@@ -81,7 +81,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #endif
 
@@ -644,6 +648,195 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   EXPECT_EQ(nullptr,
             BrowserHandlerAndroid::FindBrowserWindowById(window_id.value()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       CreateTargetUsesDefaultBrowserContext) {
+  AttachToBrowserTarget();
+
+  content::WebContents* initial_web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(initial_web_contents);
+
+  base::DictValue params;
+  params.Set("url", "about:blank");
+  params.Set("newWindow", false);
+  const base::DictValue* result =
+      SendCommandSync("Target.createTarget", std::move(params));
+  ASSERT_TRUE(result);
+  const std::string* target_id = result->FindString("targetId");
+  ASSERT_TRUE(target_id);
+  const std::string created_target_id = *target_id;
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetForId(created_target_id);
+  ASSERT_TRUE(agent_host);
+  content::WebContents* web_contents = agent_host->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_EQ(initial_web_contents->GetBrowserContext(),
+            web_contents->GetBrowserContext());
+
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(web_contents->GetBrowserContext(), tab->profile());
+
+  params = base::DictValue();
+  params.Set("targetId", created_target_id);
+  ASSERT_TRUE(SendCommandSync("Target.closeTarget", std::move(params)));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       CreateTargetUsesRequestedBrowserContext) {
+  AttachToBrowserTarget();
+
+  const base::DictValue* result =
+      SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(result);
+  const std::string* browser_context_id =
+      result->FindString("browserContextId");
+  ASSERT_TRUE(browser_context_id);
+  const std::string context_id = *browser_context_id;
+
+  base::DictValue params;
+  params.Set("url", "about:blank");
+  params.Set("newWindow", true);
+  params.Set("browserContextId", context_id);
+  result = SendCommandSync("Target.createTarget", std::move(params));
+  ASSERT_TRUE(result);
+  const std::string* target_id_value = result->FindString("targetId");
+  ASSERT_TRUE(target_id_value);
+  const std::string target_id = *target_id_value;
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetForId(target_id);
+  ASSERT_TRUE(agent_host);
+  content::WebContents* web_contents = agent_host->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_EQ(context_id, web_contents->GetBrowserContext()->UniqueId());
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(web_contents->GetBrowserContext(), tab->profile());
+
+  result = SendCommandSync("Target.getTargets");
+  ASSERT_TRUE(result);
+  const base::ListValue* target_infos = result->FindList("targetInfos");
+  ASSERT_TRUE(target_infos);
+
+  const base::Value* created_target_info = nullptr;
+  for (const auto& target : *target_infos) {
+    const std::string* listed_target_id =
+        target.GetDict().FindString("targetId");
+    if (listed_target_id && *listed_target_id == target_id) {
+      created_target_info = &target;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(created_target_info);
+  const std::string* listed_browser_context_id =
+      created_target_info->GetDict().FindString("browserContextId");
+  ASSERT_TRUE(listed_browser_context_id);
+  EXPECT_EQ(context_id, *listed_browser_context_id);
+
+  params = base::DictValue();
+  params.Set("browserContextId", context_id);
+  ASSERT_TRUE(
+      SendCommandSync("Target.disposeBrowserContext", std::move(params)));
+  EXPECT_FALSE(agent_host->GetWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest,
+    DisposeBrowserContextClosesFrozenTabsAcrossTabModelRemoval) {
+  AttachToBrowserTarget();
+
+  const base::DictValue* result =
+      SendCommandSync("Target.createBrowserContext");
+  ASSERT_TRUE(result);
+  const std::string* browser_context_id =
+      result->FindString("browserContextId");
+  ASSERT_TRUE(browser_context_id);
+  const std::string context_id = *browser_context_id;
+
+  base::DictValue params;
+  params.Set("url", "about:blank");
+  params.Set("newWindow", true);
+  params.Set("browserContextId", context_id);
+  result = SendCommandSync("Target.createTarget", std::move(params));
+  ASSERT_TRUE(result);
+  const std::string* target_id_value = result->FindString("targetId");
+  ASSERT_TRUE(target_id_value);
+  const std::string target_id = *target_id_value;
+
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      content::DevToolsAgentHost::GetForId(target_id);
+  ASSERT_TRUE(agent_host);
+  content::WebContents* web_contents = agent_host->GetWebContents();
+  ASSERT_TRUE(web_contents);
+  TabAndroid* context_tab = TabAndroid::FromWebContents(web_contents);
+  ASSERT_TRUE(context_tab);
+  Profile* context_profile = context_tab->profile();
+  ASSERT_TRUE(context_profile);
+
+  TabModel* context_model = TabModelList::GetTabModelForTabAndroid(context_tab);
+  ASSERT_TRUE(context_model);
+  ASSERT_EQ(1, context_model->GetTabCount());
+  ASSERT_EQ(context_model, TabModelList::models().back());
+  const size_t model_count = TabModelList::models().size();
+
+  OwningTestTabModel later_model_a(context_profile);
+  OwningTestTabModel later_model_b(context_profile);
+
+  ASSERT_TRUE(later_model_a.AddEmptyTab(0, /*select=*/true));
+  TabAndroid* frozen_tab_a = later_model_a.AddEmptyTab(1, /*select=*/false);
+  ASSERT_TRUE(frozen_tab_a);
+  ASSERT_TRUE(later_model_b.AddEmptyTab(0, /*select=*/true));
+  TabAndroid* frozen_tab_b = later_model_b.AddEmptyTab(1, /*select=*/false);
+  ASSERT_TRUE(frozen_tab_b);
+
+  ASSERT_EQ(context_profile, frozen_tab_a->profile());
+  ASSERT_EQ(context_profile, frozen_tab_b->profile());
+  ASSERT_TRUE(frozen_tab_a->web_contents());
+  ASSERT_TRUE(frozen_tab_b->web_contents());
+  frozen_tab_a->DestroyWebContents();
+  frozen_tab_b->DestroyWebContents();
+  ASSERT_FALSE(frozen_tab_a->web_contents());
+  ASSERT_FALSE(frozen_tab_b->web_contents());
+  ASSERT_EQ(context_profile, frozen_tab_a->profile());
+  ASSERT_EQ(context_profile, frozen_tab_b->profile());
+  ASSERT_EQ(2, later_model_a.GetTabCount());
+  ASSERT_EQ(2, later_model_b.GetTabCount());
+
+  params = base::DictValue();
+  params.Set("browserContextId", context_id);
+  ASSERT_TRUE(
+      SendCommandSync("Target.disposeBrowserContext", std::move(params)));
+
+  EXPECT_EQ(0, later_model_a.GetTabCount());
+  EXPECT_EQ(0, later_model_b.GetTabCount());
+  EXPECT_FALSE(agent_host->GetWebContents());
+  EXPECT_EQ(model_count + 1, TabModelList::models().size());
+
+  result = SendCommandSync("Target.getBrowserContexts");
+  ASSERT_TRUE(result);
+  const base::ListValue* browser_context_ids =
+      result->FindList("browserContextIds");
+  ASSERT_TRUE(browser_context_ids);
+  EXPECT_FALSE(browser_context_ids->contains(context_id));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       CreateTargetRejectsUnknownBrowserContext) {
+  AttachToBrowserTarget();
+
+  base::DictValue params;
+  params.Set("url", "about:blank");
+  params.Set("browserContextId", "unknown");
+  SendCommandSync("Target.createTarget", std::move(params));
+
+  ASSERT_TRUE(error());
+  EXPECT_EQ("Failed to find browser context with id unknown",
+            *error()->FindString("message"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateListDisposeBrowserContext) {

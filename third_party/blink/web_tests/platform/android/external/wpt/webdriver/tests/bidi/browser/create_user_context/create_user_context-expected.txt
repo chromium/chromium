@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_storage_isolation
-  AssertionError: assert 'value' == None
-Harness: the test ran to completion.
-

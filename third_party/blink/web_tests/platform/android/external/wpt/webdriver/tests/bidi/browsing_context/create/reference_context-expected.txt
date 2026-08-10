@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_reference_context_with_no_user_context_set[tab]
-[FAIL] test_reference_context_with_no_user_context_set[window]
-Harness: the test ran to completion.

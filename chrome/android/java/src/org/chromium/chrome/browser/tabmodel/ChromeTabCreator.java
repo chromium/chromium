@@ -554,6 +554,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         // performance using an existing WebContents.
         try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents")) {
             final int position = evaluateNewTabPosition(suggestedPosition, parentId);
+            Profile tabProfile = assumeNonNull(Profile.fromWebContents(webContents));
 
             boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
             TabDelegateFactory delegateFactory =
@@ -565,7 +566,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 // The webContents may not have a renderer. Treat it as FROZEN_FOR_LAZY_LOAD
                 // so that the TabStateAttribute forces an immediate write.
                 tab =
-                        TabBuilder.createLazyTabWithWebContents(getProfile())
+                        TabBuilder.createLazyTabWithWebContents(tabProfile)
                                 .setParent(parent)
                                 .setWindow(mNativeWindow)
                                 .setLaunchType(type)
@@ -577,7 +578,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
             } else {
                 tab =
-                        TabBuilder.createLiveTab(getProfile(), !openInForeground)
+                        TabBuilder.createLiveTab(tabProfile, !openInForeground)
                                 .setParent(parent)
                                 .setWindow(mNativeWindow)
                                 .setLaunchType(type)

@@ -9,18 +9,21 @@
 
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 using content::WebContents;
@@ -73,6 +76,11 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     return protocol::Response::FallThrough();
   }
 
+  GURL gurl(url);
+  if (gurl.is_empty()) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
   const TabModelList::TabModelVector& models = TabModelList::models();
   if (models.empty()) {
     return protocol::Response::ServerError("Could not find TabModelList");
@@ -80,11 +88,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
 
   TabModel* tab_model = models[0];
   CHECK(tab_model);
-
-  GURL gurl(url);
-  if (gurl.is_empty()) {
-    gurl = GURL(url::kAboutBlankURL);
-  }
 
   GURL inner_url = gurl;
   if (gurl.SchemeIs(content::kViewSourceScheme)) {
@@ -102,16 +105,28 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         "Creating a target with a local URL is not allowed");
   }
 
-  WebContents* web_contents = nullptr;
-  if (new_window.value_or(false)) {
-    Profile* profile = tab_model->GetProfile();
-    CHECK(profile);
+  Profile* const default_profile = tab_model->GetProfile();
+  CHECK(default_profile);
 
-    std::unique_ptr<WebContents> owned_web_contents =
-        WebContents::Create(WebContents::CreateParams(profile));
-    WebContents* window_web_contents = owned_web_contents.get();
-    DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*window_web_contents);
+  Profile* profile = default_profile;
+  if (browser_context_id.has_value()) {
+    profile = DevToolsBrowserContextManager::GetInstance().GetProfileById(
+        *browser_context_id);
+    if (!profile) {
+      return protocol::Response::ServerError(
+          "Failed to find browser context with id " + *browser_context_id);
+    }
+  }
 
+  std::unique_ptr<WebContents> owned_web_contents =
+      WebContents::Create(WebContents::CreateParams(profile));
+  if (!owned_web_contents) {
+    return protocol::Response::ServerError("Could not create a Tab");
+  }
+  WebContents* web_contents = owned_web_contents.get();
+  DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
+
+  if (new_window.value_or(false) && profile == default_profile) {
     BrowserWindowCreateParams create_params(*profile,
                                             /*from_user_gesture=*/false);
     create_params.web_contents = std::move(owned_web_contents);
@@ -123,7 +138,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     BrowserWindowInterface* browser_window =
         CreateBrowserWindow(std::move(create_params));
     if (browser_window) {
-      web_contents = window_web_contents;
       if (browser_handler_) {
         // Pending Android windows are intentionally absent from the global
         // browser-window iterator. Track the BWI returned to this DevTools
@@ -150,12 +164,20 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
       DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
     }
   } else {
-    web_contents =
-        tab_model->CreateNewTabForDevTools(gurl, /*new_window=*/false);
-    if (!web_contents) {
+    // Insert the pre-created WebContents so default-profile and explicit-
+    // context targets use the same tab-model path. Keeping disposable profiles
+    // in the current model also avoids racing context disposal with a pending
+    // Android Activity.
+    tabs::TabInterface* new_tab = tab_model->CreateTab(
+        /*parent=*/nullptr, std::move(owned_web_contents),
+        TabModel::kInvalidIndex, TabModel::TabLaunchType::FROM_CHROME_UI,
+        /*should_pin=*/false);
+    if (!new_tab || !new_tab->GetContents()) {
       return protocol::Response::ServerError("Could not create a Tab");
     }
-    DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
+    web_contents = new_tab->GetContents();
+    content::NavigationController::LoadURLParams load_params(gurl);
+    web_contents->GetController().LoadURLWithParams(load_params);
   }
 
   if (for_tab.value_or(false)) {

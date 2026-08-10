@@ -658,7 +658,10 @@ if (enable_devtools_frontend) {
     }
 
     if (is_android) {
-      deps += [ "//components/privacy_sandbox/privacy_sandbox_attestations" ]
+      deps += [
+        "//chrome/browser/ui/android/tab_model:test_support",
+        "//components/privacy_sandbox/privacy_sandbox_attestations",
+      ]
     }
 
     if (!is_android) {
