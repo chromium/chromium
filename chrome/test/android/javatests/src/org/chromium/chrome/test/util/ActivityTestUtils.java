@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Collection of activity utilities. */
 public class ActivityTestUtils {
@@ -219,7 +220,8 @@ public class ActivityTestUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Fragment> T waitForFragment(
             AppCompatActivity activity, String fragmentTag) {
-        CriteriaHelper.pollInstrumentationThread(
+        AtomicReference<T> fragmentRef = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
                 () -> {
                     Fragment fragment =
                             activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
@@ -232,10 +234,11 @@ public class ActivityTestUtils {
                     } else {
                         Criteria.checkThat(fragment.getView(), Matchers.notNullValue());
                     }
+                    fragmentRef.set((T) fragment);
                 },
                 ACTIVITY_START_TIMEOUT_MS,
                 CONDITION_POLL_INTERVAL_MS);
-        return (T) activity.getSupportFragmentManager().findFragmentByTag(fragmentTag);
+        return fragmentRef.get();
     }
 
     /**
@@ -252,14 +255,16 @@ public class ActivityTestUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Fragment> T waitForFragmentToAttach(
             final SettingsActivity activity, final Class<T> fragmentClass) {
-        CriteriaHelper.pollInstrumentationThread(
+        AtomicReference<T> fragmentRef = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(
-                            activity.getMainFragment(), Matchers.instanceOf(fragmentClass));
+                    Fragment fragment = activity.getMainFragment();
+                    Criteria.checkThat(fragment, Matchers.instanceOf(fragmentClass));
+                    fragmentRef.set((T) fragment);
                 },
                 ACTIVITY_START_TIMEOUT_MS,
                 CONDITION_POLL_INTERVAL_MS);
-        return (T) activity.getMainFragment();
+        return fragmentRef.get();
     }
 
     /**
