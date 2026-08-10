@@ -101,6 +101,24 @@ public class ContentView extends FrameLayout
 
     private int mDesiredHeightMeasureSpec = DEFAULT_MEASURE_SPEC;
 
+    private int mContentOffsetXPix;
+
+    /** Sets the on-screen X offset amount for the left content margin. */
+    public void setContentOffsetXPix(int contentOffsetXPix) {
+        mContentOffsetXPix = contentOffsetXPix;
+    }
+
+    /** Returns the on-screen X offset amount for the left content margin. */
+    public int getContentOffsetXPix() {
+        return mContentOffsetXPix;
+    }
+
+    @Override
+    public void getLocationInWindow(int[] outLocation) {
+        super.getLocationInWindow(outLocation);
+        outLocation[0] += mContentOffsetXPix;
+    }
+
     private EventOffsetHandler mDragDropEventOffsetHandler;
     private boolean mDeferKeepScreenOnChanges;
     private Boolean mPendingKeepScreenOnValue;

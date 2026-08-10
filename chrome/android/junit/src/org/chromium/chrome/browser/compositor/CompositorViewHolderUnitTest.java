@@ -104,6 +104,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -318,6 +319,8 @@ public class CompositorViewHolderUnitTest {
         IBinder windowToken = mock(IBinder.class);
         when(mContainerView.getWindowToken()).thenReturn(windowToken);
         when(mContentView.getWindowToken()).thenReturn(windowToken);
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(mContentView);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
     }
 
     @After
@@ -1475,6 +1478,8 @@ public class CompositorViewHolderUnitTest {
         // Setup.
         LocalizationUtils.setRtlForTesting(shouldBeRtl);
         reset(mWebContents);
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(mContentView);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
 
         // Arbitrary Side UI width.
         int leftContainerWidth = 50;
@@ -1492,6 +1497,7 @@ public class CompositorViewHolderUnitTest {
         // Verify that RTL does not affect the offset (i.e. always contentOffsetx == left)
         int expectedContentOffsetX = leftContainerWidth;
         verify(mLayoutManager).setContentOffsetX(expectedContentOffsetX);
+        verify(mContentView, atLeastOnce()).setContentOffsetXPix(expectedContentOffsetX);
     }
 
     @Test
