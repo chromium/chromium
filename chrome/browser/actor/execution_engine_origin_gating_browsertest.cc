@@ -2364,8 +2364,16 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
   }
 }
 
+// TODO(crbug.com/482434165): Flaky test on win-asan builder.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_InterleavedAction_OutOfTurnNavigation \
+  DISABLED_InterleavedAction_OutOfTurnNavigation
+#else
+#define MAYBE_InterleavedAction_OutOfTurnNavigation \
+  InterleavedAction_OutOfTurnNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
-                       InterleavedAction_OutOfTurnNavigation) {
+                       MAYBE_InterleavedAction_OutOfTurnNavigation) {
   const OutOfTurnTestParam& param = GetParam();
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
