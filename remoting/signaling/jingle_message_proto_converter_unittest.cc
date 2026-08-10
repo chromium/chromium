@@ -34,6 +34,8 @@ constexpr char kTestReceiverDomain[] = "robot_domain.com";
 constexpr char kTestReceiverEmail[] = "host@robot_domain.com";
 constexpr char kTestReceiverRegistration[] =
     "00000000-1111-2222-3333-555555555555";
+constexpr char kSessionAuthzHostToken[] = "aG9zdF90b2tlbl9zYW1wbGU=";
+constexpr char kSessionAuthzSessionToken[] = "c2Vzc2lvbl90b2tlbl9zYW1wbGU=";
 
 JingleAuthentication CreateTestAuthentication() {
   JingleAuthentication auth;
@@ -43,8 +45,8 @@ JingleAuthentication CreateTestAuthentication() {
   auth.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
   auth.spake_message = {1, 2, 3, 4};
   auth.verification_hash = {5, 6, 7, 8};
-  auth.session_authz_host_token = "host_token";
-  auth.session_authz_session_token = "session_token";
+  auth.session_authz_host_token = kSessionAuthzHostToken;
+  auth.session_authz_session_token = kSessionAuthzSessionToken;
   return auth;
 }
 
@@ -85,9 +87,11 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionInitiate) {
   ftl::IqStanza stanza = message.ToFtlIqStanza();
 
   EXPECT_EQ(stanza.id(), kMessageId);
-  EXPECT_EQ(stanza.sender().local_part(), kFromLocalId);
+  EXPECT_EQ(stanza.sender().local_part(), "from_user");
+  EXPECT_EQ(stanza.sender().domain_part(), "gmail.com");
   EXPECT_EQ(stanza.sender().resource_part(), kFromRegistrationId);
-  EXPECT_EQ(stanza.receiver().local_part(), kToLocalId);
+  EXPECT_EQ(stanza.receiver().local_part(), "to_user");
+  EXPECT_EQ(stanza.receiver().domain_part(), "gmail.com");
   EXPECT_EQ(stanza.receiver().resource_part(), kToRegistrationId);
 
   EXPECT_TRUE(stanza.has_jingle());
@@ -195,8 +199,10 @@ TEST_F(JingleMessageProtoConverterTest, ConvertReplyResult) {
 
   EXPECT_EQ(stanza.id(), kMessageId);
   EXPECT_TRUE(stanza.has_reply());
-  EXPECT_EQ(stanza.sender().local_part(), kFromLocalId);
-  EXPECT_EQ(stanza.receiver().local_part(), kToLocalId);
+  EXPECT_EQ(stanza.sender().local_part(), "from_user");
+  EXPECT_EQ(stanza.sender().domain_part(), "gmail.com");
+  EXPECT_EQ(stanza.receiver().local_part(), "to_user");
+  EXPECT_EQ(stanza.receiver().domain_part(), "gmail.com");
 
   JingleMessageReply converted_reply;
   ASSERT_TRUE(JingleMessageReplyFromProto(stanza, &converted_reply));
@@ -244,7 +250,9 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionInitiateWithAuth) {
 
   EXPECT_TRUE(stanza.jingle().has_session_initiate());
   EXPECT_EQ(stanza.jingle().session_initiate().initiator().local_part(),
-            kFromLocalId);
+            "from_user");
+  EXPECT_EQ(stanza.jingle().session_initiate().initiator().domain_part(),
+            "gmail.com");
   EXPECT_TRUE(stanza.jingle().session_initiate().has_authentication());
 
   JingleMessage converted_message;
@@ -288,6 +296,32 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionAcceptWithAuth) {
   ASSERT_TRUE(converted_accept->authentication.has_value());
   VerifyAuthentication(*converted_accept->authentication, auth);
 
+  ASSERT_TRUE(converted_message.description);
+  VerifyAuthentication(converted_message.description->authentication(), auth);
+}
+
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionAcceptWithDescriptionAuth) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  message.SetPayload(SessionAccept());
+  JingleAuthentication auth = CreateTestAuthentication();
+  message.description = std::make_unique<ContentDescription>(auth);
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+
+  EXPECT_TRUE(stanza.jingle().has_session_accept());
+  EXPECT_TRUE(stanza.jingle().session_accept().has_authentication());
+  EXPECT_EQ(stanza.jingle().session_accept().authentication().method(),
+            ftl::AUTHENTICATION_METHOD_SPAKE2_CURVE25519);
+
+  JingleMessage converted_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted_message, &error))
+      << error;
   ASSERT_TRUE(converted_message.description);
   VerifyAuthentication(converted_message.description->authentication(), auth);
 }
@@ -627,7 +661,7 @@ TEST_F(JingleMessageProtoConverterTest, ConvertMissingHeaders) {
   stanza.mutable_jingle()->set_session_id(kSid);
   stanza.clear_sender();
   EXPECT_FALSE(JingleMessageFromProto(stanza, &converted_message, &error));
-  EXPECT_EQ(error, "Missing signaling address");
+  EXPECT_TRUE(error.starts_with("Missing signaling address"));
 }
 
 }  // namespace remoting

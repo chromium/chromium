@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "remoting/base/errors.h"
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
@@ -69,10 +71,20 @@ void JingleAuthenticationToProto(const JingleAuthentication& auth,
                                  auth.verification_hash.size());
   }
   if (!auth.session_authz_host_token.empty()) {
-    proto->set_session_authz_host_token(auth.session_authz_host_token);
+    std::string decoded;
+    if (base::Base64Decode(auth.session_authz_host_token, &decoded)) {
+      proto->set_session_authz_host_token(decoded);
+    } else {
+      proto->set_session_authz_host_token(auth.session_authz_host_token);
+    }
   }
   if (!auth.session_authz_session_token.empty()) {
-    proto->set_session_authz_session_token(auth.session_authz_session_token);
+    std::string decoded;
+    if (base::Base64Decode(auth.session_authz_session_token, &decoded)) {
+      proto->set_session_authz_session_token(decoded);
+    } else {
+      proto->set_session_authz_session_token(auth.session_authz_session_token);
+    }
   }
 }
 
@@ -94,10 +106,25 @@ void JingleAuthenticationFromProto(const ftl::Authentication& proto,
                                    proto.verification_hash().end());
   }
   if (proto.has_session_authz_host_token()) {
-    auth->session_authz_host_token = proto.session_authz_host_token();
+    // TODO(joedow): Note that if raw bytes happen to form a valid Base64 string
+    // (e.g. valid Base64 chars with length multiple of 4), this heuristic will
+    // falsely assume it is an old client and skip re-encoding.
+    std::string raw = proto.session_authz_host_token();
+    std::string unused;
+    if (base::Base64Decode(raw, &unused)) {
+      auth->session_authz_host_token = std::move(raw);
+    } else {
+      auth->session_authz_host_token = base::Base64Encode(raw);
+    }
   }
   if (proto.has_session_authz_session_token()) {
-    auth->session_authz_session_token = proto.session_authz_session_token();
+    std::string raw = proto.session_authz_session_token();
+    std::string unused;
+    if (base::Base64Decode(raw, &unused)) {
+      auth->session_authz_session_token = std::move(raw);
+    } else {
+      auth->session_authz_session_token = base::Base64Encode(raw);
+    }
   }
 }
 
@@ -199,16 +226,25 @@ void SignalingAddressToJabberId(const SignalingAddress& address,
     return;
   }
 
-  // For FTL, the ID is usually the email address.
-  // SignalingAddress might contain more info, but JabberId splits it.
-  // This is a simplified mapping.
   std::string username;
   std::string registration_id;
   if (address.GetFtlInfo(&username, &registration_id)) {
-    jabber_id->set_local_part(username);
+    auto parts = base::SplitStringOnce(username, '@');
+    if (parts.has_value()) {
+      jabber_id->set_local_part(std::string(parts->first));
+      jabber_id->set_domain_part(std::string(parts->second));
+    } else {
+      jabber_id->set_local_part(username);
+    }
     jabber_id->set_resource_part(registration_id);
   } else {
-    jabber_id->set_local_part(address.id());
+    auto parts = base::SplitStringOnce(address.id(), '@');
+    if (parts.has_value()) {
+      jabber_id->set_local_part(std::string(parts->first));
+      jabber_id->set_domain_part(std::string(parts->second));
+    } else {
+      jabber_id->set_local_part(address.id());
+    }
   }
 }
 
@@ -218,7 +254,8 @@ SignalingAddress JabberIdToSignalingAddress(const ftl::JabberId& jabber_id) {
   }
 
   std::string username = jabber_id.local_part();
-  if (!jabber_id.domain_part().empty()) {
+  if (!jabber_id.domain_part().empty() &&
+      username.find('@') == std::string::npos) {
     username += "@" + jabber_id.domain_part();
   }
 
@@ -304,12 +341,18 @@ ftl::IqStanza JingleMessageToProto(const JingleMessage& message) {
     if (initiate->authentication) {
       JingleAuthenticationToProto(*initiate->authentication,
                                   proto_initiate->mutable_authentication());
+    } else if (message.description) {
+      JingleAuthenticationToProto(message.description->authentication(),
+                                  proto_initiate->mutable_authentication());
     }
   } else if (const auto* accept =
                  std::get_if<SessionAccept>(&message.payload())) {
     ftl::SessionAccept* proto_accept = jingle->mutable_session_accept();
     if (accept->authentication) {
       JingleAuthenticationToProto(*accept->authentication,
+                                  proto_accept->mutable_authentication());
+    } else if (message.description) {
+      JingleAuthenticationToProto(message.description->authentication(),
                                   proto_accept->mutable_authentication());
     }
   } else if (auto* terminate =
@@ -352,6 +395,9 @@ ftl::IqStanza JingleMessageToProto(const JingleMessage& message) {
     ftl::SessionInfo* proto_session_info = jingle->mutable_session_info();
     if (session_info->authentication) {
       JingleAuthenticationToProto(*session_info->authentication,
+                                  proto_session_info->mutable_authentication());
+    } else if (message.description) {
+      JingleAuthenticationToProto(message.description->authentication(),
                                   proto_session_info->mutable_authentication());
     }
   } else if (const auto* transport =
@@ -397,7 +443,12 @@ bool JingleMessageFromProto(const ftl::IqStanza& stanza,
   message->from = JabberIdToSignalingAddress(stanza.sender());
   message->to = JabberIdToSignalingAddress(stanza.receiver());
   if (message->from.empty() || message->to.empty()) {
-    *error = "Missing signaling address";
+    *error = "Missing signaling address (from=" + message->from.id() +
+             ", to=" + message->to.id() +
+             ", sender_local=" + stanza.sender().local_part() +
+             ", sender_domain=" + stanza.sender().domain_part() +
+             ", receiver_local=" + stanza.receiver().local_part() +
+             ", receiver_domain=" + stanza.receiver().domain_part() + ")";
     return false;
   }
   message->sid = jingle.session_id();

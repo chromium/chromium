@@ -66,6 +66,9 @@ MATCHER_P2(SignalingMessageMatchesBoth, to, from, "") {
   const auto& iq_stanza = arg.xmpp().iq_stanza();
   auto get_id = [](const ftl::JabberId& jid) {
     std::string id = jid.local_part();
+    if (!jid.domain_part().empty() && id.find('@') == std::string::npos) {
+      id += "@" + jid.domain_part();
+    }
     if (!jid.resource_part().empty()) {
       id += "/chromoting_ftl_" + jid.resource_part();
     }
@@ -98,6 +101,9 @@ MATCHER_P2(SignalingMessageMatchesProtoOnly, to, from, "") {
   const auto& iq_stanza = arg.xmpp().iq_stanza();
   auto get_id = [](const ftl::JabberId& jid) {
     std::string id = jid.local_part();
+    if (!jid.domain_part().empty() && id.find('@') == std::string::npos) {
+      id += "@" + jid.domain_part();
+    }
     if (!jid.resource_part().empty()) {
       id += "/chromoting_ftl_" + jid.resource_part();
     }
@@ -1363,31 +1369,31 @@ TEST_F(FtlSignalStrategyTest, Negotiation_HostSide_ReceiveBoth) {
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                init_msg);
 
-  // 2. Host sends reply. Verify it is PROTO-ONLY.
+  // 2. Host sends reply. Verify it is BOTH (XML + Proto).
   JingleMessageReply reply;
   reply.to = SignalingAddress(kFakeRemoteFtlId);
   reply.message_id = "req_initiate";
   reply.reply_type = JingleMessageReply::REPLY_RESULT;
 
-  EXPECT_CALL(*messaging_client_,
-              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
-                          SignalingMessageMatchesProtoOnly(kFakeRemoteFtlId,
-                                                           kFakeLocalFtlId),
-                          _, _))
+  EXPECT_CALL(
+      *messaging_client_,
+      SendMessage(
+          Property(&SignalingAddress::id, kFakeRemoteFtlId),
+          SignalingMessageMatchesBoth(kFakeRemoteFtlId, kFakeLocalFtlId), _, _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendReply(std::move(reply));
 
-  // 3. Host sends session-accept. Verify it is PROTO-ONLY.
+  // 3. Host sends session-accept. Verify it is BOTH (XML + Proto).
   JingleMessage accept_message(SignalingAddress(kFakeRemoteFtlId),
                                SessionAccept(), "sid123");
   accept_message.message_id = "req_accept";
 
-  EXPECT_CALL(*messaging_client_,
-              SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
-                          SignalingMessageMatchesProtoOnly(kFakeRemoteFtlId,
-                                                           kFakeLocalFtlId),
-                          _, _))
+  EXPECT_CALL(
+      *messaging_client_,
+      SendMessage(
+          Property(&SignalingAddress::id, kFakeRemoteFtlId),
+          SignalingMessageMatchesBoth(kFakeRemoteFtlId, kFakeLocalFtlId), _, _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendMessage(std::move(accept_message));
