@@ -23,6 +23,34 @@ UIImage* DefaultCloseButtonForToolbar();
 // Returns a SF Symbol to be used in a toolbar to symbolize "done".
 UIImage* DefaultDoneButtonForToolbar();
 
+// Returns a SF symbol named `symbol_name` configured with the given
+// `configuration`.
+UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
+                                        UIImageConfiguration* configuration);
+
+// Returns a custom symbol named `symbol_name` configured with the given
+// `configuration`.
+UIImage* CustomSymbolWithConfiguration(NSString* symbol_name,
+                                       UIImageConfiguration* configuration);
+
+// Returns a SF symbol named `symbol_name` configured with the default
+// configuration and the given `point_size`.
+UIImage* DefaultSymbolWithPointSize(NSString* symbol_name, CGFloat point_size);
+
+// Returns a custom symbol named `symbol_name` configured with the default
+// configuration and the given `point_size`.
+UIImage* CustomSymbolWithPointSize(NSString* symbol_name, CGFloat point_size);
+
+// Returns a SF symbol named `symbol_name` as a template image, configured with
+// the default configuration and the given `point_size`.
+UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbol_name,
+                                            CGFloat point_size);
+
+// Returns a custom symbol named `symbol_name` as a template image, configured
+// with the default configuration and the given `point_size`.
+UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
+                                           CGFloat point_size);
+
 // Returns the given `symbol`, making sure that it is preferring the monochrome
 // version.
 UIImage* MakeSymbolMonochrome(UIImage* symbol);
@@ -33,6 +61,18 @@ UIImage* MakeSymbolMulticolor(UIImage* symbol);
 
 // Returns the given `symbol`, with the palette of `colors` applied.
 UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors);
+
+// Returns a SF symbol named `symbol_name` configured for the Settings root
+// screen.
+UIImage* DefaultSettingsRootSymbol(NSString* symbol_name);
+
+// Returns a custom symbol named `symbol_name` configured for the Settings
+// root screen.
+UIImage* CustomSettingsRootSymbol(NSString* symbol_name);
+
+// Returns a custom symbol named `symbol_name` configured for the Settings
+// root screen, with multicolor enabled.
+UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name);
 
 // Returns an accessory symbol configured with UIImageSymbolWeightRegular.
 UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(Symbol symbol);

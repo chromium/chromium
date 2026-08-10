@@ -34,15 +34,16 @@ constexpr size_t kMaxShareSheetTargetDevices = 2;
 NSString* const kSendTabToSelfActivityType =
     @"com.google.chrome.sendTabToSelfActivity";
 
-// Returns the SF Symbol corresponding to the device form factor.
-Symbol GetSFSymbolForFormFactor(syncer::DeviceInfo::FormFactor form_factor) {
+// Returns the SF Symbol name corresponding to the device form factor.
+NSString* GetSFSymbolNameForFormFactor(
+    syncer::DeviceInfo::FormFactor form_factor) {
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return SymbolIPhone;
+      return kIPhoneSymbol;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return SymbolIPad;
+      return kIPadSymbol;
     default:
-      return SymbolLaptop;
+      return kLaptopSymbol;
   }
 }
 
@@ -205,8 +206,8 @@ std::vector<send_tab_to_self::TargetDeviceInfo> GetTargetDevices(
 }
 
 - (UIImage*)activityImage {
-  Symbol symbol = GetSFSymbolForFormFactor(self.formFactor);
-  return SymbolWithPointSize(symbol, kSymbolActionPointSize);
+  NSString* symbolName = GetSFSymbolNameForFormFactor(self.formFactor);
+  return DefaultSymbolWithPointSize(symbolName, kSymbolActionPointSize);
 }
 
 + (UIActivityCategory)activityCategory {
