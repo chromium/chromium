@@ -318,6 +318,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "AutofillPayment",
             .type = PageActionIconType::kAutofillPayment,
             .element_identifier = kAutofillPaymentIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kContextualCue,
         },
     },
     {
