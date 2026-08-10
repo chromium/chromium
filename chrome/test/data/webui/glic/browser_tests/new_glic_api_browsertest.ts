@@ -115,6 +115,15 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.switchConversation();
   }
 
+  async testClosedCaptioning() {
+    assertDefined(this.host.getClosedCaptioningSetting);
+    assertDefined(this.host.setClosedCaptioningSetting);
+    const closedCaptioningState =
+        observeSequence(this.host.getClosedCaptioningSetting());
+    assertFalse(await closedCaptioningState.next());
+    await this.host.setClosedCaptioningSetting(true);
+    assertTrue(await closedCaptioningState.next());
+  }
   async testSwitchConversationToOldConversationNewInstance() {
     assertDefined(this.host.switchConversation);
     await this.host.switchConversation(

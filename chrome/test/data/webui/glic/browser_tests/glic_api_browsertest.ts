@@ -481,15 +481,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(expectedHotkey, hotkeyState.hotkey);
   }
 
-  async testClosedCaptioning() {
-    assertDefined(this.host.getClosedCaptioningSetting);
-    assertDefined(this.host.setClosedCaptioningSetting);
-    const closedCaptioningState =
-        observeSequence(this.host.getClosedCaptioningSetting());
-    assertFalse(await closedCaptioningState.next());
-    await this.host.setClosedCaptioningSetting(true);
-    assertTrue(await closedCaptioningState.next());
-  }
 
   async testActuationOnWebSetting() {
     assertDefined(this.host.getActuationOnWebSetting);

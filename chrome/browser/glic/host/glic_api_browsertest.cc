@@ -1303,9 +1303,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
-  ExecuteJsTest();
-}
 
 class GlicApiTestWithOneTabAndCachedUserProfile : public GlicApiTestWithOneTab {
  public:

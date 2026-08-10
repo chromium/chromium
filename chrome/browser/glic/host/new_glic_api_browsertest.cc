@@ -2369,6 +2369,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testOpenPasswordManagerSettingsPage) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testClosedCaptioning) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvoke) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient());
