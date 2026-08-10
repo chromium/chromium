@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -112,6 +113,9 @@ class CBOR_EXPORT Value {
     TRUE_VALUE = 21,
     NULL_VALUE = 22,
     UNDEFINED = 23,
+
+    kMinValue = FALSE_VALUE,
+    kMaxValue = UNDEFINED,
   };
 
   // Returns a Value with Type::INVALID_UTF8. This factory method lets tests
@@ -179,16 +183,16 @@ class CBOR_EXPORT Value {
   SimpleValue GetSimpleValue() const;
   bool GetBool() const;
   double GetDouble() const;
-  const int64_t& GetInteger() const;
-  const int64_t& GetUnsigned() const;
-  const int64_t& GetNegative() const;
-  const BinaryValue& GetBytestring() const;
-  std::string_view GetBytestringAsString() const;
+  const int64_t& GetInteger() const LIFETIME_BOUND;
+  const int64_t& GetUnsigned() const LIFETIME_BOUND;
+  const int64_t& GetNegative() const LIFETIME_BOUND;
+  const BinaryValue& GetBytestring() const LIFETIME_BOUND;
+  std::string_view GetBytestringAsString() const LIFETIME_BOUND;
   // Returned string may contain NUL characters.
-  const std::string& GetString() const;
-  const ArrayValue& GetArray() const;
-  const MapValue& GetMap() const;
-  const BinaryValue& GetInvalidUTF8() const;
+  const std::string& GetString() const LIFETIME_BOUND;
+  const ArrayValue& GetArray() const LIFETIME_BOUND;
+  const MapValue& GetMap() const LIFETIME_BOUND;
+  const BinaryValue& GetInvalidUTF8() const LIFETIME_BOUND;
 
  private:
   friend class Reader;

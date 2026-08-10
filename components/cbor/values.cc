@@ -32,13 +32,16 @@ Value::Value(Value&& that) noexcept {
 
 Value::Value(SimpleValue in_simple)
     : type_(Type::SIMPLE_VALUE), simple_value_(in_simple) {
-  CHECK(static_cast<int>(in_simple) >= 20 && static_cast<int>(in_simple) <= 23);
+  CHECK(std::to_underlying(in_simple) >=
+            std::to_underlying(SimpleValue::kMinValue) &&
+        std::to_underlying(in_simple) <=
+            std::to_underlying(SimpleValue::kMaxValue));
 }
 
-Value::Value(bool boolean_value) : type_(Type::SIMPLE_VALUE) {
-  simple_value_ = boolean_value ? Value::SimpleValue::TRUE_VALUE
-                                : Value::SimpleValue::FALSE_VALUE;
-}
+Value::Value(bool boolean_value)
+    : type_(Type::SIMPLE_VALUE),
+      simple_value_(boolean_value ? SimpleValue::TRUE_VALUE
+                                  : SimpleValue::FALSE_VALUE) {}
 
 Value::Value(double float_value)
     : type_(Type::FLOAT_VALUE), float_value_(float_value) {}
@@ -46,9 +49,9 @@ Value::Value(double float_value)
 Value::Value(int integer_value)
     : Value(base::checked_cast<int64_t>(integer_value)) {}
 
-Value::Value(int64_t integer_value) : integer_value_(integer_value) {
-  type_ = integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE;
-}
+Value::Value(int64_t integer_value)
+    : type_(integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE),
+      integer_value_(integer_value) {}
 
 Value::Value(base::span<const uint8_t> in_bytes)
     : type_(Type::BYTE_STRING),
@@ -198,7 +201,6 @@ const Value::BinaryValue& Value::GetBytestring() const {
 }
 
 std::string_view Value::GetBytestringAsString() const {
-  CHECK(is_bytestring());
   return base::as_string_view(GetBytestring());
 }
 
