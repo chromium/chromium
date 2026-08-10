@@ -974,8 +974,7 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
   CGFloat max_bottom_inset = 0;
 
   SceneState* scene_state = browser_->GetSceneState();
-  if (IsChromeNextIaEnabled() && scene_state &&
-      scene_state.tabGridState.tabGridVisible) {
+  if (IsChromeNextIaEnabled() && IsTabGridVisible()) {
     if (scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
       max_bottom_inset = AppBarHeightPortrait();
     } else {
@@ -1888,6 +1887,11 @@ bool GeminiBrowserAgent::IsOmniboxFocused() const {
   return omnibox_agent && omnibox_agent->IsOmniboxFocused();
 }
 
+bool GeminiBrowserAgent::IsTabGridVisible() const {
+  SceneState* scene_state = browser_->GetSceneState();
+  return scene_state && scene_state.tabGridState.tabGridVisible;
+}
+
 bool GeminiBrowserAgent::ShouldIgnoreKeyboardUpdate() const {
   bool is_expanded_not_thinking =
       last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
@@ -2064,7 +2068,8 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
   }
 
   // Save the new active web state to attached tabs.
-  if (active_web_state && IsGeminiMultiTabContextEnabled()) {
+  if (active_web_state && !IsTabGridVisible() &&
+      IsGeminiMultiTabContextEnabled()) {
     attached_tabs_[active_web_state->GetUniqueIdentifier()] =
         active_page_context;
   }

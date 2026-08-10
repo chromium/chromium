@@ -321,6 +321,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns true if the omnibox is focused.
   bool IsOmniboxFocused() const;
 
+  // Returns true if tab grid is currently visible.
+  bool IsTabGridVisible() const;
+
   // Returns true if the keyboard update should be ignored.
   bool ShouldIgnoreKeyboardUpdate() const;
 
