@@ -609,15 +609,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "app-launch-shortcut",
-    "owners": [
-      "jimmyxgong@chromium.org",
-      "michaelcheco@google.com",
-      "cros-device-enablement@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "app-specific-history",
     "owners": [ "katzz@google.com", "jinsukkim@google.com" ],
     "expiry_milestone": 142

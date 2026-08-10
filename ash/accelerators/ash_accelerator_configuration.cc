@@ -159,9 +159,7 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
     AppendAcceleratorData(accelerators, ash::kDeveloperAcceleratorData);
   }
 
-  if (ash::features::IsAppLaunchShortcutEnabled()) {
-    AppendAcceleratorData(accelerators, ash::kGeminiAcceleratorData);
-  }
+  AppendAcceleratorData(accelerators, ash::kGeminiAcceleratorData);
 
   AppendAcceleratorData(accelerators,
                         ash::kToggleCameraAllowedAcceleratorData);

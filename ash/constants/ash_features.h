@@ -381,7 +381,6 @@ BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGaiaRecordAccountCreation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGameDashboardUtilities);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAppLaunchShortcut);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementGameDashboardRecordGame);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBlockFwupdClient);
@@ -1117,7 +1116,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaRecordAccountCreationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGameDashboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGameDashboardUtilitiesEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppLaunchShortcutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGraduationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGraduationUseEmbeddedTransferEndpointEnabled();

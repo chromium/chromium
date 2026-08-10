@@ -7845,10 +7845,6 @@ inline constexpr char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 inline constexpr char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";
 
-inline constexpr char kAppLaunchShortcut[] = "App launch keyboard shortcut";
-inline constexpr char kAppLaunchShortcutDescription[] =
-    "Enables a keyboard shortcut that launches a user specified app.";
-
 inline constexpr char kGlanceablesTimeManagementClassroomStudentViewName[] =
     "Glanceables > Time Management > Classroom Student";
 inline constexpr char

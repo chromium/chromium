@@ -111,7 +111,6 @@ ASH_EXPORT bool CanWindowSnap();
 
 ASH_EXPORT bool CanResizePipWindow();
 
-ASH_EXPORT bool CanToggleGeminiApp();
 
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.

@@ -941,8 +941,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleLockButton(accelerator);
     case AcceleratorAction::kResizePipWindow:
       return accelerators::CanResizePipWindow();
-    case AcceleratorAction::kToggleGeminiApp:
-      return accelerators::CanToggleGeminiApp();
 
     // The following are always enabled.
     case AcceleratorAction::kBrightnessDown:
@@ -991,6 +989,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kShowTaskManager:
     case AcceleratorAction::kSuspend:
     case AcceleratorAction::kToggleFullscreen:
+    case AcceleratorAction::kToggleGeminiApp:
     case AcceleratorAction::kToggleHighContrast:
     case AcceleratorAction::kToggleMaximized:
     case AcceleratorAction::kToggleSpokenFeedback:
