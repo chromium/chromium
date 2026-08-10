@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -101,13 +101,11 @@ FidoAttestationStatement::CreateFromU2fRegisterResponse(
   }
 
   std::vector<std::vector<uint8_t>> x509_certificates;
-  x509_certificates.emplace_back(CBS_data(&cert),
-                                 UNSAFE_TODO(CBS_data(&cert) + CBS_len(&cert)));
+  x509_certificates.push_back(base::ToVector(bssl::Span<const uint8_t>(cert)));
 
   // The remaining bytes are the signature.
-  std::vector<uint8_t> signature(
-      CBS_data(&response),
-      UNSAFE_TODO(CBS_data(&response) + CBS_len(&response)));
+  std::vector<uint8_t> signature =
+      base::ToVector(bssl::Span<const uint8_t>(response));
   return std::make_unique<FidoAttestationStatement>(
       std::move(signature), std::move(x509_certificates));
 }

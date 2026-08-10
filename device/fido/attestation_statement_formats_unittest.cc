@@ -110,5 +110,28 @@ TEST(OpaqueAttestationStatementTest, GetLeafCertificate) {
   EXPECT_EQ(590u, leaf_cert->size());
 }
 
+// Tests creating a FidoAttestationStatement from valid U2F register response
+// data.
+TEST(FidoAttestationStatementTest, CreateFromU2fRegisterResponseValid) {
+  auto statement = FidoAttestationStatement::CreateFromU2fRegisterResponse(
+      test_data::kTestU2fRegisterResponse);
+  ASSERT_TRUE(statement);
+  EXPECT_FALSE(statement->IsSelfAttestation());
+  auto leaf_cert = statement->GetLeafCertificate();
+  ASSERT_TRUE(leaf_cert);
+  EXPECT_EQ(sizeof(kCertificates), leaf_cert->size());
+}
+
+// Tests creating a FidoAttestationStatement from invalid or truncated data.
+TEST(FidoAttestationStatementTest, CreateFromU2fRegisterResponseInvalid) {
+  // Empty response must fail.
+  EXPECT_FALSE(
+      FidoAttestationStatement::CreateFromU2fRegisterResponse({}));
+
+  // Truncated response before key handle length must fail.
+  EXPECT_FALSE(FidoAttestationStatement::CreateFromU2fRegisterResponse(
+      base::span(test_data::kTestU2fRegisterResponse).first(10u)));
+}
+
 }  // namespace
 }  // namespace device
