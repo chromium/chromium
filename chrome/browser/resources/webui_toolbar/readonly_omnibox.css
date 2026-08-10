@@ -39,6 +39,15 @@
   width: 200px;
 }
 
+/* When the popup is expanded, we take control of spacing between us and icons,
+ * so that clicks delivered before the expansion still end up with us.
+ */
+:host-context(.popup-open) #textContainer,
+:host-context(.popup-open) #textInput {
+  padding-inline-start: var(--omnibox-start-padding);
+  margin-inline-start: calc(-1*var(--omnibox-start-padding));
+}
+
 #textContainer {
   /* Both #textContainer and #textInput are included in the layout, with opacity
    * used to determine which one is actually visible. Since the <input> element

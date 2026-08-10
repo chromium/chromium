@@ -10,6 +10,7 @@
 :host {
   --border-radius: calc(var(--location-bar-height)/2);
   --location-bar-background: var(--color-location-bar-background);
+  --omnibox-start-padding: 0px;
   align-self: center;
   align-items: center;
   background-color: var(--location-bar-background);
@@ -117,12 +118,20 @@ location-icon {
   flex-shrink: 0;
   margin: 4px;
   margin-inline-start: calc(4px - var(--border-radius));
+  margin-inline-end: 8px;
 }
 
-/* Margins expand out to line up with the popup if it's open */
+/* We expand out spacing between icon and text to line things up with the
+   popup. This is mostly done by the omnibox, since it wants to accept clicks
+   from that area, but for location icon we need to undo some of the
+   compensation that does. */
+:host(.popup-open) {
+  --omnibox-start-padding: calc(14px - var(--touch-mode)*10px);
+}
+
 :host(.popup-open) location-icon {
   margin-inline-start: calc(12px - var(--border-radius));
-  margin-inline-end: calc(14px - var(--touch-mode)*10px);
+  margin-inline-end: var(--omnibox-start-padding);
 }
 
 selected-keyword {
