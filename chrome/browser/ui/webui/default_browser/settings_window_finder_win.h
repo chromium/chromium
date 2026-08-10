@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -80,7 +82,9 @@ class SettingsWindowFinderWin {
   base::OneShotTimer timeout_timer_;
   HWINEVENTHOOK winevent_hook_ = nullptr;
   HWINEVENTHOOK uncloak_hook_ = nullptr;
-  HWINEVENTHOOK location_change_hook_ = nullptr;
+
+  // Hooks on `observed_hwnd_`, installed and released as a set.
+  std::vector<HWINEVENTHOOK> observation_hooks_;
 
   bool is_active_ = false;
 

@@ -118,6 +118,7 @@ class VisualGuidedSetterControllerWin : public views::WidgetObserver,
   virtual bool IsWindowAlive(HWND hwnd) const;
   virtual bool IsWindowOnScreen(HWND hwnd) const;
   virtual bool IsWindowCloaked(HWND hwnd) const;
+  virtual bool IsWindowMinimized(HWND hwnd) const;
   // Screen bounds of the latched Settings window, or nullopt when they are
   // unavailable or empty. Virtual for testing.
   virtual std::optional<gfx::Rect> GetSettingsWindowScreenRect() const;

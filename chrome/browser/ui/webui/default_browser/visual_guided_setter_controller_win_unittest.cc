@@ -248,6 +248,9 @@ class WindowStateTestControllerWin
   void set_settings_alive(bool value) { settings_alive_ = value; }
   void set_settings_on_screen(bool value) { settings_on_screen_ = value; }
   void set_settings_cloaked(bool value) { settings_cloaked_ = value; }
+  void set_settings_minimized(bool value) { settings_minimized_ = value; }
+  void set_chrome_cloaked(bool value) { chrome_cloaked_ = value; }
+
   bool IsWindowAlive(HWND hwnd) const override {
     return hwnd == settings_probe_hwnd_ ? settings_alive_ : true;
   }
@@ -255,8 +258,12 @@ class WindowStateTestControllerWin
     return hwnd == settings_probe_hwnd_ ? settings_on_screen_ : true;
   }
   bool IsWindowCloaked(HWND hwnd) const override {
-    return hwnd == settings_probe_hwnd_ ? settings_cloaked_ : false;
+    return hwnd == settings_probe_hwnd_ ? settings_cloaked_ : chrome_cloaked_;
   }
+  bool IsWindowMinimized(HWND hwnd) const override {
+    return hwnd == settings_probe_hwnd_ ? settings_minimized_ : false;
+  }
+
   bool settings_window_closed() const { return IsSettingsWindowClosed(); }
   bool settings_window_valid() const { return IsSettingsWindowValid(); }
 
@@ -265,6 +272,8 @@ class WindowStateTestControllerWin
   bool settings_alive_ = true;
   bool settings_on_screen_ = true;
   bool settings_cloaked_ = false;
+  bool settings_minimized_ = false;
+  bool chrome_cloaked_ = false;
 };
 
 }  // namespace
@@ -796,4 +805,98 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(controller_->show_overlay_count(), 0);
   controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest, RealClosedPredicateUwpSemantics) {
+  auto controller = MakeWindowStateController();
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  controller->set_settings_probe_hwnd(fake_hwnd);
+  controller->Start();
+  controller->test_finder()->TriggerFound(fake_hwnd);
+
+  // Latched, alive, on screen, not cloaked: not closed.
+  EXPECT_FALSE(controller->settings_window_closed());
+
+  // Destroyed window: closed.
+  controller->set_settings_alive(false);
+  EXPECT_TRUE(controller->settings_window_closed());
+  controller->set_settings_alive(true);
+
+  // Hidden (WS_VISIBLE cleared): closed.
+  controller->set_settings_on_screen(false);
+  EXPECT_TRUE(controller->settings_window_closed());
+  controller->set_settings_on_screen(true);
+
+  // DWM-cloaked (typical UWP close): closed.
+  controller->set_settings_cloaked(true);
+  EXPECT_TRUE(controller->settings_window_closed());
+
+  controller->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       CloakedSettingsWindowTearsDownFlow) {
+  base::HistogramTester histograms;
+  auto controller = MakeWindowStateController();
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  controller->set_settings_probe_hwnd(fake_hwnd);
+  controller->Start();
+  controller->test_finder()->TriggerFound(fake_hwnd);
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(controller->is_running());
+
+  controller->set_settings_cloaked(true);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FALSE(controller->is_running());
+
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowClosed, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       OverlayShownWhenDockedAndHiddenWhenInvalid) {
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  controller_->Start();
+  controller_->test_finder()->TriggerFound(fake_hwnd);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  EXPECT_GT(controller_->show_overlay_count(), 0);
+  controller_->clear_overlay_counts();
+  controller_->SetSettingsWindowValid(false);
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_GT(controller_->hide_overlay_count(), 0);
+  EXPECT_EQ(controller_->show_overlay_count(), 0);
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinTest,
+       RealClosedPredicateMinimizeAndVirtualDesktopExemptions) {
+  auto controller = MakeWindowStateController();
+  HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
+  controller->set_settings_probe_hwnd(fake_hwnd);
+  controller->Start();
+  controller->test_finder()->TriggerFound(fake_hwnd);
+
+  // Minimized (shell cloaks minimized UWP windows): not closed, not valid.
+  controller->set_settings_cloaked(true);
+  controller->set_settings_minimized(true);
+  EXPECT_FALSE(controller->settings_window_closed());
+  EXPECT_FALSE(controller->settings_window_valid());
+  controller->set_settings_minimized(false);
+
+  // Virtual desktop switch: Chrome's window is cloaked too, so the cloaked
+  // Settings window says nothing about a close.
+  controller->set_chrome_cloaked(true);
+  EXPECT_FALSE(controller->settings_window_closed());
+  EXPECT_FALSE(controller->settings_window_valid());
+
+  // Back on the active desktop with Settings still cloaked: now it is closed.
+  controller->set_chrome_cloaked(false);
+  EXPECT_TRUE(controller->settings_window_closed());
+
+  controller->Stop();
 }

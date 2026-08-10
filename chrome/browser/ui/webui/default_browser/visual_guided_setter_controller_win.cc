@@ -388,6 +388,11 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
     return;
   }
   if (!IsSettingsWindowValid()) {
+    // Reachable for a latched window that is not closed but is not showable
+    // either — minimized, or cloaked because the whole desktop is inactive.
+    // Both are exempted from IsSettingsWindowClosed() above, so the flow stays
+    // alive; only the arrow must not be left pointing at a hidden window.
+    UpdateOverlay();
     return;
   }
 
@@ -458,7 +463,28 @@ bool VisualGuidedSetterControllerWin::IsSettingsWindowValid() const {
 }
 
 bool VisualGuidedSetterControllerWin::IsSettingsWindowClosed() const {
-  return settings_hwnd_ && !IsWindowAlive(settings_hwnd_);
+  if (!settings_hwnd_) {
+    return false;
+  }
+  if (!IsWindowAlive(settings_hwnd_)) {
+    return true;
+  }
+  // Closing a UWP window such as Settings often does not destroy its
+  // ApplicationFrameWindow: the frame is kept alive hidden or DWM-cloaked
+  // while the process is suspended. Treat the latched window as closed when
+  // it is no longer genuinely visible — unless that is explained by
+  // something other than a close:
+  // - a minimized window is cloaked by the shell but the user can restore it;
+  // - when the Chrome window is cloaked too, the whole desktop went inactive
+  //   (virtual desktop switch, Win+D), which says nothing about Settings.
+  if (IsWindowMinimized(settings_hwnd_)) {
+    return false;
+  }
+  if (chrome_hwnd_ && IsWindowAlive(chrome_hwnd_) &&
+      IsWindowCloaked(chrome_hwnd_)) {
+    return false;
+  }
+  return !IsWindowOnScreen(settings_hwnd_) || IsWindowCloaked(settings_hwnd_);
 }
 
 bool VisualGuidedSetterControllerWin::IsWindowAlive(HWND hwnd) const {
@@ -471,6 +497,10 @@ bool VisualGuidedSetterControllerWin::IsWindowOnScreen(HWND hwnd) const {
 
 bool VisualGuidedSetterControllerWin::IsWindowCloaked(HWND hwnd) const {
   return gfx::IsWindowCloaked(hwnd);
+}
+
+bool VisualGuidedSetterControllerWin::IsWindowMinimized(HWND hwnd) const {
+  return ::IsIconic(hwnd);
 }
 
 std::optional<gfx::Rect> VisualGuidedSetterControllerWin::GetAnchorRectScreen()

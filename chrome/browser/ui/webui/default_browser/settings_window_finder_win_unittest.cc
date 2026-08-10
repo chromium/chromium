@@ -188,6 +188,29 @@ TEST_F(SettingsWindowFinderWinTest, FoundPathAcceptsCreateShowAndUncloak) {
   }
 }
 
+// Destroy/hide/cloak transitions of the observed window must notify the
+// owner (closing a UWP window often cloaks or hides its frame rather than
+// destroying it, and emits no location-change event), while the same events
+// for unrelated windows must not.
+TEST_F(SettingsWindowFinderWinTest, ObservedWindowStateChangesNotifyOwner) {
+  HWND sentinel = reinterpret_cast<HWND>(0x5E771);
+  for (DWORD event : {static_cast<DWORD>(EVENT_OBJECT_LOCATIONCHANGE),
+                      static_cast<DWORD>(EVENT_OBJECT_DESTROY),
+                      static_cast<DWORD>(EVENT_OBJECT_HIDE),
+                      static_cast<DWORD>(EVENT_OBJECT_CLOAKED)}) {
+    EventTestSettingsWindowFinderWin finder(sentinel);
+    int notified = 0;
+    finder.StartObservingLocationChanges(
+        sentinel, base::BindLambdaForTesting([&]() { ++notified; }));
+    finder.HandleWinEvent(event, sentinel, OBJID_WINDOW);
+    EXPECT_EQ(notified, 1) << "event=0x" << std::hex << event;
+    // The same event for an unrelated window is ignored.
+    finder.HandleWinEvent(event, reinterpret_cast<HWND>(0xBAD), OBJID_WINDOW);
+    EXPECT_EQ(notified, 1) << "event=0x" << std::hex << event;
+    finder.StopObservingLocationChanges();
+  }
+}
+
 TEST_F(SettingsWindowFinderWinTest, FoundReleasesGlobalInstance) {
   HWND sentinel = reinterpret_cast<HWND>(0x5E771);
   EventTestSettingsWindowFinderWin finder1(sentinel);
