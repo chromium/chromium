@@ -53,3 +53,11 @@ def CheckPythonTests(input_api, output_api):
           output_api,
           input_api.PresubmitLocalPath(),
           files_to_check=[r'.+_(?:unit)?test\.py$']))
+
+
+def CheckPatchFormatted(input_api, output_api):
+  return input_api.canned_checks.CheckPatchFormatted(
+      input_api,
+      output_api,
+      result_factory=output_api.PresubmitError,
+      bypass_warnings=False)
