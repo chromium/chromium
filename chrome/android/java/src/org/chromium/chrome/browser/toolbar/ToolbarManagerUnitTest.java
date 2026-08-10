@@ -128,6 +128,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.Bu
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarSceneLayerJni;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -174,6 +175,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -260,6 +262,7 @@ public class ToolbarManagerUnitTest {
     @Mock private PropertyModel mActionPropertyModel;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private TopToolbarCoordinator mMockToolbar;
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private PrefService mPrefService;
     @Mock private TabModel mIncognitoTabModel;
@@ -1185,5 +1188,28 @@ public class ToolbarManagerUnitTest {
         verify(controlContainer).setToolbarContainerTopMarginForAutoHiddenVerticalTab(false);
         assertEquals(20, params.rightMargin);
         assertEquals(0, params.leftMargin);
+    }
+
+    @Test
+    public void testMaybeShowGlicIph_nullGlicActionChipView() throws Exception {
+        // Setup Glic eligibility conditions.
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
+
+        when(mMockToolbar.shouldShowGlicToolbarButton()).thenReturn(true);
+        when(mMockToolbar.getGlicActionChipView()).thenReturn(null);
+
+        // Inject the mock toolbar into ToolbarManager
+        Field toolbarField = ToolbarManager.class.getDeclaredField("mToolbar");
+        toolbarField.setAccessible(true);
+        toolbarField.set(mToolbarManager, mMockToolbar);
+
+        // Trigger the code path.
+        Method maybeShowGlicIphMethod =
+                ToolbarManager.class.getDeclaredMethod("maybeShowGlicIph", Tab.class);
+        maybeShowGlicIphMethod.setAccessible(true);
+
+        maybeShowGlicIphMethod.invoke(mToolbarManager, mTab);
     }
 }
