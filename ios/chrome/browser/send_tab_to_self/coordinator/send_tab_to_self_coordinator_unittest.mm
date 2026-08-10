@@ -187,7 +187,8 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
   model_->SetSendResult(send_tab_to_self::SendTabToSelfResult::kSuccess);
   model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
-      syncer::DeviceInfo::FormFactor::kPhone, base::Time::Now()));
+      syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
+      base::Time::Now()));
 
   __block base::test::TestFuture<void> stop_future;
   __block base::test::TestFuture<void> snackbar_future;
@@ -244,7 +245,8 @@ TEST_F(SendTabToSelfCoordinatorTest,
       send_tab_to_self::SendTabToSelfResult::kFailureNoInternetConnection);
   model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
       kTargetDeviceName, kTargetDeviceGUID,
-      syncer::DeviceInfo::FormFactor::kPhone, base::Time::Now()));
+      syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
+      base::Time::Now()));
 
   __block base::test::TestFuture<void> stop_future;
   __block base::test::TestFuture<void> snackbar_future;

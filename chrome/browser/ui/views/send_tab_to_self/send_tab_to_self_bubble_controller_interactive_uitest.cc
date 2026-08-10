@@ -33,6 +33,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
 constexpr char kScreenshotBaselineCL[] = "7819337";
@@ -132,9 +135,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
                 SendTabToSelfSyncServiceFactory::GetForProfile(
                     browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
-            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-                "device_1", "device_1",
-                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
+            ->SetTargetDeviceInfoSortedList(
+                {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+                                  OsType::kLinux, base::Time::Now())});
       }),
       ShowBubble(),
       WaitForShow(SendTabToSelfDevicePickerBubbleView::
@@ -187,9 +190,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                 SendTabToSelfSyncServiceFactory::GetForProfile(
                     browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
-            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-                "device_1", "device_1",
-                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
+            ->SetTargetDeviceInfoSortedList(
+                {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+                                  OsType::kLinux, base::Time::Now())});
       }),
       ShowBubble(),
       WaitForShow(SendTabToSelfDevicePickerBubbleView::
@@ -242,12 +245,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                     browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
             ->SetTargetDeviceInfoSortedList(
-                {TargetDeviceInfo("device_1", "device_1",
-                                  syncer::DeviceInfo::FormFactor::kDesktop,
-                                  base::Time::Now()),
-                 TargetDeviceInfo("device_2", "device_2",
-                                  syncer::DeviceInfo::FormFactor::kPhone,
-                                  base::Time::Now())});
+                {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+                                  OsType::kLinux, base::Time::Now()),
+                 TargetDeviceInfo("device_2", "device_2", FormFactor::kPhone,
+                                  OsType::kAndroid, base::Time::Now())});
       }),
       ShowBubble(),
       WaitForShow(SendTabToSelfDevicePickerBubbleView::
@@ -307,9 +308,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                 SendTabToSelfSyncServiceFactory::GetForProfile(
                     browser()->GetProfile()));
         sync_service->GetFakeSendTabToSelfModel()
-            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
-                "device_1", "device_1",
-                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
+            ->SetTargetDeviceInfoSortedList(
+                {TargetDeviceInfo("device_1", "device_1", FormFactor::kDesktop,
+                                  OsType::kLinux, base::Time::Now())});
       }),
       ShowBubble(),
       WaitForShow(SendTabToSelfDevicePickerBubbleView::

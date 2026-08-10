@@ -19,6 +19,9 @@
 namespace send_tab_to_self {
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 class TargetDeviceInfoWithImprovedLabelsTest : public testing::Test {
  public:
   TargetDeviceInfoWithImprovedLabelsTest() {
@@ -49,9 +52,9 @@ class TargetDeviceInfoWithImprovedLabelsDisabledTest : public testing::Test {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveNow) {
   base::Time last_updated = base::Time::Now() - base::Seconds(30);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW),
             device_info.GetLastActiveTimeForDisplay());
@@ -59,9 +62,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveNow) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveMinutes) {
   base::Time last_updated = base::Time::Now() - base::Minutes(5);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES, 5),
@@ -70,9 +73,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveMinutes) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveHours) {
   base::Time last_updated = base::Time::Now() - base::Hours(5);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS, 5),
@@ -81,9 +84,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveHours) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveOneMinute) {
   base::Time last_updated = base::Time::Now() - base::Minutes(1);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES, 1),
@@ -92,9 +95,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveOneMinute) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveFiftyNineMinutes) {
   base::Time last_updated = base::Time::Now() - base::Minutes(59);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES, 59),
@@ -103,9 +106,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveFiftyNineMinutes) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveOneHour) {
   base::Time last_updated = base::Time::Now() - base::Hours(1);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS, 1),
@@ -114,9 +117,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveOneHour) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveTwentyThreeHours) {
   base::Time last_updated = base::Time::Now() - base::Hours(23);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS, 23),
@@ -125,9 +128,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveTwentyThreeHours) {
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveTodayWhenNoHighPrecision) {
   base::Time last_updated = base::Time::Now() - base::Minutes(5);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/false);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/false);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 0),
@@ -137,9 +140,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsTest, ActiveTodayWhenNoHighPrecision) {
 TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest,
        ActiveTodayWhenFlagDisabled) {
   base::Time last_updated = base::Time::Now() - base::Minutes(5);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 0),
@@ -148,9 +151,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest,
 
 TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest, OneDayAgoFallback) {
   base::Time last_updated = base::Time::Now() - base::Days(1) - base::Hours(1);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/true);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/true);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 1),
@@ -160,9 +163,9 @@ TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest, OneDayAgoFallback) {
 TEST_F(TargetDeviceInfoWithImprovedLabelsDisabledTest,
        MultipleDaysAgoFallback) {
   base::Time last_updated = base::Time::Now() - base::Days(3) - base::Hours(1);
-  TargetDeviceInfo device_info(
-      "device", "guid", syncer::DeviceInfo::FormFactor::kDesktop, last_updated,
-      /*has_high_precision_timestamp=*/false);
+  TargetDeviceInfo device_info("device", "guid", FormFactor::kDesktop,
+                               OsType::kLinux, last_updated,
+                               /*has_high_precision_timestamp=*/false);
 
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(
                 IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS, 3),
@@ -175,6 +178,7 @@ TEST(TargetDeviceInfoTest, DefaultConstructor_InitializesDefaultValues) {
   EXPECT_TRUE(device_info.device_name.empty());
   EXPECT_TRUE(device_info.cache_guid.empty());
   EXPECT_EQ(syncer::DeviceInfo::FormFactor::kUnknown, device_info.form_factor);
+  EXPECT_EQ(syncer::DeviceInfo::OsType::kUnknown, device_info.os_type);
   EXPECT_TRUE(device_info.last_updated_timestamp.is_null());
   EXPECT_FALSE(device_info.has_high_precision_timestamp);
 }

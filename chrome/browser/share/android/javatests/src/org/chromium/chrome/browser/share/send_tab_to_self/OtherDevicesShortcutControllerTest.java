@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +133,9 @@ public class OtherDevicesShortcutControllerTest {
     @Test
     public void handleShareTargetIntent() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
-        devices.add(new TargetDeviceInfo("Device 1", DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+        devices.add(
+                new TargetDeviceInfo(
+                        "Device 1", DEVICE_GUID_1, FormFactor.PHONE, OsType.ANDROID, "Just now"));
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
         // Instantiate controller to populate shortcuts in ShortcutManager.
@@ -193,7 +196,12 @@ public class OtherDevicesShortcutControllerTest {
     public void testHandleLauncherShortcutIntent_RelaunchesAsTrusted() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_1,
+                        DEVICE_GUID_1,
+                        FormFactor.PHONE,
+                        OsType.ANDROID,
+                        "Just now"));
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
@@ -258,9 +266,19 @@ public class OtherDevicesShortcutControllerTest {
     public void testUpdateShortcuts() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_1,
+                        DEVICE_GUID_1,
+                        FormFactor.PHONE,
+                        OsType.ANDROID,
+                        "Just now"));
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_2, DEVICE_GUID_2, FormFactor.DESKTOP, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_2,
+                        DEVICE_GUID_2,
+                        FormFactor.DESKTOP,
+                        OsType.WINDOWS,
+                        "Just now"));
 
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
         when(mNativeMock.addDeviceInfoObserver(any(), any())).thenReturn(123L);
@@ -296,7 +314,12 @@ public class OtherDevicesShortcutControllerTest {
 
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_1,
+                        DEVICE_GUID_1,
+                        FormFactor.PHONE,
+                        OsType.ANDROID,
+                        "Just now"));
 
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -318,7 +341,12 @@ public class OtherDevicesShortcutControllerTest {
 
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_1,
+                        DEVICE_GUID_1,
+                        FormFactor.PHONE,
+                        OsType.ANDROID,
+                        "Just now"));
 
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 
@@ -338,7 +366,12 @@ public class OtherDevicesShortcutControllerTest {
     public void testFeatureDisabled_NoShortcutsRegistered() {
         List<TargetDeviceInfo> devices = new ArrayList<>();
         devices.add(
-                new TargetDeviceInfo(DEVICE_NAME_1, DEVICE_GUID_1, FormFactor.PHONE, "Just now"));
+                new TargetDeviceInfo(
+                        DEVICE_NAME_1,
+                        DEVICE_GUID_1,
+                        FormFactor.PHONE,
+                        OsType.ANDROID,
+                        "Just now"));
 
         when(mNativeMock.getAllTargetDeviceInfos(mProfile)).thenReturn(devices);
 

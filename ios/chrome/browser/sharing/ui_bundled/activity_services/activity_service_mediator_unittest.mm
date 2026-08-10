@@ -494,13 +494,13 @@ TEST_F(
     std::vector<send_tab_to_self::TargetDeviceInfo> devices = {
         send_tab_to_self::TargetDeviceInfo(
             "Phone", "phone_guid", syncer::DeviceInfo::FormFactor::kPhone,
-            base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
         send_tab_to_self::TargetDeviceInfo(
             "Tablet", "tablet_guid", syncer::DeviceInfo::FormFactor::kTablet,
-            base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
         send_tab_to_self::TargetDeviceInfo(
             "Desktop", "desktop_guid", syncer::DeviceInfo::FormFactor::kDesktop,
-            base::Time::Now()),
+            syncer::DeviceInfo::OsType::kIOS, base::Time::Now()),
     };
     model->SetTargetDeviceInfoSortedList(devices);
     model->SetIsReady(true);

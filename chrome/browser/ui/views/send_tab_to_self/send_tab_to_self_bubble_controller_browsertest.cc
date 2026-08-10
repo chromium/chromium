@@ -59,6 +59,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 using testing::AnyOf;
 using testing::HasSubstr;
 
@@ -197,9 +200,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kDesktop,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
+                        OsType::kLinux, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
@@ -230,9 +232,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kPhone,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kPhone,
+                        OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
@@ -263,9 +264,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kTablet,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kTablet,
+                        OsType::kAndroid, base::Time::Now())});
 
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
@@ -298,9 +298,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
       sync_service->GetSendTabToSelfModel());
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kDesktop,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
+                        OsType::kLinux, base::Time::Now())});
   sync_service->GetFakeSendTabToSelfModel()->SetSendResult(
       SendTabToSelfResult::kSuccessThrottled);
 
@@ -327,9 +326,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   ASSERT_TRUE(sync_service);
 
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kDesktop,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
+                        OsType::kLinux, base::Time::Now())});
 
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
@@ -613,12 +611,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       EntryPointDisplayReason::kOfferFeature);
   // Set up 2 target devices.
   sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
-      {TargetDeviceInfo("device_name_0", "device_0",
-                        syncer::DeviceInfo::FormFactor::kDesktop,
-                        base::Time::Now()),
-       TargetDeviceInfo("device_name_1", "device_1",
-                        syncer::DeviceInfo::FormFactor::kDesktop,
-                        base::Time::Now())});
+      {TargetDeviceInfo("device_name_0", "device_0", FormFactor::kDesktop,
+                        OsType::kLinux, base::Time::Now()),
+       TargetDeviceInfo("device_name_1", "device_1", FormFactor::kDesktop,
+                        OsType::kLinux, base::Time::Now())});
 
   base::HistogramTester histogram_tester;
 

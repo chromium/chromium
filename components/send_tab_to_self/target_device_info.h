@@ -23,6 +23,7 @@ struct TargetDeviceInfo {
   TargetDeviceInfo(std::string device_name,
                    std::string cache_guid,
                    const syncer::DeviceInfo::FormFactor form_factor,
+                   const syncer::DeviceInfo::OsType os_type,
                    base::Time last_updated_timestamp,
                    bool has_high_precision_timestamp = false);
   TargetDeviceInfo(const TargetDeviceInfo& other);
@@ -44,6 +45,8 @@ struct TargetDeviceInfo {
   // Device Form Factor.
   syncer::DeviceInfo::FormFactor form_factor =
       syncer::DeviceInfo::FormFactor::kUnknown;
+  // Device OS Type.
+  syncer::DeviceInfo::OsType os_type = syncer::DeviceInfo::OsType::kUnknown;
   // Last updated timestamp.
   base::Time last_updated_timestamp;
   // Whether the device timestamp is highly precise (e.g. from sessions sync)

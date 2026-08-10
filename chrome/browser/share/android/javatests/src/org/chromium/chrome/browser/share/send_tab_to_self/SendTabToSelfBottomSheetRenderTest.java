@@ -43,6 +43,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -152,11 +153,24 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
+                        new TargetDeviceInfo(
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"));
         Activity activity = mActivityTestRule.getActivity();
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -184,11 +198,24 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(account);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
+                        new TargetDeviceInfo(
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"));
         Activity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -247,11 +274,24 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
+                        new TargetDeviceInfo(
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"));
         View view =
                 createAndShowEnhancedDevicePickerView(
                         devices, BottomSheetController.SheetState.HALF);
@@ -269,17 +309,42 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"),
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
                         new TargetDeviceInfo(
-                                "My Laptop", "guid4", FormFactor.DESKTOP, "Active 3 days ago"),
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"),
                         new TargetDeviceInfo(
-                                "My Watch", "guid5", FormFactor.PHONE, "Active 4 days ago"),
+                                "My Laptop",
+                                "guid4",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 3 days ago"),
                         new TargetDeviceInfo(
-                                "My TV", "guid6", FormFactor.TABLET, "Active 5 days ago"));
+                                "My Watch",
+                                "guid5",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active 4 days ago"),
+                        new TargetDeviceInfo(
+                                "My TV",
+                                "guid6",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 5 days ago"));
         View view =
                 createAndShowEnhancedDevicePickerView(
                         devices, BottomSheetController.SheetState.HALF);
@@ -303,6 +368,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                             "Device " + i,
                             "guid" + i,
                             FormFactor.PHONE,
+                            OsType.ANDROID,
                             "Active " + i + " days ago"));
         }
         View view =
@@ -324,13 +390,30 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"),
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
                         new TargetDeviceInfo(
-                                "My Laptop", "guid4", FormFactor.DESKTOP, "Active 3 days ago"));
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"),
+                        new TargetDeviceInfo(
+                                "My Laptop",
+                                "guid4",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 3 days ago"));
         View view =
                 createAndShowEnhancedDevicePickerView(
                         devices, BottomSheetController.SheetState.HALF);
@@ -349,13 +432,30 @@ public class SendTabToSelfBottomSheetRenderTest {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
+                                "My Phone",
+                                "guid1",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"),
                         new TargetDeviceInfo(
-                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"),
+                                "My Computer",
+                                "guid2",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 1 day ago"),
                         new TargetDeviceInfo(
-                                "My Laptop", "guid4", FormFactor.DESKTOP, "Active 3 days ago"));
+                                "My Tablet",
+                                "guid3",
+                                FormFactor.TABLET,
+                                OsType.ANDROID,
+                                "Active 2 days ago"),
+                        new TargetDeviceInfo(
+                                "My Laptop",
+                                "guid4",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active 3 days ago"));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule

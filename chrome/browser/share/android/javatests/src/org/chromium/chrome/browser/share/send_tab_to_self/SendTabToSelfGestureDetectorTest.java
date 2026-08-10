@@ -30,6 +30,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -66,7 +68,9 @@ public class SendTabToSelfGestureDetectorTest {
 
         // Set up mock target devices so the bridge check passes
         List<TargetDeviceInfo> mockDevices = new ArrayList<>();
-        mockDevices.add(new TargetDeviceInfo("device_name", "cache_guid", 1, "1000"));
+        mockDevices.add(
+                new TargetDeviceInfo(
+                        "device_name", "cache_guid", FormFactor.DESKTOP, OsType.UNKNOWN, "1000"));
         when(mNativeMock.getAllTargetDeviceInfos(any())).thenReturn(mockDevices);
 
         // Default to offering the feature, which implies the user is signed in and has devices.

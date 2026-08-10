@@ -32,6 +32,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
  public:
   explicit StubSendTabToSelfBubbleController(content::WebContents* web_contents)
@@ -50,18 +53,18 @@ class StubSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
 
   std::vector<TargetDeviceInfo> GetValidDevices() override {
     const auto now = base::Time::Now();
-    return {{"Device_1", "device_guid_1",
-             syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(0)},
-            {"Device_2", "device_guid_2",
-             syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(0)},
-            {"Device_3", "device_guid_3",
-             syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(1)},
-            {"Device_4", "device_guid_4",
-             syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(1)},
-            {"Device_5", "device_guid_5",
-             syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(5)},
-            {"Device_6", "device_guid_6",
-             syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(5)}};
+    return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
+             now - base::Days(0)},
+            {"Device_2", "device_guid_2", FormFactor::kPhone, OsType::kAndroid,
+             now - base::Days(0)},
+            {"Device_3", "device_guid_3", FormFactor::kDesktop, OsType::kLinux,
+             now - base::Days(1)},
+            {"Device_4", "device_guid_4", FormFactor::kPhone, OsType::kAndroid,
+             now - base::Days(1)},
+            {"Device_5", "device_guid_5", FormFactor::kDesktop, OsType::kLinux,
+             now - base::Days(5)},
+            {"Device_6", "device_guid_6", FormFactor::kPhone, OsType::kAndroid,
+             now - base::Days(5)}};
   }
 
   AccountInfo GetSharingAccountInfo() override {

@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -52,9 +53,11 @@ public class EnhancedTargetDevicePickerMediatorTest {
     private static final String SHARING_TITLE = "Example Page";
 
     private final TargetDeviceInfo mDevice1 =
-            new TargetDeviceInfo("Device 1", "guid_1", FormFactor.PHONE, "1 day ago");
+            new TargetDeviceInfo(
+                    "Device 1", "guid_1", FormFactor.PHONE, OsType.ANDROID, "1 day ago");
     private final TargetDeviceInfo mDevice2 =
-            new TargetDeviceInfo("Device 2", "guid_2", FormFactor.DESKTOP, "2 days ago");
+            new TargetDeviceInfo(
+                    "Device 2", "guid_2", FormFactor.DESKTOP, OsType.WINDOWS, "2 days ago");
 
     @Before
     public void setUp() {
@@ -118,13 +121,17 @@ public class EnhancedTargetDevicePickerMediatorTest {
     @Test
     public void testPopulateModelWithoutTruncation() {
         TargetDeviceInfo device3 =
-                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.TABLET, "3 days ago");
+                new TargetDeviceInfo(
+                        "Device 3", "guid_3", FormFactor.TABLET, OsType.ANDROID, "3 days ago");
         TargetDeviceInfo device4 =
-                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "4 days ago");
+                new TargetDeviceInfo(
+                        "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "4 days ago");
         TargetDeviceInfo device5 =
-                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.DESKTOP, "5 days ago");
+                new TargetDeviceInfo(
+                        "Device 5", "guid_5", FormFactor.DESKTOP, OsType.WINDOWS, "5 days ago");
         TargetDeviceInfo device6 =
-                new TargetDeviceInfo("Device 6", "guid_6", FormFactor.TABLET, "6 days ago");
+                new TargetDeviceInfo(
+                        "Device 6", "guid_6", FormFactor.TABLET, OsType.ANDROID, "6 days ago");
         createMediator(Arrays.asList(mDevice1, mDevice2, device3, device4, device5, device6));
 
         ModelList deviceList = mModel.get(EnhancedTargetDevicePickerProperties.DEVICE_LIST);
@@ -213,15 +220,20 @@ public class EnhancedTargetDevicePickerMediatorTest {
     @Test
     public void testPopulateModelWithManyDevices_autoSelectsFirstDevice() {
         TargetDeviceInfo device1 =
-                new TargetDeviceInfo("Device 1", "guid_1", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 1", "guid_1", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device2 =
-                new TargetDeviceInfo("Device 2", "guid_2", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 2", "guid_2", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device3 =
-                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 3", "guid_3", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device4 =
-                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device5 =
-                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 5", "guid_5", FormFactor.PHONE, OsType.ANDROID, "Just now");
 
         // Simulate passing 5 devices.
         createMediator(Arrays.asList(device1, device2, device3, device4, device5));
@@ -247,15 +259,20 @@ public class EnhancedTargetDevicePickerMediatorTest {
     @Test
     public void testPopulateModelWithManyDevicesMixedActivity() {
         TargetDeviceInfo device3 =
-                new TargetDeviceInfo("Device 3", "guid_3", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 3", "guid_3", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device4 =
-                new TargetDeviceInfo("Device 4", "guid_4", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 4", "guid_4", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device5 =
-                new TargetDeviceInfo("Device 5", "guid_5", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 5", "guid_5", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device6 =
-                new TargetDeviceInfo("Device 6", "guid_6", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 6", "guid_6", FormFactor.PHONE, OsType.ANDROID, "Just now");
         TargetDeviceInfo device7 =
-                new TargetDeviceInfo("Device 7", "guid_7", FormFactor.PHONE, "Just now");
+                new TargetDeviceInfo(
+                        "Device 7", "guid_7", FormFactor.PHONE, OsType.ANDROID, "Just now");
 
         // Simulate passing 2 active devices (from setUp) + 5 extra devices.
         createMediator(

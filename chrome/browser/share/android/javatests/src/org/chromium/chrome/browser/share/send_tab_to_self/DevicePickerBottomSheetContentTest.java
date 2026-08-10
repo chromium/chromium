@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 
@@ -77,7 +78,11 @@ public class DevicePickerBottomSheetContentTest {
         mDevices =
                 Arrays.asList(
                         new TargetDeviceInfo(
-                                "Pixel 10", "guid", FormFactor.DESKTOP, "Active today"));
+                                "My Computer",
+                                "guid",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active today"));
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
     }

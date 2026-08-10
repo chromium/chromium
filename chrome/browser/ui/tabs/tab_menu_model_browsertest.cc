@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfBrowserTest,
   std::vector<send_tab_to_self::TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0",
                        syncer::DeviceInfo::FormFactor::kDesktop,
-                       base::Time::Now());
+                       syncer::DeviceInfo::OsType::kLinux, base::Time::Now());
   model()->SetTargetDeviceInfoSortedList(devices);
 
   ASSERT_TRUE(embedded_test_server()->Start());

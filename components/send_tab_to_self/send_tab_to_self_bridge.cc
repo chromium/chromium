@@ -745,8 +745,8 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     for (size_t i = 0; i < devices.size(); ++i) {
       target_devices.emplace_back(
           std::move(device_names[i]), devices[i].device->guid(),
-          devices[i].device->form_factor(), devices[i].last_active,
-          devices[i].has_high_precision);
+          devices[i].device->form_factor(), devices[i].device->os_type(),
+          devices[i].last_active, devices[i].has_high_precision);
     }
     return target_devices;
   }
@@ -767,8 +767,8 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     auto it =
         std::ranges::find(devices, info.device, &DeviceWithTimestamp::device);
     return TargetDeviceInfo(info.display_name, info.device->guid(),
-                            info.device->form_factor(), it->last_active,
-                            it->has_high_precision);
+                            info.device->form_factor(), info.device->os_type(),
+                            it->last_active, it->has_high_precision);
   });
 }
 

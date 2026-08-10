@@ -34,6 +34,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
  public:
   explicit SendTabToSelfBubbleControllerMock(content::WebContents* web_contents)
@@ -43,13 +46,12 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
 
   std::vector<TargetDeviceInfo> GetValidDevices() override {
     base::SimpleTestClock clock;
-    return {
-        {"Device_1", "device_guid_1", syncer::DeviceInfo::FormFactor::kDesktop,
-         clock.Now() - base::Days(0)},
-        {"Device_2", "device_guid_2", syncer::DeviceInfo::FormFactor::kDesktop,
-         clock.Now() - base::Days(1)},
-        {"Device_3", "device_guid_3", syncer::DeviceInfo::FormFactor::kPhone,
-         clock.Now() - base::Days(5)}};
+    return {{"Device_1", "device_guid_1", FormFactor::kDesktop, OsType::kLinux,
+             clock.Now() - base::Days(0)},
+            {"Device_2", "device_guid_2", FormFactor::kDesktop, OsType::kLinux,
+             clock.Now() - base::Days(1)},
+            {"Device_3", "device_guid_3", FormFactor::kPhone, OsType::kAndroid,
+             clock.Now() - base::Days(5)}};
   }
 
   AccountInfo GetSharingAccountInfo() override {

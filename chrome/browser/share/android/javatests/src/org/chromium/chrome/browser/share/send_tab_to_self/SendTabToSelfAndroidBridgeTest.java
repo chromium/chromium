@@ -58,6 +58,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.components.sync_device_info.OsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -168,9 +169,20 @@ public class SendTabToSelfAndroidBridgeTest {
     public void testGetAllTargetDeviceInfos() {
         List<TargetDeviceInfo> expected =
                 List.of(
-                        new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, "Active today"),
-                        new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, "Active today"),
-                        new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, "Active today"));
+                        new TargetDeviceInfo(
+                                "name1",
+                                "guid1",
+                                FormFactor.DESKTOP,
+                                OsType.WINDOWS,
+                                "Active today"),
+                        new TargetDeviceInfo(
+                                "name2", "guid2", FormFactor.DESKTOP, OsType.MAC, "Active today"),
+                        new TargetDeviceInfo(
+                                "name3",
+                                "guid3",
+                                FormFactor.PHONE,
+                                OsType.ANDROID,
+                                "Active today"));
         when(mNativeMock.getAllTargetDeviceInfos(eq(mProfile))).thenReturn(expected);
 
         List<TargetDeviceInfo> actual =

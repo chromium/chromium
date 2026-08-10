@@ -38,6 +38,9 @@ namespace send_tab_to_self {
 
 namespace {
 
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using OsType = syncer::DeviceInfo::OsType;
+
 using testing::ElementsAre;
 using testing::Field;
 using testing::UnorderedElementsAre;
@@ -83,8 +86,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, GetDevicesForDisplayLimitsToFive) {
   std::vector<TargetDeviceInfo> devices;
   for (int i = 0; i < 10; ++i) {
     devices.emplace_back("Device " + base::NumberToString(i),
-                         "guid" + base::NumberToString(i),
-                         syncer::DeviceInfo::FormFactor::kDesktop, now);
+                         "guid" + base::NumberToString(i), FormFactor::kDesktop,
+                         OsType::kLinux, now);
   }
   model()->SetTargetDeviceInfoSortedList(devices);
 
@@ -106,8 +109,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, GetDevicesForDisplayLimitsToFive) {
 TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   const GURL kExampleUrl("https://example.com");
@@ -138,8 +141,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
        ExecuteCommandSendsTargetUrlAndTitleWhenProvided) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   const GURL kPageUrl("https://example.com/page");
@@ -168,8 +171,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
        ExecuteCommandSendsTitleFallbackWhenTitleEmpty) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   const GURL kPageUrl("https://example.com/page");
@@ -200,8 +203,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
        PopulateSubmenuAddsDevicesAndManageItem) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   SendTabToSelfContextMenuDelegate delegate(web_contents(),
@@ -222,10 +225,10 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
 TEST_F(SendTabToSelfContextMenuDelegateTest, OnMenuWillShowRecordsMetrics) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
-  devices.emplace_back("Device 1", "guid1",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
+  devices.emplace_back("Device 1", "guid1", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   base::HistogramTester histogram_tester;
@@ -246,8 +249,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
        ExecuteCommandSendsMultipleTabsToDevice) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   // Set up first tab (default web_contents()).
@@ -295,8 +298,8 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
        ExecuteCommandSkipsDestroyedWebContents) {
   base::Time now = base::Time::Now();
   std::vector<TargetDeviceInfo> devices;
-  devices.emplace_back("Device 0", "guid0",
-                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  devices.emplace_back("Device 0", "guid0", FormFactor::kDesktop,
+                       OsType::kLinux, now);
   model()->SetTargetDeviceInfoSortedList(devices);
 
   const GURL kUrl1("https://example1.com");

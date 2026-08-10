@@ -150,7 +150,7 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
       infos.push_back(Java_TargetDeviceInfo_build(
           env, ConvertUTF8ToJavaString(env, info.device_name),
           ConvertUTF8ToJavaString(env, info.cache_guid),
-          static_cast<int>(info.form_factor),
+          static_cast<int>(info.form_factor), static_cast<int>(info.os_type),
           base::android::ConvertUTF16ToJavaString(
               env, info.GetLastActiveTimeForDisplay())));
     }
