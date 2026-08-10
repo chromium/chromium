@@ -169,6 +169,11 @@ iwa_access_control {
     key: "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic"
     value: {}
   }
+  # crbug.com/537771961
+  managed_allowlist {
+    key: "d2akgyaysipz5jkxlpwtnhs57377awcdyn4qipu7jzdiyq2j4vcaaaic"
+    value: {}
+  }
   # crbug.com/492434018
   managed_allowlist {
     key: "fastb5gbwigsdvngfspsjt7nvlq2cur7ywysdizyxmoywcnxbplqaaic"
