@@ -3,81 +3,190 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
-test(() => {
+promise_test(async () => {
   const powerOfTwoHint = 4096;
-  const context = new AudioContext({
+  const context = new OfflineAudioContext({
+    numberOfChannels: 1,
+    length: powerOfTwoHint,
+    sampleRate: 48000,
     renderSizeHint: powerOfTwoHint,
-    latencyHint: 'playback',
   });
-  assert_true(
-      context instanceof AudioContext,
-      'AudioContext with power-of-two renderSizeHint should be created.',
-  );
-
+  const source = new ConstantSourceNode(context, {offset: 0.5});
   const shaper = context.createWaveShaper();
-  shaper.connect(context.destination);
+  shaper.curve = new Float32Array([-1.0, 0.0, 1.0]);
   shaper.oversample = '4x';
-},
-'Constructing AudioContext with a power-of-two renderSizeHint (4096) ' +
-'and using WaveShaper oversampling.');
+  source.connect(shaper).connect(context.destination);
+  source.start();
 
-test(() => {
+  const renderedBuffer = await context.startRendering();
+  assert_equals(
+      renderedBuffer.length,
+      powerOfTwoHint,
+      'Rendered buffer length must match power-of-two hint.');
+}, 'Offline rendering with power-of-two hint (4096) and WaveShaper 4x.');
+
+promise_test(async () => {
   const nonPowerOfTwoHint = 57456;
-  const context = new AudioContext({
+  const context = new OfflineAudioContext({
+    numberOfChannels: 1,
+    length: nonPowerOfTwoHint,
+    sampleRate: 48000,
     renderSizeHint: nonPowerOfTwoHint,
-    latencyHint: 'playback',
   });
-  assert_true(
-      context instanceof AudioContext,
-      'AudioContext with non-power-of-two renderSizeHint should be created.',
-  );
-
+  const source = new ConstantSourceNode(context, {offset: 0.5});
   const shaper = context.createWaveShaper();
-  shaper.connect(context.destination);
+  shaper.curve = new Float32Array([-1.0, 0.0, 1.0]);
   shaper.oversample = '4x';
-},
-'Constructing AudioContext with a non-power-of-two renderSizeHint (57456) ' +
-'and using WaveShaper oversampling.');
+  source.connect(shaper).connect(context.destination);
+  source.start();
 
-test(() => {
+  const renderedBuffer = await context.startRendering();
+  assert_equals(
+      renderedBuffer.length,
+      nonPowerOfTwoHint,
+      'Rendered buffer length must match non-power-of-two hint.');
+}, 'Offline rendering with non-power-of-two hint (57456) and WaveShaper 4x.');
+
+promise_test(async () => {
   const minSampleRate = 3000;
   const minRenderSizeHint = 1;
-  const context = new AudioContext({
+  const context = new OfflineAudioContext({
+    numberOfChannels: 1,
+    length: minRenderSizeHint,
     sampleRate: minSampleRate,
     renderSizeHint: minRenderSizeHint,
-    latencyHint: 'playback',
   });
-  assert_true(
-      context instanceof AudioContext,
-      'AudioContext with minimum sampleRate and ' +
-      'renderSizeHint should be created.',
-  );
-
+  const source = new ConstantSourceNode(context, {offset: 0.5});
   const shaper = context.createWaveShaper();
-  shaper.connect(context.destination);
+  shaper.curve = new Float32Array([-1.0, 0.0, 1.0]);
   shaper.oversample = '4x';
-},
-'Constructing AudioContext with minimum sampleRate ' +
-'renderSizeHint (1) and using WaveShaper oversampling.');
+  source.connect(shaper).connect(context.destination);
+  source.start();
+
+  const renderedBuffer = await context.startRendering();
+  assert_equals(
+      renderedBuffer.length,
+      minRenderSizeHint,
+      'Rendered buffer length must match minimum hint.');
+}, 'Offline rendering with min sampleRate and hint (1) and WaveShaper 4x.');
+
+promise_test(async () => {
+  const maxSampleRate = 768000;
+  const largeRenderSizeHint = 8192;
+  const renderLength = 128;
+  const context = new OfflineAudioContext({
+    numberOfChannels: 1,
+    length: renderLength,
+    sampleRate: maxSampleRate,
+    renderSizeHint: largeRenderSizeHint,
+  });
+  const source = new ConstantSourceNode(context, {offset: 0.5});
+  const shaper = context.createWaveShaper();
+  shaper.curve = new Float32Array([-1.0, 0.0, 1.0]);
+  shaper.oversample = '4x';
+  source.connect(shaper).connect(context.destination);
+  source.start();
+
+  const renderedBuffer = await context.startRendering();
+  assert_equals(
+      renderedBuffer.length,
+      renderLength,
+      'Rendered buffer length must match test render length.');
+}, 'Offline rendering with max sampleRate and large hint and WaveShaper 4x.');
 
 test(() => {
   const maxSampleRate = 768000;
   const maxRenderSizeHint = 768000 * 6;
-  const context = new AudioContext({
+  const context = new OfflineAudioContext({
+    numberOfChannels: 1,
+    length: 128,
     sampleRate: maxSampleRate,
     renderSizeHint: maxRenderSizeHint,
-    latencyHint: 'playback',
   });
   assert_true(
-      context instanceof AudioContext,
-      'AudioContext with maximum sampleRate and ' +
-      'renderSizeHint should be created.',
-  );
+      context instanceof OfflineAudioContext,
+      'OfflineAudioContext with max sampleRate and hint should be created.');
 
   const shaper = context.createWaveShaper();
   shaper.connect(context.destination);
   shaper.oversample = '4x';
-},
-'Constructing AudioContext with maximum sampleRate and ' +
-'renderSizeHint and using WaveShaper oversampling.');
+}, 'Constructing OfflineAudioContext with maximum valid sampleRate and ' +
+   'renderSizeHint bounds.');
+
+// Parameterized edge case, prime, and boundary limit testing covering diverse
+// quantum sizes and sample rates:
+const TEST_CONFIGURATIONS = [
+  {category: 'Min Quantum Limit', hint: 1, sampleRate: 8000},
+  {category: 'Small Multiple of 8', hint: 8, sampleRate: 48000},
+  {category: 'Multiple of 8 (<= 128)', hint: 64, sampleRate: 48000},
+  {category: 'Standard Quantum Bound', hint: 128, sampleRate: 48000},
+  {category: 'Multiple of 8 (> 128)', hint: 136, sampleRate: 96000},
+  {category: 'Non-Multiple of 8', hint: 130, sampleRate: 48000},
+  {category: 'Odd Non-Multiple of 8', hint: 250, sampleRate: 48000},
+  {category: 'Divisor 50 Non-Multiple of 8', hint: 50, sampleRate: 48000},
+  {category: 'Small Prime (11)', hint: 11, sampleRate: 48000},
+  {category: 'Boundary Prime <= 128 (127)', hint: 127, sampleRate: 48000},
+  {category: 'Medium Prime (137)', hint: 137, sampleRate: 96000},
+  {category: 'Medium Prime (179)', hint: 179, sampleRate: 48000},
+  {category: 'Fermat Prime (257)', hint: 257, sampleRate: 48000},
+  {category: 'Mersenne Prime (8191)', hint: 8191, sampleRate: 192000},
+  {category: 'Large Quantum Limit (16384)', hint: 16384, sampleRate: 48000},
+];
+
+const OVERSAMPLE_MODES = ['none', '2x', '4x'];
+
+for (const config of TEST_CONFIGURATIONS) {
+  const {category, hint, sampleRate} = config;
+
+  promise_test(async () => {
+    for (const oversample of OVERSAMPLE_MODES) {
+      // Use at least 256 frames to account for FIR oversampling filter
+      // latency (~64 frames) across small quantum sizes (e.g., hint = 1).
+      const renderLength = Math.max(hint, 256);
+      const context = new OfflineAudioContext({
+        numberOfChannels: 1,
+        length: renderLength,
+        sampleRate: sampleRate,
+        renderSizeHint: hint,
+      });
+
+      const source = new ConstantSourceNode(context, {offset: 0.5});
+      const shaper = context.createWaveShaper();
+      shaper.curve = new Float32Array([-1.0, 0.0, 1.0]);
+      shaper.oversample = oversample;
+
+      source.connect(shaper).connect(context.destination);
+      source.start();
+
+      const renderedBuffer = await context.startRendering();
+
+      assert_equals(
+          renderedBuffer.length,
+          renderLength,
+          `Rendered buffer length must match for hint ${hint} ` +
+              `(${oversample} @ ${sampleRate}Hz).`);
+
+      const channelData = renderedBuffer.getChannelData(0);
+      assert_false(
+          channelData.includes(NaN),
+          `Rendered output should not contain NaN for hint ${hint} ` +
+              `(${oversample} @ ${sampleRate}Hz).`);
+      assert_false(
+          channelData.includes(Infinity),
+          `Rendered output should not contain Infinity for hint ${hint} ` +
+              `(${oversample} @ ${sampleRate}Hz).`);
+      assert_false(
+          channelData.includes(-Infinity),
+          `Rendered output should not contain -Infinity for hint ${hint} ` +
+              `(${oversample} @ ${sampleRate}Hz).`);
+
+      const hasNonZero = channelData.some(sample => sample !== 0);
+      assert_true(
+          hasNonZero,
+          `Rendered output should contain shaped non-zero audio for hint ` +
+              `${hint} (${oversample} @ ${sampleRate}Hz).`);
+    }
+  }, `WaveShaper offline rendering [${category}] ${sampleRate}Hz ` +
+     `hint=${hint} across all oversampling modes`);
+}
 </script>

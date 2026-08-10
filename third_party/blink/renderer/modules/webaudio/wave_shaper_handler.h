@@ -28,7 +28,7 @@ class WaveShaperHandler final : public AudioHandler {
   V8OverSampleType::Enum Oversample() const;
 
  private:
-  WaveShaperHandler(AudioNode& iirfilter_node, float sample_rate);
+  WaveShaperHandler(AudioNode& node, float sample_rate);
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
@@ -48,6 +48,7 @@ class WaveShaperHandler final : public AudioHandler {
 
   const float sample_rate_;
   const unsigned render_quantum_frames_;
+  const uint32_t sub_block_frames_;
 
   mutable base::Lock process_lock_;
   Vector<std::unique_ptr<WaveShaperKernel>> kernels_ GUARDED_BY(process_lock_);

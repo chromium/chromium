@@ -37,6 +37,39 @@ namespace blink {
 namespace {
 
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+constexpr uint32_t kMaxSubBlockFrames = 128;
+constexpr uint32_t kMaxOversamplingFactor = 4;
+
+// A "sub-block" is a partition of `render_quantum_frames` that is <= 128 frames
+// (the standard quantum size) and divides `render_quantum_frames` evenly.
+// Chunking oversampling into sub-blocks ensures zero-padding is never needed,
+// filter state continuity is preserved across process calls, work buffer memory
+// is bounded to O(1), and time-domain DirectConvolver is used.
+uint32_t GetSubBlockFrames(uint32_t render_quantum_frames) {
+  CHECK_GT(render_quantum_frames, 0u);
+
+  // If quantum is a multiple of standard 128 frames, use 128 frames. For 128
+  // frames, 2x oversampling uses DirectConvolver (input size <= 128/256), and
+  // 4x oversampling stage 2 uses SimpleFFTConvolver with power-of-2 FFT sizes
+  // (256/512), which is valid and optimal for standard rendering.
+  if (render_quantum_frames % kMaxSubBlockFrames == 0) {
+    return kMaxSubBlockFrames;
+  }
+
+  // For arbitrary non-standard quantum sizes (e.g. 50, 100, 250, primes), the
+  // sub-block size must be <= 64 frames. This guarantees that all resamplers
+  // across both 2x and 4x stages (input size <= 128 for UpSampler and <= 256
+  // for DownSampler) use time-domain DirectConvolver, preventing
+  // SimpleFFTConvolver from being invoked with non-power-of-2 sizes.
+  const uint32_t max_candidate = std::min(render_quantum_frames, 64u);
+  for (uint32_t block_size = max_candidate; block_size > 1; --block_size) {
+    if (render_quantum_frames % block_size == 0) {
+      return block_size;
+    }
+  }
+
+  return 1;
+}
 
 // Computes value of the WaveShaper
 double WaveShaperCurveValue(float input, base::span<const float> curve) {
@@ -74,7 +107,6 @@ double WaveShaperCurveValue(float input, base::span<const float> curve) {
 
 class WaveShaperKernel final {
  public:
-  // Oversampling.
   std::unique_ptr<AudioFloatArray> temp_buffer_;
   std::unique_ptr<AudioFloatArray> temp_buffer2_;
   std::unique_ptr<UpSampler> up_sampler_;
@@ -82,20 +114,16 @@ class WaveShaperKernel final {
   std::unique_ptr<UpSampler> up_sampler2_;
   std::unique_ptr<DownSampler> down_sampler2_;
 
-  bool IsInitialized() { return temp_buffer_ != nullptr; }
+  bool IsInitialized() const { return temp_buffer_ != nullptr; }
 
-  // Oversampling requires more resources, so let's only allocate them if
-  // needed.
-  void LazyInitializeOversampling(unsigned render_quantum_frames) {
+  void LazyInitializeOversampling(uint32_t sub_block_frames) {
     if (!IsInitialized()) {
-      temp_buffer_ =
-          std::make_unique<AudioFloatArray>(render_quantum_frames * 2);
-      temp_buffer2_ =
-          std::make_unique<AudioFloatArray>(render_quantum_frames * 4);
-      up_sampler_ = std::make_unique<UpSampler>(render_quantum_frames);
-      down_sampler_ = std::make_unique<DownSampler>(render_quantum_frames * 2);
-      up_sampler2_ = std::make_unique<UpSampler>(render_quantum_frames * 2);
-      down_sampler2_ = std::make_unique<DownSampler>(render_quantum_frames * 4);
+      temp_buffer_ = std::make_unique<AudioFloatArray>(sub_block_frames * 2);
+      temp_buffer2_ = std::make_unique<AudioFloatArray>(sub_block_frames * 4);
+      up_sampler_ = std::make_unique<UpSampler>(sub_block_frames);
+      down_sampler_ = std::make_unique<DownSampler>(sub_block_frames * 2);
+      up_sampler2_ = std::make_unique<UpSampler>(sub_block_frames * 2);
+      down_sampler2_ = std::make_unique<DownSampler>(sub_block_frames * 4);
     }
   }
 };
@@ -156,18 +184,17 @@ void WaveShaperHandler::SetOversample(V8OverSampleType::Enum oversample) {
       break;
     case V8OverSampleType::Enum::k2X:
       for (auto& kernel : kernels_) {
-        kernel->LazyInitializeOversampling(render_quantum_frames_);
+        kernel->LazyInitializeOversampling(sub_block_frames_);
         DCHECK(kernel->IsInitialized());
         kernel->up_sampler2_->Reset();
         kernel->down_sampler2_->Reset();
       }
       break;
-    case V8OverSampleType::Enum::k4X: {
+    case V8OverSampleType::Enum::k4X:
       for (auto& kernel : kernels_) {
-        kernel->LazyInitializeOversampling(render_quantum_frames_);
+        kernel->LazyInitializeOversampling(sub_block_frames_);
       }
       break;
-    }
   }
 
   // Calculate and cache `latency_time_`
@@ -214,12 +241,13 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
     : AudioHandler(NodeType::kNodeTypeWaveShaper, node, sample_rate),
       sample_rate_(sample_rate),
       render_quantum_frames_(node.context()->renderQuantumSize()),
-      // 4 times render size to handle 4x oversampling.
-      virtual_index_(4 * render_quantum_frames_),
-      index_(4 * render_quantum_frames_),
-      v1_(4 * render_quantum_frames_),
-      v2_(4 * render_quantum_frames_),
-      f_(4 * render_quantum_frames_) {
+      sub_block_frames_(GetSubBlockFrames(render_quantum_frames_)),
+      // 4 times sub-block max size to handle 4x oversampling of sub-blocks.
+      virtual_index_(kMaxOversamplingFactor * kMaxSubBlockFrames),
+      index_(kMaxOversamplingFactor * kMaxSubBlockFrames),
+      v1_(kMaxOversamplingFactor * kMaxSubBlockFrames),
+      v2_(kMaxOversamplingFactor * kMaxSubBlockFrames),
+      f_(kMaxOversamplingFactor * kMaxSubBlockFrames) {
   AddInput();
   AddOutput(kDefaultNumberOfOutputChannels);
 
@@ -261,48 +289,67 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
               .copy_from(
                   source_bus->Channel(i)->Span().first(frames_to_process));
         } else {
-          switch (oversample_) {
-            case V8OverSampleType::Enum::kNone:
-              WaveShaperCurveValues(destination_bus->Channel(i)->MutableSpan(),
-                                    source_bus->Channel(i)->Span(),
-                                    frames_to_process, curve_);
-              break;
+          base::span<const float> source_channel =
+              source_bus->Channel(i)->Span().first(frames_to_process);
+          base::span<float> dest_channel =
+              destination_bus->Channel(i)->MutableSpan().first(
+                  frames_to_process);
 
-            case V8OverSampleType::Enum::k2X: {
-              auto temp_span = kernels_[i]->temp_buffer_->as_span().first(
-                  frames_to_process * 2);
-              kernels_[i]->up_sampler_->Process(
-                  source_bus->Channel(i)->Span().first(frames_to_process),
-                  temp_span);
+          if (oversample_ == V8OverSampleType::Enum::kNone) {
+            for (uint32_t offset = 0; offset < frames_to_process;
+                 offset += kMaxSubBlockFrames) {
+              const uint32_t chunk_size =
+                  std::min(kMaxSubBlockFrames, frames_to_process - offset);
+              WaveShaperCurveValues(dest_channel.subspan(offset, chunk_size),
+                                    source_channel.subspan(offset, chunk_size),
+                                    chunk_size, curve_);
+            }
+          } else {
+            const uint32_t sub_block_size = sub_block_frames_;
+            for (uint32_t offset = 0; offset < frames_to_process;
+                 offset += sub_block_size) {
+              const uint32_t chunk_size =
+                  std::min(sub_block_size, frames_to_process - offset);
+              base::span<const float> source_chunk =
+                  source_channel.subspan(offset, chunk_size);
+              base::span<float> dest_chunk =
+                  dest_channel.subspan(offset, chunk_size);
 
-              // Process at 2x up-sampled rate.
-              WaveShaperCurveValues(temp_span, temp_span, frames_to_process * 2,
-                                    curve_);
+              switch (oversample_) {
+                case V8OverSampleType::Enum::kNone:
+                  NOTREACHED();
+                case V8OverSampleType::Enum::k2X: {
+                  base::span<float> temp_span =
+                      kernels_[i]->temp_buffer_->as_span().first(chunk_size *
+                                                                 2);
+                  kernels_[i]->up_sampler_->Process(source_chunk, temp_span);
 
-              kernels_[i]->down_sampler_->Process(
-                  temp_span, destination_bus->Channel(i)->MutableSpan().first(
-                                 frames_to_process));
-            } break;
+                  // Process at 2x up-sampled rate.
+                  WaveShaperCurveValues(temp_span, temp_span, chunk_size * 2,
+                                        curve_);
 
-            case V8OverSampleType::Enum::k4X: {
-              auto temp_span = kernels_[i]->temp_buffer_->as_span().first(
-                  frames_to_process * 2);
-              auto temp_span2 = kernels_[i]->temp_buffer2_->as_span().first(
-                  frames_to_process * 4);
-              kernels_[i]->up_sampler_->Process(
-                  source_bus->Channel(i)->Span().first(frames_to_process),
-                  temp_span);
-              kernels_[i]->up_sampler2_->Process(temp_span, temp_span2);
+                  kernels_[i]->down_sampler_->Process(temp_span, dest_chunk);
+                } break;
 
-              // Process at 4x up-sampled rate.
-              WaveShaperCurveValues(temp_span2, temp_span2,
-                                    frames_to_process * 4, curve_);
+                case V8OverSampleType::Enum::k4X: {
+                  base::span<float> temp_span =
+                      kernels_[i]->temp_buffer_->as_span().first(chunk_size *
+                                                                 2);
+                  base::span<float> temp_span2 =
+                      kernels_[i]->temp_buffer2_->as_span().first(chunk_size *
+                                                                  4);
+                  kernels_[i]->up_sampler_->Process(source_chunk, temp_span);
+                  kernels_[i]->up_sampler2_->Process(temp_span, temp_span2);
 
-              kernels_[i]->down_sampler2_->Process(temp_span2, temp_span);
-              kernels_[i]->down_sampler_->Process(
-                  temp_span, destination_bus->Channel(i)->MutableSpan().first(
-                                 frames_to_process));
-            } break;
+                  // Process at 4x up-sampled rate.
+                  WaveShaperCurveValues(temp_span2, temp_span2, chunk_size * 4,
+                                        curve_);
+
+                  kernels_[i]->down_sampler2_->Process(temp_span2, temp_span);
+                  kernels_[i]->down_sampler_->Process(temp_span, dest_chunk);
+                } break;
+              }
+            }
           }
         }
       }
@@ -327,7 +374,7 @@ void WaveShaperHandler::Initialize() {
     for (unsigned i = 0; i < Output(0).NumberOfChannels(); ++i) {
       kernels_.push_back(std::make_unique<WaveShaperKernel>());
       if (oversample_ != V8OverSampleType::Enum::kNone) {
-        kernels_.back()->LazyInitializeOversampling(render_quantum_frames_);
+        kernels_.back()->LazyInitializeOversampling(sub_block_frames_);
       }
     }
   }
