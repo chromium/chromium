@@ -67,9 +67,7 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
   SessionKeysChangeCB session_keys_change_cb_;
   SessionExpirationUpdateCB session_expiration_update_cb_;
 
-  // TODO(xhwang): Make CdmCreatedCB an OnceCallback.
-  using CdmCreatedOnceCB = base::OnceCallback<CdmCreatedCB::RunType>;
-  CdmCreatedOnceCB cdm_created_cb_;
+  CdmCreatedCB cdm_created_cb_;
 
   std::unique_ptr<MediaDrmStorageBridge> storage_;
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
