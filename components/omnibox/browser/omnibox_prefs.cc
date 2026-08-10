@@ -59,6 +59,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kIsOmniboxInBottomPosition, false);
+  registry->RegisterIntegerPref(kIntranetRedirectBehavior, 0);
 }
 
 void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,

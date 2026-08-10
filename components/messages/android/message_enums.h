@@ -165,6 +165,7 @@ enum class MessageIdentifier {
   PRIVATE_INFERENCE_NOTICE = 75,
   CONTEXTUAL_TASKS_WINDOW_RESIZED = 76,
   IMMERSIVE_PLAYBACK_CONFIRMATION = 77,
+  INTRANET_REDIRECT = 78,
   // Insert new values before this line.
   COUNT
 };

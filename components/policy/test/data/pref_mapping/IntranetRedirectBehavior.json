@@ -1,6 +1,7 @@
 [
   {
     "os": [
+      "android",
       "chromeos",
       "linux",
       "mac",

@@ -234,6 +234,8 @@ public class MessagesMetrics {
                 return "ContextualTasksWindowResized";
             case MessageIdentifier.IMMERSIVE_PLAYBACK_CONFIRMATION:
                 return "ImmersivePlaybackConfirmation";
+            case MessageIdentifier.INTRANET_REDIRECT:
+                return "IntranetRedirect";
             default:
                 return "Unknown";
         }

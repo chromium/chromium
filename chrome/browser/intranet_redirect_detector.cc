@@ -76,7 +76,6 @@ void IntranetRedirectDetector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kLastKnownIntranetRedirectOrigin,
                                std::string());
   registry->RegisterBooleanPref(prefs::kDNSInterceptionChecksEnabled, true);
-  registry->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
 }
 
 void IntranetRedirectDetector::Restart() {
