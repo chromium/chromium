@@ -38,6 +38,9 @@ class WalletReminderNoticeBubbleController
   static WalletReminderNoticeBubbleController* From(
       tabs::TabInterface& tab_interface);
 
+  AutofillBubbleBase* GetBubbleView() const;
+  base::WeakPtr<WalletReminderNoticeBubbleController> GetWeakPtr();
+
   // BubbleControllerBase:
   void OnBubbleDiscarded() override {}
   BubbleType GetBubbleType() const override;

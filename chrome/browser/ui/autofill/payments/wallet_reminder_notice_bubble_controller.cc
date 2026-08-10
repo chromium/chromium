@@ -28,6 +28,16 @@ WalletReminderNoticeBubbleController::From(tabs::TabInterface& tab_interface) {
   return Get(tab_interface.GetUnownedUserDataHost());
 }
 
+AutofillBubbleBase* WalletReminderNoticeBubbleController::GetBubbleView()
+    const {
+  return bubble_view();
+}
+
+base::WeakPtr<WalletReminderNoticeBubbleController>
+WalletReminderNoticeBubbleController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 BubbleType WalletReminderNoticeBubbleController::GetBubbleType() const {
   return BubbleType::kWalletReminderNotice;
 }
