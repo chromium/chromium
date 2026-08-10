@@ -4,7 +4,11 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -13,24 +17,75 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/app_constants/constants.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using syncer::UserSelectableOsTypeSet;
 using syncer::UserSelectableTypeSet;
+using testing::UnorderedElementsAre;
 
 namespace {
 
-bool AllProfilesHaveSameAppList() {
-  return SyncAppListHelper::GetInstance()->AllProfilesHaveSameAppList();
+std::ostream& operator<<(std::ostream& os,
+                         const base::flat_set<std::string>& set) {
+  os << "{";
+  for (const std::string& element : set) {
+    os << element << ", ";
+  }
+  os << "}";
+  return os;
 }
+
+base::flat_set<std::string> GetServerAppListItemIds(
+    fake_server::FakeServer* fake_server) {
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server->GetSyncEntitiesByDataType(syncer::APP_LIST);
+  return base::MakeFlatSet<std::string>(
+      entities,
+      /*comp=*/{}, /*proj=*/[](const sync_pb::SyncEntity& e) {
+        return e.specifics().app_list().item_id();
+      });
+}
+
+// Waits for the APP_LIST entities in the server to be those with ids
+// `expected_app_ids`. Default apps (Chrome and Web Store) are implicitly added.
+class FakeServerAppListChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit FakeServerAppListChecker(std::vector<std::string> expected_app_ids) {
+    expected_app_ids.push_back(app_constants::kChromeAppId);
+    expected_app_ids.push_back(extensions::kWebStoreAppId);
+    expected_app_ids_ = base::MakeFlatSet<std::string>(expected_app_ids);
+  }
+
+  FakeServerAppListChecker(const FakeServerAppListChecker&) = delete;
+  FakeServerAppListChecker& operator=(const FakeServerAppListChecker&) = delete;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for app list item ids in fake server to match: "
+        << expected_app_ids_ << ".";
+    base::flat_set<std::string> actual_app_ids =
+        GetServerAppListItemIds(fake_server());
+    *os << " Actual app list item ids: " << actual_app_ids << ".";
+    return expected_app_ids_ == actual_app_ids;
+  }
+
+ private:
+  base::flat_set<std::string> expected_app_ids_;
+};
 
 // Returns true if sync items from |service| all have non-empty names.
 bool SyncItemsHaveNames(const app_list::AppListSyncableService* service) {
@@ -124,45 +179,35 @@ class SingleClientAppListSyncTest : public SyncTest {
   }
 };
 
-class SingleClientAppListSyncTestWithVerifier
-    : public SingleClientAppListSyncTest {
- public:
-  SingleClientAppListSyncTestWithVerifier() = default;
-  ~SingleClientAppListSyncTestWithVerifier() override = default;
-
-  bool UseVerifier() override {
-    // TODO(crbug.com/40724974): rewrite tests to not use verifier.
-    return true;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier, AppListEmpty) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, AppListEmpty) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(AllProfilesHaveSameAppList());
+  // Default apps (Chrome and Web Store) are synced even when no user apps are
+  // installed.
+  EXPECT_THAT(GetServerAppListItemIds(GetFakeServer()),
+              UnorderedElementsAre(app_constants::kChromeAppId,
+                                   extensions::kWebStoreAppId));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier,
-                       AppListSomeApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, AppListSomeApps) {
   ASSERT_TRUE(SetupSync());
 
   const size_t kNumApps = 5;
+  std::vector<std::string> app_ids;
   for (int i = 0; i < static_cast<int>(kNumApps); ++i) {
-    apps_helper::InstallHostedApp(GetProfile(0), i);
-    apps_helper::InstallHostedApp(verifier(), i);
+    app_ids.push_back(apps_helper::InstallHostedApp(GetProfile(0), i));
   }
 
   // Allow async callbacks to run, such as App Service Mojo calls.
   base::RunLoop().RunUntilIdle();
 
   app_list::AppListSyncableService* service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(verifier());
+      app_list::AppListSyncableServiceFactory::GetForProfile(GetProfile(0));
 
   // Default apps: chrome + web store.
   ASSERT_EQ(kNumApps + 2u, service->sync_items().size());
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(AllProfilesHaveSameAppList());
+  EXPECT_TRUE(FakeServerAppListChecker(app_ids).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
