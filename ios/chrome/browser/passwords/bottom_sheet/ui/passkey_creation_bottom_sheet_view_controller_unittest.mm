@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
@@ -26,7 +27,7 @@
 class PasskeyCreationBottomSheetViewControllerTest : public PlatformTest {
  protected:
   PasskeyCreationBottomSheetViewControllerTest() {
-    handler_ = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    handler_ = OCMProtocolMock(@protocol(IOSPasskeyClientCommands));
     view_controller_ = [[PasskeyCreationBottomSheetViewController alloc]
         initWithHandler:handler_
           faviconLoader:&favicon_loader_];

@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
-#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 
 @class DownloadListCoordinator;
@@ -15,8 +14,7 @@
 
 // Coordinator for BrowserViewController. Testing category to expose properties
 // used for tests only.
-@interface BrowserCoordinator (Testing) <ActivityServiceCommands,
-                                         OverscrollActionsControllerDelegate,
+@interface BrowserCoordinator (Testing) <OverscrollActionsControllerDelegate,
                                          SyncPresenterCommands>
 
 // The coordinator used for the New Tab Page.

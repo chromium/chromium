@@ -14,9 +14,15 @@
 - (void)showPasskeyCreationBottomSheet:
     (webauthn::IOSPasskeyClient::RequestInfo)requestInfo;
 
+// Dismisses the passkey creation bottom sheet.
+- (void)dismissPasskeyCreation;
+
 // Shows the passkey suggestion bottom sheet.
 - (void)showPasskeySuggestionBottomSheet:
     (webauthn::IOSPasskeyClient::RequestInfo)requestInfo;
+
+// Dismiss the passkey suggestions.
+- (void)dismissPasskeySuggestions;
 
 // Shows the passkey welcome screen for the given `purpose`.
 - (void)showPasskeyWelcomeScreenForPurpose:

@@ -9,9 +9,9 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -164,7 +164,7 @@ UILabel* CreateSubtitleLabel() {
   NSString* _rpId;
 
   // The passkey creation handler for user actions.
-  __weak id<BrowserCoordinatorCommands> _handler;
+  __weak id<IOSPasskeyClientCommands> _handler;
 
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -174,7 +174,7 @@ UILabel* CreateSubtitleLabel() {
 
 @implementation PasskeyCreationBottomSheetViewController
 
-- (instancetype)initWithHandler:(id<BrowserCoordinatorCommands>)handler
+- (instancetype)initWithHandler:(id<IOSPasskeyClientCommands>)handler
                   faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super initWithConfiguration:SetUpButtons()];
   if (self) {

@@ -7,11 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/ios/form_util/form_activity_params.h"
+
 class Browser;
+@protocol PasswordControllerDelegate;
 
 // Host for all the modal features at the Browser level. This is a class that is
 // the handler for a lot of commands that only show/hide modal features.
 @interface BrowserModalHost : NSObject
+
+// The password controller delegate.
+@property(nonatomic, weak) id<PasswordControllerDelegate>
+    passwordControllerDelegate;
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
@@ -30,6 +37,10 @@ class Browser;
 // This object stops being the handler for the different command protocols it is
 // hosting for.
 - (void)stopHostingCommandProtocols;
+
+// Temporary plumbing during refactoring.
+- (void)temporaryShowCredentialBottomSheet:
+    (const autofill::FormActivityParams&)params;
 
 @end
 

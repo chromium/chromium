@@ -115,13 +115,11 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)stopVoiceSearch;
 
 // Dismiss the password suggestions.
+// TODO(crbug.com/543354673): Remove this.
 - (void)dismissPasswordSuggestions;
 
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
-
-// Dismisses the passkey creation bottom sheet.
-- (void)dismissPasskeyCreation;
 
 // Dismiss the card unmask authentication prompt.
 - (void)dismissCardUnmaskAuthentication;

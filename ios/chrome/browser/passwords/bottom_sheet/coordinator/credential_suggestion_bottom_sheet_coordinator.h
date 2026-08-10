@@ -58,6 +58,7 @@ struct FormActivityParams;
     (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
 
 // Handler for Browser Coordinator Commands.
+// TODO(crbug.com/543354673): Remove this.
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
 

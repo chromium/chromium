@@ -166,11 +166,7 @@
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
-#import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_coordinator.h"
-#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
-#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
@@ -230,8 +226,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -255,8 +249,6 @@
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
-#import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -272,7 +264,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_command.h"
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -293,8 +284,6 @@
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
-#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
@@ -347,8 +336,6 @@
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
-#import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
 #import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
@@ -371,16 +358,7 @@
 #import "ios/chrome/common/swift/features.h"
 #endif  // BUILDFLAG(ENABLE_SWIFT_CXX_INTEROP)
 
-namespace {
-
-// URL to share when user selects "Share Chrome"
-const char kChromeAppStoreUrl[] =
-    "https://apps.apple.com/app/id535886823?pt=9008&ct=iosChromeShare&mt=8";
-
-}  // anonymous namespace
-
 @interface BrowserCoordinator () <
-    ActivityServiceCommands,
     AppLauncherTabHelperBrowserPresentationProvider,
     AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
@@ -402,7 +380,6 @@ const char kChromeAppStoreUrl[] =
     EnterprisePromptCoordinatorDelegate,
     FindInPageCommands,
     GoogleOneCommands,
-    IOSPasskeyClientCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
@@ -410,11 +387,7 @@ const char kChromeAppStoreUrl[] =
     NonModalSignInPromoCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
-    PasskeyWelcomeScreenCoordinatorDelegate,
-    PasswordBreachCommands,
     PasswordControllerDelegate,
-    PasswordProtectionCommands,
-    PasswordProtectionCoordinatorDelegate,
     PasswordSettingsCoordinatorDelegate,
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
@@ -499,10 +472,6 @@ const char kChromeAppStoreUrl[] =
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
 
-// Coordinator in charge of the presenting autofill options in a bottom sheet.
-@property(nonatomic, strong) CredentialSuggestionBottomSheetCoordinator*
-    credentialSuggestionBottomSheetCoordinator;
-
 // Coordinator in charge of presenting the scan card save and fill option in a
 // bottom sheet.
 @property(nonatomic, strong)
@@ -578,14 +547,6 @@ const char kChromeAppStoreUrl[] =
 // Coordinator for the PassKit UI presentation.
 @property(nonatomic, strong) PassKitCoordinator* passKitCoordinator;
 
-// Coordinator for the password breach UI presentation.
-@property(nonatomic, strong)
-    PasswordBreachCoordinator* passwordBreachCoordinator;
-
-// Coordinator for the password protection UI presentation.
-@property(nonatomic, strong)
-    PasswordProtectionCoordinator* passwordProtectionCoordinator;
-
 // Coordinator for the password settings UI presentation.
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
@@ -628,9 +589,6 @@ const char kChromeAppStoreUrl[] =
 
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
-
-// Coordinator for sharing scenarios.
-@property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
 // Coordinator for snackbar presentation.
 @property(nonatomic, strong) SnackbarCoordinator* snackbarCoordinator;
@@ -758,15 +716,6 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for the Picture-in-Picture promo.
   PictureInPictureCoordinator* _pictureInPictureCoordinator;
-
-  // The coordinator for the passkey creation bottom sheet.
-  PasskeyCreationBottomSheetCoordinator* _passkeyCreationBottomSheetCoordinator;
-
-  // The coordinator for the passkey welcome screen.
-  PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
-
-  // The coordinator for the passkey incognito interstitial.
-  PasskeyIncognitoInterstitialCoordinator* _passkeyIncognitoCoordinator;
 
   // The coordinator for Cobalt.
   ChromeCoordinator* _cobaltCoordinator;
@@ -1076,12 +1025,6 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
-- (void)stopPasskeyWelcomeScreenCoordinator {
-  [_passkeyWelcomeScreenCoordinator stop];
-  _passkeyWelcomeScreenCoordinator.delegate = nil;
-  _passkeyWelcomeScreenCoordinator = nil;
-}
-
 // The Lens UI takes the necessary steps before being backgrounded.
 - (void)updateLensUIForBackground {
   web::WebState* activeWebState = self.activeWebState;
@@ -1115,13 +1058,6 @@ const char kChromeAppStoreUrl[] =
                              browser:self.browser];
   self.priceNotificationsViewCoordinator.showCurrentPage = showCurrentPage;
   [self.priceNotificationsViewCoordinator start];
-}
-
-// Stops the password protection coordinator.
-- (void)stopPasswordProtectionCoordinator {
-  [self.passwordProtectionCoordinator stop];
-  self.passwordProtectionCoordinator.delegate = nil;
-  self.passwordProtectionCoordinator = nil;
 }
 
 - (void)stopAutofillAddCreditCardCoordinator {
@@ -1259,7 +1195,6 @@ const char kChromeAppStoreUrl[] =
   // starting any child coordinator, otherwise they won't be able to resolve
   // handlers.
   NSArray<Protocol*>* protocols = @[
-    @protocol(ActivityServiceCommands),
     @protocol(AutoDeletionCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
@@ -1270,13 +1205,10 @@ const char kChromeAppStoreUrl[] =
     @protocol(DownloadListCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
-    @protocol(IOSPasskeyClientCommands),
     @protocol(CobaltCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
-    @protocol(PasswordBreachCommands),
-    @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceTrackedItemsCommands),
@@ -1306,6 +1238,7 @@ const char kChromeAppStoreUrl[] =
 - (void)startModalDispatching {
   _modalHost = [[BrowserModalHost alloc] initWithBrowser:self.browser];
   [_modalHost startHostingCommandProtocols];
+  _modalHost.passwordControllerDelegate = self;
 }
 
 // Creates the browser view controller dependencies.
@@ -1646,26 +1579,13 @@ const char kChromeAppStoreUrl[] =
 
   /* NetExportCoordinator is created and started by a delegate method */
 
-  /* passwordBreachCoordinator is created and started by a BrowserCommand */
-
-  /* passwordProtectionCoordinator is created and started by a BrowserCommand */
-
   /* passwordSettingsCoordinator is created and started by a delegate method */
-
-  /* credentialSuggestionBottomSheetCoordinator is created and started by a
-   * BrowserCommand */
 
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
   /* paymentsScanCoordinator is created and started by a BrowserCommand */
 
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
-   * BrowserCommand */
-
-  /* _passkeyCreationBottomSheetCoordinator is created and started by a
-   * BrowserCommand */
-
-  /* _passkeyWelcomeScreenCoordinator is created and started by a
    * BrowserCommand */
 
   /* saveCardBottomSheetCoordinator is created and started by a
@@ -1701,8 +1621,6 @@ const char kChromeAppStoreUrl[] =
                                                     browser:self.browser];
   self.sadTabCoordinator.contextMenuProvider = self.contextMenuProvider;
   [self.sadTabCoordinator setOverscrollDelegate:self];
-
-  /* SharingCoordinator is created and started by an ActivityServiceCommand */
 
   self.safeBrowsingCoordinator = [[SafeBrowsingCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -1748,14 +1666,6 @@ const char kChromeAppStoreUrl[] =
 
   [self.passKitCoordinator stop];
   self.passKitCoordinator = nil;
-
-  [self.passwordBreachCoordinator stop];
-  self.passwordBreachCoordinator = nil;
-
-  [self stopPasswordProtectionCoordinator];
-
-  [self.credentialSuggestionBottomSheetCoordinator stop];
-  self.credentialSuggestionBottomSheetCoordinator = nil;
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
@@ -1806,9 +1716,6 @@ const char kChromeAppStoreUrl[] =
   [self.safeBrowsingCoordinator stop];
   self.safeBrowsingCoordinator = nil;
 
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
-
   [self stopStoreKitCoordinator];
 
   [self hideTextZoomUI];
@@ -1857,14 +1764,8 @@ const char kChromeAppStoreUrl[] =
   [_enterpriseDialogCoordinator stop];
   _enterpriseDialogCoordinator = nil;
 
-  [_passkeyCreationBottomSheetCoordinator stop];
-  _passkeyCreationBottomSheetCoordinator = nil;
-
   [self.ambientAutofillNoticeCoordinator stop];
   self.ambientAutofillNoticeCoordinator = nil;
-
-  [_passkeyIncognitoCoordinator stop];
-  _passkeyIncognitoCoordinator = nil;
 
   [self hideCobalt];
   [self hideCobaltAlert];
@@ -1877,7 +1778,6 @@ const char kChromeAppStoreUrl[] =
   [self dismissAutoDeletionActionSheet];
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
-  [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissSearchWhatYouSeePromo];
   [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
@@ -2056,99 +1956,6 @@ const char kChromeAppStoreUrl[] =
   [self.storeKitCoordinator start];
 }
 
-#pragma mark - ActivityServiceCommands
-
-- (void)stopAndStartSharingCoordinatorFromView:(UIView*)shareButton {
-  SharingScenario scenario = IsReaderModeActiveInWebState(self.activeWebState)
-                                 ? SharingScenario::ShareInReaderMode
-                                 : SharingScenario::TabShareButton;
-  SharingParams* params = [[SharingParams alloc] initWithScenario:scenario];
-
-  // Exit fullscreen if needed to make sure that share button is visible.
-  [self exitFullscreen];
-
-  if (!shareButton) {
-    shareButton = _toolbarCoordinator.shareButton;
-  }
-
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  sourceItem:shareButton];
-  [self.sharingCoordinator start];
-}
-
-- (void)showShareSheetFromShareButton:(UIView*)shareButton {
-  if (self.sharingCoordinator) {
-    [self.sharingCoordinator
-        cancelIfNecessaryAndCreateNewCoordinatorFromView:shareButton];
-  } else {
-    [self stopAndStartSharingCoordinatorFromView:shareButton];
-  }
-}
-
-- (void)showShareSheetForChromeApp {
-  GURL URL = GURL(kChromeAppStoreUrl);
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE);
-  NSString* additionalText =
-      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC);
-  SharingParams* params =
-      [[SharingParams alloc] initWithURL:URL
-                                   title:title
-                          additionalText:additionalText
-                                scenario:SharingScenario::ShareChrome];
-
-  // Exit fullscreen if needed to make sure that share button is visible.
-  [self exitFullscreen];
-
-  UIView* originView =
-      [_layoutGuideCenter referencedViewUnderName:kToolsMenuGuide];
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator =
-      [[SharingCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser
-                                                      params:params
-                                                  sourceItem:originView];
-  [self.sharingCoordinator start];
-}
-
-- (void)showShareSheetForHighlight:(ShareHighlightCommand*)command {
-  SharingParams* params =
-      [[SharingParams alloc] initWithURL:command.URL
-                                   title:command.title
-                          additionalText:command.selectedText
-                                scenario:SharingScenario::SharedHighlight];
-
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                          params:params
-                      sourceView:command.sourceView
-                      sourceRect:command.sourceRect];
-  [self.sharingCoordinator start];
-}
-
-- (void)showShareSheetForURL:(ActivityServiceShareURLCommand*)command {
-  SharingParams* params = [[SharingParams alloc]
-      initWithURL:command.URL
-            title:command.title
-         scenario:SharingScenario::ShareInWebContextMenu];
-
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = [[SharingCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                          params:params
-                      sourceView:command.sourceView
-                      sourceRect:command.sourceRect];
-  [self.sharingCoordinator start];
-}
-
 #pragma mark - AutoDeletionCommands
 
 - (void)presentAutoDeletionActionSheet {
@@ -2172,25 +1979,7 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - AutofillCommands
 
 - (void)showCredentialBottomSheet:(const autofill::FormActivityParams&)params {
-  // Do not present the bottom sheet if it is already being presented.
-  if (self.credentialSuggestionBottomSheetCoordinator) {
-    return;
-  }
-  // Do not present the bottom sheet when the omnibox is being used to not
-  // disrupt the user.
-  if (OmniboxFocusBrowserAgent::FromBrowser(self.browser)->IsOmniboxFocused()) {
-    return;
-  }
-  self.credentialSuggestionBottomSheetCoordinator =
-      [[CredentialSuggestionBottomSheetCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                              params:params
-                            delegate:self];
-  self.credentialSuggestionBottomSheetCoordinator
-      .browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
-  [self.credentialSuggestionBottomSheetCoordinator start];
+  [_modalHost temporaryShowCredentialBottomSheet:params];
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
@@ -2447,101 +2236,6 @@ const char kChromeAppStoreUrl[] =
   [self.ambientAutofillNoticeCoordinator markNoticeShown];
   [self.ambientAutofillNoticeCoordinator stop];
   self.ambientAutofillNoticeCoordinator = nil;
-}
-
-#pragma mark - IOSPasskeyClientCommands
-
-- (void)showPasskeyCreationBottomSheet:
-    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
-  _passkeyCreationBottomSheetCoordinator =
-      [[PasskeyCreationBottomSheetCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                         requestInfo:std::move(requestInfo)];
-  _passkeyCreationBottomSheetCoordinator.browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
-  [_passkeyCreationBottomSheetCoordinator start];
-}
-
-- (void)showPasskeySuggestionBottomSheet:
-    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
-  self.credentialSuggestionBottomSheetCoordinator =
-      [[CredentialSuggestionBottomSheetCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                         requestInfo:std::move(requestInfo)
-                            delegate:self];
-  self.credentialSuggestionBottomSheetCoordinator
-      .browserCoordinatorCommandsHandler =
-      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
-  [self.credentialSuggestionBottomSheetCoordinator start];
-}
-
-- (void)showPasskeyWelcomeScreenForPurpose:
-            (webauthn::PasskeyWelcomeScreenPurpose)purpose
-                                completion:
-                                    (webauthn::PasskeyWelcomeScreenAction)
-                                        completion {
-  _passkeyWelcomeScreenCoordinator = [[PasskeyWelcomeScreenCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                         purpose:purpose
-                      completion:completion];
-  _passkeyWelcomeScreenCoordinator.delegate = self;
-  [_passkeyWelcomeScreenCoordinator start];
-}
-
-- (void)dismissPasskeyWelcomeScreen {
-  [self stopPasskeyWelcomeScreenCoordinator];
-}
-
-- (void)showPasskeyIncognitoInterstitial:
-    (webauthn::IOSPasskeyClient::InterstitialCallback)callback {
-  if (_passkeyIncognitoCoordinator) {
-    return;
-  }
-
-  _passkeyIncognitoCoordinator =
-      [[PasskeyIncognitoInterstitialCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                            callback:std::move(callback)];
-
-  _passkeyIncognitoCoordinator.passkeyClientHandler =
-      HandlerForProtocol(self.dispatcher, IOSPasskeyClientCommands);
-
-  [_passkeyIncognitoCoordinator start];
-}
-
-- (void)dismissPasskeyIncognitoInterstitial {
-  [_passkeyIncognitoCoordinator stop];
-  _passkeyIncognitoCoordinator = nil;
-}
-
-- (void)showCredentialProviderPromoOnPasskeyCreated {
-  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-      HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
-  [credentialProviderPromoHandler
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 SuccessfulPasskeyCreation];
-}
-
-- (void)cancelPasskeyRequest:
-    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
-  if ([_passkeyCreationBottomSheetCoordinator hasPendingRequest:requestInfo]) {
-    [self dismissPasskeyCreation];
-    return;
-  }
-
-  if ([self.credentialSuggestionBottomSheetCoordinator
-          hasPendingRequest:requestInfo]) {
-    [self dismissPasswordSuggestions];
-    return;
-  }
-
-  if (_passkeyIncognitoCoordinator) {
-    [self dismissPasskeyIncognitoInterstitial];
-  }
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -2829,8 +2523,9 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)dismissPasswordSuggestions {
-  [self.credentialSuggestionBottomSheetCoordinator stop];
-  self.credentialSuggestionBottomSheetCoordinator = nil;
+  // TODO(crbug.com/543354673): Remove this.
+  [HandlerForProtocol(self.dispatcher, IOSPasskeyClientCommands)
+      dismissPasskeySuggestions];
 }
 
 - (void)dismissPaymentSuggestions {
@@ -2838,11 +2533,6 @@ const char kChromeAppStoreUrl[] =
   self.paymentsSuggestionBottomSheetCoordinator = nil;
   [self.paymentsScanCoordinator stop];
   self.paymentsScanCoordinator = nil;
-}
-
-- (void)dismissPasskeyCreation {
-  [_passkeyCreationBottomSheetCoordinator stop];
-  _passkeyCreationBottomSheetCoordinator = nil;
 }
 
 - (void)dismissCardUnmaskAuthentication {
@@ -3097,17 +2787,6 @@ const char kChromeAppStoreUrl[] =
 
   [self hideReaderModeBlurOverlay];
 
-  [self.sharingCoordinator stop];
-  self.sharingCoordinator = nil;
-
-  [self.passwordBreachCoordinator stop];
-  self.passwordBreachCoordinator = nil;
-
-  [self stopPasswordProtectionCoordinator];
-
-  [self.credentialSuggestionBottomSheetCoordinator stop];
-  self.credentialSuggestionBottomSheetCoordinator = nil;
-
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
@@ -3147,17 +2826,8 @@ const char kChromeAppStoreUrl[] =
   [_enterpriseDialogCoordinator stop];
   _enterpriseDialogCoordinator = nil;
 
-  [_passkeyCreationBottomSheetCoordinator stop];
-  _passkeyCreationBottomSheetCoordinator = nil;
-
   [self.ambientAutofillNoticeCoordinator stop];
   self.ambientAutofillNoticeCoordinator = nil;
-
-  [_passkeyWelcomeScreenCoordinator stop];
-  _passkeyWelcomeScreenCoordinator = nil;
-
-  [_passkeyIncognitoCoordinator stop];
-  _passkeyIncognitoCoordinator = nil;
 
   [self hideGoogleOne];
   [self updateLensUIForBackground];
@@ -3905,29 +3575,6 @@ const char kChromeAppStoreUrl[] =
   // Disconnect the presenter from the context to cancel active overlays.
   OverlayPresenter::FromBrowser(self.browser, OverlayModality::kInfobarBanner)
       ->SetPresentationContext(nullptr);
-}
-
-#pragma mark - PasswordBreachCommands
-
-- (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType {
-  self.passwordBreachCoordinator = [[PasswordBreachCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                        leakType:leakType];
-  [self.passwordBreachCoordinator start];
-}
-
-#pragma mark - PasswordProtectionCommands
-
-- (void)showPasswordProtectionWarning:(NSString*)warningText
-                           completion:(void (^)(safe_browsing::WarningAction))
-                                          completion {
-  self.passwordProtectionCoordinator = [[PasswordProtectionCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                     warningText:warningText];
-  self.passwordProtectionCoordinator.delegate = self;
-  [self.passwordProtectionCoordinator startWithCompletion:completion];
 }
 
 #pragma mark - PasswordSuggestionCommands
@@ -4878,6 +4525,7 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)displaySavedPasswordList {
+  // TODO(crbug.com/544597154): Remove this method.
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(_dispatcher, SettingsCommands);
   [settingsHandler
@@ -4886,6 +4534,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
+  // TODO(crbug.com/544597154): Remove this method.
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(_dispatcher, SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential inEditMode:NO];
@@ -4946,14 +4595,6 @@ const char kChromeAppStoreUrl[] =
 - (void)hideMiniMap {
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
-}
-
-#pragma mark - PasswordProtectionCoordinator
-
-- (void)passwordProtectionCoordinatorWantsToBeStopped:
-    (PasswordProtectionCoordinator*)coordinator {
-  CHECK_EQ(self.passwordProtectionCoordinator, coordinator);
-  [self stopPasswordProtectionCoordinator];
 }
 
 #pragma mark - RepostFormCoordinatorDelegate
@@ -5228,14 +4869,6 @@ const char kChromeAppStoreUrl[] =
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthentication];
-}
-
-#pragma mark - PasskeyWelcomeScreenCoordinatorDelegate
-
-- (void)passkeyWelcomeScreenCoordinatorWantsToBeDismissed:
-    (PasskeyWelcomeScreenCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _passkeyWelcomeScreenCoordinator);
-  [self stopPasskeyWelcomeScreenCoordinator];
 }
 
 #pragma mark - DownloadListCommands
