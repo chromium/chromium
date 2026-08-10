@@ -1,0 +1,7 @@
+include_rules = [
+  "+base",
+  "+components/keyed_service/core",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/user_prefs",
+]

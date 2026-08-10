@@ -31,6 +31,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/universal_optout/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -601,6 +602,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
           omnibox::kAimEligibilityComponentExtension)) {
     guest_otr_active_services.insert("AimEligibilityExtensionBridge");
     guest_otr_active_services.insert("ExtensionMojoBinderRegistry");
+  }
+  if (base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOut)) {
+    guest_otr_active_services.insert("UniversalOptOutService");
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

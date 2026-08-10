@@ -278,6 +278,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
+#include "chrome/browser/universal_optout/universal_optout_service_factory.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/visited_url_ranking/group_suggestions_service_factory.h"
@@ -1587,6 +1588,7 @@ void ChromeBrowserMainExtraPartsProfiles::
       GetInstance();
 #endif
   UnifiedConsentServiceFactory::GetInstance();
+  universal_optout::UniversalOptOutServiceFactory::GetInstance();
   RevokedPermissionsServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   UsbChooserContextFactory::GetInstance();

@@ -401,6 +401,7 @@ include_rules = [
   "+components/undo",
   "+components/unexportable_keys",
   "+components/unified_consent",
+  "+components/universal_optout",
   "+components/update_client",
   "+components/upload_list",
   "+components/url_matcher",

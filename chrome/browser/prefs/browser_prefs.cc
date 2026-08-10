@@ -213,6 +213,7 @@
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/tracing/common/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/universal_optout/prefs.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/service/variations_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
@@ -1877,6 +1878,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   tab_groups::prefs::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
+  universal_optout::prefs::RegisterProfilePrefs(registry);
   visited_url_ranking::GroupSuggestionsServiceImpl::RegisterProfilePrefs(
       registry);
   wallet::prefs::RegisterProfilePrefs(registry);

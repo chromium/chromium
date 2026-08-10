@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("universal_optout") {
+  sources = [
+    "universal_optout_service_factory.cc",
+    "universal_optout_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  deps = [
+    "//components/universal_optout",
+  ]
+}

@@ -193,6 +193,7 @@ source_set("impl") {
     "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/sync_sessions",
     "//components/ukm",
+    "//components/universal_optout",
     "//components/update_client",
     "//components/variations/service",
     "//components/visited_url_ranking/internal:internal_url_grouping",
