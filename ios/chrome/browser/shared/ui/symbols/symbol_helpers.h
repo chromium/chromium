@@ -96,6 +96,12 @@ UIImage* SettingsRootSymbol(Symbol symbol);
 // enabled.
 UIImage* SettingsRootMulticolorSymbol(Symbol symbol);
 
+// Helper for What's New: as it cannot safely store the enum values, use the
+// string directly. Do not use outside of what's new.
+UIImage* WhatsNewSymbolHelper(NSString* symbol_name,
+                              bool is_system,
+                              bool is_multicolor);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

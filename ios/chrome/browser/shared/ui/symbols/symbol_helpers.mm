@@ -13,6 +13,9 @@
 
 namespace {
 
+// The size of the what's new icon image.
+const CGFloat kIconImageWhatsNewSize = 16;
+
 constexpr CGFloat kCloseSymbolSize = 22;
 constexpr CGFloat kDoneSymbolSize = 22;
 
@@ -163,6 +166,18 @@ UIImage* SettingsRootSymbol(Symbol symbol) {
 
 UIImage* SettingsRootMulticolorSymbol(Symbol symbol) {
   return MakeSymbolMulticolor(SettingsRootSymbol(symbol));
+}
+
+UIImage* WhatsNewSymbolHelper(NSString* symbol_name,
+                              bool is_system,
+                              bool is_multicolor) {
+  UIImage* symbol = SymbolWithConfiguration(
+      {symbol_name, is_system ? SymbolType::kSystem : SymbolType::kCustom},
+      DefaultSymbolConfigurationWithPointSize(kIconImageWhatsNewSize));
+  if (!is_system && is_multicolor) {
+    return MakeSymbolMulticolor(symbol);
+  }
+  return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 }  // extern "C"

@@ -23,9 +23,6 @@
 
 namespace {
 
-// The size of the icon image.
-const CGFloat kIconImageWhatsNew = 16;
-
 // The file names.
 NSString* const kfileName = @"whats_new_entries.plist";
 
@@ -95,13 +92,7 @@ UIImage* GenerateImage(BOOL is_symbol,
                        BOOL is_system_symbol,
                        BOOL is_multicolor_symbol) {
   if (is_symbol) {
-    if (is_system_symbol) {
-      return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
-    } else if (is_multicolor_symbol) {
-      return MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(image, kIconImageWhatsNew));
-    }
-    return CustomSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    return WhatsNewSymbolHelper(image, is_system_symbol, is_multicolor_symbol);
   }
 
   return [UIImage imageNamed:image];
