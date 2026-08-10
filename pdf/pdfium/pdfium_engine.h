@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -272,6 +273,16 @@ class PDFiumEngine : public DocumentLoader::Client,
   bool CanRedo() const;
   void Undo();
   void Redo();
+
+  // Sets the text direction for the currently focused form field. Returns false
+  // if there is no focused form field, or if the focused form field is of a
+  // type that does not support text direction (e.g. buttons).
+  bool SetFocusedFormTextDirection(base::i18n::TextDirection direction);
+
+  // Gets the text direction for the currently focused form field. Returns
+  // std::nullopt if there is no focused form field, or if the focused form
+  // field is of a type that does not support text direction.
+  std::optional<base::i18n::TextDirection> GetFocusedFormTextDirection() const;
 
   // Handles actions invoked by Accessibility clients.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
