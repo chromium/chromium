@@ -28,13 +28,13 @@ pub const TPM_ST_HASHCHECK: u16 = ffi::TpmSt::TPM_ST_HASHCHECK.repr;
 /// TPM_RH_OWNER is the handle for the storage hierarchy (0x40000001). This is
 /// used for standard keys and as the hierarchy for validation tickets in unit
 /// tests.
-pub const TPM_RH_OWNER: u32 = 0x40000001;
+pub const TPM_RH_OWNER: u32 = ffi::TpmRh::TPM_RH_OWNER.repr;
 /// TPM_RH_ENDORSEMENT is the handle for the endorsement hierarchy (0x4000000B).
 /// This MUST be used for Windows Attestation Identity Keys (AIKs), because AIKs
 /// belong to the endorsement hierarchy.
-pub const TPM_RH_ENDORSEMENT: u32 = 0x4000000B;
+pub const TPM_RH_ENDORSEMENT: u32 = ffi::TpmRh::TPM_RH_ENDORSEMENT.repr;
 /// TPM_RS_PW is the handle for a password session.
-pub const TPM_RS_PW: u32 = 0x40000009;
+pub const TPM_RS_PW: u32 = ffi::TpmRh::TPM_RS_PW.repr;
 
 /// Size of a standard TPM command header (Tag + Size + CommandCode).
 pub const TPM_HEADER_SIZE: usize = 10;
@@ -205,6 +205,22 @@ pub mod ffi {
         TPM_ALG_SHA512 = 0x000D,
     }
 
+    /// TPM Reserved Handles. See https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=88 for details.
+    #[derive(Debug)]
+    #[repr(u32)]
+    enum TpmRh {
+        /// TPM_RH_OWNER is the handle for the storage hierarchy. This is
+        /// used for standard keys and as the hierarchy for validation tickets
+        /// in unit tests.
+        TPM_RH_OWNER = 0x40000001,
+        /// TPM_RS_PW is the handle for a password session.
+        TPM_RS_PW = 0x40000009,
+        /// TPM_RH_ENDORSEMENT is the handle for the endorsement hierarchy.
+        /// This MUST be used for Windows Attestation Identity Keys (AIKs),
+        /// because AIKs belong to the endorsement hierarchy.
+        TPM_RH_ENDORSEMENT = 0x4000000B,
+    }
+
     /// TPM Constants.
     #[derive(Debug)]
     #[repr(u32)]
@@ -307,7 +323,7 @@ pub mod ffi {
         fn parse_certify_response(resp: &[u8], challenge: &[u8]) -> CertifyResponse;
 
         /// Builds a TPM2_Hash command buffer.
-        fn build_hash_command(data: &[u8], hash_alg: u16, hierarchy: u32) -> Vec<u8>;
+        fn build_hash_command(data: &[u8], hash_alg: TpmAlg, hierarchy: TpmRh) -> Vec<u8>;
 
         /// Parses a TPM2_Hash response.
         ///
@@ -319,8 +335,8 @@ pub mod ffi {
         fn build_sign_command(
             key_handle: u32,
             digest: &[u8],
-            sig_alg: u16,
-            hash_alg: u16,
+            sig_alg: TpmAlg,
+            hash_alg: TpmAlg,
             validation_ticket: &[u8],
         ) -> Vec<u8>;
 
@@ -904,7 +920,11 @@ fn parse_tpm_signature_impl(
     })
 }
 
-pub fn build_hash_command_impl(data: &[u8], hash_alg: u16, hierarchy: u32) -> Vec<u8> {
+pub fn build_hash_command_impl(
+    data: &[u8],
+    hash_alg: ffi::TpmAlg,
+    hierarchy: ffi::TpmRh,
+) -> Vec<u8> {
     assert!(
         data.len() <= TPM_MAX_BUFFER_SIZE,
         "TPM2_Hash data exceeds TPM_MAX_BUFFER_SIZE ({} bytes)",
@@ -925,8 +945,8 @@ pub fn build_hash_command_impl(data: &[u8], hash_alg: u16, hierarchy: u32) -> Ve
 
     // 2. Command Parameters
     writer.write_tpm2b(data);
-    writer.write_u16(hash_alg);
-    writer.write_u32(hierarchy);
+    writer.write_u16(hash_alg.repr);
+    writer.write_u32(hierarchy.repr);
 
     writer.into_inner()
 }
@@ -983,12 +1003,12 @@ fn parse_hash_response_impl<'a>(resp: &'a [u8]) -> Result<HashData<'a>, TpmParse
 pub fn build_sign_command_impl(
     key_handle: u32,
     digest: &[u8],
-    sig_alg: u16,
-    hash_alg: u16,
+    sig_alg: ffi::TpmAlg,
+    hash_alg: ffi::TpmAlg,
     validation_ticket: &[u8],
 ) -> Vec<u8> {
     let mut in_scheme_size = 2;
-    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL.repr {
+    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL {
         in_scheme_size += 2;
     }
 
@@ -1021,9 +1041,9 @@ pub fn build_sign_command_impl(
     // 4. Command Parameters
     writer.write_tpm2b(digest);
 
-    writer.write_u16(sig_alg);
-    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL.repr {
-        writer.write_u16(hash_alg);
+    writer.write_u16(sig_alg.repr);
+    if sig_alg != ffi::TpmAlg::TPM_ALG_NULL {
+        writer.write_u16(hash_alg.repr);
     }
 
     writer.write_bytes(validation_ticket);
@@ -1131,7 +1151,7 @@ impl<'a> From<Result<&'a [u8], TpmParseError>> for ffi::SignResponse {
     }
 }
 
-pub fn build_hash_command(data: &[u8], hash_alg: u16, hierarchy: u32) -> Vec<u8> {
+pub fn build_hash_command(data: &[u8], hash_alg: ffi::TpmAlg, hierarchy: ffi::TpmRh) -> Vec<u8> {
     build_hash_command_impl(data, hash_alg, hierarchy)
 }
 
@@ -1150,8 +1170,8 @@ pub fn parse_hash_response(resp: &[u8]) -> ffi::HashResponse {
 pub fn build_sign_command(
     key_handle: u32,
     digest: &[u8],
-    sig_alg: u16,
-    hash_alg: u16,
+    sig_alg: ffi::TpmAlg,
+    hash_alg: ffi::TpmAlg,
     validation_ticket: &[u8],
 ) -> Vec<u8> {
     build_sign_command_impl(key_handle, digest, sig_alg, hash_alg, validation_ticket)

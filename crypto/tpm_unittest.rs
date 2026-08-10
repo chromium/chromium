@@ -351,11 +351,11 @@ fn test_parse_trailing_bytes() {
 #[gtest(TpmTest, BuildHashCommand)]
 fn test_build_hash_command() {
     let data = &[1, 2, 3, 4];
-    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256;
     // Note: TPM_RH_OWNER (0x40000001) is used for standard keys and mock validation
     // tickets in unit tests. By contrast, TPM_RH_ENDORSEMENT (0x4000000b) MUST be
     // used for Windows Attestation Identity Keys (AIKs) in production.
-    let hierarchy = tpm::TPM_RH_OWNER;
+    let hierarchy = tpm::ffi::TpmRh::TPM_RH_OWNER;
     let cmd = tpm::build_hash_command(data, hash_alg, hierarchy);
 
     // Header size (10) + data size prefix (2) + data size (4) + hash_alg (2) +
@@ -369,8 +369,8 @@ fn test_build_hash_command() {
 
     expect_eq!(reader.read_u16().unwrap(), 4);
     expect_eq!(reader.read_bytes(4).unwrap(), data);
-    expect_eq!(reader.read_u16().unwrap(), hash_alg);
-    expect_eq!(reader.read_u32().unwrap(), hierarchy);
+    expect_eq!(reader.read_u16().unwrap(), hash_alg.repr);
+    expect_eq!(reader.read_u32().unwrap(), hierarchy.repr);
 }
 
 struct HashResponseBuilder {
@@ -447,8 +447,8 @@ fn test_hash_happy_path() {
 fn test_build_sign_command() {
     let key_handle = 0x81000001;
     let digest = &[1, 2, 3];
-    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_ECDSA.repr;
-    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_ECDSA;
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256;
     let validation_ticket = &[7, 8, 9, 10];
     let cmd = tpm::build_sign_command(key_handle, digest, sig_alg, hash_alg, validation_ticket);
 
@@ -475,8 +475,8 @@ fn test_build_sign_command() {
     expect_eq!(reader.read_u16().unwrap(), 3);
     expect_eq!(reader.read_bytes(3).unwrap(), digest);
 
-    expect_eq!(reader.read_u16().unwrap(), sig_alg);
-    expect_eq!(reader.read_u16().unwrap(), hash_alg);
+    expect_eq!(reader.read_u16().unwrap(), sig_alg.repr);
+    expect_eq!(reader.read_u16().unwrap(), hash_alg.repr);
 
     expect_eq!(reader.read_bytes(4).unwrap(), validation_ticket);
 }
@@ -485,8 +485,8 @@ fn test_build_sign_command() {
 fn test_build_sign_command_null_scheme() {
     let key_handle = 0x81000001;
     let digest = &[1, 2, 3];
-    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_NULL.repr;
-    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256.repr;
+    let sig_alg = tpm::ffi::TpmAlg::TPM_ALG_NULL;
+    let hash_alg = tpm::ffi::TpmAlg::TPM_ALG_SHA256;
     let validation_ticket = &[7, 8, 9, 10];
     let cmd = tpm::build_sign_command(key_handle, digest, sig_alg, hash_alg, validation_ticket);
 
@@ -513,8 +513,8 @@ fn test_build_sign_command_null_scheme() {
     expect_eq!(reader.read_u16().unwrap(), 3);
     expect_eq!(reader.read_bytes(3).unwrap(), digest);
 
-    expect_eq!(reader.read_u16().unwrap(), sig_alg); // TPM_ALG_NULL
-                                                     // No hash_alg
+    expect_eq!(reader.read_u16().unwrap(), sig_alg.repr); // TPM_ALG_NULL
+                                                          // No hash_alg
 
     expect_eq!(reader.read_bytes(4).unwrap(), validation_ticket);
 }

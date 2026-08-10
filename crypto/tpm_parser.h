@@ -12,14 +12,22 @@
 #include <stdint.h>
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "crypto/crypto_export.h"
+#include "crypto/tpm.rs.h"
 
 namespace crypto::tpm {
+
+using enum TpmAlg;
+using enum TpmCc;
+using enum TpmConstant;
+using enum TpmRh;
+using enum TpmSt;
 
 // Various errors returned during TPM response parsing.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -109,22 +117,12 @@ struct CRYPTO_EXPORT SignResponse {
 
 // TPM algorithm IDs returned by the parser, solely for telemetry.
 struct CRYPTO_EXPORT SignatureAlgorithms {
-  uint16_t sig_alg = 0;
-  uint16_t hash_alg = 0;
+  TpmAlg sig_alg = TPM_ALG_NULL;
+  TpmAlg hash_alg = TPM_ALG_NULL;
 
   friend bool operator==(const SignatureAlgorithms&,
                          const SignatureAlgorithms&) = default;
 };
-
-// TPM hierarchy handle constants. See TPM 2.0 Library Part 2, Section 24.
-// Used as the `hierarchy` parameter for `BuildHashCommand` and when validating
-// tickets.
-// kTpmRhOwner (0x40000001) is used for standard keys and mock validation
-// tickets in unit tests.
-inline constexpr uint32_t kTpmRhOwner = 0x40000001;
-// kTpmRhEndorsement (0x4000000b) MUST be used for Windows Attestation Identity
-// Keys (AIKs) in production.
-inline constexpr uint32_t kTpmRhEndorsement = 0x4000000b;
 
 // Builds a serialized TPM2_Certify command buffer.
 //
@@ -154,13 +152,13 @@ CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
 // Builds a serialized TPM2_Hash command buffer.
 //
 // * `data` - The byte buffer to be hashed.
-// * `hash_alg` - The TPM algorithm ID of the hash function (e.g. SHA-256).
-// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. kTpmRhOwner
-// for storage/test tickets, or kTpmRhEndorsement for AIKs).
+// * `hash_alg` - The TPM algorithm of the hash function (e.g. TPM_ALG_SHA256).
+// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. TPM_RH_OWNER
+// for storage/test tickets, or TPM_RH_ENDORSEMENT for AIKs).
 CRYPTO_EXPORT std::vector<uint8_t> BuildHashCommand(
     base::span<const uint8_t> data,
-    uint16_t hash_alg,
-    uint32_t hierarchy);
+    TpmAlg hash_alg,
+    TpmRh hierarchy);
 
 // Parses a serialized TPM2_Hash response.
 //
@@ -174,8 +172,8 @@ CRYPTO_EXPORT TpmParseErrorOr<HashResponse> ParseHashResponse(
 CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(
     uint32_t key_handle,
     base::span<const uint8_t> digest,
-    uint16_t sig_alg,
-    uint16_t hash_alg,
+    TpmAlg sig_alg,
+    TpmAlg hash_alg,
     base::span<const uint8_t> validation_ticket);
 
 // Parses a serialized TPM2_Sign response.

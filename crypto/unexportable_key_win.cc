@@ -485,9 +485,10 @@ tpm::SignatureErrorOr<void> VerifyAndLogTpmSignature(
                    tpm::GetSignatureAlgorithms(signature_blob));
   base::UmaHistogramSparse(
       "Crypto.TPMOperation.Win.TpmCertifyVerify.SignatureAlgorithm",
-      algs.sig_alg);
+      std::to_underlying(algs.sig_alg));
   base::UmaHistogramSparse(
-      "Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm", algs.hash_alg);
+      "Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm",
+      std::to_underlying(algs.hash_alg));
 
   return tpm::VerifySignature(spki, statement, signature_blob);
 }

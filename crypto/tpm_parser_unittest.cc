@@ -20,7 +20,6 @@
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "crypto/test_support.h"
-#include "crypto/tpm.rs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,41 +31,24 @@ using ::testing::ElementsAre;
 
 namespace {
 
-constexpr uint16_t kTpmAlgRsaSsa = std::to_underlying(TpmAlg::TPM_ALG_RSASSA);
-constexpr uint16_t kTpmAlgEcdsa = std::to_underlying(TpmAlg::TPM_ALG_ECDSA);
-constexpr uint16_t kTpmAlgSha1 = std::to_underlying(TpmAlg::TPM_ALG_SHA1);
-constexpr uint16_t kTpmAlgSha256 = std::to_underlying(TpmAlg::TPM_ALG_SHA256);
-
-constexpr uint32_t kTpmGeneratedValue =
-    std::to_underlying(TpmConstant::TPM_GENERATED_VALUE);
-constexpr uint32_t kTpmCcHash = std::to_underlying(TpmCc::TPM_CC_HASH);
-constexpr uint32_t kTpmCcSign = std::to_underlying(TpmCc::TPM_CC_SIGN);
-constexpr uint16_t kTpmStNoSessions =
-    std::to_underlying(TpmSt::TPM_ST_NO_SESSIONS);
-constexpr uint16_t kTpmStSessions = std::to_underlying(TpmSt::TPM_ST_SESSIONS);
-constexpr uint16_t kTpmStAttestCertify =
-    std::to_underlying(TpmSt::TPM_ST_ATTEST_CERTIFY);
-constexpr uint16_t kTpmStHashcheck =
-    std::to_underlying(TpmSt::TPM_ST_HASHCHECK);
-
 constexpr std::array<uint8_t, 4> kChallenge = {1, 2, 3, 4};
 
 // Builds a serialized TPMT_SIGNATURE containing an RSASSA signature.
 // TPMT_SIGNATURE layout (TPM 2.0 Part 2, Section 11.1.1):
-// - sigAlg (TPMI_ALG_SIG_SCHEME): 2 bytes (uint16_t, e.g. kTpmAlgRsaSsa)
+// - sigAlg (TPMI_ALG_SIG_SCHEME): 2 bytes (uint16_t, TPM_ALG_RSASSA)
 // - signature (union based on sigAlg):
 //   For TPMS_SIGNATURE_RSASSA (Section 11.1.3):
-//   - hash (TPMI_ALG_HASH): 2 bytes (uint16_t, e.g. hash_alg)
+//   - hash (TPMI_ALG_HASH): 2 bytes (uint16_t, hash_alg, e.g. TPM_ALG_SHA256)
 //   - sig (TPM2B_PUBLIC_KEY_RSA):
 //     - size (uint16_t): 2 bytes
 //     - buffer (bytes): sig.size() bytes
-std::vector<uint8_t> BuildTpmRsaSignature(uint16_t hash_alg,
+std::vector<uint8_t> BuildTpmRsaSignature(TpmAlg hash_alg,
                                           base::span<const uint8_t> sig) {
   size_t size = 2 + 2 + 2 + sig.size();
   std::vector<uint8_t> tpm_sig(size);
   base::SpanWriter<uint8_t> writer(tpm_sig);
-  writer.WriteU16BigEndian(kTpmAlgRsaSsa);
-  writer.WriteU16BigEndian(hash_alg);
+  writer.WriteU16BigEndian(std::to_underlying(TPM_ALG_RSASSA));
+  writer.WriteU16BigEndian(std::to_underlying(hash_alg));
   writer.WriteU16BigEndian(sig.size());
   writer.Write(sig);
   CHECK_EQ(writer.remaining(), 0u);
@@ -75,23 +57,23 @@ std::vector<uint8_t> BuildTpmRsaSignature(uint16_t hash_alg,
 
 // Builds a serialized TPMT_SIGNATURE containing an ECDSA signature.
 // TPMT_SIGNATURE layout (TPM 2.0 Part 2, Section 11.1.1):
-// - sigAlg (TPMI_ALG_SIG_SCHEME): 2 bytes (uint16_t, e.g. kTpmAlgEcdsa)
+// - sigAlg (TPMI_ALG_SIG_SCHEME): 2 bytes (uint16_t, TPM_ALG_ECDSA)
 // - signature (union based on sigAlg):
 //   For TPMS_SIGNATURE_ECC (Section 11.1.5):
-//   - hash (TPMI_ALG_HASH): 2 bytes (uint16_t, e.g. hash_alg)
+//   - hash (TPMI_ALG_HASH): 2 bytes (uint16_t, hash_alg, e.g. TPM_ALG_SHA256)
 //   - signature (TPMS_ECC_POINT containing r and s as TPM2B_ECC_PARAMETERs):
 //     - r.size (uint16_t): 2 bytes
 //     - r.buffer (bytes): r.size() bytes
 //     - s.size (uint16_t): 2 bytes
 //     - s.buffer (bytes): s.size() bytes
-std::vector<uint8_t> BuildTpmEcdsaSignature(uint16_t hash_alg,
+std::vector<uint8_t> BuildTpmEcdsaSignature(TpmAlg hash_alg,
                                             base::span<const uint8_t> r,
                                             base::span<const uint8_t> s) {
   size_t size = 2 + 2 + 2 + r.size() + 2 + s.size();
   std::vector<uint8_t> tpm_sig(size);
   base::SpanWriter<uint8_t> writer(tpm_sig);
-  writer.WriteU16BigEndian(kTpmAlgEcdsa);
-  writer.WriteU16BigEndian(hash_alg);
+  writer.WriteU16BigEndian(std::to_underlying(TPM_ALG_ECDSA));
+  writer.WriteU16BigEndian(std::to_underlying(hash_alg));
   writer.WriteU16BigEndian(r.size());
   writer.Write(r);
   writer.WriteU16BigEndian(s.size());
@@ -117,13 +99,13 @@ std::vector<uint8_t> BuildTpmEcdsaSignature(uint16_t hash_alg,
 //   - qualifiedName (TPM2B_NAME): 2 bytes size + 0 bytes buffer = 2 bytes
 std::vector<uint8_t> BuildFakeCertifyStatement(
     base::span<const uint8_t> challenge,
-    uint32_t magic,
-    uint16_t type) {
+    TpmConstant magic = TPM_GENERATED_VALUE,
+    TpmSt type = TPM_ST_ATTEST_CERTIFY) {
   size_t size = 4 + 2 + 2 + 2 + challenge.size() + 17 + 8 + 2 + 2;
   std::vector<uint8_t> statement(size);
   base::SpanWriter<uint8_t> writer(statement);
-  writer.WriteU32BigEndian(magic);
-  writer.WriteU16BigEndian(type);
+  writer.WriteU32BigEndian(std::to_underlying(magic));
+  writer.WriteU16BigEndian(std::to_underlying(type));
   writer.WriteU16BigEndian(0);  // qualified_signer size = 0
   writer.WriteU16BigEndian(challenge.size());
   writer.Write(challenge);
@@ -157,8 +139,8 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
     base::span<const uint8_t> challenge,
     base::span<const uint8_t> signature,
     uint32_t response_code = 0,
-    uint32_t magic = kTpmGeneratedValue,
-    uint16_t type = kTpmStAttestCertify) {
+    TpmConstant magic = TPM_GENERATED_VALUE,
+    TpmSt type = TPM_ST_ATTEST_CERTIFY) {
   std::vector<uint8_t> statement =
       BuildFakeCertifyStatement(challenge, magic, type);
 
@@ -169,7 +151,7 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(kTpmStNoSessions);
+  writer.WriteU16BigEndian(std::to_underlying(TPM_ST_NO_SESSIONS));
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
@@ -185,8 +167,8 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
 
 std::vector<uint8_t> BuildFakeHashResponse(
     base::span<const uint8_t> digest,
-    uint16_t ticket_tag,
-    uint32_t ticket_hierarchy,
+    TpmSt ticket_tag,
+    TpmRh ticket_hierarchy,
     base::span<const uint8_t> ticket_digest,
     uint32_t response_code = 0) {
   // TPMT_TK_HASHCHECK size: 2 bytes tag + 4 bytes hierarchy + 2 bytes digest
@@ -200,15 +182,15 @@ std::vector<uint8_t> BuildFakeHashResponse(
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(kTpmStNoSessions);
+  writer.WriteU16BigEndian(std::to_underlying(TPM_ST_NO_SESSIONS));
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
   if (response_code == 0) {
     writer.WriteU16BigEndian(digest.size());
     writer.Write(digest);
-    writer.WriteU16BigEndian(ticket_tag);
-    writer.WriteU32BigEndian(ticket_hierarchy);
+    writer.WriteU16BigEndian(std::to_underlying(ticket_tag));
+    writer.WriteU32BigEndian(std::to_underlying(ticket_hierarchy));
     writer.WriteU16BigEndian(ticket_digest.size());
     writer.Write(ticket_digest);
   }
@@ -219,12 +201,12 @@ std::vector<uint8_t> BuildFakeHashResponse(
 
 std::vector<uint8_t> BuildFakeSignResponse(base::span<const uint8_t> signature,
                                            uint32_t response_code = 0,
-                                           uint16_t tag = kTpmStSessions) {
+                                           TpmSt tag = TPM_ST_SESSIONS) {
   size_t body_size = signature.size();
-  size_t session_size = (tag == kTpmStSessions) ? 5 : 0;
+  size_t session_size = (tag == TPM_ST_SESSIONS) ? 5 : 0;
   uint32_t resp_size = 10;
   if (response_code == 0) {
-    if (tag == kTpmStSessions) {
+    if (tag == TPM_ST_SESSIONS) {
       resp_size += 4;  // parameterSize
     }
     resp_size += body_size + session_size;
@@ -232,16 +214,16 @@ std::vector<uint8_t> BuildFakeSignResponse(base::span<const uint8_t> signature,
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(tag);
+  writer.WriteU16BigEndian(std::to_underlying(tag));
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
   if (response_code == 0) {
-    if (tag == kTpmStSessions) {
+    if (tag == TPM_ST_SESSIONS) {
       writer.WriteU32BigEndian(body_size);
     }
     writer.Write(signature);
-    if (tag == kTpmStSessions) {
+    if (tag == TPM_ST_SESSIONS) {
       writer.WriteU16BigEndian(0);  // nonce size
       writer.WriteU8BigEndian(0);   // sessionAttributes
       writer.WriteU16BigEndian(0);  // HMAC size
@@ -263,7 +245,7 @@ TEST(TpmCppParserTest, VerifySignature_RsaSha256_Success) {
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, kStatement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   EXPECT_OK(VerifySignature(spki, kStatement, sig_blob));
 }
 
@@ -276,7 +258,7 @@ TEST(TpmCppParserTest, VerifySignature_RsaSha1_Success) {
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA1, rsa_priv, kStatement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha1, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA1, sig_bytes);
   EXPECT_OK(VerifySignature(spki, kStatement, sig_blob));
 }
 
@@ -295,7 +277,7 @@ TEST(TpmCppParserTest, VerifySignature_EcdsaSha256_Success) {
 
   auto [r_span, s_span] = base::span<const uint8_t, 64>(raw_sig).split_at<32>();
 
-  auto sig_blob = BuildTpmEcdsaSignature(kTpmAlgSha256, r_span, s_span);
+  auto sig_blob = BuildTpmEcdsaSignature(TPM_ALG_SHA256, r_span, s_span);
   EXPECT_OK(VerifySignature(spki, kStatement, sig_blob));
 }
 
@@ -318,7 +300,7 @@ TEST(TpmCppParserTest, VerifySignature_UnsupportedHashAlgorithm) {
   static constexpr uint8_t kDummySig[256] = {0};
 
   EXPECT_THAT(VerifySignature(spki, kStatement,
-                              BuildTpmRsaSignature(0x0010, kDummySig)),
+                              BuildTpmRsaSignature(TPM_ALG_NULL, kDummySig)),
               ErrorIs(SignatureError::kUnsupportedHashAlgorithm));
 }
 
@@ -340,7 +322,7 @@ TEST(TpmCppParserTest, VerifySignature_TrailingBytes) {
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, kStatement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   sig_blob.push_back(0x99);  // Trailing garbage
 
   EXPECT_THAT(VerifySignature(spki, kStatement, sig_blob),
@@ -357,7 +339,7 @@ TEST(TpmCppParserTest, VerifySignature_InvalidPublicKey) {
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, kStatement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   EXPECT_THAT(VerifySignature(spki, kStatement, sig_blob),
               ErrorIs(SignatureError::kInvalidPublicKey));
 }
@@ -371,7 +353,7 @@ TEST(TpmCppParserTest, VerifySignature_InvalidSignature) {
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, kStatement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
 
   // Verify with a different statement to trigger verification failure
   static constexpr uint8_t kWrongStatement[] = {9, 9, 9, 9};
@@ -382,10 +364,10 @@ TEST(TpmCppParserTest, VerifySignature_InvalidSignature) {
 TEST(TpmCppParserTest, GetSignatureAlgorithms_Rsa_Success) {
   static constexpr uint8_t kDummySig[256] = {0};
   EXPECT_THAT(
-      GetSignatureAlgorithms(BuildTpmRsaSignature(kTpmAlgSha256, kDummySig)),
+      GetSignatureAlgorithms(BuildTpmRsaSignature(TPM_ALG_SHA256, kDummySig)),
       ValueIs(SignatureAlgorithms{
-          .sig_alg = kTpmAlgRsaSsa,
-          .hash_alg = kTpmAlgSha256,
+          .sig_alg = TPM_ALG_RSASSA,
+          .hash_alg = TPM_ALG_SHA256,
       }));
 }
 
@@ -393,10 +375,10 @@ TEST(TpmCppParserTest, GetSignatureAlgorithms_Ecdsa_Success) {
   static constexpr uint8_t kR[32] = {0};
   static constexpr uint8_t kS[32] = {0};
   EXPECT_THAT(
-      GetSignatureAlgorithms(BuildTpmEcdsaSignature(kTpmAlgSha256, kR, kS)),
+      GetSignatureAlgorithms(BuildTpmEcdsaSignature(TPM_ALG_SHA256, kR, kS)),
       ValueIs(SignatureAlgorithms{
-          .sig_alg = kTpmAlgEcdsa,
-          .hash_alg = kTpmAlgSha256,
+          .sig_alg = TPM_ALG_ECDSA,
+          .hash_alg = TPM_ALG_SHA256,
       }));
 }
 
@@ -409,23 +391,21 @@ TEST(TpmCppParserTest, GetSignatureAlgorithms_UnsupportedSignatureAlgorithm) {
 
 TEST(TpmCppParserTest, GetSignatureAlgorithms_UnsupportedHashAlgorithm) {
   static constexpr uint8_t kDummySig[256] = {0};
-  constexpr uint16_t kUnsupportedHashAlg = 0x0010;  // TPM_ALG_NULL
-  EXPECT_THAT(GetSignatureAlgorithms(
-                  BuildTpmRsaSignature(kUnsupportedHashAlg, kDummySig)),
-              ValueIs(SignatureAlgorithms{
-                  .sig_alg = kTpmAlgRsaSsa,
-                  .hash_alg = kUnsupportedHashAlg,
-              }));
+  EXPECT_THAT(
+      GetSignatureAlgorithms(BuildTpmRsaSignature(TPM_ALG_NULL, kDummySig)),
+      ValueIs(SignatureAlgorithms{
+          .sig_alg = TPM_ALG_RSASSA,
+          .hash_alg = TPM_ALG_NULL,
+      }));
 }
 
 TEST(TpmCppParserTest, ParseCertifyResponse_Success) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
-      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob);
 
   EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
@@ -437,13 +417,14 @@ TEST(TpmCppParserTest, ParseCertifyResponse_Success) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_BadMagic) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement =
-      BuildFakeCertifyStatement(kChallenge, 0x11223344, 0x8017);  // Bad magic
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
+      kChallenge, static_cast<TpmConstant>(0x11223344));  // Bad magic
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
-  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob, 0, 0x11223344);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
+  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob, 0,
+                                       static_cast<TpmConstant>(0x11223344));
 
   EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
               ErrorIs(TpmParseError(TpmParseError::Type::kBadMagicNumber)));
@@ -451,12 +432,11 @@ TEST(TpmCppParserTest, ParseCertifyResponse_BadMagic) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
-      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob);
 
   static constexpr uint8_t kWrongChallenge[] = {9, 9, 9, 9};
@@ -466,12 +446,11 @@ TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(
-      kChallenge, kTpmGeneratedValue, kTpmStAttestCertify);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
-  auto sig_blob = BuildTpmRsaSignature(kTpmAlgSha256, sig_bytes);
+  auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
   auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob,
                                        0x100);  // TPM error code 0x100
 
@@ -482,12 +461,12 @@ TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
 
 TEST(TpmCppParserTest, BuildHashCommand) {
   static constexpr uint8_t kData[] = {1, 2, 3, 4};
-  uint16_t hash_alg = kTpmAlgSha256;
-  // Note: kTpmRhOwner (0x40000001) is used for standard keys and mock
-  // validation tickets in unit tests. By contrast, kTpmRhEndorsement
+  TpmAlg hash_alg = TPM_ALG_SHA256;
+  // Note: TPM_RH_OWNER (0x40000001) is used for standard keys and mock
+  // validation tickets in unit tests. By contrast, TPM_RH_ENDORSEMENT
   // (0x4000000b) MUST be used for Windows Attestation Identity Keys (AIKs) in
   // production.
-  uint32_t hierarchy = kTpmRhOwner;
+  TpmRh hierarchy = TPM_RH_OWNER;
 
   std::vector<uint8_t> cmd = BuildHashCommand(kData, hash_alg, hierarchy);
   EXPECT_EQ(cmd.size(), 22u);
@@ -498,9 +477,9 @@ TEST(TpmCppParserTest, BuildHashCommand) {
   ASSERT_TRUE(reader.ReadU16BigEndian(tag));
   ASSERT_TRUE(reader.ReadU32BigEndian(size));
   ASSERT_TRUE(reader.ReadU32BigEndian(cc));
-  EXPECT_EQ(tag, kTpmStNoSessions);
+  EXPECT_EQ(tag, std::to_underlying(TPM_ST_NO_SESSIONS));
   EXPECT_EQ(size, 22u);
-  EXPECT_EQ(cc, kTpmCcHash);
+  EXPECT_EQ(cc, std::to_underlying(TPM_CC_HASH));
 
   uint16_t data_len;
   ASSERT_TRUE(reader.ReadU16BigEndian(data_len));
@@ -511,18 +490,18 @@ TEST(TpmCppParserTest, BuildHashCommand) {
 
   uint16_t alg;
   ASSERT_TRUE(reader.ReadU16BigEndian(alg));
-  EXPECT_EQ(alg, hash_alg);
+  EXPECT_EQ(alg, std::to_underlying(hash_alg));
 
   uint32_t hier;
   ASSERT_TRUE(reader.ReadU32BigEndian(hier));
-  EXPECT_EQ(hier, hierarchy);
+  EXPECT_EQ(hier, std::to_underlying(hierarchy));
 }
 
 TEST(TpmCppParserTest, ParseHashResponse_Success) {
   static constexpr uint8_t kDigest[] = {1, 2, 3};
   static constexpr uint8_t kTicketDigest[] = {4, 5, 6};
-  std::vector<uint8_t> resp = BuildFakeHashResponse(kDigest, kTpmStHashcheck,
-                                                    kTpmRhOwner, kTicketDigest);
+  std::vector<uint8_t> resp = BuildFakeHashResponse(
+      kDigest, TPM_ST_HASHCHECK, TPM_RH_OWNER, kTicketDigest);
 
   auto parsed_or_error = ParseHashResponse(resp);
   ASSERT_OK_AND_ASSIGN(HashResponse parsed, parsed_or_error);
@@ -541,7 +520,7 @@ TEST(TpmCppParserTest, ParseHashResponse_TpmError) {
   static constexpr uint8_t kDigest[] = {1, 2, 3};
   static constexpr uint8_t kTicketDigest[] = {4, 5, 6};
   std::vector<uint8_t> resp = BuildFakeHashResponse(
-      kDigest, kTpmStHashcheck, kTpmRhOwner, kTicketDigest, 0x100);
+      kDigest, TPM_ST_HASHCHECK, TPM_RH_OWNER, kTicketDigest, 0x100);
 
   auto parsed_or_error = ParseHashResponse(resp);
   EXPECT_THAT(
@@ -552,8 +531,8 @@ TEST(TpmCppParserTest, ParseHashResponse_TpmError) {
 TEST(TpmCppParserTest, BuildSignCommand) {
   uint32_t key_handle = 0x81000001;
   static constexpr uint8_t kDigest[] = {1, 2, 3};
-  uint16_t sig_alg = kTpmAlgEcdsa;
-  uint16_t hash_alg = kTpmAlgSha256;
+  TpmAlg sig_alg = TPM_ALG_ECDSA;
+  TpmAlg hash_alg = TPM_ALG_SHA256;
   static constexpr uint8_t kTicket[] = {7, 8, 9, 10};
 
   std::vector<uint8_t> cmd =
@@ -566,9 +545,9 @@ TEST(TpmCppParserTest, BuildSignCommand) {
   ASSERT_TRUE(reader.ReadU16BigEndian(tag));
   ASSERT_TRUE(reader.ReadU32BigEndian(size));
   ASSERT_TRUE(reader.ReadU32BigEndian(cc));
-  EXPECT_EQ(tag, kTpmStSessions);
+  EXPECT_EQ(tag, std::to_underlying(TPM_ST_SESSIONS));
   EXPECT_EQ(size, 40u);
-  EXPECT_EQ(cc, kTpmCcSign);
+  EXPECT_EQ(cc, std::to_underlying(TPM_CC_SIGN));
 
   uint32_t handle;
   ASSERT_TRUE(reader.ReadU32BigEndian(handle));
@@ -589,11 +568,11 @@ TEST(TpmCppParserTest, BuildSignCommand) {
 
   uint16_t sig_scheme;
   ASSERT_TRUE(reader.ReadU16BigEndian(sig_scheme));
-  EXPECT_EQ(sig_scheme, sig_alg);
+  EXPECT_EQ(sig_scheme, std::to_underlying(sig_alg));
 
   uint16_t hash;
   ASSERT_TRUE(reader.ReadU16BigEndian(hash));
-  EXPECT_EQ(hash, hash_alg);
+  EXPECT_EQ(hash, std::to_underlying(hash_alg));
 
   auto ticket_span = reader.Read<4>();
   ASSERT_TRUE(ticket_span.has_value());
@@ -603,7 +582,7 @@ TEST(TpmCppParserTest, BuildSignCommand) {
 TEST(TpmCppParserTest, ParseSignResponse_Success) {
   static constexpr uint8_t kDummySig[] = {0xAA, 0xBB};
   std::vector<uint8_t> sig_blob =
-      BuildTpmRsaSignature(kTpmAlgSha256, kDummySig);
+      BuildTpmRsaSignature(TPM_ALG_SHA256, kDummySig);
   std::vector<uint8_t> resp = BuildFakeSignResponse(sig_blob);
 
   auto parsed_or_error = ParseSignResponse(resp);

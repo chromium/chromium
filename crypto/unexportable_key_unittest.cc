@@ -374,8 +374,7 @@ TEST_P(UnexportableKeyTest, CertifySlowlyUsesSha256) {
   ASSERT_OK_AND_ASSIGN(
       crypto::tpm::SignatureAlgorithms signature_algs,
       crypto::tpm::GetSignatureAlgorithms(statement.signature));
-  EXPECT_EQ(signature_algs.hash_alg,
-            std::to_underlying(crypto::tpm::TpmAlg::TPM_ALG_SHA256));
+  EXPECT_EQ(signature_algs.hash_alg, crypto::tpm::TPM_ALG_SHA256);
 }
 
 TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {

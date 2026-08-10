@@ -165,8 +165,8 @@ TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
 }
 
 std::vector<uint8_t> BuildHashCommand(base::span<const uint8_t> data,
-                                      uint16_t hash_alg,
-                                      uint32_t hierarchy) {
+                                      TpmAlg hash_alg,
+                                      TpmRh hierarchy) {
   return base::ToVector(
       build_hash_command(base::SpanToRustSlice(data), hash_alg, hierarchy));
 }
@@ -188,8 +188,8 @@ TpmParseErrorOr<HashResponse> ParseHashResponse(
 std::vector<uint8_t> BuildSignCommand(
     uint32_t key_handle,
     base::span<const uint8_t> digest,
-    uint16_t sig_alg,
-    uint16_t hash_alg,
+    TpmAlg sig_alg,
+    TpmAlg hash_alg,
     base::span<const uint8_t> validation_ticket) {
   return base::ToVector(
       build_sign_command(key_handle, base::SpanToRustSlice(digest), sig_alg,
@@ -217,8 +217,8 @@ SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(
   RETURN_IF_ERROR(MapSignatureParseResult(raw_sig.status));
 
   return SignatureAlgorithms{
-      .sig_alg = std::to_underlying(raw_sig.sig_alg),
-      .hash_alg = std::to_underlying(raw_sig.hash_alg),
+      .sig_alg = raw_sig.sig_alg,
+      .hash_alg = raw_sig.hash_alg,
   };
 }
 
