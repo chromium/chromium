@@ -438,6 +438,7 @@ struct ChromeMLASRStreamOptions {
   // Function to call with transcribed audio.
   const ChromeMLASRStreamOutputFn* output_fn;
   int32_t decoder_prefill_backoff;
+  const char* language;
 };
 
 struct ChromeMLASRAPI {

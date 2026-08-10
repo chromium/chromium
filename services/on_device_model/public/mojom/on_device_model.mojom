@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module on_device_model.mojom;
 
@@ -490,6 +490,8 @@ interface AsrStreamResponder {
 [Stable]
 struct AsrStreamOptions {
   uint32 sample_rate_hz = 0;
+  [MinVersion=7]
+  string? language;
 };
 
 // Used to feed audio into an ASR stream.

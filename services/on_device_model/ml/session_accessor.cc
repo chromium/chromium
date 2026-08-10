@@ -512,6 +512,8 @@ std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
       .sample_rate_hz = asr_options->sample_rate_hz,
       .output_fn = &output_fn,
       .decoder_prefill_backoff = -1,
+      .language =
+          asr_options->language ? asr_options->language->c_str() : nullptr,
   };
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelAsrDecoderPrefill)) {

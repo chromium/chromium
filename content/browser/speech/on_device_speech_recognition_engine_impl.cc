@@ -47,7 +47,8 @@ OnDeviceSpeechRecognitionEngine::OnDeviceSpeechRecognitionEngine(
           &OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated,
           weak_factory_.GetWeakPtr())));
   core_.AsyncCall(&Core::CreateModelClient)
-      .WithArgs(config_.initial_context.global_id, config_.quality);
+      .WithArgs(config_.initial_context.global_id, config_.quality,
+                config_.language);
 }
 
 OnDeviceSpeechRecognitionEngine::~OnDeviceSpeechRecognitionEngine() = default;
@@ -138,7 +139,9 @@ int OnDeviceSpeechRecognitionEngine::GetDesiredAudioChunkDurationMs() const {
 
 void OnDeviceSpeechRecognitionEngine::Core::CreateModelClient(
     GlobalRenderFrameHostId global_id,
-    media::mojom::SpeechRecognitionQuality quality) {
+    media::mojom::SpeechRecognitionQuality quality,
+    const std::string& language) {
+  language_ = language;
   RenderFrameHost* rfh = RenderFrameHost::FromID(global_id);
   if (!rfh) {
     return;
@@ -187,6 +190,9 @@ void OnDeviceSpeechRecognitionEngine::Core::TryCreateSession() {
 
   auto asr_options = on_device_model::mojom::AsrStreamOptions::New();
   asr_options->sample_rate_hz = *sample_rate_hz_;
+  if (!language_.empty()) {
+    asr_options->language = language_;
+  }
 
   mojo::PendingRemote<on_device_model::mojom::AsrStreamInput> asr_stream;
   mojo::PendingReceiver<on_device_model::mojom::AsrStreamResponder>
