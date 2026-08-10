@@ -5,6 +5,7 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
@@ -1108,7 +1109,14 @@ void ToplevelWindowEventHandler::HandleCaptureLost(ui::LocatedEvent* event) {
     // We complete the drag instead of reverting it, as reverting it will result
     // in a weird behavior when a dragged tab produces a modal dialog while the
     // drag is in progress. crbug.com/558201.
-    CompleteDrag(DragResult::SUCCESS);
+    // However, if the capture is lost because of display configuration change,
+    // we should revert the drag.
+    auto* manager = Shell::Get()->window_tree_host_manager();
+    if (manager->in_display_configuration_change()) {
+      CompleteDrag(DragResult::REVERT);
+    } else {
+      CompleteDrag(DragResult::SUCCESS);
+    }
   }
 }
 

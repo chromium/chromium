@@ -6338,19 +6338,10 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
 
 }  // namespace
 
-// TODO(crbug.com/333085989): Re-enable flaky tests
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CancelDragTabToWindowIn2ndDisplay \
-  DISABLED_CancelDragTabToWindowIn2ndDisplay
-#else
-#define MAYBE_CancelDragTabToWindowIn2ndDisplay \
-  CancelDragTabToWindowIn2ndDisplay
-#endif
-
 // Drags from browser to a second display and releases input.
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest,
-    MAYBE_CancelDragTabToWindowIn2ndDisplay) {
+    CancelDragTabToWindowIn2ndDisplay) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -6378,19 +6369,10 @@ IN_PROC_BROWSER_TEST_P(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
 }
 
-// TODO(crbug.com/333085989): Re-enable flaky tests on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CancelDragTabToWindowIn1stDisplay \
-  DISABLED_CancelDragTabToWindowIn1stDisplay
-#else
-#define MAYBE_CancelDragTabToWindowIn1stDisplay \
-  CancelDragTabToWindowIn1stDisplay
-#endif
-
 // Drags from browser from a second display to primary and releases input.
 IN_PROC_BROWSER_TEST_P(
     DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest,
-    MAYBE_CancelDragTabToWindowIn1stDisplay) {
+    CancelDragTabToWindowIn1stDisplay) {
   display::Screen* screen = display::Screen::Get();
   const std::pair<Display, Display> displays = GetDisplays(screen);
 

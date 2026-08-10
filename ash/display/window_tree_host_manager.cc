@@ -820,6 +820,7 @@ void WindowTreeHostManager::CloseMirroringDisplayIfNotNecessary() {
 }
 
 void WindowTreeHostManager::PreDisplayConfigurationChange(bool clear_focus) {
+  in_display_configuration_change_ = true;
   // Pause occlusion tracking during display configuration updates.
   scoped_pause_ = std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
 
@@ -859,6 +860,7 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
       PropagateFontRenderParamsChange(root);
     }
   }
+  in_display_configuration_change_ = false;
 }
 
 void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {

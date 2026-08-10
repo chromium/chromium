@@ -142,6 +142,10 @@ class ASH_EXPORT WindowTreeHostManager
   void PreDisplayConfigurationChange(bool clear_focus) override;
   void PostDisplayConfigurationChange() override;
 
+  bool in_display_configuration_change() const {
+    return in_display_configuration_change_;
+  }
+
   // ui::ImeKeyEventDispatcher overrides:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override;
@@ -222,6 +226,8 @@ class ASH_EXPORT WindowTreeHostManager
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause> scoped_pause_;
 
   bool subpixel_rendering_enabled_ = true;
+
+  bool in_display_configuration_change_ = false;
 
   base::WeakPtrFactory<WindowTreeHostManager> weak_ptr_factory_{this};
 };
