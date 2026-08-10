@@ -41,8 +41,26 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
                        .SetVisible(true)
                        .Build());
     root->AddChild(actions::ActionItem::Builder(base::DoNothing())
+                       .SetActionId(kActionShowHistory)
+                       .SetText(u"History")
+                       .SetEnabled(true)
+                       .SetVisible(true)
+                       .Build());
+    root->AddChild(actions::ActionItem::Builder(base::DoNothing())
+                       .SetActionId(kActionManageExtensions)
+                       .SetText(u"Extensions")
+                       .SetEnabled(true)
+                       .SetVisible(true)
+                       .Build());
+    root->AddChild(actions::ActionItem::Builder(base::DoNothing())
                        .SetActionId(kActionPrint)
                        .SetText(u"Print")
+                       .SetEnabled(true)
+                       .SetVisible(true)
+                       .Build());
+    root->AddChild(actions::ActionItem::Builder(base::DoNothing())
+                       .SetActionId(kActionFind)
+                       .SetText(u"Find")
                        .SetEnabled(true)
                        .SetVisible(true)
                        .Build());

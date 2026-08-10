@@ -83,7 +83,7 @@ TEST_F(AppMenuActionManagerTest, InitializeInflatesHierarchy) {
             l10n_util::GetStringUTF16(IDS_APP_MENU_YOUR_CHROME_HEADER));
   EXPECT_EQ(your_chrome_section->GetProperty(
                 AppMenuActionManager::kAppMenuDisplayTypeKey),
-            MenuEntry::DisplayType::kRow);
+            DisplayType::kRow);
 
   const auto& your_chrome_children =
       your_chrome_section->GetChildren().children();

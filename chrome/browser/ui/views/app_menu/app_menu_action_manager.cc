@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/app_menu_action_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -18,17 +19,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(MenuEntry::DisplayType)
+DEFINE_UI_CLASS_PROPERTY_TYPE(DisplayType)
 
-DEFINE_UI_CLASS_PROPERTY_KEY(MenuEntry::DisplayType,
+DEFINE_UI_CLASS_PROPERTY_KEY(DisplayType,
                              kAppMenuDisplayTypeInternal,
-                             MenuEntry::DisplayType::kRow)
+                             DisplayType::kRow)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ColorId,
                              kAppMenuContainerColorInternal,
                              ui::kColorMenuBackground)
 
 // static
-const ui::ClassProperty<MenuEntry::DisplayType>* const
+const ui::ClassProperty<DisplayType>* const
     AppMenuActionManager::kAppMenuDisplayTypeKey = kAppMenuDisplayTypeInternal;
 
 // static
@@ -44,78 +45,59 @@ AppMenuActionManager::AppMenuActionManager(actions::ActionItem* action_scope)
 
 AppMenuActionManager::~AppMenuActionManager() = default;
 
-// static
-const MenuEntry& AppMenuActionManager::GetMenuHierarchy() {
-  // Defines the hierarchical tree of the Block ChroMenu
-  static const base::NoDestructor<MenuEntry> hierarchy(
-      {.text = u"Root",
-       .children = {
-           {.text = l10n_util::GetStringUTF16(IDS_APP_MENU_YOUR_CHROME_HEADER),
-            .children =
-                {
-                    {.action_id = kActionShowPasswordManager},
-                    {.action_id = kActionShowHistory},
-                    {.action_id = kActionManageExtensions},
-                },
-            // Theme background color of Your Chrome section
-            .container_color = kColorAppMenuYourChromeBackground},
-           {.text = l10n_util::GetStringUTF16(
-                IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER),
-            .children =
-                {
-                    {.action_id = kActionPrint},
-                    {.action_id = kActionFind},
-                },
-            // Theme background color of Tools and Actions section
-            .container_color = kColorAppMenuToolsAndActionsBackground},
-       }});
-  return *hierarchy;
-}
-
 void AppMenuActionManager::Initialize() {
   root_action_item_ = actions::ActionItem::Builder().Build();
-  PopulateSubtree(root_action_item_.get(), GetMenuHierarchy());
+  PopulateAppMenu(root_action_item_.get());
 }
 
-void AppMenuActionManager::PopulateSubtree(
-    actions::ActionItem* parent,
-    const MenuEntry& entry,
+void AppMenuActionManager::PopulateAppMenu(
+    actions::ActionItem* root,
     std::optional<ui::ColorId> inherited_container_color) {
-  // Every item created during this loop will be added as a child of `parent`.
-  // - Entries without an action_id become section headings.
-  // - Entries with an action_id become proxy action items.
-  for (const auto& child : entry.children) {
-    std::unique_ptr<actions::BaseAction> child_item;
-    if (child.action_id.has_value()) {
-      child_item = CreateAppMenuIndirectActionItem(child.action_id.value());
-      if (!child_item) {
-        continue;
-      }
-    } else {
-      child_item = std::make_unique<AppMenuSectionActionItem>(child.text);
-    }
+  std::optional<ui::ColorId> your_chrome_background =
+      kColorAppMenuYourChromeBackground;
+  std::optional<ui::ColorId> tools_actions_background =
+      kColorAppMenuToolsAndActionsBackground;
 
-    std::optional<ui::ColorId> effective_container_color =
-        child.container_color.has_value() ? child.container_color
-                                          : inherited_container_color;
+  // Chrome Heading (Your Chrome)
 
-    actions::ActionItem* child_item_ptr = child_item->GetActionItem();
-    child_item_ptr->SetProperty(kAppMenuDisplayTypeKey, child.display_type);
-    if (effective_container_color.has_value()) {
-      child_item_ptr->SetProperty(kAppMenuContainerColorKey,
-                                  effective_container_color.value());
-    }
+  std::unique_ptr<actions::BaseAction> your_chrome_heading =
+      CreateAppMenuSectionActionItem(
+          l10n_util::GetStringUTF16(IDS_APP_MENU_YOUR_CHROME_HEADER),
+          DisplayType::kRow, your_chrome_background);
 
-    parent->AddChild(std::move(child_item));
-    // Recursively create child action items, propagating their background color
-    // down.
-    PopulateSubtree(child_item_ptr, child, effective_container_color);
-  }
+  auto* chrome_ptr = root->AddChild(std::move(your_chrome_heading));
+
+  // Your Chrome Children Setup
+  chrome_ptr->AddChild(CreateAppMenuIndirectActionItem(
+      kActionShowPasswordManager, DisplayType::kRow, your_chrome_background));
+
+  chrome_ptr->AddChild(CreateAppMenuIndirectActionItem(
+      kActionShowHistory, DisplayType::kRow, your_chrome_background));
+
+  chrome_ptr->AddChild(CreateAppMenuIndirectActionItem(
+      kActionManageExtensions, DisplayType::kRow, your_chrome_background));
+
+  // Tools and Actions Heading
+  std::unique_ptr<actions::BaseAction> tools_actions_heading =
+      CreateAppMenuSectionActionItem(
+          l10n_util::GetStringUTF16(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER),
+          DisplayType::kRow, tools_actions_background);
+
+  auto* tools_actions_ptr = root->AddChild(std::move(tools_actions_heading));
+
+  // Tools and Actions Setup
+  tools_actions_ptr->AddChild(CreateAppMenuIndirectActionItem(
+      kActionPrint, DisplayType::kRow, tools_actions_background));
+
+  tools_actions_ptr->AddChild(CreateAppMenuIndirectActionItem(
+      kActionFind, DisplayType::kRow, tools_actions_background));
 }
 
 std::unique_ptr<actions::IndirectActionItem>
 AppMenuActionManager::CreateAppMenuIndirectActionItem(
-    actions::ActionId action_id) {
+    actions::ActionId action_id,
+    DisplayType display_type,
+    std::optional<ui::ColorId> container_color) {
   actions::ActionItem* action =
       actions::ActionManager::Get().FindAction(action_id, action_scope_);
   if (!action && action_scope_) {
@@ -125,5 +107,29 @@ AppMenuActionManager::CreateAppMenuIndirectActionItem(
     return nullptr;
   }
 
-  return std::make_unique<actions::IndirectActionItem>(action);
+  std::unique_ptr<actions::IndirectActionItem> indirect_item =
+      std::make_unique<actions::IndirectActionItem>(action);
+  indirect_item->GetActionItem()->SetProperty(kAppMenuDisplayTypeKey,
+                                              display_type);
+  if (container_color.has_value()) {
+    indirect_item->GetActionItem()->SetProperty(kAppMenuContainerColorKey,
+                                                container_color.value());
+  }
+
+  return indirect_item;
+}
+
+std::unique_ptr<AppMenuSectionActionItem>
+AppMenuActionManager::CreateAppMenuSectionActionItem(
+    std::u16string text,
+    DisplayType display_type,
+    std::optional<ui::ColorId> container_color) {
+  std::unique_ptr<AppMenuSectionActionItem> section_item =
+      std::make_unique<AppMenuSectionActionItem>(text);
+  section_item->SetProperty(kAppMenuDisplayTypeKey, display_type);
+  if (container_color.has_value()) {
+    section_item->SetProperty(kAppMenuContainerColorKey,
+                              container_color.value());
+  }
+  return section_item;
 }
