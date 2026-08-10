@@ -2980,19 +2980,33 @@ void View::HandlePropertyChangeEffects(PropertyEffects effects) {
 }
 
 void View::AfterPropertyChange(const void* key, int64_t old_value) {
-  if (key == kElementIdentifierKey) {
-    const ui::ElementIdentifier old_element_id =
-        ui::ElementIdentifier::FromRawValue(
-            base::checked_cast<intptr_t>(old_value));
-    if (old_element_id) {
-      views::ElementTrackerViews::GetInstance()->UnregisterView(old_element_id,
+  if (life_cycle_state_ == LifeCycleState::kAlive) {
+    // Only care about changes to identifiers while the view is alive; when the
+    // view is being destroyed it will naturally be removed from the tracker.
+    if (key == kElementIdentifierKey) {
+      const ui::ElementIdentifier old_element_id =
+          ui::ElementIdentifier::FromRawValue(
+              base::checked_cast<intptr_t>(old_value));
+      if (old_element_id) {
+        views::ElementTrackerViews::GetInstance()->UnregisterView(
+            old_element_id, this);
+      }
+      const ui::ElementIdentifier new_element_id =
+          GetProperty(kElementIdentifierKey);
+      if (new_element_id) {
+        views::ElementTrackerViews::GetInstance()->RegisterView(new_element_id,
                                                                 this);
-    }
-    const ui::ElementIdentifier new_element_id =
-        GetProperty(kElementIdentifierKey);
-    if (new_element_id) {
-      views::ElementTrackerViews::GetInstance()->RegisterView(new_element_id,
-                                                              this);
+      }
+    } else if (key == kElementSecondaryIdentifierKey) {
+      const auto primary_id = GetProperty(kElementIdentifierKey);
+      if (primary_id) {
+        // Since for a tracked element the ids are immutable, need to recreate
+        // it.
+        views::ElementTrackerViews::GetInstance()->UnregisterView(primary_id,
+                                                                  this);
+        views::ElementTrackerViews::GetInstance()->RegisterView(primary_id,
+                                                                this);
+      }
     }
   }
   observers_.Notify(&ViewObserver::OnViewPropertyChanged, this, key, old_value);

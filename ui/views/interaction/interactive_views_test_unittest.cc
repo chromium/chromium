@@ -34,9 +34,12 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButtonsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kButton1Id);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLabelId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabbedPaneId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kScrollChild1Id);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kScrollChild2Id);
+constexpr char16_t kLabel1Text[] = u"Label 1";
+constexpr char16_t kLabel2Text[] = u"Label 2";
 constexpr char16_t kButton1Caption[] = u"Button 1";
 constexpr char16_t kButton2Caption[] = u"Button 2";
 constexpr char16_t kTab1Title[] = u"Tab 1";
@@ -47,6 +50,8 @@ constexpr char16_t kTab2Contents[] = u"Tab 2 Contents";
 constexpr char16_t kTab3Contents[] = u"Tab 3 Contents";
 constexpr char kViewName[] = "Named View";
 constexpr char kViewName2[] = "Second Named View";
+constexpr char kSecondaryId[] = "test:secondary-id";
+constexpr char kSecondaryId2[] = "test:secondary-id2";
 }  // namespace
 
 class InteractiveViewsTestTest
@@ -77,6 +82,16 @@ class InteractiveViewsTestTest
                     .SetProperty(kElementIdentifierKey, kButtonsId)
                     .SetOrientation(LayoutOrientation::kHorizontal)
                     .AddChildren(
+                        Builder<Label>()
+                            .CopyAddressTo(&label1_)
+                            .SetProperty(kElementIdentifierKey, kLabelId)
+                            .SetText(kLabel1Text),
+                        Builder<Label>()
+                            .CopyAddressTo(&label2_)
+                            .SetProperty(kElementIdentifierKey, kLabelId)
+                            .SetProperty(kElementSecondaryIdentifierKey,
+                                         std::string(kSecondaryId))
+                            .SetText(kLabel2Text),
                         Builder<LabelButton>()
                             .CopyAddressTo(&button1_)
                             .SetProperty(kElementIdentifierKey, kButton1Id)
@@ -120,6 +135,8 @@ class InteractiveViewsTestTest
   void TearDown() override {
     SetContextWidget(nullptr);
     tabs_ = nullptr;
+    label1_ = nullptr;
+    label2_ = nullptr;
     button1_ = nullptr;
     button2_ = nullptr;
     scroll_ = nullptr;
@@ -144,6 +161,8 @@ class InteractiveViewsTestTest
 
   std::unique_ptr<Widget> widget_;
   raw_ptr<TabbedPane> tabs_;
+  raw_ptr<Label> label1_;
+  raw_ptr<Label> label2_;
   raw_ptr<LabelButton> button1_;
   raw_ptr<LabelButton> button2_;
   raw_ptr<ScrollView> scroll_;
@@ -300,12 +319,12 @@ TEST_F(InteractiveViewsTestTest, NameViewAbsoluteCallback) {
 
 TEST_F(InteractiveViewsTestTest, NameChildViewByIndex) {
   RunTestSequence(
-      NameChildView(kButtonsId, kViewName, 1U),
+      NameChildView(kButtonsId, kViewName, 3U),
       WithElement(kViewName,
                   base::BindLambdaForTesting([&](ui::TrackedElement* el) {
                     auto* const button = AsView<LabelButton>(el);
                     EXPECT_EQ(button2_.get(), button);
-                    EXPECT_EQ(1U, button->parent()->GetIndexOf(button));
+                    EXPECT_EQ(3U, button->parent()->GetIndexOf(button));
                   })));
 }
 
@@ -379,6 +398,36 @@ TEST_F(InteractiveViewsTestTest, NameDescendantViewByTypeAndIndex) {
                         kTab1Title),
       CheckViewProperty(kViewName2, &views::TabbedPaneTab::GetTitleText,
                         kTab3Title));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewWithSecondaryId) {
+  RunTestSequence(NameElementWithSecondaryId(kLabelId, kSecondaryId, kViewName),
+                  CheckViewProperty(kViewName, &Label::GetText, kLabel2Text));
+}
+
+TEST_F(InteractiveViewsTestTest, NameViewWithSecondaryIdWhichChanges) {
+  RunTestSequence(
+      NameElementWithSecondaryId(kLabelId, kSecondaryId, kViewName),
+      CheckView(
+          kViewName,
+          [](Label* label) {
+            return *label->GetProperty(kElementSecondaryIdentifierKey);
+          },
+          kSecondaryId),
+      WithView(kViewName,
+               [](Label* label) {
+                 label->SetProperty(kElementSecondaryIdentifierKey,
+                                    kSecondaryId2);
+               })
+          .SetMustRemainVisible(false),
+      WaitForHide(kViewName),
+      NameElementWithSecondaryId(kLabelId, kSecondaryId2, kViewName),
+      CheckView(
+          kViewName,
+          [](Label* label) {
+            return *label->GetProperty(kElementSecondaryIdentifierKey);
+          },
+          kSecondaryId2));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewTrue) {
