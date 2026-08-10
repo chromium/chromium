@@ -222,13 +222,21 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     extensions::WarningSet warnings;
     warnings.insert(
         extensions::Warning::CreateReloadTooFrequentWarning(extension_id));
+    Profile* profile = Profile::FromBrowserContext(browser_context_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&extensions::WarningService::NotifyWarningsOnUI,
-                       // TODO(crbug.com/40061562): Remove
-                       // `UnsafeDanglingUntriaged`
-                       base::UnsafeDanglingUntriaged(browser_context_),
-                       warnings));
+        base::BindOnce(
+            [](base::WeakPtr<Profile> profile,
+               extensions::WarningSet warnings) {
+              if (!profile) {
+                return;
+              }
+              if (auto* warning_service =
+                      extensions::WarningService::Get(profile.get())) {
+                warning_service->AddWarnings(warnings);
+              }
+            },
+            profile->GetWeakPtr(), std::move(warnings)));
   } else {
     // We can't call ReloadExtension directly, since when this method finishes
     // it tries to decrease the reference count for the extension, which fails

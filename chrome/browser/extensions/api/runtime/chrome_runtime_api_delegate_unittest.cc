@@ -33,6 +33,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/browser/warning_service.h"
+#include "extensions/browser/warning_set.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -432,13 +434,15 @@ class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
 #define MAYBE_TerminateExtensionWithTooManyReloads \
   TerminateExtensionWithTooManyReloads
 #endif
+// Verifies that an extension is terminated when reloaded excessively within
+// a short interval.
 TEST_F(ChromeRuntimeAPIDelegateReloadTest,
        MAYBE_TerminateExtensionWithTooManyReloads) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  // We expect the extension to be reloaded 30 times in quick succession before
-  // the next reload goes over the threshold for an unpacked extension and
-  // causes it to terminate.
+  // Expect the extension to be reloaded 30 times in quick succession before
+  // the next reload exceeds the threshold for an unpacked extension and
+  // causes termination.
   const int kNumReloadsBeforeDisable = 30;
   clock_.SetNowTicks(base::TimeTicks::Now());
   for (int i = 0; i < kNumReloadsBeforeDisable; i++) {
