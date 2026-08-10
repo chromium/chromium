@@ -5583,7 +5583,7 @@
   {
     "name": "glic-capture-region",
     "owners": [ "gklassen@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "glic-chrome-status-icon",
