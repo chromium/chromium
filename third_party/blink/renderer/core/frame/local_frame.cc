@@ -3855,6 +3855,10 @@ void LocalFrame::DownloadURL(
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
 }
 
+void LocalFrame::ShowCaptionSettings() {
+  GetLocalFrameHostRemote().ShowCaptionSettings();
+}
+
 void LocalFrame::AdvanceFocusForIME(mojom::blink::FocusType focus_type) {
   auto* focused_frame = GetPage()->GetFocusController().FocusedFrame();
   if (focused_frame != this)

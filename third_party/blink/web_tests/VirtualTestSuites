@@ -2088,6 +2088,26 @@
     ],
     "expires": "Dec 1, 2024"
   },
+  {
+    "prefix": "media-caption-settings-button-disabled",
+    "owners": [
+      "media-dev@chromium.org",
+      "brpeters@microsoft.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "media/video-controls-labels.html",
+      "media/controls/overflow-menu-hide-on-click-item.html"
+    ],
+    "args": [
+      "--disable-blink-features=MediaCaptionSettingsButton"
+    ],
+    "expires": "Jul 24, 2027"
+  },
   "This suite is incompatible with the default WPT Origin Isolation mode of ",
   "Site Isolation (see",
   "WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess) which",

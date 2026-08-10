@@ -8034,6 +8034,29 @@ void RenderFrameHostImpl::DownloadURL(
   StartDownload(std::move(parameters), std::move(blob_url_loader_factory));
 }
 
+void RenderFrameHostImpl::ShowCaptionSettings() {
+  // Showing caption settings is a user-visible action, so it should not happen
+  // for a frame that is prerendering or in the BFCache.
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kShowCaptionSettings)) {
+    return;
+  }
+
+  if (!HasTransientUserActivation()) {
+    // Require user gesture to show caption settings.
+    return;
+  }
+
+  // Depending on the platform, the embedder either opens a native dialog or
+  // navigates a new tab to the caption settings page. Neither should be
+  // reachable from a frame sandboxed without "allow-popups".
+  if (IsSandboxed(network::mojom::WebSandboxFlags::kPopups)) {
+    return;
+  }
+
+  GetContentClient()->browser()->ShowCaptionSettings(this);
+}
+
 void RenderFrameHostImpl::ReportNoBinderForInterface(const std::string& error) {
   CHECK(broker_holder_);
   broker_holder_->broker_receiver().ReportBadMessage(

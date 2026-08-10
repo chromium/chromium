@@ -158,6 +158,8 @@ void FakeLocalFrameHost::UpdateFaviconURL(
 void FakeLocalFrameHost::DownloadURL(
     mojom::blink::DownloadURLParamsPtr params) {}
 
+void FakeLocalFrameHost::ShowCaptionSettings() {}
+
 void FakeLocalFrameHost::FocusedElementChanged(
     bool is_editable_element,
     bool is_richly_editable_element,

@@ -55,6 +55,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#include "chrome/browser/accessibility/caption_settings_dialog.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -9141,6 +9142,29 @@ bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
   const GURL& url = web_contents->GetVisibleURL();
   return url == chrome::ChromeUINewTabURLAsGURL() ||
          url == chrome::ChromeUINewTabPageURLAsGURL();
+}
+
+void ChromeContentBrowserClient::ShowCaptionSettings(
+    content::RenderFrameHost* rfh) {
+  CHECK(rfh);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Windows and Mac caption styles come from the OS settings. Open the native
+  // dialog to allow users to change them.
+  captions::CaptionSettingsDialog::ShowCaptionSettingsDialog();
+#else
+  // Other platforms have no native dialog, so navigate to the Chrome
+  // caption settings page.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return;
+  }
+  content::OpenURLParams params(
+      GURL(captions::GetCaptionSettingsUrl()), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+#endif
 }
 
 void ChromeContentBrowserClient::BindAIManager(

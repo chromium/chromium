@@ -19,11 +19,20 @@ async_test(function(t) {
         var captionsList = mediaControlsElement(internals.shadowRoot(video).firstChild,
             "-internal-media-controls-text-track-list");
 
-        assert_equals(captionsList.children[0].innerText, "Options");
-        assert_equals(captionsList.children[1].innerText, "Off");
-        assert_equals(captionsList.children[2].innerText, "Icelandic");
-        assert_equals(captionsList.children[3].innerText, "fr");
-        assert_equals(captionsList.children[4].innerText, "Track 3");
+        // The "Caption settings" entry is only present when the
+        // MediaCaptionSettingsButton feature is enabled.
+        var hasCaptionSettings = window.internals &&
+            internals.runtimeFlags.mediaCaptionSettingsButtonEnabled;
+
+        var i = 0;
+        assert_equals(captionsList.children[i++].innerText, "Options");
+        if (hasCaptionSettings) {
+          assert_equals(captionsList.children[i++].innerText, "Caption settings");
+        }
+        assert_equals(captionsList.children[i++].innerText, "Off");
+        assert_equals(captionsList.children[i++].innerText, "Icelandic");
+        assert_equals(captionsList.children[i++].innerText, "fr");
+        assert_equals(captionsList.children[i++].innerText, "Track 3");
       }));
     });
 

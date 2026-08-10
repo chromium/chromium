@@ -776,6 +776,10 @@ class CORE_EXPORT LocalFrame final
       network::mojom::blink::RedirectMode cross_origin_redirect_behavior,
       mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token);
 
+  // Requests that the browser open the operating system's caption style
+  // settings page.
+  void ShowCaptionSettings();
+
   void NotifyUserActivation(
       mojom::blink::UserActivationNotificationType notification_type);
   void AddInspectorIssue(AuditsIssue issue);

@@ -1870,6 +1870,8 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
   return false;
 }
 
+void ContentBrowserClient::ShowCaptionSettings(RenderFrameHost* rfh) {}
+
 void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,

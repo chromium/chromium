@@ -3130,6 +3130,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // today to suppress the event when the user navigates to the new tab page.
   virtual bool ShouldSuppressAXLoadComplete(RenderFrameHost* rfh);
 
+  // Called when a frame requests that the operating system's caption style
+  // settings be shown.
+  virtual void ShowCaptionSettings(RenderFrameHost* rfh);
+
   // Binds the AIManager for a given `browser_context` to `receiver`. The
   // created AIManager will be owned by the `context_user_data`. The
   // RenderFrameHost may be null if this is called for a service worker or

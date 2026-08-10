@@ -113,6 +113,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       Vector<blink::mojom::blink::FaviconURLPtr> favicon_urls,
       blink::mojom::blink::FaviconUpdateReason reason) override;
   void DownloadURL(mojom::blink::DownloadURLParamsPtr params) override;
+  void ShowCaptionSettings() override;
   void FocusedElementChanged(bool is_editable_element,
                              bool is_richly_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,

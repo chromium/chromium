@@ -471,6 +471,9 @@ below:
       <message name="IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS_SUBMENU_TITLE" desc="Media controls overflow menu title for the closed captions submenu. The text for this overflow menu should be short.">
         Options
       </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_CAPTION_SETTINGS" desc="Media controls overflow menu item label for a button that opens the operating system's caption style settings.">
+        Caption settings
+      </message>
       <message name="IDS_MEDIA_TRACK_IDENTIFIER_VERBOSE_TITLE_NUMBERED" desc="Track identifier prefix for when tracks have no name. The numeric track identifier will be joined after a space, like 'Track #2'">
         Track #<ph name="TRACK_NUMBER">$1<ex>1</ex></ph>
       </message>

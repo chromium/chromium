@@ -3996,6 +3996,15 @@
       status: "test",
     },
     {
+      name: "MediaCaptionSettingsButton",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+      },
+    },
+    {
       name: "MediaCapture",
       status: {"Android": "stable"},
     },

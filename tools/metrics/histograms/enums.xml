@@ -5892,6 +5892,10 @@ shown properly on the user-facing crash UI.
     A clipboard read/write or listener registration IPC arrived for an inactive
     frame.
   </int>
+  <int value="48" label="kShowCaptionSettings">
+    A request to open the caption settings arrived for a frame in BFCache or
+    pending deletion.
+  </int>
 </enum>
 
 <enum name="IncidentType">

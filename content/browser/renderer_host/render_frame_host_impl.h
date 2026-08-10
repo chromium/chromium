@@ -2585,6 +2585,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateFaviconURL(std::vector<blink::mojom::FaviconURLPtr> favicon_urls,
                         blink::mojom::FaviconUpdateReason reason) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;
+  void ShowCaptionSettings() override;
   void FocusedElementChanged(
       bool is_editable_element,
       bool is_richly_editable_element,

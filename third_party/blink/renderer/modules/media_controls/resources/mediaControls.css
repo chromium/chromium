@@ -961,6 +961,8 @@ audio::-internal-media-controls-playback-speed-list-item,
 video::-internal-media-controls-playback-speed-list-item,
 audio::-internal-media-controls-track-selection-list-item,
 video::-internal-media-controls-track-selection-list-item,
+audio::-internal-media-controls-text-track-list-caption-settings,
+video::-internal-media-controls-text-track-list-caption-settings,
 audio::-internal-media-controls-overflow-menu-list-item,
 video::-internal-media-controls-overflow-menu-list-item {
   display: flex;
@@ -1099,6 +1101,8 @@ audio::-internal-media-controls-playback-speed-list-item:focus,
 video::-internal-media-controls-playback-speed-list-item:focus,
 audio::-internal-media-controls-track-selection-list-item:focus,
 video::-internal-media-controls-track-selection-list-item:focus,
+audio::-internal-media-controls-text-track-list-caption-settings:focus,
+video::-internal-media-controls-text-track-list-caption-settings:focus,
 audio::-internal-media-controls-overflow-menu-list-item:focus,
 video::-internal-media-controls-overflow-menu-list-item:focus{
   background-color: light-dark(#e0e0e0, #545454);
@@ -1118,6 +1122,8 @@ audio::-internal-media-controls-playback-speed-list-item:focus-visible,
 video::-internal-media-controls-playback-speed-list-item:focus-visible,
 audio::-internal-media-controls-track-selection-list-item:focus-visible,
 video::-internal-media-controls-track-selection-list-item:focus-visible,
+audio::-internal-media-controls-text-track-list-caption-settings:focus-visible,
+video::-internal-media-controls-text-track-list-caption-settings:focus-visible,
 audio::-internal-media-controls-overflow-menu-list-item:focus-visible,
 video::-internal-media-controls-overflow-menu-list-item:focus-visible {
   border: 1px solid currentColor;
@@ -1139,7 +1145,9 @@ video::-internal-media-controls-text-track-list-item,
 audio::-internal-media-controls-playback-speed-list-item,
 video::-internal-media-controls-playback-speed-list-item,
 audio::-internal-media-controls-track-selection-list-item,
-video::-internal-media-controls-track-selection-list-item {
+video::-internal-media-controls-track-selection-list-item,
+audio::-internal-media-controls-text-track-list-caption-settings,
+video::-internal-media-controls-text-track-list-caption-settings {
   padding-left: 58px;
   justify-content: space-between;
 }
@@ -1149,11 +1157,21 @@ video::-internal-media-controls-text-track-list-header,
 audio::-internal-media-controls-playback-speed-list-header,
 video::-internal-media-controls-playback-speed-list-header,
 audio::-internal-media-controls-track-selection-list-header,
-video::-internal-media-controls-track-selection-list-header {
+video::-internal-media-controls-track-selection-list-header,
+audio::-internal-media-controls-text-track-list-caption-settings,
+video::-internal-media-controls-text-track-list-caption-settings {
   background-size: 18px;
   background-position: 20px center;
   background-repeat: no-repeat;
   background-image: light-dark(url(ic_arrow_back.svg), url(ic_arrow_back_white.svg));
+}
+
+audio::-internal-media-controls-text-track-list-caption-settings,
+video::-internal-media-controls-text-track-list-caption-settings {
+  background-image: light-dark(url(ic_settings.svg), url(ic_settings_white.svg)),
+                    light-dark(url(ic_launch.svg), url(ic_launch_white.svg));
+  background-position: 20px center, right 16px center;
+  border-bottom: 1px solid light-dark(rgba(0,0,0,0.12), rgba(255,255,255,0.12));
 }
 
 label[pseudo="-internal-media-controls-text-track-list-item"] *,
@@ -1637,6 +1655,8 @@ audio::-internal-media-controls-text-track-list {
   video::-internal-media-controls-playback-speed-list-item,
   audio::-internal-media-controls-track-selection-list-item,
   video::-internal-media-controls-track-selection-list-item,
+  audio::-internal-media-controls-text-track-list-caption-settings,
+  video::-internal-media-controls-text-track-list-caption-settings,
   audio::-internal-media-controls-overflow-menu-list-item,
   video::-internal-media-controls-overflow-menu-list-item {
     background-color: Window;

@@ -20,6 +20,28 @@ video {
 </style>
 <video controls></video>
 <script>
+// With a single text track, the behavior depends on the
+// MediaCaptionSettingsButton feature. When enabled, the text track submenu is
+// always shown (it contains the caption settings entry) and has to be
+// dismissed. When disabled, the lone track is toggled directly and no submenu
+// appears.
+function dismissTextTrackMenuIfShown(video, t, callback) {
+  if (!window.internals ||
+      !internals.runtimeFlags.mediaCaptionSettingsButtonEnabled) {
+    callback();
+    return;
+  }
+
+  const textTracks = textTrackMenu(video);
+  assert_not_equals(getComputedStyle(textTracks).display, 'none');
+
+  // Selecting a track ("Off") dismisses the submenu.
+  singleTapOnControl(textTrackListItemAtIndex(video, -1), t.step_func(() => {
+    assert_equals(getComputedStyle(textTracks).display, 'none');
+    callback();
+  }));
+}
+
 async_test(t => {
   const video = document.querySelector('video');
   video.src = '../content/test.ogv';
@@ -41,11 +63,15 @@ async_test(t => {
           singleTapOnControl(captionsOverflowItem(video), t.step_func(() => {
             assert_equals(getComputedStyle(menu).display, 'none');
 
-            singleTapOnControl(overflowButton(video), t.step_func(() => {
-              assert_not_equals(getComputedStyle(menu).display, 'none');
+            dismissTextTrackMenuIfShown(video, t, t.step_func(() => {
+              assert_equals(getComputedStyle(menu).display, 'none');
 
-              singleTapOnControl(playbackSpeedOverflowItem(video), t.step_func_done(() => {
-                assert_equals(getComputedStyle(menu).display, 'none');
+              singleTapOnControl(overflowButton(video), t.step_func(() => {
+                assert_not_equals(getComputedStyle(menu).display, 'none');
+
+                singleTapOnControl(playbackSpeedOverflowItem(video), t.step_func_done(() => {
+                  assert_equals(getComputedStyle(menu).display, 'none');
+                }));
               }));
             }));
           }));

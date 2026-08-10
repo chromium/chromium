@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_text_track_manager.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -111,8 +112,10 @@ void MediaControlToggleClosedCaptionsButtonElement::DefaultEventHandler(
     Event& event) {
   if (event.type() == event_type_names::kClick ||
       event.type() == event_type_names::kGesturetap) {
-    if (MediaElement().textTracks()->length() == 1) {
-      // If only one track exists, toggle it on/off
+    // With the caption settings button enabled, always show the track list
+    // submenu. Otherwise, if only one track exists, toggle it on/off.
+    if (!RuntimeEnabledFeatures::MediaCaptionSettingsButtonEnabled() &&
+        MediaElement().textTracks()->length() == 1) {
       if (MediaElement().textTracks()->HasShowingTracks())
         GetMediaControls().GetTextTrackManager().DisableShowingTextTracks();
       else

@@ -524,6 +524,10 @@ interface LocalFrameHost {
   // Initiates a download based on user actions like 'ALT+click'.
   DownloadURL(DownloadURLParams params);
 
+  // Requests that the browser open the operating system's caption style
+  // settings.
+  ShowCaptionSettings();
+
   // Sent to the browser when focus changes inside the frame.
   // - is_editable_element: Whether the newly focused element needs
   //   keyboard input (true for textfields, text areas and content

@@ -1122,6 +1122,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldSuppressAXLoadComplete(content::RenderFrameHost* rfh) override;
 
+  void ShowCaptionSettings(content::RenderFrameHost* rfh) override;
+
   void BindAIManager(
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
