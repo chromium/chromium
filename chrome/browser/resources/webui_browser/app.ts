@@ -86,7 +86,10 @@ export class WebuiBrowserAppElement extends CrLitElement {
   protected accessor showingSidePanel_: boolean = false;
   protected accessor showLocationIconButton_: boolean = false;
   protected accessor locationIcon_: string = 'no-encryption';
-  protected accessor tabStripInset_: number = 0;
+  protected accessor tabStripInset_: number =
+      loadTimeData.valueExists('tabStripInset') ?
+      loadTimeData.getInteger('tabStripInset') :
+      0;
   protected accessor inactive_: boolean = false;
 
   constructor() {

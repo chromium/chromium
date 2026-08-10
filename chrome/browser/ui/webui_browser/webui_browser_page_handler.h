@@ -57,6 +57,8 @@ class WebUIBrowserPageHandler
   void ShowBackForwardMenu(bool is_back) override;
   void GetTabStripInset(GetTabStripInsetCallback callback) override;
 
+  static int GetTabStripInsetWidth();
+
  private:
   WebUIBrowserPageHandler(
       content::RenderFrameHost& render_frame_host,

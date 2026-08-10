@@ -320,16 +320,19 @@ void WebUIBrowserPageHandler::ShowBackForwardMenu(bool is_back) {
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
 }
 
+// static
+int WebUIBrowserPageHandler::GetTabStripInsetWidth() {
+#if BUILDFLAG(IS_MAC)
+  // Values from BrowserFrameViewMac::GetCaptionButtonBounds()
+  return (base::mac::MacOSVersion() >= 26'00'00) ? 76 : 82;
+#else
+  return 0;
+#endif
+}
+
 void WebUIBrowserPageHandler::GetTabStripInset(
     GetTabStripInsetCallback callback) {
-  std::move(callback).Run(
-#if BUILDFLAG(IS_MAC)
-      // Values from BrowserFrameViewMac::GetCaptionButtonBounds()
-      (base::mac::MacOSVersion() >= 26'00'00) ? 76 : 82
-#else
-      0
-#endif
-  );
+  std::move(callback).Run(GetTabStripInsetWidth());
 }
 
 WebUIBrowserPageHandler::WebUIBrowserPageHandler(

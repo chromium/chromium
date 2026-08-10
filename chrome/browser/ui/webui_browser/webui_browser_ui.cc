@@ -127,6 +127,9 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(
       SearchboxHandler::GetWebUIDataSourceDict(profile));
 
+  source->AddInteger("tabStripInset",
+                     WebUIBrowserPageHandler::GetTabStripInsetWidth());
+
   source->AddBoolean(
       "enableSurfaceEmbed",
       base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed));

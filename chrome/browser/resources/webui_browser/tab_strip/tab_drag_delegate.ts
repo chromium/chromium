@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 
 import type {TabStripItem} from './items.js';
@@ -59,7 +58,7 @@ export class TabDragDelegate {
       const nodeId = tabElement.tabData.id;
       const startPoint = {x: Math.round(e.screenX), y: Math.round(e.screenY)};
       const tabRect = tabElement.getBoundingClientRect();
-      const tabOriginalOffsetX = Math.round(tabRect.left);
+      const tabOriginalOffsetX = Math.round(e.clientX - tabRect.left);
       this.host_.tabDragService.startDrag(
           [nodeId], startPoint, tabOriginalOffsetX);
     }
@@ -87,9 +86,21 @@ export class TabDragDelegate {
     // Save original items for cancel/revert
     this.originalItems_ = [...this.host_.itemsForDrag];
 
-    // Calculate mouse offset inside the tab at drag start using
-    // tabOriginalOffsetX
-    this.mouseXOffset_ = localPoint.x - tabOriginalOffsetX;
+    // Store invariant mouse offset inside the tab
+    this.mouseXOffset_ = tabOriginalOffsetX;
+
+    // Place the dragged tab at the correct slot based on entry midpoint
+    const items = [...this.host_.itemsForDrag];
+    const targetIndex =
+        this.calculateInsertionIndexForPoint_(localPoint.x, items);
+    const draggedItemIndex = items.findIndex(item => item.id === nodeId);
+    if (draggedItemIndex !== -1 && draggedItemIndex !== targetIndex) {
+      const [draggedItem] = items.splice(draggedItemIndex, 1);
+      const insertAt =
+          targetIndex > draggedItemIndex ? targetIndex - 1 : targetIndex;
+      items.splice(insertAt, 0, draggedItem!);
+      this.host_.setItemsForDrag(items);
+    }
 
     this.host_.requestUpdate();
   }
@@ -110,7 +121,11 @@ export class TabDragDelegate {
     this.lastLocalX_ = localPoint.x;
     this.moveElementToLocalPoint_(localPoint.x);
 
-    const dragElementRect = this.getDraggedElement_().getBoundingClientRect();
+    const dragElement = this.host_.getTabElementForDrag(this.draggedTabId_);
+    if (!dragElement) {
+      return;
+    }
+    const dragElementRect = dragElement.getBoundingClientRect();
     if (this.tryMoveLeft_(index, items, dragElementRect)) {
       return;
     }
@@ -122,16 +137,18 @@ export class TabDragDelegate {
     this.host_.requestUpdate();
   }
 
-  onMojoDrop(nodeId: NodeId, _localPoint: {x: number, y: number}) {
+  onMojoDrop(nodeId: NodeId, localPoint: {x: number, y: number}) {
     if (!this.dragInProgress_) {
       return;
     }
 
     const items = this.host_.itemsForDrag;
-    const index = items.findIndex((item: TabStripItem) => {
+    let index = items.findIndex((item: TabStripItem) => {
       return item.type === 'tab' && item.id === nodeId;
     });
-    assert(index !== -1, 'dropped tab not found in items_');
+    if (index === -1) {
+      index = this.calculateInsertionIndexForPoint_(localPoint.x, items);
+    }
 
     // Commit the drag to the host (calls TabStripService.moveNode)
     this.host_.commitDrag(nodeId, index);
@@ -143,10 +160,32 @@ export class TabDragDelegate {
 
   onMojoDragCancelled() {
     if (this.originalItems_) {
-      this.host_.setItemsForDrag(this.originalItems_);
+      const wasOriginallyPresent =
+          this.originalItems_.some(item => item.id === this.draggedTabId_);
+      if (wasOriginallyPresent) {
+        this.host_.setItemsForDrag(this.originalItems_);
+      }
     }
     this.clearDragState_();
     this.host_.requestUpdate();
+  }
+
+  private calculateInsertionIndexForPoint_(
+      localX: number, items: TabStripItem[]): number {
+    const tabItems = items.filter(
+        item => item.type === 'tab' && item.id !== this.draggedTabId_);
+    for (let i = 0; i < tabItems.length; ++i) {
+      const tabElement = this.host_.getTabElementForDrag(tabItems[i]!.id);
+      if (!tabElement) {
+        continue;
+      }
+      const rect = tabElement.getBoundingClientRect();
+      const midpoint = rect.left + (rect.width / 2);
+      if (localX < midpoint) {
+        return items.findIndex(item => item.id === tabItems[i]!.id);
+      }
+    }
+    return items.length;
   }
 
   private clearDragState_() {
@@ -166,7 +205,10 @@ export class TabDragDelegate {
   }
 
   private moveElementToLocalPoint_(localX: number) {
-    const tabElement = this.getDraggedElement_();
+    const tabElement = this.host_.getTabElementForDrag(this.draggedTabId_);
+    if (!tabElement) {
+      return;
+    }
     tabElement.style.transform = '';
     const originalViewportLeft = tabElement.getBoundingClientRect().left;
     const deltaX = localX - originalViewportLeft - this.mouseXOffset_;
@@ -179,7 +221,9 @@ export class TabDragDelegate {
     if (prevItem && prevItem.type === 'tab') {
       const targetIdx = index - 1;
       const target = this.host_.getTabElementForDrag(prevItem.id);
-      assert(target, 'prev tab element not found');
+      if (!target) {
+        return false;
+      }
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.left < targetMidpoint) {
@@ -197,7 +241,9 @@ export class TabDragDelegate {
     if (nextItem && nextItem.type === 'tab') {
       const targetIdx = index + 1;
       const target = this.host_.getTabElementForDrag(nextItem.id);
-      assert(target, 'next tab element not found');
+      if (!target) {
+        return false;
+      }
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.right > targetMidpoint) {
@@ -207,12 +253,5 @@ export class TabDragDelegate {
       }
     }
     return false;
-  }
-
-  private getDraggedElement_(): TabElement {
-    assert(this.dragInProgress_ && this.draggedTabId_, 'drag not in progress');
-    const element = this.host_.getTabElementForDrag(this.draggedTabId_);
-    assert(element, 'dragged tab element not found');
-    return element;
   }
 }
