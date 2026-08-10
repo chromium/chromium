@@ -141,6 +141,10 @@ cast_source_set("unittests") {
 
 grit("resources") {
   source = "//chromecast/app/resources/shell_resources.grd"
+  inputs = [
+    "resources/shell_devtools_discovery_page.html",
+    "resources/shell_speaker_icon.png",
+  ]
 
   outputs = [
     "grit/shell_resources.h",
@@ -153,6 +157,10 @@ grit_strings("chromecast_settings") {
 
   outputs = [ "grit/chromecast_settings.h" ]
   locales = cast_locales
+
+  inputs = process_file_template(
+          cast_locales - [ "en-US" ],
+          [ "resources/chromecast_settings_{{source_name_part}}.xtb" ])
 
   deps = [ ":verify_cast_locales" ]
 }

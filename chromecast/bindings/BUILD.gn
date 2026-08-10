@@ -19,6 +19,7 @@ source_set("named_message_port_connector_resources") {
 # are migrated to use NamedMessagePortConnector directly.
 grit("bindings_resources") {
   source = "bindings_resources.grd"
+  inputs = [ "//components/cast/named_message_port_connector/named_message_port_connector.js" ]
   outputs = [
     "grit/resources.h",
     "bindings_resources.pak",
