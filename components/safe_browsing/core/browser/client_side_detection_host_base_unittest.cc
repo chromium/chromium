@@ -122,6 +122,17 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
                std::optional<net::HttpStatusCode> response_code,
                std::optional<IntelligentScanVerdict> intelligent_scan_verdict),
               (override));
+  MOCK_METHOD(void,
+              ShowBlockingPage,
+              (GURL phishing_url,
+               ClientSideDetectionType request_type,
+               std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+               bool should_show_scam_warning),
+              (override));
+  MOCK_METHOD(void,
+              UpdateDebuggingMetadataWithNetworkResult,
+              (GURL phishing_url, net::HttpStatusCode response_code),
+              (override));
 
   void AddReferrerChain(ClientPhishingRequest* verdict) override {}
 

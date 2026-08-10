@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -16,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -23,7 +25,9 @@
 #include "components/safe_browsing/core/browser/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/threat_enums.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -57,6 +61,9 @@ enum class ClientSideDetectionEvent {
   kMaxValue = kWarningShown,
 };
 
+std::string_view GetRequestTypeName(
+    ClientSideDetectionType client_side_detection_type);
+
 class ClientSideDetectionFeatureCacheBase;
 class ClientSideDetectionServiceBase;
 class VerdictCacheManager;
@@ -64,6 +71,32 @@ class VerdictCacheManager;
 class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
                                     public history::HistoryServiceObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ImageEmbeddingResult)
+  enum class ImageEmbeddingResult {
+    kSuccess = 0,
+    kImageEmbedderNotReady = 1,
+    kCancelled = 2,
+    kForwardBackTransition = 3,
+    kFailed = 4,
+    kInvalidURLFormatRequest = 5,
+    kInvalidDocumentLoader = 6,
+    kMaxValue = kInvalidDocumentLoader,
+  };
+  // LINT.ThenChange(//components/safe_browsing/content/common/safe_browsing.mojom:PhishingImageEmbeddingResult)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AsyncCheckTriggerForceRequestResult {
+    kTriggered = 0,
+    kSkippedTriggerModelsPingNotSkipped = 1,  // DEPRECATED
+    kSkippedNotForced = 2,
+    kSkippedTriggerModelsPingSentAsForceRequest = 3,
+    kMaxValue = kSkippedTriggerModelsPingSentAsForceRequest,
+  };
+
   ClientSideDetectionHostBase(
       base::WeakPtr<ClientSideDetectionServiceBase> csd_service,
       VerdictCacheManager* cache_manager,
@@ -96,18 +129,25 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // Calls the CSD service to classify phishing through thresholds presented in
   // `verdict`.
   virtual void ClassifyPhishingThroughThresholds(
-      ClientPhishingRequest* verdict) = 0;
+      ClientPhishingRequest* verdict);
 
   // Called by `MaybeSendClientPhishingRequest` to determine whether to perform
   // image embedding as part of the client-side phishing detection flow.
   //
-  // Because image embedding relies on Blink/content-specific APIs (such as
-  // RenderFrameHost and Mojo interfaces), the implementation is delegated to
-  // the derived class.
+  // Because image embedding relies on platform/renderer-specific APIs (such as
+  // RenderFrameHost/Mojo on desktop/Android, or SnapshotTabHelper on iOS), the
+  // implementation is delegated to the derived class.
   //
-  // If the derived class decides to perform image embedding, it will start the
-  // asynchronous process and eventually send the report. If not, it must
-  // forward the request to the next step in the pipeline (Intelligent Scan).
+  // Derived classes implementing this method MUST:
+  // 1. Determine whether visual features can be extracted (e.g. by checking
+  //    user opt-ins, incognito status, and viewport size limits using
+  //    `visual_utils::CanExtractVisualFeatures`).
+  // 2. Clear the visual features image from the verdict
+  //    (`verdict->mutable_visual_features()->clear_image()`) if the check
+  //    determines that extraction is not allowed.
+  // 3. Initiate the image embedding process (if allowed), forwarding the result
+  //    to `MaybeStartIntelligentScanForScamDetection` upon completion (or
+  //    immediately, if image embedding is skipped).
   //
   // TODO: Remove the parameter is_invalid_ip once the feature flag,
   // kClientSideDetectionVibrationApi and kClientSideDetectionKeyboardLock are
@@ -131,6 +171,9 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // met.
   virtual void MaybeStartPreClassification(
       ClientSideDetectionType request_type) = 0;
+
+  // Called when an asynchronous Safe Browsing URL check completes.
+  void OnAsyncSafeBrowsingCheckCompleted();
 
   // history::HistoryServiceObserver method:
   void HistoryServiceBeingDeleted(
@@ -168,6 +211,11 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
     is_off_the_record_ = is_off_the_record;
   }
 
+  // Sets a test tick clock only for testing.
+  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
+    tick_clock_ = tick_clock;
+  }
+
  protected:
   base::WeakPtr<ClientSideDetectionServiceBase> GetClientSideDetectionService()
       const;
@@ -176,6 +224,9 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
 
   std::optional<base::UnguessableToken> GetIntelligentScanId() const;
   bool IsEnhancedProtectionEnabled() const;
+
+  static safe_browsing::ThreatSubtype GetThreatSubtype(
+      IntelligentScanVerdict intelligent_scan_verdict);
 
   // Cancels any pending asynchronous requests bound to this host.
   // Intended to handle the case where the primary page changes while there is
@@ -219,6 +270,19 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       std::optional<bool> did_match_high_confidence_allowlist,
       bool is_invalid_ip,
       PhishingDetectorResult result);
+
+  // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
+  // the outcome of the image embedding. The verdict is passed into
+  // this function after the renderer classification is finished.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
+  void PhishingImageEmbeddingDone(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      ImageEmbeddingResult result,
+      std::optional<ImageFeatureEmbedding> image_feature_embedding,
+      std::optional<VisualFeatures> visual_features);
 
   // `verdict` is an encoded ClientPhishingRequest protocol message, which will
   // contain the intelligent scan result if the execution is successful.
@@ -293,7 +357,20 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       GURL phishing_url,
       bool is_phishing,
       std::optional<net::HttpStatusCode> response_code,
-      std::optional<IntelligentScanVerdict> intelligent_scan_verdict) = 0;
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict);
+
+  // Displays the platform-specific blocking page or interstitial.
+  virtual void ShowBlockingPage(
+      GURL phishing_url,
+      ClientSideDetectionType request_type,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+      bool should_show_scam_warning) = 0;
+
+  // Subclasses override this to update local feature caches with network
+  // status.
+  virtual void UpdateDebuggingMetadataWithNetworkResult(
+      GURL phishing_url,
+      net::HttpStatusCode response_code) {}
 
   virtual void AddReferrerChain(ClientPhishingRequest* verdict) = 0;
 
@@ -389,7 +466,18 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
     last_request_type_ = type;
   }
 
+  base::TimeTicks image_embedding_start_time() const {
+    return image_embedding_start_time_;
+  }
+  void set_image_embedding_start_time(base::TimeTicks time) {
+    image_embedding_start_time_ = time;
+  }
+
+  const base::TickClock* tick_clock() const { return tick_clock_; }
+
  private:
+  friend class ClientSideDetectionTabHelperTest;
+
   int GetTriggerModelVersion() const;
   bool IsModelAvailable() const;
 
@@ -467,6 +555,10 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   bool is_classifying_ = false;
   ClientSideDetectionType last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+
+  // Records the start time of when image embedding started.
+  base::TimeTicks image_embedding_start_time_;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   base::CancelableTaskTracker task_tracker_;
 

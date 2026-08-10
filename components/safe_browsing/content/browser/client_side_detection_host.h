@@ -39,10 +39,6 @@
 class PrefService;
 class SkBitmap;
 
-namespace base {
-class TickClock;
-}
-
 namespace history {
 class HistoryService;
 }
@@ -65,6 +61,9 @@ class ClientSideDetectionHost
       public permissions::PermissionRequestManager::Observer,
       public AsyncCheckTracker::Observer {
  public:
+  using AsyncCheckTriggerForceRequestResult =
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult;
+
   // ClientSideDetectionHostBase overrides:
   GURL GetCurrentUrl() const override;
   ClientSideDetectionFeatureCacheBase* GetFeatureCache() override;
@@ -87,16 +86,6 @@ class ClientSideDetectionHost
       std::optional<bool> did_match_high_confidence_allowlist) override;
   void MaybeStartPreClassification(
       safe_browsing::ClientSideDetectionType request_type) override;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AsyncCheckTriggerForceRequestResult {
-    kTriggered = 0,
-    kSkippedTriggerModelsPingNotSkipped = 1,  // DEPRECATED
-    kSkippedNotForced = 2,
-    kSkippedTriggerModelsPingSentAsForceRequest = 3,
-    kMaxValue = kSkippedTriggerModelsPingSentAsForceRequest,
-  };
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -359,17 +348,15 @@ class ClientSideDetectionHost
                            TestTriggerModelsConvertedToForceRequestAtRequest);
 
   // ClientSideDetectionHostBase overrides:
-  void ClassifyPhishingThroughThresholds(
-      ClientPhishingRequest* verdict) override;
   void CancelPendingRequests() override;
-  void MaybeShowPhishingWarning(
-      bool is_from_cache,
-      ClientSideDetectionType request_type,
-      std::optional<bool> did_match_high_confidence_allowlist,
+  void ShowBlockingPage(
       GURL phishing_url,
-      bool is_phishing,
-      std::optional<net::HttpStatusCode> response_code,
-      std::optional<IntelligentScanVerdict> intelligent_scan_verdict) override;
+      ClientSideDetectionType request_type,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict,
+      bool should_show_scam_warning) override;
+  void UpdateDebuggingMetadataWithNetworkResult(
+      GURL phishing_url,
+      net::HttpStatusCode response_code) override;
   void AddReferrerChain(ClientPhishingRequest* verdict) override;
   void MaybeFillScreenshotData(ClientPhishingRequest* request) override;
   void AddMiscellaneousMetadataToClientPhishingRequest(
@@ -419,11 +406,6 @@ class ClientSideDetectionHost
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding,
       std::optional<mojo_base::ProtoWrapper> visual_features);
-
-  // Sets a test tick clock only for testing.
-  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
-    tick_clock_ = tick_clock;
-  }
 
   // Sets the primary account signed in callback for testing.
   void set_account_signed_in_for_testing(
@@ -493,10 +475,6 @@ class ClientSideDetectionHost
   // frame navigation.
   bool did_first_visually_non_empty_paint_ = false;
   bool on_first_contentful_paint_ = false;
-
-  // Records the start time of when image embedding started.
-  base::TimeTicks image_embedding_start_time_;
-  raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;
 

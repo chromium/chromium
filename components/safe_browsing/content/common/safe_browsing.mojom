@@ -244,6 +244,8 @@ interface PhishingModelSetterTestObserver {
 // Enum representing possible outcomes of the renderer-side image embedding
 // process. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
+//
+// LINT.IfChange(PhishingImageEmbeddingResult)
 enum PhishingImageEmbeddingResult {
   // The feature collection succeeded.
   kSuccess,
@@ -261,6 +263,7 @@ enum PhishingImageEmbeddingResult {
   // WebDocumentLoader failed to load.
   kInvalidDocumentLoader,
 };
+// LINT.ThenChange(//components/safe_browsing/core/browser/client_side_detection_host_base.h:ImageEmbeddingResult)
 
 // Interface for starting image embedding. This is scoped to a
 // particular RenderFrame.
