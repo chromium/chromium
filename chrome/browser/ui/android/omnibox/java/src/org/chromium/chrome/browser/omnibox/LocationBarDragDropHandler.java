@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -231,7 +232,10 @@ public class LocationBarDragDropHandler implements OnDragListener {
             if (intent != null && intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
                 Uri uri = intent.getData();
                 if (uri != null) {
-                    return uri;
+                    GURL url = new GURL(uri.toString());
+                    if (url.isValid() && UrlUtilities.isHttpOrHttps(url)) {
+                        return Uri.parse(url.getSpec());
+                    }
                 }
             }
 

@@ -363,6 +363,83 @@ public class LocationBarDragDropHandlerTest {
 
         verify(mTab, never()).addObserver(any());
         verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
-        assertEquals("https://www.example.com", mLoadUrlParamsCaptor.getValue().url);
+        assertEquals("https://www.example.com/", mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void testOnDrag_Drop_UnsupportedBrowsableIntent() {
+        DragEvent event = mock(DragEvent.class);
+        Activity activity = mock(Activity.class);
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:user@example.com"))
+                        .addCategory(Intent.CATEGORY_BROWSABLE);
+        ClipData clipData =
+                new ClipData(
+                        "url",
+                        new String[] {ClipDescription.MIMETYPE_TEXT_URILIST},
+                        new ClipData.Item(intent));
+
+        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(event.getClipData()).thenReturn(clipData);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        assertFalse(mHandler.onDrag(new View(mContext), event));
+        verify(mOmniboxStub, never()).loadUrl(any());
+    }
+
+    @Test
+    public void testOnDrag_Drop_SkipsUnsupportedBrowsableIntent() {
+        DragEvent event = mock(DragEvent.class);
+        Activity activity = mock(Activity.class);
+        Intent mailIntent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:user@example.com"))
+                        .addCategory(Intent.CATEGORY_BROWSABLE);
+        Uri webUri = Uri.parse("https://www.example.com");
+        Intent webIntent =
+                new Intent(Intent.ACTION_VIEW, webUri).addCategory(Intent.CATEGORY_BROWSABLE);
+        ClipData clipData =
+                new ClipData(
+                        "urls",
+                        new String[] {ClipDescription.MIMETYPE_TEXT_URILIST},
+                        new ClipData.Item(mailIntent));
+        clipData.addItem(new ClipData.Item(webIntent));
+
+        when(event.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(event.getClipData()).thenReturn(clipData);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        assertTrue(mHandler.onDrag(new View(mContext), event));
+        verify(mOmniboxStub).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals("https://www.example.com/", mLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void testFindUriToLoad_AcceptsHttpBrowsableIntent() {
+        Uri webUri = Uri.parse("http://www.example.com");
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, webUri).addCategory(Intent.CATEGORY_BROWSABLE);
+        ClipData clipData =
+                new ClipData(
+                        "url",
+                        new String[] {ClipDescription.MIMETYPE_TEXT_URILIST},
+                        new ClipData.Item(intent));
+
+        assertEquals(
+                Uri.parse("http://www.example.com/"),
+                mHandler.findUriToLoad(mContext, clipData, null));
+    }
+
+    @Test
+    public void testFindUriToLoad_RejectsInvalidHttpBrowsableIntent() {
+        Intent intent =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("http://"))
+                        .addCategory(Intent.CATEGORY_BROWSABLE);
+        ClipData clipData =
+                new ClipData(
+                        "url",
+                        new String[] {ClipDescription.MIMETYPE_TEXT_URILIST},
+                        new ClipData.Item(intent));
+
+        assertNull(mHandler.findUriToLoad(mContext, clipData, null));
     }
 }
