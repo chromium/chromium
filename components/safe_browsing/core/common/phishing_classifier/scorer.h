@@ -57,7 +57,7 @@ enum ScorerCreationStatus {
 // and to allow inheritance.
 class Scorer {
  public:
-  ~Scorer();
+  virtual ~Scorer();
   // Most clients should use the factory method.  This constructor is public
   // to allow for mock implementations.
   Scorer();
@@ -94,7 +94,7 @@ class Scorer {
   // This method applies the TfLite visual model to the given bitmap for image
   // classification. It asynchronously returns the list of scores for each
   // category, in the same order as `tflite_thresholds()`.
-  void ApplyVisualTfLiteModel(
+  virtual void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const;
 
@@ -102,7 +102,7 @@ class Scorer {
   // image embedding. It asynchronously returns an ImageFeatureEmbedding object
   // which contains a vector of floats which is the feature vector result from
   // the Image Embedder process.
-  void ApplyVisualTfLiteModelImageEmbedding(
+  virtual void ApplyVisualTfLiteModelImageEmbedding(
       const SkBitmap& bitmap,
       base::OnceCallback<void(ImageFeatureEmbedding)> callback) const;
 

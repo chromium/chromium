@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier_delegate.h"
 
 #include <memory>
 #include <utility>
@@ -14,8 +14,9 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -79,49 +80,90 @@ std::string_view GetRequestTypeName(
   }
 }
 
+// Converts the mojo ClientSideDetectionType enum to the internal protobuf
+// representation. Used to translate IPC requests into core classification
+// logic.
+safe_browsing::ClientSideDetectionType MojomToProtoClientSideDetectionType(
+    safe_browsing::mojom::ClientSideDetectionType mojom_type) {
+  switch (mojom_type) {
+    case safe_browsing::mojom::ClientSideDetectionType::kForceRequest:
+      return safe_browsing::ClientSideDetectionType::FORCE_REQUEST;
+    case safe_browsing::mojom::ClientSideDetectionType::kTriggerModels:
+      return safe_browsing::ClientSideDetectionType::TRIGGER_MODELS;
+    case safe_browsing::mojom::ClientSideDetectionType::
+        kNotificationPermissionPrompt:
+      return safe_browsing::ClientSideDetectionType::
+          NOTIFICATION_PERMISSION_PROMPT;
+    case safe_browsing::mojom::ClientSideDetectionType::kKeyboardLock:
+      return safe_browsing::ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
+    case safe_browsing::mojom::ClientSideDetectionType::kPointerLock:
+      return safe_browsing::ClientSideDetectionType::POINTER_LOCK_REQUESTED;
+    case safe_browsing::mojom::ClientSideDetectionType::kVibrationApi:
+      return safe_browsing::ClientSideDetectionType::VIBRATION_API;
+    case safe_browsing::mojom::ClientSideDetectionType::kFullscreen:
+      return safe_browsing::ClientSideDetectionType::FULLSCREEN_API;
+    case safe_browsing::mojom::ClientSideDetectionType::kPasswordProtection:
+      // Password protection is not in the proto enum and this mojo value is no
+      // longer used.
+      return safe_browsing::ClientSideDetectionType::
+          CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+    case safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi:
+      return safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API;
+    case safe_browsing::mojom::ClientSideDetectionType::kCreditCardForm:
+      return safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM;
+    case safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch:
+      return safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
+    case safe_browsing::mojom::ClientSideDetectionType::kUserReport:
+      return safe_browsing::ClientSideDetectionType::USER_REPORT;
+    case safe_browsing::mojom::ClientSideDetectionType::kUnfamiliarLoginPage:
+      return safe_browsing::ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
-PhishingClassifierDelegate::PhishingClassifierDelegate(
+ContentPhishingClassifierDelegate::ContentPhishingClassifierDelegate(
     content::RenderFrame* render_frame,
-    PhishingClassifier* classifier)
+    ContentPhishingClassifier* classifier)
     : content::RenderFrameObserver(render_frame),
       last_main_frame_transition_(ui::PAGE_TRANSITION_LINK),
       is_classifying_(false),
       awaiting_retry_(false) {
   if (!classifier) {
-    classifier = new PhishingClassifier(render_frame);
+    classifier = new ContentPhishingClassifier(render_frame);
   }
 
   classifier_.reset(classifier);
 
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::PhishingDetector>(base::BindRepeating(
-          &PhishingClassifierDelegate::PhishingDetectorReceiver,
+          &ContentPhishingClassifierDelegate::PhishingDetectorReceiver,
           base::Unretained(this)));
 
   model_change_observation_.Observe(ScorerStorage::GetInstance());
 }
 
-PhishingClassifierDelegate::~PhishingClassifierDelegate() {
+ContentPhishingClassifierDelegate::~ContentPhishingClassifierDelegate() {
   CancelPendingClassification(CancelClassificationReason::kShutdown);
 }
 
 // static
-PhishingClassifierDelegate* PhishingClassifierDelegate::Create(
+ContentPhishingClassifierDelegate* ContentPhishingClassifierDelegate::Create(
     content::RenderFrame* render_frame,
-    PhishingClassifier* classifier) {
+    ContentPhishingClassifier* classifier) {
   // Private constructor and public static Create() method to facilitate
   // stubbing out this class for binary-size reduction purposes.
-  return new PhishingClassifierDelegate(render_frame, classifier);
+  return new ContentPhishingClassifierDelegate(render_frame, classifier);
 }
 
-void PhishingClassifierDelegate::PhishingDetectorReceiver(
+void ContentPhishingClassifierDelegate::PhishingDetectorReceiver(
     mojo::PendingAssociatedReceiver<mojom::PhishingDetector> receiver) {
   phishing_detector_receiver_.reset();
   phishing_detector_receiver_.Bind(std::move(receiver));
 }
 
-void PhishingClassifierDelegate::StartPhishingDetection(
+void ContentPhishingClassifierDelegate::StartPhishingDetection(
     const GURL& url,
     safe_browsing::mojom::ClientSideDetectionType request_type,
     StartPhishingDetectionCallback callback) {
@@ -136,7 +178,8 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   last_url_received_from_browser_ = StripRef(url);
   callback_ = std::move(callback);
   request_type_ = request_type;
-  classifier_->SetClientSideDetectionType(request_type);
+  classifier_->SetClientSideDetectionType(
+      MojomToProtoClientSideDetectionType(request_type));
   RecordEvent(SBPhishingClassifierEvent::kPhishingDetectionRequested);
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
@@ -150,8 +193,9 @@ void PhishingClassifierDelegate::StartPhishingDetection(
         request_type_ == mojom::ClientSideDetectionType::kTriggerModels) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PhishingClassifierDelegate::MaybeStartClassification,
-                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &ContentPhishingClassifierDelegate::MaybeStartClassification,
+              weak_factory_.GetWeakPtr()),
           base::Seconds(kCsdClassificationDelay.Get()));
     } else {
       MaybeStartClassification();
@@ -164,7 +208,7 @@ void PhishingClassifierDelegate::StartPhishingDetection(
   }
 }
 
-void PhishingClassifierDelegate::DidCommitProvisionalLoad(
+void ContentPhishingClassifierDelegate::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // A new page is starting to load, and if we had a browser request waiting, we
@@ -177,15 +221,16 @@ void PhishingClassifierDelegate::DidCommitProvisionalLoad(
   CancelPendingClassification(CancelClassificationReason::kNavigateAway);
   renderer_layout_finished_ = false;
   last_finished_load_url_ = GURL();
-  if (!frame->Parent())
+  if (!frame->Parent()) {
     last_main_frame_transition_ = transition;
+  }
 }
 
-bool PhishingClassifierDelegate::is_ready() {
+bool ContentPhishingClassifierDelegate::is_ready() {
   return classifier_->is_ready();
 }
 
-void PhishingClassifierDelegate::PageCaptured(bool preliminary_capture) {
+void ContentPhishingClassifierDelegate::PageCaptured(bool preliminary_capture) {
   if (!base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
 
@@ -260,8 +305,9 @@ void PhishingClassifierDelegate::PageCaptured(bool preliminary_capture) {
         request_type_ == mojom::ClientSideDetectionType::kImageEmbeddingMatch) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PhishingClassifierDelegate::MaybeStartClassification,
-                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &ContentPhishingClassifierDelegate::MaybeStartClassification,
+              weak_factory_.GetWeakPtr()),
           base::Seconds(kCsdClassificationDelay.Get()));
     } else {
       MaybeStartClassification();
@@ -269,7 +315,7 @@ void PhishingClassifierDelegate::PageCaptured(bool preliminary_capture) {
   }
 }
 
-void PhishingClassifierDelegate::CancelPendingClassification(
+void ContentPhishingClassifierDelegate::CancelPendingClassification(
     CancelClassificationReason reason) {
   if (is_classifying_) {
     is_classifying_ = false;
@@ -289,7 +335,7 @@ void PhishingClassifierDelegate::CancelPendingClassification(
   request_type_ = std::nullopt;
 }
 
-void PhishingClassifierDelegate::ClassificationDone(
+void ContentPhishingClassifierDelegate::ClassificationDone(
     const ClientPhishingRequest& verdict,
     PhishingClassifier::Result phishing_classifier_result) {
   RecordEvent(SBPhishingClassifierEvent::kClassificationComplete);
@@ -345,7 +391,7 @@ void PhishingClassifierDelegate::ClassificationDone(
   std::move(callback_).Run(result, mojo_base::ProtoWrapper(verdict));
 }
 
-void PhishingClassifierDelegate::MaybeStartClassification() {
+void ContentPhishingClassifierDelegate::MaybeStartClassification() {
   // We can begin phishing classification when the following conditions are
   // met:
   //  1. We still actually have a request to answer.
@@ -391,7 +437,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
 
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PhishingClassifierDelegate::OnRetryTimeout,
+          base::BindOnce(&ContentPhishingClassifierDelegate::OnRetryTimeout,
                          weak_factory_.GetWeakPtr()),
           base::Seconds(kClientSideDetectionRetryLimitTime.Get()));
     } else {
@@ -410,9 +456,10 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     // same-document navigations.
     last_url_sent_to_classifier_ = last_finished_load_url_;
     is_phishing_detection_running_ = false;
-    if (!callback_.is_null())
+    if (!callback_.is_null()) {
       std::move(callback_).Run(
           mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION, std::nullopt);
+    }
     return;
   }
 
@@ -448,11 +495,12 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
 
   is_classifying_ = true;
   RecordEvent(SBPhishingClassifierEvent::kClassificationBegin);
-  classifier_->BeginClassification(base::BindOnce(
-      &PhishingClassifierDelegate::ClassificationDone, base::Unretained(this)));
+  classifier_->BeginClassification(
+      base::BindOnce(&ContentPhishingClassifierDelegate::ClassificationDone,
+                     base::Unretained(this)));
 }
 
-void PhishingClassifierDelegate::OnRetryTimeout() {
+void ContentPhishingClassifierDelegate::OnRetryTimeout() {
   // If |awaiting_retry_| is false, the classification is happening, completed,
   // cancelled, or there is a new phishing detection request.
   if (!awaiting_retry_) {
@@ -468,7 +516,8 @@ void PhishingClassifierDelegate::OnRetryTimeout() {
   LogClassificationRetryWithinTimeout(false);
 }
 
-void PhishingClassifierDelegate::RecordEvent(SBPhishingClassifierEvent event) {
+void ContentPhishingClassifierDelegate::RecordEvent(
+    SBPhishingClassifierEvent event) {
   base::UmaHistogramEnumeration("SBClientPhishing.Classifier.Event", event);
   if (request_type_.has_value()) {
     base::UmaHistogramEnumeration(
@@ -478,14 +527,14 @@ void PhishingClassifierDelegate::RecordEvent(SBPhishingClassifierEvent event) {
   }
 }
 
-void PhishingClassifierDelegate::OnDestruct() {
+void ContentPhishingClassifierDelegate::OnDestruct() {
   if (is_phishing_detection_running_) {
     RecordEvent(SBPhishingClassifierEvent::kDestructedBeforeClassificationDone);
   }
   delete this;
 }
 
-void PhishingClassifierDelegate::OnScorerChanged() {
+void ContentPhishingClassifierDelegate::OnScorerChanged() {
   Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
 
   if (!scorer) {

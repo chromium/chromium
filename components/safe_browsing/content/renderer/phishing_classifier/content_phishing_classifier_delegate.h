@@ -4,15 +4,15 @@
 //
 // This class is used by the RenderView to interact with a PhishingClassifier.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_DELEGATE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_DELEGATE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_CLASSIFIER_DELEGATE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_CLASSIFIER_DELEGATE_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -56,21 +56,23 @@ enum class SBPhishingClassifierEvent {
   kMaxValue = kNewPageLoadWhileBrowserRequestWaitsForLoad,
 };
 
-class PhishingClassifierDelegate : public content::RenderFrameObserver,
-                                   public mojom::PhishingDetector,
-                                   public ScorerStorage::Observer {
+class ContentPhishingClassifierDelegate : public content::RenderFrameObserver,
+                                          public mojom::PhishingDetector,
+                                          public ScorerStorage::Observer {
  public:
   // The RenderFrame owns us.  This object takes ownership of the classifier.
   // Note that if classifier is null, a default instance of PhishingClassifier
   // will be used.
-  static PhishingClassifierDelegate* Create(content::RenderFrame* render_frame,
-                                            PhishingClassifier* classifier);
+  static ContentPhishingClassifierDelegate* Create(
+      content::RenderFrame* render_frame,
+      ContentPhishingClassifier* classifier);
 
-  PhishingClassifierDelegate(const PhishingClassifierDelegate&) = delete;
-  PhishingClassifierDelegate& operator=(const PhishingClassifierDelegate&) =
+  ContentPhishingClassifierDelegate(const ContentPhishingClassifierDelegate&) =
       delete;
+  ContentPhishingClassifierDelegate& operator=(
+      const ContentPhishingClassifierDelegate&) = delete;
 
-  ~PhishingClassifierDelegate() override;
+  ~ContentPhishingClassifierDelegate() override;
 
   // Called by the RenderFrame once a page has finished loading and it has
   // captured the page text. Updates the last-loaded URL, then starts
@@ -93,10 +95,10 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   bool is_ready();
 
  private:
-  friend class PhishingClassifierDelegateTest;
+  friend class ContentPhishingClassifierDelegateTest;
 
-  PhishingClassifierDelegate(content::RenderFrame* render_frame,
-                             PhishingClassifier* classifier);
+  ContentPhishingClassifierDelegate(content::RenderFrame* render_frame,
+                                    ContentPhishingClassifier* classifier);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -153,7 +155,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
 
   // The PhishingClassifier to use for the RenderFrame.  This is created once
   // a scorer is made available via SetPhishingScorer().
-  std::unique_ptr<PhishingClassifier> classifier_;
+  std::unique_ptr<ContentPhishingClassifier> classifier_;
 
   // The last URL that the browser instructed us to classify,
   // with the ref stripped.
@@ -201,9 +203,9 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   base::ScopedObservation<ScorerStorage, ScorerStorage::Observer>
       model_change_observation_{this};
 
-  base::WeakPtrFactory<PhishingClassifierDelegate> weak_factory_{this};
+  base::WeakPtrFactory<ContentPhishingClassifierDelegate> weak_factory_{this};
 };
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_DELEGATE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_CONTENT_PHISHING_CLASSIFIER_DELEGATE_H_

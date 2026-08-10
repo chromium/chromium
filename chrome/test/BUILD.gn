@@ -4494,8 +4494,8 @@ if (!is_android) {
         sources += [
           # single-process mode hangs on Mac sometimes because of multiple UI
           # message loops. See 306348
+          "../renderer/safe_browsing/content_phishing_classifier_delegate_browsertest.cc",
           "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
-          "../renderer/safe_browsing/phishing_classifier_delegate_browsertest.cc",
           "../renderer/safe_browsing/phishing_dom_utils_browsertest.cc",
         ]
       }

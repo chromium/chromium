@@ -21,6 +21,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/client_side_phishing_model.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -39,6 +40,29 @@
 #import "url/gurl.h"
 
 namespace safe_browsing {
+namespace {
+
+base::FilePath GetModelFilePath() {
+  base::FilePath path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
+  return path.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("safe_browsing")
+      .AppendASCII("client_model.pb");
+}
+
+base::FilePath GetAdditionalFilesPath() {
+  base::FilePath path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
+  return path.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("safe_browsing")
+      .AppendASCII("visual_model_ios.tflite");
+}
+
+}  // namespace
 
 class ClientSidePhishingModelObserverTracker
     : public optimization_guide::OptimizationGuideModelProvider {
@@ -116,6 +140,8 @@ class ScorerWaiter : public ClientSideDetectionService::Observer {
       scoped_observation_{this};
 };
 
+// Mock observer to verify when the ClientSideDetectionService notifies its
+// observers about changes to the active Scorer instance.
 class MockObserver : public ClientSideDetectionService::Observer {
  public:
   MOCK_METHOD(void, OnScorerChanged, (), (override));
@@ -144,25 +170,9 @@ class ClientSideDetectionServiceTest : public PlatformTest {
 
   void UpdateModelForService(ClientSideDetectionService* service,
                              ClientSidePhishingModelObserverTracker* tracker) {
-    base::FilePath model_file_path;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
-    model_file_path = model_file_path.AppendASCII("components")
-                          .AppendASCII("test")
-                          .AppendASCII("data")
-                          .AppendASCII("safe_browsing")
-                          .AppendASCII("client_model.pb");
-
-    base::FilePath additional_files_path;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
-                           &additional_files_path);
-    additional_files_path = additional_files_path.AppendASCII("components")
-                                .AppendASCII("test")
-                                .AppendASCII("data")
-                                .AppendASCII("safe_browsing")
-                                .AppendASCII("visual_model_ios.tflite");
-
     ScorerWaiter waiter(service);
-    tracker->NotifyModelFileUpdate(model_file_path, {additional_files_path});
+    tracker->NotifyModelFileUpdate(GetModelFilePath(),
+                                   {GetAdditionalFilesPath()});
     waiter.Wait();
   }
 
@@ -325,6 +335,93 @@ TEST_F(ClientSideDetectionServiceTest, ScorerProfileIsolation) {
   EXPECT_THAT(csd_service_->GetScorer(), testing::NotNull());
   EXPECT_THAT(csd_service2->GetScorer(), testing::NotNull());
   EXPECT_NE(csd_service_->GetScorer(), csd_service2->GetScorer());
+}
+
+TEST_F(ClientSideDetectionServiceTest, ScorerProfileIsolationWhenDisabled) {
+  // Verify both start with null scorers.
+  EXPECT_THAT(csd_service_->GetScorer(), testing::IsNull());
+
+  TestProfileIOS::Builder builder;
+  std::unique_ptr<TestProfileIOS> profile2 = std::move(builder).Build();
+  // Disable Safe Browsing for the second profile.
+  profile2->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+
+  // Create service 2 with its own independent model observer tracker.
+  auto model_observer_tracker2 =
+      std::make_unique<ClientSidePhishingModelObserverTracker>();
+  auto csd_service2 = std::make_unique<ClientSideDetectionService>(
+      profile2->GetPrefs(),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      model_observer_tracker2.get());
+
+  EXPECT_THAT(csd_service2->GetScorer(), testing::IsNull());
+
+  // Update model for service 1.
+  UpdateModel(model_observer_tracker_.get());
+
+  // Manually update model for service 2. We can't use UpdateModelForService
+  // because ScorerWaiter expects a Scorer to be created, which won't happen
+  // since the service is disabled.
+  model_observer_tracker2->NotifyModelFileUpdate(GetModelFilePath(),
+                                                 {GetAdditionalFilesPath()});
+  // Flush to process any async callbacks if they were triggered for service 2.
+  FlushCurrentSequence();
+
+  // Service 1 should have a scorer, but Service 2 should remain null.
+  EXPECT_THAT(csd_service_->GetScorer(), testing::NotNull());
+  EXPECT_THAT(csd_service2->GetScorer(), testing::IsNull());
+}
+
+TEST_F(ClientSideDetectionServiceTest, ProfileDisableIsolation) {
+  // Create a second profile.
+  TestProfileIOS::Builder builder;
+  std::unique_ptr<TestProfileIOS> profile2 = std::move(builder).Build();
+
+  // Create a second CSD service (with its own independent model observer
+  // tracker) for the second profile.
+  auto model_observer_tracker2 =
+      std::make_unique<ClientSidePhishingModelObserverTracker>();
+  auto csd_service2 = std::make_unique<ClientSideDetectionService>(
+      profile2->GetPrefs(),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_),
+      model_observer_tracker2.get());
+
+  // Update model for both services independently.
+  UpdateModel(model_observer_tracker_.get());
+  UpdateModelForService(csd_service2.get(), model_observer_tracker2.get());
+
+  // Verify both have scorers.
+  ASSERT_THAT(csd_service_->GetScorer(), testing::NotNull());
+  ASSERT_THAT(csd_service2->GetScorer(), testing::NotNull());
+
+  // Disable Safe Browsing in the second profile.
+  profile2->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+
+  // Flush to process any side effects of the pref change.
+  FlushCurrentSequence();
+
+  // The second service's scorer should be cleared, but the first service's
+  // scorer should remain.
+  EXPECT_THAT(csd_service2->GetScorer(), testing::IsNull());
+  EXPECT_THAT(csd_service_->GetScorer(), testing::NotNull());
+}
+
+TEST_F(ClientSideDetectionServiceTest, PhishingClassifierScorerInjection) {
+  // Update model to get a scorer.
+  UpdateModel(model_observer_tracker_.get());
+  ASSERT_THAT(csd_service_->GetScorer(), testing::NotNull());
+
+  // Verify that explicitly passing the Scorer works for the PhishingClassifier.
+  PhishingClassifier classifier;
+  EXPECT_FALSE(classifier.is_ready());
+  classifier.set_scorer(csd_service_->GetScorer());
+  EXPECT_TRUE(classifier.is_ready());
+
+  // Verify that it is not ready when injected with null.
+  classifier.set_scorer(nullptr);
+  EXPECT_FALSE(classifier.is_ready());
 }
 
 TEST_F(ClientSideDetectionServiceTest, ModelUpdatesScorer) {

@@ -8,8 +8,8 @@
 //
 // For more details, see scorer.h and client_model.proto.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
 
 #include <memory>
 #include <vector>
@@ -17,18 +17,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "base/sequence_checker.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-
-namespace content {
-class RenderFrame;
-}
+#include "url/gurl.h"
 
 namespace safe_browsing {
 class ClientPhishingRequest;
 class VisualFeatures;
-class PhishingVisualFeatureExtractor;
 
 class PhishingClassifier {
  public:
@@ -57,10 +54,9 @@ class PhishingClassifier {
 
   static const int kClassifierFailed;
 
-  // Creates a new PhishingClassifier object that will operate on
-  // |render_view|. Note that the classifier will not be 'ready' until
-  // set_phishing_scorer() is called.
-  explicit PhishingClassifier(content::RenderFrame* render_frame);
+  // Creates a new PhishingClassifier object. Note that the classifier will not
+  // be 'ready' until `set_scorer()` is called.
+  PhishingClassifier();
 
   PhishingClassifier(const PhishingClassifier&) = delete;
   PhishingClassifier& operator=(const PhishingClassifier&) = delete;
@@ -68,47 +64,59 @@ class PhishingClassifier {
   virtual ~PhishingClassifier();
 
   // Returns true if the classifier is ready to classify pages, i.e. it
-  // has had a scorer set via set_phishing_scorer().
+  // has had a scorer set via `set_scorer()` or `ScorerStorage`.
   bool is_ready() const;
 
-  // Called by the RenderView when a page has finished loading.  This begins
-  // the visual extraction and scoring process.
+#if BUILDFLAG(IS_IOS)
+  // Sets the scorer. Required on iOS because `ScorerStorage` is a process-wide
+  // singleton and iOS runs in a multi-Profile browser process architecture.
+  void set_scorer(Scorer* scorer);
+#endif
+
+  // Begins the phishing classification process for the given URL and bitmap.
+  // This method cancels any pending classifications before starting a new one.
   //
-  // To avoid blocking the render thread for too long, phishing classification
-  // may run in several chunks of work, posting a task to the current
-  // MessageLoop to continue processing.  Once the scoring process is complete,
-  // |done_callback| is run on the current thread.  PhishingClassifier takes
-  // ownership of the callback.
+  // To avoid blocking the current sequence for too long, phishing
+  // classification may run in several chunks of work, posting tasks to continue
+  // processing. Once the scoring process is complete, `callback` is run on the
+  // current thread.
   //
   // It is an error to call BeginClassification if the classifier is not yet
   // ready.
-  virtual void BeginClassification(DoneCallback callback);
+  virtual void BeginClassification(const GURL& url,
+                                   const SkBitmap& bitmap,
+                                   DoneCallback callback);
 
-  // Called by the RenderView (on the render thread) when a page is unloading
-  // or the RenderView is being destroyed.  This cancels any extraction that
-  // is in progress.  It is an error to call CancelPendingClassification if
-  // the classifier is not yet ready.
+  // Cancels any classification that is in progress.  It is an error to call
+  // CancelPendingClassification if the classifier is not yet ready.
   virtual void CancelPendingClassification();
 
   virtual void SetClientSideDetectionType(
-      std::optional<safe_browsing::mojom::ClientSideDetectionType>
-          request_type);
+      std::optional<safe_browsing::ClientSideDetectionType> request_type);
+
+ protected:
+  // Called by subclasses to end the trace event if one is active.
+  virtual void EndTraceEvent();
+
+  // Helper to create a default failure verdict when extraction or setup fails.
+  static ClientPhishingRequest CreateFailureVerdict();
+
+  // Internal helper to begin classification without resetting state.
+  void BeginClassificationInternal(const GURL& url,
+                                   const SkBitmap& bitmap,
+                                   DoneCallback done_callback);
 
  private:
-  // Called to extract the visual features of the current page.
-  void ExtractVisualFeatures();
-
-  // Callback when off-thread playback of the recorded paint operations is
-  // complete.
-  void OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap);
+  // Helper to retrieve the active Scorer.
+  Scorer* GetScorer() const;
 
   // Callback when visual features have been extracted from the screenshot.
   void OnVisualFeaturesExtracted(
       std::unique_ptr<VisualFeatures> visual_features);
 
-  // Callback when visual feature extraction is complete.
-  // If it was successful, computes a score and runs the DoneCallback.
-  // If extraction was unsuccessful, runs the DoneCallback with a
+  // Called when visual extraction is finished.
+  // If it was successful, computes a score and runs `done_callback_`.
+  // If extraction was unsuccessful, runs `done_callback_` with a
   // non-phishy verdict.
   void VisualExtractionFinished(bool success);
 
@@ -123,34 +131,38 @@ class PhishingClassifier {
       std::unique_ptr<ClientPhishingRequest> verdict,
       ImageFeatureEmbedding image_feature_embedding);
 
-  // Helper method to run the DoneCallback and clear the state.
+  // Helper method to run `done_callback_` and clear the state.
   void RunCallback(const ClientPhishingRequest& verdict,
                    Result phishing_classifier_result);
 
-  // Helper to run the DoneCallback when feature extraction has failed.
+  // Helper to run `done_callback_` when feature extraction has failed.
   // This always signals a non-phishy verdict for the page, with
-  // |kInvalidScore|.
+  // `kClassifierFailed` score.
   void RunFailureCallback(Result failure_event);
 
   // Clears the current state of the PhishingClassifier.
   void Clear();
 
-  raw_ptr<content::RenderFrame, DanglingUntriaged> render_frame_;  // owns us
-  std::unique_ptr<PhishingVisualFeatureExtractor> visual_extractor_;
-
   // State for any in-progress extraction.
-  std::unique_ptr<SkBitmap> bitmap_;
+  SkBitmap bitmap_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;
 
-  // Trigger request type forwarded from the PhishingClassifierDelegate.
-  // Used to determine if the image embedder should be applied after the visual
-  // tflite model was applied.
-  std::optional<safe_browsing::mojom::ClientSideDetectionType> request_type_;
+  // Trigger request type forwarded from the
+  // `ContentPhishingClassifierDelegate`. Used to determine if the image
+  // embedder should be applied after the visual tflite model was applied.
+  std::optional<safe_browsing::ClientSideDetectionType> request_type_;
 
   // The URL of the page being classified. Stored at the beginning of
   // classification to ensure consistency in the verdict.
   GURL classification_url_;
+
+#if BUILDFLAG(IS_IOS)
+  // An explicitly set scorer for platforms where ScorerStorage is not used.
+  raw_ptr<Scorer> scorer_ = nullptr;
+#endif
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used in scheduling BeginFeatureExtraction tasks.
   // These pointers are invalidated if classification is cancelled.
@@ -159,4 +171,4 @@ class PhishingClassifier {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_PHISHING_CLASSIFIER_H_

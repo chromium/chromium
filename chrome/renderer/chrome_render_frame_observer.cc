@@ -89,7 +89,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier_delegate.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder_delegate.h"
 #endif
 
@@ -743,8 +743,9 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  phishing_classifier_ = safe_browsing::PhishingClassifierDelegate::Create(
-      render_frame(), nullptr);
+  phishing_classifier_ =
+      safe_browsing::ContentPhishingClassifierDelegate::Create(render_frame(),
+                                                               nullptr);
   phishing_image_embedder_ =
       safe_browsing::PhishingImageEmbedderDelegate::Create(render_frame());
 #endif

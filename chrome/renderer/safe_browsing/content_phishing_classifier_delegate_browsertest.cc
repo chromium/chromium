@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier_delegate.h"
 
 #include <memory>
 #include <optional>
@@ -23,7 +23,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/features.h"
@@ -110,10 +110,10 @@ std::string GetFlatBufferString(int version) {
                      builder.GetSize());
 }
 
-class MockPhishingClassifier : public PhishingClassifier {
+class MockPhishingClassifier : public ContentPhishingClassifier {
  public:
   explicit MockPhishingClassifier(content::RenderFrame* render_frame)
-      : PhishingClassifier(render_frame) {}
+      : ContentPhishingClassifier(render_frame) {}
 
   MockPhishingClassifier(const MockPhishingClassifier&) = delete;
   MockPhishingClassifier& operator=(const MockPhishingClassifier&) = delete;
@@ -122,13 +122,12 @@ class MockPhishingClassifier : public PhishingClassifier {
 
   MOCK_METHOD1(BeginClassification, void(DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
-  MOCK_METHOD1(
-      SetClientSideDetectionType,
-      void(std::optional<safe_browsing::mojom::ClientSideDetectionType>));
+  MOCK_METHOD1(SetClientSideDetectionType,
+               void(std::optional<safe_browsing::ClientSideDetectionType>));
 };
 }  // namespace
 
-class PhishingClassifierDelegateTest
+class ContentPhishingClassifierDelegateTest
     : public ChromeRenderViewTest,
       public ::testing::WithParamInterface<double> {
  protected:
@@ -145,7 +144,8 @@ class PhishingClassifierDelegateTest
     classifier_ = new StrictMock<MockPhishingClassifier>(render_frame);
     render_frame->GetAssociatedInterfaceRegistry()->RemoveInterface(
         mojom::PhishingDetector::Name_);
-    delegate_ = PhishingClassifierDelegate::Create(render_frame, classifier_);
+    delegate_ =
+        ContentPhishingClassifierDelegate::Create(render_frame, classifier_);
     classifier_not_ready_ = false;
   }
 
@@ -161,27 +161,31 @@ class PhishingClassifierDelegateTest
   // by FakeRenderThread is correct.
   void RunAndVerifyClassificationDone(const ClientPhishingRequest& verdict) {
     delegate_->ClassificationDone(verdict,
-                                  PhishingClassifier::Result::kSuccess);
+                                  ContentPhishingClassifier::Result::kSuccess);
   }
 
   void OnStartPhishingDetection(const GURL& url) {
     EXPECT_CALL(*classifier_, CancelPendingClassification())
         .Times(testing::AnyNumber());
     EXPECT_CALL(*classifier_,
-                SetClientSideDetectionType(std::optional(kTriggerModels)));
+                SetClientSideDetectionType(std::optional(
+                    safe_browsing::ClientSideDetectionType::TRIGGER_MODELS)));
     delegate_->StartPhishingDetection(
         url, kTriggerModels,
-        base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
-                       base::Unretained(this)));
+        base::BindOnce(
+            &ContentPhishingClassifierDelegateTest::VerifyRequestProto,
+            base::Unretained(this)));
   }
 
   void StartPhishingDetectionWithCallback(
       const GURL& url,
-      PhishingClassifierDelegate::StartPhishingDetectionCallback callback) {
+      ContentPhishingClassifierDelegate::StartPhishingDetectionCallback
+          callback) {
     EXPECT_CALL(*classifier_, CancelPendingClassification())
         .Times(testing::AtMost(1));
     EXPECT_CALL(*classifier_,
-                SetClientSideDetectionType(std::optional(kTriggerModels)));
+                SetClientSideDetectionType(std::optional(
+                    safe_browsing::ClientSideDetectionType::TRIGGER_MODELS)));
     delegate_->StartPhishingDetection(url, kTriggerModels, std::move(callback));
   }
 
@@ -201,8 +205,9 @@ class PhishingClassifierDelegateTest
       return;
     }
 
-    if (result != mojom::PhishingDetectorResult::SUCCESS)
+    if (result != mojom::PhishingDetectorResult::SUCCESS) {
       return;
+    }
 
     ASSERT_TRUE(proto.has_value());
     auto verdict = proto->As<ClientPhishingRequest>();
@@ -223,12 +228,13 @@ class PhishingClassifierDelegateTest
 
   // Owned by |delegate_|.
   raw_ptr<StrictMock<MockPhishingClassifier>> classifier_;
-  raw_ptr<PhishingClassifierDelegate> delegate_;  // Owned by the RenderFrame.
+  raw_ptr<ContentPhishingClassifierDelegate>
+      delegate_;  // Owned by the RenderFrame.
   bool classifier_not_ready_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(PhishingClassifierDelegateTest, Navigation) {
+TEST_P(ContentPhishingClassifierDelegateTest, Navigation) {
   SetScorer(/*model_version=*/1);
   ASSERT_TRUE(classifier_->is_ready());
 
@@ -347,7 +353,7 @@ TEST_P(PhishingClassifierDelegateTest, Navigation) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoPhishingModel) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoPhishingModel) {
   ASSERT_FALSE(classifier_->is_ready());
   EXPECT_CALL(*classifier_, CancelPendingClassification())
       .Times(testing::AnyNumber());
@@ -359,7 +365,7 @@ TEST_P(PhishingClassifierDelegateTest, NoPhishingModel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, HasFlatBufferModel) {
+TEST_P(ContentPhishingClassifierDelegateTest, HasFlatBufferModel) {
   ASSERT_FALSE(classifier_->is_ready());
 
   SetScorer(/*model_version=*/1);
@@ -369,7 +375,7 @@ TEST_P(PhishingClassifierDelegateTest, HasFlatBufferModel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
+TEST_P(ContentPhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   ASSERT_FALSE(classifier_->is_ready());
 
   base::ScopedTempDir temp_dir;
@@ -395,7 +401,7 @@ TEST_P(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoScorerWithRetry) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoScorerWithRetry) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitWithFeatures(
       {{safe_browsing::kClientSideDetectionRetryLimit}}, {});
@@ -448,7 +454,7 @@ TEST_P(PhishingClassifierDelegateTest, NoScorerWithRetry) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitWithFeatures(
       {{safe_browsing::kClientSideDetectionRetryLimit}}, {});
@@ -500,7 +506,7 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoScorer) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoScorer) {
   std::map<std::string, std::string> feature_params;
   feature_params["RetryTimeMax"] = "0";
   base::test::ScopedFeatureList scoped_list;
@@ -552,7 +558,7 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoScorer_Ref) {
   std::map<std::string, std::string> feature_params;
   feature_params["RetryTimeMax"] = "0";
   base::test::ScopedFeatureList scoped_list;
@@ -602,7 +608,7 @@ TEST_P(PhishingClassifierDelegateTest, NoScorer_Ref) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoScorerWithinTimeout) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoScorerWithinTimeout) {
   std::map<std::string, std::string> feature_params;
   feature_params["RetryTimeMax"] = "0";
   base::test::ScopedFeatureList scoped_list;
@@ -634,7 +640,7 @@ TEST_P(PhishingClassifierDelegateTest, NoScorerWithinTimeout) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
+TEST_P(ContentPhishingClassifierDelegateTest, NoStartPhishingDetection) {
   // Tests the behavior when OnStartPhishingDetection has not yet been called
   // when the page load finishes.
   SetScorer(/*model_version=*/1);
@@ -710,7 +716,7 @@ TEST_P(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, CancelWhenScorerCleared) {
+TEST_P(ContentPhishingClassifierDelegateTest, CancelWhenScorerCleared) {
   SetScorer(/*model_version=*/1);
   ASSERT_TRUE(classifier_->is_ready());
 
@@ -740,7 +746,7 @@ TEST_P(PhishingClassifierDelegateTest, CancelWhenScorerCleared) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest,
+TEST_P(ContentPhishingClassifierDelegateTest,
        IgnorePreliminaryCaptureAndDoesNotCancelClassification) {
   // Tests that preliminary PageCaptured notifications are ignored.
   SetScorer(/*model_version=*/1);
@@ -768,7 +774,8 @@ TEST_P(PhishingClassifierDelegateTest,
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, DuplicatePageCaptureDoesNotCancel) {
+TEST_P(ContentPhishingClassifierDelegateTest,
+       DuplicatePageCaptureDoesNotCancel) {
   // Tests that a second PageCaptured notification causes classification to
   // be cancelled.
   SetScorer(/*model_version=*/1);
@@ -796,7 +803,7 @@ TEST_P(PhishingClassifierDelegateTest, DuplicatePageCaptureDoesNotCancel) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, PhishingDetectionDone) {
+TEST_P(ContentPhishingClassifierDelegateTest, PhishingDetectionDone) {
   // Tests that a SafeBrowsingHostMsg_PhishingDetectionDone IPC is
   // sent to the browser whenever we finish classification.
   SetScorer(/*model_version=*/1);
@@ -829,7 +836,8 @@ TEST_P(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest, ClassificationDoneWithUrlQueryMismatch) {
+TEST_P(ContentPhishingClassifierDelegateTest,
+       ClassificationDoneWithUrlQueryMismatch) {
   SetScorer(/*model_version=*/1);
   ASSERT_TRUE(classifier_->is_ready());
 
@@ -879,7 +887,7 @@ TEST_P(PhishingClassifierDelegateTest, ClassificationDoneWithUrlQueryMismatch) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_P(PhishingClassifierDelegateTest,
+TEST_P(ContentPhishingClassifierDelegateTest,
        NewPageLoadWhileBrowserRequestWaitsForLoad) {
   base::HistogramTester histograms;
   SetScorer(/*model_version=*/1);
@@ -907,7 +915,7 @@ TEST_P(PhishingClassifierDelegateTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         PhishingClassifierDelegateTest,
+                         ContentPhishingClassifierDelegateTest,
                          ::testing::Values(-1.0, 0.0, 0.5));
 
 }  // namespace safe_browsing
