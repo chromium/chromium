@@ -18,17 +18,15 @@ found in the LICENSE file.
     <!-- Incognito colors for theme refactor 2021. -->
     <!-- TODO(crbug.com/40774932): Use semantic colors for incognito. -->
 
-    <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
-    <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_80_alpha_10</color>
-
+    <!-- go/keep-sorted start -->
     <color name="incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color">@color/baseline_primary_80</color>
-
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_color">@color/baseline_primary_80</color>
     <color name="incognito_tab_grid_dialog_ungroup_bar_text_hovered_color">@color/modern_white</color>
-
+    <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
+    <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_80_alpha_10</color>
     <color name="incognito_tab_hover_card_bg_color">@color/gm3_baseline_surface_container_highest_dark</color>
-
     <color name="tab_group_color_picker_selection_bg_incognito">@color/dialog_bg_color_dark_baseline</color>
+    <!-- go/keep-sorted end -->
 
     <!-- Vertical Tabs colors -->
     <macro name="vertical_tabs_rail_bg_color">?attr/colorSurfaceContainerHighest</macro>
