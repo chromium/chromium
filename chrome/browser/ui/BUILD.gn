@@ -1204,14 +1204,6 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    allow_circular_includes_from += [
-      # intro includes headers from //chrome/browser/ui (e.g. managed_ui.h)
-      # that can't be split out yet.
-      "//chrome/browser/ui/webui/intro",
-    ]
-  }
-
   allow_circular_includes_from += [
     # TODO(crbug.com/503408628): Remove this circular dependency when the
     # following headers get modularized:
@@ -1297,11 +1289,6 @@ static_library("ui") {
     # metrics:impl includes headers from //chrome/browser/ui that can't be
     # split out yet.
     "//chrome/browser/metrics:impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following headers get componentized:
-    # c/b/ui/crypto_module_delegate_nss.h
-    "//chrome/browser/net:impl",
 
     # TODO(crbug.com/360599255): popunder_preventer.cc includes browser.h
     "//chrome/browser/ui/blocked_content:impl",
@@ -2138,7 +2125,6 @@ static_library("ui") {
       # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
       "//chrome/browser/ui/lens:impl",
 
-      "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
@@ -2176,10 +2162,6 @@ static_library("ui") {
       # TODO(crbug.com/364667551): It includes //c/b/ui/browser.h and
       # //c/b/ui/browser_window.h.
       "//chrome/browser/ui/webui/accessibility:impl",
-
-      # TODO(crbug.com/429171097): Remove this circular dependency when
-      # c/b/ui/bubble_anchor_util.h gets componentized.
-      "//chrome/browser/ui/tab_sharing:impl",
 
       # TODO(crbug.com/430013958): Remove this circular dependency when
       # `translate_bubble_factory.cc` stop including c/b/ui/browser_window.h.
@@ -2966,39 +2948,28 @@ static_library("ui") {
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ash/browser_delegate:impl",
-      "//chrome/browser/ash/extensions",
-      "//chrome/browser/ash/extensions/file_manager",
-      "//chrome/browser/ash/guest_os",
-      "//chrome/browser/ash/login/signin",
       "//chrome/browser/ash/login/users/avatar",
-      "//chrome/browser/ash/mahi",
       "//chrome/browser/nearby_sharing:impl",
       "//chrome/browser/ash/notifications",
-      "//chrome/browser/ash/policy/dlp",
       "//chrome/browser/ash/sync",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
-      "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/desks",
-      "//chrome/browser/ui/ash/graduation",
       "//chrome/browser/ui/ash/in_session_auth",
       "//chrome/browser/ui/ash/main_extra_parts",
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/ash/new_window",
-      "//chrome/browser/ui/ash/session",
       "//chrome/browser/ui/ash/shell_delegate",
       "//chrome/browser/ui/ash/system",
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wm",
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/cloud_upload",
-      "//chrome/browser/ui/webui/ash/diagnostics_dialog",
-      "//chrome/browser/ui/webui/ash/settings/pages/a11y",
       "//chrome/browser/ui/webui/ash/settings/pages/main",
       "//chrome/browser/ui/webui/ash/system_web_dialog",
       "//chrome/browser/ui/webui/nearby_share",
@@ -4651,7 +4622,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps/sub_apps:sub_apps_install_dialog",
     ]
     allow_circular_includes_from += [
-      "//chrome/browser/ui/views/autofill/popup/email_verifier",
       "//chrome/browser/ui/views/autofill/autofill_ai:impl",
       "//chrome/browser/ui/views/user_education:impl",
     ]
