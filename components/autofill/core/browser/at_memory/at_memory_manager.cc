@@ -204,7 +204,8 @@ std::vector<Suggestion> CreateFooterSuggestions(
   return suggestions;
 }
 
-Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
+Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry,
+                                         std::string_view app_locale) {
   const bool is_personal_context_sourced =
       !IsMemorySearchResultAutofillSourced(entry);
   Suggestion suggestion(
@@ -230,7 +231,7 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
       label_row.emplace_back(u"\u2022");  // Bullet (•)
     }
     std::u16string label_value = FormatMemoryDataTypeLabelValue(
-        metadata.type, metadata.value, metadata.typed_value);
+        metadata.type, metadata.value, metadata.typed_value, app_locale);
     label_row.emplace_back(MaybeObfuscateValue(label_value, metadata.type,
                                                is_personal_context_sourced));
   }
@@ -880,8 +881,11 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
 
     if (!result.entries.empty()) {
       // If there are remaining results after filtering, return them.
+      const std::string app_locale = owner_->client().GetAppLocale();
       SendSuggestions(
-          base::ToVector(result.entries, TransformResultIntoSuggestion));
+          base::ToVector(result.entries, [&](const MemorySearchResult& entry) {
+            return TransformResultIntoSuggestion(entry, app_locale);
+          }));
       return;
     }
   }

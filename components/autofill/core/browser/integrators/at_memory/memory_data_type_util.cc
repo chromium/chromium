@@ -20,7 +20,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/date_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -98,7 +100,8 @@ std::u16string DateToIsoString(int year, int month, int day) {
 // format (e.g. "Jun 7").
 std::optional<std::u16string> FormatShortDate(
     const std::optional<personal_context::proto::TypedValue>& typed_value,
-    std::u16string_view fallback_str = u"") {
+    std::u16string_view fallback_str,
+    std::string_view app_locale) {
   int year = 0;
   int month = 0;
   int day = 0;
@@ -124,17 +127,16 @@ std::optional<std::u16string> FormatShortDate(
   if (year <= 0 || month <= 0 || month > 12 || day <= 0 || day > 31) {
     return std::nullopt;
   }
-  base::Time::Exploded exploded{
-      .year = year,
-      .month = month,
-      .day_of_month = day,
-      .hour = 12,
-  };
-  base::Time time;
-  if (base::Time::FromLocalExploded(exploded, &time)) {
-    return base::LocalizedTimeFormatWithPattern(time, "MMM d");
+  DateInfo date_info;
+  date_info.SetDate(DateToIsoString(year, month, day), u"YYYY-MM-DD");
+  std::optional<std::u16string> pattern =
+      data_util::LocalizePattern(u"MMM d", app_locale);
+  if (!pattern) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  std::u16string formatted = date_info.GetIcuDate(*pattern, app_locale);
+  return formatted.empty() ? std::nullopt
+                           : std::make_optional(std::move(formatted));
 }
 
 // Formats a `base::Time` time-of-day for the given `app_locale`, falling back
@@ -167,12 +169,14 @@ std::u16string FormatTypedValue(
       break;
     }
     case personal_context::proto::TypedValue::kDate: {
-      // TODO(crbug.com/539400547): Support localized date formatting.
+      // Dates remain in canonical ISO (YYYY-MM-DD) format because this value
+      // is used for form filling. Localization is applied only to UI labels.
       const personal_context::proto::Date& date = typed_value.date();
       return DateToIsoString(date.year(), date.month(), date.day());
     }
     case personal_context::proto::TypedValue::kDateTime: {
-      // TODO(crbug.com/539400547): Support localized date formatting.
+      // The date portion is kept in ISO format for form filling, while the
+      // time-of-day is localized.
       const personal_context::proto::DateTime& date_time =
           typed_value.date_time();
       std::u16string date_str =
@@ -1095,11 +1099,12 @@ AttributeType GetPrimaryAttributeType(EntityType entity_type) {
 std::u16string FormatMemoryDataTypeLabelValue(
     MemoryDataType type,
     std::u16string_view value,
-    const std::optional<personal_context::proto::TypedValue>& typed_value) {
+    const std::optional<personal_context::proto::TypedValue>& typed_value,
+    std::string_view app_locale) {
   switch (type) {
     case MemoryDataType::kFlightReservationDepartureDate:
     case MemoryDataType::kFlightReservationArrivalDate:
-      return FormatShortDate(typed_value, value)
+      return FormatShortDate(typed_value, value, app_locale)
           .value_or(std::u16string(value));
     case MemoryDataType::kNameFull:
     case MemoryDataType::kAddressFull:

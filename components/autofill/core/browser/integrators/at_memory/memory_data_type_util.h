@@ -121,7 +121,8 @@ MemorySearchResult ConvertToMemorySearchResult(
 std::u16string FormatMemoryDataTypeLabelValue(
     MemoryDataType type,
     std::u16string_view value,
-    const std::optional<personal_context::proto::TypedValue>& typed_value);
+    const std::optional<personal_context::proto::TypedValue>& typed_value,
+    std::string_view app_locale);
 
 // Returns the primary attribute type for a given entity type.
 AttributeType GetPrimaryAttributeType(EntityType entity_type);
