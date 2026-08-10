@@ -62,9 +62,10 @@ void ThreadGroup::BaseScopedCommandsExecutor::Flush() {
   // worker enters its main function, is descheduled because it wasn't woken up
   // yet, and is woken up immediately after.
   for (auto& worker : workers_to_start_) {
-    worker->Start(outer_->after_start().service_thread_task_runner,
-                  outer_->after_start().worker_thread_observer);
-    if (outer_->worker_started_for_testing_) {
+    if (!worker->Start(outer_->after_start().service_thread_task_runner,
+                       outer_->after_start().worker_thread_observer)) {
+      outer_->CleanUpFailedWorker(worker.get());
+    } else if (outer_->worker_started_for_testing_) {
       outer_->worker_started_for_testing_->Wait();
     }
   }

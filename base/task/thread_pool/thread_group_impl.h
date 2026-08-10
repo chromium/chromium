@@ -89,6 +89,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   void JoinForTesting() override;
   void DidUpdateCanRunPolicy() override;
   void OnShutdownStarted() override;
+  void CleanUpFailedWorker(const WorkerThread* worker) override;
   // Returns the number of workers that are idle (i.e. not running tasks).
   size_t NumberOfIdleWorkersLockRequiredForTesting() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_) override;

@@ -4,6 +4,7 @@
 
 #include "base/task/thread_pool/thread_group_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -1079,6 +1080,17 @@ void ThreadGroupImpl::AdjustMaxTasks() {
   // Wake up workers according to the updated |max_tasks_|. This will also
   // reschedule AdjustMaxTasks() if necessary.
   EnsureEnoughWorkersLockRequired(&executor);
+}
+
+void ThreadGroupImpl::CleanUpFailedWorker(const WorkerThread* worker) {
+  CheckedAutoLock auto_lock(lock_);
+  auto worker_iter = std::find(workers_.begin(), workers_.end(), worker);
+  if (worker_iter != workers_.end()) {
+    workers_.erase(worker_iter);
+  }
+  if (idle_workers_set_.Contains(worker)) {
+    idle_workers_set_.Remove(worker);
+  }
 }
 
 }  // namespace base::internal

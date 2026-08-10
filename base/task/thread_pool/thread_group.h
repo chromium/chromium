@@ -317,6 +317,9 @@ class BASE_EXPORT ThreadGroup {
   virtual void EnsureEnoughWorkersLockRequired(
       BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_) = 0;
 
+  // Clean up a worker that failed to start.
+  virtual void CleanUpFailedWorker(const WorkerThread* worker) = 0;
+
   // Reenqueues a |transaction_with_task_source| from which a Task just ran in
   // the current ThreadGroup into the appropriate ThreadGroup.
   void ReEnqueueTaskSourceLockRequired(
