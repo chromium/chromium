@@ -37,6 +37,10 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
+import org.chromium.components.prefs.PrefService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,19 +50,24 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.ON_STARTUP_WINDOW_POLICY,
-    ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH
+    ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
+    ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF
 })
 public class TabbedStartupWindowPolicyDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityManager mActivityManager;
     @Mock private ChromeTabbedActivity mTabbedActivity;
+    @Mock private PrefService mPrefService;
+    @Mock private PrefChangeRegistrar.Natives mMockPrefChangeRegistrarNatives;
 
     private TabbedStartupWindowPolicyDelegate mDelegate;
 
     @Before
     public void setUp() {
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
+        PrefChangeRegistrarJni.setInstanceForTesting(mMockPrefChangeRegistrarNatives);
+        when(mMockPrefChangeRegistrarNatives.init(any(), any())).thenReturn(117L);
         ChromeMultiInstancePersistentStore.ensureInitialized();
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         DeviceInfo.setIsDesktopForTesting(true);
@@ -71,6 +80,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
     @After
     public void tearDown() {
+        mDelegate.destroy();
         ChromeMultiInstancePersistentStore.resetForTesting();
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
     }
@@ -264,6 +274,42 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertEquals(
                 LastSessionExitType.DEFAULT,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
+    }
+
+    @Test
+    public void testGetCachedStartupPolicy_returnsCachedValue() {
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
+        assertEquals(SessionStartupPref.LAST, mDelegate.getCachedStartupPolicy());
+    }
+
+    @Test
+    public void testPreferenceChange_syncsToCache() {
+        // Setup mock native preferences.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+
+        // Act.
+        mDelegate.initializeWithNative(mPrefService);
+
+        // Verify.
+        assertEquals(SessionStartupPref.NEW_TAB, mDelegate.getCachedStartupPolicy());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
+    public void testPreferenceChange_featureDisabled_doesNotSyncOrInitialize() {
+        // Setup mock native preferences.
+        when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
+                .thenReturn(SessionStartupPref.NEW_TAB);
+
+        // Act.
+        mDelegate.initializeWithNative(mPrefService);
+
+        // Verify that cached getters return default values.
+        assertEquals(0, mDelegate.getCachedStartupPolicy());
+
+        // Verify that we never register preference observer.
+        verify(mMockPrefChangeRegistrarNatives, never()).init(any(), any());
     }
 
     private void setupRecoverableInstances(@LastSessionExitType int exitType) {

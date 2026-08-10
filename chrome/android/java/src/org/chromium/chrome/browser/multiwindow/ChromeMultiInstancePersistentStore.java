@@ -439,6 +439,17 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         }
     }
 
+    static int readRestoreOnStartupPrefValue() {
+        assert sData != null;
+        return sData.getRestoreOnStartupPrefValue();
+    }
+
+    static void writeRestoreOnStartupPrefValue(int value) {
+        assert sData != null;
+        sData = sData.toBuilder().setRestoreOnStartupPrefValue(value).build();
+        saveProto();
+    }
+
     static List<CrashRecoveryWindowInfo> readCrashRecoveryData() {
         if (sData == null) return Collections.emptyList();
 

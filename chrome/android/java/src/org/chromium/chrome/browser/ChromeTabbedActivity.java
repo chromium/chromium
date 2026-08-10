@@ -197,6 +197,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
+import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate;
 import org.chromium.chrome.browser.multiwindow.TabbedWindowStateTracker;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
@@ -1628,22 +1629,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     @Override
     public void finishNativeInitialization() {
         try (TraceEvent te = TraceEvent.scoped("ChromeTabbedActivity.finishNativeInitialization")) {
-            assert getProfileProviderSupplier().get() != null;
-            new NavigationPredictorBridge(
-                    getProfileProviderSupplier().get().getOriginalProfile(),
-                    getLifecycleDispatcher(),
-                    this::isWarmOnResume);
+            var profileProvider = assertNonNull(getProfileProviderSupplier().get());
+            var profile = profileProvider.getOriginalProfile();
+            new NavigationPredictorBridge(profile, getLifecycleDispatcher(), this::isWarmOnResume);
 
             if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled() && !isIncognitoWindow()) {
                 CrossDeviceThemeTracker themeTracker =
-                        CrossDeviceThemeTracker.getForProfile(
-                                getProfileProviderSupplier().get().getOriginalProfile());
+                        CrossDeviceThemeTracker.getForProfile(profile);
                 if (themeTracker != null) {
                     themeTracker.setActivity(this);
                 }
             }
 
             super.finishNativeInitialization();
+
+            TabbedStartupWindowPolicyDelegate.getInstance()
+                    .initializeWithNative(UserPrefs.get(profile));
 
             recordFirstAppLaunchTimestampIfNeeded();
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
@@ -1690,7 +1691,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             initiateArchivedTabsAutoDeletePromoManager();
 
             if (FindsFeatures.sChromeFinds.isEnabled()) {
-                Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
                 FindsService findsService = FindsService.getForProfile(profile);
                 if (findsService != null) {
                     mFindsManager =

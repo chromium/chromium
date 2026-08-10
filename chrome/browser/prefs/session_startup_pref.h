@@ -45,6 +45,9 @@ struct SessionStartupPref {
   // line up. These are the values registered in prefs.
   // The values are also recorded in Settings.StartupPageLoadSettings histogram,
   // so make sure to update histograms.xml if you change these.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.multiwindow
+  // GENERATED_JAVA_PREFIX_TO_STRIP: kPrefValue
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SessionStartupPref
   enum PrefValue {
     kPrefValueLast = 1,
     kPrefValueURLs = 4,

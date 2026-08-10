@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.ActivityManager.AppTask;
 import android.content.Intent;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ResettersForTesting;
@@ -15,6 +19,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefService;
 
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +34,9 @@ import java.util.Set;
 public class TabbedStartupWindowPolicyDelegate {
     private static @Nullable TabbedStartupWindowPolicyDelegate sInstance;
 
+    private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable PrefService mPrefService;
+
     private TabbedStartupWindowPolicyDelegate() {}
 
     /** Returns the singleton instance of {@link TabbedStartupWindowPolicyDelegate}. */
@@ -35,6 +45,23 @@ public class TabbedStartupWindowPolicyDelegate {
             sInstance = new TabbedStartupWindowPolicyDelegate();
         }
         return sInstance;
+    }
+
+    /**
+     * Initializes the delegate with native preferences once native is ready. This method is
+     * idempotent and can be safely called multiple times across activity lifecycles.
+     *
+     * @param prefService The {@link PrefService} to observe.
+     */
+    public void initializeWithNative(PrefService prefService) {
+        if (!MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()) return;
+        // Early return if already initialized to ensure idempotency across multiple activities.
+        if (mPrefChangeRegistrar != null) return;
+        mPrefService = prefService;
+        mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
+        mPrefChangeRegistrar.addObserver(
+                Pref.RESTORE_ON_STARTUP, this::onRestoreOnStartupPrefChanged);
+        onRestoreOnStartupPrefChanged();
     }
 
     /**
@@ -56,6 +83,11 @@ public class TabbedStartupWindowPolicyDelegate {
         }
 
         ChromeMultiInstancePersistentStore.writeLastSessionExitType(exitType);
+    }
+
+    /* package */ int getCachedStartupPolicy() {
+        if (!MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()) return 0;
+        return ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
     }
 
     /* package */ void maybeRestoreWindowsAfterLaunch(ChromeTabbedActivity activity) {
@@ -122,6 +154,20 @@ public class TabbedStartupWindowPolicyDelegate {
         if (windowsRestored) {
             ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), /* flags= */ 0);
         }
+    }
+
+    @VisibleForTesting
+    /* package */ void destroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+            mPrefChangeRegistrar = null;
+        }
+        mPrefService = null;
+    }
+
+    private void onRestoreOnStartupPrefChanged() {
+        int type = assertNonNull(mPrefService).getInteger(Pref.RESTORE_ON_STARTUP);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(type);
     }
 
     /* package */ static void setInstanceForTesting(

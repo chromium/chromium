@@ -1063,6 +1063,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/metrics/metrics_reporting_state.h",
       "//chrome/browser/notifications/notification_handler.h",
       "//chrome/browser/notifications/notification_platform_bridge_android.cc",
+      "//chrome/browser/prefs/session_startup_pref.h",
     ]
   }
 

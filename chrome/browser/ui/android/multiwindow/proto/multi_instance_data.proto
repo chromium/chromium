@@ -65,6 +65,10 @@ message MultiInstanceData {
   // The exit type of the last multi-instance session.
   // Maps to MultiInstanceManager.LastSessionExitType.
   optional int32 last_session_exit_type = 14;
+
+  // The cached value of the RestoreOnStartup policy/preference.
+  // Maps to SessionStartupPref::PrefValue.
+  optional int32 restore_on_startup_pref_value = 15;
 }
 
 // Data representing the state of a single Chrome instance.
