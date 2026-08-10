@@ -134,6 +134,12 @@ inline constexpr char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "
     "spread across multiple iframes.";
 
+inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeName[] =
+    "Autofill AI always show Private AI notice";
+inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeDescription[] =
+    "Forces the Autofill AI Private AI notice suggestion to be shown for "
+    "testing.";
+
 inline constexpr char kAutofillAiAvailableByDefaultName[] =
     "Autofill AI available by default";
 inline constexpr char kAutofillAiAvailableByDefaultDescription[] =

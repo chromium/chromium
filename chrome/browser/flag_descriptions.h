@@ -889,6 +889,12 @@ inline constexpr char kAutofillAiAlwaysTriggerServerModelDescription[] =
     "Queries the server model for every form encountered, ignoring server-side "
     "instructions. Intended for testing only.";
 
+inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeName[] =
+    "Autofill AI always show Private AI notice";
+inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeDescription[] =
+    "Forces the Autofill AI Private AI notice suggestion to be shown for "
+    "testing, skipping cool-off timers and impression count checks.";
+
 inline constexpr char kAutofillAiAvailableByDefaultName[] =
     "Autofill AI available by default";
 inline constexpr char kAutofillAiAvailableByDefaultDescription[] =

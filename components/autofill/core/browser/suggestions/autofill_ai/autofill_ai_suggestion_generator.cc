@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -1018,6 +1019,18 @@ void AppendDomainFallbackSuggestions(
 bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
                                       const AttributeTypeAssignment& assignment,
                                       const PrefService* prefs) {
+  const bool is_autofill_ai_field =
+      !FindAttributesForField(assignment, trigger_field.global_id()).empty();
+  if (!is_autofill_ai_field ||
+      !base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi)) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::debug::kAutofillAiAlwaysShowPrivateAiNotice)) {
+    return true;
+  }
+
   const base::Time ambient_autofill_notice_acked =
       prefs ? prefs->GetTime(personal_context::prefs::
                                  kAmbientAutofillNoticeAcknowledgedTimestamp)
@@ -1064,11 +1077,7 @@ bool ShouldShowPrivateInferenceNotice(const AutofillField& trigger_field,
               prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp)
           .is_null();
 
-  const bool is_autofill_ai_field =
-      !FindAttributesForField(assignment, trigger_field.global_id()).empty();
-
-  return is_autofill_ai_field && private_inference_notice_never_acked &&
-         base::FeatureList::IsEnabled(features::kAutofillAiUsePrivateAi);
+  return private_inference_notice_never_acked;
 }
 
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(

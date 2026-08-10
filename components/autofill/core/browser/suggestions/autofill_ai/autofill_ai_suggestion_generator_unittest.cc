@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -2447,6 +2448,57 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   client().GetPrefs()->SetTime(
       prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
       base::Time::Now() - base::Minutes(10));
+
+  SetEntities({GetPassportEntityInstanceWithRandomGuid()});
+  SetForm({PASSPORT_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions,
+              Not(Contains(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       PrivateInferenceNoticeShownWhenAlwaysShowFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAiUsePrivateAi,
+                            features::debug::
+                                kAutofillAiAlwaysShowPrivateAiNotice},
+      /*disabled_features=*/{});
+
+  // Set pref conditions that would normally suppress the notice.
+  client().GetPrefs()->SetTime(
+      prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+      base::Time::Now());
+  client().GetPrefs()->SetTime(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp,
+      base::Time::Now() - base::Minutes(5));
+  client().GetPrefs()->SetInteger(
+      personal_context::prefs::
+          kPersonalContextAmbientAutofillNoticeImpressionCount,
+      1);
+
+  SetEntities({GetPassportEntityInstanceWithRandomGuid()});
+  SetForm({PASSPORT_NUMBER});
+
+  // Notice should still be shown because of the override flag.
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions,
+              Contains(EqualsSuggestion(
+                  SuggestionType::kAutofillAiPrivateInferenceNotice)));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    PrivateInferenceNoticeNotShownWhenMainFeatureDisabledEvenWithAlwaysShow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::debug::
+                                kAutofillAiAlwaysShowPrivateAiNotice},
+      /*disabled_features=*/{features::kAutofillAiUsePrivateAi});
 
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});

@@ -19,6 +19,13 @@ BASE_FEATURE(kAtMemoryNoDeviceReauthCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 // and other) for local testing and teamfooding.
 BASE_FEATURE(kAtMemorySkipEnablementChecks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, all checks in ShouldShowPrivateInferenceNotice are skipped
+// (except triggering field being an Autofill AI type and
+// kAutofillAiUsePrivateAi being enabled) and the notice is forced to show for
+// testing.
+BASE_FEATURE(kAutofillAiAlwaysShowPrivateAiNotice,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Wallet private passes are supported on devices without re-auth.
 BASE_FEATURE(kAutofillAiDisableReauthRequirement,
              base::FEATURE_DISABLED_BY_DEFAULT);
