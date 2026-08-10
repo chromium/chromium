@@ -25,12 +25,34 @@ enum InputSource {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/input_source.proto:InputSource)
 
+enum SearchboxOverride {
+  // Requests that no searchbox be opened.
+  kUnspecified = 0,
+  kRealbox = 1,
+  kComposebox = 2,
+};
+
+// Actions for the Fusebox (a fusion of "Composebox" and "Searchbox"), which can
+// be either the Composebox (for AI queries) or the Searchbox (for non-AI
+// queries). FuseboxAction carries optional client behavior and configuration to
+// apply when the user accepts a suggestion. Its fields correspond to the
+// client-supported subset of the SuggestTemplateInfo.FuseboxAction proto
+// message in //third_party/omnibox_proto/suggest_template_info.proto. A null
+// field means this action does not specify the corresponding setting or
+// behavior, which is distinct from an explicit zero value.
 // TODO(crbug.com/539651790): Add more fields to FuseboxAction.
 struct FuseboxAction {
+  // The tool to preselect, if specified.
   composebox_query.mojom.ToolMode? preselected_tool;
+  // The suggestion inventory to show, if specified.
   searchbox.mojom.SuggestInventory? preferred_inventory;
+  // The model mode to preselect, if specified.
   composebox_query.mojom.ModelMode? preselected_model;
+  // How to handle the suggestion query, if specified.
   QueryActionOverride? query_action_override;
   // The source that should be opened, if available.
   InputSource? preselected_input_source;
+  // Whether and which searchbox to open, if specified.
+  // Null means no override was provided.
+  SearchboxOverride? searchbox_override;
 };

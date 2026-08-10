@@ -1366,6 +1366,7 @@ suite('NewTabPageAppTest', () => {
             preselectedModel: null,
             queryActionOverride: null,
             preselectedInputSource: InputSource.kInputSourceGallery,
+            searchboxOverride: null,
           };
 
           // Act.
@@ -2957,6 +2958,7 @@ suite('NewTabPageAppTest', () => {
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
                 preselectedInputSource: null,
+                searchboxOverride: null,
               },
             },
             tab: fakeTab,
@@ -2973,6 +2975,7 @@ suite('NewTabPageAppTest', () => {
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
                 preselectedInputSource: null,
+                searchboxOverride: null,
               },
             },
             tab: null,
@@ -2989,6 +2992,7 @@ suite('NewTabPageAppTest', () => {
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
                 preselectedInputSource: null,
+                searchboxOverride: null,
               },
             },
             tab: null,
@@ -3157,6 +3161,7 @@ suite('NewTabPageAppTest', () => {
                 preselectedModel: ModelMode.kUnspecified,
                 queryActionOverride: null,
                 preselectedInputSource: null,
+                searchboxOverride: null,
               },
             },
             tab: {
@@ -3212,6 +3217,7 @@ suite('NewTabPageAppTest', () => {
                 preselectedModel: ModelMode.kGeminiPro,
                 queryActionOverride: null,
                 preselectedInputSource: null,
+                searchboxOverride: null,
               },
             },
             tab: null,

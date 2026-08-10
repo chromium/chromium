@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipClickDetail, ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
@@ -40,6 +40,7 @@ suite('NewTabPageActionChipsTest', () => {
           preferredInventory: null,
           preselectedModel: ModelMode.kUnspecified,
           queryActionOverride: null,
+          searchboxOverride: null,
         },
       },
       suggestion: 'Suggestion for recent tab',
@@ -60,6 +61,7 @@ suite('NewTabPageActionChipsTest', () => {
           preferredInventory: null,
           preselectedModel: ModelMode.kUnspecified,
           queryActionOverride: null,
+          searchboxOverride: null,
         },
       },
       suggestion: 'Suggestion for image',
@@ -75,6 +77,7 @@ suite('NewTabPageActionChipsTest', () => {
           preferredInventory: null,
           preselectedModel: ModelMode.kUnspecified,
           queryActionOverride: null,
+          searchboxOverride: null,
         },
       },
       suggestion: 'Suggestion for deep search',
@@ -124,6 +127,7 @@ suite('NewTabPageActionChipsTest', () => {
               preselectedModel: ModelMode.kUnspecified,
               queryActionOverride: null,
               preselectedInputSource: null,
+              searchboxOverride: null,
               ...chip.suggestTemplateInfo.fuseboxAction,
             } :
                                                                     null,
@@ -462,6 +466,8 @@ suite('NewTabPageActionChipsTest', () => {
             fuseboxAction: {
               preselectedTool: null,
               preferredInventory: SuggestInventory.kConversationStarters,
+              queryActionOverride: QueryActionOverride.kPaste,
+              searchboxOverride: SearchboxOverride.kComposebox,
             },
           },
           suggestion: '',
@@ -485,6 +491,12 @@ suite('NewTabPageActionChipsTest', () => {
       assertEquals(
           SuggestInventory.kConversationStarters,
           event.detail.fuseboxAction?.preferredInventory);
+      assertEquals(
+          QueryActionOverride.kPaste,
+          event.detail.fuseboxAction?.queryActionOverride);
+      assertEquals(
+          SearchboxOverride.kComposebox,
+          event.detail.fuseboxAction?.searchboxOverride);
       assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,

@@ -29,6 +29,16 @@ mojom::FuseboxActionPtr SyncFuseboxActionProtoToMojo(
                     << proto.query_action_override();
     }
   }
+  if (proto.has_searchbox_override()) {
+    auto maybe_valid_searchbox_override =
+        static_cast<mojom::SearchboxOverride>(proto.searchbox_override());
+    if (mojom::IsKnownEnumValue(maybe_valid_searchbox_override)) {
+      mojo_action->searchbox_override = maybe_valid_searchbox_override;
+    } else {
+      NOTREACHED() << "Unknown SearchboxOverride "
+                   << proto.searchbox_override();
+    }
+  }
 
   return mojo_action;
 }
