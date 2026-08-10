@@ -31,6 +31,9 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     // Frame layout hosting the arrow puck UI.
     private @MonotonicNonNull SideSlideLayout mSideSlideLayout;
 
+    private int mLeftSideUiWidth;
+    private int mRightSideUiWidth;
+
     // Async runnable for ending the refresh animation after the page first
     // loads a frame. This is used to provide a reasonable minimum animation time.
     private @Nullable Runnable mStopNavigatingRunnable;
@@ -44,6 +47,14 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         mNavigateCallback = navigateCallback;
         setOnHierarchyChangeListener(this);
         setVisibility(View.INVISIBLE);
+    }
+
+    void setSideUiWidths(int leftWidth, int rightWidth) {
+        mLeftSideUiWidth = leftWidth;
+        mRightSideUiWidth = rightWidth;
+        if (mSideSlideLayout != null) {
+            mSideSlideLayout.setSideUiWidths(leftWidth, rightWidth);
+        }
     }
 
     @Override
@@ -66,6 +77,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         mSideSlideLayout = new SideSlideLayout(getContext());
         mSideSlideLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mSideSlideLayout.setSideUiWidths(mLeftSideUiWidth, mRightSideUiWidth);
         return mSideSlideLayout;
     }
 
@@ -93,6 +105,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
                         sideSlideLayout.post(createDetachLayoutRunnable());
                     });
         }
+        mSideSlideLayout.setSideUiWidths(mLeftSideUiWidth, mRightSideUiWidth);
         mSideSlideLayout.setEnabled(true);
         mSideSlideLayout.setDirection(forward);
         mSideSlideLayout.setInitiatingEdge(initiatingEdge);
