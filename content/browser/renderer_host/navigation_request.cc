@@ -2174,12 +2174,8 @@ NavigationRequest::NavigationRequest(
     // requests will be merged into this preflight request in
     // `ServiceWorkerRegistry::FindRegistrationForClientUrl()` and
     // `ServiceWorkerRegistry::RunFindRegistrationCallbacks()` later.
-    if (ServiceWorkerContext* context =
-            frame_tree_node_->navigator()
-                .controller()
-                .GetBrowserContext()
-                ->GetStoragePartition(site_info_.GetStoragePartitionConfig())
-                ->GetServiceWorkerContext()) {
+    if (ServiceWorkerContext* context = GetStoragePartitionWithCurrentSiteInfo()
+                                            ->GetServiceWorkerContext()) {
       const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
           GetTentativeOriginAtRequestTime());
       if (context->MaybeHasRegistrationForStorageKey(key)) {
