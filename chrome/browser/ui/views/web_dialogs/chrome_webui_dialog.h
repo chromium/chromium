@@ -38,9 +38,9 @@ struct WebDialogSpec {
   ~WebDialogSpec();
   WebDialogSpec(const WebDialogSpec&);
 
-  // The minimum and maximum size of the dialog.
-  // The dialog will auto-resize within these bounds based on the WebUI content.
-  // To fix a dimension, set min == max.
+  // Bounds for content-driven auto-resizing. Set min == max to fix a dimension.
+  // A zero extent leaves that dimension unconstrained, so a spec may pin the
+  // width and let the height follow content.
   gfx::Size min_size;
   gfx::Size max_size;
 

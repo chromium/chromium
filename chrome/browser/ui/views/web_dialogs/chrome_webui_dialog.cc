@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_dialogs/chrome_webui_dialog.h"
 
+#include <algorithm>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -24,6 +26,27 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace webui_dialog {
+
+namespace {
+
+// EnableSizingFromWebContents() DCHECKs on an empty maximum, so an
+// unconstrained dimension is given to the renderer as the widest range it can
+// express. ResizeDueToAutoResize() still clamps the result to the work area.
+constexpr int kUnboundedExtent = std::numeric_limits<int>::max();
+
+gfx::Size EffectiveMinSize(const WebDialogSpec& spec) {
+  // Auto-resize does not accept a zero-sized minimum.
+  return gfx::Size(std::max(1, spec.min_size.width()),
+                   std::max(1, spec.min_size.height()));
+}
+
+gfx::Size EffectiveMaxSize(const WebDialogSpec& spec) {
+  return gfx::Size(
+      spec.max_size.width() > 0 ? spec.max_size.width() : kUnboundedExtent,
+      spec.max_size.height() > 0 ? spec.max_size.height() : kUnboundedExtent);
+}
+
+}  // namespace
 
 WebDialogSpec::WebDialogSpec() = default;
 WebDialogSpec::~WebDialogSpec() = default;
@@ -97,7 +120,8 @@ ChromeWebUIDialog::ChromeWebUIDialog(
     initial_size = gfx::Size(1, 1);
   }
   web_view_->SetPreferredSize(initial_size);
-  web_view_->EnableSizingFromWebContents(spec_.min_size, spec_.max_size);
+  web_view_->EnableSizingFromWebContents(EffectiveMinSize(spec_),
+                                         EffectiveMaxSize(spec_));
 
   view_observation_.Observe(web_view_);
   SetContentsView(std::move(web_view));
@@ -143,8 +167,8 @@ void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
   // the min/max bounds via `EnableAutoResize()` in the constructor. However,
   // because the renderer is an untrusted process, the size must be defensively
   // clamped here to guarantee strict adherence to `spec_`.
-  bounded_size.SetToMax(spec_.min_size);
-  bounded_size.SetToMin(spec_.max_size);
+  bounded_size.SetToMax(EffectiveMinSize(spec_));
+  bounded_size.SetToMin(EffectiveMaxSize(spec_));
 
   // Ensure the dialog doesn't exceed the display's work area.
   // Note: Clamping against the work area occurs *after* applying the spec

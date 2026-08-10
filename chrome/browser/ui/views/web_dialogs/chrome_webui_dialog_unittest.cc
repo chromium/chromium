@@ -187,6 +187,33 @@ TEST_F(ChromeWebUIDialogTest, AutoResizeClampsToMaxSize) {
   EXPECT_EQ(delegate->web_view()->GetPreferredSize(), gfx::Size(300, 300));
 }
 
+TEST_F(ChromeWebUIDialogTest, AutoResizeWithUnboundedMaxSizeIsContentDriven) {
+  // Sizes stay well inside the 800x600 test display so the work-area clamp is
+  // not what this measures.
+  WebDialogSpec spec;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  delegate->ResizeDueToAutoResize(nullptr, gfx::Size(300, 250));
+
+  EXPECT_EQ(delegate->web_view()->GetPreferredSize(), gfx::Size(300, 250));
+}
+
+TEST_F(ChromeWebUIDialogTest, AutoResizeLocksWidthWithUnboundedHeight) {
+  // Width is pinned by min == max; height is left unconstrained.
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(300, 0);
+  spec.max_size = gfx::Size(300, 0);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  delegate->ResizeDueToAutoResize(nullptr, gfx::Size(700, 250));
+
+  EXPECT_EQ(delegate->web_view()->GetPreferredSize(), gfx::Size(300, 250));
+}
+
 TEST_F(ChromeWebUIDialogTest, CornerRadiusClipping) {
   WebDialogSpec spec;
   spec.min_size = gfx::Size(kMinSize, kMinSize);
