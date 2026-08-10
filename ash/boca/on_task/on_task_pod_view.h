@@ -45,10 +45,6 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   OnTaskPodView& operator=(const OnTaskPodView) = delete;
   ~OnTaskPodView() override;
 
-  // views::BoxLayoutView:
-  void AddedToWidget() override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
   // Test element accessors:
   IconButton* get_back_button_for_testing() { return back_button_; }
   IconButton* get_forward_button_for_testing() { return forward_button_; }

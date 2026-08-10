@@ -52,10 +52,8 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
 
 OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
     : pod_controller_(pod_controller),
-      // Since this view has fully circular rounded corners, we can't use a
-      // nine patch layer for the shadow. We have to use the
-      // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
-      shadow_(SystemShadow::CreateShadowOnTextureLayer(
+      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
           SystemShadow::Type::kElevation4)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -133,28 +131,6 @@ void OnTaskPodView::AddShortcutButtons() {
       /*is_togglable=*/true));
   pin_tab_strip_button_->SetVisible(
       pod_controller_->CanToggleTabStripVisibility());
-}
-
-void OnTaskPodView::AddedToWidget() {
-  views::BoxLayoutView::AddedToWidget();
-
-  // Since the layer of the shadow has to be added as a sibling to
-  // `on_task_pod_view` layer, we need to wait until the view is added to the
-  // widget.
-  auto* const parent = layer()->parent();
-  ui::Layer* const shadow_layer = shadow_->GetLayer();
-  parent->Add(shadow_layer);
-  parent->StackAtBottom(shadow_layer);
-
-  // Make the shadow observe the color provider source change to update the
-  // colors.
-  shadow_->ObserveColorProviderSource(GetWidget());
-}
-
-void OnTaskPodView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // The shadow layer is a sibling of `on_task_pod_view` layer, and should have
-  // the same bounds.
-  shadow_->SetContentBounds(layer()->bounds());
 }
 
 void OnTaskPodView::UpdatePinTabStripButton(bool user_action) {
