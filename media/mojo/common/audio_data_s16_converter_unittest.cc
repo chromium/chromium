@@ -121,6 +121,32 @@ TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_AudioBuffer) {
   EXPECT_EQ(base::span(result->data), base::span(kTestVectorContents));
 }
 
+// Tests converting an interleaved S16 stereo AudioBuffer directly without
+// format conversion.
+TEST_F(AudioDataS16ConverterTest,
+       ConvertToAudioDataS16_AudioBuffer_InterleavedStereo) {
+  // Create S16 Stereo AudioBuffer.
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      SampleFormat::kSampleFormatS16, CHANNEL_LAYOUT_STEREO, 2, kSampleRate,
+      kStereoFrameCount);
+
+  // Populate interleaved stereo data manually.
+  auto raw_channel = buffer->channels()[0];
+  auto bus_span = base::subtle::reinterpret_span<int16_t>(raw_channel);
+  ASSERT_EQ(bus_span.size(), kTestVectorSize);
+  bus_span.copy_from(kTestVectorContents);
+
+  // Convert with multichannel supported = true.
+  mojom::AudioDataS16Ptr result = converter_->ConvertToAudioDataS16(
+      buffer, /*is_multichannel_supported=*/true);
+
+  // Compare.
+  ASSERT_EQ(2, result->channel_count);
+  ASSERT_EQ(static_cast<size_t>(result->frame_count), kStereoFrameCount);
+  ASSERT_EQ(buffer->sample_rate(), result->sample_rate);
+  EXPECT_EQ(base::span(result->data), base::span(kTestVectorContents));
+}
+
 TEST_F(AudioDataS16ConverterTest,
        ConvertToAudioDataS16_AudioBuffer_FormatConversion) {
   auto buffer = CreatePopulatedF32StereoBuffer();
