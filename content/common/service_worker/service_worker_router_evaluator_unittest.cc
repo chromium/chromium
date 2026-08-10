@@ -1137,8 +1137,8 @@ TEST(ServiceWorkerRouterEvaluator, OrConditionMatch) {
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
   EXPECT_TRUE(evaluator.need_running_status());
-  size_t max_depth = evaluator.max_rule_depth();
-  size_t max_width = evaluator.max_rule_width();
+  size_t max_depth = evaluator.MaxRuleDepthForTesting();
+  size_t max_width = evaluator.MaxRuleWidthForTesting();
   EXPECT_EQ(2U, max_depth);
   EXPECT_EQ(2U, max_width);
 

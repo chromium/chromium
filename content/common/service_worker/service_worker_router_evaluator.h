@@ -84,8 +84,8 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   std::string ToString() const;
   std::vector<ServiceWorkerRouterRule> CalculateRouterRulesForDevTools() const;
   void RecordRouterRuleInfo() const;
-  size_t max_rule_depth() const { return max_rule_depth_; }
-  size_t max_rule_width() const { return max_rule_width_; }
+  size_t MaxRuleDepthForTesting() const { return max_rule_depth_; }
+  size_t MaxRuleWidthForTesting() const { return max_rule_width_; }
   const std::optional<ServiceWorkerRouterEvaluatorErrorEnums>&
   invalid_error_code() const {
     return invalid_error_code_;
@@ -104,9 +104,10 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   bool need_running_status_ = false;
   bool require_fetch_handler_ = false;
   bool has_non_fetch_event_source_ = false;
-  size_t max_rule_depth_ = 0;
-  size_t max_rule_width_ = 0;
   std::optional<ServiceWorkerRouterEvaluatorErrorEnums> invalid_error_code_;
+  size_t max_rule_depth_ = 0;
+  // Used only for testing purposes.
+  size_t max_rule_width_ = 0;
 };
 
 }  // namespace content

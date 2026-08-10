@@ -865,10 +865,6 @@ ServiceWorkerRouterEvaluator::CalculateRouterRulesForDevTools() const {
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {
   base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.RuleCount",
                                compiled_rules_.size());
-  base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.ConditionDepth",
-                               max_rule_depth_);
-  base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.OrConditionWidth",
-                               max_rule_width_);
 }
 
 }  // namespace content
