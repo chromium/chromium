@@ -2289,33 +2289,3 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
   }
 }
 
-class WebUIPinnedToolbarActionsInteractiveUiTest
-    : public WebUIPinnedToolbarActionsTestBase {};
-
-IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsInteractiveUiTest,
-                       HighlightOnShowTranslateBubble) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  content::WebContents* web_ui_contents =
-      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-
-  actions::ActionId action_id = kActionShowTranslate;
-  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
-      toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
-
-  // Pin Translate action.
-  PinAction(action_id, mojom_action);
-
-  // Show translate bubble.
-  BrowserWindow::FromBrowser(browser())->ShowTranslateBubble(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "fr", "en",
-      translate::TranslateErrors::NONE, true);
-
-  // Verify it's highlighted.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return EvalJsOnPinnedButton(web_ui_contents, mojom_action,
-                                "return !!btn && "
-                                "btn.hasAttribute('is-menu-open');")
-        .ExtractBool();
-  }));
-}

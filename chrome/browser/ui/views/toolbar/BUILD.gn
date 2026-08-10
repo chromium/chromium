@@ -385,6 +385,9 @@ if (!is_android) {
     if (toolkit_views) {
       sources += [
         "toolbar_view_browsertest.cc",
+        "webui_pinned_toolbar_actions_browsertest.cc",
+        "webui_pinned_toolbar_actions_test_base.cc",
+        "webui_pinned_toolbar_actions_test_base.h",
         "webui_toolbar_web_view_browsertest.cc",
         "webui_toolbar_web_view_test_base.cc",
         "webui_toolbar_web_view_test_base.h",
@@ -433,6 +436,9 @@ if (!is_android && !is_chromeos_device) {
         "toolbar_view_interactive_uitest.cc",
         "webui_and_views_toolbar_interactive_uitest_base.cc",
         "webui_and_views_toolbar_interactive_uitest_base.h",
+        "webui_pinned_toolbar_actions_interactive_uitest.cc",
+        "webui_pinned_toolbar_actions_test_base.cc",
+        "webui_pinned_toolbar_actions_test_base.h",
         "webui_toolbar_interactive_uitest.cc",
         "webui_toolbar_web_view_interactive_uitest.cc",
         "webui_toolbar_web_view_test_base.cc",
