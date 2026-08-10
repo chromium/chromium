@@ -4,8 +4,6 @@
 
 import './todo_item.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -46,44 +44,29 @@ export class AiTaskboxElement extends CrLitElement {
 
   static override get properties() {
     return {
-      autoTodosEnabled_: {type: Boolean},
-      // Gmail-based todo properties.
       todos: {type: Array},
-      completedTodos: {type: Array},
+      tabTodos: {type: Array},
       isGeneratingGmailTodos_: {type: Boolean},
       hasGmailGenerationError_: {type: Boolean},
       hasGeneratedGmail_: {type: Boolean},
-      isCompletedExpanded_: {type: Boolean},
-      // Tab-based todo properties.
-      tabTodos: {type: Array},
-      completedTabTodos: {type: Array},
       isGeneratingTabTodos_: {type: Boolean},
       hasTabGenerationError_: {type: Boolean},
       hasGeneratedTab_: {type: Boolean},
-      isCompletedTabExpanded_: {type: Boolean},
+      autoTodosEnabled_: {type: Boolean},
     };
   }
 
   accessor todos: AutoTodoItem[]|null = null;
-  accessor completedTodos: AutoTodoItem[]|null = null;
   accessor tabTodos: AutoTodoItem[]|null = null;
-  accessor completedTabTodos: AutoTodoItem[]|null = null;
-  protected accessor autoTodosEnabled_: boolean =
-      loadTimeData.getBoolean('kAutoTodos');
-
-  // Gmail-based property accessors.
   protected accessor isGeneratingGmailTodos_: boolean = false;
   protected accessor hasGmailGenerationError_: boolean = false;
   protected accessor hasGeneratedGmail_: boolean = false;
-  protected accessor isCompletedExpanded_: boolean = false;
-
-  // Tab-based property accessors.
   protected accessor isGeneratingTabTodos_: boolean = false;
   // TODO(crbug.com/539697847): Use this to show an error message to the user.
   protected accessor hasTabGenerationError_: boolean = false;
   protected accessor hasGeneratedTab_: boolean = false;
-  protected accessor isCompletedTabExpanded_: boolean = false;
-
+  protected accessor autoTodosEnabled_: boolean =
+      loadTimeData.getBoolean('kAutoTodos');
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
@@ -99,25 +82,11 @@ export class AiTaskboxElement extends CrLitElement {
                                 todo => !!todo.data.firstParty &&
                                     todo.status === AutoTodoStatus.kActive)
                             .sort((a, b) => b.score - a.score);
-                    this.completedTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.firstParty &&
-                                    todo.status === AutoTodoStatus.kCompleted)
-                            .sort((a, b) => b.score - a.score);
                     this.tabTodos =
                         todos
                             .filter(
                                 todo => !!todo.data.thirdParty &&
                                     todo.status === AutoTodoStatus.kActive)
-                            .sort(
-                                (a, b) => getTabTodoPriority(a) -
-                                    getTabTodoPriority(b));
-                    this.completedTabTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.thirdParty &&
-                                    todo.status === AutoTodoStatus.kCompleted)
                             .sort(
                                 (a, b) => getTabTodoPriority(a) -
                                     getTabTodoPriority(b));
@@ -134,18 +103,8 @@ export class AiTaskboxElement extends CrLitElement {
           firstPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
               .sort((a, b) => b.score - a.score) ??
           null;
-      this.completedTodos =
-          firstPartyTodos
-              .filter(todo => todo.status === AutoTodoStatus.kCompleted)
-              .sort((a, b) => b.score - a.score) ??
-          null;
       this.tabTodos =
           thirdPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
-              .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
-          null;
-      this.completedTabTodos =
-          thirdPartyTodos
-              .filter(todo => todo.status === AutoTodoStatus.kCompleted)
               .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
           null;
     } catch (e) {
@@ -163,14 +122,6 @@ export class AiTaskboxElement extends CrLitElement {
 
   protected onGeneralFeedbackClick_() {
     window.open(GENERAL_FEEDBACK_FORM_URL, '_blank');
-  }
-
-  protected onCompletedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.isCompletedExpanded_ = e.detail.value;
-  }
-
-  protected onCompletedTabExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.isCompletedTabExpanded_ = e.detail.value;
   }
 
   protected async onGenerateGmailTodosClick_() {
