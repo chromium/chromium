@@ -256,6 +256,10 @@ DraggedTabsContainer& UnpinnedTabContainerView::GetTabDragTarget(
       continue;
     }
 
+    if (group_view->IsGroupFocused()) {
+      return *group_view;
+    }
+
     if (group_view->IsHandlingDrag()) {
       if (ShouldDragRemainInGroup(*group_view, layout.bounds,
                                   point_in_screen)) {
