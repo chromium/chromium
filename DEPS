@@ -285,6 +285,9 @@ vars = {
   # siso CIPD package version.
   'siso_version': 'git_revision:1b1109fc6f5e177a439a195b87931224efc7a007',
 
+  # CPython 3 CIPD package version for Siso hermetic toolchain.
+  'cpython3_version': 'version:3@3.11.9.chromium.38',
+
   # reclient options.
   # download reclient binaries, required for 'use_reclient` gn arg.
   # TODO(crbug.com/448517720): make it false by default.
@@ -2298,6 +2301,19 @@ deps = {
         },
       ],
       'condition': 'host_os == "linux" and non_git_source',
+      'dep_type': 'cipd',
+  },
+
+  # Host platform package. ${platform} folder is not used as in .gn the variable
+  # is not initialized yet by the time Python is required.
+  'src/third_party/cpython3/host': {
+      'packages': [
+        {
+          'package': 'infra/3pp/tools/cpython3/${{platform}}',
+          'version': Var('cpython3_version'),
+        },
+      ],
+      'condition': 'non_git_source',
       'dep_type': 'cipd',
   },
 
