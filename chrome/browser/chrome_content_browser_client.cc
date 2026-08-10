@@ -2286,9 +2286,14 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
                              ->GetSecurityPrincipal()
                              .GetDeprecatedSiteURL();
   if (site_url.SchemeIs(extensions::kExtensionScheme)) {
-    return extensions::util::IsMojoJsEnabledForExtension(
-        extensions::ExtensionId(site_url.host()),
-        render_frame_host.GetBrowserContext());
+    content::BrowserContext* browser_context =
+        render_frame_host.GetBrowserContext();
+    const extensions::Extension* extension =
+        extensions::ExtensionRegistry::Get(browser_context)
+            ->enabled_extensions()
+            .GetByID(site_url.GetHost());
+    return extensions::util::IsMojoJsEnabledForExtension(extension,
+                                                         browser_context);
   }
 #endif
   return false;

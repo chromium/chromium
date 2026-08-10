@@ -19,6 +19,11 @@ namespace extensions::crash_keys {
 //   multiple because of process collapsing).
 void SetActiveExtensions(const std::set<ExtensionId>& extensions);
 
+// Sets the list of active component extension names in this process. See
+// `SetActiveExtensions()` for the definition of "active".
+void SetActiveComponentExtensions(
+    const std::set<std::string>& component_extensions);
+
 }  // namespace extensions::crash_keys
 
 #endif  // EXTENSIONS_COMMON_CRASH_KEYS_H_

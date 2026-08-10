@@ -39,4 +39,31 @@ void SetActiveExtensions(const std::set<ExtensionId>& extensions) {
   }
 }
 
+void SetActiveComponentExtensions(
+    const std::set<std::string>& component_extensions) {
+  static crash_reporter::CrashKeyString<4> num_component_extensions(
+      "num-component-extensions");
+  num_component_extensions.Set(
+      base::NumberToString(component_extensions.size()));
+
+  using ComponentExtensionKey = crash_reporter::CrashKeyString<64>;
+  static ComponentExtensionKey component_extension_keys[] = {
+      {"component-extension-1", ComponentExtensionKey::Tag::kArray},
+      {"component-extension-2", ComponentExtensionKey::Tag::kArray},
+      {"component-extension-3", ComponentExtensionKey::Tag::kArray},
+      {"component-extension-4", ComponentExtensionKey::Tag::kArray},
+      {"component-extension-5", ComponentExtensionKey::Tag::kArray},
+  };
+
+  auto it = component_extensions.begin();
+  for (ComponentExtensionKey& crash_key : component_extension_keys) {
+    if (it == component_extensions.end()) {
+      crash_key.Clear();
+    } else {
+      crash_key.Set(*it);
+      ++it;
+    }
+  }
+}
+
 }  // namespace extensions::crash_keys

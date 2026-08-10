@@ -35,16 +35,27 @@ class ExtensionMojoBinderProvider {
   // Returns the ID of the component extension supported by this provider.
   virtual ExtensionId GetExtensionId() const = 0;
 
+  // Registers Mojo interface binders for document frames belonging to this
+  // extension.
   virtual void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,
       const Extension* extension) {}
 
+  // Registers Mojo interface binders for service workers belonging to this
+  // extension.
   virtual void PopulateServiceWorkerBinders(
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>&
           binder_map,
       content::BrowserContext* browser_context,
       const Extension* extension) {}
+
+  // Returns true if `extension` is allowed to report JS errors.
+  virtual bool IsJsErrorReportingEnabled() const;
+
+  // Returns true if `extension` should crash on JS errors in development
+  // builds.
+  virtual bool ShouldCrashOnJsErrorInDevelopmentBuild() const;
 };
 
 // A registry for extension-scoped Mojo interface binder providers. It decouples
@@ -84,6 +95,13 @@ class ExtensionMojoBinderRegistry : public KeyedService {
 
   // Returns true if `extension` is allowed to use MojoJS bindings.
   bool IsMojoJsEnabled(const Extension* extension) const;
+
+  // Returns true if `extension` is allowed to report JS errors.
+  bool IsJsErrorReportingEnabled(const Extension* extension) const;
+
+  // Returns true if `extension` should crash on JS errors in development
+  // builds.
+  bool ShouldCrashOnJsErrorInDevelopmentBuild(const Extension* extension) const;
 
   void ClearProvidersForTesting();
 

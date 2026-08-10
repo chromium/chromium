@@ -23,6 +23,10 @@ extern const char kAllowlistedExtensionID[];
 // Chromebox for Meetings hardware.
 extern const char kDisableAppContentVerification[];
 
+// Disables crashing on JavaScript errors in component extensions. Used for
+// development.
+extern const char kDisableCrashOnComponentExtensionJsError[];
+
 // Disable checking for user opt-in for extensions that want to inject script
 // into file URLs (ie, always allow it). This is used during automated testing.
 extern const char kDisableExtensionsFileAccessCheck[];

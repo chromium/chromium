@@ -19,6 +19,8 @@ class AimEligibilityExtensionBinderProvider
   ~AimEligibilityExtensionBinderProvider() override;
 
   extensions::ExtensionId GetExtensionId() const override;
+  bool IsJsErrorReportingEnabled() const override;
+  bool ShouldCrashOnJsErrorInDevelopmentBuild() const override;
   void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,

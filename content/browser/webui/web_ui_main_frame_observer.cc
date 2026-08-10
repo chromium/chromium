@@ -15,8 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/navigation_handle.h"
@@ -28,25 +26,15 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#include "components/crash/content/browser/error_reporting/error_reporting_util.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+
 namespace content {
 
 namespace {
-
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA))
-// Remove the pieces of the URL we don't want to send back with the error
-// reports. In particular, do not send query or fragments as those can have
-// privacy-sensitive information in them.
-std::string RedactURL(const GURL& url) {
-  std::string redacted_url = url.DeprecatedGetOriginAsURL().spec();
-  // Path will start with / and GetOrigin ends with /. Cut one / to avoid
-  // chrome://discards//graph.
-  if (!redacted_url.empty() && redacted_url.back() == '/') {
-    redacted_url.pop_back();
-  }
-  base::StrAppend(&redacted_url, {url.path()});
-  return redacted_url;
-}
-#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA))
 
 bool IsWebUIJavaScriptErrorReportingSupported() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
@@ -120,6 +108,8 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     return;
   }
 
+  // Ignore console messages from frames that are pending deletion to avoid
+  // reporting errors during frame teardown.
   if (source_frame->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPendingDeletion) {
     DVLOG(3) << "Message not reported, frame is being deleted";
@@ -129,7 +119,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   JavaScriptErrorReport report;
   report.message = base::UTF16ToUTF8(message);
   report.line_number = line_no;
-  report.url = RedactURL(url);
+  report.url = RedactUrlForErrorReports(url);
   report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
   if (untrusted_stack_trace) {
     report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
@@ -137,7 +127,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
 
   GURL page_url = source_frame->GetLastCommittedURL();
   if (page_url.is_valid()) {
-    report.page_url = RedactURL(page_url);
+    report.page_url = RedactUrlForErrorReports(page_url);
   }
 
   if (should_crash_on_error_) {

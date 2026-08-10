@@ -378,13 +378,23 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id) {
   return url;
 }
 
-bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
+bool IsMojoJsEnabledForExtension(const Extension* extension,
                                  content::BrowserContext* context) {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-          extension_id);
   return ExtensionMojoBinderRegistryFactory::GetForBrowserContext(context)
       ->IsMojoJsEnabled(extension);
+}
+
+bool IsJsErrorReportingEnabledForExtension(const Extension* extension,
+                                           content::BrowserContext* context) {
+  return ExtensionMojoBinderRegistryFactory::GetForBrowserContext(context)
+      ->IsJsErrorReportingEnabled(extension);
+}
+
+bool ShouldCrashOnExtensionJsErrorInDevelopmentBuild(
+    const Extension* extension,
+    content::BrowserContext* context) {
+  return ExtensionMojoBinderRegistryFactory::GetForBrowserContext(context)
+      ->ShouldCrashOnJsErrorInDevelopmentBuild(extension);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

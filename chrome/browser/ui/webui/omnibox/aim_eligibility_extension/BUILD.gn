@@ -49,6 +49,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/common:constants",
+    "//components/crash/content/browser/error_reporting",
     "//components/omnibox/browser:test_support",
     "//components/omnibox/common",
     "//content/test:browsertest_support",

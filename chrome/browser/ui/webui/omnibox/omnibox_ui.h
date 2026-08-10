@@ -34,6 +34,7 @@ class OmniboxUIConfig : public content::DefaultInternalWebUIConfig<OmniboxUI> {
 
   // content::WebUIConfig:
   bool SupportsInProcessResourceLoadingV2() const override;
+  bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const override;
 };
 
 // The UI for chrome://omnibox/

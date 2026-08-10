@@ -1560,7 +1560,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Indicates that this process wants the |untrusted_stack_trace| parameter of
   // FrameHost.DidAddMessageToConsole() to be filled in as much as possible for
   // log_level == kError messages.
-  void SetWantErrorMessageStackTrace();
+  void SetWantErrorMessageStackTrace() override;
 
   // Listens to the change events of the cookies associated with the domain of
   // the specified URL during initialization. It also contains the information

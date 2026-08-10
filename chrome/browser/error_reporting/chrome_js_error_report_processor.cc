@@ -225,6 +225,9 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     case JavaScriptErrorReport::SourceSystem::kDevToolsObserver:
       params[kSourceSystemParamName] = "devtools_observer";
       break;
+    case JavaScriptErrorReport::SourceSystem::kExtensionObserver:
+      params[kSourceSystemParamName] = "extension_observer";
+      break;
   }
   params["full_url"] = source.spec();
   params["url"] = source.GetPath();

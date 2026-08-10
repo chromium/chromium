@@ -1137,6 +1137,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // example, helper methods for MojoJs to better work with Web API objects.
   virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
 
+  // Indicates that this frame wants stack traces included in console error
+  // notifications (`untrusted_stack_trace` in `DidAddMessageToConsole`).
+  virtual void SetWantErrorMessageStackTrace() = 0;
+
   // Whether the current document is loaded inside iframe credentialless.
   // Updated on every cross-document navigation.
   virtual bool IsCredentialless() const = 0;

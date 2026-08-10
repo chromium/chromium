@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -25,6 +27,13 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/crash/content/browser/error_reporting/error_reporting_util.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -61,6 +70,85 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   ReloadIfTerminated(render_frame_host);
   ExtensionWebContentsObserver::RenderFrameCreated(render_frame_host);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeExtensionWebContentsObserver::OnDidAddMessageToConsole(
+    content::RenderFrameHost* source_frame,
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id,
+    const std::optional<std::u16string>& untrusted_stack_trace) {
+  if (log_level != blink::mojom::ConsoleMessageLevel::kError) {
+    return;
+  }
+
+  if (!source_frame) {
+    return;
+  }
+
+  // If source_id is not a valid extension script URL, fall back to the frame's
+  // committed URL so errors originating from the extension frames are captured.
+  GURL url(source_id);
+  if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme)) {
+    url = source_frame->GetLastCommittedURL();
+  }
+  if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme)) {
+    return;
+  }
+
+  // Ignore console messages from frames that are pending deletion to avoid
+  // reporting errors during frame teardown.
+  if (source_frame->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPendingDeletion) {
+    return;
+  }
+
+  const Extension* extension =
+      GetExtensionFromFrame(source_frame, /*verify_url=*/false);
+  if (!extension || !util::IsJsErrorReportingEnabledForExtension(
+                        extension, browser_context())) {
+    return;
+  }
+
+  JavaScriptErrorReport report;
+  report.message = base::UTF16ToUTF8(message);
+  report.line_number = line_no;
+  report.url = RedactUrlForErrorReports(url);
+  report.source_system =
+      JavaScriptErrorReport::SourceSystem::kExtensionObserver;
+  if (untrusted_stack_trace) {
+    report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
+  }
+
+  GURL page_url = source_frame->GetLastCommittedURL();
+  if (page_url.is_valid()) {
+    report.page_url = RedactUrlForErrorReports(page_url);
+  }
+
+  if (util::ShouldCrashOnExtensionJsErrorInDevelopmentBuild(
+          extension, browser_context())) {
+    // LOG(FATAL) will crash the browser in development builds.
+    LOG(FATAL) << "JavaScript error in component extension development build. "
+                  "To disable this crash, use --"
+               << switches::kDisableCrashOnComponentExtensionJsError << ".\n"
+               << "URL: " << report.url << "\n"
+               << "Page URL: " << report.page_url.value_or("(empty)") << "\n"
+               << "Message: " << report.message << "\n"
+               << "Stack trace: " << report.stack_trace.value_or("(empty)");
+  }
+
+  scoped_refptr<JsErrorReportProcessor> processor =
+      JsErrorReportProcessor::Get();
+  if (!processor) {
+    // This usually means we are not on an official Google build.
+    return;
+  }
+
+  processor->SendErrorReport(std::move(report), base::DoNothing(),
+                             browser_context());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromeExtensionWebContentsObserver::InitializeRenderFrame(
     content::RenderFrameHost* render_frame_host) {
@@ -131,10 +219,17 @@ void ChromeExtensionWebContentsObserver::SetUpRenderFrameHost(
   }
 
   // Allow specific allowlisted component extensions to use Mojo JS bindings.
-  if (util::IsMojoJsEnabledForExtension(
-          extension->id(), render_frame_host->GetBrowserContext())) {
+  if (util::IsMojoJsEnabledForExtension(extension, browser_context())) {
     render_frame_host->EnableMojoJsBindings(/*features=*/nullptr);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Allow specific allowlisted component extensions to report JS errors.
+  if (util::IsJsErrorReportingEnabledForExtension(extension,
+                                                  browser_context())) {
+    render_frame_host->SetWantErrorMessageStackTrace();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeExtensionWebContentsObserver);

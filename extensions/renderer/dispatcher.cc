@@ -1397,7 +1397,17 @@ void Dispatcher::UpdateActiveExtensions() {
   // In single-process mode, the browser process reports the active extensions.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kSingleProcess)) {
+    std::set<std::string> active_component_extension_names;
+    for (const ExtensionId& id : active_extensions) {
+      const Extension* extension =
+          RendererExtensionRegistry::Get()->GetByID(id);
+      if (extension &&
+          extension->location() == mojom::ManifestLocation::kComponent) {
+        active_component_extension_names.insert(extension->name());
+      }
+    }
     crash_keys::SetActiveExtensions(active_extensions);
+    crash_keys::SetActiveComponentExtensions(active_component_extension_names);
   }
 }
 

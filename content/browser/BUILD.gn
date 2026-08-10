@@ -3418,10 +3418,7 @@ source_set("browser") {
         "speech/soda_speech_recognition_engine_impl.h",
       ]
 
-      deps += [
-        "//components/crash/content/browser/error_reporting",
-        "//media/mojo/mojom:web_speech_recognition",
-      ]
+      deps += [ "//media/mojo/mojom:web_speech_recognition" ]
     }
 
     deps += [
@@ -3437,6 +3434,10 @@ source_set("browser") {
       "//media/mojo/mojom:speech_recognition",
       "//ui/base",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/content/browser/error_reporting" ]
   }
 
   # For platforms that support extension service workers.

@@ -575,6 +575,7 @@ source_set("extensions") {
     "//components/contextual_search:prefs",
     "//components/contextual_tasks/public",
     "//components/cookie_config",
+    "//components/crash/content/browser/error_reporting",
     "//components/crx_file",
     "//components/data_sharing/public",
     "//components/data_sharing/public:features",
@@ -2265,6 +2266,14 @@ source_set("unit_tests") {
       sources += [ "api/mdns/mdns_api_unittest.cc" ]
       deps += [ "//chrome/browser/extensions/api/mdns" ]
     }
+  }
+
+  if (!is_android) {
+    sources += [ "chrome_extension_web_contents_observer_unittest.cc" ]
+    deps += [
+      "//chrome/browser/ui/webui/omnibox/aim_eligibility_extension",
+      "//components/crash/content/browser/error_reporting",
+    ]
   }
 
   if (is_android) {

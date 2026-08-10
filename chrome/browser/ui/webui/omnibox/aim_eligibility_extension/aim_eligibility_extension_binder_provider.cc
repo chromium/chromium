@@ -63,6 +63,15 @@ extensions::ExtensionId AimEligibilityExtensionBinderProvider::GetExtensionId()
   return extension_misc::kAimEligibilityExtensionId;
 }
 
+bool AimEligibilityExtensionBinderProvider::IsJsErrorReportingEnabled() const {
+  return true;
+}
+
+bool AimEligibilityExtensionBinderProvider::
+    ShouldCrashOnJsErrorInDevelopmentBuild() const {
+  return true;
+}
+
 void AimEligibilityExtensionBinderProvider::PopulateFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
     content::RenderFrameHost* render_frame_host,
