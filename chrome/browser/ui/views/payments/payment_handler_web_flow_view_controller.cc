@@ -15,6 +15,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -28,6 +29,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -188,10 +190,18 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   // Make the web view show up in the task manager.
   task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
-  // Install a OneTimePermissionsTrackerHelper so that "Allow this time"
-  // permissions from nested pop-up windows persist through the lifetime of the
-  // Payment Handler window.
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+  // Install permission helpers so that permission prompts, one-time
+  // permissions, and security state checks function within the Payment
+  // Handler window.
+  //
+  // TODO(crbug.com/539998580): Restrict non-camera permission requests in
+  // Payment Handler windows via Permissions-Policy enforcement.
+  if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
+    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
+    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+  } else if (base::FeatureList::IsEnabled(
+                 features::kPaymentHandlerCameraAccess)) {
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
   }
 
@@ -337,7 +347,9 @@ void PaymentHandlerWebFlowViewController::RequestMediaAccessPermission(
   if (request.video_type !=
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
       request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE ||
-      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+      !(base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess) ||
+        base::FeatureList::IsEnabled(
+            features::kPaymentHandlerCameraAccessUx))) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
@@ -353,7 +365,9 @@ bool PaymentHandlerWebFlowViewController::CheckMediaAccessPermission(
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
-      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+      !(base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess) ||
+        base::FeatureList::IsEnabled(
+            features::kPaymentHandlerCameraAccessUx))) {
     return false;
   }
   return MediaCaptureDevicesDispatcher::GetInstance()

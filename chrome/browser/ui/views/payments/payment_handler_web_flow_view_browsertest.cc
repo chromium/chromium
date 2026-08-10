@@ -7,6 +7,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -17,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -553,10 +555,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
 }
 
 class PaymentHandlerWebFlowViewCameraTest
-    : public PaymentRequestBrowserTestBase {
+    : public PaymentRequestBrowserTestBase,
+      public testing::WithParamInterface<base::test::FeatureRef> {
  public:
   PaymentHandlerWebFlowViewCameraTest() {
-    feature_list_.InitAndEnableFeature(features::kPaymentHandlerCameraAccess);
+    feature_list_.InitAndEnableFeature(*GetParam());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -595,7 +598,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
       web_flow_controller->web_contents();
+  EXPECT_EQ(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
+                         payment_handler_contents));
   EXPECT_EQ(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
+                         payment_handler_contents));
+  EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
                          payment_handler_contents));
 
   std::string result = content::EvalJs(payment_handler_contents, R"(
@@ -607,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
   EXPECT_EQ("NotSupportedError", result);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
                        CameraAccessPreGrantedSuccess) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -642,6 +649,21 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_NE(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
                          payment_handler_contents));
 
+  // kPaymentHandlerCameraAccessUx flag also initializes
+  // ChromeSecurityStateTabHelper and PermissionRequestManager for permission
+  // prompting and indicators.
+  if (GetParam() == features::kPaymentHandlerCameraAccessUx) {
+    EXPECT_NE(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
+                           payment_handler_contents));
+    EXPECT_NE(nullptr, permissions::PermissionRequestManager::FromWebContents(
+                           payment_handler_contents));
+  } else {
+    EXPECT_EQ(nullptr, ChromeSecurityStateTabHelper::FromWebContents(
+                           payment_handler_contents));
+    EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
+                           payment_handler_contents));
+  }
+
   GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
   HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
@@ -658,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_EQ("success", result);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
+IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
@@ -700,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
   EXPECT_EQ("NotSupportedError", result);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
                        AudioAndVideoAccessDenied) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -747,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_EQ("NotSupportedError", result);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
                        CameraAccessBlocked) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -787,7 +809,14 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
       .catch(err => err.name);
   )")
                            .ExtractString();
-  EXPECT_NE("success", result);
+  EXPECT_EQ("NotAllowedError", result);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PaymentHandlerWebFlowViewCameraTest,
+    testing::Values(
+        base::test::FeatureRef(features::kPaymentHandlerCameraAccess),
+        base::test::FeatureRef(features::kPaymentHandlerCameraAccessUx)));
 
 }  // namespace payments
