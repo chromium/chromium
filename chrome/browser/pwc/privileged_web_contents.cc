@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -102,6 +103,20 @@ content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
   // Note this also matches the WebContentsDelegate default, but is stated
   // explicitly so the security property does not depend on the default.
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
+content::WebContents* PrivilegedWebContents::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  // Related-window creation is denied for privileged content
+  // (ChromeContentBrowserClient::CanCreateWindow), so a new WebContents should
+  // never be handed to this delegate. Drop it loudly if it ever is.
+  NOTREACHED();
 }
 
 }  // namespace pwc

@@ -4387,6 +4387,15 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   DCHECK(profile);
   *no_javascript_access = false;
 
+  // A privileged WebContents (see //chrome's PrivilegedWebContents) must not
+  // create related windows: the new window would share an opener relationship
+  // (and, for same-site targets, a process) with the privileged page. Deny
+  // outright, so window.open() returns null and target=_blank openers get
+  // nothing. Any legitimate off-PWC navigation is the feature's own concern.
+  if (web_contents->IsPrivileged()) {
+    return false;
+  }
+
   // This block gives the Contextual Tasks feature the opportunity to intercept
   // tab creation in the event it doesn't go directly through the feature's
   // navigation throttle. When a new tab/window is created, it is done before

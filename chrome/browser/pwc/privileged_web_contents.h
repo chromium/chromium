@@ -66,6 +66,17 @@ class PrivilegedWebContents : public content::WebContentsDelegate {
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents,
       content::PreloadingTriggerType trigger_type) override;
+  // A privileged WebContents never creates related windows
+  // (ChromeContentBrowserClient::CanCreateWindow denies them), so this must be
+  // unreachable.
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
  private:
   PrivilegedWebContents(PrivilegedComponent component,

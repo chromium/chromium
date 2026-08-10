@@ -71,10 +71,13 @@ source_set("browser_tests") {
     "//url",
   ]
 
-  # PwcNavigationThrottle and its test use desktop-only UI (Browser,
-  # InProcessBrowserTest), so the test is desktop-only.
+  # These tests use desktop-only UI (Browser, InProcessBrowserTest), so they
+  # are desktop-only.
   if (!is_android) {
-    sources += [ "pwc_navigation_throttle_browsertest.cc" ]
+    sources += [
+      "privileged_web_contents_browsertest.cc",
+      "pwc_navigation_throttle_browsertest.cc",
+    ]
     deps += [ "//chrome/browser/ui" ]
   }
 }
