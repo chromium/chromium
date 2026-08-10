@@ -227,9 +227,6 @@ using segmentation_platform::TipIdentifier;
 // The mediator used by this coordinator.
 @property(nonatomic, strong)
     ContentSuggestionsMediator* contentSuggestionsMediator;
-// Metrics recorder for the content suggestions.
-@property(nonatomic, strong)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 @property(nonatomic, strong) SetUpListMediator* setUpListMediator;
 
 @end
@@ -309,9 +306,6 @@ using segmentation_platform::TipIdentifier;
   ReadingListModel* readingListModel =
       ReadingListModelFactory::GetForProfile(profile);
 
-  self.contentSuggestionsMetricsRecorder =
-      [[ContentSuggestionsMetricsRecorder alloc] init];
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -345,8 +339,6 @@ using segmentation_platform::TipIdentifier;
               engagementTracker:engagementTracker
               layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
     _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
-    _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
     _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:self.browser
                scenario:kMenuScenarioHistogramMostVisitedEntry];
@@ -365,8 +357,6 @@ using segmentation_platform::TipIdentifier;
       featureEngagementTracker:feature_engagement::TrackerFactory::
                                    GetForProfile(profile)
                identityManager:identityManager];
-  _shortcutsMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
   _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   _shortcutsMediator.dispatcher = static_cast<
       id<SceneCommands, BrowserCoordinatorCommands, WhatsNewCommands>>(
@@ -384,8 +374,6 @@ using segmentation_platform::TipIdentifier;
                shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                    profile)];
   _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
-  _tabResumptionMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
 
   [moduleMediators addObject:_tabResumptionMediator];
   if (IsPriceTrackingPromoCardEnabled(shoppingService, self.authService,
@@ -429,8 +417,6 @@ using segmentation_platform::TipIdentifier;
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile)];
     _shopCardMediator.NTPActionsDelegate = self.NTPActionsDelegate;
-    _shopCardMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }
@@ -487,8 +473,6 @@ using segmentation_platform::TipIdentifier;
   viewController.audience = self;
   viewController.urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  viewController.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsViewController = viewController;
 
   BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
@@ -507,8 +491,6 @@ using segmentation_platform::TipIdentifier;
         isDefaultSearchEngine:isDefaultSearchEngine
          priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
     _setUpListMediator.commandHandler = self;
-    _setUpListMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
     _setUpListMediator.delegate = self.delegate;
     self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
     [moduleMediators addObject:_setUpListMediator];
@@ -531,8 +513,6 @@ using segmentation_platform::TipIdentifier;
                                       self.profile)
                    levelUpService:LevelUpServiceFactory::GetForProfile(
                                       self.profile)];
-  _magicStackRankingModel.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
       _magicStackRankingModel;
   _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
@@ -587,8 +567,6 @@ using segmentation_platform::TipIdentifier;
   _shopCardMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
-  [self.contentSuggestionsMetricsRecorder disconnect];
-  self.contentSuggestionsMetricsRecorder = nil;
   self.contentSuggestionsViewController.audience = nil;
   self.contentSuggestionsViewController = nil;
   [self clearPresentedState];
@@ -1202,7 +1180,7 @@ using segmentation_platform::TipIdentifier;
         logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
                                            type)];
   }
-  [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
+  [ContentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   [self.NTPActionsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();
   set_up_list_prefs::RecordInteraction(localState);
@@ -1406,7 +1384,7 @@ using segmentation_platform::TipIdentifier;
 
 // Display the notification settings.
 - (void)showNotificationSettings {
-  [self.contentSuggestionsMetricsRecorder
+  [ContentSuggestionsMetricsRecorder
       recordContentNotificationSnackbarEvent:ContentNotificationSnackbarEvent::
                                                  kActionButtonTapped];
   id<SettingsCommands> settingsHandler = HandlerForProtocol(

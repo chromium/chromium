@@ -262,7 +262,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 }
 
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
-  [self.contentSuggestionsMetricsRecorder
+  [ContentSuggestionsMetricsRecorder
       recordMagicStackModuleEngagementForType:type
                                       atIndex:
                                           [self indexForMagicStackModule:type]];

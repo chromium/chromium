@@ -140,7 +140,7 @@
   [self.NTPActionsDelegate shortcutTileOpened];
   [self.delegate
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts];
-  [self.contentSuggestionsMetricsRecorder
+  [ContentSuggestionsMetricsRecorder
       recordShortcutTileTapped:shortcutsItem.collectionShortcutType];
   switch (shortcutsItem.collectionShortcutType) {
     case NTPCollectionShortcutTypeBookmark:

@@ -8,8 +8,6 @@
 #import <UIKit/UIKit.h>
 
 class Browser;
-@class ContentSuggestionsMetricsRecorder;
-
 @protocol NewTabPageActionsDelegate;
 class OptimizationGuideService;
 class PrefService;
@@ -35,10 +33,6 @@ class IdentityManager;
 
 // Delegate for reporting content suggestions actions to the NTP.
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Default initializer.
 - (instancetype)

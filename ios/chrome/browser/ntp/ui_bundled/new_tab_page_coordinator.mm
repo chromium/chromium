@@ -894,8 +894,6 @@
               layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
     _mostVisitedTilesMediator.contentSuggestionsDelegate =
         self.contentSuggestionsCoordinator.delegate;
-    // TODO(crbug.com/1444140): Pass a real metrics recorder instead of nil.
-    _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder = nil;
     _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:self.browser
                scenario:kMenuScenarioHistogramMostVisitedEntry];

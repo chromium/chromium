@@ -8,6 +8,8 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container.h"
+#import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
@@ -521,6 +523,12 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
       [self embedMostVisitedView];
     }
   }
+
+  for (MostVisitedItem* item in config.mostVisitedItems) {
+    [ContentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
+                                                          atIndex:item.index];
+  }
+  [ContentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
 }
 
 #pragma mark - NewTabPageConsumer

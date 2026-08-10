@@ -476,7 +476,7 @@ GURL GetValidUrl(NSString* urlString) {
 
 // Removes the most visited `item`.
 - (void)removeMostVisited:(MostVisitedItem*)item {
-  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
+  [ContentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
   [self blockMostVisitedURL:item.URL];
   __weak MostVisitedTilesMediator* weakSelf = self;
   [self showSnackbarWithMessage:l10n_util::GetNSString(
@@ -595,7 +595,7 @@ GURL GetValidUrl(NSString* urlString) {
 - (void)logMostVisitedOpening:(MostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPActionsDelegate mostVisitedTileOpened];
-  [self.contentSuggestionsMetricsRecorder
+  [ContentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex];
 }

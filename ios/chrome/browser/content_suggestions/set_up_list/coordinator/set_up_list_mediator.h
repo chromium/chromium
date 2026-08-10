@@ -14,7 +14,6 @@ class IdentityManager;
 }  // namespace signin
 
 @protocol ContentSuggestionsDelegate;
-@class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class SceneState;
@@ -47,10 +46,6 @@ class PrefService;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Default initializer.
 - (instancetype)initWithPrefService:(PrefService*)prefService

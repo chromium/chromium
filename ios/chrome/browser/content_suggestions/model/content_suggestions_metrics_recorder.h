@@ -21,61 +21,58 @@ enum class SetUpListItemType;
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
 
-// Cleans up this class's saved properties before deallocation.
-- (void)disconnect;
-
 // Logs a metric for when the user taps on a module of `type` in the Magic
 // Stack.
-- (void)recordMagicStackModuleEngagementForType:
++ (void)recordMagicStackModuleEngagementForType:
             (ContentSuggestionsModuleType)type
                                         atIndex:(int)index;
 
 // Logs a metric for the "Return to Recent Tab" tile being shown.
-- (void)recordReturnToRecentTabTileShown;
++ (void)recordReturnToRecentTabTileShown;
 
 // Logs a metric for a shortcut tile being tapped.
-- (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType;
++ (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType;
 
 // Logs a tab resumption tab opened.
-- (void)recordTabResumptionTabOpened:(ShopCardData*)shopCardData;
++ (void)recordTabResumptionTabOpened:(ShopCardData*)shopCardData;
 
 // Logs a tab resumption impression including if the tab resumption
 // module contained a price drop, was the price tracking variant or
 // is the regular tab resumnption.
-- (void)recordTabResumptionImpressionWithCustomization:
++ (void)recordTabResumptionImpressionWithCustomization:
             (ShopCardData*)shopCardData
                                                atIndex:(int)index;
 
 // Logs the most visited tiles being shown.
-- (void)recordMostVisitedTilesShown;
++ (void)recordMostVisitedTilesShown;
 
 // Logs a single most visited tile `item` being shown at `index`.
-- (void)recordMostVisitedTileShown:(MostVisitedItem*)item
++ (void)recordMostVisitedTileShown:(MostVisitedItem*)item
                            atIndex:(NSInteger)index;
 
 // Logs a most visited tile `item` being opened at `index` in `webState`.
-- (void)recordMostVisitedTileOpened:(MostVisitedItem*)item
++ (void)recordMostVisitedTileOpened:(MostVisitedItem*)item
                             atIndex:(NSInteger)index;
 
 // Logs a most visited tile being removed.
-- (void)recordMostVisitedTileRemoved;
++ (void)recordMostVisitedTileRemoved;
 
 // Logs the Set Up List being shown.
-- (void)recordSetUpListShown;
++ (void)recordSetUpListShown;
 
 // Logs a Set Up List item being shown.
-- (void)recordSetUpListItemShown:(SetUpListItemType)type;
++ (void)recordSetUpListItemShown:(SetUpListItemType)type;
 
 // Logs a Set Up List item being selected.
-- (void)recordSetUpListItemSelected:(SetUpListItemType)type;
++ (void)recordSetUpListItemSelected:(SetUpListItemType)type;
 
 // Logs a ShopCard was rendered
-- (void)recordShopCardImpression:(ShopCardData*)shopCardData atIndex:(int)index;
++ (void)recordShopCardImpression:(ShopCardData*)shopCardData atIndex:(int)index;
 
 // Logs a ShopCard was opened
-- (void)recordShopCardOpened:(ShopCardData*)shopCardData;
++ (void)recordShopCardOpened:(ShopCardData*)shopCardData;
 
-- (void)recordContentNotificationSnackbarEvent:
++ (void)recordContentNotificationSnackbarEvent:
     (ContentNotificationSnackbarEvent)event;
 
 @end

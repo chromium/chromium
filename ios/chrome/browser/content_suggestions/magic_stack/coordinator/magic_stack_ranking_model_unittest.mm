@@ -407,11 +407,6 @@ class MagicStackRankingModelTest : public PlatformTest {
                      levelUpService:LevelUpServiceFactory::GetForProfile(
                                         GetProfile())];
 
-    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
-    _magicStackRankingModel.contentSuggestionsMetricsRecorder =
-        metrics_recorder_;
-    _setUpListMediator.contentSuggestionsMetricsRecorder = metrics_recorder_;
-
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -485,7 +480,6 @@ class MagicStackRankingModelTest : public PlatformTest {
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   MagicStackRankingModel* _magicStackRankingModel;
   id setUpListConsumer_;
-  ContentSuggestionsMetricsRecorder* metrics_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

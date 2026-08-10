@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
-@class ContentSuggestionsMetricsRecorder;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -27,10 +26,6 @@ class UrlLoadingBrowserAgent;
     audience;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 @end
 

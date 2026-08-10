@@ -58,7 +58,6 @@ class ShortcutsMediatorTest : public PlatformTest {
         featureEngagementTracker:&tracker_
                  identityManager:identity_manager];
 
-    mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.dispatcher = dispatcher_;
     mediator_.delegate = mock_delegate_;
     mediator_.NTPActionsDelegate = mock_ntp_actions_delegate_;
@@ -69,7 +68,6 @@ class ShortcutsMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   ShortcutsMediator* mediator_;
-  ContentSuggestionsMetricsRecorder* metrics_recorder_;
   feature_engagement::test::MockTracker tracker_;
   std::unique_ptr<ReadingListModel> reading_list_model_;
   id dispatcher_;

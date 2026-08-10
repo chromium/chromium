@@ -297,6 +297,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:cells",
+    "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/content_suggestions/ui",

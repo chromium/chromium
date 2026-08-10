@@ -19,7 +19,6 @@ class IdentityManager;
 
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsConsumer;
-@class ContentSuggestionsMetricsRecorder;
 @protocol NewTabPageActionsDelegate;
 class ReadingListModel;
 @protocol SceneCommands;
@@ -32,10 +31,6 @@ class ReadingListModel;
 
 // The latest config for the Shortcuts module.
 @property(nonatomic, strong, readonly) ShortcutsConfig* shortcutsConfig;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;

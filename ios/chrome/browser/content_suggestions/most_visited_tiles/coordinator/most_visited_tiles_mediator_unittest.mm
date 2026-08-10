@@ -159,9 +159,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
               engagementTracker:tracker_.get()
               layoutGuideCenter:nil];
 
-    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
     mediator_.actionFactory = mock_action_factory();
-    mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     delegate_ = OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
     mediator_.NTPActionsDelegate = delegate_;
   }
@@ -226,7 +224,6 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   MostVisitedTilesMediator* mediator_;
   id<NewTabPageActionsDelegate> delegate_;
-  ContentSuggestionsMetricsRecorder* metrics_recorder_;
   // The captured observer, ready to be used in tests
   raw_ptr<ntp_tiles::MostVisitedSites::Observer> captured_observer_;
 };

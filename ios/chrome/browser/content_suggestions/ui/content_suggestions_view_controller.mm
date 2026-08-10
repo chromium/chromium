@@ -101,12 +101,11 @@
   }
 
   for (MostVisitedItem* item in _mostVisitedTileConfig.mostVisitedItems) {
-    [self.contentSuggestionsMetricsRecorder
-        recordMostVisitedTileShown:item
-                           atIndex:item.index];
+    [ContentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
+                                                          atIndex:item.index];
   }
 
-  [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
+  [ContentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
 }
 
 #pragma mark - Private
