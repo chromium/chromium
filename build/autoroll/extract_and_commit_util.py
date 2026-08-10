@@ -19,20 +19,24 @@ _CHROMIUM_SRC_PREFIX = 'CHROMIUM_SRC'
 
 def _HasChanges(repo):
   output = subprocess.check_output(
-      ['git', '-C', repo, 'status', '--porcelain=v1'])
+    ['git', '-C', repo, 'status', '--porcelain=v1']
+  )
   return bool(output)
 
 
 def main(committed_dir_path):
   parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+  )
   parser.add_argument(
-      '--cipd-package-path', required=True, help='Path to cipd package.')
+    '--cipd-package-path', required=True, help='Path to cipd package.'
+  )
   parser.add_argument(
-      '--no-git-add',
-      action='store_false',
-      dest='git_add',
-      help='Whether to git add the extracted files.')
+    '--no-git-add',
+    action='store_false',
+    dest='git_add',
+    help='Whether to git add the extracted files.',
+  )
   options = parser.parse_args()
 
   cipd_package_path = pathlib.Path(options.cipd_package_path)
@@ -49,15 +53,16 @@ def main(committed_dir_path):
   with zipfile.ZipFile(to_commit_zip_path) as z:
     z.extractall(committed_dir_path)
   changed_file_paths: List[str] = [
-      str(committed_dir_path.relative_to(_SRC_PATH))
+    str(committed_dir_path.relative_to(_SRC_PATH))
   ]
 
   committed_chromium_src_dir = committed_dir_path / _CHROMIUM_SRC_PREFIX
   for root, _, files in os.walk(committed_chromium_src_dir):
     for file in files:
       file_path = os.path.join(root, file)
-      path_relative_to_src = os.path.relpath(file_path,
-                                             committed_chromium_src_dir)
+      path_relative_to_src = os.path.relpath(
+        file_path, committed_chromium_src_dir
+      )
       full_src_path = _SRC_PATH / path_relative_to_src
       if full_src_path.exists():
         full_src_path.unlink()
@@ -65,8 +70,9 @@ def main(committed_dir_path):
       changed_file_paths.append(path_relative_to_src)
 
   if not _HasChanges(_SRC_PATH):
-    print("No changes found after extracting zip. Did you run this script "
-          "before?")
+    print(
+      "No changes found after extracting zip. Did you run this script before?"
+    )
     return
 
   if options.git_add:

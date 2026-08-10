@@ -34,14 +34,16 @@ ANDROIDX_CIPD_PACKAGE = 'chromium/third_party/androidx'
 def _get_current_cipd_instance():
   with open(os.path.join(_SRC_PATH, 'DEPS'), 'rt') as f:
     gclient_dict = gclient_eval.Exec(f.read())
-    return gclient_eval.GetCIPD(gclient_dict, 'src/third_party/androidx/cipd',
-                                ANDROIDX_CIPD_PACKAGE)
+    return gclient_eval.GetCIPD(
+      gclient_dict, 'src/third_party/androidx/cipd', ANDROIDX_CIPD_PACKAGE
+    )
 
 
 def _query_cipd_tags(version):
   cipd_output = subprocess.check_output(
-      ['cipd', 'describe', ANDROIDX_CIPD_PACKAGE, '-version', version],
-      encoding='utf-8')
+    ['cipd', 'describe', ANDROIDX_CIPD_PACKAGE, '-version', version],
+    encoding='utf-8',
+  )
   # Output looks like:
   # Package:       chromium/third_party/androidx
   # Instance ID:   gUjEawxv5mQO8yfbuC8W-rx4V3zYE-4LTWggXpZHI4sC
@@ -71,23 +73,24 @@ def get_current_androidx_version():
   cipd_instance = _get_current_cipd_instance()
   cipd_tags = _query_cipd_tags(cipd_instance)
   version_string = cipd_tags['version']
-  version = version_string[len('cr-0'):]
+  version = version_string[len('cr-0') :]
   logging.info('Resolved current androidx version to %s', version)
   return version
 
 
 def make_androidx_maven_url(version):
-  return ('https://androidx.dev/snapshots/builds/' + version +
-          '/artifacts/repository')
+  return (
+    'https://androidx.dev/snapshots/builds/' + version + '/artifacts/repository'
+  )
 
 
 def generate_version_map_str(bom_path, with_hash=False):
   """Generate groovy code to fill the versionCache map.
 
-    Args:
-      bom_path: Path to bill_of_materials.json to parse.
-      with_hash: Whether to also return a hash of all the packages in the BoM.
-    """
+  Args:
+    bom_path: Path to bill_of_materials.json to parse.
+    with_hash: Whether to also return a hash of all the packages in the BoM.
+  """
   bom = []
   version_map_lines = []
   bom_hash = hashlib.sha256()
@@ -120,40 +123,42 @@ def hash_files(files):
 def fill_template(template_path, output_path, **kwargs):
   """Fills in a template.
 
-    Args:
-      template_path: Path to <file>.template.
-      output_path: Path to <file>.
-      **kwargs: each kwarg should be a string to replace in the template.
-    """
+  Args:
+    template_path: Path to <file>.template.
+    output_path: Path to <file>.
+    **kwargs: each kwarg should be a string to replace in the template.
+  """
   content = pathlib.Path(template_path).read_text()
   for key, value in kwargs.items():
     replace_string = '{{' + key + '}}'
     if not replace_string in content:
-      raise Exception(f'Replace text {replace_string} '
-                      f'not found in {template_path}')
+      raise Exception(
+        f'Replace text {replace_string} not found in {template_path}'
+      )
     try:
       content = content.replace(replace_string, value)
     except Exception as e:
       raise e from Exception(
-          f'Failed to replace {repr(replace_string)} with {repr(value)}')
+        f'Failed to replace {repr(replace_string)} with {repr(value)}'
+      )
 
-  content = content.replace(r'{{generated_disclaimer}}',
-                            _DEFAULT_GENERATED_DISCLAIMER)
+  content = content.replace(
+    r'{{generated_disclaimer}}', _DEFAULT_GENERATED_DISCLAIMER
+  )
 
   unreplaced_variable_re = re.compile(r'\{\{(.+)\}\}')
   if matches := unreplaced_variable_re.findall(content):
     unreplaced_variables = ', '.join(repr(match) for match in matches)
-    raise Exception('Found unreplaced variables '
-                    f'[{unreplaced_variables}] in {template_path}')
+    raise Exception(
+      f'Found unreplaced variables [{unreplaced_variables}] in {template_path}'
+    )
 
   pathlib.Path(output_path).write_text(content)
 
 
-def write_cipd_yaml(package_root,
-                    package_name,
-                    version,
-                    output_path,
-                    experimental=False):
+def write_cipd_yaml(
+  package_root, package_name, version, output_path, experimental=False
+):
   """Writes cipd.yaml file at the passed-in path."""
 
   root_libs_dir = package_root / 'libs'
@@ -162,12 +167,12 @@ def write_cipd_yaml(package_root,
     raise Exception('No generated libraries in {}'.format(root_libs_dir))
 
   data_files = [
-      'BUILD.gn',
-      'VERSION.txt',
-      'bill_of_materials.json',
-      'additional_readme_paths.json',
-      'build.gradle',
-      'to_commit.zip',
+    'BUILD.gn',
+    'VERSION.txt',
+    'bill_of_materials.json',
+    'additional_readme_paths.json',
+    'build.gradle',
+    'to_commit.zip',
   ]
   for lib_dir in lib_dirs:
     abs_lib_dir: pathlib.Path = root_libs_dir / lib_dir
@@ -180,15 +185,15 @@ def write_cipd_yaml(package_root,
       data_files.append((abs_lib_dir / lib_file).relative_to(package_root))
 
   if experimental:
-    package_name = (f'experimental/google.com/{os.getlogin()}/{package_name}')
+    package_name = f'experimental/google.com/{os.getlogin()}/{package_name}'
   contents = [
-      '# Copyright 2025 The Chromium Authors',
-      '# Use of this source code is governed by a BSD-style license that can be',
-      '# found in the LICENSE file.',
-      f'# version: {version}',
-      f'package: {package_name}',
-      f'description: CIPD package for {package_name}',
-      'data:',
+    '# Copyright 2025 The Chromium Authors',
+    '# Use of this source code is governed by a BSD-style license that can be',
+    '# found in the LICENSE file.',
+    f'# version: {version}',
+    f'package: {package_name}',
+    f'description: CIPD package for {package_name}',
+    'data:',
   ]
   contents.extend(f'- file: {str(f)}' for f in data_files)
 
@@ -196,16 +201,17 @@ def write_cipd_yaml(package_root,
     out.write('\n'.join(contents))
 
 
-def create_to_commit_zip(output_path, package_root, dirnames,
-                         absolute_file_map):
+def create_to_commit_zip(
+  output_path, package_root, dirnames, absolute_file_map
+):
   """Generates a to_commit.zip from useful text files inside |package_root|.
 
-    Args:
-      output_path: where to output the zipfile.
-      package_root: path to gradle/cipd package.
-      dirnames: list of subdirs under |package_root| to walk.
-      absolute_file_map: List of files to be stored under the absolute prefix
-        CHROMIUM_SRC/.
+  Args:
+    output_path: where to output the zipfile.
+    package_root: path to gradle/cipd package.
+    dirnames: list of subdirs under |package_root| to walk.
+    absolute_file_map: List of files to be stored under the absolute prefix
+      CHROMIUM_SRC/.
   """
   to_commit_paths = []
   for directory in dirnames:
@@ -232,10 +238,9 @@ def create_to_commit_zip(output_path, package_root, dirnames,
       zip_file.write(filename, arcname=arcname)
 
 
-def run_fetch_all(android_deps_dir,
-                  extra_args,
-                  verbose_count=0,
-                  output_subdir=None):
+def run_fetch_all(
+  android_deps_dir, extra_args, verbose_count=0, output_subdir=None
+):
   fetch_all_cmd = [_FETCH_ALL_PATH, '--android-deps-dir', android_deps_dir]
   fetch_all_cmd += ['-v'] * verbose_count
   if output_subdir:
