@@ -17,6 +17,7 @@
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
@@ -349,6 +350,37 @@ class GlicBrowserTestMixin : public T {
     return RunUntilEqual<bool>(
         [&]() { return instance_impl->IsHibernated(); }, false,
         "WaitForInstanceAwakened: instance did not wake up");
+  }
+
+  [[nodiscard]] TestResult<> WaitForInstanceActive(
+      GlicInstance* instance = nullptr) {
+    auto* instance_impl = GetInstanceImpl(instance);
+    if (!instance_impl) {
+      return base::unexpected("WaitForInstanceActive: instance is null");
+    }
+    return RunUntilEqual<bool>(
+        [&]() { return instance_impl->IsActive(); }, true,
+        "WaitForInstanceActive: instance did not become active");
+  }
+
+  [[nodiscard]] TestResult<GlicInstanceImpl*> WaitForInstanceWithConversationId(
+      tabs::TabInterface* tab,
+      const std::string& expected_conversation_id) {
+    auto result = RunUntilEqual<std::string>(
+        [&]() {
+          auto* instance = GetInstanceForTab(tab);
+          if (!instance) {
+            return std::string("no instance bound to tab");
+          }
+          return instance->conversation_id().value_or("");
+        },
+        expected_conversation_id,
+        "WaitForInstanceWithConversationId: timeout waiting for conversation "
+        "ID");
+    if (!result) {
+      return base::unexpected(result.error());
+    }
+    return GetInstanceForTab(tab);
   }
 
   void RegisterConversation(GlicInstance* instance,

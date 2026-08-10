@@ -781,26 +781,6 @@ class GlicApiTestWithDaisyChain : public GlicApiTest {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       testSwitchConversationToOldConversationNewInstance) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest();
-  histogram_tester->ExpectBucketCount(
-      "Glic.Interaction.SwitchConversationTarget",
-      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       testSwitchConversationToNewConversationNewInstance) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest();
-  histogram_tester->ExpectBucketCount(
-      "Glic.Interaction.SwitchConversationTarget",
-      GlicSwitchConversationTarget::kStartNewConversation, 1);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testSwitchConversationToLastActiveConversation) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
                            /*conversation_id=*/std::nullopt));

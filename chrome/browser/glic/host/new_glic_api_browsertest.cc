@@ -947,6 +947,82 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ExecuteJsTest({.params = base::Value("verifyNewInstance")});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSwitchConversationToOldConversationInPlace) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK(WaitForInstanceActive());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1));
+  EXPECT_EQ("A", GetOnlyGlicInstance()->conversation_id().value_or(""));
+  EXPECT_EQ("Title A", GetOnlyGlicInstance()->conversation_title());
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSwitchConversationToNewConversationInPlace) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK(WaitForInstanceActive());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kStartNewConversation, 1));
+  EXPECT_EQ("", GetOnlyGlicInstance()->conversation_id().value_or(""));
+  EXPECT_EQ("", GetOnlyGlicInstance()->conversation_title());
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSwitchConversationToOldConversationNewInstance) {
+  glic::GlicHistogramTester histogram_tester;
+  auto* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* initial_instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForInstanceActive());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1));
+  EXPECT_EQ("initial_id", initial_instance->conversation_id().value_or(""));
+  EXPECT_EQ("Initial Title", initial_instance->conversation_title());
+
+  auto initial_id = initial_instance->id();
+  ContinueJsTest(
+      {.expect_guest_frame_destroyed = true, .instance = initial_instance});
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 2));
+  ASSERT_OK_AND_ASSIGN(auto* new_instance,
+                       WaitForInstanceWithConversationId(active_tab, "A"));
+  EXPECT_NE(new_instance->id(), initial_id);
+  EXPECT_EQ("Title A", new_instance->conversation_title());
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSwitchConversationToNewConversationNewInstance) {
+  glic::GlicHistogramTester histogram_tester;
+  auto* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* initial_instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForInstanceActive());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1));
+  EXPECT_EQ("initial_id", initial_instance->conversation_id().value_or(""));
+  EXPECT_EQ("Initial Title", initial_instance->conversation_title());
+
+  auto initial_id = initial_instance->id();
+  ContinueJsTest(
+      {.expect_guest_frame_destroyed = true, .instance = initial_instance});
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kStartNewConversation, 1));
+  ASSERT_OK_AND_ASSIGN(auto* new_instance,
+                       WaitForInstanceWithConversationId(active_tab, ""));
+  EXPECT_NE(new_instance->id(), initial_id);
+  EXPECT_EQ("", new_instance->conversation_title());
+}
+
 #if defined(NOT_VETTED_ON_ANDROID)
 #define MAYBE_testTabSwitchDoesNotLogActivationMetric \
   DISABLED_testTabSwitchDoesNotLogActivationMetric

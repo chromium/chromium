@@ -9,7 +9,10 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/glic/test_support/test_result.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +69,26 @@ class GlicHistogramTester {
                                               T sample) const {
     CollectHistograms();
     return tester_.GetBucketCount(name, sample);
+  }
+
+  template <typename T>
+  [[nodiscard]] TestResult<> WaitForBucketCount(
+      std::string_view name,
+      T sample,
+      base::HistogramBase::Count32 expected_bucket_count) const {
+    base::HistogramBase::Count32 actual_bucket_count = 0;
+    bool success = base::test::RunUntil([&]() {
+      actual_bucket_count = GetBucketCount(name, sample);
+      return actual_bucket_count == expected_bucket_count;
+    });
+    if (!success) {
+      return base::unexpected(base::StringPrintf(
+          "Timeout waiting for histogram bucket count. Expected %d, got %d for "
+          "histogram %s",
+          expected_bucket_count, actual_bucket_count,
+          std::string(name).c_str()));
+    }
+    return base::ok();
   }
 
   std::vector<base::Bucket> GetAllSamples(std::string_view name) const {

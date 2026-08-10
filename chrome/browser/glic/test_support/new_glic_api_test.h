@@ -290,8 +290,14 @@ class GlicApiBrowserTestMixin : public T {
                             "embeddedTestServerUrl",
                             Base::embedded_test_server()->GetURL("/").spec()))
             .value_or("");
+    // Store `frame_id` early to avoid evaluation-order use-after-free if
+    // `EvalJs` yields and the frame is destroyed.
+    content::GlobalRenderFrameHostId frame_id = glic_guest_frame->GetGlobalId();
+    // Clear `options.instance` before `EvalJs` yields, to avoid it dangling if
+    // the instance is destroyed.
+    options.instance = nullptr;
     ProcessTestResult(
-        glic_guest_frame->GetGlobalId(), options,
+        frame_id, options,
         content::EvalJs(
             glic_guest_frame,
             base::StrCat(
@@ -310,8 +316,14 @@ class GlicApiBrowserTestMixin : public T {
     ASSERT_TRUE(next_step_required_.contains(glic_guest_frame->GetGlobalId()));
     next_step_required_.erase(glic_guest_frame->GetGlobalId());
     std::string param_json = base::WriteJson(options.params).value_or("");
+    // Store `frame_id` early to avoid evaluation-order use-after-free if
+    // `EvalJs` yields and the frame is destroyed.
+    content::GlobalRenderFrameHostId frame_id = glic_guest_frame->GetGlobalId();
+    // Clear `options.instance` before `EvalJs` yields, to avoid it dangling if
+    // the instance is destroyed.
+    options.instance = nullptr;
     ProcessTestResult(
-        glic_guest_frame->GetGlobalId(), options,
+        frame_id, options,
         content::EvalJs(glic_guest_frame,
                         base::StrCat({"continueApiTest(", param_json, ")"})));
   }

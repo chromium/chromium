@@ -1194,17 +1194,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testSwitchConversationToOldConversationNewInstance() {
-    assertDefined(this.host.switchConversation);
-    await this.host.switchConversation(
-        {conversationId: 'A', conversationTitle: 'Title A'});
-  }
-
-  async testSwitchConversationToNewConversationNewInstance() {
-    assertDefined(this.host.switchConversation);
-    await this.host.switchConversation();
-  }
-
   async testSwitchConversationToLastActiveConversation() {
     assertDefined(this.host.registerConversation);
     assertDefined(this.host.switchConversation);
