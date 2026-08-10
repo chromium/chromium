@@ -744,7 +744,18 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    public void testSetToolbarContainerTopMarginForAutoHiddenVerticalTab() {
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testSetToolbarContainerTopMarginForAutoHiddenVerticalTab_RefactorEnabled() {
+        checkSetToolbarContainerTopMarginForAutoHiddenVerticalTab();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testSetToolbarContainerTopMarginForAutoHiddenVerticalTab_RefactorDisabled() {
+        checkSetToolbarContainerTopMarginForAutoHiddenVerticalTab();
+    }
+
+    private void checkSetToolbarContainerTopMarginForAutoHiddenVerticalTab() {
         initControlContainer(R.layout.toolbar_tablet);
         View toolbarContainer = mControlContainer.findViewById(R.id.toolbar_container);
         assertNotNull(toolbarContainer);

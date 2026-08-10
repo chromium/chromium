@@ -415,12 +415,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int tabStripHeight = 0;
         if (ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()) {
             View toolbar = findViewById(R.id.toolbar);
             View hairline = findViewById(R.id.toolbar_hairline);
 
             if (toolbar != null && hairline != null) {
-                int tabStripHeight = mToolbar.getTabStripHeight();
+                tabStripHeight = mToolbar != null ? mToolbar.getTabStripHeight() : 0;
 
                 // Set the hairline's top margin to toolbar view to avoid the hairline's top
                 // margin from becoming too big (e.g. toolbar height + tab strip height).
@@ -428,16 +429,16 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 if (hairlineParams.topMargin != mToolbarLayoutHeight) {
                     hairlineParams.topMargin = mToolbarLayoutHeight;
                 }
-
-                // Set a top margin of tab strip height + narrow width top margin to the
-                // toolbar_container.
-                MarginLayoutParams containerParams =
-                        (MarginLayoutParams) mToolbarContainer.getLayoutParams();
-                int targetTopMargin = tabStripHeight + mTopMarginNarrowWidth;
-                if (containerParams.topMargin != targetTopMargin) {
-                    containerParams.topMargin = targetTopMargin;
-                }
             }
+        }
+
+        // Set a top margin of tab strip height (if snapshot refactor is enabled) + narrow width
+        // top margin to the toolbar_container.
+        MarginLayoutParams containerParams =
+                (MarginLayoutParams) mToolbarContainer.getLayoutParams();
+        int targetTopMargin = tabStripHeight + mTopMarginNarrowWidth;
+        if (containerParams.topMargin != targetTopMargin) {
+            containerParams.topMargin = targetTopMargin;
         }
 
         // Run the measure pass once with the correct params already in place.
