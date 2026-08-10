@@ -3499,6 +3499,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiUnresponsiveTest, MAYBE_testUnresponsive) {
                                      /*WebUiErrorReason.CLIENT_ERROR*/ 6, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testActuationOnWebSetting) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

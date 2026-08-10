@@ -1394,6 +1394,16 @@ class ApiTests extends ApiTestFixtureBase {
           state => state.kind === PanelStateKind.DETACHED);
     }
   }
+
+  async testActuationOnWebSetting() {
+    assertDefined(this.host.getActuationOnWebSetting);
+    assertDefined(this.host.setActuationOnWebSetting);
+    const actuationOnWebState =
+        observeSequence(this.host.getActuationOnWebSetting());
+    assertFalse(await actuationOnWebState.next());
+    await this.host.setActuationOnWebSetting(true);
+    assertTrue(await actuationOnWebState.next());
+  }
 }
 
 class FaviconTest extends ApiTests {

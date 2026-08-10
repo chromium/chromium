@@ -481,18 +481,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(expectedHotkey, hotkeyState.hotkey);
   }
 
-
-  async testActuationOnWebSetting() {
-    assertDefined(this.host.getActuationOnWebSetting);
-    assertDefined(this.host.setActuationOnWebSetting);
-    const actuationOnWebState =
-        observeSequence(this.host.getActuationOnWebSetting());
-    assertFalse(await actuationOnWebState.next());
-    await this.host.setActuationOnWebSetting(true);
-    assertTrue(await actuationOnWebState.next());
-  }
-
-
   async testGetUserProfileInfoCached() {
     assertDefined(this.host.getUserProfileInfo);
     assertDefined(this.host.getPlatform);
