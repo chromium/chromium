@@ -513,7 +513,7 @@ suite('ComposeboxMixinTest', () => {
 
     const args = await searchboxHandler.whenCalled('queryAutocomplete');
     assertDeepEquals(
-        args, [0, 'hello', false, 3, SuggestInventory.kDefault, false]);
+        args, [0, 'hello', false, 3, SuggestInventory.kDefault, false, '']);
   });
 
   test(
@@ -538,9 +538,15 @@ suite('ComposeboxMixinTest', () => {
         element.queryAutocomplete(/*clearMatches=*/ false);
 
         const args = await searchboxHandler.whenCalled('queryAutocomplete');
-        assertDeepEquals(
-            args,
-            [0, 'hello world', false, 11, SuggestInventory.kDefault, false]);
+        assertDeepEquals(args, [
+          0,
+          'hello world',
+          false,
+          11,
+          SuggestInventory.kDefault,
+          false,
+          '',
+        ]);
       });
 
   test('queries autocomplete on load by default', async () => {

@@ -316,6 +316,7 @@ enum InputMethod {
   kLensCamera = 10,
   kSmartCompose = 11,
 };
+
 // LINT.ThenChange(//third_party/omnibox_proto/chrome_searchbox_stats.proto:InputMethod)
 
 // Information about a successfully processed Drive file.
@@ -363,7 +364,8 @@ interface PageHandler {
                     bool prevent_inline_autocomplete,
                     uint32 cursor_position,
                     SuggestInventory suggest_inventory,
-                    bool is_on_focus);
+                    bool is_on_focus,
+                    string keyword);
 
   // Cancels the current autocomplete query. Clears the result set if
   // |clear_result| is true.
@@ -574,10 +576,7 @@ interface Page {
   // Updates properties of the AIM button (label text, tooltip/title, a11y
   // label, icon URL) based on the config provided by the AIM button service.
   SetAimButtonConfig(
-      string text,
-      string tooltip,
-      string a11y_label,
-      url.mojom.Url icon_url);
+      string text, string tooltip, string a11y_label, url.mojom.Url icon_url);
 
   // Called to set searchbox input.
   SetInputText(string input);
@@ -629,8 +628,7 @@ interface Page {
 
   // Notifies the size of the permission prompt and that it is
   // showing or being hidden.
-  OnPermissionPromptChanged(bool is_showing,
-                            gfx.mojom.Size prompt_size);
+  OnPermissionPromptChanged(bool is_showing, gfx.mojom.Size prompt_size);
 
   // Sets the tab IDs that should be shown as selected before tabs are selected.
   SetRestoredTabIds(array<int32> ids);

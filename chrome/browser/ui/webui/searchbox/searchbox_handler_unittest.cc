@@ -361,7 +361,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     handler_->QueryAutocomplete(
         0, u"", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-        /*is_on_focus=*/true);
+        /*is_on_focus=*/true, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -390,7 +390,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     handler_->QueryAutocomplete(
         0, u"a", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-        /*is_on_focus=*/false);
+        /*is_on_focus=*/false, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
@@ -438,7 +438,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_StartWithSuggestInventory) {
     handler_->QueryAutocomplete(
         0, u"a", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
-        /*is_on_focus=*/false);
+        /*is_on_focus=*/false, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
@@ -491,7 +491,7 @@ TEST_F(RealboxHandlerTest, SetInputMethodTest) {
     handler_->QueryAutocomplete(
         0, u"test query", /*prevent_inline_autocomplete=*/false, 10,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
-        /*is_on_focus=*/false);
+        /*is_on_focus=*/false, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"test query");
     EXPECT_EQ(input.text(), u"test query");
@@ -519,7 +519,7 @@ TEST_F(RealboxHandlerTest, SetInputMethodTest) {
     handler_->QueryAutocomplete(
         0, u"another query", /*prevent_inline_autocomplete=*/false, 13,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
-        /*is_on_focus=*/false);
+        /*is_on_focus=*/false, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"another query");
     EXPECT_EQ(input.text(), u"another query");
@@ -749,7 +749,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     handler_->QueryAutocomplete(
         0, u"", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-        /*is_on_focus=*/true);
+        /*is_on_focus=*/true, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -804,7 +804,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     handler_->QueryAutocomplete(
         0, u"a", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-        /*is_on_focus=*/false);
+        /*is_on_focus=*/false, /*keyword=*/"");
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");

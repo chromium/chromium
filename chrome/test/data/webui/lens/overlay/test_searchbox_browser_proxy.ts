@@ -146,7 +146,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   queryAutocomplete(
       queryId: number, input: String16, preventInlineAutocomplete: boolean,
       cursorPosition: number, suggestInventory: SuggestInventory,
-      isOnFocus: boolean) {
+      isOnFocus: boolean, keyword: string) {
     this.methodCalled('queryAutocomplete', {
       queryId,
       input,
@@ -154,6 +154,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       cursorPosition,
       suggestInventory,
       isOnFocus,
+      keyword,
     });
   }
 
