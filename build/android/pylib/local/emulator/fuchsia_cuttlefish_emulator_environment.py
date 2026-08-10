@@ -22,6 +22,30 @@ CUTTLEFISH_SCRIPT = os.path.join(
 )
 
 
+_CUTTLEFISH_DIR = os.path.abspath(
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.pardir,
+        os.pardir,
+        os.pardir,
+        os.pardir,
+        os.pardir,
+        'cuttlefish',
+    )
+)
+
+
+# TODO(crbug.com/517946352): Fuchsia/Starview tests should explicitly pass
+# an emulator flag instead of inferring Cuttlefish from script existence
+# and environment variables.
+def IsSupported():
+    return (
+        bool(os.environ.get('ISOLATED_OUTDIR'))
+        and os.path.exists(CUTTLEFISH_SCRIPT)
+        and os.path.exists(_CUTTLEFISH_DIR)
+    )
+
+
 class FuchsiaCuttlefishEmulatorEnvironment(
     local_device_environment.LocalDeviceEnvironment
 ):

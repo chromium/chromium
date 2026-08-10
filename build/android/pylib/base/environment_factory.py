@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-
 from pylib import constants
+
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_network_environment
 from pylib.local.emulator import fuchsia_cuttlefish_emulator_environment
@@ -32,18 +31,11 @@ def CreateEnvironment(args, output_manager, error_func):
                     args, output_manager, error_func
                 )
 
-            # TODO(crbug.com/517946352): Fuchsia/Starview tests should explicitly pass
-            # an emulator flag instead of inferring Cuttlefish from script existence
-            # and environment variables.
-            if (
-                os.environ.get('ISOLATED_OUTDIR')
-                or os.environ.get('CHROME_HEADLESS')
-            ) and os.path.exists(
-                fuchsia_cuttlefish_emulator_environment.CUTTLEFISH_SCRIPT
-            ):
+            if fuchsia_cuttlefish_emulator_environment.IsSupported():
                 return (
                     fuchsia_cuttlefish_emulator_environment.FuchsiaCuttlefishEmulatorEnvironment
                 )(args, output_manager, error_func)
+
             if args.connect_over_network:
                 return local_device_network_environment.LocalDeviceNetworkEnvironment(
                     args, output_manager, error_func
