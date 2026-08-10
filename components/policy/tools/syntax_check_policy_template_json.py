@@ -166,6 +166,13 @@ LEGACY_USER_POLICY_NAME_OFFENDERS = [
 # See crbug.com/1068257 for the details.
 OPTIONAL_PROPERTIES_POLICIES_ALLOWLIST = ['DataControlsRules', 'ProxySettings']
 
+# List of policies that have default_for_enterprise_users defined while
+# having future_on set on ChromeOS.
+FUTURE_ON_ENTERPRISE_DEFAULT_ALLOWLIST = [
+    'CastReceiverEnabled',
+    'ShowHumanPresenceSensorScreenEnabled',
+]
+
 # Each policy must have a description message shorter than 4096 characters in
 # all its translations (ADM format limitation). However, translations of the
 # description might exceed this limit, so a lower limit of is used instead.
@@ -1089,6 +1096,28 @@ class PolicyTemplateChecker(object):
             'device_policy_decoder.cc for chrome, but could '
             'also have to done in other components if they read the '
             'proto directly. Details: crbug.com/809653', policy,
+            'default_for_enterprise_users')
+
+      # Check if 'default_for_enterprise_users' is set on a policy with 'future_on' for ChromeOS.
+      # default_for_enterprise_users is only applicable on ChromeOS.
+      future_on_raw = policy.get('future_on', [])
+      future_on_has_cros = any(p.startswith('chrome_os')
+                               for p in future_on_raw)
+
+      if ('default_for_enterprise_users' in policy and future_on_has_cros
+          and policy.get('name') not in FUTURE_ON_ENTERPRISE_DEFAULT_ALLOWLIST):
+        self._PolicyError(
+            'Policy has "default_for_enterprise_users" set while being marked '
+            'as "future_on" on ChromeOS. Setting an enterprise default for a '
+            'policy set to "future_on" means the policy behavior will be '
+            'different between Dev (where future_on policies are applied) and '
+            'Beta/Stable (where future_on policies are not applied, so '
+            'enterprise defaults will NOT be applied).\n'
+            'To acknowledge you understand the limitation here, please add '
+            f'\'{policy.get("name")}\' to '
+            'FUTURE_ON_ENTERPRISE_DEFAULT_ALLOWLIST in '
+            'syntax_check_policy_template_json.py with a TODO(crbug.com/...) '
+            'to remove it when launched.', policy,
             'default_for_enterprise_users')
 
       default_policy_level = self._CheckContains(
