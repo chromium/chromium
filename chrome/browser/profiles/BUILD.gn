@@ -43,13 +43,7 @@ source_set("misc") {
   sources = [
     "bookmark_model_loaded_observer.cc",
     "bookmark_model_loaded_observer.h",
-    "chrome_incognito_mode_policy_handler.cc",
-    "chrome_incognito_mode_policy_handler.h",
     "chrome_version_service.cc",
-    "force_safe_search_policy_handler.cc",
-    "force_safe_search_policy_handler.h",
-    "force_youtube_safety_mode_policy_handler.cc",
-    "force_youtube_safety_mode_policy_handler.h",
     "incognito_helpers.cc",
     "off_the_record_profile_impl.cc",
     "off_the_record_profile_impl.h",
@@ -228,13 +222,6 @@ source_set("misc") {
     sources += [ "profile_shortcut_manager_stub.cc" ]
   }
 
-  if (is_linux || is_win || is_mac) {
-    sources += [
-      "guest_mode_policy_handler.cc",
-      "guest_mode_policy_handler.h",
-    ]
-  }
-
   if (is_linux || is_mac) {
     deps += [
       "//chrome/browser/gapis",
@@ -275,6 +262,42 @@ source_set("misc") {
 
   if (enable_bound_session_credentials) {
     deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+  }
+}
+
+source_set("policy_handlers") {
+  public = [
+    "chrome_incognito_mode_policy_handler.h",
+    "force_safe_search_policy_handler.h",
+    "force_youtube_safety_mode_policy_handler.h",
+  ]
+  sources = [
+    "chrome_incognito_mode_policy_handler.cc",
+    "force_safe_search_policy_handler.cc",
+    "force_youtube_safety_mode_policy_handler.cc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/prefs",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/safe_search_api",
+    "//components/strings:components_strings",
+  ]
+
+  if (is_win) {
+    deps += [ "//chrome/credential_provider/common:common_constants" ]
+  }
+
+  if (is_linux || is_win || is_mac) {
+    public += [ "guest_mode_policy_handler.h" ]
+    sources += [ "guest_mode_policy_handler.cc" ]
+    deps += [
+      "//chrome/browser/policy",
+      "//chrome/common:constants",
+    ]
   }
 }
 
@@ -1005,6 +1028,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":misc",
+    ":policy_handlers",
     ":profile_downloader",
     ":profile_manager",
     ":profile_util",

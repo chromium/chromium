@@ -10,7 +10,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#if BUILDFLAG(IS_WIN)
 #include "chrome/credential_provider/common/gcp_strings.h"
+#endif
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 #include "components/policy/core/common/policy_map.h"

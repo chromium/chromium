@@ -2245,6 +2245,7 @@ source_set("browser") {
     "//chrome/browser/private_verification_tokens",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:misc",
+    "//chrome/browser/profiles:policy_handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_downloader",
     "//chrome/browser/profiles:profile_io_data",
