@@ -607,10 +607,9 @@ enum class PopupMenuIPHSessionType {
   UIView* baseView = baseViewController.view;
   CGRect anchorFrame = self.layoutGuide.layoutFrame;
 
-  BubbleAlignment alignment =
-      CGRectGetMidX(anchorFrame) < CGRectGetWidth(baseView.bounds) / 2.0
-          ? BubbleAlignmentTopOrLeading
-          : BubbleAlignmentBottomOrTrailing;
+  BubbleAlignment alignment = [self isToolsMenuAtLeading]
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing;
 
   BubbleViewControllerPresenter* bubblePresenter =
       [[BubbleViewControllerPresenter alloc]
@@ -1033,12 +1032,15 @@ enum class PopupMenuIPHSessionType {
   BubbleArrowDirection arrowDirection = [self isToolsMenuAtBottom]
                                             ? BubbleArrowDirectionDown
                                             : BubbleArrowDirectionUp;
+  BubbleAlignment alignment = [self isToolsMenuAtLeading]
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing;
 
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
       [[BubbleViewControllerPresenter alloc]
           initDefaultBubbleWithText:text
                      arrowDirection:arrowDirection
-                          alignment:BubbleAlignmentBottomOrTrailing
+                          alignment:alignment
                   dismissalCallback:dismissalCallback];
 
   bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverAnnouncement;
@@ -1053,6 +1055,16 @@ enum class PopupMenuIPHSessionType {
     return IsCurrentLayoutBottomOmnibox(self.browser);
   }
   return IsSplitToolbarMode(self.baseViewController);
+}
+
+// Returns whether the tools menu button is displayed at the leading edge of the
+// screen
+- (BOOL)isToolsMenuAtLeading {
+  if (IsChromeNextIaEnabled()) {
+    return CGRectGetMidX(self.layoutGuide.layoutFrame) <
+           CGRectGetWidth(self.baseViewController.view.bounds) / 2.0;
+  }
+  return NO;
 }
 
 // Displays an IPH bubble anchored to the popup menu button (tools menu button).
