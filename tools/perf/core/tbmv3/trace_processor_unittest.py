@@ -38,9 +38,24 @@ class TraceProcessorTestCase(unittest.TestCase):
     return trace_file.name
 
   def testConvertProtoTraceToJson(self):
-    with mock.patch(RUN_METHOD):
+    with mock.patch(RUN_METHOD) as run_patch:
       trace_processor.ConvertProtoTraceToJson(self.tp_path, '/path/to/proto',
                                               '/path/to/json')
+      self.assertIn('--allow-sql-file-access', run_patch.call_args[0])
+
+  def testConvertProtoTraceToJsonFallback(self):
+    with mock.patch(RUN_METHOD) as run_patch:
+      run_patch.side_effect = [
+          RuntimeError(
+              'Running trace processor failed. Stderr: trace_processor_shell: '
+              'unrecognized option \'--allow-sql-file-access\''),
+          None,
+      ]
+      trace_processor.ConvertProtoTraceToJson(self.tp_path, '/path/to/proto',
+                                              '/path/to/json')
+      self.assertEqual(run_patch.call_count, 2)
+      self.assertNotIn('--allow-sql-file-access',
+                       run_patch.call_args_list[1][0])
 
   def testRunMetricNoRepeated(self):
     metric_output = """

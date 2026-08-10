@@ -391,11 +391,25 @@ def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):
   with tempfile_ext.NamedTemporaryFile(mode='w+') as query_file:
     query_file.write(EXPORT_JSON_QUERY_TEMPLATE % _SqlString(json_path))
     query_file.close()
-    _RunTraceProcessor(
-        trace_processor_path,
-        '-q',
-        query_file.name,
-        proto_file,
-    )
+    try:
+      _RunTraceProcessor(
+          trace_processor_path,
+          '--allow-sql-file-access',
+          '-q',
+          query_file.name,
+          proto_file,
+      )
+    except RuntimeError as e:
+      # TODO(crbug.com/544452037): Remove this fallback once the new trace
+      # processor binary rolls to all platforms.
+      if 'unrecognized option' in str(e) or 'unknown option' in str(e):
+        _RunTraceProcessor(
+            trace_processor_path,
+            '-q',
+            query_file.name,
+            proto_file,
+        )
+      else:
+        raise
 
   return json_path
