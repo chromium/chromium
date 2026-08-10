@@ -3,5 +3,5 @@ monorail: {
 }
 team_email: "security-dev@chromium.org"
 buganizer_public: {
-  component_id: 1456855
+  component_id: 2216368
 }
