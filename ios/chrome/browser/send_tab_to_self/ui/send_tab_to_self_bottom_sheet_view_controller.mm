@@ -163,15 +163,18 @@ NSString* const kSendTabToSelfModalMenuButton =
   }
 
   NSInteger index = [self selectedRow];
-  if (index >= 0 && index < static_cast<NSInteger>(_targetDeviceList.size())) {
-    const send_tab_to_self::TargetDeviceInfo& device = _targetDeviceList[index];
-
-    [_delegate
-        sendTabToTargetDeviceCacheGUID:base::SysUTF8ToNSString(
-                                           device.cache_guid)
-                      targetDeviceName:base::SysUTF8ToNSString(
-                                           device.device_name)];
+  if (index < 0 || index >= static_cast<NSInteger>(_targetDeviceList.size())) {
+    return;
   }
+
+  const send_tab_to_self::TargetDeviceInfo& device = _targetDeviceList[index];
+
+  [self showLoadingState];
+
+  [_delegate
+      sendTabToTargetDeviceCacheGUID:base::SysUTF8ToNSString(device.cache_guid)
+                    targetDeviceName:base::SysUTF8ToNSString(
+                                         device.device_name)];
 }
 
 #pragma mark - TableViewBottomSheetViewController
@@ -200,6 +203,14 @@ NSString* const kSendTabToSelfModalMenuButton =
 }
 
 #pragma mark - Private
+
+// Transitions the primary action button to a loading spinner state and
+// disables user interaction on the sheet while sending is pending.
+- (void)showLoadingState {
+  [self setLoading:YES];
+  self.modalInPresentation = YES;
+  self.view.userInteractionEnabled = NO;
+}
 
 - (void)closeButtonTapped {
   [_delegate dismissViewControllerAnimated];

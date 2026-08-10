@@ -8,16 +8,17 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/infobars/core/infobar.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/page_context.h"
-#import "base/run_loop.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -50,6 +51,8 @@
 
 using send_tab_to_self::FakeSendTabToSelfModel;
 using send_tab_to_self::SendTabToSelfEntry;
+using send_tab_to_self::SendTabToSelfResult;
+using send_tab_to_self::ShareEntryPoint;
 
 namespace {
 
@@ -728,16 +731,27 @@ TEST_F(SendTabToSelfBrowserAgentAutoOpenInTabGridTest,
 TEST_F(SendTabToSelfBrowserAgentTest,
        SendTabToTargetDevice_AddsEntryToModelWhenReady) {
   agent_->SendTabToTargetDevice(GURL("https://example.com"), "Title", "target",
-                                "My Phone",
-                                send_tab_to_self::ShareEntryPoint::kShareSheet);
+                                "My Phone", ShareEntryPoint::kShareSheet);
 
   EXPECT_EQ(1u, model_->GetAllGuids().size());
-  const send_tab_to_self::SendTabToSelfEntry* entry =
+  const SendTabToSelfEntry* entry =
       model_->GetEntryByGUID(model_->GetAllGuids()[0]);
   ASSERT_TRUE(entry);
   EXPECT_EQ(entry->GetURL(), GURL("https://example.com"));
   EXPECT_EQ(entry->GetTitle(), "Title");
   EXPECT_EQ(entry->GetTargetDeviceSyncCacheGuid(), "target");
+}
+
+// Tests that sending a tab to a specified target device invokes the provided
+// send result callback with the result.
+TEST_F(SendTabToSelfBrowserAgentTest,
+       SendTabToTargetDevice_InvokesSendResultCallback) {
+  base::test::TestFuture<SendTabToSelfResult> result_future;
+  agent_->SendTabToTargetDevice(GURL("https://example.com"), "Title", "target",
+                                "My Phone", ShareEntryPoint::kShareSheet,
+                                result_future.GetCallback());
+
+  EXPECT_EQ(SendTabToSelfResult::kSuccess, result_future.Get());
 }
 
 class SendTabToSelfBrowserAgentToastEnabledTest

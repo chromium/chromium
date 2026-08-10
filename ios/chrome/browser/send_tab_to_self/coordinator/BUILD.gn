@@ -54,6 +54,7 @@ source_set("unit_tests") {
     "//components/send_tab_to_self:test_support",
     "//components/sync:test_support",
     "//ios/chrome/browser/send_tab_to_self/model",
+    "//ios/chrome/browser/send_tab_to_self/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

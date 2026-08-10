@@ -209,6 +209,7 @@ SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {
 }
 
 void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   StopObserving();
   url_loading_observation_.Reset();
   model_observation_.Reset();
@@ -485,7 +486,8 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
     const std::string& title,
     const std::string& target_guid,
     const std::string& target_device_name,
-    send_tab_to_self::ShareEntryPoint entry_point) {
+    send_tab_to_self::ShareEntryPoint entry_point,
+    SendResultCallback send_result_callback) {
   if (!browser_) {
     return;
   }
@@ -504,7 +506,7 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
           send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
     HandleTextFragmentGenerated(url, title, target_guid, target_device_name,
                                 entry_point, std::move(page_context),
-                                std::nullopt);
+                                std::move(send_result_callback), std::nullopt);
     return;
   }
 
@@ -512,7 +514,8 @@ void SendTabToSelfBrowserAgent::SendTabToTargetDevice(
       web_state,
       base::BindOnce(&SendTabToSelfBrowserAgent::HandleTextFragmentGenerated,
                      weak_ptr_factory_.GetWeakPtr(), url, title, target_guid,
-                     target_device_name, entry_point, std::move(page_context)));
+                     target_device_name, entry_point, std::move(page_context),
+                     std::move(send_result_callback)));
 }
 
 void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
@@ -522,6 +525,7 @@ void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
     const std::string& target_device_name,
     send_tab_to_self::ShareEntryPoint entry_point,
     send_tab_to_self::PageContext page_context,
+    SendResultCallback send_result_callback,
     std::optional<SendTabToSelfTextFragment> fragment) {
   if (!browser_) {
     return;
@@ -555,15 +559,19 @@ void SendTabToSelfBrowserAgent::HandleTextFragmentGenerated(
       send_tab_to_self::NavigationHistory(),
       base::BindOnce(&SendTabToSelfBrowserAgent::HandleEntrySent,
                      weak_ptr_factory_.GetWeakPtr(), snackbar_commands,
-                     target_device_name),
+                     target_device_name, std::move(send_result_callback)),
       entry_point);
 }
 
 void SendTabToSelfBrowserAgent::HandleEntrySent(
     id<SnackbarCommands> snackbar_commands,
     const std::string& target_device_name,
+    SendResultCallback send_result_callback,
     send_tab_to_self::SendTabToSelfResult result) {
   if (!snackbar_commands) {
+    if (send_result_callback) {
+      std::move(send_result_callback).Run(result);
+    }
     return;
   }
 
@@ -574,13 +582,18 @@ void SendTabToSelfBrowserAgent::HandleEntrySent(
   NSString* email = account ? account.userEmail : nil;
 
   ShowPostSendSnackbar(snackbar_commands, target_device_name, email, result);
+
+  if (send_result_callback) {
+    std::move(send_result_callback).Run(result);
+  }
 }
 
 void SendTabToSelfBrowserAgent::HandleEntrySentForTest(
     id<SnackbarCommands> snackbar_commands,
     const std::string& target_device_name,
     send_tab_to_self::SendTabToSelfResult result) {
-  HandleEntrySent(snackbar_commands, target_device_name, result);
+  HandleEntrySent(snackbar_commands, target_device_name, base::NullCallback(),
+                  result);
 }
 
 void SendTabToSelfBrowserAgent::OpenEntryInBackgroundTab(

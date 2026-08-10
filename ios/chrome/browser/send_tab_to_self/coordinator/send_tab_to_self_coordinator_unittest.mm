@@ -19,6 +19,7 @@
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -56,6 +57,9 @@ constexpr char kTargetDeviceName[] = "My Target Device";
 class SendTabToSelfCoordinatorTest : public PlatformTest {
  protected:
   SendTabToSelfCoordinatorTest() {
+    feature_list_.InitAndEnableFeature(
+        send_tab_to_self::kSendTabToSelfPostSendToast);
+
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
@@ -152,6 +156,7 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     return coordinator_;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -169,12 +174,6 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
 // successfully sends the tab to the target device, shows a success snackbar,
 // and requests the coordinator to be stopped immediately.
 TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
-  // Enable the post-send toast feature. The direct-send flow always surfaces a
-  // success toast, whereas the picker UI only surfaces a toast in error cases.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      send_tab_to_self::kSendTabToSelfPostSendToast);
-
   CreateDirectSendCoordinator(@(kTargetDeviceGUID));
 
   ASSERT_NE(nullptr, browser_.get());
@@ -232,12 +231,6 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
 // failure snackbar and requests the coordinator to be stopped immediately.
 TEST_F(SendTabToSelfCoordinatorTest,
        SendsTabDirectToDeviceWithConnectionFailure) {
-  // Enable the post-send toast feature. The direct-send flow always surfaces a
-  // success toast, whereas the picker UI only surfaces a toast in error cases.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      send_tab_to_self::kSendTabToSelfPostSendToast);
-
   CreateDirectSendCoordinator(@(kTargetDeviceGUID));
 
   // Configure fake model with connection failure.
@@ -275,6 +268,56 @@ TEST_F(SendTabToSelfCoordinatorTest,
 
   // Trigger direct-send via start.
   [coordinator_ start];
+
+  // Wait for both the stop callback and the snackbar presentation to complete
+  // asynchronously.
+  EXPECT_TRUE(stop_future.Wait());
+  EXPECT_TRUE(snackbar_future.Wait());
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+}
+
+// Tests that calling sendTabToTargetDeviceCacheGUID:targetDeviceName: sends
+// the tab to the target device, shows the success snackbar, and requests the
+// coordinator to be stopped once the send completes.
+TEST_F(SendTabToSelfCoordinatorTest,
+       SendsTabFromModalDelegateAndStopsOnCompletion) {
+  CreateCoordinator();
+
+  // Configure fake model.
+  model_->SetSendResult(send_tab_to_self::SendTabToSelfResult::kSuccess);
+  model_->AddTargetDevice(send_tab_to_self::TargetDeviceInfo(
+      kTargetDeviceName, kTargetDeviceGUID,
+      syncer::DeviceInfo::FormFactor::kPhone, syncer::DeviceInfo::OsType::kIOS,
+      base::Time::Now()));
+
+  __block base::test::TestFuture<void> stop_future;
+  __block base::test::TestFuture<void> snackbar_future;
+
+  // Expect the delegate to be notified that the coordinator wants to be
+  // stopped once the send completes.
+  OCMExpect(
+      [mock_delegate_ sendTabToSelfCoordinatorWantsToBeStopped:coordinator_])
+      .andDo(^(NSInvocation* invocation) {
+        [coordinator_ stop];
+        stop_future.SetValue();
+      });
+
+  // Expect the success snackbar to be shown.
+  OCMExpect([mock_snackbar_handler_
+                showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                                SnackbarMessage* message) {
+                  return [message.title containsString:@(kTargetDeviceName)];
+                }]])
+      .andDo(^(NSInvocation* invocation) {
+        snackbar_future.SetValue();
+      });
+
+  id<SendTabToSelfModalDelegate> modal_delegate =
+      (id<SendTabToSelfModalDelegate>)coordinator_;
+  [modal_delegate sendTabToTargetDeviceCacheGUID:@(kTargetDeviceGUID)
+                                targetDeviceName:@(kTargetDeviceName)];
 
   // Wait for both the stop callback and the snackbar presentation to complete
   // asynchronously.

@@ -308,14 +308,18 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                       targetDeviceName:(NSString*)targetDeviceName {
   SendTabToSelfBrowserAgent* browserAgent =
       SendTabToSelfBrowserAgent::FromBrowser(self.browser);
-  if (browserAgent) {
-    browserAgent->SendTabToTargetDevice(
-        self.url, base::SysNSStringToUTF8(self.title),
-        base::SysNSStringToUTF8(cacheGUID),
-        base::SysNSStringToUTF8(targetDeviceName), _entryPoint);
+  if (!browserAgent) {
+    [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+    return;
   }
 
-  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+  browserAgent->SendTabToTargetDevice(
+      self.url, base::SysNSStringToUTF8(self.title),
+      base::SysNSStringToUTF8(cacheGUID),
+      base::SysNSStringToUTF8(targetDeviceName), _entryPoint,
+      base::BindOnce(^(send_tab_to_self::SendTabToSelfResult result) {
+        [self handleTabSentWithResult:result];
+      }));
 }
 
 - (void)openManageDevicesTab {
@@ -329,6 +333,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }
 
 #pragma mark - Private
+
+// Handles the result when a tab has finished sending to the target device.
+- (void)handleTabSentWithResult:(send_tab_to_self::SendTabToSelfResult)result {
+  if (self.stopped) {
+    return;
+  }
+  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+}
 
 // Returns YES if the coordinator is in direct-send mode, which bypasses the
 // device picker UI and sends the tab directly to a specific target device.

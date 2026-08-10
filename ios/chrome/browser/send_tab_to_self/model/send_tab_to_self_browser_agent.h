@@ -12,6 +12,8 @@
 #import <vector>
 
 #import "base/containers/span.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
@@ -43,8 +45,7 @@ class SendTabToSelfEntry;
 class SendTabToSelfModel;
 }  // namespace send_tab_to_self
 
-// Service that listens for SendTabToSelf model changes and calls UI
-// handlers to update the UI accordingly.
+// A browser agent that coordinates Send Tab To Self actions.
 class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,
@@ -54,18 +55,24 @@ class SendTabToSelfBrowserAgent
       public UrlLoadingObserver,
       public BrowserObserver {
  public:
+  using SendResultCallback =
+      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>;
+
   ~SendTabToSelfBrowserAgent() override;
 
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;
 
   // Sends the tab with `url` and `title` to the target device with
-  // `target_guid` and `target_device_name`. Dispatches appropriate snackbar commands on completion.
-  void SendTabToTargetDevice(const GURL& url,
-                             const std::string& title,
-                             const std::string& target_guid,
-                             const std::string& target_device_name,
-                             send_tab_to_self::ShareEntryPoint entry_point);
+  // `target_guid` and `target_device_name`. Dispatches appropriate snackbar
+  // commands on completion and invokes `send_result_callback` if provided.
+  void SendTabToTargetDevice(
+      const GURL& url,
+      const std::string& title,
+      const std::string& target_guid,
+      const std::string& target_device_name,
+      send_tab_to_self::ShareEntryPoint entry_point,
+      SendResultCallback send_result_callback = base::NullCallback());
 
   // Test-only wrapper for internal callback handler.
   void HandleEntrySentForTest(id<SnackbarCommands> snackbar_commands,
@@ -117,13 +124,15 @@ class SendTabToSelfBrowserAgent
       const std::string& target_device_name,
       send_tab_to_self::ShareEntryPoint entry_point,
       send_tab_to_self::PageContext page_context,
+      SendResultCallback send_result_callback,
       std::optional<SendTabToSelfTextFragment> text_fragment);
 
   // Callback invoked when an entry is sent to the target device.
-  // Dispatches post-send snackbar feedback and triggers haptic feedback on
-  // success.
+  // Dispatches post-send snackbar feedback, triggers haptic feedback on
+  // success, and runs `send_result_callback` if provided.
   void HandleEntrySent(id<SnackbarCommands> snackbar_commands,
                        const std::string& target_device_name,
+                       SendResultCallback send_result_callback,
                        send_tab_to_self::SendTabToSelfResult result);
 
   // Checks if there are any unopened entries targeted to the local device
