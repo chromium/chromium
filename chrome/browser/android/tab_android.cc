@@ -530,6 +530,7 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
   }
 }
 
+// TODO(crbug.com/542647852): Move this to its own file.
 class TabWebContentsDestroyer : public content::WebContentsDelegate,
                                 public content::WebContentsObserver {
  public:
@@ -614,9 +615,15 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (web_contents_) {
-      web_contents_->Stop();
+    if (!web_contents_) {
+      return;
     }
+    // Synchronously stopping the navigation is not safe as some other callers
+    // in the observer chain may try to access the navigation which we want to
+    // stop.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&TabWebContentsDestroyer::StopNavigation,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 
   void PrimaryMainFrameRenderProcessGone(
@@ -625,6 +632,11 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
   }
 
  private:
+  void StopNavigation() {
+    if (web_contents_) {
+      web_contents_->Stop();
+    }
+  }
   void Destroy() {
     Observe(nullptr);
     if (web_contents_) {
