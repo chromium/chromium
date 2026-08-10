@@ -95,10 +95,12 @@ void FakePasswordStoreBackend::SetAffiliatedAndGroupedRealms(
 #endif
 
 void FakePasswordStoreBackend::ReturnErrorOnRequest(
-    PasswordStoreBackendError password_store_backend_error) {
+    std::optional<PasswordStoreBackendError> password_store_backend_error) {
   password_store_backend_error_ = password_store_backend_error;
   actionable_error_ =
-      BackendErrorToActionableError(password_store_backend_error.type);
+      password_store_backend_error.has_value()
+          ? BackendErrorToActionableError(password_store_backend_error->type)
+          : ActionableError::kNoError;
 }
 
 void FakePasswordStoreBackend::SetError(ActionableError error) {

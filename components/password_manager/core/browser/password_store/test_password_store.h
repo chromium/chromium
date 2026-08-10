@@ -82,7 +82,7 @@ class TestPasswordStore : public PasswordStore {
 #endif
 
   void ReturnErrorOnRequest(
-      PasswordStoreBackendError password_store_backend_error);
+      std::optional<PasswordStoreBackendError> password_store_backend_error);
 
   void SetError(ActionableError error);
 

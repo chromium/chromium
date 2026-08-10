@@ -66,7 +66,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       const std::vector<std::string>& grouped_realms = {});
 #endif
   void ReturnErrorOnRequest(
-      PasswordStoreBackendError password_store_backend_error);
+      std::optional<PasswordStoreBackendError> password_store_backend_error);
   void SetError(ActionableError error);
   void NotifyAboutError();
   void SetAffiliatedMatchHelper(AffiliatedMatchHelper* match_helper);
