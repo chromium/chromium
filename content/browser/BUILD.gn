@@ -2401,8 +2401,6 @@ source_set("browser") {
       "memory_pressure/user_level_memory_pressure_signal_generator.h",
       "renderer_host/input/touch_selection_controller_input_observer.cc",
       "renderer_host/input/touch_selection_controller_input_observer.h",
-      "renderer_host/unbounded_surface_window_android.cc",
-      "renderer_host/unbounded_surface_window_android.h",
     ]
   }
 

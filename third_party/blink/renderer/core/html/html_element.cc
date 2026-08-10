@@ -30,8 +30,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
-#include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -1672,23 +1670,6 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     return promise;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Unbounded elements rely on
-  // AttachedSurfaceControl.buildReparentTransaction(), which requires Android U
-  // (API level 34 / Android 14) or higher. See
-  // UnboundedSurfacePopupWindow::create() in
-  // content/public/android/java/src/org/chromium/content/browser/UnboundedSurfacePopupWindow.java
-  int32_t major_version = 0, minor_version = 0, bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
-                                               &bugfix_version);
-  if (major_version < 14) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Unbounded elements are only supported on Android 14 (API level 34) or "
-        "higher."));
-    return promise;
-  }
-#endif
   SetUnboundedElementActive(true);
 
   mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;

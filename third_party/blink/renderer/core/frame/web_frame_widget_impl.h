@@ -1424,13 +1424,12 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   class UnboundedSurfaceState final
       : public GarbageCollected<UnboundedSurfaceState>,
-        public ExecutionContextLifecycleObserver,
-        public mojom::blink::UnboundedSurfaceClient {
+        public ExecutionContextLifecycleObserver {
    public:
     UnboundedSurfaceState(WebFrameWidgetImpl* widget, ExecutionContext* context)
         : ExecutionContextLifecycleObserver(context),
           widget_(widget),
-          client_receiver_(this, context),
+          client_receiver_(widget, context),
           host_(context) {}
 
     void Trace(Visitor* visitor) const override {
@@ -1444,24 +1443,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
     void ContextDestroyed() override { widget_->UnboundedContextDestroyed(); }
 
-    // mojom::blink::UnboundedSurfaceClient overrides:
-    void OnSurfaceAllocated(
-        const viz::FrameSinkId& frame_sink_id,
-        const viz::LocalSurfaceId& local_surface_id) override {
-      if (widget_ && widget_->unbounded_surface_state_.Get() == this) {
-        widget_->OnSurfaceAllocated(frame_sink_id, local_surface_id);
-      }
-    }
-
-    void OnDismissed() override {
-      if (widget_ && widget_->unbounded_surface_state_.Get() == this) {
-        widget_->OnDismissed();
-      }
-    }
-
     Member<WebFrameWidgetImpl> widget_;
     HeapMojoAssociatedReceiver<mojom::blink::UnboundedSurfaceClient,
-                               UnboundedSurfaceState>
+                               WebFrameWidgetImpl>
         client_receiver_;
     HeapMojoAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_;
 

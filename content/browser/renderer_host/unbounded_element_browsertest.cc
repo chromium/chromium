@@ -9,11 +9,9 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_gesture_target.h"
@@ -42,28 +40,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
-#endif
-
 namespace content {
-
-namespace {
-
-void SkipTestsForUnsupportedPlatforms() {
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/508672616): Not yet implemented on iOS.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_ANDROID)
-  if (base::android::android_info::sdk_int() <
-      base::android::android_info::SDK_VERSION_U) {
-    GTEST_SKIP()
-        << "Unbounded elements require Android U (API 34+ / Android 14+).";
-  }
-#endif
-}
-
-}  // namespace
 
 class UnboundedElementBrowserTestBase : public ContentBrowserTest {
  public:
@@ -160,7 +137,10 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,
   UnboundedElementBrowserTest() = default;
   ~UnboundedElementBrowserTest() override = default;
   void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/508672616): Not yet implemented on Android/iOS.
+    GTEST_SKIP();
+#else
     std::vector<base::test::FeatureRef> enabled_features = {
         blink::features::kUnboundedElement,
         blink::features::kUnboundedElementOnTheOpenWeb};
@@ -172,6 +152,7 @@ class UnboundedElementBrowserTest : public UnboundedElementBrowserTestBase,
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     UnboundedElementBrowserTestBase::SetUp();
+#endif
   }
 
  private:
@@ -322,13 +303,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, InputEventRoutingTouch) {
   EXPECT_EQ(50, EvalJs(primary_main_frame_host(), "window.__touch_y"));
 }
 
-// TODO(crbug.com/534380085): Flaky/failing on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_LightDismissEscKey DISABLED_LightDismissEscKey
-#else
-#define MAYBE_LightDismissEscKey LightDismissEscKey
-#endif
-IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, MAYBE_LightDismissEscKey) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, LightDismissEscKey) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -577,17 +552,12 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopupInputEventRouting) {
-#if BUILDFLAG(IS_ANDROID)
-  // Mouse events are not routed through UnboundedSurfaceWindow on Android, as
-  // native touch/pointer events are handled by the regular Android View
-  // hierarchy.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
 #endif
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -634,17 +604,12 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopupInputEventRouting) {
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        PopupOutsideViewportInputEventRouting) {
-#if BUILDFLAG(IS_ANDROID)
-  // Mouse events are not routed through UnboundedSurfaceWindow on Android, as
-  // native touch/pointer events are handled by the regular Android View
-  // hierarchy.
-  GTEST_SKIP();
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
 #endif
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -836,16 +801,8 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {
   }
 }
 
-// TODO(crbug.com/534380085): Flaky/failing on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NestedChildBoundsExpansionTriggersRedraw \
-  DISABLED_NestedChildBoundsExpansionTriggersRedraw
-#else
-#define MAYBE_NestedChildBoundsExpansionTriggersRedraw \
-  NestedChildBoundsExpansionTriggersRedraw
-#endif
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
-                       MAYBE_NestedChildBoundsExpansionTriggersRedraw) {
+                       NestedChildBoundsExpansionTriggersRedraw) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -888,16 +845,8 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(200, window->GetBounds().width());
 }
 
-// TODO(crbug.com/534380085): Flaky/failing on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AnimatedChildWithBoxShadowSubmitsFrame \
-  DISABLED_AnimatedChildWithBoxShadowSubmitsFrame
-#else
-#define MAYBE_AnimatedChildWithBoxShadowSubmitsFrame \
-  AnimatedChildWithBoxShadowSubmitsFrame
-#endif
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
-                       MAYBE_AnimatedChildWithBoxShadowSubmitsFrame) {
+                       AnimatedChildWithBoxShadowSubmitsFrame) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -1146,7 +1095,9 @@ class UnboundedElementPermutationBrowserTest
   ~UnboundedElementPermutationBrowserTest() override = default;
 
   void SetUp() override {
-    SkipTestsForUnsupportedPlatforms();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    GTEST_SKIP();
+#else
     const auto& params = GetParam();
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -1169,6 +1120,7 @@ class UnboundedElementPermutationBrowserTest
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     UnboundedElementBrowserTestBase::SetUp();
+#endif
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1178,8 +1130,7 @@ class UnboundedElementPermutationBrowserTest
     std::vector<std::string> enabled_blink_features;
     std::vector<std::string> disabled_blink_features;
 
-    if (params.unbounded_element_runtime_feature ||
-        params.open_web_runtime_feature) {
+    if (params.unbounded_element_runtime_feature) {
       enabled_blink_features.push_back("UnboundedElement");
     } else {
       disabled_blink_features.push_back("UnboundedElement");
@@ -1209,7 +1160,7 @@ class UnboundedElementPermutationBrowserTest
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
                        CheckPermutation) {
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   GTEST_SKIP();
 #else
   const auto& params = GetParam();
