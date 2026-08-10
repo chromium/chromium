@@ -561,7 +561,6 @@ suite('Extensions', function() {
     assertEquals('action-2', keyedStates[0]!.key);
     assertEquals('action-1', keyedStates[1]!.key);
     assertTrue(!keyedStates[1]!.dragPlaceholder);
-    assertEquals(0, (container as any).dragEnterCount_);
   });
 
   test('Extension action is draggable', () => {

@@ -584,7 +584,6 @@ suite('PinnedToolbarActions', function() {
     assertEquals('2', keyedStates[0]!.key);
     assertEquals('1', keyedStates[1]!.key);
     assertTrue(!keyedStates[1]!.dragPlaceholder);
-    assertEquals(0, (container as any).dragEnterCount_);
   });
 
   test('Cross-window drag abort clears placeholder in target window', () => {
@@ -605,15 +604,13 @@ suite('PinnedToolbarActions', function() {
     // Verify Action 1 is placeholder
     let keyedStates = container.keyedStates;
     assertTrue(!!keyedStates[0]!.dragPlaceholder);
-    assertEquals(1, (container as any).dragEnterCount_);
 
     // 2. Simulate broadcast drag-end (aborted)
     helperChannel.postMessage({type: 'drag-end'});
 
-    // Verify placeholder is cleared even though dragEnterCount_ is still 1
+    // Verify placeholder is cleared
     keyedStates = container.keyedStates;
     assertTrue(!keyedStates[0]!.dragPlaceholder);
-    assertEquals(1, (container as any).dragEnterCount_);  // still inside
   });
 
   test(

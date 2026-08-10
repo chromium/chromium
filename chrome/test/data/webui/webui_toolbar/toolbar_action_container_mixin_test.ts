@@ -374,4 +374,100 @@ suite('ToolbarActionContainerMixinTest', function() {
     // animateIn should be reset to false.
     assertFalse(element.keyedStates[1]!.animateIn === true);
   });
+
+  test('DragLeaveGuardedByRelatedTarget', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // Start drag.
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
+      detail: {itemId: 'a'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Dispatch dragenter to simulate entering the host from outside.
+    const dragEnterEvent = new DragEvent('dragenter', {
+      relatedTarget: null,
+      bubbles: true,
+      composed: true,
+    });
+    Object.defineProperty(dragEnterEvent, 'dataTransfer', {
+      value: {
+        types: ['application/x-test'],
+      },
+    });
+    element.dispatchEvent(dragEnterEvent);
+    await microtasksFinished();
+
+    // Verify element 'a' has dragPlaceholder.
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+
+    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
+    assertTrue(!!childElB);
+
+    // Simulate dragover 'b' to reorder.
+    const dragOverEvent = {
+      preventDefault: () => {},
+      dataTransfer: {
+        types: ['application/x-test'],
+        dropEffect: 'none',
+      },
+      currentTarget: childElB,
+    } as unknown as DragEvent;
+    element.onActionDragover(dragOverEvent);
+    await microtasksFinished();
+
+    // Verify reordered: 'b' then 'a'. 'a' is still placeholder.
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertEquals('a', element.keyedStates[1]!.key);
+    assertTrue(element.keyedStates[1]!.dragPlaceholder === true);
+
+    // Simulate dragleave where relatedTarget is a child.
+    const dragLeaveEvent = new DragEvent('dragleave', {
+      relatedTarget: childElB,
+      bubbles: true,
+      composed: true,
+    });
+    Object.defineProperty(dragLeaveEvent, 'dataTransfer', {
+      value: {
+        types: ['application/x-test'],
+      },
+    });
+    element.dispatchEvent(dragLeaveEvent);
+    await microtasksFinished();
+
+    // Reconcile should NOT have been called, order should still be 'b' then
+    // 'a'.
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertEquals('a', element.keyedStates[1]!.key);
+    assertTrue(element.keyedStates[1]!.dragPlaceholder === true);
+
+    // Simulate dragleave where relatedTarget is null (outside).
+    const rect = element.getBoundingClientRect();
+    const dragLeaveOutsideEvent = new DragEvent('dragleave', {
+      relatedTarget: null,
+      bubbles: true,
+      composed: true,
+      clientX: rect.left - 10,
+      clientY: rect.top - 10,
+    });
+    Object.defineProperty(dragLeaveOutsideEvent, 'dataTransfer', {
+      value: {
+        types: ['application/x-test'],
+      },
+    });
+    element.dispatchEvent(dragLeaveOutsideEvent);
+    await microtasksFinished();
+
+    // Reconcile should have been called, order reverted to 'a' then 'b'.
+    // Placeholder flag should still be present on 'a'.
+    assertEquals('a', element.keyedStates[0]!.key);
+    assertEquals('b', element.keyedStates[1]!.key);
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+  });
 });

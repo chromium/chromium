@@ -132,7 +132,8 @@ export const ToolbarActionContainerMixin =
         }
 
         private draggedItemId_: string|null = null;
-        private dragEnterCount_ = 0;
+        // True if the drag is currently over the host element.
+        private isDragOverHost_ = false;
         private didDrop_ = false;
         private itemToFocusAfterUpdate_: string|null = null;
 
@@ -566,11 +567,12 @@ export const ToolbarActionContainerMixin =
             this.externallyDraggedItemId_ = e.data.itemId;
             // Guard against race: if the drag already entered this window
             // before we received the broadcast, apply the placeholder now.
-            if (this.dragEnterCount_ > 0) {
+            if (this.isDragOverHost_) {
               this.setPlaceholder_(e.data.itemId);
             }
           } else if (e.data.type === 'drag-end') {
             this.externallyDraggedItemId_ = null;
+            this.isDragOverHost_ = false;
             if (e.data.aborted) {
               this.clearPlaceholderAndRevert_();
             } else {
@@ -735,7 +737,6 @@ export const ToolbarActionContainerMixin =
             e.preventDefault();
             e.stopPropagation();
 
-            this.dragEnterCount_ = 0;
             this.didDrop_ = true;
 
             const placeholderIdx = this.getPlaceholderIndex_();
@@ -754,13 +755,14 @@ export const ToolbarActionContainerMixin =
               !e.dataTransfer.types.includes(this.getMimeType())) {
             return;
           }
-          this.dragEnterCount_++;
-          if (this.dragEnterCount_ === 1) {
-            const draggedItemId =
-                this.draggedItemId_ ?? this.externallyDraggedItemId_;
-            if (draggedItemId !== null) {
-              this.setPlaceholder_(draggedItemId);
-            }
+          if (e.relatedTarget && this.contains(e.relatedTarget as Node)) {
+            return;
+          }
+          this.isDragOverHost_ = true;
+          const draggedItemId =
+              this.draggedItemId_ ?? this.externallyDraggedItemId_;
+          if (draggedItemId !== null) {
+            this.setPlaceholder_(draggedItemId);
           }
         }
 
@@ -769,10 +771,27 @@ export const ToolbarActionContainerMixin =
               !e.dataTransfer.types.includes(this.getMimeType())) {
             return;
           }
-          this.dragEnterCount_--;
-          if (this.dragEnterCount_ === 0) {
-            this.reconcileKeys();
+          if (e.relatedTarget && this.contains(e.relatedTarget as Node)) {
+            return;
           }
+
+          // If relatedTarget is null, the drag might have left the window or
+          // an element was removed/moved during reordering. Check coordinates
+          // as a fallback to verify if the pointer actually left the host.
+          if (!e.relatedTarget) {
+            const rect = this.getBoundingClientRect();
+            const buffer = 1;
+            const isOutside = e.clientX < rect.left - buffer ||
+                e.clientX > rect.right + buffer ||
+                e.clientY < rect.top - buffer ||
+                e.clientY > rect.bottom + buffer;
+            if (!isOutside) {
+              return;
+            }
+          }
+
+          this.isDragOverHost_ = false;
+          this.reconcileKeys();
         }
 
         private onHostDragover_(e: DragEvent) {
@@ -784,7 +803,6 @@ export const ToolbarActionContainerMixin =
         }
 
         private onHostDrop_(e: DragEvent) {
-          this.dragEnterCount_ = 0;
           if (this.didDrop_) {
             return;
           }
