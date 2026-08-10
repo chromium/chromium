@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -256,6 +257,9 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   auto web_view = std::make_unique<views::WebView>(profile_);
   web_view->SetProperty(views::kElementIdentifierKey,
                         kOmniboxEverywhereElementId);
+  // Allow the WebContents host to route unhandled accelerator keys through
+  // the Views focus/accelerator system.
+  web_view->set_allow_accelerators(true);
   web_view->SetWebContents(web_contents());
   web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   if (web_contents()) {
@@ -454,6 +458,16 @@ void OmniboxEverywhereUIManager::DraggableRegionsChanged(
   if (widget_delegate_) {
     widget_delegate_->SetDraggableRegion(draggable_region_);
   }
+}
+
+// Forwards unhandled keyboard events from the renderer process (such as
+// keyboard shortcuts) to the Views FocusManager so that accelerators and focus
+// traversal work as expected.
+bool OmniboxEverywhereUIManager::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, widget_ ? widget_->GetFocusManager() : nullptr);
 }
 
 std::unique_ptr<WebUIContentsWrapper>

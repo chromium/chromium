@@ -100,6 +100,32 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       });
 
   test(
+      'pasting files into searchbox opens composebox with pasted files', () => {
+        let openComposeboxCalled = false;
+        const detailHolder: {state?: ComposeboxState} = {};
+        omnibox.addEventListener('open-composebox', (e: Event) => {
+          openComposeboxCalled = true;
+          detailHolder.state = (e as CustomEvent).detail as ComposeboxState;
+        });
+
+        const file = new File(['foo'], 'foo.png', {type: 'image/png'});
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        const input = omnibox.shadowRoot.querySelector('#input')!;
+        input.dispatchEvent(new CustomEvent('searchbox-input-files-pasted', {
+          detail: {files: dataTransfer.files},
+          bubbles: true,
+          composed: true,
+        }));
+
+        assertTrue(openComposeboxCalled);
+        const files = detailHolder.state!.files;
+        assertEquals(1, files.length);
+        assertEquals(file, (files[0] as {file: File}).file);
+      });
+
+  test(
       'clicking voice search button dispatches open-voice-search event',
       async () => {
         let eventFired = false;
@@ -289,6 +315,32 @@ suite('OmniboxEverywhereComposeboxTest', () => {
 
         assertFalse(composebox.hasAttribute('is-dragging-file'));
       });
+
+  test('pasting files into composebox processes files', async () => {
+    const mockToken = {high: 4567n, low: 8910n};
+    testProxy.handler.setPromiseResolveFor('addFileContext', mockToken);
+
+    const file = new File(['test content'], 'test.png', {type: 'image/png'});
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+
+    const pasteEvent = new CustomEvent('paste', {
+                         bubbles: true,
+                         composed: true,
+                       }) as unknown as ClipboardEvent;
+    Object.defineProperty(pasteEvent, 'clipboardData', {
+      value: dataTransfer,
+    });
+
+    const dropZone = composebox.shadowRoot.querySelector('#composebox')!;
+    assertTrue(!!dropZone);
+    dropZone.dispatchEvent(pasteEvent);
+
+    await testProxy.handler.whenCalled('addFileContext');
+    assertEquals(1, testProxy.handler.getCallCount('addFileContext'));
+    await microtasksFinished();
+    assertEquals(1, composebox.files.size);
+  });
 });
 
 declare global {

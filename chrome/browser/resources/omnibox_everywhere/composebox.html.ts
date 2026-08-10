@@ -31,7 +31,8 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
       @dragenter="${this.dragAndDropHandler.handleDragEnter}"
       @dragover="${this.dragAndDropHandler.handleDragOver}"
       @dragleave="${this.dragAndDropHandler.handleDragLeave}"
-      @drop="${this.dragAndDropHandler.handleDrop}">
+      @drop="${this.dragAndDropHandler.handleDrop}"
+      @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <!-- Note: Copied from omnibox_composebox.html.ts. Cancel button title
              and cancel click handler may be needed if added to mixin in the

@@ -44,6 +44,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/ui/webui/omnibox_popup",
     "//components/omnibox/common:features",
     "//components/prefs",
+    "//ui/base",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
     "//ui/views",
