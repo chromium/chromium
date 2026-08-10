@@ -98,7 +98,7 @@ suite('Extensions', function() {
         icon: {handleId: 3n},
       },
     ];
-    await microtasksFinished();
+    await container.updateComplete;
   });
 
   test('Keyboard reorder retains focus', async () => {

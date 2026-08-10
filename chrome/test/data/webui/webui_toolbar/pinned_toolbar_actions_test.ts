@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {PinnedToolbarActionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -108,6 +108,52 @@ suite('PinnedToolbarActions', function() {
       },
     ];
     await microtasksFinished();
+  });
+
+  test('Sets poppedOut property on elements after divider', async () => {
+    container.states = [
+      {
+        action: 1,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 1',
+        accessibilityText: '',
+        elementId: 'action-1',
+        icon: {handleId: 1n},
+      },
+      {
+        action: PinnedToolbarAction.kDivider,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: '',
+        accessibilityText: '',
+        elementId: '',
+        icon: {handleId: 0n},
+      },
+      {
+        action: 3,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 3',
+        accessibilityText: '',
+        elementId: 'action-3',
+        icon: {handleId: 3n},
+      },
+    ];
+    await microtasksFinished();
+
+    const actionElements =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action');
+    assertEquals(2, actionElements.length);
+
+    const action1 = actionElements[0]!;
+    const action3 = actionElements[1]!;
+
+    assertFalse(action1.poppedOut);
+    assertTrue(action3.poppedOut);
   });
 
   test('Keyboard reorder retains focus', async () => {

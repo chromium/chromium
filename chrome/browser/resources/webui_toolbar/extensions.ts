@@ -13,8 +13,6 @@ import {getHtml} from './extensions.html.js';
 import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 
-export type {KeyedActionState as KeyedExtensionState} from './toolbar_action_container_mixin.js';
-
 const initialState: ExtensionActionInfo[] = [];
 
 const ExtensionsElementBase =
@@ -60,8 +58,8 @@ export class ExtensionsElement extends ExtensionsElementBase {
     return 'webui-toolbar-extension';
   }
 
-  override isDivider(_key: string): boolean {
-    return false;
+  override isDraggable(state: ExtensionActionInfo, _index: number): boolean {
+    return state.id !== '';
   }
 }
 

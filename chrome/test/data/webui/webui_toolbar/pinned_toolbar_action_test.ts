@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 
@@ -117,6 +117,24 @@ suite('PinnedToolbarAction', function() {
     };
     await microtasksFinished();
     assertEquals('false', button.getAttribute('draggable'));
+  });
+
+  test('Sets draggable attribute based on poppedOut state', async () => {
+    const button = action.shadowRoot!.querySelector('cr-icon-button')!;
+    assertEquals('true', button.getAttribute('draggable'));
+
+    action.poppedOut = true;
+    await microtasksFinished();
+    assertEquals('false', button.getAttribute('draggable'));
+
+    // Verify dragstart is prevented when poppedOut is true.
+    const dragStartEvent = new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    button.dispatchEvent(dragStartEvent);
+    assertTrue(dragStartEvent.defaultPrevented);
   });
 
   test('Keyboard left/right arrows move pinned action', () => {

@@ -56,6 +56,14 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      poppedOut: {type: Boolean},
+    };
+  }
+
+  accessor poppedOut: boolean = false;
+
   private iconTable_: IconTable = IconTable.getInstance();
 
   private get browserProxy_(): BrowserProxy {
@@ -170,9 +178,8 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   }
 
   override isDraggable() {
-    return this.state.enabled &&
-        this.state.action !== PinnedToolbarAction.kDivider &&
-        this.state.action !== PinnedToolbarAction.kUnspecified;
+    return this.state.enabled && !this.poppedOut &&
+        this.state.action !== PinnedToolbarAction.kDivider;
   }
 
   override moveItemBy(delta: number) {

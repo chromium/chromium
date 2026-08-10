@@ -102,8 +102,15 @@ class TestContainerElement extends TestContainerBase {
   override get childTagName(): string {
     return 'div';
   }
-  override isDivider(_key: string): boolean {
-    return false;
+  override isDraggable(state: TestState, index: number): boolean {
+    if (state.id === 'divider') {
+      return false;
+    }
+    const dividerIdx = this.keyedStates.findIndex(s => s.key === 'divider');
+    if (dividerIdx !== -1 && index > dividerIdx) {
+      return false;
+    }
+    return true;
   }
 }
 
@@ -469,5 +476,52 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertEquals('a', element.keyedStates[0]!.key);
     assertEquals('b', element.keyedStates[1]!.key);
     assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+  });
+
+  test('DragCannotCrossDivider', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+      {id: 'divider', name: 'Divider'},
+      {id: 'c', name: 'Item C'},
+      {id: 'd', name: 'Item D'},
+    ];
+    await microtasksFinished();
+
+    // Start drag on 'a'.
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
+      detail: {itemId: 'a'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify 'a' has placeholder.
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+
+    const childElC = element.shadowRoot.querySelector('[data-key="c"]');
+    assertTrue(!!childElC);
+
+    // Try to drag 'a' over 'c' (past divider).
+    const dragOverCEvent = {
+      preventDefault: () => {},
+      dataTransfer: {
+        types: ['application/x-test'],
+        dropEffect: 'none',
+      },
+      currentTarget: childElC,
+    } as unknown as DragEvent;
+    element.onActionDragover(dragOverCEvent);
+    await microtasksFinished();
+
+    // 'a' should NOT have moved past divider. It should be at index 1 (just
+    // before divider). Order should be 'b', 'a' (placeholder), 'divider', 'c',
+    // 'd'.
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertEquals('a', element.keyedStates[1]!.key);
+    assertEquals('divider', element.keyedStates[2]!.key);
+    assertEquals('c', element.keyedStates[3]!.key);
+    assertEquals('d', element.keyedStates[4]!.key);
+    assertTrue(element.keyedStates[1]!.dragPlaceholder === true);
   });
 });

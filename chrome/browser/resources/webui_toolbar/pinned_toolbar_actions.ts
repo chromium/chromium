@@ -6,6 +6,7 @@ import './pinned_toolbar_action.js';
 import './toolbar_divider.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -13,8 +14,6 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getHtml} from './pinned_toolbar_actions.html.js';
 import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
-
-export type {KeyedActionState} from './toolbar_action_container_mixin.js';
 
 const initialState: PinnedToolbarActionState[] = [];
 
@@ -33,6 +32,22 @@ export class PinnedToolbarActionsElement extends
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      dividerIndex: {type: Number},
+    };
+  }
+
+  accessor dividerIndex: number = -1;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('keyedStates')) {
+      this.dividerIndex = this.keyedStates.findIndex(
+          s => s.key === PinnedToolbarAction.kDivider.toString());
+    }
   }
 
   // ToolbarActionContainerMixin override
@@ -71,8 +86,12 @@ export class PinnedToolbarActionsElement extends
     return 'pinned-toolbar-action';
   }
 
-  override isDivider(key: string): boolean {
-    return key === PinnedToolbarAction.kDivider.toString();
+  override isDraggable(state: PinnedToolbarActionState, index: number):
+      boolean {
+    if (this.dividerIndex !== -1 && index >= this.dividerIndex) {
+      return false;
+    }
+    return state.enabled;
   }
 }
 

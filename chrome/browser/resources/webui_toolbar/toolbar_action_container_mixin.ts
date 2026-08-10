@@ -56,7 +56,7 @@ export interface ToolbarActionContainerMixinInterface<T> {
   allExiting(): boolean;
   animateInDivider(): boolean;
   reconcileKeys(): void;
-  isDivider(key: string): boolean;
+  isDraggable(state: T, index: number): boolean;
   onActionDragover(e: DragEvent): void;
   onActionDrop(e: DragEvent): void;
   moveItem(id: string, index: number): void;
@@ -71,7 +71,7 @@ export interface ToolbarActionContainerMixinInterface<T> {
  * actions and extensions) that manage a list of dynamic items with slide-in
  * and slide-out animations.
  *
- * It reconciles new state arrays (`state`) against internal keyed items
+ * It reconciles new state arrays (`states`) against internal keyed items
  * (`keyedStates`), automatically setting animation flags (`animateIn` for
  * newly added items, and `exiting` for removed items) while keeping exiting
  * items in the DOM until their CSS transitions complete.
@@ -79,9 +79,13 @@ export interface ToolbarActionContainerMixinInterface<T> {
  * Usage:
  * 1. Mix in `ToolbarActionContainerMixin<T>` where `T` is your item state type.
  * 2. Implement `getKey(state: T): string` to return a unique key for each item.
- * 3. Optionally override `isInitialUpdate(newStates: T[]): boolean` to suppress
+ * 3. Implement `isDraggable(state: T, index: number): boolean` to specify
+ *    which items are draggable. Non-draggable items must be positioned
+ *    consecutively at the very end of the list, forming a fixed undraggable
+ *    suffix that drag-and-drop operations cannot reorder or enter.
+ * 4. Optionally override `isInitialUpdate(newStates: T[]): boolean` to suppress
  *    slide-in animations on initial load.
- * 4. In your Lit template (`.html.ts`), iterate over `this.keyedStates` using
+ * 5. In your Lit template (`.html.ts`), iterate over `this.keyedStates` using
  *    the Lit `repeat()` directive, applying `animate-in` and `exiting` CSS
  *    classes based on `keyedState.animateIn` and `keyedState.exiting`.
  */
@@ -127,15 +131,35 @@ export const ToolbarActionContainerMixin =
           return assertNotReached();
         }
 
-        isDivider(_key: string): boolean {
+        isDraggable(_state: T, _index: number): boolean {
           return assertNotReached();
         }
 
+        /**
+         * The ID of the item currently being dragged locally. Null if no local
+         * drag is active.
+         */
         private draggedItemId_: string|null = null;
-        // True if the drag is currently over the host element.
+
+        /**
+         * True if the drag is currently over the host element.
+         */
         private isDragOverHost_ = false;
+
+        /**
+         * True if a drop event occurred in this container, preventing revert
+         * on dragend.
+         */
         private didDrop_ = false;
+
+        /** The ID of the item to focus after the next render update. */
         private itemToFocusAfterUpdate_: string|null = null;
+
+        /**
+         * The number of draggable items in the container. Draggable items are
+         * always positioned consecutively at the beginning of the list.
+         */
+        draggableItemsCount: number = 0;
 
         // Channel to coordinate drag-and-drop state across different browser
         // windows.
@@ -221,6 +245,17 @@ export const ToolbarActionContainerMixin =
               this.reconcileKeys();
               this.deferredUpdate_ = false;
             }
+          }
+
+          if (changedProperties.has('keyedStates')) {
+            let draggableCount = 0;
+            for (let i = this.keyedStates.length - 1; i >= 0; i--) {
+              if (this.isDraggable(this.keyedStates[i]!.state, i)) {
+                draggableCount = i + 1;
+                break;
+              }
+            }
+            this.draggableItemsCount = draggableCount;
           }
         }
 
@@ -334,26 +369,16 @@ export const ToolbarActionContainerMixin =
               this.externallyDraggedItemId_ !== null;
         }
 
-        private getActiveAndSuffixStates_() {
-          const suffixLength = this.getFixedSuffixLength_();
-          const activeLength = this.keyedStates.length - suffixLength;
-          return {
-            active: this.keyedStates.slice(0, activeLength),
-            suffix: this.keyedStates.slice(activeLength),
-          };
+        private getSuffixStates_(): Array<KeyedActionState<T>> {
+          return this.keyedStates.slice(this.draggableItemsCount);
         }
 
         private getActiveStates_(): Array<KeyedActionState<T>> {
-          return this.getActiveAndSuffixStates_().active;
-        }
-
-        private getNonDividerActiveStates_(): Array<KeyedActionState<T>> {
-          return this.getActiveStates_().filter(s => !this.isDivider(s.key));
+          return this.keyedStates.slice(0, this.draggableItemsCount);
         }
 
         private getPlaceholderIndex_(): number {
-          return this.getNonDividerActiveStates_().findIndex(
-              s => s.dragPlaceholder);
+          return this.getActiveStates_().findIndex(s => s.dragPlaceholder);
         }
 
         reconcileKeys() {
@@ -640,23 +665,6 @@ export const ToolbarActionContainerMixin =
           }
         }
 
-        // Gets the length of non-draggable extensions.
-        private getFixedSuffixLength_(): number {
-          let suffixLength = 0;
-          for (let i = this.keyedStates.length - 1; i >= 0; i--) {
-            const state = this.keyedStates[i]!;
-            const el = this.shadowRoot.querySelector<HTMLElement&{
-              isDraggable?: () => boolean,
-            }>(`${this.childTagName}[data-key="${state.key}"]`);
-            if (el && el.isDraggable && !el.isDraggable()) {
-              suffixLength++;
-            } else {
-              break;
-            }
-          }
-          return suffixLength;
-        }
-
         onActionDragover(e: DragEvent) {
           if (!e.dataTransfer) {
             return;
@@ -672,13 +680,14 @@ export const ToolbarActionContainerMixin =
           if (draggedItemId === null) {
             return;
           }
+
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
           const target = e.currentTarget as HTMLElement;
 
           const key = target?.dataset['key'];
           const overState = this.keyedStates.find(s => s.key === key);
-          if (!overState || this.isDivider(overState.key)) {
+          if (!overState) {
             return;
           }
           // If the user hovers over the dragged action itself, do nothing. It
@@ -689,8 +698,8 @@ export const ToolbarActionContainerMixin =
 
           // Re-order the actions to show what would happen on drop.
 
-          const {active: activeStates, suffix: suffixStates} =
-              this.getActiveAndSuffixStates_();
+          const activeStates = this.getActiveStates_();
+          const suffixStates = this.getSuffixStates_();
 
           const fromIndex =
               activeStates.findIndex(s => s.key === draggedItemId);
@@ -709,8 +718,10 @@ export const ToolbarActionContainerMixin =
             if (moved) {
               const insertIndex = Math.min(toIndex, newActive.length);
               newActive.splice(insertIndex, 0, moved);
+              if (fromIndex !== insertIndex) {
+                this.keyedStates = [...newActive, ...suffixStates];
+              }
             }
-            this.keyedStates = [...newActive, ...suffixStates];
           }
         }
 
@@ -742,7 +753,7 @@ export const ToolbarActionContainerMixin =
             const placeholderIdx = this.getPlaceholderIndex_();
             const targetIndex = placeholderIdx !== -1 ?
                 placeholderIdx :
-                this.getNonDividerActiveStates_().length;
+                this.draggableItemsCount;
 
             this.moveItem(itemId, targetIndex);
           } catch (_err) {
