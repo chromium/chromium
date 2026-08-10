@@ -1290,50 +1290,27 @@ void Tab::UpdateIconVisibility() {
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);
 
+  const bool declutter_eligible =
+      features::IsTabStripDeclutterEnabled() &&
+      !(mouse_hovered_ || HasFocus() ||
+        (close_button_ && close_button_->HasFocus()));
+
 #if BUILDFLAG(IS_CHROMEOS)
+  // Hide tab close button for OnTask if locked. Only applicable for non-web
+  // browser scenarios.
   const bool should_show_close_button =
       !IsLockedForOnTask(controller_->GetBrowserWindowInterface());
+#else
+  const bool should_show_close_button = true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (IsActive()) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Hide tab close button for OnTask if locked. Only applicable for non-web
-    // browser scenarios.
-    showing_close_button_ = should_show_close_button;
-#else
-    // Close button is shown on active tabs regardless of the size.
-    showing_close_button_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-    if (features::IsTabStripDeclutterEnabled() && showing_close_button_) {
-      const bool alert_fits_without_close =
-          has_alert_icon && alert_icon_width <= available_width;
-      const bool favicon_fits_without_close =
-          has_favicon &&
-          favicon_width <= (available_width -
-                            (alert_fits_without_close ? alert_icon_width : 0));
-
-      const int width_with_close = available_width - close_button_width;
-      const bool alert_fits_with_close =
-          has_alert_icon && alert_icon_width <= width_with_close;
-      const bool favicon_fits_with_close =
-          has_favicon &&
-          favicon_width <= (width_with_close -
-                            (alert_fits_with_close ? alert_icon_width : 0));
-
-      const bool alert_hidden_by_close =
-          alert_fits_without_close && !alert_fits_with_close;
-      const bool favicon_hidden_by_close =
-          favicon_fits_without_close && !favicon_fits_with_close;
-
-      if (alert_hidden_by_close || favicon_hidden_by_close) {
-        showing_close_button_ = mouse_hovered_ || HasFocus() ||
-                                (close_button_ && close_button_->HasFocus());
+    if (!declutter_eligible) {
+      // Close button is shown on active tabs regardless of the size.
+      showing_close_button_ = should_show_close_button;
+      if (showing_close_button_) {
+        available_width -= close_button_width;
       }
-    }
-
-    if (showing_close_button_) {
-      available_width -= close_button_width;
     }
 
     showing_alert_indicator_ =
@@ -1345,6 +1322,15 @@ void Tab::UpdateIconVisibility() {
     showing_icon_ = has_favicon && favicon_width <= available_width;
     if (showing_icon_) {
       available_width -= favicon_width;
+    }
+
+    if (declutter_eligible) {
+      showing_close_button_ =
+          should_show_close_button && ((!has_alert_icon && !has_favicon) ||
+                                       close_button_width <= available_width);
+      if (showing_close_button_) {
+        available_width -= close_button_width;
+      }
     }
   } else {
     showing_alert_indicator_ =
@@ -1358,16 +1344,11 @@ void Tab::UpdateIconVisibility() {
       available_width -= favicon_width;
     }
 
-    const bool is_decluttered =
-        features::IsTabStripDeclutterEnabled() &&
-        available_width <= TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide;
     showing_close_button_ =
-#if BUILDFLAG(IS_CHROMEOS)
-        should_show_close_button &&
-#endif
-        large_enough_for_close_button &&
-        (!is_decluttered || mouse_hovered_ || HasFocus() ||
-         (close_button_ && close_button_->HasFocus()));
+        should_show_close_button && large_enough_for_close_button &&
+        !(declutter_eligible &&
+          available_width <=
+              TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide);
     if (showing_close_button_) {
       available_width -= close_button_width;
     }
