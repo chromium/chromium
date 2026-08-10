@@ -108,6 +108,29 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogBrowserTest,
+                       DefaultButtonAndInputProtection) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "ProtocolHandlerLaunchDialogView");
+  GURL protocol_url("web+test://test");
+  webapps::AppId test_app_id = InstallTestWebApp(browser()->GetProfile());
+
+  ShowWebAppProtocolLaunchDialog(protocol_url, browser()->GetProfile(),
+                                 test_app_id, base::DoNothing());
+
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::DialogDelegate* dialog_delegate =
+      widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_NE(dialog_delegate, nullptr);
+
+  EXPECT_EQ(dialog_delegate->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kCancel));
+  EXPECT_FALSE(dialog_delegate->ShouldAllowKeyEventsDuringInputProtection());
+
+  views::test::CancelDialog(widget);
+}
+
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogBrowserTest,
                        ProtocolHandlerIntentPickerDialog_DisallowAndRemember) {
   ProtocolHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(true);
   ShowDialogAndCloseWithReason(

@@ -83,6 +83,8 @@ void LaunchAppUserChoiceDialogView::Init() {
   SetCanResize(false);
   set_draggable(true);
 
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
+
   SetAcceptCallback(base::BindOnce(&LaunchAppUserChoiceDialogView::OnAccepted,
                                    base::Unretained(this)));
 
@@ -231,6 +233,11 @@ void LaunchAppUserChoiceDialogView::OnIconMaskedUpdateDialog(
   CHECK(!masked_bitmap.drawsNothing());
   icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(
       gfx::ImageSkia::CreateFrom1xBitmap(std::move(masked_bitmap))));
+}
+
+bool LaunchAppUserChoiceDialogView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
 }
 
 BEGIN_METADATA(LaunchAppUserChoiceDialogView)

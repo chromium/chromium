@@ -46,6 +46,9 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
 
   void Init();
 
+  // views::DialogDelegate:
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
+
   static void SetDefaultRememberSelectionForTesting(bool remember_selection);
 
  protected:

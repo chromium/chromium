@@ -226,6 +226,24 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 
+IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,
+                       DefaultButtonAndInputProtection) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "FileHandlerLaunchDialogView");
+  LaunchAppWithFiles({{base::FilePath::FromASCII("foo.txt")}});
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::DialogDelegate* dialog_delegate =
+      widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_NE(dialog_delegate, nullptr);
+
+  EXPECT_EQ(dialog_delegate->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kCancel));
+  EXPECT_FALSE(dialog_delegate->ShouldAllowKeyEventsDuringInputProtection());
+
+  views::test::CancelDialog(widget);
+}
+
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, DisallowAndRemember) {
   // One normal browser window exists.
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
