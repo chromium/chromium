@@ -7477,6 +7477,15 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
   BoolAttributeToUIAAriaProperty(properties, ax::mojom::BoolAttribute::kBusy,
                                  "busy");
 
+  if (IsCellOrTableHeader(GetRole())) {
+    StringAttributeToUIAAriaProperty(
+        properties, ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+        "colindextext");
+    StringAttributeToUIAAriaProperty(
+        properties, ax::mojom::StringAttribute::kAriaCellRowIndexText,
+        "rowindextext");
+  }
+
   switch (GetData().GetCheckedState()) {
     case ax::mojom::CheckedState::kNone:
       break;

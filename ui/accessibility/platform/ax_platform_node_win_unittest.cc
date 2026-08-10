@@ -4142,6 +4142,24 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
       L"required=false;hasactions=false");
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAAriaPropertiesForCellIndexText) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kCell;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                          "A");
+  root.AddStringAttribute(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                          "10");
+  Init(root);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"colindextext=A;rowindextext=10;readonly=true;expanded=false;"
+      L"multiline=false;multiselectable=false;required=false;hasactions=false");
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
   AXNodeData root;
   root.id = 1;
