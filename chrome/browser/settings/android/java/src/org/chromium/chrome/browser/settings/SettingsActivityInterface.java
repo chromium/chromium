@@ -31,4 +31,16 @@ public interface SettingsActivityInterface {
 
     /** Finishes the specified settings fragment. */
     void finishCurrentSettings(Fragment fragment);
+
+    /**
+     * Returns the title of the activity. The implementation is usually fulfilled by the Activity
+     * implementing this interface.
+     */
+    CharSequence getTitle();
+
+    /**
+     * Returns a localized string from the activity's resources. The implementation is usually
+     * fulfilled by the Activity implementing this interface.
+     */
+    String getString(int resId);
 }
