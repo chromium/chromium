@@ -105,12 +105,12 @@ public final class AndroidXProcessGlobalConfig {
             HashMap<String, Object> configMap = null;
             try {
                 Class<?> holder = Class.forName("androidx.webkit.ProcessGlobalConfig", true, cl);
-                Field sProcessGlobalConfig = holder.getDeclaredField("sProcessGlobalConfig");
-                sProcessGlobalConfig.setAccessible(true);
+                Field processGlobalConfig = holder.getDeclaredField("sProcessGlobalConfig");
+                processGlobalConfig.setAccessible(true);
                 // AndroidX field type is AtomicReference<HashMap<String, Object>>.
                 @SuppressWarnings("unchecked")
                 AtomicReference<HashMap<String, Object>> configRef =
-                        (AtomicReference<HashMap<String, Object>>) sProcessGlobalConfig.get(null);
+                        (AtomicReference<HashMap<String, Object>>) processGlobalConfig.get(null);
                 configMap = configRef.get();
             } catch (Exception e) {
                 // The class probably doesn't exist - the app may not be using the AndroidX library,

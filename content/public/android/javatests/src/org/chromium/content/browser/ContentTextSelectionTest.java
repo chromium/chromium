@@ -324,16 +324,16 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(mSelectionPopupController.hasSelection());
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2f;
-        float mCurrentY = webContentsView.getHeight() / 2f;
+        float currentX = webContentsView.getWidth() / 2f;
+        float currentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(
                 mActivityTestRule.getActivity(),
-                mCurrentX,
-                mCurrentX,
-                mCurrentY,
-                mCurrentY - 100,
+                currentX,
+                currentX,
+                currentY,
+                currentY - 100,
                 /* stepCount= */ 3, /* duration in ms */
                 250);
 
@@ -353,16 +353,16 @@ public class ContentTextSelectionTest {
         waitForSelectActionBarVisible(false);
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2f;
-        float mCurrentY = webContentsView.getHeight() / 2f;
+        float currentX = webContentsView.getWidth() / 2f;
+        float currentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(
                 mActivityTestRule.getActivity(),
-                mCurrentX,
-                mCurrentX,
-                mCurrentY,
-                mCurrentY - 100,
+                currentX,
+                currentX,
+                currentY,
+                currentY - 100,
                 /* stepCount= */ 3, /* duration in ms */
                 250);
 
@@ -1182,12 +1182,12 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(mSelectionPopupController.isActionModeValid());
         selectActionBarSearch();
         Intent i = mActivityTestRule.getActivity().getLastSentIntent();
-        int new_task_flag = Intent.FLAG_ACTIVITY_NEW_TASK;
-        Assert.assertEquals(i.getFlags() & new_task_flag, new_task_flag);
+        int newTaskFlag = Intent.FLAG_ACTIVITY_NEW_TASK;
+        Assert.assertEquals(i.getFlags() & newTaskFlag, newTaskFlag);
 
         selectActionBarShare();
         i = mActivityTestRule.getActivity().getLastSentIntent();
-        Assert.assertEquals(i.getFlags() & new_task_flag, new_task_flag);
+        Assert.assertEquals(i.getFlags() & newTaskFlag, newTaskFlag);
     }
 
     private TextClassification createSingleActionTextClassification(String title) {

@@ -617,8 +617,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
         mKeyboardInset = keyboardInset;
         mKeyboardInsetSupplier.set(keyboardInset);
-        for (WindowInsetObserver mObserver : mObservers) {
-            mObserver.onKeyboardInsetChanged(keyboardInset);
+        for (WindowInsetObserver observer : mObservers) {
+            observer.onKeyboardInsetChanged(keyboardInset);
         }
     }
 
@@ -663,8 +663,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
         mCurrentSafeArea.set(newSafeArea);
         // Create a new rect to avoid rect being changed by observers.
-        for (WindowInsetObserver mObserver : mObservers) {
-            mObserver.onSafeAreaChanged(new Rect(mCurrentSafeArea));
+        for (WindowInsetObserver observer : mObservers) {
+            observer.onSafeAreaChanged(new Rect(mCurrentSafeArea));
         }
     }
 

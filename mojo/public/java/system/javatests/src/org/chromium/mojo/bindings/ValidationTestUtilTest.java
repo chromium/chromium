@@ -129,7 +129,7 @@ public class ValidationTestUtilTest {
 
         // Test some failure cases.
         {
-            String[] error_inputs = {
+            String[] errorInputs = {
                 "/ hello world",
                 "[u1]x",
                 "[u2]-1000",
@@ -144,7 +144,7 @@ public class ValidationTestUtilTest {
                 "0 [handles]50"
             };
 
-            for (String input : error_inputs) {
+            for (String input : errorInputs) {
                 ByteBuffer expected = ByteBuffer.allocateDirect(0);
                 expected.order(ByteOrder.nativeOrder());
                 checkInputParser(input, false, expected, 0);

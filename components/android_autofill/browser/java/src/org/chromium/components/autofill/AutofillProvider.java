@@ -395,9 +395,9 @@ public class AutofillProvider {
         // Check index inside short value?
         if (mRequest == null) return;
 
-        short sIndex = (short) index;
+        short shortIndex = (short) index;
         FocusField focusField = mRequest.getFocusField();
-        if (focusField == null || sIndex != focusField.fieldIndex) {
+        if (focusField == null || shortIndex != focusField.fieldIndex) {
             onFocusChangedImpl(true, index, x, y, width, height, /* causedByValueChange= */ true);
         } else {
             // Currently there is no api to notify both value and position
@@ -413,7 +413,8 @@ public class AutofillProvider {
             }
         }
         notifyVirtualValueChanged(index, /* forceNotify= */ false);
-        mAutofillUMA.onUserChangeFieldValue(mRequest.getField(sIndex).hasPreviouslyAutofilled());
+        mAutofillUMA.onUserChangeFieldValue(
+                mRequest.getField(shortIndex).hasPreviouslyAutofilled());
     }
 
     /**
@@ -448,8 +449,8 @@ public class AutofillProvider {
     public void onTextFieldDidScroll(int index, float x, float y, float width, float height) {
         if (mRequest == null) return;
 
-        short sIndex = (short) index;
-        FormFieldData fieldData = mRequest.getField(sIndex);
+        short shortIndex = (short) index;
+        FormFieldData fieldData = mRequest.getField(shortIndex);
         if (fieldData != null) fieldData.updateBounds(new RectF(x, y, x + width, y + height));
     }
 

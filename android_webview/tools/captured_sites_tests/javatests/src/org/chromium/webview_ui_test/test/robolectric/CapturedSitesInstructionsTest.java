@@ -28,8 +28,8 @@ public final class CapturedSitesInstructionsTest {
     @Test
     @SmallTest
     public void verifyBuild_failsIfNoTestFile() {
-        String mUrl = "missing.test";
-        assertThrows(IOException.class, () -> new CapturedSitesInstructions(mUrl));
+        String url = "missing.test";
+        assertThrows(IOException.class, () -> new CapturedSitesInstructions(url));
     }
 
     // We can't test the loading of the url due to the way file structure works so, all we can do is

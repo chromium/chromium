@@ -130,10 +130,10 @@ public class WebExposedTest extends AwParameterizedTest {
                     }
                 };
 
-        AwTestContainerView mTestContainerView =
+        AwTestContainerView testContainerView =
                 mRule.createAwTestContainerViewOnMainSync(
                         mContentsClient, false, new TestDependencyFactory());
-        mAwContents = mTestContainerView.getAwContents();
+        mAwContents = testContainerView.getAwContents();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

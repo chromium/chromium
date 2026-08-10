@@ -38,16 +38,16 @@ class PowerSaveBlocker {
         assert mKeepScreenOnView == null;
         mKeepScreenOnView = new WeakReference<>(view);
 
-        Integer prev_counter = sBlockViewCounter.get(view);
+        Integer prevCounter = sBlockViewCounter.get(view);
 
-        if (prev_counter == null) {
+        if (prevCounter == null) {
             sBlockViewCounter.put(view, 1);
         } else {
-            assert prev_counter >= 0;
-            sBlockViewCounter.put(view, prev_counter + 1);
+            assert prevCounter >= 0;
+            sBlockViewCounter.put(view, prevCounter + 1);
         }
 
-        if (prev_counter == null || prev_counter == 0) view.setKeepScreenOn(true);
+        if (prevCounter == null || prevCounter == 0) view.setKeepScreenOn(true);
     }
 
     @CalledByNative
@@ -62,11 +62,11 @@ class PowerSaveBlocker {
         // View has been garbage collected. No need to worry about clean up.
         if (view == null) return;
 
-        Integer prev_counter = sBlockViewCounter.get(view);
-        assert prev_counter != null;
-        assert prev_counter > 0;
-        sBlockViewCounter.put(view, prev_counter - 1);
+        Integer prevCounter = sBlockViewCounter.get(view);
+        assert prevCounter != null;
+        assert prevCounter > 0;
+        sBlockViewCounter.put(view, prevCounter - 1);
 
-        if (prev_counter == 1) view.setKeepScreenOn(false);
+        if (prevCounter == 1) view.setKeepScreenOn(false);
     }
 }

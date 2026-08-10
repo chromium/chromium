@@ -72,7 +72,7 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             assumeNonNull(mTransaction);
             x = x - mWidthPx / 2f;
             y = y - mHeightPx / 2f;
-            float readback_y = y;
+            float readbackY = y;
             y = y + mVerticalOffsetPx;
 
             y = y - scaleByDeviceFactor(TOP_SHADOW_HEIGHT_DP);
@@ -83,9 +83,9 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
             x = Math.min(x, localVisibleRect.right - mWidthPx);
             y = Math.min(y, localVisibleRect.bottom - mHeightPx);
 
-            readback_y = readback_y - mWebContents.getRenderCoordinates().getContentOffsetYPix();
+            readbackY = readbackY - mWebContents.getRenderCoordinates().getContentOffsetYPix();
             MagnifierSurfaceControlJni.get()
-                    .setReadbackOrigin(mNativeMagnifierSurfaceControl, x, readback_y);
+                    .setReadbackOrigin(mNativeMagnifierSurfaceControl, x, readbackY);
 
             int[] viewOriginInSurface = new int[2];
             view.getLocationInSurface(viewOriginInSurface);

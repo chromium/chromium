@@ -93,12 +93,12 @@ public class TrafficStatsTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
         // Another tagging and loading
-        int another_tag = 87654321;
-        long priorBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(another_tag);
-        AwContentsStatics.setDefaultTrafficStatsTag(another_tag);
+        int anotherTag = 87654321;
+        long priorBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(anotherTag);
+        AwContentsStatics.setDefaultTrafficStatsTag(anotherTag);
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        long newBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(another_tag);
+        long newBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(anotherTag);
         Assert.assertTrue(
                 "expected new bytes:" + newBytes + " to be greater than prior bytes:" + priorBytes,
                 newBytes > priorBytes);
@@ -145,11 +145,11 @@ public class TrafficStatsTest extends AwParameterizedTest {
     public void testTagging_UnsetTag_SocketIsTaggedWithZero() throws Throwable {
         String url = mTestServer.getURL("/android_webview/test/data/hello_world.html");
 
-        int traffic_tag = 0;
-        long priorBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(traffic_tag);
+        int trafficTag = 0;
+        long priorBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(trafficTag);
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
-        long newBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(traffic_tag);
+        long newBytes = TrafficStatsTestUtil.nativeGetTaggedBytes(trafficTag);
         Assert.assertTrue(
                 "expected new bytes:" + newBytes + " to be greater than prior bytes:" + priorBytes,
                 newBytes > priorBytes);

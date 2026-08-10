@@ -261,7 +261,7 @@ public class JsSandboxServiceTest {
     @MediumTest
     public void testMultipleInfiniteLoops() throws Throwable {
         final String code = "while(true){}";
-        final int num_of_evaluations = 10;
+        final int numOfEvaluations = 10;
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -273,13 +273,13 @@ public class JsSandboxServiceTest {
             List<ListenableFuture<String>> resultFutures =
                     new ArrayList<ListenableFuture<String>>();
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
-                for (int i = 0; i < num_of_evaluations; i++) {
+                for (int i = 0; i < numOfEvaluations; i++) {
                     ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                     resultFutures.add(resultFuture);
                 }
             }
 
-            for (int i = 0; i < num_of_evaluations; i++) {
+            for (int i = 0; i < numOfEvaluations; i++) {
                 try {
                     resultFutures.get(i).get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown.");
@@ -850,10 +850,10 @@ public class JsSandboxServiceTest {
     public void testSandboxCanBeCreatedAfterClosed() throws Throwable {
         final String code = "\"PASS\"";
         final String expected = "PASS";
-        final int num_of_startups = 2;
+        final int numOfStartups = 2;
         Context context = ContextUtils.getApplicationContext();
 
-        for (int i = 0; i < num_of_startups; i++) {
+        for (int i = 0; i < numOfStartups; i++) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
             try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
@@ -1045,11 +1045,11 @@ public class JsSandboxServiceTest {
                             JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
-            final long num_doubles = 1024 * 1024;
+            final long numDoubles = 1024 * 1024;
             // There may be additional allocation overhead beyond this value.
-            final long allocation_size = 8 * num_doubles;
+            final long allocationSize = 8 * numDoubles;
             final long memoryUseFactor = 2;
-            final long allocationsToTry = memoryUseFactor * maxHeapSize / allocation_size;
+            final long allocationsToTry = memoryUseFactor * maxHeapSize / allocationSize;
             // This test will exercise both the V8 heap and ArrayBuffer-allocated memory. Each will
             // have allocations totalling approximately memoryUseFactor times the available memory.
             //
@@ -1061,7 +1061,7 @@ public class JsSandboxServiceTest {
                 final String code =
                         ""
                                 + "this.arrayLength = "
-                                + num_doubles
+                                + numDoubles
                                 + ";this.obj = { array: Array(this.arrayLength).fill(Math.random(),"
                                 + " 0), arraybuffer: new Float64Array(new ArrayBuffer(8 *"
                                 + " this.arrayLength)),};'PASS'";

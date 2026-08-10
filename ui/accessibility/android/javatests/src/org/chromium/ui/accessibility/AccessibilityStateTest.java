@@ -239,9 +239,9 @@ public class AccessibilityStateTest {
     @SmallTest
     public void testMaskToEventTypeConversion() {
         // Create some event masks with known outcomes.
-        int serviceEventMask_empty = 0;
-        int serviceEventMask_full = Integer.MAX_VALUE;
-        int serviceEventMask_test =
+        int serviceEventMaskEmpty = 0;
+        int serviceEventMaskFull = Integer.MAX_VALUE;
+        int serviceEventMaskTest =
                 AccessibilityEvent.TYPE_VIEW_CLICKED
                         | AccessibilityEvent.TYPE_VIEW_LONG_CLICKED
                         | AccessibilityEvent.TYPE_VIEW_FOCUSED
@@ -251,34 +251,34 @@ public class AccessibilityStateTest {
 
         // Convert each mask to a set of eventTypes.
         AccessibilityServiceInfo serviceEmpty =
-                new BuilderForTests().setEventTypes(serviceEventMask_empty).build();
+                new BuilderForTests().setEventTypes(serviceEventMaskEmpty).build();
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(serviceEmpty));
         mDelegate.updateAccessibilityServices();
-        Set<Integer> outcome_empty = AccessibilityState.relevantEventTypesForCurrentServices();
+        Set<Integer> outcomeEmpty = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceFull =
-                new BuilderForTests().setEventTypes(serviceEventMask_full).build();
+                new BuilderForTests().setEventTypes(serviceEventMaskFull).build();
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(serviceFull));
         mDelegate.updateAccessibilityServices();
-        Set<Integer> outcome_full = AccessibilityState.relevantEventTypesForCurrentServices();
+        Set<Integer> outcomeFull = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceTest =
-                new BuilderForTests().setEventTypes(serviceEventMask_test).build();
+                new BuilderForTests().setEventTypes(serviceEventMaskTest).build();
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(serviceTest));
         mDelegate.updateAccessibilityServices();
-        Set<Integer> outcome_test = AccessibilityState.relevantEventTypesForCurrentServices();
+        Set<Integer> outcomeTest = AccessibilityState.relevantEventTypesForCurrentServices();
 
         // Verify results.
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_empty);
-        Assert.assertTrue(EVENT_TYPE_MASK_ERROR, outcome_empty.isEmpty());
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcomeEmpty);
+        Assert.assertTrue(EVENT_TYPE_MASK_ERROR, outcomeEmpty.isEmpty());
 
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_full);
-        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcomeFull);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcomeFull.size());
 
-        Set<Integer> expected_test =
+        Set<Integer> expectedTest =
                 new HashSet<>(
                         Arrays.asList(
                                 AccessibilityEvent.TYPE_VIEW_CLICKED,
@@ -288,8 +288,8 @@ public class AccessibilityStateTest {
                                 AccessibilityEvent.TYPE_VIEW_SELECTED,
                                 AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END));
 
-        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
-        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
+        Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcomeTest);
+        Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expectedTest, outcomeTest);
     }
 
     @Test
@@ -314,7 +314,7 @@ public class AccessibilityStateTest {
     @Test
     @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_missingFlags() {
-        int flags_mask =
+        int flagsMask =
                 AccessibilityServiceInfo.DEFAULT
                         | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
                         | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE;
@@ -324,7 +324,7 @@ public class AccessibilityStateTest {
         // | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
 
         AccessibilityServiceInfo passwordManagerService =
-                createPasswordManagerServiceInfoWithFlags(flags_mask);
+                createPasswordManagerServiceInfoWithFlags(flagsMask);
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
@@ -335,7 +335,7 @@ public class AccessibilityStateTest {
     @Test
     @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_extraFlags() {
-        int flags_mask =
+        int flagsMask =
                 AccessibilityServiceInfo.DEFAULT
                         | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
                         | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
@@ -346,7 +346,7 @@ public class AccessibilityStateTest {
                         | AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME;
 
         AccessibilityServiceInfo passwordManagerService =
-                createPasswordManagerServiceInfoWithFlags(flags_mask);
+                createPasswordManagerServiceInfoWithFlags(flagsMask);
         AccessibilityStateJUnitTestHelper.setEnabledAccessibilityServiceList(
                 mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();

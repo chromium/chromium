@@ -514,14 +514,14 @@ public class EmbeddedTestServer {
         try {
             synchronized (mImplMonitor) {
                 checkServiceLocked();
-                String[] headers_array = mImpl.getRequestHeadersForUrl(relativeUrl);
+                String[] headersArray = mImpl.getRequestHeadersForUrl(relativeUrl);
                 // The length of the vector should be even, as the vector alternates between header
                 // names (even indices) and their corresponding values (odd indices).
-                Assert.assertEquals(0, headers_array.length % 2);
+                Assert.assertEquals(0, headersArray.length % 2);
 
                 HashMap<String, String> headers = new HashMap<String, String>();
-                for (int i = 0; i < headers_array.length; i += 2) {
-                    headers.put(headers_array[i], headers_array[i + 1]);
+                for (int i = 0; i < headersArray.length; i += 2) {
+                    headers.put(headersArray[i], headersArray[i + 1]);
                 }
                 return headers;
             }

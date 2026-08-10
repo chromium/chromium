@@ -45,12 +45,12 @@ public final class HostnameTest {
     public void testIDNMapping() {
         // Note the strategic use of ß as our test character, which is handled differently based on
         // which version of IDNA is used - see Unicode Technical Standard #46.
-        final var IDN_UNICODE = "example-idn-begin-ß-end";
+        final var idnUnicode = "example-idn-begin-ß-end";
         // On Android API <24 Cronet uses IDNA2003, under which "ß" is mapped to "ss".
         // On Android API 24+ Cronet uses IDNA2008, under which "ß" is preserved and triggers
         // punycode conversion.
         // See also https://crbug.com/513446116.
-        final var EXPECTED_IDN_ASCII =
+        final var expectedIdnAscii =
                 (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
                         ? "example-idn-begin-ss-end"
                         : "xn--example-idn-begin--end-71b";
@@ -66,7 +66,7 @@ public final class HostnameTest {
                                                         .put(
                                                                 "host_resolver_rules",
                                                                 "MAP "
-                                                                        + EXPECTED_IDN_ASCII
+                                                                        + expectedIdnAscii
                                                                         + " 127.0.0.1"))
                                         .toString()));
         testFramework.startEngine();
@@ -77,7 +77,7 @@ public final class HostnameTest {
             testFramework
                     .getEngine()
                     .newUrlRequestBuilder(
-                            "http://" + IDN_UNICODE + ":" + nativeTestServer.getPort() + "/",
+                            "http://" + idnUnicode + ":" + nativeTestServer.getPort() + "/",
                             callback,
                             callback.getExecutor())
                     .build()

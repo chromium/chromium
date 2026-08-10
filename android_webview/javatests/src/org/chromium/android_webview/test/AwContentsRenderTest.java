@@ -82,13 +82,13 @@ public class AwContentsRenderTest extends AwParameterizedTest {
         setBackgroundColorOnUiThread(Color.YELLOW);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.YELLOW);
 
-        final String html_meta = "<html><head><meta name=color-scheme content=dark></head></html>";
+        final String htmlMeta = "<html><head><meta name=color-scheme content=dark></head></html>";
         mActivityTestRule.loadUrlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
-                "data:text/html," + html_meta);
-        final int dark_scheme_color = 0xFF121212;
-        GraphicsTestUtils.pollForBackgroundColor(mAwContents, dark_scheme_color);
+                "data:text/html," + htmlMeta);
+        final int darkSchemeColor = 0xFF121212;
+        GraphicsTestUtils.pollForBackgroundColor(mAwContents, darkSchemeColor);
 
         final String html =
                 "<html><head><style>body {background-color:#227788}</style></head>"
@@ -253,7 +253,7 @@ public class AwContentsRenderTest extends AwParameterizedTest {
                 "data:text/html," + html.replace("#", "%23"));
 
         final TitleUpdatedHelper onTitleUpdatedHelper = new TitleUpdatedHelper();
-        final WebContentsObserver web_contents_observer =
+        final WebContentsObserver webContentsObserver =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new WebContentsObserver(mAwContents.getWebContents()) {
@@ -299,6 +299,6 @@ public class AwContentsRenderTest extends AwParameterizedTest {
                         return true;
                     }
                 });
-        ThreadUtils.runOnUiThreadBlocking(() -> web_contents_observer.observe(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> webContentsObserver.observe(null));
     }
 }

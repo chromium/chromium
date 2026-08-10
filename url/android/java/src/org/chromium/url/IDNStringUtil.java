@@ -31,13 +31,13 @@ public class IDNStringUtil {
             return null;
         }
 
-        var sIDNA =
+        var idna =
                 IDNA.getUTS46Instance(
                         IDNA.NONTRANSITIONAL_TO_ASCII | IDNA.NONTRANSITIONAL_TO_UNICODE);
-        if (sIDNA == null) {
+        if (idna == null) {
             throw new IllegalStateException("Failed to create IDNA instance");
         }
-        return sIDNA;
+        return idna;
     }
 
     /**

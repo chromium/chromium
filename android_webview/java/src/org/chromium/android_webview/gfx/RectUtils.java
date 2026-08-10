@@ -100,9 +100,9 @@ public final class RectUtils {
             arr[i + 1].set(arr[i]);
         }
 
-        int insert_index = i + 1;
-        assert insert_index >= 0 && insert_index < capacity;
-        arr[insert_index].set(verticalSegment);
+        int insertIndex = i + 1;
+        assert insertIndex >= 0 && insertIndex < capacity;
+        arr[insertIndex].set(verticalSegment);
     }
 
     private static int deleteElement(
@@ -221,13 +221,13 @@ public final class RectUtils {
 
         Arrays.sort(sHorizontalSegments, 0, maxSegments);
 
-        int prev_x = -1;
+        int prevX = -1;
         int coveredPixels = 0;
         for (int i = 0; i < maxSegments; i++) {
             HorizontalSegment hSegment = sHorizontalSegments[i];
             coveredPixels +=
                     getCoverageOfVerticalSegments(sVerticalSegments, numVerticalSegments)
-                            * (hSegment.mX - prev_x);
+                            * (hSegment.mX - prevX);
             sVerticalSegment1.set(hSegment.mTop, SegmentType.START);
             sVerticalSegment2.set(hSegment.mBottom, SegmentType.END);
 
@@ -247,7 +247,7 @@ public final class RectUtils {
                 assert ret != -1;
                 numVerticalSegments = ret;
             }
-            prev_x = hSegment.mX;
+            prevX = hSegment.mX;
         }
 
         return coveredPixels;

@@ -51,15 +51,15 @@ public class ClientCertLookupTable {
     }
 
     public void allow(String host, int port, PrivateKey privateKey, byte[][] chain) {
-        String host_and_port = hostAndPort(host, port);
-        mCerts.put(host_and_port, new Cert(privateKey, chain));
-        mDenieds.remove(host_and_port);
+        String hostAndPort = hostAndPort(host, port);
+        mCerts.put(hostAndPort, new Cert(privateKey, chain));
+        mDenieds.remove(hostAndPort);
     }
 
     public void deny(String host, int port) {
-        String host_and_port = hostAndPort(host, port);
-        mCerts.remove(host_and_port);
-        mDenieds.add(host_and_port);
+        String hostAndPort = hostAndPort(host, port);
+        mCerts.remove(hostAndPort);
+        mDenieds.add(hostAndPort);
     }
 
     public @Nullable Cert getCertData(String host, int port) {

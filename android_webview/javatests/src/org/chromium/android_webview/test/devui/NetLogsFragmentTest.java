@@ -103,17 +103,17 @@ public class NetLogsFragmentTest {
     }
 
     private List<File> initalizeTestFiles() {
-        String package_num = "";
+        String packageNum = "";
         mFileTime = System.currentTimeMillis();
         List<File> files = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            package_num += 'I';
+            packageNum += 'I';
             String fileName =
                     MOCK_PID
                             + Long.toString(mFileTime + i)
                             + "_"
                             + MOCK_PACKAGE_NAME
-                            + package_num
+                            + packageNum
                             + JSON_TAG;
             File file = new File(AwNetLogService.getNetLogFileDirectory(), fileName);
             try {
@@ -151,17 +151,17 @@ public class NetLogsFragmentTest {
         ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
         Assert.assertEquals(5, filesList.getCount());
 
-        String package_num = "";
+        String packageNum = "";
         DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
         for (int i = 0; i < filesList.getCount(); i++) {
-            package_num += 'I';
+            packageNum += 'I';
             DataInteraction fileInteraction =
                     onData(anything()).inAdapterView(withId(R.id.net_log_list)).atPosition(i);
 
             fileInteraction
                     .onChildView(withId(R.id.file_name))
-                    .check(matches(withText(MOCK_PACKAGE_NAME + package_num)));
+                    .check(matches(withText(MOCK_PACKAGE_NAME + packageNum)));
 
             fileInteraction
                     .onChildView(withId(R.id.file_capacity))

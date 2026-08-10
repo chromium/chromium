@@ -103,7 +103,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
                     // We currently only handle two fingers.
                     assert pointerIndex == 0 || pointerIndex == 1;
                     assert pointerCount <= 2;
-                    int action_bitfield =
+                    int actionBitfield =
                             pointerIndex == 0
                                     ? MotionEvent.ACTION_DOWN
                                     : MotionEvent.ACTION_POINTER_DOWN
@@ -113,7 +113,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
                             MotionEvent.obtain(
                                     mDownTimeInMs,
                                     timeInMs,
-                                    action_bitfield,
+                                    actionBitfield,
                                     pointerIndex + 1,
                                     mPointerProperties,
                                     mPointerCoords,
@@ -178,7 +178,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
                     // We currently only handle two fingers.
                     assert pointerIndex == 0 || pointerIndex == 1;
                     assert pointerCount <= 2;
-                    int action_bitfield =
+                    int actionBitfield =
                             pointerIndex == 0
                                     ? MotionEvent.ACTION_UP
                                     : MotionEvent.ACTION_POINTER_UP
@@ -187,7 +187,7 @@ public class MotionEventSynthesizerImpl implements MotionEventSynthesizer {
                             MotionEvent.obtain(
                                     mDownTimeInMs,
                                     timeInMs,
-                                    action_bitfield,
+                                    actionBitfield,
                                     pointerIndex + 1,
                                     mPointerProperties,
                                     mPointerCoords,

@@ -68,9 +68,9 @@ public class NoDynamicStringsInTraceEventCheck extends BugChecker
         }
 
         List<? extends Tree> args = tree.getArguments();
-        Tree eventName_expr = args.get(0);
+        Tree eventNameExpr = args.get(0);
 
-        ParameterVisitor.Result r = eventName_expr.accept(sVisitor, null);
+        ParameterVisitor.Result r = eventNameExpr.accept(sVisitor, null);
         if (r.success) return Description.NO_MATCH;
 
         return buildDescription(tree)

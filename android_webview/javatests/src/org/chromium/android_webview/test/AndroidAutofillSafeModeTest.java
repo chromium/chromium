@@ -52,12 +52,12 @@ public class AndroidAutofillSafeModeTest extends AwParameterizedTest {
         safeModeController.enableAllRegisteredActionsForTesting();
 
         // When
-        AwTestContainerView mTestContainerView =
+        AwTestContainerView testContainerView =
                 mRule.createAwTestContainerViewOnMainSync(
                         new TestAwContentsClient(), false, new TestDependencyFactory());
 
         // Then
-        assertNull(mTestContainerView.getAwContents().getAutofillProviderForTesting());
+        assertNull(testContainerView.getAwContents().getAutofillProviderForTesting());
     }
 
     @Test

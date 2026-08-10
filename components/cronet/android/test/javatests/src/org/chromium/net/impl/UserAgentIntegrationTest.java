@@ -56,11 +56,11 @@ public class UserAgentIntegrationTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
         String headerName = "User-Agent";
-        String UA_TEST_STRING = "I'm a teapot";
+        String uaTestString = "I'm a teapot";
 
         var cronetBuilder =
                 new NativeCronetProvider(mCronetTestFramework.getContext()).createBuilder();
-        cronetBuilder.setUserAgent(UA_TEST_STRING);
+        cronetBuilder.setUserAgent(uaTestString);
         var cronetEngine = cronetBuilder.build();
 
         UrlRequest.Builder builder =
@@ -71,7 +71,7 @@ public class UserAgentIntegrationTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        assertThat(callback.mResponseAsString).isEqualTo(UA_TEST_STRING);
+        assertThat(callback.mResponseAsString).isEqualTo(uaTestString);
     }
 
     @Test
@@ -84,11 +84,11 @@ public class UserAgentIntegrationTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
         String headerName = "User-Agent";
-        String UA_TEST_STRING = "I'm a teapot";
+        String uaTestString = "I'm a teapot";
 
         var cronetBuilder =
                 new NativeCronetProvider(mCronetTestFramework.getContext()).createBuilder();
-        cronetBuilder.setUserAgent(UA_TEST_STRING);
+        cronetBuilder.setUserAgent(uaTestString);
         cronetBuilder.setUserAgent(null);
         var cronetEngine = cronetBuilder.build();
 
@@ -120,11 +120,11 @@ public class UserAgentIntegrationTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
         String headerName = "User-Agent";
-        String UA_TEST_STRING = "I'm a teapot";
+        String uaTestString = "I'm a teapot";
 
         var cronetBuilder =
                 new HttpEngineNativeProvider(mCronetTestFramework.getContext()).createBuilder();
-        cronetBuilder.setUserAgent(UA_TEST_STRING);
+        cronetBuilder.setUserAgent(uaTestString);
         cronetBuilder.setUserAgent(null);
         var cronetEngine = cronetBuilder.build();
 

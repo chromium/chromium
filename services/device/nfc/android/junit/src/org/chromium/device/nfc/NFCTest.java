@@ -881,13 +881,13 @@ public class NFCTest {
         {
             // |recordType| is a string mixed with ASCII/non-ASCII, FAIL.
             extMojoNdefRecord.recordType = "example.com:hellö";
-            android.nfc.NdefMessage extNdefMessage_nonASCII = null;
+            android.nfc.NdefMessage extNdefMessageNonAscii = null;
             try {
-                extNdefMessage_nonASCII =
+                extNdefMessageNonAscii =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(extMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNull(extNdefMessage_nonASCII);
+            assertNull(extNdefMessageNonAscii);
 
             char[] chars = new char[251];
             Arrays.fill(chars, 'a');
@@ -895,23 +895,23 @@ public class NFCTest {
 
             // |recordType|'s length is 255, OK.
             extMojoNdefRecord.recordType = domain + ":xyz";
-            android.nfc.NdefMessage extNdefMessage_255 = null;
+            android.nfc.NdefMessage extNdefMessage255 = null;
             try {
-                extNdefMessage_255 =
+                extNdefMessage255 =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(extMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNotNull(extNdefMessage_255);
+            assertNotNull(extNdefMessage255);
 
             // Exceeding the maximum length 255, FAIL.
             extMojoNdefRecord.recordType = domain + ":xyze";
-            android.nfc.NdefMessage extNdefMessage_256 = null;
+            android.nfc.NdefMessage extNdefMessage256 = null;
             try {
-                extNdefMessage_256 =
+                extNdefMessage256 =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(extMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNull(extNdefMessage_256);
+            assertNull(extNdefMessage256);
         }
         {
             // '/' is not allowed in the type part.
@@ -948,37 +948,37 @@ public class NFCTest {
         {
             // |recordType| is a string mixed with ASCII/non-ASCII, FAIL.
             localMojoNdefRecord.recordType = ":hellö";
-            android.nfc.NdefMessage localNdefMessage_nonASCII = null;
+            android.nfc.NdefMessage localNdefMessageNonAscii = null;
             try {
-                localNdefMessage_nonASCII =
+                localNdefMessageNonAscii =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(localMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNull(localNdefMessage_nonASCII);
+            assertNull(localNdefMessageNonAscii);
 
             char[] chars = new char[255];
             Arrays.fill(chars, 'a');
-            String chars_255 = new String(chars);
+            String chars255 = new String(chars);
 
             // The length of the real local type is 255, OK.
-            localMojoNdefRecord.recordType = ":" + chars_255;
-            android.nfc.NdefMessage localNdefMessage_255 = null;
+            localMojoNdefRecord.recordType = ":" + chars255;
+            android.nfc.NdefMessage localNdefMessage255 = null;
             try {
-                localNdefMessage_255 =
+                localNdefMessage255 =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(localMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNotNull(localNdefMessage_255);
+            assertNotNull(localNdefMessage255);
 
             // Exceeding the maximum length 255, FAIL.
-            localMojoNdefRecord.recordType = ":a" + chars_255;
-            android.nfc.NdefMessage localNdefMessage_256 = null;
+            localMojoNdefRecord.recordType = ":a" + chars255;
+            android.nfc.NdefMessage localNdefMessage256 = null;
             try {
-                localNdefMessage_256 =
+                localNdefMessage256 =
                         NdefMessageUtils.toNdefMessage(createMojoNdefMessage(localMojoNdefRecord));
             } catch (InvalidNdefMessageException e) {
             }
-            assertNull(localNdefMessage_256);
+            assertNull(localNdefMessage256);
         }
     }
 

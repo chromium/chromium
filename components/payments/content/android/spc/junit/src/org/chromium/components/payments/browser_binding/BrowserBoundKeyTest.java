@@ -69,21 +69,21 @@ public class BrowserBoundKeyTest {
     public void testEncodeCoseKeyWith256BitEcPublicKey() {
         // BigInteger serializes this to a 33 byte array. The first byte will be 0 followed by the
         // the same bytes listed here.
-        final byte[] coordinate_with_leading_one =
+        final byte[] coordinateWithLeadingOne =
                 new byte[] {
                     -128, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
                     22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
                 };
         // BigInteger serializes this to 32 bytes.
-        final byte[] coordinate_with_leading_zero =
+        final byte[] coordinateWithLeadingZero =
                 new byte[] {
                     127, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
                     53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
                 };
         ECPublicKey publicKey =
                 mockEcPublicKey(
-                        new BigInteger(/* signum= */ 1, coordinate_with_leading_one),
-                        new BigInteger(/* signum= */ 1, coordinate_with_leading_zero));
+                        new BigInteger(/* signum= */ 1, coordinateWithLeadingOne),
+                        new BigInteger(/* signum= */ 1, coordinateWithLeadingZero));
         BrowserBoundKey bbk =
                 new BrowserBoundKey(
                         /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
@@ -91,7 +91,7 @@ public class BrowserBoundKeyTest {
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 
         assertNotNull(encodedKey);
-        assertEncodedCoseKey(encodedKey, coordinate_with_leading_one, coordinate_with_leading_zero);
+        assertEncodedCoseKey(encodedKey, coordinateWithLeadingOne, coordinateWithLeadingZero);
     }
 
     /**
@@ -102,20 +102,20 @@ public class BrowserBoundKeyTest {
      */
     @Test
     public void testEncodeCoseKeyAddsLeadingZerosForSmallCoordinates() {
-        final byte[] small_coordinate =
+        final byte[] smallCoordinate =
                 new byte[] {
                     -128, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
                     25, 26, 27, 28, 29, 30, 31, 32
                 };
-        final byte[] small_coordinate_encoded =
+        final byte[] smallCoordinateEncoded =
                 new byte[] {
                     0, 0, 0, 0, -128, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
                     22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
                 };
         ECPublicKey publicKey =
                 mockEcPublicKey(
-                        new BigInteger(/* signum= */ 1, small_coordinate),
-                        new BigInteger(/* signum= */ 1, small_coordinate));
+                        new BigInteger(/* signum= */ 1, smallCoordinate),
+                        new BigInteger(/* signum= */ 1, smallCoordinate));
         BrowserBoundKey bbk =
                 new BrowserBoundKey(
                         /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
@@ -123,14 +123,14 @@ public class BrowserBoundKeyTest {
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 
         assertNotNull(encodedKey);
-        assertEncodedCoseKey(encodedKey, small_coordinate_encoded, small_coordinate_encoded);
+        assertEncodedCoseKey(encodedKey, smallCoordinateEncoded, smallCoordinateEncoded);
     }
 
     /** Test that a null is returned for a unexpected negative coordinates. */
     @Test
     public void testEncodeCoseKeyReturnsNullOnNegativeCoordinate() {
-        BigInteger negative_coordinate = BigInteger.valueOf(-1);
-        ECPublicKey publicKey = mockEcPublicKey(negative_coordinate, negative_coordinate);
+        BigInteger negativeCoordinate = BigInteger.valueOf(-1);
+        ECPublicKey publicKey = mockEcPublicKey(negativeCoordinate, negativeCoordinate);
         BrowserBoundKey bbk =
                 new BrowserBoundKey(
                         /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
@@ -143,10 +143,10 @@ public class BrowserBoundKeyTest {
     /** Test that a null is returned for an unexpected coordinate size. */
     @Test
     public void testEncodeCoseKeyReturnsNullOnUnexpectedCoordinateSize() {
-        final byte[] large_coordinate_bytes = new byte[257];
-        large_coordinate_bytes[0] = 1;
-        final BigInteger large_coordinate = new BigInteger(/* signum= */ 1, large_coordinate_bytes);
-        ECPublicKey publicKey = mockEcPublicKey(large_coordinate, large_coordinate);
+        final byte[] largeCoordinateBytes = new byte[257];
+        largeCoordinateBytes[0] = 1;
+        final BigInteger largeCoordinate = new BigInteger(/* signum= */ 1, largeCoordinateBytes);
+        ECPublicKey publicKey = mockEcPublicKey(largeCoordinate, largeCoordinate);
         BrowserBoundKey bbk =
                 new BrowserBoundKey(
                         /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));

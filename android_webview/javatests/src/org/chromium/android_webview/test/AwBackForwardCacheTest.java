@@ -187,8 +187,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // Remove the escape character and the beginning and trailing quotes
         notRestoredReasons = notRestoredReasons.replace("\\", "");
         notRestoredReasons = notRestoredReasons.substring(1, notRestoredReasons.length() - 1);
-        JSONObject json_obj = new JSONObject(notRestoredReasons);
-        return json_obj.getJSONArray("reasons").getJSONObject(0).getString("reason");
+        JSONObject jsonObj = new JSONObject(notRestoredReasons);
+        return jsonObj.getJSONArray("reasons").getJSONObject(0).getString("reason");
     }
 
     private HistogramWatcher getNotRestoredReasonsHistogramWatcher(int reason) {
