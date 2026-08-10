@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "remoting/base/errors.h"
 #include "remoting/signaling/content_description.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
@@ -315,13 +316,36 @@ ftl::IqStanza JingleMessageToProto(const JingleMessage& message) {
                  std::get_if<SessionTerminate>(&message.payload())) {
     ftl::SessionTerminate* proto_terminate =
         jingle->mutable_session_terminate();
-    proto_terminate->set_reason(
-        JingleTerminateReasonToProto(terminate->reason));
-    if (!terminate->error_code.empty()) {
-      proto_terminate->set_error_code(terminate->error_code);
+    SessionTerminate::Reason reason = message.reason;
+    if (reason == SessionTerminate::Reason::kUnspecified) {
+      reason = terminate->reason;
     }
-    if (!terminate->error_details.empty()) {
-      proto_terminate->set_error_details(terminate->error_details);
+    proto_terminate->set_reason(JingleTerminateReasonToProto(reason));
+
+    std::string error_code;
+    if (message.error_code != ErrorCode::UNKNOWN_ERROR) {
+      error_code = ErrorCodeToString(message.error_code);
+    } else {
+      error_code = terminate->error_code;
+    }
+    if (!error_code.empty()) {
+      proto_terminate->set_error_code(error_code);
+    }
+
+    std::string error_details = message.error_details;
+    if (error_details.empty()) {
+      error_details = terminate->error_details;
+    }
+    if (!error_details.empty()) {
+      proto_terminate->set_error_details(error_details);
+    }
+
+    std::string error_location = message.error_location;
+    if (error_location.empty()) {
+      error_location = terminate->error_location;
+    }
+    if (!error_location.empty()) {
+      proto_terminate->set_error_location(error_location);
     }
   } else if (const auto* session_info =
                  std::get_if<SessionInfo>(&message.payload())) {
@@ -413,6 +437,21 @@ bool JingleMessageFromProto(const ftl::IqStanza& stanza,
         ProtoTerminateReasonToJingle(jingle.session_terminate().reason());
     terminate.error_code = jingle.session_terminate().error_code();
     terminate.error_details = jingle.session_terminate().error_details();
+    if (jingle.session_terminate().has_error_location()) {
+      terminate.error_location = jingle.session_terminate().error_location();
+    }
+
+    // Set fields on the message directly, matching XML behavior.
+    message->reason = terminate.reason;
+    if (!terminate.error_code.empty()) {
+      if (!ParseErrorCode(terminate.error_code, &message->error_code)) {
+        LOG(WARNING) << "Unknown error-code received: " << terminate.error_code;
+        message->error_code = ErrorCode::UNKNOWN_ERROR;
+      }
+    }
+    message->error_details = terminate.error_details;
+    message->error_location = terminate.error_location;
+
     message->SetPayload(std::move(terminate));
   } else if (jingle.has_session_info()) {
     SessionInfo session_info;

@@ -140,6 +140,50 @@ TEST_F(JingleMessageProtoConverterTest, ConvertSessionTerminate) {
   EXPECT_EQ(converted_terminate->error_details, "The peer is offline.");
 }
 
+TEST_F(JingleMessageProtoConverterTest,
+       ConvertSessionTerminateWithDirectFields) {
+  JingleMessage message;
+  message.from = from_address_;
+  message.to = to_address_;
+  message.message_id = kMessageId;
+  message.sid = kSid;
+  message.reason = SessionTerminate::Reason::kGeneralError;
+  message.error_code = ErrorCode::HOST_OVERLOAD;
+  message.error_details = "Host is overloaded";
+  message.error_location = "host.cc:123";
+  message.SetPayload(SessionTerminate());
+
+  ftl::IqStanza stanza = message.ToFtlIqStanza();
+
+  EXPECT_TRUE(stanza.jingle().has_session_terminate());
+  EXPECT_EQ(stanza.jingle().session_terminate().reason(),
+            ftl::SessionTerminate::GENERAL_ERROR);
+  EXPECT_EQ(stanza.jingle().session_terminate().error_code(), "HOST_OVERLOAD");
+  EXPECT_EQ(stanza.jingle().session_terminate().error_details(),
+            "Host is overloaded");
+  EXPECT_EQ(stanza.jingle().session_terminate().error_location(),
+            "host.cc:123");
+
+  JingleMessage converted_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromProto(stanza, &converted_message, &error))
+      << error;
+
+  EXPECT_EQ(converted_message.reason, SessionTerminate::Reason::kGeneralError);
+  EXPECT_EQ(converted_message.error_code, ErrorCode::HOST_OVERLOAD);
+  EXPECT_EQ(converted_message.error_details, "Host is overloaded");
+  EXPECT_EQ(converted_message.error_location, "host.cc:123");
+
+  auto* converted_terminate =
+      std::get_if<SessionTerminate>(&converted_message.payload());
+  ASSERT_TRUE(converted_terminate);
+  EXPECT_EQ(converted_terminate->reason,
+            SessionTerminate::Reason::kGeneralError);
+  EXPECT_EQ(converted_terminate->error_code, "HOST_OVERLOAD");
+  EXPECT_EQ(converted_terminate->error_details, "Host is overloaded");
+  EXPECT_EQ(converted_terminate->error_location, "host.cc:123");
+}
+
 TEST_F(JingleMessageProtoConverterTest, ConvertReplyResult) {
   JingleMessageReply reply;
   reply.from = from_address_;
