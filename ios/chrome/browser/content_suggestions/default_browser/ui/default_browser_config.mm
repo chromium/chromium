@@ -59,11 +59,11 @@ constexpr CGFloat kIconSize = 40;
   return kDefaultBrowserViewAccessibilityId;
 }
 
-- (NSString*)iconName {
+- (Symbol)symbol {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return kMulticolorChromeballSymbol;
+  return SymbolMulticolorChromeball;
 #else
-  return kChromeProductSymbol;
+  return SymbolChromeProduct;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 }
 

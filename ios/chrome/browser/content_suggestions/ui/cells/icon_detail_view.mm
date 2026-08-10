@@ -102,11 +102,8 @@ UIImageView* BadgeIcon(const IconDetailViewConfig* icon_detail_view_config) {
 
   config = [config configurationByApplyingConfiguration:color_config];
 
-  UIImage* image = icon_detail_view_config.badgeUsesDefaultSymbol
-                       ? DefaultSymbolWithConfiguration(
-                             icon_detail_view_config.badgeSymbolName, config)
-                       : CustomSymbolWithConfiguration(
-                             icon_detail_view_config.badgeSymbolName, config);
+  UIImage* image =
+      SymbolWithConfiguration(icon_detail_view_config.badgeSymbol, config);
 
   if (!icon_detail_view_config.badgeColorPalette) {
     image = MakeSymbolMulticolor(image);
@@ -374,7 +371,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
     }
 
     // Create the Badge Icon, if applicable.
-    if (_config.badgeSymbolName.length != 0) {
+    if (_config.badgeSymbol != SymbolNone) {
       UIImageView* badge = BadgeIcon(_config);
 
       UIView* badgeWithContainer = BadgeIconInContainer(

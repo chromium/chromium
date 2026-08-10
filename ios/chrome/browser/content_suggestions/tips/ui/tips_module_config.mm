@@ -71,56 +71,44 @@ const CGFloat kProductImageBadgeBottomRightRadius = 8;
 // Constant for the symbol width.
 const CGFloat kSymbolWidth = 22;
 
-// This struct represents configuration information for a Tips-related symbol.
-struct SymbolConfig {
-  const std::string name;
-  bool is_default_symbol;
-};
-
-// Returns the `SymbolConfig` for the given `tip`.
-SymbolConfig GetSymbolConfigForTip(TipIdentifier tip) {
+// Returns the `Symbol` for the given `tip`.
+Symbol SymbolForTip(TipIdentifier tip) {
   switch (tip) {
     case TipIdentifier::kUnknown:
-      return {SysNSStringToUTF8(kListBulletClipboardSymbol), true};
+      return SymbolListBulletClipboard;
     case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
     case TipIdentifier::kLensTranslate:
-      return {SysNSStringToUTF8(kCameraLensSymbol), false};
+      return SymbolCameraLens;
     case TipIdentifier::kAddressBarPosition:
-      return {SysNSStringToUTF8(kGlobeAmericasSymbol), true};
+      return SymbolGlobeAmericas;
     case TipIdentifier::kSavePasswords:
     case TipIdentifier::kAutofillPasswords:
 #if BUILDFLAG(IS_IOS_MACCATALYST)
-      return {SysNSStringToUTF8(kPasswordSymbol), false};
+      return SymbolPassword;
 #else
-      return {SysNSStringToUTF8(kMulticolorPasswordSymbol), false};
+      return SymbolMulticolorPassword;
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
     case TipIdentifier::kEnhancedSafeBrowsing:
-      return {SysNSStringToUTF8(kPrivacySymbol), false};
+      return SymbolPrivacy;
   }
 }
 
-// Returns the `SymbolConfig` for the badge symbol of the given `tip`, or
+// Returns the `Symbol` for the badge symbol of the given `tip`, or
 // `std::nullopt` if the tip doesn't have a badge. `has_product_image` is used
 // to determine the correct badge for the shopping tip.
-std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
-                                                       bool has_product_image) {
+std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
+                                                 bool has_product_image) {
   switch (tip) {
     case TipIdentifier::kLensShop: {
       if (has_product_image) {
-        SymbolConfig result = {SysNSStringToUTF8(kCameraLensSymbol), false};
-
-        return result;
+        return SymbolCameraLens;
       }
 
-      SymbolConfig result = {SysNSStringToUTF8(kCartSymbol), true};
-
-      return result;
+      return SymbolCart;
     }
     case TipIdentifier::kLensTranslate: {
-      SymbolConfig result = {SysNSStringToUTF8(kLanguageSymbol), false};
-
-      return result;
+      return SymbolLanguage;
     }
     default:
       return std::nullopt;
@@ -131,12 +119,9 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
 @interface TipsModuleConfig ()
 
-// Config for the shape and size of the SF Symbol used for this Tips module.
-@property(nonatomic, readonly) SymbolConfig symbolConfig;
-
 // Config for the shape and size of the SF Symbol used for the badge on this
 // Tips module.
-@property(nonatomic, readonly) std::optional<SymbolConfig> badgeSymbolConfig;
+@property(nonatomic, readonly) std::optional<Symbol> badgeSymbolConfig;
 
 @end
 
@@ -151,11 +136,7 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
 #pragma mark - Accessors
 
-- (SymbolConfig)symbolConfig {
-  return GetSymbolConfigForTip(self.identifier);
-}
-
-- (std::optional<SymbolConfig>)badgeSymbolConfig {
+- (std::optional<Symbol>)badgeSymbolConfig {
   return GetBadgeSymbolConfigForTip(self.identifier, [self productImage]);
 }
 
@@ -258,8 +239,8 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   return [self productImage];
 }
 
-- (NSString*)iconName {
-  return SysUTF8ToNSString(self.symbolConfig.name);
+- (Symbol)symbol {
+  return SymbolForTip(self.identifier);
 }
 
 - (IconViewSourceType)iconSource {
@@ -302,19 +283,15 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   }
 }
 
-- (BOOL)usesDefaultSymbol {
-  return self.symbolConfig.is_default_symbol;
-}
-
 - (CGFloat)iconWidth {
   return kSymbolWidth;
 }
 
-- (NSString*)badgeSymbolName {
+- (Symbol)badgeSymbol {
   if (!self.badgeSymbolConfig.has_value()) {
-    return nil;
+    return SymbolNone;
   }
-  return SysUTF8ToNSString(self.badgeSymbolConfig.value().name);
+  return self.badgeSymbolConfig.value();
 }
 
 - (NSArray<UIColor*>*)badgeColorPalette {
@@ -352,13 +329,6 @@ std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     default:
       return nil;
   }
-}
-
-- (BOOL)badgeUsesDefaultSymbol {
-  if (!self.badgeSymbolConfig.has_value()) {
-    return NO;
-  }
-  return self.badgeSymbolConfig.value().is_default_symbol;
 }
 
 #pragma mark - IconDetailViewTapDelegate

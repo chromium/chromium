@@ -49,11 +49,8 @@ UIImageView* IconForSymbol(
     config = [config configurationByApplyingConfiguration:colorConfig];
   }
 
-  UIImage* image = icon_view_configuration.defaultSymbol
-                       ? DefaultSymbolWithConfiguration(
-                             icon_view_configuration.iconName, config)
-                       : CustomSymbolWithConfiguration(
-                             icon_view_configuration.iconName, config);
+  UIImage* image =
+      SymbolWithConfiguration(icon_view_configuration.symbol, config);
 
   // If no color palette is provided, make the symbol multicolor.
   if (!icon_view_configuration.symbolColorPalette) {

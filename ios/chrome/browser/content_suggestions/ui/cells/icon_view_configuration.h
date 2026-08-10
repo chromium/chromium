@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 enum class IconViewSourceType {
   // This icon should be retrieved from an SF symbol.
   kSymbol = 0,
@@ -26,22 +28,21 @@ enum class IconViewSourceType {
 @property(nonatomic, assign) BOOL inSquare;
 
 // Icon properties.
-// The name of the image or symbol for the icon.
-@property(nonatomic, copy) NSString* iconName;
 // The type of resource to retrieve this icon from.
 @property(nonatomic, assign) IconViewSourceType iconSource;
+// The name of the image for the icon. Nil if it is a symbol.
+@property(nonatomic, copy) NSString* iconName;
+// The Symbol to use.
+@property(nonatomic, assign) Symbol symbol;
 // The color palette of the icon.
 @property(nonatomic, copy) NSArray<UIColor*>* symbolColorPalette;
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* symbolBackgroundColor;
 // The width of the icon.
 @property(nonatomic, assign) CGFloat iconWidth;
-// YES if `symbol` is a default symbol name. (NO if `symbol` is a custom
-// symbol name.)
-@property(nonatomic, assign) BOOL defaultSymbol;
 
 // Convenience initializer to create a configuration with a `symbol`.
-+ (instancetype)configurationWithSymbolNamed:(NSString*)symbolName;
++ (instancetype)configurationWithSymbol:(Symbol)symbol;
 
 // Convenience initializer to create a configuration with an `image`.
 + (instancetype)configurationWithImageNamed:(NSString*)imageName;

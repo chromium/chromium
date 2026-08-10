@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_ICON_DETAIL_VIEW_CONFIG_H_
 
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 // The possible layout types for a given `IconDetailView`. These values
 // determine how the content within the `IconDetailView` is arranged.
@@ -75,30 +76,28 @@ enum class IconViewSourceType;
 @property(nonatomic, strong) UIImage* backgroundImage;
 
 // Icon properties.
-// The name of the image or symbol to be displayed in the view.
-@property(nonatomic, copy) NSString* iconName;
 // The type of resource (symbol, local image) to retrieve this icon from.
 @property(nonatomic, assign) IconViewSourceType iconSource;
+// The name of the image to be displayed in the view.
+@property(nonatomic, copy) NSString* iconName;
+// The Symbol to use.
+@property(nonatomic, assign) Symbol symbol;
 // The color palette of the symbol displayed in the view.
 @property(nonatomic, copy) NSArray<UIColor*>* symbolColorPalette;
 // The background color of the symbol displayed in the view.
 @property(nonatomic, strong) UIColor* symbolBackgroundColor;
-// Indicates whether the symbol is a default symbol.
-@property(nonatomic, assign) BOOL usesDefaultSymbol;
 // The width of the icon.
 @property(nonatomic, assign) CGFloat iconWidth;
 
 // Badge properties.
-// The symbol name of the Badge Icon to be displayed in the view.
-@property(nonatomic, copy) NSString* badgeSymbolName;
+// The symbol of the Badge Icon to be displayed in the view.
+@property(nonatomic, assign) Symbol badgeSymbol;
 // The color palette of the badge symbol displayed in the view.
 @property(nonatomic, copy) NSArray<UIColor*>* badgeColorPalette;
 // The background color of the Badge Icon to be displayed in the view.
 @property(nonatomic, strong) UIColor* badgeBackgroundColor;
 // The shape configuration of the badge displayed on the icon.
 @property(nonatomic, assign) BadgeShapeConfig badgeShapeConfig;
-// Indicates whether the Badge's Icon is a default symbol.
-@property(nonatomic, assign) BOOL badgeUsesDefaultSymbol;
 
 @property(nonatomic, strong) NewTabPageColorPalette* ntpBackgroundColorPalette;
 // LINT.ThenChange(icon_detail_view_config.mm:Copy)

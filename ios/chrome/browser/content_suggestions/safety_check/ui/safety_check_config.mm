@@ -174,20 +174,20 @@ using l10n_util::GetNSStringF;
   return self.itemType == SafetyCheckItemType::kAllSafe;
 }
 
-- (NSString*)iconName {
+- (Symbol)symbol {
   switch (self.itemType) {
     case SafetyCheckItemType::kUpdateChrome:
-      return kInfoCircleSymbol;
+      return SymbolInfoCircle;
     case SafetyCheckItemType::kPassword:
-      return kPasswordSymbol;
+      return SymbolPassword;
     case SafetyCheckItemType::kSafeBrowsing:
-      return kPrivacySymbol;
+      return SymbolPrivacy;
     case SafetyCheckItemType::kAllSafe:
     case SafetyCheckItemType::kRunning:
     case SafetyCheckItemType::kDefault:
-      return kSafetyCheckSymbol;
+      return SymbolSafetyCheck;
     default:
-      return nil;
+      return SymbolNone;
   }
 }
 
@@ -213,10 +213,6 @@ using l10n_util::GetNSStringF;
   } else {
     return [UIColor colorNamed:kBlueHaloColor];
   }
-}
-
-- (BOOL)usesDefaultSymbol {
-  return [self.iconName isEqualToString:kInfoCircleSymbol];
 }
 
 - (CGFloat)iconWidth {
