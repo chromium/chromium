@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
@@ -39,11 +40,11 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/send_tab_to_self/target_device_list_waiter.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -58,6 +59,7 @@ SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
 }
 
 void SendTabToSelfBubbleController::HideBubble() {
+  target_device_list_waiter_.reset();
   if (send_tab_to_self_bubble_view_) {
     send_tab_to_self_bubble_view_->Hide();
   }
@@ -75,24 +77,16 @@ void SendTabToSelfBubbleController::ShowBubble(ShareEntryPoint entry_point,
 
   show_back_button_ = show_back_button;
 
-  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      GetEntryPointDisplayReason();
+  std::optional<EntryPointDisplayReason> reason = GetEntryPointDisplayReason();
 
   if (!reason) {
     // If the user has just signed in, the model might not be ready yet.
-    // Defer the bubble display until the model is fully loaded and ready.
-    if (ShouldStartWaitingForModel()) {
-      StartWaitingForModel();
-    }
+    // Defer the bubble display until the target device list is ready.
+    StartWaitingForTargetDeviceList();
     return;
   }
 
-  // If we were waiting for the model but it is now ready, clear the waiting
-  // state.
-  if (model_observation_.IsObserving()) {
-    model_observation_.Reset();
-  }
-
+  target_device_list_waiter_.reset();
   ShowBubbleImpl(*reason);
 }
 
@@ -357,14 +351,17 @@ void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(
       ->SetSelectorGenerationTimeoutForTesting(timeout);
 }
 
-void SendTabToSelfBubbleController::OnModelReady() {
-  model_observation_.Reset();
+void SendTabToSelfBubbleController::ShowBubbleWhenTargetDeviceListReady() {
+  target_device_list_waiter_.reset();
 
-  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      GetEntryPointDisplayReason();
-  // If the user signed out or sync has been disabled during the asynchronous
-  // wait, the model will no longer be in a state where we should show the
-  // bubble.
+  // Avoid duplicate bubble presentation if one is already showing.
+  if (send_tab_to_self_bubble_view_) {
+    return;
+  }
+
+  std::optional<EntryPointDisplayReason> reason = GetEntryPointDisplayReason();
+  // If the user signed out, reauth is required, or sync was disabled during
+  // the asynchronous wait, the bubble should not be shown.
   if (!reason.has_value() ||
       reason.value() == EntryPointDisplayReason::kOfferSignIn ||
       reason.value() == EntryPointDisplayReason::kOfferReauth) {
@@ -374,16 +371,21 @@ void SendTabToSelfBubbleController::OnModelReady() {
   ShowBubbleImpl(*reason);
 }
 
-bool SendTabToSelfBubbleController::ShouldStartWaitingForModel() {
-  send_tab_to_self::SendTabToSelfModel* model = GetModel();
-  return model && !model->IsReady() && !model_observation_.IsObserving();
-}
-
-void SendTabToSelfBubbleController::StartWaitingForModel() {
-  send_tab_to_self::SendTabToSelfModel* model = GetModel();
-  if (model && !model_observation_.IsObserving()) {
-    model_observation_.Observe(model);
+void SendTabToSelfBubbleController::StartWaitingForTargetDeviceList() {
+  if (target_device_list_waiter_) {
+    return;
   }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(GetProfile());
+  SendTabToSelfSyncService* send_tab_to_self_service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
+  target_device_list_waiter_ = std::make_unique<TargetDeviceListWaiter>(
+      sync_service, send_tab_to_self_service,
+      GetWebContents().GetLastCommittedURL(),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &SendTabToSelfBubbleController::ShowBubbleWhenTargetDeviceListReady,
+          weak_ptr_factory_.GetWeakPtr())));
 }
 
 // Static:

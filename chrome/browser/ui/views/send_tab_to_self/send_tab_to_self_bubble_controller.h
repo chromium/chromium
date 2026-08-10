@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -54,12 +53,12 @@ class SendTabToSelfBubbleView;
 struct TargetDeviceInfo;
 
 class SendTabToSelfModel;
+class TargetDeviceListWaiter;
 
 class SendTabToSelfBubbleController
     : public content::WebContentsUserData<SendTabToSelfBubbleController>,
       public content::WebContentsObserver,
-      public views::WidgetObserver,
-      public send_tab_to_self::SendTabToSelfModelObserver {
+      public views::WidgetObserver {
  public:
   SendTabToSelfBubbleController(const SendTabToSelfBubbleController&) = delete;
   SendTabToSelfBubbleController& operator=(
@@ -119,7 +118,7 @@ class SendTabToSelfBubbleController
   friend class content::WebContentsUserData<SendTabToSelfBubbleController>;
 
   Profile* GetProfile();
-  send_tab_to_self::SendTabToSelfModel* GetModel();
+  SendTabToSelfModel* GetModel();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
 
   // Prepares the anchor and initiates showing the bubble for a specific reason.
@@ -142,17 +141,9 @@ class SendTabToSelfBubbleController
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // send_tab_to_self::SendTabToSelfModelObserver:
-  void OnModelReady() override;
+  void ShowBubbleWhenTargetDeviceListReady();
 
-  // Returns true if the user is signed in to their Chrome profile but the Send
-  // Tab to Self model is not yet ready, indicating the controller should wait
-  // and observe the model.
-  bool ShouldStartWaitingForModel();
-
-  // Registers the controller as an observer to listen for the
-  // Send Tab to Self model's readiness.
-  void StartWaitingForModel();
+  void StartWaitingForTargetDeviceList();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<SendTabToSelfBubbleView> send_tab_to_self_bubble_view_ = nullptr;
@@ -166,9 +157,8 @@ class SendTabToSelfBubbleController
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
-                          send_tab_to_self::SendTabToSelfModelObserver>
-      model_observation_{this};
+  // Non-null while waiting for the target device list to be ready after sign-in.
+  std::unique_ptr<TargetDeviceListWaiter> target_device_list_waiter_;
 
   base::WeakPtrFactory<SendTabToSelfBubbleController> weak_ptr_factory_{this};
 
