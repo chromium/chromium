@@ -6,9 +6,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -30,6 +30,7 @@ class ChromeBrowserCloudManagementControllerAndroidTest : public testing::Test {
   ~ChromeBrowserCloudManagementControllerAndroidTest() override = default;
 
   void SetUp() override {
+    storage_.SetClientId("client_id");
     // SystemNetworkContextManager is a dependency for the provisioning service.
     // It must be initialized for the test.
     SystemNetworkContextManager::CreateInstance(
@@ -40,13 +41,13 @@ class ChromeBrowserCloudManagementControllerAndroidTest : public testing::Test {
 
   void TearDown() override {
     BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
-    android::SaveDmTokenInSharedPreferences(std::string());
     // Clean up the SystemNetworkContextManager.
     SystemNetworkContextManager::DeleteInstance();
   }
 
  protected:
   MockPolicyService mock_policy_service_;
+  FakeBrowserDMTokenStorage storage_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -63,8 +64,9 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
   // enrollment token is not available in the policy service.
   EXPECT_FALSE(delegate.ReadyToCreatePolicyManager());
 
+  storage_.SetDMToken("dm-token");
+  storage_.ResetForTesting();
   // Ready to create policy manager because the DMToken is set.
-  android::SaveDmTokenInSharedPreferences("dm-token");
   EXPECT_TRUE(delegate.ReadyToCreatePolicyManager());
 }
 
@@ -95,8 +97,9 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest, ReadyToInit_DMToken) {
   // enrollment token is not available in the policy service.
   EXPECT_FALSE(delegate.ReadyToInit());
 
+  storage_.SetDMToken("dm-token");
+  storage_.ResetForTesting();
   // Ready to initialize controller because DMToken is available.
-  android::SaveDmTokenInSharedPreferences("dm-token");
   EXPECT_TRUE(delegate.ReadyToInit());
 }
 
@@ -111,7 +114,7 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
   // enrollment token is not available in the policy service.
   EXPECT_FALSE(delegate.ReadyToInit());
 
-  // Not ready to initialize controller after enrollment token available in the
+  // Ready to initialize controller after enrollment token available in the
   // policy service.
   policy_map.Set(key::kCloudManagementEnrollmentToken, PolicyMap::Entry());
   EXPECT_TRUE(delegate.ReadyToInit());

@@ -19,10 +19,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace enterprise::test {
 
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
@@ -37,10 +33,6 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     management_context_.is_cloud_machine_managed = true;
     browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
     browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
-#if BUILDFLAG(IS_ANDROID)
-    policy::android::SaveDmTokenInSharedPreferences(
-        std::string(kBrowserDmToken));
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 
