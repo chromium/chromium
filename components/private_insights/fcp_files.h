@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FILES_H_
-#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FILES_H_
+#ifndef COMPONENTS_PRIVATE_INSIGHTS_FCP_FILES_H_
+#define COMPONENTS_PRIVATE_INSIGHTS_FCP_FILES_H_
 
 #include <string>
 
@@ -26,4 +26,4 @@ class FcpFiles : public fcp::client::Files {
 
 }  // namespace private_insights
 
-#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FILES_H_
+#endif  // COMPONENTS_PRIVATE_INSIGHTS_FCP_FILES_H_

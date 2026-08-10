@@ -23,6 +23,6 @@ source_set("private_insights") {
   # of ODR violations related to any.proto.  This can get removed when we stop
   # using libprotobuf-mutator or it stops being linked with this target.
   if (!use_fuzzing_engine) {
-    public_deps += [ "//components/metrics/private_metrics/private_insights" ]
+    public_deps += [ "//components/private_insights" ]
   }
 }

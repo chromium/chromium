@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/private_insights_service.h"
+#include "components/private_insights/private_insights_service.h"
 
 #include <string>
 
@@ -18,14 +18,14 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/private_metrics/private_insights/fcp_event_publisher.h"
-#include "components/metrics/private_metrics/private_insights/fcp_files.h"
-#include "components/metrics/private_metrics/private_insights/fcp_flags.h"
-#include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
-#include "components/metrics/private_metrics/private_insights/fcp_log_manager.h"
-#include "components/metrics/private_metrics/private_insights/fcp_simple_task_environment.h"
-#include "components/metrics/private_metrics/private_insights/private_insights_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/private_insights/fcp_event_publisher.h"
+#include "components/private_insights/fcp_files.h"
+#include "components/private_insights/fcp_flags.h"
+#include "components/private_insights/fcp_http_client.h"
+#include "components/private_insights/fcp_log_manager.h"
+#include "components/private_insights/fcp_simple_task_environment.h"
+#include "components/private_insights/private_insights_features.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/fcp_simple_task_environment.h"
+#include "components/private_insights/fcp_simple_task_environment.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/grit/components_resources.h"
-#include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
+#include "components/private_insights/fcp_http_client.h"
 #include "third_party/federated_compute/chromium/fcp/client/attestation/attestation_transparency_verifier.h"
 #include "third_party/federated_compute/chromium/fcp/protos/confidentialcompute/access_policy_endorsement_options.pb.h"
 #include "third_party/federated_compute/src/fcp/client/attestation/attestation_verifier.h"

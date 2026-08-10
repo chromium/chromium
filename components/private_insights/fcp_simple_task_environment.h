@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_
-#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_
+#ifndef COMPONENTS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_
+#define COMPONENTS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_
 
 #include "base/memory/ref_counted.h"
 #include "third_party/federated_compute/src/fcp/client/attestation/attestation_verifier.h"
@@ -61,4 +61,4 @@ class FcpSimpleTaskEnvironment
 
 }  // namespace private_insights
 
-#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_
+#endif  // COMPONENTS_PRIVATE_INSIGHTS_FCP_SIMPLE_TASK_ENVIRONMENT_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/fcp_flags.h"
+#include "components/private_insights/fcp_flags.h"
 
-#include "components/metrics/private_metrics/private_insights/private_insights_features.h"
+#include "components/private_insights/private_insights_features.h"
 
 namespace private_insights {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/fcp_simple_task_environment.h"
+#include "components/private_insights/fcp_simple_task_environment.h"
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
+#include "components/private_insights/fcp_http_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/federated_compute/src/fcp/client/attestation/attestation_verifier.h"
 #include "third_party/federated_compute/src/fcp/client/example_query_result.pb.h"

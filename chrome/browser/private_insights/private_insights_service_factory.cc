@@ -15,8 +15,8 @@
 #include "content/public/browser/storage_partition.h"
 
 #if !BUILDFLAG(USE_FUZZING_ENGINE)
-#include "components/metrics/private_metrics/private_insights/private_insights_features.h"  // nogncheck
-#include "components/metrics/private_metrics/private_insights/private_insights_service.h"  // nogncheck
+#include "components/private_insights/private_insights_features.h"  // nogncheck
+#include "components/private_insights/private_insights_service.h"   // nogncheck
 #endif
 
 namespace private_insights {

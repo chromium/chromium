@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/private_insights_service.h"
+#include "components/private_insights/private_insights_service.h"
 
 #include <atomic>
 
@@ -14,10 +14,10 @@
 #include "base/test/task_environment.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
-#include "components/metrics/private_metrics/private_insights/fcp_simple_task_environment.h"
-#include "components/metrics/private_metrics/private_insights/private_insights_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/private_insights/fcp_simple_task_environment.h"
+#include "components/private_insights/private_insights_features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -158,7 +158,6 @@ TEST_F(PrivateInsightsServiceTest, ShutdownLogsHistogram) {
 }
 
 TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
-
   TestingPrefServiceSimple local_state;
   local_state.registry()->RegisterBooleanPref(
       metrics::prefs::kMetricsReportingEnabled, false);
@@ -195,7 +194,6 @@ TEST_F(PrivateInsightsServiceTest, MetricsChoiceCoupling) {
 }
 
 TEST_F(PrivateInsightsServiceTest, MetricsChoiceRespectedOnStartup) {
-
   PrivateInsightsMetricsServiceAccessor::
       SetForceIsMetricsReportingEnabledPrefLookupForTesting(true);
 

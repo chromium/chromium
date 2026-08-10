@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
+#include "components/private_insights/fcp_http_client.h"
 
 #include <atomic>
 #include <memory>

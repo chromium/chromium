@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/fcp_http_client.h"
+#include "components/private_insights/fcp_http_client.h"
 
 #include <atomic>
 #include <cstdint>
@@ -23,7 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/metrics/private_metrics/private_insights/fcp_utils.h"
+#include "components/private_insights/fcp_utils.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/filter/source_stream_type.h"
@@ -66,7 +66,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         destination: GOOGLE_OWNED_SERVICE
         internal {
           contacts {
-            owners: "//components/metrics/private_metrics/OWNERS"
+            owners: "//components/private_insights/OWNERS"
           }
         }
         user_data {

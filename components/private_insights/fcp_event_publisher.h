@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_
-#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_
+#ifndef COMPONENTS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_
+#define COMPONENTS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -286,4 +286,4 @@ class FcpEventPublisher : public fcp::client::EventPublisher {
 
 }  // namespace private_insights
 
-#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_
+#endif  // COMPONENTS_PRIVATE_INSIGHTS_FCP_EVENT_PUBLISHER_H_

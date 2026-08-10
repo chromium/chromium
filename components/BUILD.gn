@@ -837,6 +837,7 @@ test("components_unittests") {
       "//components/metrics/private_metrics:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/metrics/structured/mojom:unit_tests",
+      "//components/private_insights:unit_tests",
       "//components/stability_report:unit_tests",
       "//components/webapps/isolated_web_apps:unit_tests",
     ]

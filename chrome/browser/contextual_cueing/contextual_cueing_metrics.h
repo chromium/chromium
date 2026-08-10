@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_
-#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_
+#ifndef COMPONENTS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_
+#define COMPONENTS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_
 
 #include <optional>
 #include <string>
@@ -22,8 +22,8 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/metrics/metrics_service_accessor.h"
-#include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/private_insights/events/contextual_cue_log_event.pb.h"
 
 class PrefService;
 
@@ -216,4 +216,4 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
 }  // namespace private_insights
 
-#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_
+#endif  // COMPONENTS_PRIVATE_INSIGHTS_PRIVATE_INSIGHTS_SERVICE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FLAGS_H_
-#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FLAGS_H_
+#ifndef COMPONENTS_PRIVATE_INSIGHTS_FCP_FLAGS_H_
+#define COMPONENTS_PRIVATE_INSIGHTS_FCP_FLAGS_H_
 
 #include <cstdint>
 
@@ -47,4 +47,4 @@ class FcpFlags : public fcp::client::Flags {
 
 }  // namespace private_insights
 
-#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_INSIGHTS_FCP_FLAGS_H_
+#endif  // COMPONENTS_PRIVATE_INSIGHTS_FCP_FLAGS_H_

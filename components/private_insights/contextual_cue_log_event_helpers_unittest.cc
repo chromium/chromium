@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/private_metrics/private_insights/contextual_cue_log_event_helpers.h"
+#include "components/private_insights/contextual_cue_log_event_helpers.h"
 
 #include <vector>
 
 #include "base/test/values_test_util.h"
-#include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
+#include "components/private_insights/events/contextual_cue_log_event.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

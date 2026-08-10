@@ -527,7 +527,7 @@ Refer to README.md for content description and update process.
  <item id="partial_translate_one_platform" added_in_milestone="150" content_hash_code="0356ccc0" os_list="linux,windows,android,chromeos" file_path="components/translate/content/browser/contextual_translate_delegate.cc" />
  <item id="contextual_search_fpop_service" added_in_milestone="150" content_hash_code="07a1f58b" os_list="linux,windows,android,chromeos" file_path="components/contextual_search/footprints/internal/fpop_service_impl.cc" />
  <item id="web_install_manifest_fetcher" added_in_milestone="151" content_hash_code="0593db17" os_list="linux,windows,chromeos" file_path="chrome/browser/web_applications/web_install_manifest_fetcher.cc" />
- <item id="private_insights_fcp_http" added_in_milestone="151" content_hash_code="0459da1c" os_list="linux,windows,android,chromeos" file_path="components/metrics/private_metrics/private_insights/fcp_http_client.cc" />
+ <item id="private_insights_fcp_http" added_in_milestone="151" content_hash_code="05f37c08" os_list="linux,windows,android,chromeos" file_path="components/private_insights/fcp_http_client.cc" />
  <item id="doodle_impression_android" added_in_milestone="152" content_hash_code="00cd483d" os_list="android" file_path="chrome/browser/ui/android/logo/logo_bridge.cc" />
  <item id="enterprise_proxy_pvd_fetch" added_in_milestone="152" content_hash_code="038d0700" os_list="linux,windows,chromeos,android" file_path="components/enterprise/net/core/provisioning_domain_client.cc" />
  <item id="read_aloud_generate_text" added_in_milestone="152" content_hash_code="004d1146" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
