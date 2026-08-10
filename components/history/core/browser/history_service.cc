@@ -1483,10 +1483,13 @@ bool HistoryService::Init(
 
   // Unit tests can inject `backend_task_runner_` before this is called.
   if (!backend_task_runner_) {
+    base::TaskPriority priority = base::TaskPriority::USER_BLOCKING;
+    if (base::FeatureList::IsEnabled(kHistoryInitPrioritySettings)) {
+      priority = kHistoryInitPriority.Get();
+    }
     backend_task_runner_ =
         base::ThreadPool::CreateSequencedTaskRunnerForResource(
-            {base::MayBlock(), base::WithBaseSyncPrimitives(),
-             base::TaskPriority::USER_BLOCKING,
+            {base::MayBlock(), base::WithBaseSyncPrimitives(), priority,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
             history_dir_.Append(kHistoryFilename));
   }
