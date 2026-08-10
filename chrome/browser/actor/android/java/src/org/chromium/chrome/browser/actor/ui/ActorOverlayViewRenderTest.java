@@ -181,7 +181,7 @@ public class ActorOverlayViewRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.getMediator().setOverlayVisible(true);
-                    mCoordinator.getView().setHovered(true);
+                    mParentView.findViewById(R.id.actor_overlay).setHovered(true);
                 });
 
         CriteriaHelper.pollUiThread(

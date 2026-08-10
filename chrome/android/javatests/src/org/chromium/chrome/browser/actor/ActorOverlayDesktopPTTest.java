@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -55,8 +56,8 @@ public class ActorOverlayDesktopPTTest {
                     assertNotNull(rootUiCoordinator.getActorOverlayCoordinatorForTesting());
                 });
 
-        // The overlay should not be displayed initially, but it is inflated.
-        onView(withId(R.id.actor_overlay)).check(matches(not(isDisplayed())));
+        // The overlay should not be inflated initially.
+        onView(withId(R.id.actor_overlay)).check(doesNotExist());
 
         // Show the overlay and check that it's displayed.
         showOverlay(true);
