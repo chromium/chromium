@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
     (const bookmarks::BookmarkNode*)bookmarkNode;
 
-// Callback for the SigninPresenter.
+// Callback for the Signin.
 - (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
 
 @end

@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 class Browser;
-@protocol SigninPresenter;
 @protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;

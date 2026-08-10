@@ -4052,25 +4052,9 @@
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
-  if (_signinCoordinator.viewWillPersist) {
-    return;
-  }
-  [_signinCoordinator stop];
-  _signinCoordinator = [SigninCoordinator
-      signinCoordinatorWithCommand:command
-                           browser:signin::GetRegularBrowser(self.browser)
-                baseViewController:self.viewController];
-  __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion =
-      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
-        id<SystemIdentity> identity) {
-        SigninCoordinatorCompletionCallback completion = command.completion;
-        if (completion) {
-          completion(coordinator, result, identity);
-        }
-        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator];
-      };
-  [_signinCoordinator start];
+  [HandlerForProtocol(self.dispatcher, SceneCommands)
+              showSignin:command
+      baseViewController:self.viewController];
 }
 
 #pragma mark - SnapshotGeneratorDelegate methods
