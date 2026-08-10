@@ -50,6 +50,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/scan_save_and_fill/coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/autofill/wallet_reminder_notice/ui",
     "//ios/chrome/browser/consent_auditor/model",
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/history/model",

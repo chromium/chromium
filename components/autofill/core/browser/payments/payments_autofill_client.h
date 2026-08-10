@@ -88,6 +88,8 @@ class MultipleRequestPaymentsNetworkInterface;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 class SaveAndFillManager;
+class WalletReminderNoticeManager;
+class WalletReminderNoticeUiDelegate;
 
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
@@ -818,6 +820,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the `BnplUiDelegate` instance associated with the client. Handles the
   // UI in the BNPL flow depending on the platform.
   virtual BnplUiDelegate* GetBnplUiDelegate() = 0;
+
+  // Gets the `WalletReminderNoticeUiDelegate` instance associated with the
+  // client. Handles the UI for the Wallet Reminder Notice.
+  virtual WalletReminderNoticeUiDelegate* GetWalletReminderNoticeUiDelegate();
+
+  // Gets the `WalletReminderNoticeManager` instance associated with the
+  // client.
+  virtual WalletReminderNoticeManager* GetWalletReminderNoticeManager();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the `OmniboxAutofillDelegate` instance associated with the client, or

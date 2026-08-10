@@ -37,6 +37,7 @@
 #import "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#import "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
@@ -60,6 +61,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_ui_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -690,6 +692,23 @@ BnplUiDelegate* IOSChromePaymentsAutofillClient::GetBnplUiDelegate() {
     bnpl_ui_delegate_ = std::make_unique<IosBnplUiDelegate>(&client_.get());
   }
   return bnpl_ui_delegate_.get();
+}
+
+WalletReminderNoticeUiDelegate*
+IOSChromePaymentsAutofillClient::GetWalletReminderNoticeUiDelegate() {
+  if (!wallet_reminder_notice_ui_delegate_) {
+    wallet_reminder_notice_ui_delegate_.emplace(web_state_,
+                                                client_->commands_handler());
+  }
+  return &*wallet_reminder_notice_ui_delegate_;
+}
+
+WalletReminderNoticeManager*
+IOSChromePaymentsAutofillClient::GetWalletReminderNoticeManager() {
+  if (!wallet_reminder_notice_manager_) {
+    wallet_reminder_notice_manager_.emplace(&client_.get());
+  }
+  return &*wallet_reminder_notice_manager_;
 }
 
 void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(

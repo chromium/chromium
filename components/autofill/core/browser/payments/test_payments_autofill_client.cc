@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -484,6 +485,20 @@ BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
 
 BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
   return bnpl_ui_delegate_.get();
+}
+
+WalletReminderNoticeUiDelegate*
+TestPaymentsAutofillClient::GetWalletReminderNoticeUiDelegate() {
+  return wallet_reminder_notice_ui_delegate_.get();
+}
+
+WalletReminderNoticeManager*
+TestPaymentsAutofillClient::GetWalletReminderNoticeManager() {
+  if (!wallet_reminder_notice_manager_) {
+    wallet_reminder_notice_manager_ =
+        std::make_unique<WalletReminderNoticeManager>(&client_.get());
+  }
+  return wallet_reminder_notice_manager_.get();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

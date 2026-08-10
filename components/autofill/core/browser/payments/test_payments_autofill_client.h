@@ -27,10 +27,12 @@
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -236,6 +238,14 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool IsTabModalPopup() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
+  WalletReminderNoticeUiDelegate* GetWalletReminderNoticeUiDelegate() override;
+  WalletReminderNoticeManager* GetWalletReminderNoticeManager() override;
+
+  void set_wallet_reminder_notice_ui_delegate(
+      std::unique_ptr<WalletReminderNoticeUiDelegate> ui_delegate) {
+    wallet_reminder_notice_ui_delegate_ = std::move(ui_delegate);
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowExpandedOmniboxAutofillChip(
@@ -484,6 +494,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // platform.
   // Lazily initialized: access only through `GetBnplUiDelegate()`.
   std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
+
+  std::unique_ptr<WalletReminderNoticeUiDelegate>
+      wallet_reminder_notice_ui_delegate_;
+  std::unique_ptr<WalletReminderNoticeManager> wallet_reminder_notice_manager_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The OmniboxAutofillDelegate used to handle the logic flow and user
