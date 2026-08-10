@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -182,6 +183,13 @@ class FuseboxAttachmentViewBinder {
         @ColorInt
         int colorSurface = OmniboxResourceProvider.getColorSurface(context, brandedColorScheme);
         @ColorInt int closeBgColor = ColorUtils.setAlphaComponentWithFloat(colorSurface, 0.64f);
-        closeButton.getBackground().setTint(closeBgColor);
+        Drawable closeBg = closeButton.getBackground();
+        closeBg.setTint(closeBgColor);
+        if (closeBg instanceof RippleDrawable ripple) {
+            ripple.setRadius(
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.fusebox_attachment_remove_highlight_inset));
+        }
     }
 }

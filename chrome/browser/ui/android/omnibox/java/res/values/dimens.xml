@@ -210,6 +210,7 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_remove_vertical_padding">
         @dimen/fusebox_attachment_close_padding
     </dimen>
+    <dimen name="fusebox_attachment_remove_highlight_inset">12dp</dimen>
     <dimen name="fusebox_attachment_remove_width">
         @dimen/min_touch_target_size
     </dimen>
