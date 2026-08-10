@@ -429,11 +429,12 @@ IN_PROC_BROWSER_TEST_P(
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
 
   // Simulate the case when the server already knows another device which is
-  // not subscribed to BOOKMARKS.
-  InjectDeviceInfoEntityToServer(
-      kRemoteDeviceCacheGuid,
-      Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS}),
-      kRemoteFCMRegistrationToken);
+  // subscribed only to NIGORI. This ensures that other data types (e.g.
+  // PREFERENCES) that may be committed alongside BOOKMARKS do not cause the
+  // remote token to be included in
+  // fcm_registration_tokens_for_interested_clients.
+  InjectDeviceInfoEntityToServer(kRemoteDeviceCacheGuid, {syncer::NIGORI},
+                                 kRemoteFCMRegistrationToken);
   ASSERT_TRUE(SetupSync());
 
   // Commit a new bookmark to check if the next commit message has FCM
