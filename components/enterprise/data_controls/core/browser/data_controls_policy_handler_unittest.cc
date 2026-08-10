@@ -707,6 +707,22 @@ TEST_F(DataControlsPolicyHandlerTest, WithValidPolicy) {
   }
 }
 
+TEST_F(DataControlsPolicyHandlerTest, EarlyInitializationSafetyCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
+  policy::PolicyMap map =
+      CreatePolicyMap(kValidPolicy, policy::PolicySource::POLICY_SOURCE_CLOUD);
+  auto handler = std::make_unique<DataControlsPolicyHandler>(
+      kPolicyName, kTestPref, schema());
+  policy::PolicyErrorMap errors;
+  ASSERT_TRUE(handler->CheckPolicySettings(map, &errors));
+
+  auto* feature = base::FeatureList::GetEarlyAccessedFeatureForTesting();
+  EXPECT_EQ(nullptr, feature) << "Dangerous early access detected for feature: "
+      << feature->name
+      << ". This can cause the browser to crash.";
+}
+
 TEST_F(DataControlsPolicyHandlerTest, WarnInvalidSchema) {
   for (auto scope : kCloudSources) {
     policy::PolicyMap map = CreatePolicyMap(kInvalidPolicy, scope);
