@@ -255,10 +255,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // via --force-renderer-accessibility on the command line.
   std::unique_ptr<ScopedAccessibilityMode> forced_accessibility_mode_;
 
-  // A ScopedAccessibilityMode that holds process-wide mode flags required to
-  // support the platform API calls being used.
-  std::unique_ptr<ScopedAccessibilityMode> platform_ax_mode_;
-
   // Keeps track of whether the Accessibility Performance Measurement Experiment
   // is currently active. This is necessary because there are cases where we
   // don't want to make the experiment active, and checking the state of the
@@ -266,6 +262,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // are met, this will contain the mode of the current experiment group,
   // nullptr otherwise.
   std::unique_ptr<ScopedAccessibilityMode> experiment_accessibility_mode_;
+
+  // A ScopedAccessibilityMode that holds process-wide mode flags required to
+  // support the platform API calls being used.
+  std::unique_ptr<ScopedAccessibilityMode> platform_ax_mode_;
 
   // The most recently hidden WebContentses; used only when the disable-on-hide
   // feature of ProgressiveAccessibility is enabled. This container holds the

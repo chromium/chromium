@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
-#include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/linux/linux_ui_getter.h"
 #include "ui/linux/primary_paste_pref_observer.h"
@@ -22,11 +21,26 @@ namespace {
 
 LinuxUi* g_linux_ui = nullptr;
 
+base::RepeatingClosureList& GetAnimationsEnabledCallbackList() {
+  static base::NoDestructor<base::RepeatingClosureList> s_callbacks;
+  return *s_callbacks;
+}
+
 }  // namespace
 
 // static
 LinuxUi* LinuxUi::SetInstance(LinuxUi* instance) {
-  return std::exchange(g_linux_ui, instance);
+  LinuxUi* old_instance = std::exchange(g_linux_ui, instance);
+  if (old_instance != instance) {
+    GetAnimationsEnabledCallbackList().Notify();
+  }
+  return old_instance;
+}
+
+// static
+base::CallbackListSubscription LinuxUi::RegisterAnimationsEnabledCallback(
+    base::RepeatingClosure callback) {
+  return GetAnimationsEnabledCallbackList().Add(std::move(callback));
 }
 
 // static
@@ -79,6 +93,10 @@ void LinuxUi::AddPrimaryPastePrefObserver(PrimaryPastePrefObserver* observer) {
 void LinuxUi::RemovePrimaryPastePrefObserver(
     PrimaryPastePrefObserver* observer) {
   primary_paste_observer_list_.RemoveObserver(observer);
+}
+
+void LinuxUi::NotifyAnimationsEnabledChanged() {
+  GetAnimationsEnabledCallbackList().Notify();
 }
 
 LinuxUi::FontSettings LinuxUi::GetDefaultFontDescription() {
