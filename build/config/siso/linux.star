@@ -33,7 +33,17 @@ def __filegroups(ctx):
     }
     return fg
 
-__handlers = {}
+def __dump_app_syms(ctx, cmd):
+    binary = ctx.fs.canonpath(cmd.args[-2])
+    dwo_dir = binary + "-dwo/"
+    inputs = []
+    if ctx.fs.exists(dwo_dir):
+        inputs.append(dwo_dir)
+    ctx.actions.fix(inputs = cmd.inputs + inputs)
+
+__handlers = {
+    "dump_app_syms": __dump_app_syms,
+}
 __handlers.update(android.handlers)
 __handlers.update(clang.handlers)
 __handlers.update(cros.handlers)
@@ -111,6 +121,14 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/gn_run_binary.py generate_fontconfig_caches",
             "remote": config.get(ctx, "cog") or config.get(ctx, "default-remote"),
             "timeout": "2m",
+        },
+        {
+            "name": "dump_app_syms",
+            "command_prefix": "python3 ../../build/linux/dump_app_syms.py",
+            "handler": "dump_app_syms",
+            "remote": config.get(ctx, "remote-link") or config.get(ctx, "cog") or config.get(ctx, "default-remote"),
+            "platform_ref": "large",
+            "timeout": "30m",
         },
     ])
 

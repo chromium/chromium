@@ -17,6 +17,10 @@ def __clang_link(ctx, cmd):
     if not (config.get(ctx, "remote-link") or config.get(ctx, "default-remote")):
         return
     inputs = []
+    outputs = []
+    reconcile_outputdirs = []
+    split_dwarf = False
+    use_lto = False
     sysroot = ""
     target = ""
     args = cmd.args
@@ -56,6 +60,10 @@ def __clang_link(ctx, cmd):
                 crl = ctx.fs.canonpath(crls[1])
                 if ctx.fs.exists(crl):
                     inputs.append(crl + ":link")
+        elif arg == "-gsplit-dwarf":
+            split_dwarf = True
+        elif arg.startswith("-flto"):
+            use_lto = True
         elif arg == "--":
             clang_base = ctx.fs.canonpath(path.dir(path.dir(cmd.args[i + 1])))
             inputs.append(clang_base + ":link")
@@ -68,7 +76,18 @@ def __clang_link(ctx, cmd):
             ])
             break
 
-    ctx.actions.fix(inputs = cmd.inputs + inputs)
+    outputs = cmd.outputs
+    reconcile_outputdirs = []
+    if split_dwarf and use_lto:
+        dwo_dir = cmd.outputs[0] + "-dwo/"
+        outputs = cmd.outputs + [dwo_dir]
+        reconcile_outputdirs = [dwo_dir]
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
+        outputs = outputs,
+        reconcile_outputdirs = reconcile_outputdirs,
+    )
 
 __handlers = {}
 __handlers.update(clang_all.handlers)
