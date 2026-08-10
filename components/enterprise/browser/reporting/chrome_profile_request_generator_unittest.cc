@@ -57,6 +57,10 @@ const bool kFakeVerifiedAppsEnabled = true;
 const int64_t kFakeSecurityPatchLevel = 1735689600000;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+constexpr char kFakeVendorId[] = "fake-vendor-id";
+#endif  // BUILDFLAG(IS_IOS)
+
 constexpr char kFakeCertData[] = "fake_cert_data";
 constexpr char kFakeSignature[] = "fake_signature";
 
@@ -87,6 +91,10 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
   os_signals.verified_apps_enabled = kFakeVerifiedAppsEnabled;
   os_signals.security_patch_ms = kFakeSecurityPatchLevel;
 #endif
+
+#if BUILDFLAG(IS_IOS)
+  os_signals.vendor_id = kFakeVendorId;
+#endif  // BUILDFLAG(IS_IOS)
 
   response.os_signals_response = os_signals;
 
@@ -278,6 +286,12 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(os_report.security_patch_ms(), kFakeSecurityPatchLevel);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+      ASSERT_TRUE(os_report.has_ios_specific_attributes());
+      EXPECT_EQ(os_report.ios_specific_attributes().vendor_id(),
+                kFakeVendorId);
+#endif  // BUILDFLAG(IS_IOS)
+
       if (agent_collection_enabled) {
         EXPECT_EQ(os_report.detected_agents(0), em::Agent::CROWDSTRIKE_FALCON);
       }
@@ -306,6 +320,9 @@ class ChromeProfileRequestGeneratorTest
       EXPECT_EQ(0, os_report.antivirus_info_size());
       EXPECT_EQ(0, os_report.hotfixes_size());
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_IOS)
+      EXPECT_FALSE(os_report.has_ios_specific_attributes());
+#endif  // BUILDFLAG(IS_IOS)
     }
 
     EXPECT_EQ(
