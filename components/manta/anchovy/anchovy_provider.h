@@ -6,7 +6,6 @@
 #define COMPONENTS_MANTA_ANCHOVY_ANCHOVY_PROVIDER_H_
 
 #include <cstdint>
-#include <vector>
 
 #include "base/component_export.h"
 #include "base/version_info/channel.h"

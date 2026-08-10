@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_STUB_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_STUB_H_
 
-#include <vector>
-
 #include "components/viz/service/display/overlay_processor_interface.h"
 
 namespace viz {

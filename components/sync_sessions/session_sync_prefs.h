@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_PREFS_H_
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_PREFS_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 
 class PrefService;

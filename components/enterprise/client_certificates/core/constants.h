@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_CONSTANTS_H_
 
-#include <array>
 #include <cstdint>
-#include <vector>
 
 namespace client_certificates {
 
