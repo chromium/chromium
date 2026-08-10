@@ -14,6 +14,7 @@
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task.h"
 #include "url/gurl.h"
 
+// LINT.IfChange(SearchPromotionExitCode)
 enum class SearchPromotionExitCode {
   // Pre-execution registration errors:
   kInvalidExtensionId = 100,
@@ -29,9 +30,11 @@ enum class SearchPromotionExitCode {
   kSuccessBackground = 106,
   kSuccessWithForegroundFallback = 107,
   kForegroundFallbackLaunchFailed = 108,
-
-  kMaxValue = kForegroundFallbackLaunchFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchPromotionExitCode)
+
+// Returns the string/variant name for the given exit code.
+std::string_view SearchPromotionExitCodeToString(SearchPromotionExitCode code);
 
 namespace base {
 class CommandLine;

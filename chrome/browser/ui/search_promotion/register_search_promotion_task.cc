@@ -19,6 +19,30 @@ constexpr char kPostInstallUrlSwitch[] = "post-install-url";
 
 }  // namespace
 
+std::string_view SearchPromotionExitCodeToString(SearchPromotionExitCode code) {
+  switch (code) {
+    case SearchPromotionExitCode::kInvalidExtensionId:
+      return "InvalidExtensionId";
+    case SearchPromotionExitCode::kInvalidPostInstallUrl:
+      return "InvalidPostInstallUrl";
+    case SearchPromotionExitCode::kRegistryWriteFailed:
+      return "RegistryWriteFailed";
+    case SearchPromotionExitCode::kUrlLaunchFailed:
+      return "UrlLaunchFailed";
+    case SearchPromotionExitCode::kUrlLaunchSuccess:
+      return "UrlLaunchSuccess";
+    case SearchPromotionExitCode::kTimeout:
+      return "Timeout";
+    case SearchPromotionExitCode::kSuccessBackground:
+      return "SuccessBackground";
+    case SearchPromotionExitCode::kSuccessWithForegroundFallback:
+      return "SuccessWithForegroundFallback";
+    case SearchPromotionExitCode::kForegroundFallbackLaunchFailed:
+      return "ForegroundFallbackLaunchFailed";
+  }
+  return std::string_view();
+}
+
 RegisterSearchPromotionTask::RegisterSearchPromotionTask(
     const GURL& post_install_url,
     std::string_view extension_id)

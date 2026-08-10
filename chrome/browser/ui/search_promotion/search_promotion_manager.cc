@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_experience/delegated_tasks/delegated_task_runner.h"
@@ -252,6 +253,18 @@ void SearchPromotionManager::RunRegisterTask(
 
 void SearchPromotionManager::OnTaskCompleted(
     platform_experience::DelegatedTaskResult result) {
+  if (result.exit_code_or_status.has_value()) {
+    auto exit_code = static_cast<SearchPromotionExitCode>(
+        result.exit_code_or_status.value());
+    std::string_view variant = SearchPromotionExitCodeToString(exit_code);
+    if (!variant.empty()) {
+      base::UmaHistogramSparse("Search.SearchPromotion.DelegatedTaskExitCode",
+                               static_cast<int>(exit_code));
+      base::UmaHistogramMediumTimes(
+          base::StrCat({"Search.SearchPromotion.Duration.", variant}),
+          result.execution_time);
+    }
+  }
   task_runner_.reset();
 }
 
