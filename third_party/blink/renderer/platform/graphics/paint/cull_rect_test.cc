@@ -782,7 +782,7 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   auto transform = MakeTranslationMatrix(10, 20);
   transform.Scale3d(2, 4, 1);
   auto* t1 = CreateTransform(t0(), transform, gfx::Point3F(),
-                             CompositingReason::kWillChangeTransform);
+                             {CompositingReason::kWillChangeTransform});
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
@@ -821,7 +821,7 @@ TEST_F(CullRectTest, CompositedTransformUnderClipWithoutExpansion) {
   auto* c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto* t1 =
       CreateTransform(t0(), MakeTranslationMatrix(10, 20), gfx::Point3F(),
-                      CompositingReason::kWillChangeTransform);
+                      {CompositingReason::kWillChangeTransform});
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
@@ -860,7 +860,7 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
                          FloatRoundedRect(0, 8000, 100, 100));
   auto* t2 =
       CreateTransform(scroll_translation, gfx::Transform(), gfx::Point3F(),
-                      CompositingReason::kWillChangeTransform);
+                      {CompositingReason::kWillChangeTransform});
 
   // c2a is out of view, but in the expansion area of the composited scroll.
   CullRect cull_rect = CullRect::Infinite();

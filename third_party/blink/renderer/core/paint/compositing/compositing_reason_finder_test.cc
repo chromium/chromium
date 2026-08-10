@@ -42,11 +42,6 @@ class CompositingReasonFinderTest : public RenderingTest,
   void CheckCompositingReasonsForAnimation(bool supports_transform_animation);
 };
 
-#define EXPECT_REASONS(expect, actual)                        \
-  EXPECT_EQ(expect, actual)                                   \
-      << " expected: " << CompositingReason::ToString(expect) \
-      << " actual: " << CompositingReason::ToString(actual)
-
 INSTANTIATE_PAINT_TEST_SUITE_P(CompositingReasonFinderTest);
 
 TEST_P(CompositingReasonFinderTest, PromoteTrivial3D) {
@@ -55,9 +50,9 @@ TEST_P(CompositingReasonFinderTest, PromoteTrivial3D) {
       style='width: 100px; height: 100px; transform: translateZ(0)'></div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kTrivial3DTransform,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kTrivial3DTransform},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, PromoteNonTrivial3D) {
@@ -66,9 +61,9 @@ TEST_P(CompositingReasonFinderTest, PromoteNonTrivial3D) {
       style='width: 100px; height: 100px; transform: translateZ(1px)'></div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::k3DTransform,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::k3DTransform},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
@@ -88,25 +83,28 @@ TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
 
   auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
   auto default_overscroll_type = visual_viewport.GetOverscrollType();
-  EXPECT_REASONS(default_overscroll_type == OverscrollType::kTransform
-                     ? CompositingReason::kFixedPosition |
-                           CompositingReason::kUndoOverscroll
-                     : CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("fixedDiv")));
+  CompositingReasons expected_reasons;
+  if (default_overscroll_type == OverscrollType::kTransform) {
+    expected_reasons = {CompositingReason::kFixedPosition,
+                        CompositingReason::kUndoOverscroll};
+  }
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("fixedDiv")));
 
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("fixedDiv")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("fixedDiv")));
 
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(
-      CompositingReason::kFixedPosition | CompositingReason::kUndoOverscroll,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(
-          *GetLayoutObjectByElementId("fixedDiv")));
+  expected_reasons = {CompositingReason::kFixedPosition,
+                      CompositingReason::kUndoOverscroll};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("fixedDiv")));
 }
 
 // Tests that an anchored-positioned fixpos element should overscroll if the
@@ -131,18 +129,19 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
   auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(
-      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(
-          *GetLayoutObjectByElementId("target")));
+  CompositingReasons expected_reasons = {CompositingReason::kFixedPosition,
+                                         CompositingReason::kAnchorPosition};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
-  auto expected_reasons_with_overflow =
-      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition;
+  CompositingReasons expected_reasons_with_overflow = {
+      CompositingReason::kFixedPosition, CompositingReason::kAnchorPosition};
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(expected_reasons_with_overflow,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(expected_reasons_with_overflow,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   // Adjust the body so that it does not scroll, but is still affected by
   // elastic overscroll effects.
@@ -152,14 +151,15 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
   // When AnchorPositionAdjustmentWithoutOverflow is enabled, the behavior
   // should be the same as the non-overflow case because overflow effects are
   // the same regardless of actual scrollable overflow.
-  auto expected_reasons_without_overflow =
-      RuntimeEnabledFeatures::AnchorPositionAdjustmentWithoutOverflowEnabled()
-          ? expected_reasons_with_overflow
-          : CompositingReason::kFixedPosition |
-                CompositingReason::kUndoOverscroll;
-  EXPECT_REASONS(expected_reasons_without_overflow,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  auto expected_reasons_without_overflow = expected_reasons_with_overflow;
+  if (!RuntimeEnabledFeatures::
+          AnchorPositionAdjustmentWithoutOverflowEnabled()) {
+    expected_reasons_without_overflow = {CompositingReason::kFixedPosition,
+                                         CompositingReason::kUndoOverscroll};
+  }
+  EXPECT_EQ(expected_reasons_without_overflow,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 // Tests that an anchored-positioned fixpos element should not overscroll if
@@ -190,18 +190,20 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
   auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(
-      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(
-          *GetLayoutObjectByElementId("target")));
+  CompositingReasons expected_reasons = {CompositingReason::kFixedPosition,
+                                         CompositingReason::kAnchorPosition};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kFixedPosition |
-                     CompositingReason::kAnchorPosition |
-                     CompositingReason::kUndoOverscroll,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  expected_reasons = {CompositingReason::kFixedPosition,
+                      CompositingReason::kAnchorPosition,
+                      CompositingReason::kUndoOverscroll};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
@@ -217,12 +219,12 @@ TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kStickyPosition,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("sticky-top")));
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("sticky-no-anchor")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kStickyPosition},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("sticky-top")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("sticky-no-anchor")));
 }
 
 TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
@@ -267,26 +269,25 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
     < div style='height: 2000px;"></div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kStickyPosition,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("sticky-scrolling")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kStickyPosition},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("sticky-scrolling")));
 
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("sticky-no-scrolling")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("sticky-no-scrolling")));
 
-  EXPECT_REASONS(CompositingReason::kStickyPosition,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("overflow-hidden-scrolling")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kStickyPosition},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("overflow-hidden-scrolling")));
 
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(
-          *GetLayoutObjectByElementId("overflow-hidden-no-scrolling")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("overflow-hidden-no-scrolling")));
 
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("under-fixed")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("under-fixed")));
 }
 
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
@@ -305,17 +306,16 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder.SetHasCurrentBackdropFilterAnimation(false);
   object->SetStyle(builder.TakeStyle());
 
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::CompositingReasonsForAnimation(*object));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  CompositingReasons expected_reason = CompositingReason::kNone;
+  CompositingReasons expected_reason;
 
   builder = ComputedStyleBuilder(object->StyleRef());
   builder.SetHasCurrentTransformAnimation(true);
   object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
-    expected_reason |= CompositingReason::kActiveTransformAnimation;
+    expected_reason.Put(CompositingReason::kActiveTransformAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
@@ -323,7 +323,7 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder.SetHasCurrentScaleAnimation(true);
   object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
-    expected_reason |= CompositingReason::kActiveScaleAnimation;
+    expected_reason.Put(CompositingReason::kActiveScaleAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
@@ -331,7 +331,7 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder.SetHasCurrentRotateAnimation(true);
   object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
-    expected_reason |= CompositingReason::kActiveRotateAnimation;
+    expected_reason.Put(CompositingReason::kActiveRotateAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
@@ -339,28 +339,28 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   builder.SetHasCurrentTranslateAnimation(true);
   object->SetStyle(builder.TakeStyle());
   if (supports_transform_animation)
-    expected_reason |= CompositingReason::kActiveTranslateAnimation;
+    expected_reason.Put(CompositingReason::kActiveTranslateAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   builder = ComputedStyleBuilder(object->StyleRef());
   builder.SetHasCurrentOpacityAnimation(true);
   object->SetStyle(builder.TakeStyle());
-  expected_reason |= CompositingReason::kActiveOpacityAnimation;
+  expected_reason.Put(CompositingReason::kActiveOpacityAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   builder = ComputedStyleBuilder(object->StyleRef());
   builder.SetHasCurrentFilterAnimation(true);
   object->SetStyle(builder.TakeStyle());
-  expected_reason |= CompositingReason::kActiveFilterAnimation;
+  expected_reason.Put(CompositingReason::kActiveFilterAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   builder = ComputedStyleBuilder(object->StyleRef());
   builder.SetHasCurrentBackdropFilterAnimation(true);
   object->SetStyle(builder.TakeStyle());
-  expected_reason |= CompositingReason::kActiveBackdropFilterAnimation;
+  expected_reason.Put(CompositingReason::kActiveBackdropFilterAnimation);
   EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 }
@@ -411,9 +411,9 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   PaintLayer* iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->UsesCompositedScrolling());
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *iframe_layout_view));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -430,19 +430,19 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   ASSERT_TRUE(iframe_layer);
   ASSERT_TRUE(iframe->ContentFrame()->IsCrossOriginToNearestMainFrame());
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->UsesCompositedScrolling());
-  EXPECT_REASONS(CompositingReason::kIFrame,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *iframe_layout_view));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kIFrame},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
 
   // Make the iframe contents scrollable.
   iframe->contentDocument()->body()->setAttribute(
       html_names::kStyleAttr, AtomicString("height: 2000px"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kIFrame,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *iframe_layout_view));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kIFrame},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *iframe_layout_view));
   EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-      *iframe_layout_view, CompositingReason::kIFrame));
+      *iframe_layout_view, {CompositingReason::kIFrame}));
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -459,10 +459,12 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor |
-                     CompositingReason::kTransform3DSceneLeaf,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  CompositingReasons expected_reasons = {
+      CompositingReason::kBackfaceInvisibility3DAncestor,
+      CompositingReason::kTransform3DSceneLeaf};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -479,9 +481,10 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(
+      CompositingReasons{CompositingReason::kBackfaceInvisibility3DAncestor},
+      CompositingReasonFinder::DirectReasonsForPaintProperties(
+          *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -500,9 +503,10 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(
+      CompositingReasons{CompositingReason::kBackfaceInvisibility3DAncestor},
+      CompositingReasonFinder::DirectReasonsForPaintProperties(
+          *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -521,13 +525,15 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kBackfaceInvisibility3DAncestor |
-                     CompositingReason::kTransform3DSceneLeaf,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("intermediate")));
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  CompositingReasons expected_reasons = {
+      CompositingReason::kBackfaceInvisibility3DAncestor,
+      CompositingReason::kTransform3DSceneLeaf};
+  EXPECT_EQ(expected_reasons,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("intermediate")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest,
@@ -544,9 +550,9 @@ TEST_P(CompositingReasonFinderTest,
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
@@ -562,9 +568,9 @@ TEST_P(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
     </div>
   )HTML");
 
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, CompositedSVGText) {
@@ -576,13 +582,12 @@ TEST_P(CompositingReasonFinderTest, CompositedSVGText) {
 
   auto* svg_text = GetLayoutObjectByElementId("text");
   EXPECT_EQ(
-      CompositingReason::kWillChangeOpacity,
+      CompositingReasons{CompositingReason::kWillChangeOpacity},
       CompositingReasonFinder::DirectReasonsForPaintProperties(*svg_text));
   auto* text = svg_text->SlowFirstChild();
   ASSERT_TRUE(text->IsText());
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
 }
 
 TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
@@ -606,36 +611,32 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
   )HTML");
 
   auto* defs = GetLayoutObjectByElementId("defs");
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*defs));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*defs));
 
   auto* text = GetLayoutObjectByElementId("text");
-  EXPECT_REASONS(
-      CompositingReason::kActiveTransformAnimation,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kActiveTransformAnimation},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
 
   auto* text_content = text->SlowFirstChild();
   ASSERT_TRUE(text_content->IsText());
   EXPECT_EQ(
-      CompositingReason::kNone,
+      CompositingReasons{},
       CompositingReasonFinder::DirectReasonsForPaintProperties(*text_content));
 
   auto* tspan = GetLayoutObjectByElementId("tspan");
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*tspan));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*tspan));
 
   auto* tspan_content = tspan->SlowFirstChild();
   ASSERT_TRUE(tspan_content->IsText());
   EXPECT_EQ(
-      CompositingReason::kNone,
+      CompositingReasons{},
       CompositingReasonFinder::DirectReasonsForPaintProperties(*tspan_content));
 
   auto* feBlend = GetLayoutObjectByElementId("feBlend");
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*feBlend));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*feBlend));
 }
 
 TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
@@ -648,20 +649,18 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
 
   auto* target = GetLayoutObjectByElementId("target");
   EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-      *target, CompositingReason::kNone));
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
+      *target, {}));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
 
   GetDocument()
       .getElementById(AtomicString("target"))
       ->RemoveInlineStyleProperty(CSSPropertyID::kWillChange);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-      *target, CompositingReason::kNone));
-  EXPECT_REASONS(
-      CompositingReason::kNone,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
+      *target, {}));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
 }
 
 TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
@@ -674,30 +673,30 @@ TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
   auto* html_element = To<HTMLElement>(element);
 
   // 1. No attribute, inactive: kNone
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   // 2. With attribute, but inactive: kNone
   html_element->setAttribute(html_names::kUnboundedAttr, g_empty_atom);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   // 3. With attribute AND active: kUnboundedElement
   html_element->SetUnboundedElementActive(true);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kUnboundedElement,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kUnboundedElement},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 
   // 4. Remove attribute, keep active: kNone
   html_element->removeAttribute(html_names::kUnboundedAttr);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *GetLayoutObjectByElementId("target")));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("target")));
 }
 
 TEST_P(CompositingReasonFinderTest, CanvasChild) {
@@ -716,23 +715,23 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
   Element* canvas = GetElementById("canvas");
   ASSERT_TRUE(canvas);
   LayoutObject* canvas_layout_object = canvas->GetLayoutObject();
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *canvas_layout_object));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *canvas_layout_object));
 
   Element* child = GetElementById("child");
   ASSERT_TRUE(child);
   LayoutObject* child_layout_object = child->GetLayoutObject();
-  EXPECT_REASONS(CompositingReason::kCanvasChild,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *child_layout_object));
+  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasChild},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *child_layout_object));
 
   Element* grandchild = GetElementById("grandchild");
   ASSERT_TRUE(grandchild);
   LayoutObject* grandchild_layout_object = grandchild->GetLayoutObject();
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *grandchild_layout_object));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *grandchild_layout_object));
 }
 
 TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
@@ -758,8 +757,8 @@ TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
   EXPECT_TRUE(slotted->IsCanvasOrInCanvasSubtree());
   LayoutObject* layout_object = slotted->GetLayoutObject();
   ASSERT_TRUE(layout_object);
-  EXPECT_REASONS(
-      CompositingReason::kCanvasChild,
+  EXPECT_EQ(
+      CompositingReasons{CompositingReason::kCanvasChild},
       CompositingReasonFinder::DirectReasonsForPaintProperties(*layout_object));
 
   Element* slot_child = GetElementById("slotchild");
@@ -768,9 +767,9 @@ TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
   EXPECT_TRUE(slot_child->IsCanvasOrInCanvasSubtree());
   LayoutObject* child_layout_object = slot_child->GetLayoutObject();
   ASSERT_TRUE(child_layout_object);
-  EXPECT_REASONS(CompositingReason::kNone,
-                 CompositingReasonFinder::DirectReasonsForPaintProperties(
-                     *child_layout_object));
+  EXPECT_EQ(CompositingReasons{},
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *child_layout_object));
 }
 
 }  // namespace blink

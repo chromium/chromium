@@ -507,7 +507,7 @@ static bool NeedsScrollAndScrollTranslation(
   if (!object.IsScrollContainer()) {
     return false;
   }
-  if (direct_compositing_reasons & CompositingReason::kRootScroller) {
+  if (direct_compositing_reasons.Has(CompositingReason::kRootScroller)) {
     return true;
   }
 
@@ -677,7 +677,7 @@ static bool NeedsPaintOffsetTranslation(
   // to avoid unnecessary full layer paint/raster invalidation when paint
   // offset in ancestor transform node changes which should not affect the
   // descendants of the composited layer.
-  if (direct_compositing_reasons != CompositingReason::kNone ||
+  if (!direct_compositing_reasons.empty() ||
       // Though we don't treat hidden backface as a direct compositing reason,
       // it's very likely that the object will be composited, so a paint offset
       // translation will be beneficial.
@@ -696,14 +696,14 @@ FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation() const {
   if (!object_.HasLayer())
     return {true, true};
 
-  if (full_context_.direct_compositing_reasons &
-      CompositingReason::kPreventingSubpixelAccumulationReasons) {
+  if (full_context_.direct_compositing_reasons.HasAny(
+          CompositingReasonCombos::kPreventingSubpixelAccumulationReasons)) {
     return {false, false};
   }
-  if (full_context_.direct_compositing_reasons &
-      (CompositingReason::kActiveTransformAnimation |
-       CompositingReason::kActiveRotateAnimation |
-       CompositingReason::kActiveScaleAnimation)) {
+  if (full_context_.direct_compositing_reasons.HasAny(
+          {CompositingReason::kActiveTransformAnimation,
+           CompositingReason::kActiveRotateAnimation,
+           CompositingReason::kActiveScaleAnimation})) {
     if (const auto* element = DynamicTo<Element>(object_.GetNode())) {
       DCHECK(element->GetElementAnimations());
       if (element->GetElementAnimations()->IsIdentityOrTranslation()) {
@@ -774,8 +774,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
 
   ResetPaintOffset(subpixel_accumulation);
 
-  if (full_context_.direct_compositing_reasons == CompositingReason::kNone)
+  if (full_context_.direct_compositing_reasons.empty()) {
     return;
+  }
 
   if (paint_offset_translation && properties_ &&
       properties_->PaintOffsetTranslation()) {
@@ -803,8 +804,9 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
         context_.should_flatten_inherited_transform;
     state.rendering_context_id = context_.rendering_context_id;
     state.direct_compositing_reasons =
-        full_context_.direct_compositing_reasons &
-        CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
+        base::Intersection(full_context_.direct_compositing_reasons,
+                           CompositingReasonCombos::
+                               kDirectReasonsForPaintOffsetTranslationProperty);
     if (auto* box = DynamicTo<LayoutBox>(object_)) {
       if (box->IsFixedToView(full_context_.container_for_fixed_position) &&
           object_.View()->FirstFragment().PaintProperties()->Scroll()) {
@@ -914,8 +916,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
       TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
           ToRoundedVector2d(rounded_sticky_offset))}};
       state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kStickyPosition;
+          base::Intersection(full_context_.direct_compositing_reasons,
+                             {CompositingReason::kStickyPosition});
       // TODO(wangxianzhu): Not using GetCompositorElementId() here because
       // sticky elements don't work properly under multicol for now, to keep
       // consistency with CompositorElementIdFromUniqueObjectId() below.
@@ -927,7 +929,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      if (state.direct_compositing_reasons) {
+      if (!state.direct_compositing_reasons.empty()) {
         const auto layout_constraint = box_model.StickyConstraints();
         DCHECK(layout_constraint.HasAnyConstraint());
         const CompositorElementId x_compositor_scroll_ancestor_id =
@@ -1008,8 +1010,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
           state.sticky_constraint = std::move(constraint);
 
           if (object_.StyleRef().IsBottomRelativeToSafeAreaInset()) {
-            state.direct_compositing_reasons |=
-                CompositingReason::kAffectedBySafeAreaBottom;
+            state.direct_compositing_reasons.Put(
+                CompositingReason::kAffectedBySafeAreaBottom);
           }
         }
       }
@@ -1050,11 +1052,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
              (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
                   object_.GetDocument().GetExecutionContext()) &&
               object_.IsInCanvasSubtree()) ||
-             (full_context_.direct_compositing_reasons &
-              CompositingReason::kAnchorPosition));
+             full_context_.direct_compositing_reasons.Has(
+                 CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kAnchorPosition;
+          base::Intersection(full_context_.direct_compositing_reasons,
+                             {CompositingReason::kAnchorPosition});
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
       // because anchor-positioned elements don't work properly under multicol
@@ -1143,13 +1145,13 @@ static void DirectlyUpdateCcOpacity(const LayoutObject& object,
 
 // TODO(dbaron): Remove this function when we can remove the
 // BackfaceVisibilityInteropEnabled() check, and have the caller use
-// CompositingReason::kDirectReasonsForTransformProperty directly.
+// CompositingReasonCombos::kDirectReasonsForTransformProperty directly.
 static CompositingReasons CompositingReasonsForTransformProperty() {
   CompositingReasons reasons =
-      CompositingReason::kDirectReasonsForTransformProperty;
+      CompositingReasonCombos::kDirectReasonsForTransformProperty;
 
   if (RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled())
-    reasons |= CompositingReason::kBackfaceInvisibility3DAncestor;
+    reasons.Put(CompositingReason::kBackfaceInvisibility3DAncestor);
 
   return reasons;
 }
@@ -1160,19 +1162,20 @@ static bool NeedsTransformForSVGChild(
     CompositingReasons direct_compositing_reasons) {
   if (!object.IsSVGChild() || object.IsText())
     return false;
-  if (direct_compositing_reasons &
-      (CompositingReasonsForTransformProperty() |
-       CompositingReason::kDirectReasonsForTranslateProperty |
-       CompositingReason::kDirectReasonsForRotateProperty |
-       CompositingReason::kDirectReasonsForScaleProperty))
+  CompositingReasons reasons = CompositingReasonsForTransformProperty();
+  reasons.PutAll(CompositingReasonCombos::kDirectReasonsForTranslateProperty);
+  reasons.PutAll(CompositingReasonCombos::kDirectReasonsForRotateProperty);
+  reasons.PutAll(CompositingReasonCombos::kDirectReasonsForScaleProperty);
+  if (direct_compositing_reasons.HasAny(reasons)) {
     return true;
+  }
   return !object.LocalToSVGParentTransform().IsIdentity();
 }
 
 TransformPaintPropertyNode::TransformAndOrigin
 FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
-  if (full_context_.direct_compositing_reasons &
-      CompositingReason::kActiveTransformAnimation) {
+  if (full_context_.direct_compositing_reasons.Has(
+          CompositingReason::kActiveTransformAnimation)) {
     if (CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
             *To<SVGElement>(object_.GetNode()))) {
       const gfx::RectF reference_box =
@@ -1219,8 +1222,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
       // be included here, such as setting animation_is_axis_aligned.
-      state.direct_compositing_reasons =
-          direct_compositing_reasons & CompositingReasonsForTransformProperty();
+      state.direct_compositing_reasons = base::Intersection(
+          direct_compositing_reasons, CompositingReasonsForTransformProperty());
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
@@ -1271,8 +1274,9 @@ static bool NeedsIndividualTransform(
   if (object.IsText() || object.IsSVGChild())
     return false;
 
-  if (relevant_compositing_reasons)
+  if (!relevant_compositing_reasons.empty()) {
     return true;
+  }
 
   if (!object.IsBox())
     return false;
@@ -1287,8 +1291,9 @@ static bool NeedsTranslate(const LayoutObject& object,
                            CompositingReasons direct_compositing_reasons) {
   return NeedsIndividualTransform(
       object,
-      direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForTranslateProperty,
+      base::Intersection(
+          direct_compositing_reasons,
+          CompositingReasonCombos::kDirectReasonsForTranslateProperty),
       [](const ComputedStyle& style) {
         return style.Translate() || style.HasCurrentTranslateAnimation();
       });
@@ -1298,8 +1303,9 @@ static bool NeedsRotate(const LayoutObject& object,
                         CompositingReasons direct_compositing_reasons) {
   return NeedsIndividualTransform(
       object,
-      direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForRotateProperty,
+      base::Intersection(
+          direct_compositing_reasons,
+          CompositingReasonCombos::kDirectReasonsForRotateProperty),
       [](const ComputedStyle& style) {
         return style.Rotate() || style.HasCurrentRotateAnimation();
       });
@@ -1309,8 +1315,9 @@ static bool NeedsScale(const LayoutObject& object,
                        CompositingReasons direct_compositing_reasons) {
   return NeedsIndividualTransform(
       object,
-      direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForScaleProperty,
+      base::Intersection(
+          direct_compositing_reasons,
+          CompositingReasonCombos::kDirectReasonsForScaleProperty),
       [](const ComputedStyle& style) {
         return style.Scale() || style.HasCurrentScaleAnimation();
       });
@@ -1319,8 +1326,7 @@ static bool NeedsScale(const LayoutObject& object,
 static bool NeedsOffset(const LayoutObject& object,
                         CompositingReasons direct_compositing_reasons) {
   return NeedsIndividualTransform(
-      object, CompositingReason::kNone,
-      [](const ComputedStyle& style) { return style.HasOffset(); });
+      object, {}, [](const ComputedStyle& style) { return style.HasOffset(); });
 }
 
 static bool NeedsTransform(const LayoutObject& object,
@@ -1331,8 +1337,10 @@ static bool NeedsTransform(const LayoutObject& object,
   if (object.StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden)
     return true;
 
-  if (direct_compositing_reasons & CompositingReasonsForTransformProperty())
+  if (direct_compositing_reasons.HasAny(
+          CompositingReasonsForTransformProperty())) {
     return true;
+  }
 
   if (!object.IsBox())
     return false;
@@ -1348,11 +1356,13 @@ static bool NeedsTransform(const LayoutObject& object,
 static bool UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
     const LayoutBox& object,
     CompositingReasons compositing_reasons) {
-  if (!(compositing_reasons & (CompositingReason::kActiveTransformAnimation |
-                               CompositingReason::kActiveScaleAnimation |
-                               CompositingReason::kActiveRotateAnimation |
-                               CompositingReason::kActiveTranslateAnimation)))
+  if (!compositing_reasons.HasAny(
+          {CompositingReason::kActiveTransformAnimation,
+           CompositingReason::kActiveScaleAnimation,
+           CompositingReason::kActiveRotateAnimation,
+           CompositingReason::kActiveTranslateAnimation})) {
     return false;
+  }
 
   if (!object.GetNode() || !object.GetNode()->IsElementNode())
     return false;
@@ -1470,8 +1480,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
       }
 
       state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          compositing_reasons_for_property;
+          base::Intersection(full_context_.direct_compositing_reasons,
+                             compositing_reasons_for_property);
 
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
@@ -1541,7 +1551,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTranslate() {
         if (style.Translate())
           style.Translate()->Apply(matrix, gfx::SizeF(reference_box.size));
       },
-      CompositingReason::kDirectReasonsForTranslateProperty,
+      CompositingReasonCombos::kDirectReasonsForTranslateProperty,
       CompositorElementIdNamespace::kTranslateTransform,
       &ComputedStyle::IsRunningTranslateAnimationOnCompositor,
       &ObjectPaintProperties::Translate,
@@ -1558,7 +1568,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateRotate() {
         if (style.Rotate())
           style.Rotate()->Apply(matrix, gfx::SizeF(reference_box.size));
       },
-      CompositingReason::kDirectReasonsForRotateProperty,
+      CompositingReasonCombos::kDirectReasonsForRotateProperty,
       CompositorElementIdNamespace::kRotateTransform,
       &ComputedStyle::IsRunningRotateAnimationOnCompositor,
       &ObjectPaintProperties::Rotate, &ObjectPaintProperties::UpdateRotate,
@@ -1574,7 +1584,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScale() {
         if (style.Scale())
           style.Scale()->Apply(matrix, gfx::SizeF(reference_box.size));
       },
-      CompositingReason::kDirectReasonsForScaleProperty,
+      CompositingReasonCombos::kDirectReasonsForScaleProperty,
       CompositorElementIdNamespace::kScaleTransform,
       &ComputedStyle::IsRunningScaleAnimationOnCompositor,
       &ObjectPaintProperties::Scale, &ObjectPaintProperties::UpdateScale,
@@ -1594,7 +1604,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOffset() {
             ComputedStyle::kIncludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
       },
-      CompositingReason::kNone,
+      {},
       // TODO(dbaron): When we support animating offset on the
       // compositor, we need to use an element ID specific to offset.
       // This is currently unused.
@@ -1753,14 +1763,15 @@ static bool NeedsEffectIgnoringClipPathAnd2DScale(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
   if (object.IsText()) {
-    DCHECK(!(direct_compositing_reasons &
-             CompositingReason::kDirectReasonsForEffectProperty));
+    DCHECK(!direct_compositing_reasons.HasAny(
+        CompositingReasonCombos::kDirectReasonsForEffectProperty));
     return false;
   }
 
-  if (direct_compositing_reasons &
-      CompositingReason::kDirectReasonsForEffectProperty)
+  if (direct_compositing_reasons.HasAny(
+          CompositingReasonCombos::kDirectReasonsForEffectProperty)) {
     return true;
+  }
 
   const ComputedStyle& style = object.StyleRef();
 
@@ -1833,8 +1844,8 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffect() const {
       if (properties_ && properties_->ClipPathClip()) {
         return true;
       }
-      if (full_context_.direct_compositing_reasons &
-          CompositingReason::kAuxiliaryReasonsForBackdropRoot) {
+      if (full_context_.direct_compositing_reasons.HasAny(
+              CompositingReasonCombos::kAuxiliaryReasonsForBackdropRoot)) {
         return true;
       }
     }
@@ -2033,8 +2044,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
   wrapper_effect_state.local_transform_space =
       properties_->UnboundedWrapperTransform();
   wrapper_effect_state.output_clip = &ClipPaintPropertyNode::Root();
-  wrapper_effect_state.direct_compositing_reasons =
-      CompositingReason::kUnboundedElement;
+  wrapper_effect_state.direct_compositing_reasons = {
+      CompositingReason::kUnboundedElement};
   wrapper_effect_state.compositor_element_id = GetCompositorElementId(
       CompositorElementIdNamespace::kUnboundedWrapperEffect);
   OnUpdateEffect(properties_->UpdateUnboundedWrapperEffect(
@@ -2043,8 +2054,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
 
   // Clear the kUnboundedElement bit from the direct compositing reasons for the
   // inner nodes, so that the element's own effect node doesn't duplicate it.
-  full_context_.direct_compositing_reasons &=
-      ~CompositingReason::kUnboundedElement;
+  full_context_.direct_compositing_reasons.Remove(
+      CompositingReason::kUnboundedElement);
 
   ResetPaintOffset();
   context_.current.directly_composited_container_paint_offset_subpixel_delta =
@@ -2140,26 +2151,26 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.needs_effect_for_2d_scale_transform =
           NeedsEffectFor2DScaleTransform();
 
-      state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForEffectProperty;
+      state.direct_compositing_reasons = base::Intersection(
+          full_context_.direct_compositing_reasons,
+          CompositingReasonCombos::kDirectReasonsForEffectProperty);
 
       // If an effect node exists, add an additional direct compositing reason
       // for 3d transforms and will-change:transform to ensure it is composited.
-      state.direct_compositing_reasons |=
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalEffectCompositingTrigger);
+      state.direct_compositing_reasons.PutAll(base::Intersection(
+          full_context_.direct_compositing_reasons,
+          CompositingReasonCombos::kAdditionalEffectCompositingTrigger));
 
       // We may begin to composite our subtree prior to an animation starts, but
       // a compositor element ID is only needed when an animation is current.
       // Currently, we use the existence of this id to check if effect nodes
       // have been created for animations on this element.
-      if (state.direct_compositing_reasons) {
+      if (!state.direct_compositing_reasons.empty()) {
         state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kPrimaryEffect);
 
-        if (state.direct_compositing_reasons &
-            CompositingReason::kCanvasChild) {
+        if (state.direct_compositing_reasons.Has(
+                CompositingReason::kCanvasChild)) {
           PopulateCanvasChildState(object_, state);
         }
       } else {
@@ -2194,11 +2205,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       DirectlyUpdateCcOpacity(object_, *properties_, effective_change_type);
       OnUpdateEffect(effective_change_type);
 
-      auto mask_direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-                  CompositingReason::kDirectReasonsForBackdropFilter
-              ? CompositingReason::kBackdropFilterMask
-              : CompositingReason::kNone;
+      CompositingReasons mask_direct_compositing_reasons;
+      if (full_context_.direct_compositing_reasons.HasAny(
+              CompositingReasonCombos::kDirectReasonsForBackdropFilter)) {
+        mask_direct_compositing_reasons = {
+            CompositingReason::kBackdropFilterMask};
+      }
 
       if (mask_clip) {
         EffectPaintPropertyNode::State mask_state;
@@ -2275,8 +2287,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
     return;
   }
 
-  if (!(full_context_.direct_compositing_reasons &
-        CompositingReason::kElementCapture)) {
+  if (!full_context_.direct_compositing_reasons.Has(
+          CompositingReason::kElementCapture)) {
     OnClearEffect(properties_->ClearElementCaptureEffect());
     return;
   }
@@ -2291,7 +2303,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
   EffectPaintPropertyNode::State state;
   state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
   state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
-  state.direct_compositing_reasons = CompositingReason::kElementCapture;
+  state.direct_compositing_reasons = {CompositingReason::kElementCapture};
   state.local_transform_space = context_.current.transform;
   state.output_clip = context_.current.clip;
   state.restriction_target_id = *element->GetRestrictionTargetId();
@@ -2361,8 +2373,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
             ->SelfOrAncestorParticipatesInViewTransition();
 
     const bool needs_view_transition_effect =
-        full_context_.direct_compositing_reasons &
-        CompositingReason::kViewTransitionElement;
+        full_context_.direct_compositing_reasons.Has(
+            CompositingReason::kViewTransitionElement);
 
     if (needs_view_transition_effect) {
       auto* transition =
@@ -2372,8 +2384,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
       EffectPaintPropertyNode::State state;
       state.is_in_tainted_subtree = context_.is_in_tainted_subtree;
       state.is_in_canvas_subtree = context_.is_in_canvas_subtree;
-      state.direct_compositing_reasons =
-          CompositingReason::kViewTransitionElement;
+      state.direct_compositing_reasons = {
+          CompositingReason::kViewTransitionElement};
       state.local_transform_space = context_.current.transform;
       state.output_clip = context_.current.clip;
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
@@ -2432,8 +2444,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionClip() {
   if (NeedsPaintPropertyUpdate()) {
-    if (full_context_.direct_compositing_reasons &
-        CompositingReason::kViewTransitionElement) {
+    if (full_context_.direct_compositing_reasons.Has(
+            CompositingReason::kViewTransitionElement)) {
       auto* transition =
           ViewTransitionUtils::TransitionForParticipantOrScope(object_);
       DCHECK(transition);
@@ -2474,9 +2486,10 @@ static bool IsClipPathDescendant(const LayoutObject& object) {
 
 static bool NeedsFilter(const LayoutObject& object,
                         const PaintPropertyTreeBuilderContext& full_context) {
-  if (full_context.direct_compositing_reasons &
-      CompositingReason::kDirectReasonsForFilterProperty)
+  if (full_context.direct_compositing_reasons.HasAny(
+          CompositingReasonCombos::kDirectReasonsForFilterProperty)) {
     return true;
+  }
 
   if (object.IsBoxModelObject() &&
       To<LayoutBoxModelObject>(object).HasLayer()) {
@@ -2578,15 +2591,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // We may begin to composite our subtree prior to an animation starts,
       // but a compositor element ID is only needed when an animation is
       // current.
-      state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForFilterProperty;
+      state.direct_compositing_reasons = base::Intersection(
+          full_context_.direct_compositing_reasons,
+          CompositingReasonCombos::kDirectReasonsForFilterProperty);
 
       // If a filter node exists, add an additional direct compositing reason
       // for 3d transforms and will-change:transform to ensure it is composited.
-      state.direct_compositing_reasons |=
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::kAdditionalEffectCompositingTrigger);
+      state.direct_compositing_reasons.PutAll(base::Intersection(
+          full_context_.direct_compositing_reasons,
+          CompositingReasonCombos::kAdditionalEffectCompositingTrigger));
 
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);
@@ -2757,10 +2770,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
           // TODO(crbug.com/337191311): The optimization breaks
           // view-transition if the bounding box of clip-path is larger than
           // the contents.
-          if (!(full_context_.direct_compositing_reasons &
-                (CompositingReason::kViewTransitionElement |
-                 CompositingReason::
-                     kViewTransitionElementDescendantWithClipPath))) {
+          CompositingReasons view_transition_reasons{
+              CompositingReason::kViewTransitionElement,
+              CompositingReason::kViewTransitionElementDescendantWithClipPath};
+          if (!full_context_.direct_compositing_reasons.HasAny(
+                  view_transition_reasons)) {
             rrect = PathToRRect(*path);
           }
           ClipPaintPropertyNode::State state(
@@ -3616,8 +3630,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlEffects() {
           scrollable_area->GetScrollbarElementId(orientation);
 
       if (scrollbar_is_overlay && !effect_state.is_in_canvas_subtree) {
-        effect_state.direct_compositing_reasons =
-            CompositingReason::kActiveOpacityAnimation;
+        effect_state.direct_compositing_reasons = {
+            CompositingReason::kActiveOpacityAnimation};
       }
 
       const EffectPaintPropertyNodeOrAlias* parent =
@@ -3685,9 +3699,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollTranslation() {
   state.flattens_inherited_transform =
       context_.should_flatten_inherited_transform;
   state.rendering_context_id = context_.rendering_context_id;
-  state.direct_compositing_reasons =
-      full_context_.direct_compositing_reasons &
-      CompositingReason::kDirectReasonsForScrollTranslationProperty;
+  state.direct_compositing_reasons = base::Intersection(
+      full_context_.direct_compositing_reasons,
+      CompositingReasonCombos::kDirectReasonsForScrollTranslationProperty);
   state.scroll = properties_->Scroll();
 
   // The scroll translation node always inherits backface visibility, which
@@ -4174,8 +4188,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #endif
 
   if (properties_) {
-    if (full_context_.direct_compositing_reasons &
-        CompositingReason::kCanvasChild) {
+    if (full_context_.direct_compositing_reasons.Has(
+            CompositingReason::kCanvasChild)) {
       context_.is_in_canvas_subtree = true;
     }
     UpdateStickyTranslation(sticky_offset);
@@ -4527,15 +4541,15 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   if (Platform::Current()->IsLowEndDevice()) {
     // Don't composite "trivial" 3D transforms such as translateZ(0).
     // These transforms still force comosited scrolling (see above).
-    context_.direct_compositing_reasons &=
-        ~CompositingReason::kTrivial3DTransform;
+    context_.direct_compositing_reasons.Remove(
+        CompositingReason::kTrivial3DTransform);
   }
 
   if (context_.fragment_context
           .self_or_ancestor_participates_in_view_transition &&
       object_.StyleRef().HasClipPath()) {
-    context_.direct_compositing_reasons |=
-        CompositingReason::kViewTransitionElementDescendantWithClipPath;
+    context_.direct_compositing_reasons.Put(
+        CompositingReason::kViewTransitionElementDescendantWithClipPath);
   }
 
   context_.was_layout_shift_root =

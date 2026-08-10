@@ -1085,9 +1085,11 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
   // TODO(lfg): Audit for portals
   const LocalFrame& frame = frame_view_->GetFrame();
-  if (frame.OwnerLayoutObject() && frame.IsCrossOriginToParentOrOuterDocument())
-    return CompositingReason::kIFrame;
-  return CompositingReason::kNone;
+  if (frame.OwnerLayoutObject() &&
+      frame.IsCrossOriginToParentOrOuterDocument()) {
+    return {CompositingReason::kIFrame};
+  }
+  return {};
 }
 
 bool LayoutView::AffectedByResizedInitialContainingBlock(

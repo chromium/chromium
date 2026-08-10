@@ -87,7 +87,8 @@ EffectPaintPropertyNode::State LinkHighlightEffectNodeState(
   // EffectPaintPropertyNode::Update does not pay attention to changes in
   // direct_compositing_reasons so we assume that the effect node is always
   // animating.
-  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
+  state.direct_compositing_reasons = {
+      CompositingReason::kActiveOpacityAnimation};
   return state;
 }
 

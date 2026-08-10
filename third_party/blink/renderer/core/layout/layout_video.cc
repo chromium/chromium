@@ -210,10 +210,10 @@ bool LayoutVideo::SupportsAcceleratedRendering() const {
 
 CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
-  if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering())
-    return CompositingReason::kVideo;
-
-  return CompositingReason::kNone;
+  if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering()) {
+    return {CompositingReason::kVideo};
+  }
+  return {};
 }
 
 }  // namespace blink

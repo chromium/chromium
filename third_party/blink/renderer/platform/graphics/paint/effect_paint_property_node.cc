@@ -116,10 +116,10 @@ bool EffectPaintPropertyNode::State::IsOpacityChangeSimple(
     CompositingReasons new_direct_compositing_reasons) {
   bool opacity_changed = opacity != new_opacity;
   return opacity_changed && ((opacity != 1.f && new_opacity != 1.f) ||
-                             ((direct_compositing_reasons &
-                               CompositingReason::kActiveOpacityAnimation) &&
-                              (new_direct_compositing_reasons &
-                               CompositingReason::kActiveOpacityAnimation)));
+                             (direct_compositing_reasons.Has(
+                                  CompositingReason::kActiveOpacityAnimation) &&
+                              new_direct_compositing_reasons.Has(
+                                  CompositingReason::kActiveOpacityAnimation)));
 }
 
 void EffectPaintPropertyNode::State::Trace(Visitor* visitor) const {
@@ -261,10 +261,9 @@ std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
     json->SetDouble("opacity", state_.opacity);
   if (state_.blend_mode != SkBlendMode::kSrcOver)
     json->SetString("blendMode", SkBlendMode_Name(state_.blend_mode));
-  if (state_.direct_compositing_reasons != CompositingReason::kNone) {
-    json->SetString(
-        "directCompositingReasons",
-        CompositingReason::ToString(state_.direct_compositing_reasons));
+  if (!state_.direct_compositing_reasons.empty()) {
+    json->SetString("directCompositingReasons",
+                    blink::ToString(state_.direct_compositing_reasons));
   }
   if (state_.compositor_element_id) {
     json->SetString("compositorElementId",

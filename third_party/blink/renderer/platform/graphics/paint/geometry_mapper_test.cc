@@ -656,7 +656,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
   expected_transform = MakeTranslationMatrix(0, 100);
   local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                    CompositingReason::kStickyPosition);
+                                    {CompositingReason::kStickyPosition});
   auto* clip =
       CreateClip(c0(), *local_transform, FloatRoundedRect(10, 10, 50, 50));
   local_clip = clip;
@@ -717,7 +717,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
   expected_transform = MakeTranslationMatrix(0, 100);
   local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                    CompositingReason::kStickyPosition);
+                                    {CompositingReason::kStickyPosition});
   auto* clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   local_clip = clip;
 
@@ -796,7 +796,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
   auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = MakeTranslationMatrix(0, 100);
   local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                    CompositingReason::kStickyPosition);
+                                    {CompositingReason::kStickyPosition});
   auto* clip2 =
       CreateClip(*clip1, *local_transform, FloatRoundedRect(10, 10, 200, 200));
   local_clip = clip2;

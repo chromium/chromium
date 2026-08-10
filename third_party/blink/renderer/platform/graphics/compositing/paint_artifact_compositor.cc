@@ -1582,10 +1582,8 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
     if (needs_update_ == UpdateType::kFull) {
       auto compositing_reasons =
           GetCompositingReasons(pending_layer, previous_layer_state);
-      debug_info.compositing_reasons =
-          CompositingReason::Descriptions(compositing_reasons);
-      debug_info.compositing_reason_ids =
-          CompositingReason::ShortNames(compositing_reasons);
+      debug_info.compositing_reasons = Descriptions(compositing_reasons);
+      debug_info.compositing_reason_ids = ShortNames(compositing_reasons);
     }
     debug_info.owner_node_id = pending_layer.OwnerNodeId();
 
@@ -1608,50 +1606,52 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
   DCHECK_EQ(needs_update_, UpdateType::kFull);
 
   if (layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer) {
-    return CompositingReason::kOverflowScrolling;
+    return {CompositingReason::kOverflowScrolling};
   }
   if (layer.Chunks().size() == 1 && layer.FirstPaintChunk().size() == 1) {
     switch (layer.FirstDisplayItem().GetType()) {
       case DisplayItem::kFixedAttachmentBackground:
-        return CompositingReason::kFixedAttachmentBackground;
+        return {CompositingReason::kFixedAttachmentBackground};
       case DisplayItem::kCaret:
-        return CompositingReason::kCaret;
+        return {CompositingReason::kCaret};
       case DisplayItem::kScrollbarHorizontal:
       case DisplayItem::kScrollbarVertical:
-        return CompositingReason::kScrollbar;
+        return {CompositingReason::kScrollbar};
       case DisplayItem::kForeignLayerCanvas:
-        return CompositingReason::kCanvas;
+        return {CompositingReason::kCanvas};
       case DisplayItem::kForeignLayerDevToolsOverlay:
-        return CompositingReason::kDevToolsOverlay;
+        return {CompositingReason::kDevToolsOverlay};
       case DisplayItem::kForeignLayerPlugin:
-        return CompositingReason::kPlugin;
+        return {CompositingReason::kPlugin};
       case DisplayItem::kForeignLayerVideo:
-        return CompositingReason::kVideo;
+        return {CompositingReason::kVideo};
       case DisplayItem::kForeignLayerRemoteFrame:
-        return CompositingReason::kIFrame;
+        return {CompositingReason::kIFrame};
       case DisplayItem::kForeignLayerLinkHighlight:
-        return CompositingReason::kLinkHighlight;
+        return {CompositingReason::kLinkHighlight};
       case DisplayItem::kForeignLayerViewportScroll:
-        return CompositingReason::kViewport;
+        return {CompositingReason::kViewport};
       case DisplayItem::kForeignLayerViewportScrollbar:
-        return CompositingReason::kScrollbar;
+        return {CompositingReason::kScrollbar};
       case DisplayItem::kForeignLayerViewTransitionContent:
-        return CompositingReason::kViewTransitionContent;
+        return {CompositingReason::kViewTransitionContent};
       default:
         // Will determine compositing reasons based on paint properties.
         break;
     }
   }
 
-  CompositingReasons reasons = CompositingReason::kNone;
+  CompositingReasons reasons;
   const auto& transform = layer.GetPropertyTreeState().Transform();
   if (transform.IsBackfaceHidden() &&
       !previous_layer_state.Transform().IsBackfaceHidden()) {
-    reasons = CompositingReason::kBackfaceVisibilityHidden;
+    reasons = {CompositingReason::kBackfaceVisibilityHidden};
   }
   if (layer.GetCompositingType() == PendingLayer::kOverlap) {
-    return reasons == CompositingReason::kNone ? CompositingReason::kOverlap
-                                               : reasons;
+    if (reasons.empty()) {
+      return {CompositingReason::kOverlap};
+    }
+    return reasons;
   }
 
   auto composited_ancestor = [this](const TransformPaintPropertyNode& transform)
@@ -1669,12 +1669,12 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
       [composited_ancestor](
           const TransformPaintPropertyNode& transform,
           const TransformPaintPropertyNode& previous) -> CompositingReasons {
-    CompositingReasons reasons = CompositingReason::kNone;
+    CompositingReasons reasons;
     const auto* ancestor = composited_ancestor(transform);
     if (ancestor && ancestor != composited_ancestor(previous)) {
       reasons = ancestor->DirectCompositingReasonsForDebugging();
       if (ancestor->ScrollNode()) {
-        reasons |= CompositingReason::kOverflowScrolling;
+        reasons.Put(CompositingReason::kOverflowScrolling);
       }
     }
     return reasons;
@@ -1689,16 +1689,16 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
         previous.LocalTransformSpace().Unalias());
   };
 
-  reasons |= transform_compositing_reasons(transform,
-                                           previous_layer_state.Transform());
+  reasons.PutAll(transform_compositing_reasons(
+      transform, previous_layer_state.Transform()));
   const auto& effect = layer.GetPropertyTreeState().Effect();
   if (&effect != &previous_layer_state.Effect()) {
-    reasons |= effect.DirectCompositingReasonsForDebugging();
-    if (reasons == CompositingReason::kNone) {
+    reasons.PutAll(effect.DirectCompositingReasonsForDebugging());
+    if (reasons.empty()) {
       reasons = transform_compositing_reasons(
           effect.LocalTransformSpace().Unalias(),
           previous_layer_state.Effect().LocalTransformSpace().Unalias());
-      if (reasons == CompositingReason::kNone && effect.OutputClip() &&
+      if (reasons.empty() && effect.OutputClip() &&
           previous_layer_state.Effect().OutputClip()) {
         reasons = clip_compositing_reasons(
             effect.OutputClip()->Unalias(),
@@ -1706,7 +1706,7 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
       }
     }
   }
-  if (reasons == CompositingReason::kNone) {
+  if (reasons.empty()) {
     reasons = clip_compositing_reasons(layer.GetPropertyTreeState().Clip(),
                                        previous_layer_state.Clip());
   }

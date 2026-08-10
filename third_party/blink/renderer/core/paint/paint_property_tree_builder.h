@@ -320,7 +320,7 @@ struct PaintPropertyTreeBuilderContext final {
 
   // This is always recalculated in PaintPropertyTreeBuilder::UpdateForSelf()
   // which overrides the inherited value.
-  CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
+  CompositingReasons direct_compositing_reasons;
 };
 
 class VisualViewportPaintPropertyTreeBuilder {

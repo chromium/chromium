@@ -123,7 +123,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
 
     BackfaceVisibility backface_visibility = BackfaceVisibility::kInherited;
     unsigned rendering_context_id = 0;
-    CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
+    CompositingReasons direct_compositing_reasons;
     CompositorElementId compositor_element_id;
     std::unique_ptr<CompositorStickyConstraint> sticky_constraint;
     std::unique_ptr<cc::AnchorPositionScrollData> anchor_position_scroll_data;
@@ -139,11 +139,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
         const AnimationState& animation_state) const;
 
     bool UsesCompositedScrolling() const {
-      return direct_compositing_reasons & CompositingReason::kOverflowScrolling;
+      return direct_compositing_reasons.Has(
+          CompositingReason::kOverflowScrolling);
     }
     bool RequiresCullRectExpansion() const {
-      return direct_compositing_reasons &
-             CompositingReason::kRequiresCullRectExpansion;
+      return direct_compositing_reasons.HasAny(
+          CompositingReasonCombos::kRequiresCullRectExpansion);
     }
 
     void Trace(Visitor*) const;
@@ -225,13 +226,13 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   // used to keep bottom-fixed elements appear fixed to the bottom of the
   // screen in the presence of URL bar movement.
   bool IsAffectedByOuterViewportBoundsDelta() const {
-    return DirectCompositingReasons() &
-           CompositingReason::kAffectedByOuterViewportBoundsDelta;
+    return DirectCompositingReasons().Has(
+        CompositingReason::kAffectedByOuterViewportBoundsDelta);
   }
 
   bool IsAffectedBySafeAreaBottom() const {
-    return DirectCompositingReasons() &
-           CompositingReason::kAffectedBySafeAreaBottom;
+    return DirectCompositingReasons().Has(
+        CompositingReason::kAffectedBySafeAreaBottom);
   }
 
   // If true, this node is a descendant of the page scale transform. This is
@@ -327,50 +328,53 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   }
 
   bool HasDirectCompositingReasons() const {
-    return DirectCompositingReasons() != CompositingReason::kNone;
+    return !DirectCompositingReasons().empty();
   }
 
   bool HasDirectCompositingReasonsOtherThan3dTransform() const {
-    return DirectCompositingReasons() &
-           ~(CompositingReason::k3DTransform | CompositingReason::k3DScale |
-             CompositingReason::k3DRotate | CompositingReason::k3DTranslate |
-             CompositingReason::kTrivial3DTransform);
+    return !base::Difference(
+                DirectCompositingReasons(),
+                {CompositingReason::k3DTransform, CompositingReason::k3DScale,
+                 CompositingReason::k3DRotate, CompositingReason::k3DTranslate,
+                 CompositingReason::kTrivial3DTransform})
+                .empty();
   }
 
   bool HasActiveTransformAnimation() const {
-    return state_.direct_compositing_reasons &
-           (CompositingReason::kActiveTransformAnimation |
-            CompositingReason::kActiveScaleAnimation |
-            CompositingReason::kActiveRotateAnimation |
-            CompositingReason::kActiveTranslateAnimation);
+    return DirectCompositingReasons().HasAny(
+        {CompositingReason::kActiveTransformAnimation,
+         CompositingReason::kActiveScaleAnimation,
+         CompositingReason::kActiveRotateAnimation,
+         CompositingReason::kActiveTranslateAnimation});
   }
 
   bool RequiresCompositingForFixedPosition() const {
-    return DirectCompositingReasons() & CompositingReason::kFixedPosition;
+    return DirectCompositingReasons().Has(CompositingReason::kFixedPosition);
   }
   bool RequiresCompositingForFixedPositionOnly() const {
     return RequiresCompositingForFixedPosition() &&
-           (DirectCompositingReasons() &
-            ~CompositingReason::kFixedPositionReasons) ==
-               CompositingReason::kNone;
+           base::Difference(DirectCompositingReasons(),
+                            CompositingReasonCombos::kFixedPositionReasons)
+               .empty();
   }
   bool CanMergeForFixedPosition(const TransformPaintPropertyNode& other) const;
 
   bool RequiresCompositingForFixedToViewport() const {
-    return DirectCompositingReasons() & CompositingReason::kUndoOverscroll;
+    return DirectCompositingReasons().Has(CompositingReason::kUndoOverscroll);
   }
 
   bool RequiresCompositingForStickyPosition() const {
-    return DirectCompositingReasons() & CompositingReason::kStickyPosition;
+    return DirectCompositingReasons().Has(CompositingReason::kStickyPosition);
   }
   bool RequiresCompositingForStickyPositionOnly() const {
-    return DirectCompositingReasons() == CompositingReason::kStickyPosition;
+    return DirectCompositingReasons() ==
+           CompositingReasons{CompositingReason::kStickyPosition};
   }
   cc::StickyPositionConstraint::CanMergeResult CanMergeForStickyPosition(
       const TransformPaintPropertyNode& other) const;
 
   bool RequiresCompositingForAnchorPosition() const {
-    return DirectCompositingReasons() & CompositingReason::kAnchorPosition;
+    return DirectCompositingReasons().Has(CompositingReason::kAnchorPosition);
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
@@ -382,15 +386,15 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   }
 
   bool RequiresCompositingForRootScroller() const {
-    return state_.direct_compositing_reasons & CompositingReason::kRootScroller;
+    return DirectCompositingReasons().Has(CompositingReason::kRootScroller);
   }
 
   bool RequiresCompositingForWillChangeTransform() const {
-    return state_.direct_compositing_reasons &
-           (CompositingReason::kWillChangeTransform |
-            CompositingReason::kWillChangeScale |
-            CompositingReason::kWillChangeRotate |
-            CompositingReason::kWillChangeTranslate);
+    return DirectCompositingReasons().HasAny(
+        {CompositingReason::kWillChangeTransform,
+         CompositingReason::kWillChangeScale,
+         CompositingReason::kWillChangeRotate,
+         CompositingReason::kWillChangeTranslate});
   }
 
   // Cull rect expansion is required if the compositing reasons hint requirement

@@ -359,7 +359,7 @@ TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
   {
     EffectPaintPropertyNode::State state{transform.ancestor, clip.ancestor};
     state.opacity = 0.5f;  // Same as the initial opacity of |effect.ancestor|.
-    state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
+    state.direct_compositing_reasons = {CompositingReason::kWillChangeOpacity};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
@@ -368,14 +368,14 @@ TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
                                          clip.ancestor.Get()};
     // Change only opacity to 1.
     state.opacity = 1.f;
-    state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
+    state.direct_compositing_reasons = {CompositingReason::kWillChangeOpacity};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
   {
     EffectPaintPropertyNode::State state{transform.ancestor.Get(),
                                          clip.ancestor.Get()};
-    state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
+    state.direct_compositing_reasons = {CompositingReason::kWillChangeOpacity};
     // Change only opacity to 0.7f.
     state.opacity = 0.7f;
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
@@ -388,8 +388,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state{transform.ancestor.Get(),
                                          clip.ancestor.Get()};
     state.opacity = 0.5f;  // Same as the initial opacity of |effect.ancestor|.
-    state.direct_compositing_reasons |=
-        CompositingReason::kActiveOpacityAnimation;
+    state.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
@@ -397,8 +397,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state1{transform.ancestor.Get(),
                                           clip.ancestor.Get()};
     state1.opacity = 1.f;
-    state1.direct_compositing_reasons |=
-        CompositingReason::kActiveOpacityAnimation;
+    state1.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
               effect.ancestor->Update(*effect.root, std::move(state1)));
   }
@@ -406,8 +406,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state2{transform.ancestor.Get(),
                                           clip.ancestor.Get()};
     state2.opacity = 0.7f;
-    state2.direct_compositing_reasons |=
-        CompositingReason::kActiveOpacityAnimation;
+    state2.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
               effect.ancestor->Update(*effect.root, std::move(state2)));
   }
@@ -418,7 +418,8 @@ TEST_F(PaintPropertyNodeTest, ChangeDirectCompositingReason) {
   ExpectUnchangedState();
   {
     TransformPaintPropertyNode::State state;
-    state.direct_compositing_reasons = CompositingReason::kWillChangeTransform;
+    state.direct_compositing_reasons = {
+        CompositingReason::kWillChangeTransform};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               transform.child1->Update(*transform.ancestor, std::move(state)));
     EXPECT_CHANGE_EQ(PaintPropertyChangeType::kChangedOnlyValues,
@@ -427,9 +428,9 @@ TEST_F(PaintPropertyNodeTest, ChangeDirectCompositingReason) {
 
   {
     TransformPaintPropertyNode::State state;
-    state.direct_compositing_reasons =
-        CompositingReason::kWillChangeTransform |
-        CompositingReason::kBackfaceVisibilityHidden;
+    state.direct_compositing_reasons = {
+        CompositingReason::kWillChangeTransform,
+        CompositingReason::kBackfaceVisibilityHidden};
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               transform.child1->Update(*transform.ancestor, std::move(state)));
     // The previous change is more significant.
@@ -504,14 +505,14 @@ TEST_F(PaintPropertyNodeTest, StickyTranslationChange) {
   ResetAllChanged();
   ExpectUnchangedState();
   TransformPaintPropertyNode::State state;
-  state.direct_compositing_reasons = CompositingReason::kStickyPosition;
+  state.direct_compositing_reasons = {CompositingReason::kStickyPosition};
   // The change affects RequiresCullRectExpansion().
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
             transform.child1->Update(*transform.ancestor, std::move(state)));
 
   // Change sticky translation.
   TransformPaintPropertyNode::State state1{{MakeTranslationMatrix(10, 20)}};
-  state1.direct_compositing_reasons = CompositingReason::kStickyPosition;
+  state1.direct_compositing_reasons = {CompositingReason::kStickyPosition};
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyCompositedValues,
             transform.child1->Update(*transform.ancestor, std::move(state1)));
 

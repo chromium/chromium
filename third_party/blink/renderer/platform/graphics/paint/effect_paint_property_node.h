@@ -145,7 +145,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     float opacity = 1;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
     // === End of effects ===
-    CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
+    CompositingReasons direct_compositing_reasons;
     CompositorElementId compositor_element_id;
 
     // An identifier to tag transition element resources generated and cached in
@@ -291,18 +291,19 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   gfx::Rect MapRect(const gfx::Rect& input_rect) const;
 
   bool HasDirectCompositingReasons() const {
-    return state_.direct_compositing_reasons != CompositingReason::kNone;
+    return !state_.direct_compositing_reasons.empty();
   }
   bool RequiresCompositingForUnboundedElement() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kUnboundedElement;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kUnboundedElement);
   }
   bool RequiresCompositingForBackdropFilterMask() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kBackdropFilterMask;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kBackdropFilterMask);
   }
   bool RequiresCompositingForCanvasChild() const {
-    return state_.direct_compositing_reasons & CompositingReason::kCanvasChild;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kCanvasChild);
   }
 
   bool IsInTaintedSubtree() const { return state_.is_in_tainted_subtree; }
@@ -310,34 +311,34 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   bool IsInCanvasSubtree() const { return state_.is_in_canvas_subtree; }
 
   bool FlattensAtLeafOf3DScene() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kTransform3DSceneLeaf;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kTransform3DSceneLeaf);
   }
 
   bool HasActiveOpacityAnimation() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kActiveOpacityAnimation;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kActiveOpacityAnimation);
   }
   bool HasActiveFilterAnimation() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kActiveFilterAnimation;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kActiveFilterAnimation);
   }
   bool HasActiveBackdropFilterAnimation() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kActiveBackdropFilterAnimation;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kActiveBackdropFilterAnimation);
   }
 
   bool RequiresCompositingForWillChangeOpacity() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kWillChangeOpacity;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kWillChangeOpacity);
   }
   bool RequiresCompositingForWillChangeFilter() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kWillChangeFilter;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kWillChangeFilter);
   }
   bool RequiresCompositingForWillChangeBackdropFilter() const {
-    return state_.direct_compositing_reasons &
-           CompositingReason::kWillChangeBackdropFilter;
+    return state_.direct_compositing_reasons.Has(
+        CompositingReason::kWillChangeBackdropFilter);
   }
 
   // True if opacity is not 1.0, or could become non-1.0 without a compositing

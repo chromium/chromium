@@ -47,8 +47,8 @@ TransformPaintPropertyNode::State::ComputeTransformChange(
                : PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
-  if ((direct_compositing_reasons & CompositingReason::kStickyPosition) ||
-      (direct_compositing_reasons & CompositingReason::kAnchorPosition)) {
+  if ((direct_compositing_reasons.Has(CompositingReason::kStickyPosition)) ||
+      (direct_compositing_reasons.Has(CompositingReason::kAnchorPosition))) {
     // The compositor handles sticky offset changes and anchor position
     // translation offset changes automatically.
     DCHECK(transform_and_origin.matrix.Preserves2dAxisAlignment());
@@ -247,10 +247,9 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
     json->SetString("renderingContextId",
                     String::HexNumber(state_.rendering_context_id));
   }
-  if (state_.direct_compositing_reasons != CompositingReason::kNone) {
-    json->SetString(
-        "directCompositingReasons",
-        CompositingReason::ToString(state_.direct_compositing_reasons));
+  if (!state_.direct_compositing_reasons.empty()) {
+    json->SetString("directCompositingReasons",
+                    blink::ToString(state_.direct_compositing_reasons));
   }
   if (state_.compositor_element_id) {
     json->SetString("compositorElementId",

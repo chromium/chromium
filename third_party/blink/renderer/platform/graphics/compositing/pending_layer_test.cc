@@ -185,7 +185,7 @@ TEST(PendingLayerTest, PendingLayerDontMergeSparseWithTransforms) {
 TEST(PendingLayerTest, DontMergeSparseInCompositedEffect) {
   auto* t1 = Create2DTranslation(t0(), 20, 25);
   auto* e1 =
-      CreateOpacityEffect(e0(), 1.0f, CompositingReason::kWillChangeOpacity);
+      CreateOpacityEffect(e0(), 1.0f, {CompositingReason::kWillChangeOpacity});
   auto* t2 = Create2DTranslation(t0(), 1000, 1000);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), *e1)
@@ -206,7 +206,7 @@ TEST(PendingLayerTest, DontMergeSparseInCompositedEffect) {
 TEST(PendingLayerTest, MergeSparseInNonCompositedEffect) {
   auto* t1 = Create2DTranslation(t0(), 20, 25);
   auto* t2 = Create2DTranslation(t0(), 1000, 1000);
-  auto* e1 = CreateOpacityEffect(e0(), 1.0f, CompositingReason::kNone);
+  auto* e1 = CreateOpacityEffect(e0(), 1.0f, {});
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), *e1)
                        .Bounds(gfx::Rect(0, 0, 30, 40))

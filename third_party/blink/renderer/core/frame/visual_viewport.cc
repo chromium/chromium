@@ -216,7 +216,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     if (scale_ != 1.f)
       state.transform_and_origin.matrix = gfx::Transform::MakeScale(scale_);
     state.in_subtree_of_page_scale = false;
-    state.direct_compositing_reasons = CompositingReason::kViewport;
+    state.direct_compositing_reasons = {CompositingReason::kViewport};
     state.compositor_element_id = page_scale_element_id_;
 
     if (!page_scale_node_) {
@@ -293,7 +293,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     TransformPaintPropertyNode::State state{
         {gfx::Transform::MakeTranslation(-offset_)}};
     state.scroll = scroll_node_;
-    state.direct_compositing_reasons = CompositingReason::kViewport;
+    state.direct_compositing_reasons = {CompositingReason::kViewport};
     if (!scroll_translation_node_) {
       scroll_translation_node_ = TransformPaintPropertyNode::Create(
           *page_scale_node_, std::move(state));
@@ -323,8 +323,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   if (scrollbar_layer_horizontal_) {
     EffectPaintPropertyNode::State state;
     state.local_transform_space = transform_parent;
-    state.direct_compositing_reasons =
-        CompositingReason::kActiveOpacityAnimation;
+    state.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kHorizontalScrollbar);
     if (!horizontal_scrollbar_effect_node_) {
@@ -340,8 +340,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   if (scrollbar_layer_vertical_) {
     EffectPaintPropertyNode::State state;
     state.local_transform_space = transform_parent;
-    state.direct_compositing_reasons =
-        CompositingReason::kActiveOpacityAnimation;
+    state.direct_compositing_reasons = {
+        CompositingReason::kActiveOpacityAnimation};
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kVerticalScrollbar);
     if (!vertical_scrollbar_effect_node_) {
