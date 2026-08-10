@@ -213,7 +213,7 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     // Unloading an extension clears all warnings, so first terminate the
     // extension, and then add the warning. Since this is called from an
     // extension function unloading the extension has to be done
-    // asynchronously. Fortunately PostTask guarentees FIFO order so just
+    // asynchronously. Fortunately PostTask guarantees FIFO order so just
     // post both tasks.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
