@@ -49,7 +49,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kPeriodicRefresh = 0,
     kRefreshTokenUpdated = 1,
     kRefreshTokenRemoved = 2,
-    kMaxValue = kRefreshTokenRemoved,
+    kRefreshTokenInvalidated = 3,
+    kMaxValue = kRefreshTokenInvalidated,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 
@@ -99,6 +100,11 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
  private:
@@ -108,6 +114,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void StartFetch(const GaiaId& gaia_id);
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
                               std::optional<AccountPreviewData> data);
+  std::vector<CoreAccountInfo> GetAccountsWithValidRefreshTokens() const;
+  void RefreshAccountIdToGaiaIdMapping();
   bool HaveAccountsMutatedSinceLastFetch(
       const std::vector<CoreAccountInfo>& accounts) const;
   void RecordAccountsUsedForLastFetch();
@@ -120,6 +128,13 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void NotifyBatchBarrierOnFetchCompleted(const GaiaId& gaia_id);
   void MaybeNotifySinglePendingRequests(const GaiaId& gaia_id);
   void ClearAllSinglePendingRequests();
+
+  // Clears in-memory cache, in-flight fetchers, stored preferred account
+  // pref for `gaia_id`, and `account_id` from mapping. May trigger a batch
+  // fetch request if `gaia_id` was the preferred account.
+  void ProcessAccountRemoval(const CoreAccountId& account_id,
+                             const GaiaId& gaia_id,
+                             FetchTriggerCause trigger_cause);
 
   void ClearMemoryData();
   void ClearStoredResults();

@@ -58,8 +58,9 @@ void RecordSuccessfulFetchingMetrics(
 
   switch (cause) {
     case AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated:
+    case AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenRemoved:
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
-        kRefreshTokenRemoved: {
+        kRefreshTokenInvalidated: {
       int count = pref_service->GetInteger(
           prefs::kAccountPreviewNonPeriodicFetchCountPref);
       pref_service->SetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref,
@@ -175,13 +176,20 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  account_id_to_gaia_id_[account_info.account_id] = account_info.gaia;
   // This prevents startup refresh token updates from triggering unexpected
   // fetching requests. Startup should only rely on the repeating timer and
   // refresh all accounts preview data.
-  if (identity_manager_->AreRefreshTokensLoaded()) {
-    EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenUpdated);
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    return;
   }
+
+  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id)) {
+    // Treated in `OnErrorStateOfRefreshTokenUpdatedForAccount()`.
+    return;
+  }
+
+  EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenUpdated);
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
@@ -192,25 +200,19 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
   }
 
   GaiaId gaia_id = it->second;
-  account_id_to_gaia_id_.erase(it);
-  if (account_id_to_gaia_id_.empty()) {
-    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
-  }
+  ProcessAccountRemoval(account_id, gaia_id,
+                        FetchTriggerCause::kRefreshTokenRemoved);
+}
 
-  cached_data_.erase(gaia_id);
-  if (active_fetchers_.contains(gaia_id)) {
-    MaybeNotifySinglePendingRequests(gaia_id);
-    // `all_accounts_fetched_barrier_` relies on fetcher results, so it should
-    // be called before clearing the active fetcher.
-    NotifyBatchBarrierOnFetchCompleted(gaia_id);
-    active_fetchers_.erase(gaia_id);
-  }
-
-  auto preferred_account = GetPreferredAccountForPromo();
-  if (preferred_account && preferred_account->gaia_id == gaia_id) {
-    // Clears the prefs.
-    WritePreferredAccountToPrefs(std::nullopt);
-    EnsureAllAccountsFetched(FetchTriggerCause::kRefreshTokenRemoved);
+void AccountPreviewDataServiceImpl::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (error.IsPersistentError()) {
+    // An account with persistent error / refresh token errors is considered a
+    // removed account.
+    ProcessAccountRemoval(account_info.account_id, account_info.gaia,
+                          FetchTriggerCause::kRefreshTokenInvalidated);
   }
 }
 
@@ -258,6 +260,7 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
+  RefreshAccountIdToGaiaIdMapping();
   if (deferred_fetch_on_loaded_tokens_callback_) {
     std::move(deferred_fetch_on_loaded_tokens_callback_).Run();
   }
@@ -273,7 +276,7 @@ void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
 }
 
 void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
-  // Clear data to ensure a new fresh fetch and oreferred data computation is
+  // Clear data to ensure a new fresh fetch and preferred data computation is
   // performed.
   ClearAllDataAndResults();
   EnsureAllAccountsFetched(FetchTriggerCause::kPeriodicRefresh);
@@ -289,7 +292,8 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     return;
   }
 
-  auto accounts = identity_manager_->GetAccountsWithRefreshTokens();
+  const std::vector<CoreAccountInfo> accounts =
+      GetAccountsWithValidRefreshTokens();
   // If there are no accounts, there is no need to fetch any data.
   if (accounts.empty()) {
     ClearAllDataAndResults();
@@ -305,19 +309,19 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
       }
       pref_service_->ClearPref(prefs::kAccountPreviewNonPeriodicFetchCountPref);
     }
+    if (all_data_available_callback_for_testing_) {
+      std::move(all_data_available_callback_for_testing_).Run();
+    }
     return;
   }
 
   base::UmaHistogramEnumeration("Signin.AccountPreview.AllFetchTriggerCause",
                                 cause);
 
-  account_id_to_gaia_id_.clear();
-  for (const auto& account : accounts) {
-    account_id_to_gaia_id_[account.account_id] = account.gaia;
-  }
+  RefreshAccountIdToGaiaIdMapping();
 
   // Do not perform any fetch in case the previous list used to compute the
-  // preferred data is exactly equiavlent to the current list of accounts. This
+  // preferred data is exactly equivalent to the current list of accounts. This
   // will directly be false for all periodic refreshes since the previous list
   // and results are cleared during periodic refreshes.
   if (switches::kAccountPreviewDataPersistAccounts.Get() &&
@@ -341,19 +345,21 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   }
 
   if (gaia_ids_to_fetch.empty()) {
-    // When `kAccountPreviewDataPersistAccounts` is enabled,
-    // `HaveAccountsMutatedSinceLastFetch()` above ensures `gaia_ids_to_fetch`
-    // is not empty. However, if `kAccountPreviewDataPersistAccounts` is
-    // disabled, all accounts may already be cached.
-    CHECK(!switches::kAccountPreviewDataPersistAccounts.Get());
+    // This scenario may happen if an account was removed/invalidated, which
+    // would cause changes to the account list used (bypassing the optimization
+    // above in `HaveAccountsMutatedSinceLastFetch()`) while potentially still
+    // having the previous cached used in the initial computation. So a
+    // preferred account computation is needed.
+
     base::UmaHistogramEnumeration(
         "Signin.AccountPreview.TriggerCauseWithAllCachesAvailable", cause);
 
-    // If there are no new accounts to fetch, we can just skip this request.
-    // - if there are on-going fetches, they will be cleared (via
-    // `OnRefreshTokenRemovedForAccount()`) or finalized when the result is
-    // fetched.
-    // - otherwise, there is no need to force recomputing the preferred account.
+    // If there are on-going active fetches, they will complete the barrier
+    // and finalize the batch when done. Otherwise, all caches are already
+    // available, so immediately finalize and recompute the preferred account.
+    if (active_fetchers_.empty()) {
+      OnAllFetchesCompleted(/*should_reset_periodic_timer=*/false);
+    }
     return;
   }
 
@@ -442,6 +448,27 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   return std::nullopt;
 }
 
+std::vector<CoreAccountInfo>
+AccountPreviewDataServiceImpl::GetAccountsWithValidRefreshTokens() const {
+  CHECK(identity_manager_);
+  std::vector<CoreAccountInfo> accounts;
+  for (const auto& account :
+       identity_manager_->GetAccountsWithRefreshTokens()) {
+    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+            account.account_id)) {
+      accounts.push_back(account);
+    }
+  }
+  return accounts;
+}
+
+void AccountPreviewDataServiceImpl::RefreshAccountIdToGaiaIdMapping() {
+  account_id_to_gaia_id_.clear();
+  for (const auto& account : GetAccountsWithValidRefreshTokens()) {
+    account_id_to_gaia_id_[account.account_id] = account.gaia;
+  }
+}
+
 bool AccountPreviewDataServiceImpl::HaveAccountsMutatedSinceLastFetch(
     const std::vector<CoreAccountInfo>& accounts) const {
   absl::flat_hash_set<std::string> last_used_gaia_ids;
@@ -451,7 +478,6 @@ bool AccountPreviewDataServiceImpl::HaveAccountsMutatedSinceLastFetch(
       last_used_gaia_ids.insert(*str);
     }
   }
-
   if (accounts.size() != last_used_gaia_ids.size()) {
     return true;
   }
@@ -567,6 +593,9 @@ void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
     if (!identity_manager_observation_.IsObserving()) {
       identity_manager_observation_.Observe(identity_manager_);
       CreateAndStartRepeatingTimer();
+      if (identity_manager_->AreRefreshTokensLoaded()) {
+        RefreshAccountIdToGaiaIdMapping();
+      }
     }
     return;
   }
@@ -624,6 +653,31 @@ void AccountPreviewDataServiceImpl::ClearAllSinglePendingRequests() {
   single_pending_requests_.clear();
 }
 
+void AccountPreviewDataServiceImpl::ProcessAccountRemoval(
+    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
+    FetchTriggerCause trigger_cause) {
+  account_id_to_gaia_id_.erase(account_id);
+  if (account_id_to_gaia_id_.empty()) {
+    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+  }
+
+  cached_data_.erase(gaia_id);
+  if (active_fetchers_.contains(gaia_id)) {
+    MaybeNotifySinglePendingRequests(gaia_id);
+    // `all_accounts_fetched_barrier_` relies on fetcher results, so it should
+    // be called before clearing the active fetcher.
+    NotifyBatchBarrierOnFetchCompleted(gaia_id);
+    active_fetchers_.erase(gaia_id);
+  }
+
+  auto preferred_account = GetPreferredAccountForPromo();
+  if (preferred_account && preferred_account->gaia_id == gaia_id) {
+    WritePreferredAccountToPrefs(/*preference=*/std::nullopt);
+    EnsureAllAccountsFetched(trigger_cause);
+  }
+}
+
 void AccountPreviewDataServiceImpl::ClearMemoryData() {
   cached_data_.clear();
   active_fetchers_.clear();
@@ -636,7 +690,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
 
 void AccountPreviewDataServiceImpl::ClearStoredResults() {
   pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
-  WritePreferredAccountToPrefs(std::nullopt);
+  WritePreferredAccountToPrefs(/*preference=*/std::nullopt);
 }
 
 void AccountPreviewDataServiceImpl::ClearAllDataAndResults() {

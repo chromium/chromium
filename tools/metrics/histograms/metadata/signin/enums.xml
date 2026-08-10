@@ -219,6 +219,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="PeriodicRefresh"/>
   <int value="1" label="RefreshTokenUpdated"/>
   <int value="2" label="RefreshTokenRemoved"/>
+  <int value="3" label="RefreshTokenInvalidated"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_service_impl.h:FetchTriggerCause) -->
