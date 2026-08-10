@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -982,6 +983,39 @@ TEST_F(IndigoPageActionControllerTest,
   navigation->Commit();
 
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       InvokeActionSkipsGlicIfOngoingConversation) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  glic::MockGlicInstance mock_glic_instance;
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              GetInstanceForTab(tab_interface_.get()))
+      .WillOnce(::testing::Return(&mock_glic_instance));
+  EXPECT_CALL(mock_glic_instance, conversation_id())
+      .WillOnce(::testing::Return(std::optional<std::string>("convo123")));
+
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            1);
 }
 
 TEST_F(IndigoPageActionControllerTest,

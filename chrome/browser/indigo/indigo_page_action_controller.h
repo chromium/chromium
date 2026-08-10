@@ -233,6 +233,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void ContinueInvoke(bool skip_glic_invoke,
                       const CombinedEligibility& eligibility);
 
+  // Checks whether we should skip Indigo invocation and invoke Glic instead.
+  // Returns true if Glic will be invoked.
+  bool MaybeInvokeGlic();
+
   // Helper to invoke IndigoAgent.
   void TriggerIndigoAgent();
   // Same as above, but introduces a delay before invoking.
