@@ -266,12 +266,7 @@ public class TabListMediator implements TabListNotificationHandler {
         void onTabSelecting(int tabId, boolean fromActionButton);
     }
 
-    /**
-     * Defines the layout structure used by the TabList. - FLAT: A linear list of tabs where groups
-     * are not supported or treated as single tabs. - GROUPED: A flat list where tab groups are
-     * permanently collapsed and represented as single interactive cards. - NESTED: A hierarchical
-     * list where tab groups can be expanded to show their children.
-     */
+    /** Defines the structural geometry and visual packaging policy for the TabList. */
     @IntDef({
         TabListLayoutType.FLAT,
         TabListLayoutType.GROUPED,
@@ -279,8 +274,28 @@ public class TabListMediator implements TabListNotificationHandler {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListLayoutType {
+        /**
+         * Standard flat grid or list. Does not visually package tabs into clusters or headers.
+         * Surfaces using this layout: - {@link TabGroupUiCoordinator} (Bottom Tab Strip) - {@link
+         * TabGridDialogCoordinator} (Inside the Group Popup) - {@link TabListEditorCoordinator}
+         * (Selection mode, when display groups are disabled)
+         */
         int FLAT = 0;
+
+        /**
+         * Clustered grid. Visually merges an entire group of tabs into a single proxy tile model.
+         * Surfaces using this layout: - {@link TabSwitcherPaneCoordinator} (Grid Tab Switcher) -
+         * {@link TabListEditorCoordinator} (Selection mode, when display groups are enabled) -
+         * {@link ArchivedTabsDialogCoordinator} (Implicitly uses TabListEditor with groups enabled)
+         */
         int GROUPED = 1;
+
+        /**
+         * Hierarchical list. Uses dedicated group header models with physically inline child
+         * models. Surfaces using this layout: - {@link
+         * org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator}
+         * (Vertical Tabs)
+         */
         int NESTED = 2;
     }
 
@@ -1451,7 +1466,7 @@ public class TabListMediator implements TabListNotificationHandler {
             PropertyModel oldModel = mModelList.get(oldIndex).model;
             int lastId = oldModel.get(TAB_ID);
             oldModel.set(TabProperties.IS_SELECTED, false);
-            if (mLayoutType != TabListLayoutType.FLAT
+            if (mTabListLayoutDelegate.requiresThumbnailUpdateOnDeselect()
                     && mThumbnailProvider != null
                     && mShowingTabs) {
                 updateThumbnailFetcher(oldModel, lastId);
@@ -1462,7 +1477,9 @@ public class TabListMediator implements TabListNotificationHandler {
             PropertyModel newModel = mModelList.get(newIndex).model;
             int newId = newModel.get(TAB_ID);
             newModel.set(TabProperties.IS_SELECTED, true);
-            if (mThumbnailProvider != null && mShowingTabs) {
+            if (mTabListLayoutDelegate.requiresThumbnailUpdateOnSelect()
+                    && mThumbnailProvider != null
+                    && mShowingTabs) {
                 updateThumbnailFetcher(newModel, newId);
             }
         }
@@ -1846,10 +1863,10 @@ public class TabListMediator implements TabListNotificationHandler {
 
         boolean forceUpdate = isTabSelected && !quickMode;
         boolean forceUpdateLastSelected =
-                mLayoutType != TabListLayoutType.FLAT
+                mTabListLayoutDelegate.requiresThumbnailUpdateOnDeselect()
                         && index == mLastSelectedTabListModelIndex
                         && !quickMode;
-        // TODO(crbug.com/40273706): Fetching thumbnail for group is expansive, we should consider
+        // TODO(crbug.com/40273706): Fetching thumbnail for group is expensive, we should consider
         // to improve it.
         if (mThumbnailProvider != null
                 && mShowingTabs

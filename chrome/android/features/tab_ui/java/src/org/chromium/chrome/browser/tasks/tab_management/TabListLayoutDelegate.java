@@ -34,6 +34,18 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     /** Returns the insertion index for a new tab card. */
     public abstract int getInsertionIndexOfTab(Tab tab);
 
+    /**
+     * Whether this layout requires a thumbnail cache invalidation fetch when a tab is deselected.
+     * Often required for multi-thumbnail cluster views (like Grouped layouts).
+     */
+    public abstract boolean requiresThumbnailUpdateOnDeselect();
+
+    /**
+     * Whether this layout requires fetching a fresh thumbnail when a tab becomes selected. Should
+     * be false for layouts that do not support thumbnails (like Vertical Tabs).
+     */
+    public abstract boolean requiresThumbnailUpdateOnSelect();
+
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         mMediator.updateTabGroupTitle(tabGroupId);

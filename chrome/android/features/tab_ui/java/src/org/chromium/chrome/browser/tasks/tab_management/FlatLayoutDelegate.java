@@ -35,6 +35,16 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    public boolean requiresThumbnailUpdateOnDeselect() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresThumbnailUpdateOnSelect() {
+        return true;
+    }
+
+    @Override
     public int getInsertionIndexOfTab(Tab tab) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
         // Compute the index of the tab within the tab's group.

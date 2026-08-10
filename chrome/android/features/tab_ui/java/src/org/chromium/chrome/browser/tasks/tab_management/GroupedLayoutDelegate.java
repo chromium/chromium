@@ -40,6 +40,16 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    public boolean requiresThumbnailUpdateOnDeselect() {
+        return true;
+    }
+
+    @Override
+    public boolean requiresThumbnailUpdateOnSelect() {
+        return true;
+    }
+
+    @Override
     public int getInsertionIndexOfTab(Tab tab) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
         int tabIndex = TabList.INVALID_TAB_INDEX;

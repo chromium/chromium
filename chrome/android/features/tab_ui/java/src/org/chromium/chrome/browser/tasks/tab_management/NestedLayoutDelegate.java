@@ -34,6 +34,16 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         super(mediator, modelList);
     }
 
+    @Override
+    public boolean requiresThumbnailUpdateOnDeselect() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresThumbnailUpdateOnSelect() {
+        return false;
+    }
+
     /**
      * Spatial indexing helper for nested layouts. Maps a backend Tab's absolute index to its
      * corresponding UI list position.
