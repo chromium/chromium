@@ -49,6 +49,11 @@ namespace context_hub {
 
 namespace {
 
+// Maximum number of parallel MES requests for tab-based todos generation.
+// Matches the execution limit for ModelBasedCapabilityKey::kContextHub in
+// components/optimization_guide/core/model_execution/model_execution_manager.cc.
+constexpr int kMaxConcurrentMesRequests = 10;
+
 optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
     const MemoryBankEntry& entry) {
   optimization_guide::proto::MemoryBankEntry mb_proto;
@@ -105,6 +110,26 @@ void OnPageContentExtracted(
         extracted_result->page_content->data;
   }
   barrier_callback.Run(std::make_pair(std::move(tab), std::move(page_context)));
+}
+
+ThirdPartyData::GroupType ToThirdPartyGroupType(
+    optimization_guide::proto::BrowserBasedTodosResponse::GroupType
+        group_type) {
+  switch (group_type) {
+    case optimization_guide::proto::BrowserBasedTodosResponse::
+        GROUP_TYPE_READING_LIST:
+      return ThirdPartyData::GroupType::kReadingList;
+    case optimization_guide::proto::BrowserBasedTodosResponse::
+        GROUP_TYPE_NUDGE_TO_CLOSE:
+      return ThirdPartyData::GroupType::kNudgeToClose;
+    case optimization_guide::proto::BrowserBasedTodosResponse::
+        GROUP_TYPE_UNFINISHED:
+      return ThirdPartyData::GroupType::kUnfinishedAction;
+    case optimization_guide::proto::BrowserBasedTodosResponse::
+        GROUP_TYPE_UNSPECIFIED:
+    default:
+      return ThirdPartyData::GroupType::kNoMatch;
+  }
 }
 
 }  // namespace
@@ -257,9 +282,116 @@ void ContextHubService::OnTabContextsFetched(
   if (!pending_tab_todos_callback_) {
     return;
   }
-  // TODO(crbug.com/543605762): Send tab contexts to Model Execution Service
-  // to generate tab-based todos.
-  std::move(pending_tab_todos_callback_).Run(true);
+
+  // Add all eligible tabs to the pending MES requests queue.
+  for (auto& [tab, page_context] : tab_contexts) {
+    if (tab.id != -1 && tab.url.is_valid() && !tab.last_active_time.is_null() &&
+        page_context) {
+      pending_tab_todos_requests_.emplace(std::move(tab),
+                                          std::move(*page_context));
+    }
+  }
+
+  // Start processing the MES requests.
+  ProcessNextTabBasedTodosMesBatch();
+}
+
+void ContextHubService::ProcessNextTabBasedTodosMesBatch() {
+  // If all pending requests have been dispatched and no active model executions
+  // remain, commit all generated todos to the store in a single batch.
+  if (pending_tab_todos_requests_.empty() && active_tab_todos_requests_ == 0) {
+    if (!generated_tab_todos_.empty()) {
+      auto_todos_store_->AddAllTodos(
+          generated_tab_todos_,
+          base::BindOnce(&ContextHubService::FinishTabBasedTodosGeneration,
+                         weak_factory_.GetWeakPtr()));
+    } else {
+      FinishTabBasedTodosGeneration(/*success=*/true);
+    }
+    return;
+  }
+
+  // Dispatch requests up to the maximum concurrency limit.
+  while (active_tab_todos_requests_ < kMaxConcurrentMesRequests &&
+         !pending_tab_todos_requests_.empty()) {
+    auto [tab, page_context] = std::move(pending_tab_todos_requests_.front());
+    pending_tab_todos_requests_.pop();
+    active_tab_todos_requests_++;
+
+    // Construct the ContextHubRequest proto with the tab and its page context.
+    optimization_guide::proto::ContextHubRequest request;
+    request.set_request_type(optimization_guide::proto::
+                                 CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS);
+    optimization_guide::proto::EntryItem* entry_item =
+        request.add_entry_items();
+    optimization_guide::proto::Tab* tab_proto = entry_item->mutable_tab();
+    tab_proto->set_tab_id(tab.id);
+    tab_proto->set_title(tab.title);
+    tab_proto->set_url(tab.url.spec());
+    tab_proto->set_last_active_timestamp_ms(
+        tab.last_active_time.InMillisecondsSinceUnixEpoch());
+    *tab_proto->mutable_page_context() = std::move(page_context);
+
+    int64_t tab_id = tab.id;
+    base::Time last_active_time = tab.last_active_time;
+
+    optimization_guide_remote_model_executor_->ExecuteModel(
+        optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
+        optimization_guide::ModelExecutionOptions(),
+        base::BindOnce(&ContextHubService::OnTabBasedTodosMesResponseReceived,
+                       weak_factory_.GetWeakPtr(), tab_id, last_active_time));
+  }
+}
+
+void ContextHubService::OnTabBasedTodosMesResponseReceived(
+    int64_t tab_id,
+    base::Time last_active_time,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  // Decrement active request count to free up a concurrency slot.
+  active_tab_todos_requests_--;
+
+  // Parse the model execution response and extract any generated todo.
+  if (result.response.has_value()) {
+    std::optional<optimization_guide::proto::ContextHubResponse> response =
+        optimization_guide::ParsedAnyMetadata<
+            optimization_guide::proto::ContextHubResponse>(*result.response);
+    if (response && response->has_browser_based_todos_response()) {
+      const auto& todo_proto = response->browser_based_todos_response();
+      ThirdPartyData::GroupType group_type =
+          ToThirdPartyGroupType(todo_proto.group_type());
+      // Only record the todo if a valid non-empty title was generated and the
+      // group type matches a known actionable category.
+      if (!todo_proto.todo_title().empty() &&
+          group_type != ThirdPartyData::GroupType::kNoMatch) {
+        AutoTodoEntry entry;
+        entry.title = todo_proto.todo_title();
+        entry.description = todo_proto.todo_description();
+        entry.status = AutoTodoEntry::Status::kActive;
+
+        ThirdPartyData third_party;
+        third_party.tab_id = tab_id;
+        third_party.last_active_timestamp = last_active_time;
+        third_party.group_type = group_type;
+        entry.data = std::move(third_party);
+
+        generated_tab_todos_.push_back(std::move(entry));
+      }
+    }
+  }
+
+  // Continue processing remaining queued requests or finalize generation.
+  ProcessNextTabBasedTodosMesBatch();
+}
+
+void ContextHubService::FinishTabBasedTodosGeneration(bool success) {
+  active_tab_todos_requests_ = 0;
+  pending_tab_todos_requests_ = {};
+  generated_tab_todos_.clear();
+
+  if (pending_tab_todos_callback_) {
+    std::move(pending_tab_todos_callback_).Run(success);
+  }
 }
 
 void ContextHubService::OnFirstPartyAutoTodosFetched(

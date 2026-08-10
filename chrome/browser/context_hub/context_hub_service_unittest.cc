@@ -33,6 +33,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -99,10 +100,89 @@ class ContextHubServiceTest : public testing::Test {
             browser::context_hub::mojom::kAutoTabGroups,
         },
         /*disabled_features=*/{});
+
+    ON_CALL(mock_remote_model_executor_, ExecuteModel)
+        .WillByDefault(
+            [this](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback callback) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      std::move(callback),
+                      CreateContextHubResponseResult(
+                          "Todo title",
+                          optimization_guide::proto::BrowserBasedTodosResponse::
+                              GROUP_TYPE_READING_LIST),
+                      nullptr));
+            });
   }
   ~ContextHubServiceTest() override = default;
 
  protected:
+  std::unique_ptr<content::WebContents> CreateEligibleTab(
+      const GURL& url = GURL("https://example.com"),
+      base::TimeDelta inactive_time = base::Hours(3),
+      bool is_visible = false) {
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    sessions::SessionTabHelper::CreateForWebContents(
+        web_contents.get(), sessions::SessionTabHelper::DelegateLookup());
+    content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(url);
+    content::WebContentsTester::For(web_contents.get())
+        ->SetLastActiveTime(base::Time::Now() - inactive_time);
+    if (is_visible) {
+      web_contents->WasShown();
+    } else {
+      web_contents->WasHidden();
+    }
+    return web_contents;
+  }
+
+  void MockPageContentExtraction(content::WebContents* web_contents,
+                                 const std::string& title = "Page Title") {
+    scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
+        apc = base::MakeRefCounted<
+            page_content_annotations::RefCountedAnnotatedPageContent>();
+    apc->data.mutable_main_frame_data()->set_title(title);
+    page_content_annotations::ExtractedPageContentResult extracted_result(
+        std::move(apc), base::Time::Now(),
+        /*is_eligible_for_server_upload=*/true,
+        /*screenshot_data=*/{});
+    EXPECT_CALL(mock_page_content_extraction_service_,
+                GetExtractedPageContentAndEligibilityForPageAsync(
+                    testing::Ref(web_contents->GetPrimaryPage()), _, true))
+        .WillOnce(RunOnceCallback<1>(std::move(extracted_result)));
+  }
+
+  std::unique_ptr<content::WebContents> CreateEligibleTabWithMockExtraction(
+      const GURL& url = GURL("https://example.com"),
+      const std::string& title = "Page Title") {
+    auto web_contents = CreateEligibleTab(url);
+    MockPageContentExtraction(web_contents.get(), title);
+    return web_contents;
+  }
+
+  optimization_guide::OptimizationGuideModelExecutionResult
+  CreateContextHubResponseResult(
+      const std::string& todo_title,
+      optimization_guide::proto::BrowserBasedTodosResponse::GroupType
+          group_type) {
+    optimization_guide::proto::ContextHubResponse response;
+    auto* todo_proto = response.mutable_browser_based_todos_response();
+    todo_proto->set_todo_title(todo_title);
+    todo_proto->set_group_type(group_type);
+
+    optimization_guide::proto::Any any_response;
+    any_response.set_type_url(
+        "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+    response.SerializeToString(any_response.mutable_value());
+    return optimization_guide::OptimizationGuideModelExecutionResult(
+        base::ok(std::move(any_response)), nullptr);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -201,12 +281,9 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
-  auto web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   // Tab was active recently (< 2 hours ago), so it is not eligible.
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(1));
-  web_contents->WasHidden();
+  auto web_contents =
+      CreateEligibleTab(GURL("https://example.com"), base::Hours(1));
 
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
@@ -220,12 +297,10 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
-  auto web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   // Tab was active 3 hours ago, but is currently visible.
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
-  web_contents->WasShown();
+  auto web_contents =
+      CreateEligibleTab(GURL("https://example.com"), base::Hours(3),
+                        /*is_visible=*/true);
 
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(_, _, _))
@@ -238,100 +313,29 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EligibleTabFetchesAPC) {
-  auto web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  // Tab was active 3 hours ago (> 2 hours threshold), so APC should be fetched.
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
-  web_contents->WasHidden();
-
-  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc =
-      base::MakeRefCounted<
-          page_content_annotations::RefCountedAnnotatedPageContent>();
-
-  page_content_annotations::ExtractedPageContentResult extracted_result(
-      std::move(apc), base::Time::Now(),
-      /*is_eligible_for_server_upload=*/true,
-      /*screenshot_data=*/{});
-
-  EXPECT_CALL(mock_page_content_extraction_service_,
-              GetExtractedPageContentAndEligibilityForPageAsync(
-                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::move(extracted_result)));
-
-  base::test::TestFuture<bool> future;
-  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
-                                 future.GetCallback());
-
-  EXPECT_TRUE(future.Get());
-}
-
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MultipleTabsFiltering) {
-  auto web_contents1 =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  auto web_contents2 =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  auto web_contents3 =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-
   // Tab 1: Active 3 hours ago (eligible)
+  auto web_contents1 = CreateEligibleTabWithMockExtraction(
+      GURL("https://example.com/tab1"), "Tab 1");
   // Tab 2: Active 30 mins ago (not eligible)
-  // Tab 3: Active 5 hours ago (eligible)
-  content::WebContentsTester::For(web_contents1.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
-  web_contents1->WasHidden();
-  content::WebContentsTester::For(web_contents2.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Minutes(30));
-  web_contents2->WasHidden();
-  content::WebContentsTester::For(web_contents3.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(5));
-  web_contents3->WasHidden();
+  auto web_contents2 =
+      CreateEligibleTab(GURL("https://example.com/tab2"), base::Minutes(30));
 
-  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc1 =
-      base::MakeRefCounted<
-          page_content_annotations::RefCountedAnnotatedPageContent>();
-  page_content_annotations::ExtractedPageContentResult extracted_result1(
-      std::move(apc1), base::Time::Now(),
-      /*is_eligible_for_server_upload=*/true,
-      /*screenshot_data=*/{});
-
-  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc3 =
-      base::MakeRefCounted<
-          page_content_annotations::RefCountedAnnotatedPageContent>();
-  page_content_annotations::ExtractedPageContentResult extracted_result3(
-      std::move(apc3), base::Time::Now(),
-      /*is_eligible_for_server_upload=*/true,
-      /*screenshot_data=*/{});
-
-  EXPECT_CALL(mock_page_content_extraction_service_,
-              GetExtractedPageContentAndEligibilityForPageAsync(
-                  testing::Ref(web_contents1->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::move(extracted_result1)));
   EXPECT_CALL(mock_page_content_extraction_service_,
               GetExtractedPageContentAndEligibilityForPageAsync(
                   testing::Ref(web_contents2->GetPrimaryPage()), _, _))
       .Times(0);
-  EXPECT_CALL(mock_page_content_extraction_service_,
-              GetExtractedPageContentAndEligibilityForPageAsync(
-                  testing::Ref(web_contents3->GetPrimaryPage()), _, true))
-      .WillOnce(RunOnceCallback<1>(std::move(extracted_result3)));
 
   base::test::TestFuture<bool> future;
   service_.GenerateTabBasedTodos(
-      {web_contents1->GetWeakPtr(), web_contents2->GetWeakPtr(),
-       web_contents3->GetWeakPtr()},
+      {web_contents1->GetWeakPtr(), web_contents2->GetWeakPtr()},
       future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_ReentrancyBlocked) {
-  auto web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
-  web_contents->WasHidden();
+  auto web_contents = CreateEligibleTab();
 
   page_content_annotations::PageContentExtractionService::
       GetExtractedPageContentAndEligibilityCallback saved_callback;
@@ -365,11 +369,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_ReentrancyBlocked) {
 
 TEST_F(ContextHubServiceTest,
        GenerateTabBasedTodos_NavigatedPageDuringExtraction) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(base::Time::Now() - base::Hours(3));
-  web_contents->WasHidden();
+  auto web_contents = CreateEligibleTab();
 
   page_content_annotations::PageContentExtractionService::
       GetExtractedPageContentAndEligibilityCallback saved_callback;
@@ -409,6 +409,205 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NullWebContents) {
                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateTabBasedTodos_SuccessfulGenerationSavesTodo) {
+  auto web_contents = CreateEligibleTabWithMockExtraction(
+      GURL("https://example.com/item"), "Item Details");
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [this](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    CreateContextHubResponseResult(
+                        "Todo title",
+                        optimization_guide::proto::BrowserBasedTodosResponse::
+                            GROUP_TYPE_UNFINISHED),
+                    nullptr));
+          });
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  // Verify that the observer is notified of the todo being saved to the store.
+  EXPECT_CALL(observer, OnAutoTodosChanged(ElementsAre(AllOf(
+                            Field(&AutoTodoEntry::id, "item_1"),
+                            Field(&AutoTodoEntry::title, "Todo title")))));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MissingPageContentSkipped) {
+  auto web_contents = CreateEligibleTab(GURL("https://example.com/page"));
+
+  // Extraction returns result without page_content (null).
+  page_content_annotations::ExtractedPageContentResult extracted_result(
+      /*page_content=*/nullptr, base::Time::Now(),
+      /*is_eligible_for_server_upload=*/true,
+      /*screenshot_data=*/{});
+
+  EXPECT_CALL(mock_page_content_extraction_service_,
+              GetExtractedPageContentAndEligibilityForPageAsync(
+                  testing::Ref(web_contents->GetPrimaryPage()), _, true))
+      .WillOnce(RunOnceCallback<1>(std::move(extracted_result)));
+
+  // Model execution should not be triggered since page content is missing.
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_QueuesRequestsOverLimit) {
+  // Set the number of tabs to exceed kMaxConcurrentMesRequests (10) to verify
+  // request queuing and batch processing.
+  constexpr size_t kNumTabs = 12;
+  std::vector<std::unique_ptr<content::WebContents>> web_contents_list;
+  std::vector<base::WeakPtr<content::WebContents>> tab_ptrs;
+
+  for (size_t i = 0; i < kNumTabs; ++i) {
+    auto web_contents = CreateEligibleTabWithMockExtraction(
+        GURL("https://example.com/tab" + base::NumberToString(i)),
+        "Tab " + base::NumberToString(i));
+    tab_ptrs.push_back(web_contents->GetWeakPtr());
+    web_contents_list.push_back(std::move(web_contents));
+  }
+
+  // Model execution is called for each tab. Tabs exceeding the concurrency
+  // limit of 10 are queued and dispatched as in-flight requests complete.
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .Times(kNumTabs)
+      .WillRepeatedly(
+          [this](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request = static_cast<
+                const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+            int64_t tab_id = request.entry_items(0).tab().tab_id();
+
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    CreateContextHubResponseResult(
+                        "Todo for tab " + base::NumberToString(tab_id),
+                        optimization_guide::proto::BrowserBasedTodosResponse::
+                            GROUP_TYPE_READING_LIST),
+                    nullptr));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos(std::move(tab_ptrs), future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // Verify that all generated todos across batches were stored.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> todos_future;
+  service_.GetAutoTodos(todos_future.GetCallback());
+  EXPECT_EQ(kNumTabs, todos_future.Get().size());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_SkipsInvalidGroupType) {
+  auto web_contents1 = CreateEligibleTabWithMockExtraction(
+      GURL("https://example.com/tab1"), "Tab 1");
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [this](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            // GROUP_TYPE_UNSPECIFIED -> kNoMatch, should NOT be saved.
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    CreateContextHubResponseResult(
+                        "Todo title",
+                        optimization_guide::proto::BrowserBasedTodosResponse::
+                            GROUP_TYPE_UNSPECIFIED),
+                    nullptr));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents1->GetWeakPtr()},
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> todos_future;
+  service_.GetAutoTodos(todos_future.GetCallback());
+  auto todos = todos_future.Get();
+  EXPECT_TRUE(todos.empty());
+}
+
+TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EmptyTitleSkipped) {
+  auto web_contents = CreateEligibleTabWithMockExtraction(
+      GURL("https://example.com/tab"), "Tab");
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [this](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    CreateContextHubResponseResult(
+                        "",
+                        optimization_guide::proto::BrowserBasedTodosResponse::
+                            GROUP_TYPE_NUDGE_TO_CLOSE),
+                    nullptr));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
+                                 future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> todos_future;
+  service_.GetAutoTodos(todos_future.GetCallback());
+  EXPECT_TRUE(todos_future.Get().empty());
 }
 
 TEST_F(ContextHubServiceTest, SaveTab) {
@@ -584,9 +783,12 @@ TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
              const optimization_guide::ModelExecutionOptions& options,
              optimization_guide::OptimizationGuideModelExecutionResultCallback
                  callback) {
-            std::move(callback).Run(
-                optimization_guide::OptimizationGuideModelExecutionResult(),
-                nullptr);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback),
+                    optimization_guide::OptimizationGuideModelExecutionResult(),
+                    nullptr));
           });
 
   base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>>

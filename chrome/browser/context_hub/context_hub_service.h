@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -239,6 +240,21 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
                     std::optional<optimization_guide::proto::PageContext>>>
           tab_contexts);
 
+  // Dispatches pending tab-based todos MES requests up to the concurrency
+  // limit.
+  void ProcessNextTabBasedTodosMesBatch();
+
+  // Handles a single MES response for a tab in tab-based todos generation.
+  void OnTabBasedTodosMesResponseReceived(
+      int64_t tab_id,
+      base::Time last_active_time,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Cleans up tab-based todos generation state and invokes the completion
+  // callback.
+  void FinishTabBasedTodosGeneration(bool success);
+
   // Handles the result of the model execution from `GenerateTabGroups`.
   void HandleTabGroupModelExecutionResult(
       std::vector<TabData> tabs,
@@ -268,6 +284,19 @@ class ContextHubService : public KeyedService, public AutoTodosStore::Observer {
   // TODO(crbug.com/543605762): Consider adding a timeout timer to ensure this
   // callback is not held indefinitely if page content extraction stalls.
   AutoTodosStore::OperationCallback pending_tab_todos_callback_;
+
+  // Number of concurrent Model Execution Service (MES) requests currently in
+  // flight for tab-based todos generation.
+  int active_tab_todos_requests_ = 0;
+
+  // Queue of candidate tabs and their extracted page contexts waiting to be
+  // dispatched for model execution.
+  std::queue<std::pair<TabData, optimization_guide::proto::PageContext>>
+      pending_tab_todos_requests_;
+
+  // Accumulates generated tab-based todos from completed MES requests during an
+  // in-flight generation session before batch-saving them to the store.
+  std::vector<AutoTodoEntry> generated_tab_todos_;
 
   using TabGroupChatHistoryTurnId =
       base::IdType64<class TabGroupChatHistoryTurnIdTag>;
