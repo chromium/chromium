@@ -112,7 +112,45 @@ action("generate_policy_templates") {
 grit("translate_policy_templates") {
   deps = [ ":generate_policy_templates" ]
   source = policy_templates_grd_file
-  inputs = [ policy_templates_generated_json_path ]
+  inputs = [
+             "//third_party/pyyaml/__init__.py",
+             "//third_party/pyyaml/composer.py",
+             "//third_party/pyyaml/constructor.py",
+             "//third_party/pyyaml/cyaml.py",
+             "//third_party/pyyaml/dumper.py",
+             "//third_party/pyyaml/emitter.py",
+             "//third_party/pyyaml/error.py",
+             "//third_party/pyyaml/events.py",
+             "//third_party/pyyaml/loader.py",
+             "//third_party/pyyaml/nodes.py",
+             "//third_party/pyyaml/parser.py",
+             "//third_party/pyyaml/reader.py",
+             "//third_party/pyyaml/representer.py",
+             "//third_party/pyyaml/resolver.py",
+             "//third_party/pyyaml/scanner.py",
+             "//third_party/pyyaml/serializer.py",
+             "//third_party/pyyaml/tokens.py",
+             "resources/policy_templates_de.xtb",
+             "resources/policy_templates_es-419.xtb",
+             "resources/policy_templates_es.xtb",
+             "resources/policy_templates_fr.xtb",
+             "resources/policy_templates_id.xtb",
+             "resources/policy_templates_it.xtb",
+             "resources/policy_templates_ja.xtb",
+             "resources/policy_templates_ko.xtb",
+             "resources/policy_templates_nl.xtb",
+             "resources/policy_templates_pt-BR.xtb",
+             "resources/policy_templates_ru.xtb",
+             "resources/policy_templates_th.xtb",
+             "resources/policy_templates_tr.xtb",
+             "resources/policy_templates_uk.xtb",
+             "resources/policy_templates_vi.xtb",
+             "resources/policy_templates_zh-CN.xtb",
+             "resources/policy_templates_zh-TW.xtb",
+             "resources/policy_templates.py",
+             "tools/template_writers/policy_template_generator.py",
+           ] + expand_directory("resources/templates", true)
+
   output_dir = "$root_gen_dir/chrome"
   outputs = policy_templates_translation_outputs
   grit_flags = [

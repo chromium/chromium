@@ -177,4 +177,8 @@ exec_script_allowlist =
       "//third_party/dawn/third_party/meson/meson_target.gni",
     ]
 
-expand_directory_allowlist = build_dotfile_settings.expand_directory_allowlist
+expand_directory_allowlist =
+    build_dotfile_settings.expand_directory_allowlist + [
+      # Requires to enumerate policy template yaml files.
+      "//components/policy/BUILD.gn",
+    ]
