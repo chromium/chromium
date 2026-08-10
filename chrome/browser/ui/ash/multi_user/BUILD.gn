@@ -46,7 +46,6 @@ static_library("multi_user") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
