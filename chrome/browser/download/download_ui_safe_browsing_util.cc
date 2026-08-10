@@ -103,11 +103,12 @@ void SendSafeBrowsingDownloadReport(
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 #if BUILDFLAG(IS_ANDROID)
-bool ShouldShowSafeBrowsingAndroidDownloadWarnings() {
+bool ShouldShowSafeBrowsingAndroidDownloadWarnings(bool enable_for_telemetry) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return base::FeatureList::IsEnabled(
              safe_browsing::kMaliciousApkDownloadCheck) &&
-         !safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get();
+         (enable_for_telemetry ||
+          !safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get());
 #else
   return false;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
