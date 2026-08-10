@@ -732,13 +732,8 @@ void LayoutView::CalculateScrollbarModes(
       RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAuto);
     }
 
-    LayoutObject* viewport = viewport_defining_element->GetLayoutObject();
+    const LayoutObject* viewport = viewport_defining_element->GetLayoutObject();
     if (!viewport) {
-      RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAuto);
-    }
-
-    const ComputedStyle* style = viewport->Style();
-    if (!style) {
       RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAuto);
     }
 
@@ -755,8 +750,10 @@ void LayoutView::CalculateScrollbarModes(
         RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
       }
     }
-    overflow_x = style->OverflowX();
-    overflow_y = style->OverflowY();
+
+    const ComputedStyle& style = viewport->StyleRef();
+    overflow_x = style.OverflowX();
+    overflow_y = style.OverflowY();
   }
 
   h_mode = v_mode = mojom::blink::ScrollbarMode::kAuto;
