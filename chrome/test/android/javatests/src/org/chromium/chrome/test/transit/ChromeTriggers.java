@@ -12,7 +12,6 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.util.MenuUtils;
 
@@ -35,28 +34,6 @@ public class ChromeTriggers {
                                 InstrumentationRegistry.getInstrumentation(),
                                 station.getActivity(),
                                 menuId));
-    }
-
-    /** Switch to the browsing layout programmatically. */
-    @CheckReturnValue
-    public static TripBuilder showBrowsingLayoutTo(
-            Station<? extends ChromeTabbedActivity> station) {
-        return station.runOnUiThreadTo(
-                () ->
-                        station.getActivity()
-                                .getLayoutManager()
-                                .showLayout(LayoutType.BROWSING, /* animate= */ false));
-    }
-
-    /** Switch to the tab switcher layout programmatically. */
-    @CheckReturnValue
-    public static TripBuilder showTabSwitcherLayoutTo(
-            Station<? extends ChromeTabbedActivity> station) {
-        return station.runOnUiThreadTo(
-                () ->
-                        station.getActivity()
-                                .getLayoutManager()
-                                .showLayout(LayoutType.HUB, /* animate= */ false));
     }
 
     /** Close all tabs in the current tab model programmatically. */

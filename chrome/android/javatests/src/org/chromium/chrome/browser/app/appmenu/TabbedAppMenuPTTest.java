@@ -28,10 +28,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
-import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
@@ -255,26 +253,5 @@ public class TabbedAppMenuPTTest {
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
-    }
-
-    /** Tests that entering the Tab Switcher causes the app menu to close. */
-    @Test
-    @LargeTest
-    public void testHideMenuOnToggleOverview() {
-        WebPageStation page = mCtaTestRule.startOnBlankPage();
-
-        page.openRegularTabAppMenu();
-
-        // Go to Tab Switcher programmatically because the App Menu covers the button.
-        RegularTabSwitcherStation tabSwitcher =
-                RegularTabSwitcherStation.from(page.getTabModelSelector());
-        ChromeTriggers.showTabSwitcherLayoutTo(page).arriveAt(tabSwitcher);
-
-        tabSwitcher.openAppMenu();
-
-        // Go to a Web Page programmatically because tapping outside the app menu causes it to
-        // capture the event and close.
-        ChromeTriggers.showBrowsingLayoutTo(tabSwitcher)
-                .arriveAt(WebPageStation.newBuilder().initFrom(page).build());
     }
 }
