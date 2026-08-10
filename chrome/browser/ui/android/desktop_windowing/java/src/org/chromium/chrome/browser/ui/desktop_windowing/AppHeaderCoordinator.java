@@ -10,6 +10,7 @@ import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -94,6 +95,8 @@ public class AppHeaderCoordinator
     private int mKeyboardInset;
     private int mNavBarInset;
     private @Nullable final Supplier<Integer> mWindowIdSupplier;
+    private int mBackgroundColor = Color.TRANSPARENT;
+    private int mScrimColor = Color.TRANSPARENT;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -201,8 +204,15 @@ public class AppHeaderCoordinator
     }
 
     @Override
-    public void updateForegroundColor(int backgroundColor) {
-        updateIconColorForCaptionBars(backgroundColor);
+    public void onBackgroundColorChanged(int backgroundColor) {
+        mBackgroundColor = backgroundColor;
+        updateIconColorForCaptionBars();
+    }
+
+    @Override
+    public void onScrimColorChanged(int scrimColor) {
+        mScrimColor = scrimColor;
+        updateIconColorForCaptionBars();
     }
 
     @Override
@@ -327,7 +337,8 @@ public class AppHeaderCoordinator
         }
     }
 
-    private void updateIconColorForCaptionBars(int color) {
+    private void updateIconColorForCaptionBars() {
+        int color = ColorUtils.overlayColor(mBackgroundColor, mScrimColor);
         boolean useLightIcon = ColorUtils.shouldUseLightForegroundOnBackground(color);
         // APPEARANCE_LIGHT_CAPTION_BARS needs to be set when caption bar is with light background.
         int captionBarAppearance = useLightIcon ? 0 : APPEARANCE_LIGHT_CAPTION_BARS;

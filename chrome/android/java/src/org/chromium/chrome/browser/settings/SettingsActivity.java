@@ -381,7 +381,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onAppHeaderStateChanged(AppHeaderState newState) {
         setCaptionBarHeight(newState.getAppHeaderHeight());
         assumeNonNull(mAppHeaderCoordinator)
-                .updateForegroundColor(SemanticColorUtils.getSettingsBackgroundColor(this));
+                .onBackgroundColorChanged(SemanticColorUtils.getSettingsBackgroundColor(this));
     }
 
     private void setCaptionBarHeight(int height) {

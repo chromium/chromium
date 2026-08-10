@@ -1548,7 +1548,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new ScrimManager(mActivity, mCoordinator, ScrimClient.TABBED_ROOT_UI_COORDINATOR);
         scrimManager
                 .getStatusBarColorSupplier()
-                .addSyncObserverAndPostIfNonNull(mStatusBarColorController::onScrimColorChanged);
+                .addSyncObserverAndPostIfNonNull(this::onScrimColorChanged);
         scrimManager
                 .getNavigationBarColorSupplier()
                 .addSyncObserverAndPostIfNonNull(this::onNavBarScrimColorChanged);

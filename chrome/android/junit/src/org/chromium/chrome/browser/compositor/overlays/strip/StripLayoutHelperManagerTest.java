@@ -463,20 +463,20 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testUpdateForeGroundColor() {
+    public void testOnBackgroundColorChanged() {
         initializeTest();
 
         mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
 
         int normalColor = TabUiThemeUtil.getTabStripBackgroundColor(mActivity, false);
-        verify(mDesktopWindowStateManager).updateForegroundColor(normalColor);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(normalColor);
 
         Mockito.reset(mDesktopWindowStateManager);
         mStripLayoutHelperManager.setIsIncognitoForTesting(true);
         mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
 
         int incognitoColor = TabUiThemeUtil.getTabStripBackgroundColor(mActivity, true);
-        verify(mDesktopWindowStateManager).updateForegroundColor(incognitoColor);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(incognitoColor);
     }
 
     @Test

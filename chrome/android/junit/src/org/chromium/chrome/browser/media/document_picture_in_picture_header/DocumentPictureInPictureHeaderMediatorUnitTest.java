@@ -156,7 +156,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         verify(mThemeColorProvider).addTintObserver(mMediator);
 
         // Verify that the color is set during creation.
-        verify(mDesktopWindowStateManager).updateForegroundColor(DEFAULT_THEME_COLOR);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(DEFAULT_THEME_COLOR);
         assertEquals(
                 DEFAULT_THEME_COLOR,
                 (int) mModel.get(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR));
@@ -436,7 +436,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
 
         assertEquals(
                 color, (int) mModel.get(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR));
-        verify(mDesktopWindowStateManager).updateForegroundColor(color);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(color);
     }
 
     @Test

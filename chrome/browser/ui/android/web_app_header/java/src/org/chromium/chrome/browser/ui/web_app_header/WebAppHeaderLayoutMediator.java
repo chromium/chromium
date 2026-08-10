@@ -278,7 +278,7 @@ class WebAppHeaderLayoutMediator
 
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
-        mDesktopWindowStateManager.updateForegroundColor(color);
+        mDesktopWindowStateManager.onBackgroundColorChanged(color);
         mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_COLOR, color);
     }
 

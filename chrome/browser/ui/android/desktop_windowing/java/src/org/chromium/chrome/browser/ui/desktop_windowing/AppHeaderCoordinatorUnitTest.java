@@ -64,6 +64,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.insets.CaptionBarInsetsRectProvider;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetsRectProvider;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 
@@ -472,19 +473,58 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void updateForegroundColor() {
+    public void onBackgroundColorChanged() {
         var insetController = mSpyRootView.getWindowInsetsController();
 
-        mAppHeaderCoordinator.updateForegroundColor(Color.BLACK);
+        mAppHeaderCoordinator.onBackgroundColorChanged(Color.BLACK);
         assertEquals(
                 "Background is dark. Expecting APPEARANCE_LIGHT_CAPTION_BARS not set.",
                 0,
                 insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
 
-        mAppHeaderCoordinator.updateForegroundColor(Color.WHITE);
+        mAppHeaderCoordinator.onBackgroundColorChanged(Color.WHITE);
         assertEquals(
                 "Background is light. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
                 APPEARANCE_LIGHT_CAPTION_BARS,
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
+    }
+
+    @Test
+    public void onScrimColorChanged() {
+        var insetController = mSpyRootView.getWindowInsetsController();
+
+        mAppHeaderCoordinator.onBackgroundColorChanged(Color.WHITE);
+        assertEquals(
+                "Background is light. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
+                APPEARANCE_LIGHT_CAPTION_BARS,
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
+
+        int darkScrimColor = ColorUtils.setAlphaComponentWithFloat(Color.BLACK, 0.8f);
+        mAppHeaderCoordinator.onScrimColorChanged(darkScrimColor);
+        assertEquals(
+                "Scrimmed background is dark. Expecting APPEARANCE_LIGHT_CAPTION_BARS not set.",
+                0,
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
+
+        mAppHeaderCoordinator.onScrimColorChanged(Color.TRANSPARENT);
+        assertEquals(
+                "Background is light again. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
+                APPEARANCE_LIGHT_CAPTION_BARS,
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
+    }
+
+    @Test
+    public void onBackgroundColorChanged_withActiveScrim() {
+        var insetController = mSpyRootView.getWindowInsetsController();
+
+        int darkScrimColor = ColorUtils.setAlphaComponentWithFloat(Color.BLACK, 0.8f);
+        mAppHeaderCoordinator.onScrimColorChanged(darkScrimColor);
+
+        mAppHeaderCoordinator.onBackgroundColorChanged(Color.WHITE);
+        assertEquals(
+                "Composite background is dark due to scrim. Expecting APPEARANCE_LIGHT_CAPTION_BARS"
+                        + " not set.",
+                0,
                 insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
     }
 

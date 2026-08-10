@@ -189,7 +189,7 @@ public class DocumentPictureInPictureHeaderMediator
 
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
-        mDesktopWindowStateManager.updateForegroundColor(color);
+        mDesktopWindowStateManager.onBackgroundColorChanged(color);
         mModel.set(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR, color);
     }
 

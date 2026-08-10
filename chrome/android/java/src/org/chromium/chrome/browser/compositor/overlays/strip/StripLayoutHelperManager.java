@@ -1713,7 +1713,7 @@ public class StripLayoutHelperManager
         // We do not update the layer's height in this method. The height adjustment will be
         // triggered by #onHeightChanged.
 
-        mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
+        mDesktopWindowStateManager.onBackgroundColorChanged(getBackgroundColor());
         updateHorizontalPaddings(newState.getLeftPadding(), newState.getRightPadding());
 
         mTrailingButtonsCoordinator.updateGlicButtonOpacity(
@@ -1803,7 +1803,7 @@ public class StripLayoutHelperManager
 
         // If we are in DW mode, notify DW state provider since the model changed.
         if (isAppInDesktopWindow()) {
-            mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
+            mDesktopWindowStateManager.onBackgroundColorChanged(getBackgroundColor());
         }
 
         mManagerHost.resetKeyboardFocus(); // Reset virtual views index & keyboard focus state.

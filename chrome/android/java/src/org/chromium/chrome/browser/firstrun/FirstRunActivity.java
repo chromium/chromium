@@ -1012,7 +1012,7 @@ public class FirstRunActivity extends FirstRunActivityBase
                         assumeNonNull(getEdgeToEdgeStateProvider()),
                         /* windowIdSupplier= */ null);
         mAppHeaderCoordinator.addObserver(this);
-        mAppHeaderCoordinator.updateForegroundColor(
+        mAppHeaderCoordinator.onBackgroundColorChanged(
                 SemanticColorUtils.getColorSurfaceContainerLow(this));
         if (mAppHeaderCoordinator.getAppHeaderState() != null) {
             setCaptionBarHeight(mAppHeaderCoordinator.getAppHeaderState().getAppHeaderHeight());

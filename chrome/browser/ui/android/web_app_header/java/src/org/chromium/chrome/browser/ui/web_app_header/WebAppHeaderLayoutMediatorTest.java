@@ -523,7 +523,7 @@ public class WebAppHeaderLayoutMediatorTest {
                 "Light color should be set initially",
                 LIGHT_COLOR,
                 mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
-        verify(mDesktopWindowStateManager).updateForegroundColor(LIGHT_COLOR);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(LIGHT_COLOR);
     }
 
     @Test
@@ -537,7 +537,7 @@ public class WebAppHeaderLayoutMediatorTest {
                 DARK_COLOR,
                 mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
 
-        verify(mDesktopWindowStateManager).updateForegroundColor(DARK_COLOR);
+        verify(mDesktopWindowStateManager).onBackgroundColorChanged(DARK_COLOR);
     }
 
     @Test

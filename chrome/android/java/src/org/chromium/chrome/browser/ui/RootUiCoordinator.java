@@ -2210,6 +2210,9 @@ public class RootUiCoordinator
 
     protected void onScrimColorChanged(@ColorInt int scrimColor) {
         mStatusBarColorController.onScrimColorChanged(scrimColor);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.onScrimColorChanged(scrimColor);
+        }
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
