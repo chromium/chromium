@@ -436,8 +436,13 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
     const DecoderBuffer& buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // EOS buffers are markers and contain no audio payload to decode.
+  if (buffer.end_of_stream()) {
+    return DecoderStatus::Codes::kOk;
+  }
+
   // The first frame only has a valid timestamp if it is not EOS.
-  if (!first_frame_timestamp_.has_value() && !buffer.end_of_stream()) {
+  if (!first_frame_timestamp_.has_value()) {
     first_frame_timestamp_ = buffer.timestamp();
   }
 
