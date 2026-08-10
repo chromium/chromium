@@ -430,4 +430,15 @@ TEST_F(TabGroupViewsTest, UnderlineHiddenInFocusMode) {
   tab_strip_controller_->SetFocusedGroup(std::nullopt);
   group_views_->UpdateBounds();
   EXPECT_TRUE(group_views_->underline()->GetVisible());
+
+  // Focus a different group and verify this group's underline is also hidden.
+  tab_groups::TabGroupId other_group = tab_groups::TabGroupId::GenerateNew();
+  tab_strip_controller_->SetFocusedGroup(other_group);
+  group_views_->UpdateBounds();
+  EXPECT_FALSE(group_views_->underline()->GetVisible());
+
+  // Unfocus the group and verify underline becomes visible again.
+  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  group_views_->UpdateBounds();
+  EXPECT_TRUE(group_views_->underline()->GetVisible());
 }

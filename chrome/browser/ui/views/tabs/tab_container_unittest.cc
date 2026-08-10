@@ -1102,6 +1102,44 @@ TEST_F(TabContainerTest, GroupUnderlineHiddenInFocusMode) {
   EXPECT_TRUE(underline->GetVisible());
 }
 
+TEST_F(TabContainerTest, MultipleGroupsUnderlineHiddenInFocusMode) {
+  AddTab(0);
+  AddTab(1);
+  AddTab(2);
+
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId group3 = tab_groups::TabGroupId::GenerateNew();
+
+  AddTabToGroup(0, group1);
+  AddTabToGroup(1, group2);
+  AddTabToGroup(2, group3);
+
+  tab_container_->CompleteAnimationAndLayout();
+
+  TabGroupViews* group1_views = tab_container_->GetGroupViews(group1);
+  TabGroupViews* group2_views = tab_container_->GetGroupViews(group2);
+  TabGroupViews* group3_views = tab_container_->GetGroupViews(group3);
+
+  EXPECT_TRUE(group1_views->underline()->GetVisible());
+  EXPECT_TRUE(group2_views->underline()->GetVisible());
+  EXPECT_TRUE(group3_views->underline()->GetVisible());
+
+  // Focus group 2 and verify all group underlines are hidden.
+  tab_strip_controller_->SetFocusedGroup(group2);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_FALSE(group1_views->underline()->GetVisible());
+  EXPECT_FALSE(group2_views->underline()->GetVisible());
+  EXPECT_FALSE(group3_views->underline()->GetVisible());
+
+  // Unfocus and verify underlines become visible again.
+  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_TRUE(group1_views->underline()->GetVisible());
+  EXPECT_TRUE(group2_views->underline()->GetVisible());
+  EXPECT_TRUE(group3_views->underline()->GetVisible());
+}
+
 TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
   // Validates that group underlines are updated correctly in a single Layout
   // call when the visibility of tabs in the group change. See
