@@ -1655,8 +1655,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* driveAction = [self
         actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION)
                   image:driveSymbol
-                 hidden:[_state isAttachmentHidden:kFile]
-               disabled:[_state isAttachmentDisabled:kFile]
+                 hidden:[_state isAttachmentHidden:kDrive]
+               disabled:[_state isAttachmentDisabled:kDrive]
                selected:NO
                 handler:^{
                   [weakSelf.delegate
