@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.PolicyStoreState"
-    enum="FirstRunCloudPolicyStoreState" expires_after="2026-09-15">
+    enum="FirstRunCloudPolicyStoreState" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -956,7 +956,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StartBrowsing"
-    enum="FeatureShowcaseStep" expires_after="2026-12-31">
+    enum="FeatureShowcaseStep" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StepEligible"
-    enum="FeatureShowcaseStep" expires_after="2026-12-31">
+    enum="FeatureShowcaseStep" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -979,7 +979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FREFlow.FeatureShowcase.StepShown"
-    enum="FeatureShowcaseStep" expires_after="2026-12-31">
+    enum="FeatureShowcaseStep" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -991,7 +991,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.{FeatureShowcaseStep}"
-    enum="FeatureShowcaseStepUserAction" expires_after="2026-12-31">
+    enum="FeatureShowcaseStepUserAction" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -1015,7 +1015,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ProfilePicker.FREFlow.FeatureShowcase.ThemesAndCustomization.ThemeChanged"
-    enum="Boolean" expires_after="2026-12-31">
+    enum="Boolean" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -1028,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FREFlow.MediaEffects.{Action}"
-    enum="ProfileManagementFlowStep" expires_after="2026-12-31">
+    enum="ProfileManagementFlowStep" expires_after="2027-01-14">
   <owner>ernn@google.com</owner>
   <owner>kbajkiewicz@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -1064,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.SignInProviderStep"
-    enum="ProfilePickerSignInProviderStep" expires_after="2026-09-14">
+    enum="ProfilePickerSignInProviderStep" expires_after="2027-01-14">
   <owner>droger@google.com</owner>
   <owner>ernn@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
