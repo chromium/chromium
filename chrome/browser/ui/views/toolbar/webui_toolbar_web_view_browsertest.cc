@@ -3877,8 +3877,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   SimulateUriListDropOnToolbar(web_contents,
                                "javascript:void(document.title='PWNED')");
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, unsafe schemes dropped on toolbar are redirected to
+  // about:blank#blocked.
+  content::TestNavigationObserver navigation_observer(active_contents);
+  navigation_observer.Wait();
+  EXPECT_EQ(active_contents->GetLastCommittedURL(),
+            GURL("about:blank#blocked"));
+#else
   // Wait to see if any navigation starts (it should not).
   counter.WaitForNoNavigations();
+#endif
 
   // Verify that the title remained empty (javascript was not executed).
   EXPECT_EQ("",
@@ -3910,8 +3919,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   SimulateUriListDropOnToolbar(
       web_contents, "javascript:javascript:void(document.title='PWNED')");
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, unsafe schemes dropped on toolbar are redirected to
+  // about:blank#blocked.
+  content::TestNavigationObserver navigation_observer(active_contents);
+  navigation_observer.Wait();
+  EXPECT_EQ(active_contents->GetLastCommittedURL(),
+            GURL("about:blank#blocked"));
+#else
   // Wait to see if any navigation starts (it should not).
   counter.WaitForNoNavigations();
+#endif
 
   // Verify that the title remained empty (javascript was not executed).
   EXPECT_EQ("",

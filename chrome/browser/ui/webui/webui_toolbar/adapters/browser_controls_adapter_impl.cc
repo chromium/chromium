@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/command_updater.h"
@@ -81,6 +82,15 @@ void BrowserControlsAdapterImpl::NavigateHome(
 void BrowserControlsAdapterImpl::Navigate(const GURL& url) {
   bool drag_originated_from_renderer = GetDragOriginatedFromRendererAndReset();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, drag origin provenance cannot be reliably distinguished
+  // between OS-local and renderer sources. To ensure security by default, all
+  // drags are conservatively treated as renderer-originated. This enforces
+  // strict scheme checks below, redirecting non-HTTP/HTTPS and non-file URLs
+  // (such as privileged chrome:// schemes) to about:blank#blocked.
+  drag_originated_from_renderer = true;
+#endif
+
   // If the drag originated from a renderer (web page), only allow safe schemes
   // (HTTP, HTTPS, file). Block and redirect other schemes (e.g., chrome://) to
   // about:blank#blocked to match native UI drag-and-drop navigation security.
@@ -115,6 +125,15 @@ void BrowserControlsAdapterImpl::NavigateText(const std::string& text) {
   }
 
   bool drag_originated_from_renderer = GetDragOriginatedFromRendererAndReset();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, drag origin provenance cannot be reliably distinguished
+  // between OS-local and renderer sources. To ensure security by default, all
+  // drags are conservatively treated as renderer-originated. This restricts
+  // plain-text drops strictly to HTTP/HTTPS destinations, preventing untrusted
+  // drag actions from navigating to privileged or local URL schemes.
+  drag_originated_from_renderer = true;
+#endif
 
   // For text drops, enforce stricter filtering for renderer-originated drags.
   // Only allow HTTP/HTTPS to prevent web pages from forcing navigation to local
