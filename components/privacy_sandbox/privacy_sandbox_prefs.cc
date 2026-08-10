@@ -13,36 +13,12 @@
 namespace privacy_sandbox {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1ConsentDecisionMade,
-                                false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
-                                false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
-                                false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, false);
-  registry->RegisterIntegerPref(prefs::kPrivacySandboxM1PromptSuppressed, 0);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1TopicsEnabled, false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1FledgeEnabled, false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
 
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxNoticeDisplayed, false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxConsentDecisionMade,
-                                false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxNoConfirmationSandboxDisabled, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxNoConfirmationSandboxRestricted, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxNoConfirmationSandboxManaged, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxNoConfirmationManuallyControlled, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxDisabledInsufficientConfirmation, false);
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
       false);
@@ -50,18 +26,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
-                                false);
-  registry->RegisterTimePref(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
-                             base::Time());
-  registry->RegisterIntegerPref(
-      prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
-      static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
-  registry->RegisterStringPref(
-      prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
-
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial, false);
   // TODO: b/462419925 - Deprecate these prefs post-Mode B rollback.
   registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
   registry->RegisterBooleanPref(

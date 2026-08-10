@@ -103,17 +103,9 @@ enum class StateKey {
   kIsRestrictedAccount = 8,
   kHasCurrentTopics = 9,
   kAdvanceClockBy = 11,
-  kTrialsConsentDecisionMade = 14,
-  kTrialsNoticeDisplayed = 15,
-  kM1ConsentDecisionPreviouslyMade = 16,
-  kM1EEANoticePreviouslyAcknowledged = 17,
-  kM1RowNoticePreviouslyAcknowledged = 18,
-  kM1PromptPreviouslySuppressedReason = 19,
-  kM1PromptDisabledByPolicy = 20,
   kM1TopicsDisabledByPolicy = 21,
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
-  kM1RestrictedNoticePreviouslyAcknowledged = 25,
   kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,
 };
@@ -146,14 +138,9 @@ enum class OutputKey {
   // kPromptType and kM1PromptSuppressedReason are Obsolete.
   // TODO(crbug.com/474716334): Remove obsolete enums.
   kPromptType = 21,
-  kM1PromptSuppressedReason = 22,
-  kM1ConsentDecisionMade = 23,
-  kM1EEANoticeAcknowledged = 24,
-  kM1RowNoticeAcknowledged = 25,
   kM1TopicsEnabled = 26,
   kM1FledgeEnabled = 27,
   kM1AdMeasurementEnabled = 28,
-  kM1RestrictedNoticeAcknowledged = 31,
   kIsSharedStorageAllowedDebugMessage = 48,
   kIsSharedStorageSelectURLAllowedDebugMessage = 49,
   kIsSharedStorageBlockSiteSettingSpecific = 50,
@@ -194,7 +181,6 @@ using TestCaseItemValue =
                  int,
                  base::Time,
                  base::TimeDelta,
-                 privacy_sandbox::TopicsConsentUpdateSource,
                  std::vector<int>,
                  std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
 

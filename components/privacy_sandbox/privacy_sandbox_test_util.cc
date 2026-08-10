@@ -152,63 +152,7 @@ void ApplyTestState(
       task_environment->AdvanceClock(time_delta);
       return;
     }
-    case (StateKey::kTrialsConsentDecisionMade): {
-      SCOPED_TRACE("State Setup: Trials consent decision made");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxConsentDecisionMade,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kTrialsNoticeDisplayed): {
-      SCOPED_TRACE("State Setup: Trials notice displayed");
-      testing_pref_service->SetUserPref(prefs::kPrivacySandboxNoticeDisplayed,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1ConsentDecisionPreviouslyMade): {
-      SCOPED_TRACE("State Setup: M1 consent decision made");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1ConsentDecisionMade,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1EEANoticePreviouslyAcknowledged): {
-      SCOPED_TRACE("State Setup: M1 eea notice acknowledged");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1EEANoticeAcknowledged,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1RowNoticePreviouslyAcknowledged): {
-      SCOPED_TRACE("State Setup: M1 row notice acknowledged");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1RowNoticeAcknowledged,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1RestrictedNoticePreviouslyAcknowledged): {
-      SCOPED_TRACE("State Setup: M1 restricted notice acknowledged");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1PromptPreviouslySuppressedReason): {
-      SCOPED_TRACE("State Setup: M1 prompt suppressed value");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1PromptSuppressed,
-          base::Value(GetItemValue<int>(value)));
-      return;
-    }
-    case (StateKey::kM1PromptDisabledByPolicy): {
-      SCOPED_TRACE("State Setup: M1 prompt disabled by policy");
-      testing_pref_service->SetManagedPref(
-          prefs::kPrivacySandboxM1PromptSuppressed,
-          base::Value(GetItemValue<int>(value)));
-      EXPECT_TRUE(testing_pref_service->IsManagedPreference(
-          prefs::kPrivacySandboxM1PromptSuppressed));
-      return;
-    }
+
     case (StateKey::kM1TopicsDisabledByPolicy): {
       SCOPED_TRACE("State Setup: M1 topics disabled by policy");
       testing_pref_service->SetManagedPref(
@@ -335,46 +279,7 @@ void CheckOutput(
       // TODO(crbug.com/474716334): Remove this case when the enum is removed.
       return;
     }
-    case (OutputKey::kM1PromptSuppressedReason): {
-      SCOPED_TRACE("Check Output: Prompt suppressed reason");
-      auto prompt_suppressed_reason = GetItemValue<int>(output_value);
-      auto force_chrome_build =
-          GetItemValueForKey<bool>(InputKey::kForceChromeBuild, input);
-      privacy_sandbox_service->ForceChromeBuildForTests(force_chrome_build);
-      EXPECT_EQ(prompt_suppressed_reason,
-                testing_pref_service->GetInteger(
-                    prefs::kPrivacySandboxM1PromptSuppressed));
-      return;
-    }
-    case (OutputKey::kM1ConsentDecisionMade): {
-      SCOPED_TRACE("Check Output: M1 consent decision made");
-      bool expected = GetItemValue<bool>(output_value);
-      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
-                              prefs::kPrivacySandboxM1ConsentDecisionMade));
-      return;
-    }
-    case (OutputKey::kM1EEANoticeAcknowledged): {
-      SCOPED_TRACE("Check Output: M1 eea notice acknowledged");
-      bool expected = GetItemValue<bool>(output_value);
-      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
-                              prefs::kPrivacySandboxM1EEANoticeAcknowledged));
-      return;
-    }
-    case (OutputKey::kM1RowNoticeAcknowledged): {
-      SCOPED_TRACE("Check Output: M1 row notice acknowledged");
-      bool expected = GetItemValue<bool>(output_value);
-      EXPECT_EQ(expected, testing_pref_service->GetBoolean(
-                              prefs::kPrivacySandboxM1RowNoticeAcknowledged));
-      return;
-    }
-    case (OutputKey::kM1RestrictedNoticeAcknowledged): {
-      SCOPED_TRACE("Check Output: M1 restricted notice acknowledged");
-      bool expected = GetItemValue<bool>(output_value);
-      EXPECT_EQ(expected,
-                testing_pref_service->GetBoolean(
-                    prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged));
-      return;
-    }
+
     case (OutputKey::kM1TopicsEnabled): {
       SCOPED_TRACE("Check Output: M1 topics enabled");
       bool expected = GetItemValue<bool>(output_value);
