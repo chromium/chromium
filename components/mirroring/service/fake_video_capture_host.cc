@@ -4,7 +4,8 @@
 
 #include "components/mirroring/service/fake_video_capture_host.h"
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+
 #include "base/memory/read_only_shared_memory_region.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -72,7 +73,7 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
   if (!shmem.IsValid()) {
     return;
   }
-  UNSAFE_TODO(memset(shmem.mapping.memory(), 125, 5000));
+  std::ranges::fill(shmem.mapping.GetMemoryAsSpan<uint8_t>(), 125);
   observer_->OnNewBuffer(
       0, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
              std::move(shmem.region)));
