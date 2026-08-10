@@ -654,6 +654,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/side_panel:test_support",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/test:test_support",
     "//components/application_locale_storage",
     "//components/contextual_search:prefs",
@@ -674,6 +675,7 @@ source_set("unit_tests") {
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/actions:actions_headers",
     "//ui/base/unowned_user_data",
+    "//ui/webui:buildflags",
   ]
 
   if (!is_android) {

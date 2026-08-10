@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,6 +28,7 @@
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -40,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
+#include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 
 using testing::_;
@@ -819,6 +822,35 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
   ASSERT_TRUE(is_system_voice_search_enabled.has_value());
   EXPECT_EQ(is_system_voice_search_enabled.value(), !!BUILDFLAG(IS_ANDROID));
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+TEST_F(ContextualTasksUiTest,
+       GetContextualTasksLoadTimeData_CobrowsingOnlyCoherence) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kVoiceSearchCoherenceComposeboxes,
+      {{omnibox::kVoiceSearchCoherenceComposeboxCobrowsingOnly.name, "true"}});
+
+  // The plain searchbox dict keeps the diverging all-surfaces value.
+  base::DictValue searchbox_dict =
+      SearchboxHandler::GetWebUIDataSourceDict(profile_);
+  EXPECT_EQ(searchbox_dict.FindBool("voiceSearchCoherenceComposeboxesEnabled"),
+            false);
+  EXPECT_EQ(searchbox_dict.FindBool(
+                "voiceSearchCoherenceCobrowsingComposeboxEnabled"),
+            true);
+
+  // The Contextual Tasks dict overrides the all-surfaces key with the
+  // cobrowsing value.
+  base::DictValue load_time_data =
+      ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+  EXPECT_EQ(load_time_data.FindBool("voiceSearchCoherenceComposeboxesEnabled"),
+            true);
+  EXPECT_EQ(load_time_data.FindBool(
+                "voiceSearchCoherenceCobrowsingComposeboxEnabled"),
+            true);
+}
+#endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
 TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
   struct TestCase {
