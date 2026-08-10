@@ -97,7 +97,7 @@ namespace remote_cocoa {
 CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
                                          const NSPoint& initial_mouse_in_screen)
     : owner_(owner),
-      initial_mouse_in_screen_(initial_mouse_in_screen),
+      base_mouse_in_screen_(initial_mouse_in_screen),
       weak_factory_(this) {}
 
 CocoaWindowMoveLoop::~CocoaWindowMoveLoop() {
@@ -114,8 +114,8 @@ bool CocoaWindowMoveLoop::Run() {
   LoopExitReason exit_reason = ENDED_EXTERNALLY;
   exit_reason_ref_ = &exit_reason;
   NSWindow* window = owner_->ns_window();
-  initial_frame_ = [window frame];
-  last_set_frame_ = initial_frame_;
+  base_frame_ = [window frame];
+  last_set_frame_ = base_frame_;
   __block ChildWindowMover child_window_mover(window);
 
   base::RunLoop run_loop;
@@ -150,21 +150,21 @@ bool CocoaWindowMoveLoop::Run() {
     if ([event type] == NSEventTypeLeftMouseDragged) {
       const NSPoint mouse_in_screen = [NSEvent mouseLocation];
       NSRect current_frame = [window frame];
-      if (!NSEqualRects(current_frame, strong->last_set_frame_)) {
+      if (!NSEqualSizes(current_frame.size, strong->last_set_frame_.size)) {
         // If the window frame has been modified programmatically (e.g. resized
         // by TabDragController to fit display boundaries), re-baseline our move
         // loop coordinate calculations so future drag events don't revert it.
         // On Mac, coordinates are bottom-left relative, so resizing the window
         // height shifts its bottom-left origin. Re-baselining here prevents
         // the window from jumping vertically on the next drag event.
-        strong->initial_frame_ = current_frame;
-        strong->initial_mouse_in_screen_ = mouse_in_screen;
+        strong->base_frame_ = current_frame;
+        strong->base_mouse_in_screen_ = mouse_in_screen;
       }
       gfx::Vector2d mouse_offset(
-          mouse_in_screen.x - strong->initial_mouse_in_screen_.x,
-          mouse_in_screen.y - strong->initial_mouse_in_screen_.y);
-      NSRect ns_frame = NSOffsetRect(strong->initial_frame_, mouse_offset.x(),
-                                     mouse_offset.y());
+          mouse_in_screen.x - strong->base_mouse_in_screen_.x,
+          mouse_in_screen.y - strong->base_mouse_in_screen_.y);
+      NSRect ns_frame =
+          NSOffsetRect(strong->base_frame_, mouse_offset.x(), mouse_offset.y());
       [window setFrame:ns_frame display:NO animate:NO];
       child_window_mover.MoveByOriginOffset();
       // `setFrame:...` may have destroyed `this`, so do the weak check again.
