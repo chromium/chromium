@@ -295,8 +295,6 @@ source_set("sync") {
       "//chrome/browser/ash/login/session",
     ]
   }
-
-  allow_circular_includes_from += [ "//chrome/browser/consent_auditor" ]
 }
 
 # Code that depends on this target must be linked into //chrome/browser:browser

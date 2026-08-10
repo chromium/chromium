@@ -100,7 +100,6 @@ static_library("extensions") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
   ]
 }

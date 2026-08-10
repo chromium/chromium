@@ -131,7 +131,6 @@ static_library("search") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/app_list/search/util",
   ]
 }
 

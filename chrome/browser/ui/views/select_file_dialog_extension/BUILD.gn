@@ -32,7 +32,6 @@ static_library("select_file_dialog_extension") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/extensions/file_manager",
   ]

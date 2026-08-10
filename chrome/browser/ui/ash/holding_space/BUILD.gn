@@ -74,7 +74,6 @@ static_library("holding_space") {
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/phonehub",
-    "//chrome/browser/ash/system_web_apps/apps/camera_app",
   ]
 }
 

@@ -89,10 +89,7 @@ static_library("scanning") {
     "//url",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/printing",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/printing" ]
 }
 
 static_library("test_support") {

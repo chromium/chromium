@@ -57,10 +57,7 @@ static_library("capture_mode") {
     "//ui/base",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/policy/dlp",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/dlp" ]
 }
 
 source_set("browser_tests") {

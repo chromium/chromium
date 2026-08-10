@@ -191,10 +191,5 @@ source_set("side_panel") {
     deps += [ "//chrome/common/extensions/api" ]
   }
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ui/views/toolbar",
-    "//chrome/browser/ui/customize_chrome",
-    "//chrome/browser/ui/side_panel:side_panel",
-    "//chrome/browser/glic",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/glic" ]
 }

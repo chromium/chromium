@@ -145,11 +145,6 @@ source_set("test_support") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
   ]
-
-  # chrome/browser/ui/passwords/manage_passwords_test.h
-  # -> mock_optimization_guide_keyed_service.h
-  # -> chrome/test/base/testing_browser_process.h
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 if (!is_android) {

@@ -59,7 +59,6 @@ source_set("app_service") {
       "//components/services/app_service/public/cpp:instance_update",
       "//extensions/browser/api/file_handlers",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
   }
 }
 

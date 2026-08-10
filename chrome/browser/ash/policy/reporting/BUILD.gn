@@ -92,10 +92,7 @@ static_library("reporting") {
     "//third_party/protobuf:protobuf_lite",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/policy/core",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
 proto_library("user_event_reporter_testing_record_proto") {

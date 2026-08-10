@@ -170,7 +170,6 @@ static_library("file_manager") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/exo",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/system_web_apps/apps",
   ]

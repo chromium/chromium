@@ -59,8 +59,6 @@ static_library("test_support") {
     "//testing/gtest",
     "//url",
   ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 source_set("browser_tests") {

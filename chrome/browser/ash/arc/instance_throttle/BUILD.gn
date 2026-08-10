@@ -56,7 +56,6 @@ static_library("instance_throttle") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/idle_manager",
-    "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/vmm",
   ]
 }

@@ -45,8 +45,6 @@ static_library("sharesheet") {
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/compositor",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
 }
 
 source_set("unit_tests") {

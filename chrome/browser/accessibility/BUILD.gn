@@ -171,9 +171,6 @@ source_set("impl") {
 
   allow_circular_includes_from =
       [ "//chrome/browser:browser_public_dependencies" ]
-  if (is_chromeos) {
-    allow_circular_includes_from += [ "//chrome/browser/ash/accessibility" ]
-  }
 }
 
 source_set("unit_tests") {

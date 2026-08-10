@@ -50,8 +50,6 @@ static_library("public") {
     "//content/public/browser",
     "//storage/browser",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/borealis" ]
 }
 
 source_set("unit_tests") {
