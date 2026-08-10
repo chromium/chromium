@@ -17,9 +17,6 @@ import android.os.Process;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
@@ -33,6 +30,9 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Caches device info during app start-up. For values that might change during the lifetime of the
@@ -94,7 +94,9 @@ public final class DeviceInfo {
                         /* isFoldable= */ (sIsFoldableForTesting != null)
                                 ? sIsFoldableForTesting
                                 : info.isFoldable,
-                        /* isDesktop= */ info.isDesktop,
+                        /* isDesktop= */ (sIsDesktopForTesting != null)
+                                ? sIsDesktopForTesting
+                                : info.isDesktop,
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
                         /* isXr= */ (sIsXrForTesting != null) ? sIsXrForTesting : info.isXr,
                         /* wasLaunchedOnLargeDisplay= */ info.wasLaunchedOnLargeDisplay);
@@ -174,7 +176,9 @@ public final class DeviceInfo {
     }
 
     public static boolean isDesktop() {
-        return getInstance().mIDeviceInfo.isDesktop;
+        return (sIsDesktopForTesting != null)
+                ? sIsDesktopForTesting
+                : getInstance().mIDeviceInfo.isDesktop;
     }
 
     public static int getVulkanDeqpLevel() {
