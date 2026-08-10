@@ -28,6 +28,17 @@ class DomainRelationChecker;
 
 namespace one_time_tokens {
 
+// LINT.IfChange(GmailOtpSenderDomainMatchRejectionReason)
+enum class GmailOtpSenderDomainMatchRejectionReason {
+  kUnknown = 0,
+  kNoMatch = 1,
+  kGrouped = 2,
+  kPslMatchDisallowed = 3,
+  kGroupedAndPslMatchDisallowed = 4,
+  kMaxValue = kGroupedAndPslMatchDisallowed
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpSenderDomainMatchRejectionReason)
+
 class OneTimeTokenService;
 enum class OneTimeTokenSource;
 

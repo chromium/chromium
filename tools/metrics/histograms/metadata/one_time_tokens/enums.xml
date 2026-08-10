@@ -99,6 +99,18 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
 
+<!-- LINT.IfChange(GmailOtpSenderDomainMatchRejectionReason) -->
+
+<enum name="GmailOtpSenderDomainMatchRejectionReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="NoMatch"/>
+  <int value="2" label="Grouped"/>
+  <int value="3" label="PslMatchDisallowed"/>
+  <int value="4" label="GroupedAndPslMatchDisallowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_retriever.h:GmailOtpSenderDomainMatchRejectionReason) -->
+
 <!-- LINT.IfChange(VerifyIsActorLoginFlowEvent) -->
 
 <enum name="VerifyIsActorLoginFlowEvent">

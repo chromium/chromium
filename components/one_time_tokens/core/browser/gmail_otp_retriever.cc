@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -28,6 +29,50 @@
 namespace one_time_tokens {
 
 namespace {
+
+GmailOtpSenderDomainMatchRejectionReason GetRejectionReason(
+    std::optional<affiliations::MatchType> match_type,
+    bool is_login_flow) {
+  if (!match_type.has_value()) {
+    return GmailOtpSenderDomainMatchRejectionReason::kNoMatch;
+  }
+
+  int value = static_cast<int>(*match_type);
+  bool has_psl = value & static_cast<int>(affiliations::MatchType::kPSL);
+  bool has_grouped =
+      value & static_cast<int>(affiliations::MatchType::kGrouped);
+
+  if (has_grouped && has_psl) {
+    return GmailOtpSenderDomainMatchRejectionReason::
+        kGroupedAndPslMatchDisallowed;
+  }
+  if (has_grouped) {
+    return GmailOtpSenderDomainMatchRejectionReason::kGrouped;
+  }
+  if (has_psl) {
+    return GmailOtpSenderDomainMatchRejectionReason::kPslMatchDisallowed;
+  }
+  return GmailOtpSenderDomainMatchRejectionReason::kUnknown;
+}
+
+void RecordSenderDomainMatchRejectionReason(
+    std::optional<affiliations::MatchType> match_type,
+    bool is_login_flow,
+    bool is_cached) {
+  GmailOtpSenderDomainMatchRejectionReason reason =
+      GetRejectionReason(match_type, is_login_flow);
+  if (is_cached) {
+    base::UmaHistogramEnumeration(
+        "OneTimeTokens.GmailOtpRetriever."
+        "SenderDomainMatchRejectionReason.Cached",
+        reason);
+  } else {
+    base::UmaHistogramEnumeration(
+        "OneTimeTokens.GmailOtpRetriever."
+        "SenderDomainMatchRejectionReason.Received",
+        reason);
+  }
+}
 
 std::string ExtractEmailDomain(std::string_view email) {
   std::vector<std::string_view> parts = base::SplitStringPiece(
@@ -227,6 +272,8 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     return;
   }
 
+  RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
+                                         /*is_cached=*/true);
   CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
   MaybeFail();
 }
@@ -289,6 +336,8 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
     return;
   }
 
+  RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
+                                         /*is_cached=*/false);
   MaybeFail();
 }
 

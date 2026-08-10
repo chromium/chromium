@@ -98,6 +98,28 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram
+    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Cached"
+    enum="GmailOtpSenderDomainMatchRejectionReason" expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <summary>
+    Records the reason why a sender domain match was rejected for a cached OTP
+    in GmailOtpRetriever. Recorded only when a token is rejected.
+  </summary>
+</histogram>
+
+<histogram
+    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.Received"
+    enum="GmailOtpSenderDomainMatchRejectionReason" expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <summary>
+    Records the reason why a sender domain match was rejected for a received
+    (fresh) OTP in GmailOtpRetriever. Recorded only when a token is rejected.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
