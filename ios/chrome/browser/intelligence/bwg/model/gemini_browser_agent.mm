@@ -887,33 +887,33 @@ void GeminiBrowserAgent::ShowGeminiLiveMicrophoneAlert(
   switch (status) {
     case AVAuthorizationStatusNotDetermined: {
       RecordLiveOSMicPromptShown();
-      [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio
-                               completionHandler:^(BOOL granted) {
-                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                   if (granted) {
-                                     RecordLiveOSMicPromptAllowed();
-                                     if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
-                                             prefs::kIOSGeminiLiveMicrophoneSetting)) {
-                                       ShowGeminiMicrophonePermissionAlert(
-                                           base_view_controller,
-                                           browser_->GetProfile()->AsWeakPtr(),
-                                           completion);
-                                     } else {
-                                       if (completion) {
-                                         completion(YES);
-                                       }
-                                     }
-                                   } else {
-                                     RecordLiveOSMicPromptDenied();
-                                     // If user reject mic permission on the
-                                     // native iOS alert, we call completion to
-                                     // reset state.
-                                     if (completion) {
-                                       completion(NO);
-                                     }
-                                   }
-                                 });
-                               }];
+      [AVCaptureDevice
+          requestAccessForMediaType:AVMediaTypeAudio
+                  completionHandler:^(BOOL granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                      if (granted) {
+                        RecordLiveOSMicPromptAllowed();
+                        if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
+                                prefs::kIOSGeminiLiveMicrophoneSetting)) {
+                          ShowGeminiMicrophonePermissionAlert(
+                              base_view_controller,
+                              browser_->GetProfile()->AsWeakPtr(), completion);
+                        } else {
+                          if (completion) {
+                            completion(YES);
+                          }
+                        }
+                      } else {
+                        RecordLiveOSMicPromptDenied();
+                        // If user reject mic permission on the
+                        // native iOS alert, we call completion to
+                        // reset state.
+                        if (completion) {
+                          completion(NO);
+                        }
+                      }
+                    });
+                  }];
       break;
     }
     case AVAuthorizationStatusAuthorized:
@@ -1498,12 +1498,7 @@ NSUInteger GeminiBrowserAgent::AttachedTabsCount() const {
 
 void GeminiBrowserAgent::OnTabPickerSelectionChanged(
     std::set<web::WebStateID> selected_tabs) {
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  if (!active_web_state) {
-    return;
-  }
-  web::WebStateID active_web_state_id = active_web_state->GetUniqueIdentifier();
+  web::WebStateID active_web_state_id = GetActiveWebStateID();
 
   // `new_attached_tabs` will replace `attached_tabs_`.
   std::map<web::WebStateID, __strong GeminiPageContext*> new_attached_tabs;
@@ -1752,6 +1747,15 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     }
     [old_active->GetWebViewProxy().scrollViewProxy
         removeObserver:scroll_observer_];
+
+    web::WebStateID old_active_id = old_active->GetUniqueIdentifier();
+    if (HasSharedTabs() && attached_tabs_.contains(old_active_id)) {
+      // We are switching tabs and there is more than one tab attached to the
+      // conversation. Refetch the old active tab's page context to ensure it
+      // reflects its most recent state (instead of the state when the Floaty
+      // was last invoked).
+      UpdateAttachedTabContexts({old_active_id});
+    }
   }
 
   if (new_active) {
@@ -2067,24 +2071,25 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
 
 NSArray<GeminiPageContext*>* GeminiBrowserAgent::GetSharedTabs() const {
   NSMutableArray<GeminiPageContext*>* shared_tabs = [NSMutableArray array];
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  web::WebStateID active_web_state_id =
-      active_web_state ? active_web_state->GetUniqueIdentifier()
-                       : web::WebStateID();
+  web::WebStateID active_web_state_id = GetActiveWebStateID();
 
   for (const auto& [tab_id, context] : attached_tabs_) {
-    if (tab_id != active_web_state_id &&
-        context.geminiPageContextAttachmentState ==
-            ios::provider::GeminiPageContextAttachmentState::kAttached) {
+    if (tab_id != active_web_state_id) {
       [shared_tabs addObject:context];
     }
   }
   return shared_tabs;
 }
 
-void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
+bool GeminiBrowserAgent::HasSharedTabs() const {
+  if (attached_tabs_.size() > 1) {
+    return true;
+  }
+  return !attached_tabs_.empty() &&
+         attached_tabs_.begin()->first != GetActiveWebStateID();
+}
 
+void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
@@ -2252,6 +2257,13 @@ void GeminiBrowserAgent::OnViewStateChanged(
 
 void GeminiBrowserAgent::OnGeminiUIDidAppear() {
   ResetFullscreenDisabler();
+}
+
+web::WebStateID GeminiBrowserAgent::GetActiveWebStateID() const {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  return active_web_state ? active_web_state->GetUniqueIdentifier()
+                          : web::WebStateID();
 }
 
 GeminiTabHelper* GeminiBrowserAgent::GetActiveTabHelper(
@@ -2434,15 +2446,13 @@ void GeminiBrowserAgent::DetachTabWithID(NSString* tab_id) {
   web::WebStateID detached_tab_id =
       web::WebStateID::FromSerializedValue(identifier_value);
 
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  CHECK(active_web_state);
-  CHECK(detached_tab_id != active_web_state->GetUniqueIdentifier());
+  web::WebStateID active_web_state_id = GetActiveWebStateID();
+  CHECK(detached_tab_id != active_web_state_id);
 
   attached_tabs_.erase(detached_tab_id);
 
-  GeminiPageContext* active_page_context = base::FindPtrOrNull(
-      attached_tabs_, active_web_state->GetUniqueIdentifier());
+  GeminiPageContext* active_page_context =
+      base::FindPtrOrNull(attached_tabs_, active_web_state_id);
   ios::provider::UpdateActivePageContext(active_page_context, GetSharedTabs());
 }
 

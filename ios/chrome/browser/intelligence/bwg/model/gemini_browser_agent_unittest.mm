@@ -1561,6 +1561,48 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_TRUE(other_context.uniquePageContext != nullptr);
 }
 
+// Tests that switching away from a shared tab immediately triggers a page
+// context refetch for that tab.
+TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  std::unique_ptr<web::FakeWebState> other_web_state =
+      std::make_unique<web::FakeWebState>();
+  other_web_state->SetBrowserState(profile_);
+  GeminiTabHelper::CreateForWebState(other_web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
+  web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(other_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+
+  // Switch to `other_id` and manually set its computation state to kSuccess.
+  browser_->GetWebStateList()->ActivateWebStateAt(1);
+  auto tabs = GetRawAttachedTabs();
+  tabs[other_id].geminiPageContextComputationState =
+      ios::provider::GeminiPageContextComputationState::kSuccess;
+
+  // Switch back to `active_id` so that we switch away from `other_id`, which
+  // should immediately trigger a refetch for `other_id`.
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+
+  // Verify that a fresh partial context was generated for `other_id`. Since
+  // `FakeWebState` lacks a URL, it is ineligible and the refetch immediately
+  // sets its partial context state to `kBlocked`.
+  tabs = GetRawAttachedTabs();
+  EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kBlocked,
+            tabs[other_id].geminiPageContextComputationState);
+}
+
 // Tests the logic backing the metrics block providers.
 TEST_F(GeminiBrowserAgentTest, TestMetricsBlockProviders) {
   base::test::ScopedFeatureList feature_list;
