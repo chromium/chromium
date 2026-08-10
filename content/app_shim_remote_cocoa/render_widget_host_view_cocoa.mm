@@ -1934,6 +1934,11 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // during layout, and we don't explicitly listen for re-layout of parent
   // views.
   [self sendViewBoundsInWindowToHost];
+  // Update screen properties in case the window moved to a different display.
+  // AppKit only dispatches NSWindowDidChangeScreenNotification when crossing
+  // physical NSScreens, which won't fire for virtual displays (e.g. in Headless
+  // Mode).
+  [self updateScreenProperties];
 }
 
 - (void)setFrame:(NSRect)r {
