@@ -4,7 +4,9 @@
 
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 
+#include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -13,8 +15,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -76,7 +78,6 @@ void PrivateVerificationTokensService::Shutdown() {
     std::move(operation).Run();
   }
   store_ = nullptr;
-  receivers_.Clear();
 }
 
 void PrivateVerificationTokensService::AddObserver(Observer* observer) {
@@ -94,17 +95,6 @@ bool PrivateVerificationTokensService::is_initialized() const {
   return store_ && store_->is_initialized();
 }
 
-void PrivateVerificationTokensService::BindReceiver(
-    mojo::PendingReceiver<
-        private_verification_tokens::mojom::PrivateVerificationTokensProvider>
-        pending_receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (is_shutting_down_) {
-    return;
-  }
-  receivers_.Add(this, std::move(pending_receiver));
-}
-
 bool PrivateVerificationTokensService::IsAntiAbuseEnabled(
     const url::Origin& issuer) const {
   if (!host_content_settings_map_) {
@@ -113,39 +103,6 @@ bool PrivateVerificationTokensService::IsAntiAbuseEnabled(
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       issuer.GetURL(), issuer.GetURL(), ContentSettingsType::ANTI_ABUSE);
   return setting != CONTENT_SETTING_BLOCK;
-}
-
-void PrivateVerificationTokensService::GetTokens(
-    private_verification_tokens::mojom::PrivateVerificationTokensProvider::
-        GetTokensCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (is_shutting_down_) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  if (!is_initialized()) {
-    pending_operations_.push_back(
-        base::BindOnce(&PrivateVerificationTokensService::GetTokens,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>
-      tokens;
-  CHECK(store_);
-  for (const auto& [issuer, token_with_id] : store_->tokens()) {
-    if (!IsAntiAbuseEnabled(issuer)) {
-      continue;
-    }
-    auto mojo_token = private_verification_tokens::mojom::
-        PrivateVerificationTokensToken::New();
-    mojo_token->issuer = issuer;
-    mojo_token->serialized_token = token_with_id.token.token();
-    tokens.push_back(std::move(mojo_token));
-  }
-  std::move(callback).Run(std::move(tokens));
 }
 
 void PrivateVerificationTokensService::StoreTokens(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVATE_VERIFICATION_TOKENS_PRIVATE_VERIFICATION_TOKENS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,8 +18,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
-#include "components/private_verification_tokens/mojom/private_verification_tokens_service.mojom.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace url {
 class Origin;
@@ -26,25 +25,13 @@ class Origin;
 
 class HostContentSettingsMap;
 
-class PrivateVerificationTokensService
-    : public KeyedService,
-      public private_verification_tokens::mojom::
-          PrivateVerificationTokensProvider {
+class PrivateVerificationTokensService : public KeyedService {
  public:
   static std::unique_ptr<PrivateVerificationTokensService> Create(
       const base::FilePath& data_directory,
       HostContentSettingsMap* host_content_settings_map = nullptr);
   ~PrivateVerificationTokensService() override;
   void Shutdown() override;
-  void BindReceiver(
-      mojo::PendingReceiver<
-          private_verification_tokens::mojom::PrivateVerificationTokensProvider>
-          pending_receiver);
-
-  // mojom implementation
-  void GetTokens(
-      private_verification_tokens::mojom::PrivateVerificationTokensProvider::
-          GetTokensCallback callback) override;
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnInitializationComplete() = 0;
@@ -105,9 +92,6 @@ class PrivateVerificationTokensService
 
   bool IsAntiAbuseEnabled(const url::Origin& issuer) const;
 
-  mojo::ReceiverSet<
-      private_verification_tokens::mojom::PrivateVerificationTokensProvider>
-      receivers_;
   std::unique_ptr<private_verification_tokens::PrivateVerificationTokensStore>
       store_;
 

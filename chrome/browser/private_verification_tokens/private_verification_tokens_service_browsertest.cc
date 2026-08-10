@@ -33,9 +33,7 @@
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
-#include "components/private_verification_tokens/mojom/private_verification_tokens_service.mojom.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +55,9 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
+    HostContentSettingsMapFactory::GetForProfile(GetProfile())
+        ->SetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE,
+                                   CONTENT_SETTING_ALLOW);
     db_path_ = GetProfile()->GetPath().Append(kDatabaseName);
     PrepopulateDatabase();
   }
@@ -113,25 +114,6 @@ class PrivateVerificationTokensServiceBrowserTest : public PlatformBrowserTest {
             PrivateVerificationTokensDatabase::Create(db_path);
     ASSERT_TRUE(database);
     database->StoreTokens(tokens);
-  }
-
-  void VerifyTokens(
-      const std::vector<private_verification_tokens::mojom::
-                            PrivateVerificationTokensTokenPtr>& actual_tokens,
-      const std::vector<
-          private_verification_tokens::PrivateVerificationTokensToken>&
-          expected_tokens) {
-    base::flat_map<url::Origin, std::vector<uint8_t>> expected_map;
-    for (const auto& token : expected_tokens) {
-      expected_map[token.issuer()] = token.token();
-    }
-
-    EXPECT_EQ(actual_tokens.size(), expected_map.size());
-    for (const auto& token : actual_tokens) {
-      auto it = expected_map.find(token->issuer);
-      ASSERT_TRUE(it != expected_map.end());
-      EXPECT_EQ(token->serialized_token, it->second);
-    }
   }
 
   // SetTestIssuerConfig sets a fixed config for the given service.
@@ -227,82 +209,6 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       GetTokens_Success) {
-  Profile* profile = GetProfile();
-
-  // Get service
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
-
-  // Call GetTokens and verify
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  auto tokens = future.Take();
-  auto expected_tokens = CreateTestTokens();
-  VerifyTokens(tokens, expected_tokens);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       GetTokens_WhenAntiAbuseSettingBlocked_ReturnsEmpty) {
-  Profile* profile = GetProfile();
-
-  HostContentSettingsMapFactory::GetForProfile(profile)
-      ->SetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE,
-                                 CONTENT_SETTING_BLOCK);
-
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  auto tokens = future.Take();
-  EXPECT_TRUE(tokens.empty());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    PrivateVerificationTokensServiceBrowserTest,
-    GetTokens_WhenAntiAbuseSettingBlockedForOrigin_FiltersOriginTokens) {
-  Profile* profile = GetProfile();
-
-  HostContentSettingsMapFactory::GetForProfile(profile)
-      ->SetContentSettingDefaultScope(
-          GURL("https://a.com"), GURL("https://a.com"),
-          ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_BLOCK);
-
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  auto tokens = future.Take();
-  const auto expiration = base::Time::Now() + base::Hours(2);
-  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
-      expected_tokens;
-  expected_tokens.emplace_back(url::Origin::Create(GURL("https://b.org")),
-                               std::vector<uint8_t>{4, 5, 6, 7}, 2, expiration,
-                               1);
-  VerifyTokens(tokens, expected_tokens);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
                        StoreTokens_Success) {
   Profile* profile = GetProfile();
 
@@ -324,22 +230,26 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   service->StoreTokens(std::move(new_tokens), store_future.GetCallback());
   EXPECT_TRUE(store_future.Wait());
 
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      get_future;
-  service->GetTokens(get_future.GetCallback());
+  base::test::TestFuture<std::vector<url::Origin>> get_future;
+  service->GetTokenIssuers(get_future.GetCallback());
 
-  auto tokens = get_future.Take();
-  auto expected_tokens = CreateTestTokens();
-  expected_tokens.emplace_back(c_origin, std::vector<uint8_t>{10, 11}, 3,
-                               expiration, 1);
-  VerifyTokens(tokens, expected_tokens);
+  auto issuers = get_future.Take();
+  EXPECT_THAT(issuers,
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.com")),
+                  url::Origin::Create(GURL("https://b.org")), c_origin));
 }
 
 IN_PROC_BROWSER_TEST_F(
     PrivateVerificationTokensServiceBrowserTest,
     StoreTokens_WhenAntiAbuseSettingBlockedForOrigin_FiltersOriginTokens) {
   Profile* profile = GetProfile();
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
 
   const auto c_origin = url::Origin::Create(GURL("https://c.net"));
   const auto d_origin = url::Origin::Create(GURL("https://d.com"));
@@ -348,12 +258,6 @@ IN_PROC_BROWSER_TEST_F(
       ->SetContentSettingDefaultScope(c_origin.GetURL(), c_origin.GetURL(),
                                       ContentSettingsType::ANTI_ABUSE,
                                       CONTENT_SETTING_BLOCK);
-
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
 
   const auto expiration = base::Time::Now() + base::Hours(2);
   std::vector<private_verification_tokens::PrivateVerificationTokensToken>
@@ -368,41 +272,14 @@ IN_PROC_BROWSER_TEST_F(
   service->StoreTokens(std::move(new_tokens), store_future.GetCallback());
   EXPECT_TRUE(store_future.Wait());
 
-  // Reset setting for c.net so GetTokens includes it if present, allowing us to
-  // verify that StoreTokens dropped c.net's token.
-  HostContentSettingsMapFactory::GetForProfile(profile)
-      ->SetContentSettingDefaultScope(c_origin.GetURL(), c_origin.GetURL(),
-                                      ContentSettingsType::ANTI_ABUSE,
-                                      CONTENT_SETTING_ALLOW);
+  base::test::TestFuture<std::vector<url::Origin>> get_future;
+  service->GetTokenIssuers(get_future.GetCallback());
 
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      get_future;
-  service->GetTokens(get_future.GetCallback());
-
-  auto tokens = get_future.Take();
-  auto expected_tokens = CreateTestTokens();
-  expected_tokens.emplace_back(d_origin, std::vector<uint8_t>{12, 13}, 4,
-                               expiration, 1);
-  VerifyTokens(tokens, expected_tokens);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       GetTokens_WhenShuttingDown_ReturnsEmpty) {
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
-  service->Shutdown();
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  auto tokens = future.Take();
-  EXPECT_TRUE(tokens.empty());
+  auto issuers = get_future.Take();
+  EXPECT_THAT(issuers,
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.com")),
+                  url::Origin::Create(GURL("https://b.org")), d_origin));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
@@ -417,31 +294,8 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   base::test::TestFuture<std::vector<url::Origin>> future;
   service->GetTokenIssuers(future.GetCallback());
 
-  auto tokens = future.Take();
-  EXPECT_TRUE(tokens.empty());
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       BindReceiver_Success) {
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(service);
-
-  WaitForInitialization(service);
-
-  mojo::Remote<
-      private_verification_tokens::mojom::PrivateVerificationTokensProvider>
-      remote;
-  service->BindReceiver(remote.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  remote->GetTokens(future.GetCallback());
-
-  auto tokens = future.Take();
-  auto expected_tokens = CreateTestTokens();
-  VerifyTokens(tokens, expected_tokens);
+  auto issuers = future.Take();
+  EXPECT_TRUE(issuers.empty());
 }
 
 class PrivateVerificationTokensServiceDisabledBrowserTest
@@ -472,18 +326,18 @@ class PrivateVerificationTokensServiceEmptyDatabaseBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceEmptyDatabaseBrowserTest,
-                       GetTokens_EmptyDbFile_ReturnsEmpty) {
+                       EmptyDatabase_ReturnsEmpty) {
   PrivateVerificationTokensService* service =
       PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
+  WaitForInitialization(service);
 
-  auto tokens = future.Take();
-  EXPECT_TRUE(tokens.empty());
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service->GetTokenIssuers(future.GetCallback());
+
+  auto issuers = future.Take();
+  EXPECT_TRUE(issuers.empty());
 }
 
 class PrivateVerificationTokensServiceNoDatabaseFileBrowserTest
@@ -496,18 +350,18 @@ class PrivateVerificationTokensServiceNoDatabaseFileBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     PrivateVerificationTokensServiceNoDatabaseFileBrowserTest,
-    GetTokens_NoDbFile_ReturnsEmpty) {
+    NoDatabaseFile_ReturnsEmpty) {
   PrivateVerificationTokensService* service =
       PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
+  WaitForInitialization(service);
 
-  auto tokens = future.Take();
-  EXPECT_TRUE(tokens.empty());
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service->GetTokenIssuers(future.GetCallback());
+
+  auto issuers = future.Take();
+  EXPECT_TRUE(issuers.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
@@ -558,30 +412,6 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       GetTokens_PendingBeforeInitialization_Success) {
-  Profile* profile = GetProfile();
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  // The callback should not have run yet because it's pending initialization.
-  EXPECT_FALSE(future.IsReady());
-
-  // Now wait for initialization. This should trigger the pending callback.
-  WaitForInitialization(service);
-
-  // The callback should now have run.
-  auto tokens = future.Take();
-  auto expected_tokens = CreateTestTokens();
-  VerifyTokens(tokens, expected_tokens);
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
                        GetTokenIssuers_PendingBeforeInitialization_Success) {
   Profile* profile = GetProfile();
   PrivateVerificationTokensService* service =
@@ -625,31 +455,6 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   auto issuers = issuers_future.Take();
   EXPECT_EQ(issuers.size(), 1u);
   EXPECT_EQ(issuers[0], url::Origin::Create(GURL("https://b.org")));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
-                       GetTokens_PendingShutdownBeforeInitialization_Success) {
-  Profile* profile = GetProfile();
-  PrivateVerificationTokensService* service =
-      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-
-  base::test::TestFuture<std::vector<
-      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
-      future;
-  service->GetTokens(future.GetCallback());
-
-  // The callback should not have run yet because it's pending initialization.
-  EXPECT_FALSE(future.IsReady());
-
-  // Shut down the service before initialization; this should clear the
-  // callbacks.
-  service->Shutdown();
-
-  // The callback should now have run, but with an empty result since we never
-  // got a chance to initialize our DB.
-  auto tokens = future.Take();
-  EXPECT_EQ(tokens.size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(

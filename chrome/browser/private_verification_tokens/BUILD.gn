@@ -26,7 +26,6 @@ static_library("private_verification_tokens") {
     "//components/keyed_service/core",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
     "//components/private_verification_tokens/common:private_verification_tokens_store",
-    "//components/private_verification_tokens/mojom",
     "//content/public/browser",
     "//net",
   ]
@@ -43,6 +42,5 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
-    "//components/private_verification_tokens/mojom",
   ]
 }
