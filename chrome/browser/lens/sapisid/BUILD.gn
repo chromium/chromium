@@ -13,21 +13,25 @@ source_set("sapisid") {
 
   deps = [ "//base" ]
 
-  if (is_chrome_branded && !is_android) {
-    data_deps = [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
-  }
+  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
+  # if (is_chrome_branded) {
+  #   data_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
+  # }
 }
 
 if (is_mac) {
-  if (is_chrome_branded) {
-    bundle_data("sapisid_bundle_data") {
-      sources = [ "$root_out_dir/sapisid.so" ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//chrome/browser/internal/lens/sapisid:generate_sapisid_module" ]
-    }
-  } else {
-    group("sapisid_bundle_data") {
-    }
+  # TODO(crbug.com/534400256): Uncomment this in a follow-up CL once the internal CL lands.
+  # if (is_chrome_branded) {
+  #   bundle_data("sapisid_bundle_data") {
+  #     sources = [ "$root_out_dir/sapisid.so" ]
+  #     outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+  #     public_deps = [ "//internal/chrome/browser/lens/sapisid:generate_sapisid_module" ]
+  #   }
+  # } else {
+  #   group("sapisid_bundle_data") {
+  #   }
+  # }
+  group("sapisid_bundle_data") {
   }
 }
 
