@@ -233,11 +233,8 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
 
   auto get_if_string = [&](std::string_view key) -> const std::string* {
     auto it = result->find(key);
-    // TODO(crbug.com/543284188): Based on the unit tests for the
-    // `Federation-RP-Connection-Status` header, this should probably ensure that the value
-    // isn't an inner list (`!it->second.member_is_inner_list`). As is, it allows a
-    // single-element inner list containing a string.
-    if (it == result->end() || it->second.member.size() != 1) {
+    if (it == result->end() || it->second.member_is_inner_list ||
+        it->second.member.size() != 1) {
       return nullptr;
     }
     return it->second.member.front().item.GetIfString();
