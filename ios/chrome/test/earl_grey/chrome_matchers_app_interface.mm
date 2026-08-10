@@ -382,26 +382,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return imageMatcher;
 }
 
-+ (id<GREYMatcher>)imageViewWithCustomSymbolNamed:(NSString*)symbolName
-                                        pointSize:(CGFloat)pointSize {
-  UIImage* expectedImage =
-      CustomSymbolTemplateWithPointSize(symbolName, pointSize);
-  GREYMatchesBlock matches = ^BOOL(UIImageView* imageView) {
-    return ui::test::uiimage_utils::UIImagesAreEqual(expectedImage,
-                                                     imageView.image);
-  };
-  NSString* descriptionString = [NSString
-      stringWithFormat:@"Images matching custom symbol named %@ of size %f",
-                       symbolName, pointSize];
-  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:descriptionString];
-  };
-  id<GREYMatcher> imageMatcher =
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe];
-  return imageMatcher;
-}
-
 + (id<GREYMatcher>)imageViewWithSymbol:(Symbol)symbol
                              pointSize:(CGFloat)pointSize {
   UIImage* expectedImage = SymbolTemplateWithPointSize(symbol, pointSize);
