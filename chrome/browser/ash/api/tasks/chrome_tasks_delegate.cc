@@ -15,11 +15,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/services/app_service/public/cpp/app_service.h"
 #include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/signin/public/base/consent_level.h"
@@ -27,6 +25,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "content/public/browser/browser_context.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -82,14 +81,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // services in testing situations (See
 // chrome/browser/ash/api/tasks/tasks_client_impl_unittest.cc).
 std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
+    const AccountId& account_id,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::OAuthConsumerId oauth_consumer_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetURLLoaderFactory();
-
+      ash::IdentityManagerProvider::Get().Find(account_id);
   std::unique_ptr<google_apis::AuthService> auth_service =
       std::make_unique<google_apis::AuthService>(
           identity_manager,
@@ -127,16 +124,17 @@ void ChromeTasksDelegate::UpdateClientForProfileSwitch(
   if (user->GetType() != user_manager::UserType::kGuest) {
     auto& client = clients_[account_id];
     if (!client) {
-      Profile* profile = Profile::FromBrowserContext(
-          BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-              account_id));
+      auto* browser_context =
+          BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
       apps::AppService* app_service =
           apps::AppServiceRegistry::Get()->Find(account_id);
       client = std::make_unique<TasksClientImpl>(
           user->GetProfilePrefs(),
           (app_service ? &app_service->AppRegistryCache() : nullptr),
-          AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
-          base::BindRepeating(&CreateRequestSenderForClient),
+          AshPolicyBlocklistServiceFactory::GetForBrowserContext(
+              browser_context),
+          base::BindRepeating(&CreateRequestSenderForClient, account_id,
+                              browser_context->GetURLLoaderFactory()),
           kTrafficAnnotation);
     }
   }

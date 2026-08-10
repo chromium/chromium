@@ -1,5 +1,7 @@
 specific_include_rules = {
   "tasks_client_impl_unittest\\.cc": [
+    "+chrome/browser/prefs/browser_prefs.h",
     "+chrome/browser/apps/app_service",
+    "+chrome/test/base",
   ]
 }
