@@ -288,6 +288,10 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<Drawable> STATUS_VIEW_BACKGROUND =
             new WritableObjectPropertyKey<>();
 
+    /** Whether hover is enabled on StatusView. */
+    static final WritableBooleanPropertyKey STATUS_VIEW_HOVER_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** The StatusView tooltip text resource. */
     static final WritableIntPropertyKey STATUS_VIEW_TOOLTIP_TEXT = new WritableIntPropertyKey();
 
@@ -330,6 +334,7 @@ public class StatusProperties {
                 STATUS_ICON_DESCRIPTION_RES,
                 STATUS_ICON_RESOURCE,
                 STATUS_VIEW_BACKGROUND,
+                STATUS_VIEW_HOVER_ENABLED,
                 STATUS_VIEW_TOOLTIP_TEXT,
                 TRANSLATION_X,
                 USE_SMALL_WIDGET,

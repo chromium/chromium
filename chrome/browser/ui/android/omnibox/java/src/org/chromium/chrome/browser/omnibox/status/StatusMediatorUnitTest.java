@@ -1376,6 +1376,28 @@ public final class StatusMediatorUnitTest {
         }
     }
 
+    @Test
+    @SmallTest
+    public void testHover_enabledWhenClickListenerSet() {
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+        assertTrue(mModel.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
+    }
+
+    @Test
+    @SmallTest
+    public void testHover_disabledWhenClickListenerNull() {
+        mMediator.beginInput(mFuseboxSessionState);
+
+        assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
+        assertFalse(mModel.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
+    }
+
     private void setAutocompleteState(@AutocompleteState int state) {
         doReturn(state).when(mAutocompleteInput).getAutocompleteState();
         mMediator.beginInput(mFuseboxSessionState);

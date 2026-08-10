@@ -564,7 +564,7 @@ public class StatusMediator
     public void showPermissionIcon(PermissionIconResource icon) {
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, icon);
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, icon.getContentDescriptionRes());
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, this::onClickOpenPageInfo);
+        setStatusClickListener(this::onClickOpenPageInfo);
 
         updateStatusViewVisibility();
     }
@@ -701,9 +701,14 @@ public class StatusMediator
         mModel.set(
                 StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
                 doubleTapDescriptionRes);
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, clickListener);
+        setStatusClickListener(clickListener);
 
         updateStatusViewVisibility();
+    }
+
+    private void setStatusClickListener(@Nullable OnClickListener listener) {
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, listener);
+        mModel.set(StatusProperties.STATUS_VIEW_HOVER_ENABLED, listener != null);
     }
 
     private void onFuseboxStateChanged(@FuseboxState int state) {
@@ -722,7 +727,7 @@ public class StatusMediator
 
         mModel.set(
                 StatusProperties.STATUS_ICON_RESOURCE, getStatusIconResourceForSearchEngineIcon());
-        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, null);
+        setStatusClickListener(null);
         updateStatusViewVisibility();
         return true;
     }

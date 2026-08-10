@@ -58,6 +58,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                     res.getAnimationFinishedCallback());
         } else if (StatusProperties.STATUS_VIEW_BACKGROUND.equals(propertyKey)) {
             applyStatusIconAndTooltipProperties(model, view);
+        } else if (StatusProperties.STATUS_VIEW_HOVER_ENABLED.equals(propertyKey)) {
+            view.setHoverEnabled(model.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
         } else if (StatusProperties.STATUS_VIEW_TOOLTIP_TEXT.equals(propertyKey)) {
             applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
