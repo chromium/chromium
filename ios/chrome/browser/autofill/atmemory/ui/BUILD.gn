@@ -18,15 +18,28 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/resources",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "at_memory_search_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/browser/autofill/atmemory/public",
+    "//testing/gtest",
   ]
 }

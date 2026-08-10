@@ -4,12 +4,19 @@
 
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
 
+#import "base/check.h"
 #import "base/notreached.h"
+#import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -38,14 +45,8 @@ enum class ItemIdentifier {
   kNoticeItem,
 };
 
-// View states for the AtMemory search table view.
-enum class ViewState {
-  kInitialState,
-  kSearchState,
-  kFetchingState,
-  kErrorState,
-  kResultState,
-};
+// The symbol point size for the cell icons.
+constexpr CGFloat kIconPointSize = 24;
 
 }  // namespace
 
@@ -64,7 +65,7 @@ enum class ViewState {
   BOOL _noticeIsVisible;
   // Tells if the recent fills are visible.
   BOOL _recentFillsAreVisible;
-  // Represent the error type.
+  // The current error type.
   AtMemoryErrorType _errorType;
 }
 
@@ -100,6 +101,7 @@ enum class ViewState {
 
 - (void)loadModel {
   [AtMemoryInlineNoticeConfiguration registerCellForTableView:self.tableView];
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
 
   __weak __typeof(self) weakSelf = self;
   _dataSource = [[UITableViewDiffableDataSource alloc]
@@ -113,10 +115,7 @@ enum class ViewState {
                              itemIdentifier:static_cast<ItemIdentifier>(
                                                 itemIdentifier.integerValue)];
            }];
-  NSDiffableDataSourceSnapshot* snapshot =
-      [[NSDiffableDataSourceSnapshot alloc] init];
-  [self populateAndApplySnapshot:snapshot
-                    forViewState:ViewState::kInitialState];
+  [self createSnapshotForViewState:AtMemoryViewState::kInitialState];
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -136,6 +135,7 @@ enum class ViewState {
 
 - (void)setErrorType:(AtMemoryErrorType)errorType {
   _errorType = errorType;
+  [self createSnapshotForViewState:AtMemoryViewState::kErrorState];
 }
 
 - (void)setNoticeVisible:(BOOL)noticeVisible {
@@ -163,27 +163,30 @@ enum class ViewState {
 
 #pragma mark - Private
 
-// Applies the diffable data source snapshot for the given `viewState`.
-- (void)populateAndApplySnapshot:(NSDiffableDataSourceSnapshot*)snapshot
-                    forViewState:(ViewState)viewState {
+// Creates the diffable data source snapshot for the given `viewState`.
+- (void)createSnapshotForViewState:(AtMemoryViewState)viewState {
   switch (viewState) {
-    case ViewState::kInitialState:
-      [self populateSnapshotForInitialState:snapshot];
-      break;
-    case ViewState::kSearchState:
-    case ViewState::kFetchingState:
-    case ViewState::kErrorState:
-    case ViewState::kResultState:
+    case AtMemoryViewState::kInitialState:
+      [self createSnapshotForInitialState];
+      return;
+    case AtMemoryViewState::kErrorState:
       self.tableView.backgroundView = nil;
-      break;
+      [self createSnapshotForErrorState];
+      return;
+    case AtMemoryViewState::kSearchState:
+    case AtMemoryViewState::kFetchingState:
+    case AtMemoryViewState::kResultState:
+      self.tableView.backgroundView = nil;
+      return;
   }
-
-  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+  NOTREACHED();
 }
 
-// Populates `snapshot` for the initial state.
-- (void)populateSnapshotForInitialState:
-    (NSDiffableDataSourceSnapshot*)snapshot {
+// Creates the `snapshot` for the initial state.
+- (void)createSnapshotForInitialState {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
   if (_noticeIsVisible) {
     [snapshot appendSectionsWithIdentifiers:@[
       @(static_cast<int>(SectionIdentifier::kNoticeSection))
@@ -202,6 +205,52 @@ enum class ViewState {
     // TODO(crbug.com/540877897): Call a method that adds the recentFill
     // results into the kRecentFillsSection.
   }
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Creates the `snapshot` for the error states.
+- (void)createSnapshotForErrorState {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  ItemIdentifier errorIdentifier;
+  SectionIdentifier errorSection;
+
+  switch (_errorType) {
+    case AtMemoryErrorType::kNoConnectionError:
+      errorIdentifier = ItemIdentifier::kNoConnectionItem;
+      errorSection = SectionIdentifier::kNoConnectionSection;
+      break;
+    case AtMemoryErrorType::kNoDataError:
+      errorIdentifier = ItemIdentifier::kNoDataItem;
+      errorSection = SectionIdentifier::kNoDataSection;
+      break;
+    case AtMemoryErrorType::kUnsupportedQueryError:
+      errorIdentifier = ItemIdentifier::kUnsupportedQueryItem;
+      errorSection = SectionIdentifier::kUnsupportedQuerySection;
+      break;
+  }
+
+  // Add the correct error section identifier.
+  [snapshot
+      appendSectionsWithIdentifiers:@[ @(static_cast<int>(errorSection)) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(static_cast<int>(errorIdentifier)) ]
+             intoSectionWithIdentifier:@(static_cast<int>(errorSection))];
+
+  // Add the notice if needed below the error cell.
+  if (_noticeIsVisible) {
+    [snapshot appendSectionsWithIdentifiers:@[
+      @(static_cast<int>(SectionIdentifier::kNoticeSection))
+    ]];
+    [snapshot
+        appendItemsWithIdentifiers:@[ @(static_cast<int>(
+                                       ItemIdentifier::kNoticeItem)) ]
+         intoSectionWithIdentifier:@(static_cast<int>(
+                                       SectionIdentifier::kNoticeSection))];
+  }
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 // Sets the table view background to the empty state.
@@ -212,31 +261,119 @@ enum class ViewState {
                                image:image];
 }
 
-// Reloads the snapshot for the cell with the given `itemIdentifier`.
-- (void)updateSnapshotForItemIdentifier:(ItemIdentifier)itemIdentifier {
-  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
-      [_dataSource snapshot];
-  [snapshot
-      reloadItemsWithIdentifiers:@[ @(static_cast<int>(itemIdentifier)) ]];
-  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
-}
-
 // Returns the cell for the corresponding `itemIdentifier`.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
+  UITableViewCell* cell = nil;
   switch (itemIdentifier) {
     case ItemIdentifier::kNoticeItem:
-      return [self noticeCellForTableView:tableView];
+      cell = [self noticeCellForTableView:tableView];
+      break;
     case ItemIdentifier::kSearchItem:
     case ItemIdentifier::kFetchingItem:
-    case ItemIdentifier::kNoDataItem:
-    case ItemIdentifier::kNoConnectionItem:
-    case ItemIdentifier::kUnsupportedQueryItem:
       // TODO(crbug.com/542645452): Implement cells for each item identifier.
       break;
+    case ItemIdentifier::kNoDataItem:
+      cell = [self noDataCellForTableView:tableView];
+      break;
+    case ItemIdentifier::kNoConnectionItem:
+      cell = [self noConnectionCellForTableView:tableView];
+      break;
+    case ItemIdentifier::kUnsupportedQueryItem:
+      cell = [self unsupportedQueryCellForTableView:tableView];
+      break;
   }
-  NOTREACHED();
+  CHECK(cell);
+  return cell;
+}
+
+// Returns the table view cell for the "No Data" state.
+- (UITableViewCell*)noDataCellForTableView:(UITableView*)tableView {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_NO_DATA);
+  configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  symbolConfiguration.symbolImage =
+      DefaultSymbolWithPointSize(kErrorCircleSymbol, kIconPointSize);
+  symbolConfiguration.symbolTintColor =
+      [UIColor colorNamed:kTextSecondaryColor];
+  configuration.leadingConfiguration = symbolConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.contentView.alpha = kDefaultCellAlpha;
+  cell.userInteractionEnabled = NO;
+  cell.accessibilityIdentifier = kAtMemoryNoDataCellAccessibilityIdentifier;
+
+  return cell;
+}
+
+// Returns the table view cell for the "No Connection" state.
+- (UITableViewCell*)noConnectionCellForTableView:(UITableView*)tableView {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _searchController.searchBar.text;
+  configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
+  configuration.subtitle =
+      l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION);
+
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  symbolConfiguration.symbolImage =
+      DefaultSymbolWithPointSize(kErrorCircleSymbol, kIconPointSize);
+  symbolConfiguration.symbolTintColor =
+      [UIColor colorNamed:kTextSecondaryColor];
+  configuration.leadingConfiguration = symbolConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.contentView.alpha = kDisabledCellAlpha;
+  cell.userInteractionEnabled = NO;
+  cell.accessibilityIdentifier =
+      kAtMemoryNoConnectionCellAccessibilityIdentifier;
+
+  return cell;
+}
+
+// Returns the table view cell for the "Unsupported Query" state.
+- (UITableViewCell*)unsupportedQueryCellForTableView:(UITableView*)tableView {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title =
+      l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE);
+  configuration.subtitle = l10n_util::GetNSString(
+      IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION);
+
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  symbolConfiguration.symbolImage =
+      CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol, kIconPointSize);
+#else
+  symbolConfiguration.symbolImage =
+      DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol, kIconPointSize);
+#endif
+  symbolConfiguration.symbolTintColor = [UIColor colorNamed:kTextPrimaryColor];
+  configuration.leadingConfiguration = symbolConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.contentView.alpha = kDefaultCellAlpha;
+  cell.userInteractionEnabled = YES;
+  cell.accessibilityIdentifier =
+      kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
+
+  return cell;
 }
 
 // Returns the table view cell for the notice state.

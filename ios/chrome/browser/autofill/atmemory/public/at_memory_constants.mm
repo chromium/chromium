@@ -12,3 +12,12 @@ NSString* const kAtMemorySearchBarAccessibilityIdentifier =
 
 NSString* const kAtMemoryBackButtonAccessibilityIdentifier =
     @"AtMemoryBackButton";
+
+NSString* const kAtMemoryNoDataCellAccessibilityIdentifier =
+    @"AtMemoryNoDataCell";
+
+NSString* const kAtMemoryNoConnectionCellAccessibilityIdentifier =
+    @"AtMemoryNoConnectionCell";
+
+NSString* const kAtMemoryUnsupportedQueryCellAccessibilityIdentifier =
+    @"AtMemoryUnsupportedQueryCell";
