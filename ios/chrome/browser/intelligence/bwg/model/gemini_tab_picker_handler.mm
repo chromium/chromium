@@ -63,7 +63,7 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
       ^(std::set<web::WebStateID> selectedIDs,
         std::set<web::WebStateID> cachedIDs) {
         if (weakSelf.selectionCallback) {
-          weakSelf.selectionCallback(selectedIDs, cachedIDs);
+          weakSelf.selectionCallback(selectedIDs);
         }
       };
 
