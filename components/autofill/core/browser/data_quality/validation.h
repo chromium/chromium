@@ -82,10 +82,6 @@ size_t GetCvcLengthForCardNetwork(std::string_view card_network,
 // https://upipayments.co.in/virtual-payment-address-vpa/
 bool IsUPIVirtualPaymentAddress(std::u16string_view value);
 
-// Returns true if `value` appears to be an International Bank Account Number
-// (IBAN). See https://en.wikipedia.org/wiki/International_Bank_Account_Number
-bool IsInternationalBankAccountNumber(std::u16string_view value);
-
 // Returns true if `value` appears to be a valid ABA Routing Transit Number,
 // generally used in the United States for ACH bank transfers.
 bool IsAchRoutingTransitNumber(std::u16string_view value);

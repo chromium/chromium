@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -282,8 +283,8 @@ bool IsFieldValueSaveable(const FormFieldData& field,
 
   // Do not save sensitive values like credit card numbers, IBANs, or Social
   // Security Numbers.
-  if (IsValidCreditCardNumber(field.value()) ||
-      IsInternationalBankAccountNumber(field.value()) || IsSSN(field.value())) {
+  if (IsValidCreditCardNumber(field.value()) || Iban::IsValid(field.value()) ||
+      IsSSN(field.value())) {
     return false;
   }
 

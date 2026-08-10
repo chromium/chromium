@@ -257,30 +257,6 @@ TEST(AutofillValidation, IsUPIVirtualPaymentAddress_Others) {
   EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"1234123412341234@rupay.npci"));
 }
 
-class AutofillIsInternationalBankAccountNumber
-    : public testing::TestWithParam<std::u16string> {};
-
-INSTANTIATE_TEST_SUITE_P(InternationalBankAccountNumber,
-                         AutofillIsInternationalBankAccountNumber,
-                         testing::Values(u"MT84MALT011000012345MTLCAST001S",
-                                         u"SC18SSCB11010000000000001497USD",
-                                         u"MD24AG000225100013104168",
-                                         u"BH67BMAG00001299123456",
-                                         u"LI21088100002324013AA",
-                                         u"NO9386011117947",
-                                         u"FR1420041010050500013M02606",
-                                         u"LB62099900000001001901229114"));
-
-TEST_P(AutofillIsInternationalBankAccountNumber,
-       IsInternationalBankAccountNumber) {
-  EXPECT_TRUE(IsInternationalBankAccountNumber(GetParam())) << GetParam();
-  EXPECT_TRUE(IsInternationalBankAccountNumber(u" " + GetParam() + u" "));
-  EXPECT_FALSE(IsInternationalBankAccountNumber(u"DE" + GetParam()));
-  EXPECT_FALSE(IsInternationalBankAccountNumber(GetParam() + u"."));
-  EXPECT_FALSE(IsInternationalBankAccountNumber(
-      GetParam() + u"0000000000000000000000000000000000000"));
-}
-
 TEST(AutofillValidation, IsValidAchRoutingTransitNumber) {
   // Must be 9 digits, cannot have text:
   EXPECT_FALSE(IsAchRoutingTransitNumber(u"12345678"));

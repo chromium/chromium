@@ -49,7 +49,7 @@ class Iban {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // Next ID: 80
+  // Next ID: 81
   enum class IbanSupportedCountry {
     kUnsupported = 0,
     kAD = 1,   // Andorra
@@ -107,6 +107,7 @@ class Iban {
     kMT = 52,  // Malta
     kMU = 53,  // Mauritius
     kNL = 54,  // Netherlands
+    kNO = 80,  // Norway
     kPK = 55,  // Pakistan
     kPL = 56,  // Poland
     kPS = 57,  // Palestinian territories
@@ -131,7 +132,7 @@ class Iban {
     kVA = 76,  // Vatican City
     kVG = 77,  // Virgin Islands, British
     kXK = 78,  // Kosovo
-    kMaxValue = kIE,
+    kMaxValue = kNO,
   };
 
   // Creates an IBAN with `kUnknown` record type.
@@ -161,7 +162,7 @@ class Iban {
   //
   // The validation algorithm is from:
   // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
-  static bool IsValid(const std::u16string& value);
+  static bool IsValid(std::u16string_view value);
 
   // Returns the capitalized country code of the given `iban_value`.
   static std::string GetCountryCode(const std::u16string& iban_value);

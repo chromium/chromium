@@ -207,12 +207,6 @@ bool IsUPIVirtualPaymentAddress(std::u16string_view value) {
   return MatchesRegex<kUPIVirtualPaymentAddressRe>(value);
 }
 
-bool IsInternationalBankAccountNumber(std::u16string_view value) {
-  std::u16string no_spaces;
-  base::RemoveChars(value, u" ", &no_spaces);
-  return MatchesRegex<kInternationalBankAccountNumberValueRe>(no_spaces);
-}
-
 bool IsAchRoutingTransitNumber(std::u16string_view value) {
   // For a 9-digit Routing Transit Number, multiply the first eight digits by
   // [3,7,1,3,7,1,3,7], and total the results. The remaining ninth digit is the
