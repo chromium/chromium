@@ -2883,7 +2883,17 @@ ci.builder(
                     shards = 55,
                 ),
             ),
+            "browser_tests_no_field_trial": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 55,
+                ),
+            ),
             "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+            "interactive_ui_tests_no_field_trial": targets.mixin(
                 swarming = targets.swarming(
                     shards = 9,
                 ),
