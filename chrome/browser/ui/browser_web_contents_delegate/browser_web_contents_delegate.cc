@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -138,13 +140,15 @@ BrowserWebContentsDelegate::BrowserWebContentsDelegate(
     UnloadController& unload_controller,
     web_app::AppBrowserController* app_browser_controller,
     BrowserWindow& window,
-    DesktopBrowserWindowCapabilities& capabilities)
+    DesktopBrowserWindowCapabilities& capabilities,
+    BrowserUiController& browser_ui_controller)
     : exclusive_access_manager_(exclusive_access_manager),
       command_controller_(command_controller),
       unload_controller_(unload_controller),
       app_browser_controller_(app_browser_controller),
       window_(window),
       capabilities_(capabilities),
+      browser_ui_controller_(browser_ui_controller),
       browser_(*browser),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {}
 
@@ -499,8 +503,7 @@ void BrowserWebContentsDelegate::NavigationStateChanged(
 
   // Only update the UI when something visible has changed.
   if (changed_flags) {
-    browser_->GetBrowserForMigrationOnly()->ScheduleUIUpdate(source,
-                                                             changed_flags);
+    browser_ui_controller_->ScheduleUIUpdate(source, changed_flags);
   }
 
   // We can synchronously update commands since they will only change once per
@@ -631,8 +634,8 @@ bool BrowserWebContentsDelegate::IsContentsActive(
 void BrowserWebContentsDelegate::LoadingStateChanged(
     content::WebContents* source,
     bool should_show_loading_ui) {
-  browser_->GetBrowserForMigrationOnly()->ScheduleUIUpdate(
-      source, content::INVALIDATE_TYPE_LOAD);
+  browser_ui_controller_->ScheduleUIUpdate(source,
+                                           content::INVALIDATE_TYPE_LOAD);
   browser_->GetBrowserForMigrationOnly()->UpdateWindowForLoadingStateChanged(
       source, should_show_loading_ui);
 }

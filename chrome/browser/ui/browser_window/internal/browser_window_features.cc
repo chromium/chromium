@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
 #include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -695,6 +696,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           browser->GetProfile(), browser->tab_strip_model(),
           BrowserWindow::FromBrowser(browser), browser);
 
+  browser_ui_controller_ =
+      GetUserDataFactory().CreateInstance<BrowserUiController>(
+          *browser, *browser, *tab_strip_model_,
+          *BrowserWindow::FromBrowser(browser), *bookmark_bar_controller_);
+
   if (browser_view) {
     color_provider_browser_helper_ =
         std::make_unique<ColorProviderBrowserHelper>(
@@ -755,13 +761,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       browser, BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext(),
       browser_command_controller_.get(), bookmark_bar_controller_.get());
 
-  // Must be after exclusive_access_manager_ and
-  // desktop_browser_window_capabilities_.
+  // Must be after exclusive_access_manager_,
+  // desktop_browser_window_capabilities_, and browser_ui_controller_.
   browser_web_contents_delegate_ = std::make_unique<BrowserWebContentsDelegate>(
       browser, *exclusive_access_manager_, *browser_command_controller_,
       *unload_controller_, app_browser_controller_.get(),
       *BrowserWindow::FromBrowser(browser),
-      *desktop_browser_window_capabilities_);
+      *desktop_browser_window_capabilities_, *browser_ui_controller_);
 
   // Must be after exclusive_access_manager_.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1142,6 +1148,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   data_protection_ui_controller_.reset();
   contents_border_controller_.reset();
   color_provider_browser_helper_.reset();
+  browser_ui_controller_.reset();
   browser_select_file_dialog_controller_.reset();
   browser_focus_controller_.reset();
   bookmark_bar_controller_->SetDelegate(nullptr);

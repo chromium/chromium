@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -1094,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleNameUpdatesOnTabFocus) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        DISABLED_TabGroupHeaderAccessibleProperties) {
-  browser()->set_update_ui_immediately_for_testing();
+  BrowserUiController::From(browser())->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
   AppendTab();
@@ -1297,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
-  browser()->set_update_ui_immediately_for_testing();
+  BrowserUiController::From(browser())->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
   AppendTab();
@@ -1335,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderTooltipText) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        TabGroupHeaderTooltipTextAccessibility) {
-  browser()->set_update_ui_immediately_for_testing();
+  BrowserUiController::From(browser())->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
   AppendTab();

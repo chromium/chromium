@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("browser_ui_controller") {
+  sources = [ "browser_ui_controller.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/tabs:public",
+    "//ui/base",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "browser_ui_controller.cc" ]
+
+  public_deps = [
+    ":browser_ui_controller",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:status_bubble",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//content/public/browser",
+  ]
+}

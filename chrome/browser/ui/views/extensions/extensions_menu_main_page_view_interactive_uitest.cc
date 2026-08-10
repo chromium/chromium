@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -400,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
             u"Extensions are not allowed on chrome://extensions");
 
   // Update the title of the unfocused tab.
-  browser()->set_update_ui_immediately_for_testing();
+  BrowserUiController::From(browser())->set_update_ui_immediately_for_testing();
   content::WebContents* unfocused_tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   std::u16string updated_title = u"Updated Title";

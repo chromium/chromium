@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BrowserUiController;
 class BrowserWindow;
 class BrowserWindowInterface;
 class DesktopBrowserWindowCapabilities;
@@ -38,7 +39,8 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       UnloadController& unload_controller,
       web_app::AppBrowserController* app_browser_controller,
       BrowserWindow& window,
-      DesktopBrowserWindowCapabilities& capabilities);
+      DesktopBrowserWindowCapabilities& capabilities,
+      BrowserUiController& browser_ui_controller);
   BrowserWebContentsDelegate(const BrowserWebContentsDelegate&) = delete;
   BrowserWebContentsDelegate& operator=(const BrowserWebContentsDelegate&) =
       delete;
@@ -264,6 +266,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
   const raw_ptr<web_app::AppBrowserController> app_browser_controller_;
   const raw_ref<BrowserWindow> window_;
   const raw_ref<DesktopBrowserWindowCapabilities> capabilities_;
+  const raw_ref<BrowserUiController> browser_ui_controller_;
   const raw_ref<BrowserWindowInterface> browser_;
   ui::ScopedUnownedUserData<BrowserWebContentsDelegate> scoped_data_holder_;
 };

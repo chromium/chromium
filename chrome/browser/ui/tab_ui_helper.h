@@ -19,7 +19,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;
+class BrowserUiController;
 #endif
 
 namespace content {
@@ -119,7 +119,7 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   tabs::TabNetworkState GetTabNetworkState();
 
 #if !BUILDFLAG(IS_ANDROID)
-  void NotifyTabUIChanged(base::PassKey<Browser> pass_key);
+  void NotifyTabUIChanged(base::PassKey<BrowserUiController> pass_key);
 #endif
 
  private:

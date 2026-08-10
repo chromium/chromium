@@ -1662,6 +1662,8 @@ static_library("ui") {
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/speech",
       "//chrome/browser/subscription_eligibility",
+      "//chrome/browser/ui/browser_ui_controller",
+      "//chrome/browser/ui/browser_ui_controller:impl",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/contextual_search",
@@ -2104,6 +2106,7 @@ static_library("ui") {
       # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes
       # //c/b/ui/tab_modal_confirm_dialog_delegate.h.
       "//chrome/browser/ui/apps:impl",
+      "//chrome/browser/ui/browser_ui_controller:impl",
       "//chrome/browser/ui/browser_window/internal",
       "//chrome/browser/ui/find_bar:impl",
       "//chrome/browser/ui/focus:impl",

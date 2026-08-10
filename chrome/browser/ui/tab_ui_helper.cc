@@ -373,7 +373,8 @@ tabs::TabNetworkState TabUIHelper::GetTabNetworkState() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void TabUIHelper::NotifyTabUIChanged(base::PassKey<Browser> pass_key) {
+void TabUIHelper::NotifyTabUIChanged(
+    base::PassKey<BrowserUiController> pass_key) {
   // Notify subscribers because data might have updated since the browser is
   // batching updates.
   tab_ui_change_callbacks_.Notify();
