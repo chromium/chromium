@@ -340,6 +340,10 @@ linux_memory_builder(
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 45,
                 ),
@@ -363,6 +367,10 @@ linux_memory_builder(
                 ),
             ),
             "sync_integration_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 6,
                 ),
@@ -600,6 +608,8 @@ linux_memory_builder(
             "browser_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 # These are very slow on the Chrome OS MSAN trybot, most likely because browser_tests on cros has ~40% more tests. Also, these tests
                 # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
@@ -619,6 +629,10 @@ linux_memory_builder(
                 reason = "Can't run on MSAN because gl_unittests_ozone uses the hardware driver, which isn't instrumented.",
             ),
             "interactive_ui_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 # These are very slow on the Chrome OS MSAN trybot for some reason.
                 # crbug.com/865455
                 swarming = targets.swarming(
@@ -729,6 +743,10 @@ linux_memory_builder(
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 70,
                 ),
@@ -754,6 +772,10 @@ linux_memory_builder(
                 reason = "https://crbug.com/831676",
             ),
             "sync_integration_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 6,
                 ),
@@ -999,6 +1021,10 @@ linux_memory_builder(
                 ),
             ),
             "browser_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 20,
                 ),
@@ -1009,6 +1035,10 @@ linux_memory_builder(
                 ),
             ),
             "interactive_ui_tests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
+                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
+                ],
                 swarming = targets.swarming(
                     shards = 6,
                 ),
