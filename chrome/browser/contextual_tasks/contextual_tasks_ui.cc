@@ -2071,11 +2071,37 @@ void ContextualTasksUI::UpdateZoom() {
     zoom::ZoomController::CreateForWebContents(web_contents);
     zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
   }
+
+  // Set the zoom mode of the outer WebContents and the
+  // inner WebContents. Inner WebContents needs to update first to prevent the
+  // change of the outer WebContents affecting the inner one. Specifically
+  // when the outer WebContents zoom mode is set to ZOOM_MODE_DISABLED, it will
+  // reset the inner WebContents host zoom level to 0. If inner WebContents'
+  // zoom mode is not yet set to ZOOM_MODE_DISABLED, it will incorrectly affect
+  // other tab's inner WebContents zoom level.
+  const zoom::ZoomController::ZoomMode zoom_mode =
+      IsShownInTab() ? zoom::ZoomController::ZOOM_MODE_DEFAULT
+                     : zoom::ZoomController::ZOOM_MODE_DISABLED;
+
+  if (content::WebContents* inner_web_contents = GetInnerWebContents()) {
+    auto* inner_zoom_controller =
+        zoom::ZoomController::FromWebContents(inner_web_contents);
+    if (!inner_zoom_controller) {
+      zoom::ZoomController::CreateForWebContents(inner_web_contents);
+      inner_zoom_controller =
+          zoom::ZoomController::FromWebContents(inner_web_contents);
+    }
+    if (inner_zoom_controller) {
+      inner_zoom_controller->SetZoomMode(zoom_mode);
+    }
+  }
+
+  if (zoom_controller) {
+    zoom_controller->SetZoomMode(zoom_mode);
+  }
+
   if (IsShownInTab()) {
-    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DEFAULT);
     SyncZoom(/*site_to_webui=*/true);
-  } else {
-    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
   }
 }
 

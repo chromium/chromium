@@ -250,9 +250,20 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void TriggerOnInnerWebContentsCreated(content::WebContents* inner) {
-    controller_->OnInnerWebContentsCreated(inner);
+  void TriggerOnInnerWebContentsCreated(ContextualTasksUI* controller,
+                                        content::WebContents* inner) {
+    controller->OnInnerWebContentsCreated(inner);
   }
+
+  void TriggerOnInnerWebContentsCreated(content::WebContents* inner) {
+    TriggerOnInnerWebContentsCreated(controller_.get(), inner);
+  }
+
+  void TriggerUpdateZoom(ContextualTasksUI* controller) {
+    controller->UpdateZoom();
+  }
+
+  void TriggerUpdateZoom() { TriggerUpdateZoom(controller_.get()); }
 
   ContextualTasksComposeboxHandler* GetComposeboxHandler() {
     return static_cast<ContextualTasksComposeboxHandler*>(
@@ -1024,4 +1035,44 @@ IN_PROC_BROWSER_TEST_F(
   // This should return early and not crash.
   CallOnContextRetrievedForActiveTab(null_browser, tab_id, url,
                                      std::move(context));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       UpdateZoom_UpdatesInnerWebContentsZoomMode) {
+  // Test in tab mode. IsShownInTab() returns true.
+  std::unique_ptr<content::WebContents> inner_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+
+  TriggerOnInnerWebContentsCreated(inner_contents.get());
+  TriggerUpdateZoom();
+
+  auto* inner_zoom_controller =
+      zoom::ZoomController::FromWebContents(inner_contents.get());
+  ASSERT_TRUE(inner_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
+            inner_zoom_controller->zoom_mode());
+
+  // Test in side panel mode, since this WebUI is not added to the tab strip,
+  // IsShownInTab() returns false.
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  auto side_panel_web_ui = std::make_unique<content::TestWebUI>();
+  side_panel_web_ui->set_web_contents(side_panel_contents.get());
+  auto side_panel_controller =
+      std::make_unique<ContextualTasksUI>(side_panel_web_ui.get());
+
+  std::unique_ptr<content::WebContents> side_panel_inner_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  TriggerOnInnerWebContentsCreated(side_panel_controller.get(),
+                                   side_panel_inner_contents.get());
+  TriggerUpdateZoom(side_panel_controller.get());
+
+  auto* side_panel_inner_zoom_controller =
+      zoom::ZoomController::FromWebContents(side_panel_inner_contents.get());
+  ASSERT_TRUE(side_panel_inner_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
+            side_panel_inner_zoom_controller->zoom_mode());
 }
