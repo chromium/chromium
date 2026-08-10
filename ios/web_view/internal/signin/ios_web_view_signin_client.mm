@@ -48,6 +48,10 @@ class IOSWebViewOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   signin::OAuthConsumer GetOAuthConsumerForBrowserActuator() const override {
     NOTREACHED();
   }
+
+  signin::OAuthConsumer GetOAuthConsumerForSiteTokenProvider() const override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

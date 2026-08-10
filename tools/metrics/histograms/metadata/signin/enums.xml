@@ -928,6 +928,7 @@ chromium-metrics-reviews@google.com.
   <int value="105" label="Remote Actor Login Credentials Service"/>
   <int value="106" label="Browser Actuator"/>
   <int value="107" label="Tab Context Containers Service"/>
+  <int value="108" label="Site Token Provider"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

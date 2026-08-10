@@ -230,6 +230,7 @@ source_set("impl") {
     "//components/profile_metrics",
     "//components/signin/core/browser",
     "//components/signin/public/webdata",
+    "//components/site_token_provider",
     "//components/skills:features",
     "//components/supervised_user/core/browser",
     "//components/sync_bookmarks",

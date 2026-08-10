@@ -799,6 +799,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/oauth_consumer_name::kTabContextContainersServiceName,
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+    case OAuthConsumerId::kSiteTokenProvider:
+      return GetOAuthConsumerForSiteTokenProvider();
   }
 }
 

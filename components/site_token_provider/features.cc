@@ -9,4 +9,8 @@ namespace site_token_provider::features {
 // Enables the registration and creation of the SiteTokenProvider component.
 BASE_FEATURE(kSiteTokenProviderEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The OAuth2 scope used to request site tokens. Configured via Finch.
+const base::FeatureParam<std::string> kSiteTokenOAuth2Scope{
+    &kSiteTokenProviderEnabled, "oauth2_scope", ""};
+
 }  // namespace site_token_provider::features

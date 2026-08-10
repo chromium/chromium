@@ -60,6 +60,10 @@ class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   signin::OAuthConsumer GetOAuthConsumerForBrowserActuator() const override {
     NOTREACHED();
   }
+
+  signin::OAuthConsumer GetOAuthConsumerForSiteTokenProvider() const override {
+    return signin::OAuthConsumer("site_token_provider", {"test_scope"});
+  }
 };
 
 }  // namespace
