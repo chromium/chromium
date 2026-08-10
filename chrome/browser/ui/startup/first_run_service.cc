@@ -138,6 +138,16 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   // The method has multiple exit points, this ensures `callback` gets called.
   base::ScopedClosureRunner scoped_closure_runner(std::move(callback));
 
+  // If `IsPreFirstRunDesktopRefreshEnabled` holds, we should NOT skip the First
+  // Run. It contains a Welcome screen (e.g. with metrics enabling opt-in) that
+  // should always be presented to users.
+  //
+  // Policy evaluation (to whether the rest of the flow should be skipped) will
+  // be evaluated in `FirstRunFlowController`.
+  if (switches::IsPreFirstRunDesktopRefreshEnabled()) {
+    return;
+  }
+
   // If the FRE is already open, it is obviously not finished and we also don't
   // want to preemptively mark it completed. Skip all the below, the profile
   // picker can handle being called while already shown.
