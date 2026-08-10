@@ -25,6 +25,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/autofill/content/renderer/email_verification_handler.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_submission_tracker.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
-#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
@@ -139,30 +139,6 @@ class AutofillAgent : public content::RenderFrameObserver,
         BUILDFLAG(IS_ANDROID)};
   };
 
-  class EmailVerificationObserver : public blink::WebLocalFrameObserver {
-   public:
-    explicit EmailVerificationObserver(AutofillAgent* agent);
-    ~EmailVerificationObserver() override;
-    void StoreEmailVerificationToken(FieldRendererId email_field_id,
-                                     const std::string& email,
-                                     FieldRendererId token_field_id,
-                                     const std::string& token);
-    // blink::WebLocalFrameObserver:
-    void WillSendSubmitEvent(const blink::WebFormElement& form) override;
-    void OnFrameDetached() override {}
-    void Reset() { email_verification_tokens_.clear(); }
-
-   private:
-    struct TokenInfo {
-      std::string token;
-      FieldRendererId email_field_id;
-      std::string email;
-    };
-
-    const raw_ptr<AutofillAgent> agent_;
-    base::flat_map<FieldRendererId, TokenInfo> email_verification_tokens_;
-  };
-
   // `PasswordAutofillAgent` and `PasswordGenerationAgent` may be `nullptr`. If
   // they are not, then they are also guaranteed to outlive `AutofillAgent`.
   AutofillAgent(
@@ -185,6 +161,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   // unsafe_autofill_driver() is nullptr if unsafe_render_frame() is nullptr and
   // the `autofill_driver_` has not been bound yet.
   mojom::AutofillDriver* unsafe_autofill_driver();
+
+  // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
+  // between OnDestruct() and ~AutofillAgent().
+  content::RenderFrame* unsafe_render_frame() const {
+    return content::RenderFrameObserver::render_frame();
+  }
 
   CallTimerState GetCallTimerState(CallTimerState::CallSite call_site) const;
 
@@ -330,12 +312,6 @@ class AutofillAgent : public content::RenderFrameObserver,
  private:
   class DeferringAutofillDriver;
   friend class AutofillAgentTestApi;
-
-  // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
-  // between OnDestruct() and ~AutofillAgent().
-  content::RenderFrame* unsafe_render_frame() const {
-    return content::RenderFrameObserver::render_frame();
-  }
 
   const blink::RendererPreferences* GetRendererPreferences() const;
 
@@ -666,7 +642,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   const bool replace_form_element_observer_ = false;
 
-  EmailVerificationObserver email_verification_observer_;
+  EmailVerificationHandler email_verification_handler_;
 
   // Tracks when an autofill operation is performed on a form via JavaScript,
   // and not via regular Chrome Autofill.

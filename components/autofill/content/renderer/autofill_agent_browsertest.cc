@@ -2736,15 +2736,15 @@ TEST_F(AutofillAgentTest_AtMemoryInactivityNudge, InactivityTriggersNudge) {
   task_environment_.FastForwardBy(base::Seconds(5));
 }
 
-class EmailVerificationObserverTest : public AutofillAgentTest {
+class EmailVerificationHandlerTest : public AutofillAgentTest {
  public:
-  EmailVerificationObserverTest() = default;
+  EmailVerificationHandlerTest() = default;
 };
 
 // Tests that the verification token is injected into the token field if the
 // email field's current value still matches the verified email address.
-TEST_F(EmailVerificationObserverTest,
-       EmailVerificationObserverSharesTokenIfEmailMatches) {
+TEST_F(EmailVerificationHandlerTest,
+       EmailVerificationHandlerSharesTokenIfEmailMatches) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
   LoadHTML(R"(<body>
     <form id="form">
@@ -2770,7 +2770,7 @@ TEST_F(EmailVerificationObserverTest,
                   _, form_util::GetFieldRendererId(verification_element)));
 
   test_api(autofill_agent())
-      .email_verification_observer()
+      .email_verification_handler()
       .WillSendSubmitEvent(form_element);
 
   EXPECT_EQ(verification_element.Value().Utf16(), u"evt_token_123");
@@ -2778,8 +2778,8 @@ TEST_F(EmailVerificationObserverTest,
 
 // Tests that the verification token is NOT injected if the email field's
 // current value has changed since verification.
-TEST_F(EmailVerificationObserverTest,
-       EmailVerificationObserverDoesNotShareTokenIfEmailChanges) {
+TEST_F(EmailVerificationHandlerTest,
+       EmailVerificationHandlerDoesNotShareTokenIfEmailChanges) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
   LoadHTML(R"(<body>
     <form id="form">
@@ -2808,7 +2808,7 @@ TEST_F(EmailVerificationObserverTest,
       .Times(0);
 
   test_api(autofill_agent())
-      .email_verification_observer()
+      .email_verification_handler()
       .WillSendSubmitEvent(form_element);
 
   EXPECT_EQ(verification_element.Value().Utf16(), u"");
@@ -2816,8 +2816,8 @@ TEST_F(EmailVerificationObserverTest,
 
 // Tests that the verification token is NOT injected if the email field has
 // been cleared since verification.
-TEST_F(EmailVerificationObserverTest,
-       EmailVerificationObserverDoesNotShareTokenIfEmailIsCleared) {
+TEST_F(EmailVerificationHandlerTest,
+       EmailVerificationHandlerDoesNotShareTokenIfEmailIsCleared) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
   LoadHTML(R"(<body>
     <form id="form">
@@ -2846,7 +2846,7 @@ TEST_F(EmailVerificationObserverTest,
       .Times(0);
 
   test_api(autofill_agent())
-      .email_verification_observer()
+      .email_verification_handler()
       .WillSendSubmitEvent(form_element);
 
   EXPECT_EQ(verification_element.Value().Utf16(), u"");

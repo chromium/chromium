@@ -568,7 +568,7 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)),
-      email_verification_observer_(this),
+      email_verification_handler_(this),
       javascript_autofill_tracker_(
           render_frame->GetWebFrame(),
           base::BindRepeating(&AutofillAgent::OnJavaScriptAutofillDetected,
@@ -625,7 +625,7 @@ void AutofillAgent::Reset() {
   timing_ = {};
   input_warnings_.has_warned = false;
   input_warnings_.remove_listeners.clear();
-  email_verification_observer_.Reset();
+  email_verification_handler_.Reset();
   javascript_autofill_tracker_.Reset();
   // Runs Blink's observer disconnection closure
   // (`VisibilityObserver::Disconnect()`) before being reset.
@@ -882,69 +882,6 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          mojom::SubmissionSource source) {
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     autofill_driver->FormSubmitted(form_data, source);
-  }
-}
-
-AutofillAgent::EmailVerificationObserver::EmailVerificationObserver(
-    AutofillAgent* agent)
-    : blink::WebLocalFrameObserver(agent->unsafe_render_frame()->GetWebFrame()),
-      agent_(agent) {}
-
-AutofillAgent::EmailVerificationObserver::~EmailVerificationObserver() =
-    default;
-
-void AutofillAgent::EmailVerificationObserver::StoreEmailVerificationToken(
-    FieldRendererId email_field_id,
-    const std::string& email,
-    FieldRendererId token_field_id,
-    const std::string& token) {
-  email_verification_tokens_[token_field_id] = TokenInfo{
-      .token = token, .email_field_id = email_field_id, .email = email};
-}
-
-void AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent(
-    const blink::WebFormElement& form) {
-  if (email_verification_tokens_.empty() || form.IsNull()) {
-    return;
-  }
-
-  for (const auto& [field_id, info] : email_verification_tokens_) {
-    WebFormControlElement element =
-        form_util::GetFormControlByRendererId(field_id);
-    if (element && element.GetOwningFormForAutofill() == form) {
-      // To prevent sharing an Email Verification Token (EVT) generated for a
-      // different email address (e.g., if the user edited the email field,
-      // cleared it, or selected a different email address after the token was
-      // sent to the renderer), verify that the email field's current value
-      // still matches the email address used during verification.
-      WebFormControlElement email_element =
-          form_util::GetFormControlByRendererId(info.email_field_id);
-      if (email_element) {
-        std::u16string current_email = email_element.Value().Utf16();
-        std::u16string original_email = base::UTF8ToUTF16(info.email);
-        if (base::i18n::FoldCase(
-                base::TrimWhitespace(current_email, base::TRIM_ALL)) !=
-            base::i18n::FoldCase(
-                base::TrimWhitespace(original_email, base::TRIM_ALL))) {
-          continue;
-        }
-      } else {
-        continue;
-      }
-
-      element.SetValue(WebString::FromUtf8(info.token));
-
-      if (auto* driver = agent_->unsafe_autofill_driver()) {
-        if (std::optional<FormData> form_data = form_util::ExtractFormData(
-                form.GetDocument(), form, agent_->field_data_manager(),
-                agent_->GetCallTimerState(
-                    kFormWithEmailVerificationTokenSubmitted),
-                agent_->button_titles_cache())) {
-          driver->FormWithEmailVerificationTokenSubmitted(*form_data, field_id);
-        }
-      }
-      return;
-    }
   }
 }
 
@@ -2048,7 +1985,7 @@ void AutofillAgent::SendEmailVerificationToken(FieldRendererId email_field_id,
     return;
   }
 
-  email_verification_observer_.StoreEmailVerificationToken(
+  email_verification_handler_.StoreEmailVerificationToken(
       email_field_id, email, token_field_id, token);
 }
 

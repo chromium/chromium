@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
 
   // 4. Submit the form.
   // This will trigger
-  // AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent. The token
+  // EmailVerificationHandler::WillSendSubmitEvent. The token
   // value is injected into the verification token field.
 
   ASSERT_TRUE(content::ExecJs(
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   // 4. Submit the form.
   // This will trigger
-  // AutofillAgent::EmailVerificationObserver::WillSendSubmitEvent. The token
+  // EmailVerificationHandler::WillSendSubmitEvent. The token
   // value is injected into the verification token field.
 
   ASSERT_TRUE(content::ExecJs(

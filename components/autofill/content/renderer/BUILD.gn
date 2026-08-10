@@ -8,6 +8,8 @@ static_library("renderer") {
     "a11y_utils.h",
     "autofill_agent.cc",
     "autofill_agent.h",
+    "email_verification_handler.cc",
+    "email_verification_handler.h",
     "form_autofill_issues.cc",
     "form_autofill_issues.h",
     "form_autofill_util.cc",
