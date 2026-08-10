@@ -581,6 +581,10 @@ void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
 
   if (!DispatchPasteEvent(frame, PasteMode::kAllMimeTypes, source))
     return;
+  // A 'paste' event handler may destroy target frame.
+  if (frame.GetDocument()->GetFrame() != frame) {
+    return;
+  }
   if (!frame.GetEditor().CanPaste())
     return;
 
@@ -839,6 +843,10 @@ bool ClipboardCommands::ExecutePasteAndMatchStyle(LocalFrame& frame,
                                                   const String&) {
   if (!DispatchPasteEvent(frame, PasteMode::kPlainTextOnly, source))
     return false;
+  // A 'paste' event handler may destroy target frame.
+  if (frame.GetDocument()->GetFrame() != frame) {
+    return false;
+  }
   if (!frame.GetEditor().CanPaste())
     return false;
 
