@@ -662,6 +662,8 @@ static_library("browser") {
     "payments/payments_autofill_client.h",
     "payments/payments_churned_users_manager.cc",
     "payments/payments_churned_users_manager.h",
+    "payments/payments_churned_users_metrics.cc",
+    "payments/payments_churned_users_metrics.h",
     "payments/payments_customer_data.h",
     "payments/payments_data_cleaner.cc",
     "payments/payments_data_cleaner.h",

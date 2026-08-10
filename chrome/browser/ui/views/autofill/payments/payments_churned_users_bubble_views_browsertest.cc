@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -33,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {
@@ -91,27 +94,13 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   }
 
   void ClickOnIcon() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    auto* provider = browser_view->toolbar_button_provider();
-    views::View* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(
-            kActionShowPaymentsChurnedUsersBubble),
-        kActionShowPaymentsChurnedUsersBubble);
-    EXPECT_TRUE(icon);
-    if (!icon) {
-      return;
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        kActionShowPaymentsChurnedUsersBubble,
+        BrowserActions::From(browser())->root_action_item());
+    EXPECT_TRUE(action_item);
+    if (action_item) {
+      action_item->InvokeAction();
     }
-
-    ui::MouseEvent pressed(ui::EventType::kMousePressed, gfx::Point(),
-                           gfx::Point(), base::TimeTicks::Now(),
-                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    icon->OnMousePressed(pressed);
-    ui::MouseEvent released_event =
-        ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(),
-                       gfx::Point(), base::TimeTicks::Now(),
-                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    icon->OnMouseReleased(released_event);
   }
 
   PaymentsChurnedUsersBubbleView* GetBubbleView() {
@@ -140,6 +129,74 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       LogsResultMetrics_Accepted) {
+  base::HistogramTester histogram_tester;
+
+  ShowBubble();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  bubble_view->AcceptDialog();
+
+  // The confirmation bubble will be shown after a short delay, which will close
+  // the original bubble.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    AutofillBubbleBase* current_bubble = GetAutofillBubbleView();
+    if (!current_bubble || current_bubble == bubble_view) {
+      return false;
+    }
+
+    // Check that it's the confirmation bubble by verifying its view ID.
+    auto* location_bar_bubble =
+        static_cast<AutofillLocationBarBubble*>(current_bubble);
+    return location_bar_bubble->GetID() ==
+           DialogViewId::
+               SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS;
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.Result",
+      PaymentsUiClosedReason::kAccepted, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       LogsResultMetrics_Cancelled) {
+  base::HistogramTester histogram_tester;
+
+  ShowBubble();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      GetBubbleView()->GetWidget());
+  GetBubbleView()->CancelDialog();
+  destroyed_waiter.Wait();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.Result",
+      PaymentsUiClosedReason::kCancelled, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       LogsResultMetrics_Closed) {
+  base::HistogramTester histogram_tester;
+
+  ShowBubble();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      GetBubbleView()->GetWidget());
+  GetBubbleView()->GetBubbleFrameView()->ResetViewShownTimeStampForTesting();
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      GetBubbleView()->GetBubbleFrameView()->close_button());
+  destroyed_waiter.Wait();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.Result",
+      PaymentsUiClosedReason::kClosed, 1);
+}
 
 INSTANTIATE_TEST_SUITE_P(,
                          PaymentsChurnedUsersBubbleViewsBrowserTest,

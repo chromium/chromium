@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -78,6 +79,8 @@ void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {
 void PaymentsChurnedUsersBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
+  autofill_metrics::LogPaymentsChurnedUsersBubbleResult(
+      is_accepted_ ? PaymentsUiClosedReason::kAccepted : closed_reason);
 
   if (is_accepted_ || closed_reason == PaymentsUiClosedReason::kCancelled ||
       closed_reason == PaymentsUiClosedReason::kClosed) {
@@ -203,11 +206,11 @@ void PaymentsChurnedUsersBubbleController::DoShowBubble() {
   if (!browser_window) {
     return;
   }
-  if (AutofillBubbleBase* bubble_view =
-          AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
-              ->ShowPaymentsChurnedUsersBubble(web_contents(), this,
-                                               is_reshow_)) {
-    SetBubbleView(*bubble_view);
+  AutofillBubbleBase* created_bubble =
+      AutofillBubbleHandler::Get(browser_window->GetUnownedUserDataHost())
+          ->ShowPaymentsChurnedUsersBubble(web_contents(), this, is_reshow_);
+  if (created_bubble) {
+    SetBubbleView(*created_bubble);
   }
 #endif
 }

@@ -6817,6 +6817,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.PaymentsChurnedUsersBubble.Result"
+    enum="PaymentsUiClosedReason" expires_after="2027-04-30">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of the payments churned users bubble. Logged when the bubble
+    is closed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
     expires_after="2027-01-10">
   <owner>darwinyang@google.com</owner>
