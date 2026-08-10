@@ -461,6 +461,13 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
                         positioned:NSWindowBelow
                         relativeTo:nil];
   [GetInProcessNSView() setNextKeyView:view_view];
+
+  // There is no NSWindow when running headless, so send the frame bounds to the
+  // view synchronously to ensure its initial screen info is accurate.
+  if (![GetInProcessNSView() window]) {
+    view->SetWindowFrameInScreen(
+        gfx::ScreenRectFromNSRect([GetInProcessNSView() frame]));
+  }
   return view;
 }
 
@@ -470,7 +477,7 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForChildWidget(
       new RenderWidgetHostViewMac(render_widget_host);
 
   // If the parent RenderWidgetHostViewMac is hosted in another process, ensure
-  // that the popup window will be created created in the same process.
+  // that the popup window will be created in the same process.
   // https://crbug.com/1091179
   if (views_host_) {
     auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();

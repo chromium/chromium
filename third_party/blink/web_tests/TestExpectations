@@ -9417,3 +9417,9 @@ crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_screensh
 # Gardener 2026-08-10
 # Timing out on MSAN.
 crbug.com/544415105 [ Linux ] http/tests/origin_trials/webexposed/js-self-profiling-markers-origin-trial-enabled-coi.php [ Pass Timeout ]
+
+# http://crrev.com/c/8217307 improved headless initial window frame reporting
+# on macOS, but WebTestShellPlatformDelegate intentionally skips setting the frame
+# for popups to avoid racing mid-navigation resizes, causing an opener/popup
+# geometry mismatch.
+crbug.com/446689489 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open_initial_size.html [ Failure ]
