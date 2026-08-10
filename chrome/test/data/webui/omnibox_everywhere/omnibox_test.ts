@@ -9,6 +9,7 @@ import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, Om
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -32,6 +33,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       searchboxShowComposeEntrypoint: true,
       ntpRealboxDynamicAiModeButton: true,
       composeboxContextDragAndDropEnabled: true,
+      energyEffectAnimationEnabled: false,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -145,8 +147,11 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   test(
       'configures animated glow and compose button properties correctly',
       () => {
-        const glow = omnibox.shadowRoot.querySelector('search-animated-glow');
+        const glow =
+            omnibox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+                'search-animated-glow');
         assertTrue(!!glow);
+        assertEquals('OmniboxEverywhere', glow.entrypointName);
 
         const composeButton =
             omnibox.shadowRoot.querySelector('#composeButton');
@@ -221,6 +226,8 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       composeboxContextDragAndDropEnabled: true,
+      energyEffectAnimationEnabled: false,
+      composeboxEnergyEffectAnimationEnabled: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -233,6 +240,15 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     composebox = document.createElement('omnibox-everywhere-composebox');
     document.body.appendChild(composebox);
     await microtasksFinished();
+  });
+
+  test('configures animated glow on composebox correctly', () => {
+    const glow = composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+        '#animatedSearchElement');
+    assertTrue(!!glow);
+    assertEquals('OmniboxEverywhere', glow.entrypointName);
+    assertEquals('expanding', glow.animationState);
+    assertTrue(glow.energyEffectAnimationEnabled);
   });
 
   test('onAddTabContext adds tab to composebox files', async () => {

@@ -15,7 +15,9 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         @dragleave="${this.dragAndDropHandler.handleDragLeave}"
         @drop="${this.dragAndDropHandler.handleDrop}">
       <search-animated-glow
-        animation-state="${this.animationState}"
+        .animationState="${this.animationState}"
+        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+        .entrypointName="${this.entrypointName}"
         part="animated-glow">
       </search-animated-glow>
       <cr-searchbox-input id="input"

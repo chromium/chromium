@@ -21,7 +21,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
           .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
           .transcript="${this.transcript}"
           .receivedSpeech="${this.receivedSpeech}"
-          .energyEffectAnimationEnabled="${false}"
+          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
           .isZeroState="${false}"
           exportparts="composebox-background">
       </search-animated-glow>

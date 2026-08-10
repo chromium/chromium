@@ -22,8 +22,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         .usePecApi="${this.usePecApi_}"
         .isOblongShape="${this.isOblongShape_}"
         .contextManagementInComposeboxEnabled="${
-                                   this.contextManagementInComposeboxEnabled_}"
-        entrypoint-name="Omnibox">
+                                   this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-composebox>
   ` :
                                html`

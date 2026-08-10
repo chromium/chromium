@@ -14,7 +14,13 @@
 :host {
   -webkit-app-region: drag;
   position: relative;
+  /* Preserves 2px border width parity with omnibox-everywhere-omnibox to
+   * prevent layout shift when toggling between searchbox and composebox,
+   * and matches the -2px search-animated-glow inset. */
+  border: 2px solid transparent;
   border-radius: 28px;
+  box-sizing: border-box;
+  --cr-composebox-background-color: var(--color-searchbox-background);
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
@@ -31,7 +37,9 @@
 }
 
 #composebox {
-  background-color: var(--color-searchbox-background);
+  /* Transparent so search-animated-glow behind it (z-index: 1) can render
+   * the background and energy glow effect via composebox-background. */
+  background-color: transparent;
   border-radius: inherit;
   display: flex;
   flex-direction: column;
@@ -79,10 +87,11 @@ cr-composebox-tool-chip {
 }
 
 search-animated-glow {
-  pointer-events: none;
+  border-radius: inherit;
   inset: -2px;
-  z-index: 1;
+  pointer-events: none;
   position: absolute;
+  z-index: 1;
 }
 
 #shadow-container {

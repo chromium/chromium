@@ -118,13 +118,18 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         type: Boolean,
       },
+      energyEffectAnimationEnabled_: {type: Boolean},
       fileContextEnabled_: {type: Boolean},
+      entrypointName: {type: String},
     };
   }
 
   accessor placeholderText: string = '';
+  accessor entrypointName: string = 'OmniboxEverywhere';
   accessor isDraggingFile: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler;
+  protected accessor energyEffectAnimationEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectAnimationEnabled');
   protected accessor fileContextEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   accessor searchboxChromeRefreshTheming: boolean =

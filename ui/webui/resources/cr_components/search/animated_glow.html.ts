@@ -39,12 +39,15 @@ export function getHtml(this: SearchAnimatedGlowElement) {
    * NOTE: Voice search animations are not dependent on 'energyEffectAnimationEnabled' flag.
    */
 
+  // TODO(b/543432985): Generalize energy-effect animation conditions so new
+  // embedders don't require adding explicit entrypointName checks.
   // clang-format off
   return html`<!--_html_template_start_-->
     ${this.energyEffectAnimationEnabled &&
       (this.animationState === GlowAnimationState.DRAGGING ||
        this.animationState === GlowAnimationState.SUBMITTING ||
-      this.isZeroState || this.entrypointName === 'Realbox') ? html`
+       this.isZeroState || this.entrypointName === 'Realbox' ||
+       this.entrypointName === 'OmniboxEverywhere') ? html`
       <div class="gradient-blur-wrapper">
         <div class="gradient"></div>
       </div>

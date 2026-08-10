@@ -63,13 +63,20 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
       },
       entrypointName: {type: String, reflect: true},
       disableComposeboxAnimation: {type: Boolean},
+      energyEffectAnimationEnabled: {type: Boolean},
       submitButtonIconType: {type: String},
     };
   }
 
-  accessor entrypointName: string = 'Omnibox';
+  /**
+   * Entrypoint name used by SearchAnimatedGlowElement and
+   * ComposeboxEmbedderMixin to apply embedder-specific styling and themes.
+   */
+  accessor entrypointName: string = 'OmniboxEverywhere';
   accessor disableComposeboxAnimation: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
+  override accessor energyEffectAnimationEnabled: boolean =
+      getLoadTimeBoolean('composeboxEnergyEffectAnimationEnabled', true);
   override accessor submitButtonIconType = SubmitButtonIconType.FORWARD;
 
   override onVoiceSearchButtonClick() {
@@ -97,6 +104,7 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
 
   override connectedCallback() {
     super.connectedCallback();
+    this.animationState = GlowAnimationState.EXPANDING;
     this.refreshTabSuggestions(/*forceRefresh=*/ true);
   }
 
