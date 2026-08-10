@@ -776,7 +776,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTaskBottomSheetComponentProvider.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTaskBottomSheetContent.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImpl.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ui/ContextualTasksControlCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ui/ContextualTasksControlMediator.java",
     ]
@@ -789,7 +788,6 @@ if (is_android) {
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
-      "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/flags:java",
@@ -825,9 +823,7 @@ if (is_android) {
   robolectric_library("junit") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridgeUnitTest.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksFuseboxManagerImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ui/ContextualTasksControlCoordinatorUnitTest.java",
-      "fusebox/android/java/src/org/chromium/chrome/browser/contextual_tasks/fusebox/ContextualTasksSessionStateUnitTest.java",
     ]
     deps = [
       ":java",
@@ -837,7 +833,6 @@ if (is_android) {
       "//base:supplier_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
-      "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/flags:java",

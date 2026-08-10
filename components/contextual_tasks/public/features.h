@@ -112,12 +112,7 @@ BASE_DECLARE_FEATURE(kContextualTasksCloseTabExpandsSidePanel);
 BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
 
 // Enables the use of APC comparison for webpages in the recontextualization
-// flow.
 BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
-
-// Enables the Java implementation of the Contextual Tasks Fusebox. Android
-// only.
-BASE_DECLARE_FEATURE(kContextualTasksJavaFusebox);
 
 // Enables overriding side panel to show Bottom Sheet on demand.
 BASE_DECLARE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen);
@@ -495,8 +490,6 @@ extern const char kContextualTasksSearchQueryName[];
 extern const char kContextualTasksSearchQueryDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
 extern const char kContextualTasksSuggestionsEnabledDescription[];
-extern const char kContextualTasksJavaFuseboxName[];
-extern const char kContextualTasksJavaFuseboxDescription[];
 extern const char kContextualTasksBackButtonExpandsSidePanelName[];
 extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
 extern const char kContextualTasksCloseTabExpandsSidePanelName[];

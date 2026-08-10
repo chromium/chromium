@@ -35,7 +35,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.context_sharing.R;
-import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
 
@@ -46,9 +45,7 @@ public class CoBrowseViewsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabBottomSheetWebUi mWebUi;
-    @Mock private ContextualTasksFusebox mFusebox;
     @Mock private View mWebUiView;
-    @Mock private View mFuseboxView;
     @Mock private View mPeekView;
     @Mock private WebContents mWebContents;
     @Mock private EventForwarder mEventForwarder;
@@ -61,7 +58,6 @@ public class CoBrowseViewsUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mWebUi.getWebUiView()).thenReturn(mWebUiView);
-        when(mFusebox.getFuseboxView()).thenReturn(mFuseboxView);
         when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
 
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
@@ -71,7 +67,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         null,
                         () -> null);
@@ -83,17 +78,12 @@ public class CoBrowseViewsUnitTest {
         assertNotNull(view);
 
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = view.findViewById(R.id.fusebox_container);
         View handleBar = view.findViewById(R.id.handle_bar);
 
         assertEquals(1, webUiContainer.getChildCount());
         assertEquals(mWebUiView, webUiContainer.getChildAt(0));
 
-        assertEquals(1, fuseboxContainer.getChildCount());
-        assertEquals(mFuseboxView, fuseboxContainer.getChildAt(0));
-
         assertEquals(View.VISIBLE, handleBar.getVisibility());
-        assertTrue(((ViewGroup.MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin > 0);
     }
 
     @Test
@@ -106,7 +96,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.SIDE_PANEL,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
                         () -> null);
@@ -124,14 +113,11 @@ public class CoBrowseViewsUnitTest {
         mCoBrowseViews.destroy();
 
         verify(mWebUi).destroy();
-        verify(mFusebox).destroy();
 
         View view = mCoBrowseViews.getView();
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = view.findViewById(R.id.fusebox_container);
 
         assertEquals(0, webUiContainer.getChildCount());
-        assertEquals(0, fuseboxContainer.getChildCount());
     }
 
     @Test
@@ -178,7 +164,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
                         () -> null);
@@ -208,7 +193,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
                         () -> null);
@@ -226,7 +210,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
                         () -> null);
@@ -245,7 +228,6 @@ public class CoBrowseViewsUnitTest {
                         TabBottomSheetClientType.CONTEXTUAL_TASKS,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mWebUi,
-                        mFusebox,
                         Color.WHITE,
                         mMockContentProvider,
                         () -> null);

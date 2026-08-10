@@ -132,7 +132,6 @@ public class TabBottomSheetManagerTest {
                                     TabBottomSheetClientType.UNKNOWN,
                                     CoBrowseContainerType.BOTTOM_SHEET,
                                     null,
-                                    null,
                                     Color.WHITE,
                                     new TestCoBrowseComponentProvider(),
                                     () -> mPeekViewManager);
@@ -620,7 +619,6 @@ public class TabBottomSheetManagerTest {
                                                 .inflate(R.layout.tab_bottom_sheet, null),
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
-                                        null,
                                         null,
                                         Color.WHITE,
                                         new TestCoBrowseComponentProvider(),

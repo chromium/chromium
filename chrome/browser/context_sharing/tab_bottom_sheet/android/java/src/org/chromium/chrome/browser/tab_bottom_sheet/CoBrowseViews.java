@@ -23,7 +23,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
-import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.WebContents;
 
@@ -39,7 +38,6 @@ public class CoBrowseViews {
             ObservableSuppliers.createNullable();
 
     private final @Nullable TabBottomSheetWebUi mWebUi;
-    private final @Nullable ContextualTasksFusebox mFusebox;
     private final @ColorInt int mBackgroundColor;
     private final View mContainerView;
     private final @TabBottomSheetClientType int mClientType;
@@ -51,7 +49,6 @@ public class CoBrowseViews {
     private final Callback<@Nullable WebContents> mWebContentsObserver = this::onWebContentsChanged;
 
     private final TabBottomSheetWebUiContainer mWebUiContainer;
-    private final @Nullable ViewGroup mFuseboxContainer;
     private final ViewGroup mPeekContainer;
     private final @Nullable View mHandleBar;
 
@@ -68,7 +65,6 @@ public class CoBrowseViews {
      * @param clientType The client using the bottom sheet.
      * @param containerType The type of container hosting the views.
      * @param webUi The web UI for the view.
-     * @param fusebox The fusebox for the view.
      * @param backgroundColor The background color for the view.
      * @param contentProvider The provider for custom sheet content implementations.
      * @param peekViewManagerSupplier Supplier for the manager for the peek view.
@@ -78,14 +74,12 @@ public class CoBrowseViews {
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
             @Nullable TabBottomSheetWebUi webUi,
-            @Nullable ContextualTasksFusebox fusebox,
             @ColorInt int backgroundColor,
             @Nullable CoBrowseComponentProvider contentProvider,
             Supplier<@Nullable PeekViewManager> peekViewManagerSupplier) {
         mClientType = clientType;
         mContainerType = containerType;
         mWebUi = webUi;
-        mFusebox = fusebox;
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
         mContentProvider = contentProvider;
@@ -93,7 +87,6 @@ public class CoBrowseViews {
 
         // Cache view lookups.
         mWebUiContainer = assertNonNull(containerView.findViewById(R.id.web_ui_container));
-        mFuseboxContainer = containerView.findViewById(R.id.fusebox_container);
         mPeekContainer = assertNonNull(containerView.findViewById(R.id.peek_view_container));
         mHandleBar = containerView.findViewById(R.id.handle_bar);
 
@@ -210,10 +203,6 @@ public class CoBrowseViews {
             mWebUiContainer.removeAllViews();
             mWebUi.destroy();
         }
-        if (mFusebox != null && mFuseboxContainer != null) {
-            mFuseboxContainer.removeAllViews();
-            mFusebox.destroy();
-        }
         if (mPeekView != null) {
             mPeekContainer.removeAllViews();
             mPeekView = null;
@@ -255,11 +244,6 @@ public class CoBrowseViews {
             View webUiView = mWebUi.getWebUiView();
             detachFromParent(webUiView);
             mWebUiContainer.addView(webUiView);
-        }
-        if (mFusebox != null && mFuseboxContainer != null) {
-            View fuseboxView = mFusebox.getFuseboxView();
-            detachFromParent(fuseboxView);
-            mFuseboxContainer.addView(fuseboxView);
         }
         if (mPeekView != null) {
             detachFromParent(mPeekView);

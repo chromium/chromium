@@ -20,7 +20,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
@@ -124,28 +123,13 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    void onWebUIReady(String taskId, WebContents webContents) {
-        ContextualTasksFuseboxManager fuseboxManager =
-                ContextualTasksFuseboxManager.from(mWindowAndroid);
-        if (fuseboxManager == null) return;
-        fuseboxManager.onWebUIReady(taskId, webContents);
-    }
+    void onWebUIReady(String taskId, WebContents webContents) {}
 
     @CalledByNative
-    void onWebUIDestroyed(String taskId) {
-        ContextualTasksFuseboxManager fuseboxManager =
-                ContextualTasksFuseboxManager.from(mWindowAndroid);
-        if (fuseboxManager == null) return;
-        fuseboxManager.onWebUIDestroyed(taskId);
-    }
+    void onWebUIDestroyed(String taskId) {}
 
     @CalledByNative
-    void onTaskChanged(String oldTaskId, String newTaskId) {
-        ContextualTasksFuseboxManager fuseboxManager =
-                ContextualTasksFuseboxManager.from(mWindowAndroid);
-        if (fuseboxManager == null) return;
-        fuseboxManager.onTaskChanged(oldTaskId, newTaskId);
-    }
+    void onTaskChanged(String oldTaskId, String newTaskId) {}
 
     @CalledByNative
     void startVoiceRecognition() {

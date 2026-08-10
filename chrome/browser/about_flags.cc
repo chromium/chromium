@@ -12188,13 +12188,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSidePanel)},
 
-    {"contextual-tasks-java-fusebox",
-     contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,
-     contextual_tasks::flag_descriptions::
-         kContextualTasksJavaFuseboxDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksJavaFusebox)},
-
     {"contextual-tasks-override-show-bottom-sheet-on-large-screen",
      contextual_tasks::flag_descriptions::
          kContextualTasksOverrideShowBottomSheetOnLargeScreenName,

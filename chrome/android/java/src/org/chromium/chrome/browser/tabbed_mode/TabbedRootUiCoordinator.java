@@ -28,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -90,9 +89,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksFuseboxManagerImpl;
-import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
-import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -161,7 +157,6 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProd
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.open_in_app.TabbedOpenInAppEntryPoint;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
@@ -385,7 +380,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
     private @Nullable Callback<ReadAloudController> mTabBottomSheetReadAloudControllerCallback;
-    private @Nullable ContextualTasksFuseboxManager mContextualTasksFuseboxManager;
     private @Nullable CoBrowseViewFactory mCoBrowseViewFactory;
     private final MonotonicObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private @Nullable AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
@@ -954,11 +948,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager = null;
         }
 
-        if (mContextualTasksFuseboxManager != null) {
-            mContextualTasksFuseboxManager.destroy();
-            mContextualTasksFuseboxManager = null;
-        }
-
         if (mContextualTasksBridge != null) {
             mContextualTasksBridge = null;
         }
@@ -1464,23 +1453,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         mWindowAndroid),
                                 () -> mContextualTasksBridge);
             }
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {
-                mContextualTasksFuseboxManager =
-                        new ContextualTasksFuseboxManagerImpl(
-                                mActivity,
-                                () -> {
-                                    ViewStub stub =
-                                            mActivity.findViewById(
-                                                    R.id.contextual_tasks_fusebox_stub);
-                                    return createContextualTasksFuseboxConfig(stub.inflate());
-                                },
-                                mActivityTabProvider.asObservable(),
-                                mWindowAndroid,
-                                mActivityLifecycleDispatcher,
-                                mProfileSupplier,
-                                mSnackbarManagerSupplier);
-            }
         }
         initUndoGroupSnackbarController();
         initializeSideUi(currentlySelectedProfile);
@@ -1574,26 +1546,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     // Private class methods
-    private ContextualTasksFuseboxConfig createContextualTasksFuseboxConfig(View contentView) {
-        var omniboxActionDelegate =
-                new OmniboxActionDelegateImpl(
-                        mActivity,
-                        /* tabSupplier= */ () -> null,
-                        /* openUrlInExistingTabElseNewTabCb= */ (url) -> {},
-                        /* openIncognitoTabCb= */ CallbackUtils.emptyRunnable(),
-                        /* openPasswordSettingsCb= */ CallbackUtils.emptyRunnable(),
-                        /* openQuickDeleteCb= */ CallbackUtils.emptyRunnable(),
-                        /* tabWindowManagerSupplier= */ TabWindowManagerSingleton::getInstance,
-                        /* bringTabToFrontCallback= */ (tabInfo, url) -> {});
-        return new ContextualTasksFuseboxConfig(
-                contentView,
-                contentView.findViewById(R.id.search_location_bar),
-                contentView.findViewById(R.id.toolbar),
-                contentView.findViewById(R.id.control_container),
-                contentView.findViewById(R.id.bottom_container),
-                omniboxActionDelegate);
-    }
-
     private void initializeIph(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
         ToolbarManager toolbarManager = mToolbarManager;
@@ -2046,10 +1998,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void initializeCoBrowseViewFactory() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()
                 || AndroidSidePanelEnabledFn.isEnabled()) {
-            View contentView =
-                    mActivity.getLayoutInflater().inflate(R.layout.search_activity, null);
-            ContextualTasksFuseboxConfig fuseboxConfig =
-                    createContextualTasksFuseboxConfig(contentView);
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
                             /* itemDelegate= */ null,
@@ -2060,7 +2008,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCoBrowseViewFactory =
                     new CoBrowseViewFactory(
                             mActivity,
-                            fuseboxConfig,
                             mProfileSupplier.asNonNull(),
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,

@@ -160,10 +160,6 @@ BASE_FEATURE(kContextualTasksCloseTabExpandsSidePanel,
 BASE_FEATURE(kContextualTasksWebpageApcComparison,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Java Fusebox on Android. Meant to be used as a fallback until WebUI
-// based fusebox is fully functional.
-BASE_FEATURE(kContextualTasksJavaFusebox, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables overriding side panel to show Bottom Sheet on demand.
 BASE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -894,10 +890,6 @@ const char kContextualTasksSuggestionsEnabledName[] =
     "Contextual Tasks Suggestions Enabled";
 const char kContextualTasksSuggestionsEnabledDescription[] =
     "Enables suggestions for contextual tasks.";
-
-const char kContextualTasksJavaFuseboxName[] = "Contextual Tasks Java Fusebox";
-const char kContextualTasksJavaFuseboxDescription[] =
-    "Enables Java Fusebox for contextual tasks.";
 
 const char kContextualTasksBackButtonExpandsSidePanelName[] =
     "Contextual Tasks Back Button Expands Side Panel";

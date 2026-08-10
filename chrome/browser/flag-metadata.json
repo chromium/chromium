@@ -2130,11 +2130,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "contextual-tasks-java-fusebox",
-    "owners": ["shaktisahu@chromium.org", "chrome-contextual-tasks-eng@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "contextual-tasks-override-show-bottom-sheet-on-large-screen",
     "owners": ["shaktisahu@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 155

@@ -173,7 +173,6 @@ public class TabBottomSheetCoordinatorUnitTest {
                                 TabBottomSheetClientType.UNKNOWN,
                                 CoBrowseContainerType.BOTTOM_SHEET,
                                 mMockWebUi,
-                                null,
                                 0,
                                 mMockContentProvider,
                                 () -> null));
@@ -1150,7 +1149,6 @@ public class TabBottomSheetCoordinatorUnitTest {
                         clientType,
                         CoBrowseContainerType.BOTTOM_SHEET,
                         mMockWebUi,
-                        null,
                         0,
                         mMockContentProvider,
                         () -> null);
