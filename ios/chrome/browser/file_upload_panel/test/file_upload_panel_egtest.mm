@@ -837,9 +837,13 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that cancelling the file picker logs the correct metric.
 - (void)testFilePickerCancel {
-  // The file upload panel is only available on iOS 18.4+.
-  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
+  // The file upload panel is only available on iOS 18.4+, but is failing on
+  // iOS 18.5.
+  // TODO(crbug.com/544412706): Re-enable test on iOS 18.5+.
+  if (!base::ios::IsRunningOnOrLater(18, 6, 0)) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Test is available for iOS 18.4+ but currently failing on iOS 18.5, "
+        @"skipping.");
   }
 
   GURL url = self.testServer->GetURL("/directory");
