@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -610,16 +611,16 @@ public class PdfToolbarCoordinatorUnitTest {
         org.junit.Assert.assertNotNull("Edit button should not be null", editButton);
 
         // Initial state: EDIT_MODE_ACTIVE is false (default)
-        // Click should toggle it to true, calling setEditMode(true)
+        // Click should enter edit mode, calling setEditMode(true)
         editButton.performClick();
         verify(mDelegate).setEditMode(true);
 
         // Now set the model to active (simulating delegate callback -> coordinator -> model update)
         mPdfToolbarCoordinator.setEditModeActive(true);
 
-        // Click again should toggle it to false, calling setEditMode(false)
+        // Click again while already in edit mode: should NOT exit edit mode or call setEditMode(false)
         editButton.performClick();
-        verify(mDelegate).setEditMode(false);
+        verify(mDelegate, never()).setEditMode(false);
     }
 
     @Test

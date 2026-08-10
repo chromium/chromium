@@ -115,7 +115,9 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
         } else if (actionId == R.id.done_button) {
             mDelegate.setEditMode(false);
         } else if (actionId == R.id.edit_button) {
-            mDelegate.setEditMode(!mModel.get(PdfToolbarProperties.EDIT_MODE_ACTIVE));
+            if (!mModel.get(PdfToolbarProperties.EDIT_MODE_ACTIVE)) {
+                mDelegate.setEditMode(true);
+            }
         }
     }
 
