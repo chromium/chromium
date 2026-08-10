@@ -560,6 +560,8 @@ public abstract class ChromeFeatureList {
     public static final String ON_STARTUP_WINDOW_POLICY = "OnStartupWindowPolicy";
     public static final String OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND =
             "OpenDownloadInFilesAppIfNoHandlerFound";
+    public static final String OPTIONAL_BUTTON_NO_HARDWARE_LAYER_KILLSWITCH =
+            "OptionalButtonNoHardwareLayerKillswitch";
     public static final String PAGE_CONTENT_PROVIDER = "PageContentProvider";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =
             "PageInfoAboutThisSiteMoreLangs";
@@ -1128,6 +1130,8 @@ public abstract class ChromeFeatureList {
                     ON_STARTUP_WINDOW_POLICY,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sOptionalButtonNoHardwareLayerKillswitch =
+            newCachedFlag(OPTIONAL_BUTTON_NO_HARDWARE_LAYER_KILLSWITCH, /* defaultValue= */ true);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
@@ -1388,6 +1392,7 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampolineNoNewTask,
                     sNtpMvcRefactor,
                     sOnStartupWindowPolicy,
+                    sOptionalButtonNoHardwareLayerKillswitch,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPersistAcrossReboots,

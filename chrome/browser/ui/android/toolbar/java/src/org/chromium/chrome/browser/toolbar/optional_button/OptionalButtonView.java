@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.transition.ChangeBounds;
@@ -47,6 +48,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -1187,5 +1189,34 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         return mForegroundColorTint;
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        if (ChromeFeatureList.sOptionalButtonNoHardwareLayerKillswitch.isEnabled()) {
+            return false;
+        } else {
+            return super.hasOverlappingRendering();
+        }
+    }
+
+    @Override
+    public void setLayerType(int layerType, @Nullable Paint paint) {
+        if (ChromeFeatureList.sOptionalButtonNoHardwareLayerKillswitch.isEnabled()) {
+            if (layerType == LAYER_TYPE_HARDWARE && (getWidth() <= 0 || getHeight() <= 0)) {
+                layerType = LAYER_TYPE_NONE;
+            }
+        }
+        super.setLayerType(layerType, paint);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (ChromeFeatureList.sOptionalButtonNoHardwareLayerKillswitch.isEnabled()) {
+            if (getLayerType() == LAYER_TYPE_HARDWARE && (getWidth() <= 0 || getHeight() <= 0)) {
+                super.setLayerType(LAYER_TYPE_NONE, null);
+            }
+        }
     }
 }

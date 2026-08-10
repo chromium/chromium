@@ -231,6 +231,7 @@ BASE_DECLARE_FEATURE(kOmniboxAutofocusOnIncognitoNtp);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
 BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
+BASE_DECLARE_FEATURE(kOptionalButtonNoHardwareLayerKillswitch);
 BASE_DECLARE_FEATURE(kPCCTMinimumHeight);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kPageContentProvider);
