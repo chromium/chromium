@@ -100,24 +100,6 @@ using content::WebContents;
 
 namespace {
 
-void DialogTimingToSource(
-    base::OnceCallback<void(CloseTabSource)> callback,
-    CloseTabSource source,
-    tab_groups::DeletionDialogController::DeletionDialogTiming timing) {
-  switch (timing) {
-    case tab_groups::DeletionDialogController::DeletionDialogTiming::
-        Synchronous: {
-      std::move(callback).Run(source);
-      return;
-    }
-    case tab_groups::DeletionDialogController::DeletionDialogTiming::
-        Asynchronous: {
-      std::move(callback).Run(CloseTabSource::kFromNonUIEvent);
-      return;
-    }
-  }
-}
-
 TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
   TabStripUserGestureDetails gesture_detail(
       TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
@@ -343,87 +325,11 @@ void BrowserTabStripController::OnCloseTab(
     int model_index,
     CloseTabSource source,
     base::OnceCallback<void(CloseTabSource)> callback) {
-  if (!web_app::IsTabClosable(model_, model_index)) {
+  tabs::TabInterface* tab = model_->GetTabAtIndex(model_index);
+  if (!tab) {
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Tabs cannot be closed when the app is in locked fullscreen, which is
-  // available only on ChromeOS.
-  if (browser_view_->IsLockedFullscreen()) {
-    return;
-  }
-#endif
-
-  // Only consider pausing the close operation if this is the last remaining
-  // tab (since otherwise closing it won't close the browser window).
-  if (GetCount() <= 1) {
-    // Closing this tab will close the current window. See if the browser wants
-    // to prompt the user before the browser is allowed to close.
-    const UnloadController::WarnBeforeClosingResult result =
-        UnloadController::From(browser_view_->browser())
-            ->MaybeWarnBeforeClosing(base::BindOnce(
-                [](TabStrip* tab_strip, int model_index,
-                   UnloadController::WarnBeforeClosingResult result) {
-                  if (result ==
-                      UnloadController::WarnBeforeClosingResult::kOkToClose) {
-                    tab_strip->CloseTab(tab_strip->tab_at(model_index),
-                                        CloseTabSource::kFromNonUIEvent);
-                  }
-                },
-                base::Unretained(tabstrip_), model_index));
-
-    if (result != UnloadController::WarnBeforeClosingResult::kOkToClose) {
-      return;
-    }
-  }
-
-  // Check to make sure the tab is not the last in it's group.
-  std::vector<tab_groups::TabGroupId> groups_to_delete =
-      model_->GetGroupsDestroyedFromRemovingIndices({model_index});
-
-  if (groups_to_delete.empty()) {
-    std::move(callback).Run(source);
-    return;
-  }
-
-  auto timing_mapped_callback =
-      base::BindOnce(&DialogTimingToSource, std::move(callback), source);
-
-  // If the user is destroying the last tab in a saved or shared group via the
-  // tabstrip, a dialog is shown that will decide whether to destroy the tab or
-  // not. It will first ungroup the tab, then close the tab.
-  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-      browser_view_->browser(), tab_groups::GroupDeletionReason::ClosedLastTab,
-      groups_to_delete, std::move(timing_mapped_callback));
-}
-
-void BrowserTabStripController::CloseTab(int model_index) {
-  // Cancel any pending tab transition.
-  hover_tab_selector_.CancelTabTransition();
-
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksCloseTabExpandsSidePanel)) {
-    tabs::TabInterface* closing_tab = model_->GetTabAtIndex(model_index);
-    ContextualTasksCloseButtonController* const close_button_controller =
-        ContextualTasksCloseButtonController::From(GetBrowserWindowInterface());
-    if (closing_tab && closing_tab->IsActivated() && close_button_controller &&
-        close_button_controller->ShouldShowCloseButton()) {
-      close_button_controller->MaybeCloseTabExpandSidePanel();
-      return;
-    }
-  }
-
-  model_->CloseWebContentsAt(model_index,
-                             TabCloseTypes::CLOSE_USER_GESTURE |
-                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-
-  // Try to show reading list IPH if needed.
-  if (tabstrip_->GetTabCount() >= 7) {
-    BrowserUserEducationInterface::From(GetBrowserWindowInterface())
-        ->MaybeShowFeaturePromo(
-            feature_engagement::kIPHReadingListEntryPointFeature);
-  }
+  model_->delegate()->CloseTab(tab, source, std::move(callback));
 }
 
 void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
@@ -498,7 +404,7 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
         tab_groups::TabGroupVisualData(GetGroupTitle(group),
                                        GetGroupColorId(group),
                                        !is_currently_collapsed),
-        true);
+        GetTabGroup(group)->IsCustomized());
   }
 
   const bool is_implicit_action =

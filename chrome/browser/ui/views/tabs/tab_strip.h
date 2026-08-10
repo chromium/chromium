@@ -213,6 +213,7 @@ class TabStrip : public views::View,
   int GetModelCount() const;
 
   TabStripController* controller() const { return controller_.get(); }
+  TabContainer* tab_container_for_testing() { return tab_container_; }
 
   TabDragContext* GetDragContext();
 
@@ -376,7 +377,7 @@ class TabStrip : public views::View,
   const Tab* GetLastVisibleTab() const;
 
   // Closes the tab at `model_index`.
-  void CloseTabInternal(int model_index, CloseTabSource source);
+  void CloseTabInternal(CloseTabSource source);
 
   // Computes and stores values derived from contrast ratios.
   void UpdateContrastRatioValues();

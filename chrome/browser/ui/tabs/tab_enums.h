@@ -14,6 +14,16 @@ enum class TabMutedReason {
   kContentSettingChrome,  // Mute toggled on chrome:// URL.
 };
 
+// Source of the call to CloseTab().
+enum class CloseTabSource {
+  // Tab was closed by a mouse event on the tab or its close button
+  kFromMouse,
+  // Tab was closed by a touch event on the tab or its close button
+  kFromTouch,
+  // Tab is closed by some means other than direct tab interaction
+  kFromNonUIEvent,
+};
+
 // A BitField used to specify what should happen when the tab is closed.
 enum TabCloseTypes {
   CLOSE_NONE = 0,

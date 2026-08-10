@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/buildflags.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -236,6 +237,19 @@ class TabStripModelDelegate {
   // Unpins the specified tabs from all Glic conversations.
   virtual void GlicUnpinTabsFromAllConversations(
       base::span<const tabs::TabHandle> tab_handles);
+
+  // Requests closing the specified tab, performing all closability checks,
+  // user prompts (e.g. UnloadController, group deletion dialogs), and fallback
+  // tab creation. If `on_approved` is provided, it is executed once all checks
+  // and prompts pass, before performing default tab destruction.
+  virtual void CloseTab(
+      const tabs::TabInterface* tab,
+      CloseTabSource source,
+      base::OnceCallback<void(CloseTabSource)> on_approved) = 0;
+
+  void CloseTab(const tabs::TabInterface* tab, CloseTabSource source) {
+    CloseTab(tab, source, base::OnceCallback<void(CloseTabSource)>());
+  }
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

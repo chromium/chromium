@@ -161,3 +161,8 @@ void TestTabStripModelDelegate::OnRemovingAllTabsFromGroups(
 
 void TestTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
     base::span<const tabs::TabHandle> tab_handles) {}
+
+void TestTabStripModelDelegate::CloseTab(
+    const tabs::TabInterface* tab,
+    CloseTabSource source,
+    base::OnceCallback<void(CloseTabSource)> on_approved) {}

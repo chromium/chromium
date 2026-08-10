@@ -4,6 +4,9 @@
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_TYPES_H_
+
+#include "chrome/browser/ui/tabs/tab_enums.h"
+
 // Enum passed to EndDrag().
 enum class EndDragReason {
   // Complete the drag.
@@ -17,16 +20,6 @@ enum class EndDragReason {
 
   // The model mutated.
   kModelAddedTab,
-};
-
-// Source of the call to CloseTab().
-enum class CloseTabSource {
-  // Tab was closed by a mouse event on the tab or its close button
-  kFromMouse,
-  // Tab was closed by a touch event on the tab or its close button
-  kFromTouch,
-  // Tab is closed by some means other than direct tab interaction
-  kFromNonUIEvent,
 };
 
 // Source of the call to ToggleTabGroup(). The source of the call can trigger

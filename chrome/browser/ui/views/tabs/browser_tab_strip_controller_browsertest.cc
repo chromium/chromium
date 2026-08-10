@@ -343,3 +343,16 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestFocusedGroup,
   controller()->SetFocusedGroup(group);
   EXPECT_NE(widget->user_color_override(), std::nullopt);
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTest,
+                       CloseTabFromTabStripExecutesClose) {
+  controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+
+  EXPECT_FALSE(tabstrip()->tab_container_for_testing()->InTabClose());
+
+  tabstrip()->CloseTab(tabstrip()->tab_at(0), CloseTabSource::kFromMouse);
+
+  EXPECT_TRUE(tabstrip()->tab_container_for_testing()->InTabClose());
+  EXPECT_EQ(tab_strip_model()->count(), 1);
+}

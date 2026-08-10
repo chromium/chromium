@@ -163,9 +163,6 @@ void FakeBaseTabStripController::OnCloseTab(
     CloseTabSource source,
     base::OnceCallback<void(CloseTabSource)> callback) {
   std::move(callback).Run(source);
-}
-
-void FakeBaseTabStripController::CloseTab(int index) {
   RemoveTab(index);
 }
 

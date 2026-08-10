@@ -1740,8 +1740,7 @@ void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
       tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
   if (index_to_close.has_value() && IsValidModelIndex(index_to_close.value())) {
     auto callback =
-        base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this),
-                       index_to_close.value());
+        base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this));
     controller_->OnCloseTab(index_to_close.value(), source,
                             std::move(callback));
   }
@@ -2267,7 +2266,7 @@ const Tab* TabStrip::GetLastVisibleTab() const {
   return nullptr;
 }
 
-void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
+void TabStrip::CloseTabInternal(CloseTabSource source) {
   if (!tab_container_->InTabClose() && IsAnimatingInTabStrip()) {
     // Cancel any current animations. We do this as remove uses the current
     // ideal bounds and we need to know ideal bounds is in a good state.
@@ -2282,20 +2281,6 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   }
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
-  if (tab_at(model_index)->group().has_value()) {
-    base::RecordAction(base::UserMetricsAction("CloseGroupedTab"));
-
-    if (controller_->GetCount() == 1) {
-      // Prevent the browser from closing when the last grouped tab is closed
-      // from the browser by adding a new tab.
-      controller_->CreateNewTab(NewTabTypes::kNoUserAction);
-      // In some situations the new tab is assigned a group. So if it is in a
-      // group, we remove it from the group so that after closing the tab at
-      // `model_index`, the browser shows a tab without a group.
-      controller_->RemoveTabFromGroup(1);
-    }
-  }
-  controller_->CloseTab(model_index);
 }
 
 void TabStrip::UpdateContrastRatioValues() {

@@ -91,6 +91,9 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
       base::OnceCallback<void()> callback) override;
   void GlicUnpinTabsFromAllConversations(
       base::span<const tabs::TabHandle> tab_handles) override;
+  void CloseTab(const tabs::TabInterface* tab,
+                CloseTabSource source,
+                base::OnceCallback<void(CloseTabSource)> on_approved) override;
 
   void CloseFrame();
 
