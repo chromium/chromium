@@ -38,6 +38,7 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -4516,6 +4517,34 @@ public class AwContents implements SmartClipProvider {
         AwContentsJni.get().insertVisualStateCallback(mNativeAwContents, requestId, callback);
     }
 
+    // Detects whether a View is a Jetpack Compose wrapper. See http://b/521949426.
+    // Compose explicitly overrides View#getAccessibilityClassName() to return these hardcoded
+    // strings so that out-of-process accessibility services (like TalkBack) can identify the nodes.
+    // This is safe to rely on because R8 cannot obfuscate the strings without breaking
+    // accessibility.
+    private static boolean isComposeView(View view) {
+        CharSequence accClassName = view.getAccessibilityClassName();
+        return accClassName != null && accClassName.toString().contains("androidx.compose.");
+    }
+
+    private static int getComposeHierarchyDepth(View view) {
+        int depth = 1;
+        for (ViewParent parent = view.getParent();
+                parent instanceof View;
+                parent = parent.getParent()) {
+            if (isComposeView((View) parent)) {
+                return depth;
+            }
+            depth++;
+        }
+        return 0;
+    }
+
+    private static void recordComposeHierarchyDepth(View view) {
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.ComposeHierarchyDepth", getComposeHierarchyDepth(view));
+    }
+
     public static boolean isDpadEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
@@ -4872,6 +4901,7 @@ public class AwContents implements SmartClipProvider {
             mAwWindowCoverageTracker.trackContents(AwContents.this);
 
             recordIfAttachedToPopupWindow(mContainerView);
+            recordComposeHierarchyDepth(mContainerView);
         }
 
         @Override

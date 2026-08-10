@@ -7461,6 +7461,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ComposeHierarchyDepth" units="levels"
+    expires_after="2027-09-01">
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how many levels up in the View hierarchy Jetpack Compose is found
+    when a WebView is attached to the window (e.g. 1 means directly wrapped by
+    AndroidView). Records 0 if no Compose ancestor is found.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
     expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>

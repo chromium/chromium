@@ -21,6 +21,7 @@ import org.chromium.android_webview.test.util.CommonResources
 import org.chromium.base.ThreadUtils
 import org.chromium.base.test.util.Batch
 import org.chromium.base.test.util.Feature
+import org.chromium.base.test.util.HistogramWatcher
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper
 
 /**
@@ -66,6 +67,8 @@ class AwComposeTest {
     @MediumTest
     @Feature("AndroidWebView")
     fun testWebViewInCompose() {
+        val histogramWatcher =
+            HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 1)
         val client = TestAwContentsClient()
         val containerView = ThreadUtils.runOnUiThreadBlocking<AwTestContainerView> {
             mActivityTestRule.createDetachedAwTestContainerView(client)
@@ -76,6 +79,20 @@ class AwComposeTest {
         }
 
         loadPage(containerView, client.onPageFinishedHelper)
+        histogramWatcher.assertExpected()
+    }
+
+    @Test
+    @MediumTest
+    @Feature("AndroidWebView")
+    fun testWebViewNotInCompose() {
+        val histogramWatcher =
+            HistogramWatcher.newSingleRecordWatcher("Android.WebView.ComposeHierarchyDepth", 0)
+        val client = TestAwContentsClient()
+        val containerView = mActivityTestRule.createAwTestContainerViewOnMainSync(client)
+
+        loadPage(containerView, client.onPageFinishedHelper)
+        histogramWatcher.assertExpected()
     }
 
     @Test
