@@ -29,7 +29,7 @@
 </if>
           name="true"
           disabled$="[[isGuest_]]"
-          icon="[[getSyncSavedLocallyIcon_()]]">
+          icon="privacy:sync-saved-locally">
       </settings-collapse-radio-button>
       <settings-collapse-radio-button no-collapse
           id="blockedButton"
@@ -38,7 +38,7 @@
           sub-label="$i18n{siteSettingsProtectedContentBlockedSubLabel}"
           name="false"
           disabled$="[[isGuest_]]"
-          icon="[[getSyncSavedLocallyOffIcon_()]]">
+          icon="privacy:sync-saved-locally-off">
       </settings-collapse-radio-button>
     </settings-radio-group>
   </div>
@@ -51,14 +51,14 @@
         "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
       block-option-sub-label=
         "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
-      block-option-icon="[[getSyncSavedLocallyOffIcon_()]]"
+      block-option-icon="privacy:sync-saved-locally-off"
       allow-option-label=
         "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
 <if expr="is_win and _google_chrome">
       allow-option-sub-label=
         "$i18n{siteSettingsProtectedContentIdentifiersAllowedSubLabel}"
 </if>
-      allow-option-icon="[[getSyncSavedLocallyIcon_()]]"
+      allow-option-icon="privacy:sync-saved-locally"
       disabled$="[[isGuest_]]">
   </settings-category-default-radio-group>
   <category-setting-exceptions

@@ -18,7 +18,7 @@
         on-click="onClearBrowsingDataClick_"></cr-link-row>
     <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
       <cr-link-row id="privacyGuideLinkRow" class="hr"
-          start-icon="[[getSignpostIcon_()]]"
+          start-icon="privacy20:signpost"
           label="$i18n{privacyGuideLabel}"
           sub-label="$i18n{privacyGuideSublabel}"
           on-click="onPrivacyGuideClick_"
@@ -26,19 +26,19 @@
       </cr-link-row>
     </template>
     <cr-link-row id="thirdPartyCookiesLinkRow"
-        start-icon="[[getCookieIcon_()]]"
+        start-icon="privacy:cookie"
         class="hr" label="$i18n{thirdPartyCookiesLinkRowLabel}"
         sub-label="[[computeThirdPartyCookiesSublabel_(
             prefs.profile.cookie_controls_mode.*)]]"
         on-click="onCookiesClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <cr-link-row id="securityLinkRow" start-icon="[[getLockIcon_()]]"
+    <cr-link-row id="securityLinkRow" start-icon="privacy:lock"
         class="hr" label="$i18n{securityPageTitle}"
         sub-label="$i18n{securityPageDescription}"
         on-click="onSecurityPageClick_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    <cr-link-row id="siteSettingsLinkRow" start-icon="[[getPageInfoIcon_()]]"
+    <cr-link-row id="siteSettingsLinkRow" start-icon="privacy:page-info"
         class="hr" label="$i18n{siteSettings}"
         sub-label="$i18n{siteSettingsSublabel}"
         on-click="onSiteSettingsLinkRowClick_"

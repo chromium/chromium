@@ -255,6 +255,7 @@ build_webui("build") {
   # -----------------ts_files start ----------------------------
 
   ts_files = [
+    "privacy_icons.html.ts",
     "a11y_page/a11y_browser_proxy.ts",
     "a11y_page/a11y_page.html.ts",
     "a11y_page/a11y_page.ts",
@@ -459,10 +460,7 @@ build_webui("build") {
 
   # -----------------ts_files end -------------------------------
 
-  icons_html_files = [
-    "privacy_icons.html",
-    "privacy_page/security/fingerprint_icons.html",
-  ]
+  icons_html_files = [ "privacy_page/security/fingerprint_icons.html" ]
 
   if (is_chrome_branded) {
     icons_html_files += [ "internal/icons.html" ]

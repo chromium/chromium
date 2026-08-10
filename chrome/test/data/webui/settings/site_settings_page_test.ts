@@ -396,9 +396,7 @@ suite('SiteSettingsList', function() {
       route: routes.SITE_SETTINGS_SENSORS,
       id: ContentSettingsTypes.SENSORS,
       label: 'siteSettingsSensors',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:sensors' :
-          'privacy:sensors-old',
+      icon: 'privacy:sensors',
       enabledLabel: 'siteSettingsSensorsAllowed',
       disabledLabel: 'siteSettingsSensorsBlocked',
       askLabel: 'siteSettingsSensorsAsk',
@@ -421,11 +419,7 @@ suite('SiteSettingsList', function() {
         [], []);
     browserProxy.setPrefs(allowPrefs);
     await flushTasks();
-    assertEquals(
-        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'privacy:sensors' :
-            'privacy:sensors-old',
-        sensorsRow.startIcon);
+    assertEquals('privacy:sensors', sensorsRow.startIcon);
 
     const askPrefs = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(
@@ -445,10 +439,6 @@ suite('SiteSettingsList', function() {
         [], []);
     browserProxy.setPrefs(blockPrefs);
     await flushTasks();
-    assertEquals(
-        loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'privacy:sensors-off' :
-            'privacy:sensors-off-old',
-        sensorsRow.startIcon);
+    assertEquals('privacy:sensors-off', sensorsRow.startIcon);
   });
 });

@@ -60,18 +60,6 @@ export class FilesystemPageElement extends FilesystemPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
-
-  protected getFileSaveIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:file-save' :
-        'privacy:file-save-old';
-  }
-
-  protected getFileSaveOffIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:file-save-off' :
-        'privacy:file-save-off-old';
-  }
 }
 
 declare global {

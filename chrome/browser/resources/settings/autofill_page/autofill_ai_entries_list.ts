@@ -477,17 +477,13 @@ export class SettingsAutofillAiEntriesListElement extends
       case EntityTypeName.kFlightReservation:
         return 'settings20:travel';
       case EntityTypeName.kKnownTravelerNumber:
-        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'privacy20:person-check' :
-            'privacy20:person-check-old';
+        return 'privacy20:person-check';
       case EntityTypeName.kNationalIdCard:
         return 'settings20:id-card';
       case EntityTypeName.kPassport:
         return 'settings20:passport';
       case EntityTypeName.kRedressNumber:
-        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'privacy20:person-check' :
-            'privacy20:person-check-old';
+        return 'privacy20:person-check';
       case EntityTypeName.kVehicle:
         return 'settings20:directions-car';
       default:

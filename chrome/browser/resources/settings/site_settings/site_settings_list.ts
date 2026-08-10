@@ -228,15 +228,11 @@ class SettingsSiteSettingsListElement extends
       return;
     }
 
-    let icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:sensors' :
-        'privacy:sensors-old';
+    let icon = 'privacy:sensors';
     if (setting === ContentSetting.ASK) {
       icon = 'privacy:sensors-ask-custom';
     } else if (setting === ContentSetting.BLOCK) {
-      icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:sensors-off' :
-          'privacy:sensors-off-old';
+      icon = 'privacy:sensors-off';
     }
     this.set(`categoryList.${index}.icon`, icon);
   }

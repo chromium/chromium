@@ -57,9 +57,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_ADS,
       id: Id.ADS,
       label: 'siteSettingsAds',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:web-asset' :
-          'privacy:web-asset-old',
+      icon: 'privacy:web-asset',
       enabledLabel: 'siteSettingsAdsAllowed',
       disabledLabel: 'siteSettingsAdsBlocked',
       shouldShow: () =>
@@ -69,9 +67,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTO_VERIFY,
       id: Id.ANTI_ABUSE,
       label: 'siteSettingsAntiAbuse',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy20:person-check' :
-          'privacy20:person-check-old',
+      icon: 'privacy20:person-check',
       enabledLabel: 'siteSettingsAntiAbuseEnabledSubLabel',
       disabledLabel: 'siteSettingsAntiAbuseDisabledSubLabel',
     },
@@ -79,9 +75,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AR,
       id: Id.AR,
       label: 'siteSettingsAr',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:cardboard' :
-          'privacy:cardboard-old',
+      icon: 'privacy:cardboard',
       enabledLabel: 'siteSettingsArAsk',
       disabledLabel: 'siteSettingsArBlock',
     },
@@ -156,9 +150,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_CLIPBOARD,
       id: Id.CLIPBOARD,
       label: 'siteSettingsClipboard',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:content-paste' :
-          'privacy:content-paste-old',
+      icon: 'privacy:content-paste',
       enabledLabel: 'siteSettingsClipboardAsk',
       disabledLabel: 'siteSettingsClipboardBlocked',
     },
@@ -166,9 +158,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
       id: Id.FEDERATED_IDENTITY_API,
       label: 'siteSettingsFederatedIdentityApi',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:account-circle' :
-          'privacy:account-circle-old',
+      icon: 'privacy:account-circle',
       enabledLabel: 'siteSettingsFederatedIdentityApiAllowed',
       disabledLabel: 'siteSettingsFederatedIdentityApiBlocked',
       shouldShow: () =>
@@ -178,9 +168,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:file-save' :
-          'privacy:file-save-old',
+      icon: 'privacy:file-save',
       enabledLabel: 'siteSettingsFileSystemWriteAsk',
       disabledLabel: 'siteSettingsFileSystemWriteBlocked',
     },
@@ -196,9 +184,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_HAND_TRACKING,
       id: Id.HAND_TRACKING,
       label: 'siteSettingsHandTracking',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:hand-gesture' :
-          'privacy:hand-gesture-old',
+      icon: 'privacy:hand-gesture',
       enabledLabel: 'siteSettingsHandTrackingAsk',
       disabledLabel: 'siteSettingsHandTrackingBlock',
       shouldShow: () =>
@@ -208,9 +194,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_HID_DEVICES,
       id: Id.HID_DEVICES,
       label: 'siteSettingsHidDevices',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:videogame-asset' :
-          'privacy:videogame-asset-old',
+      icon: 'privacy:videogame-asset',
       enabledLabel: 'siteSettingsHidDevicesAsk',
       disabledLabel: 'siteSettingsHidDevicesBlocked',
     },
@@ -226,9 +210,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_IMAGES,
       id: Id.IMAGES,
       label: 'siteSettingsImages',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:imagesmode' :
-          'privacy:imagesmode-old',
+      icon: 'privacy:imagesmode',
       enabledLabel: 'siteSettingsImagesAllowed',
       disabledLabel: 'siteSettingsImagesBlocked',
     },
@@ -236,9 +218,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_JAVASCRIPT,
       id: Id.JAVASCRIPT,
       label: 'siteSettingsJavascript',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:code' :
-          'privacy:code-old',
+      icon: 'privacy:code',
       enabledLabel: 'siteSettingsJavascriptAllowed',
       disabledLabel: 'siteSettingsJavascriptBlocked',
     },
@@ -246,9 +226,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
       id: Id.JAVASCRIPT_OPTIMIZER,
       label: 'siteSettingsJavascriptOptimizer',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:v8' :
-          'privacy:v8-old',
+      icon: 'privacy:v8',
       enabledLabel: 'siteSettingsJavascriptOptimizerAllowed',
       disabledLabel: 'siteSettingsJavascriptOptimizerBlocked',
     },
@@ -265,9 +243,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_LOCAL_FONTS,
       id: Id.LOCAL_FONTS,
       label: 'fonts',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:font-download' :
-          'privacy:font-download-old',
+      icon: 'privacy:font-download',
       enabledLabel: 'siteSettingsFontsAsk',
       disabledLabel: 'siteSettingsFontsBlocked',
     },
@@ -297,9 +273,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:mic' :
-          'privacy:mic-old',
+      icon: 'privacy:mic',
       enabledLabel: 'siteSettingsMicAsk',
       disabledLabel: 'siteSettingsMicBlocked',
     },
@@ -307,9 +281,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MIDI_DEVICES,
       id: Id.MIDI_DEVICES,
       label: 'siteSettingsMidiDevices',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:piano' :
-          'privacy:piano-old',
+      icon: 'privacy:piano',
       enabledLabel: 'siteSettingsMidiAsk',
       disabledLabel: 'siteSettingsMidiBlocked',
     },
@@ -317,18 +289,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_MIXEDSCRIPT,
       id: Id.MIXEDSCRIPT,
       label: 'siteSettingsInsecureContent',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:warning' :
-          'privacy:warning-old',
+      icon: 'privacy:warning',
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
       route: routes.SITE_SETTINGS_NOTIFICATIONS,
       id: Id.NOTIFICATIONS,
       label: 'siteSettingsNotifications',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:notifications' :
-          'privacy:notifications-old',
+      icon: 'privacy:notifications',
     },
     {
       route: routes.OFFER_WRITING_HELP,
@@ -341,9 +309,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_PAYMENT_HANDLER,
       id: Id.PAYMENT_HANDLER,
       label: 'siteSettingsPaymentHandler',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:credit-card' :
-          'privacy:credit-card-old',
+      icon: 'privacy:credit-card',
       enabledLabel: 'siteSettingsPaymentHandlersAllowed',
       disabledLabel: 'siteSettingsPaymentHandlersBlocked',
       shouldShow: () =>
@@ -353,9 +319,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
       id: Id.PDF_DOCUMENTS,
       label: 'siteSettingsPdfDocuments',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:drive-pdf' :
-          'privacy:drive-pdf-old',
+      icon: 'privacy:drive-pdf',
       enabledLabel: 'siteSettingsPdfsAllowed',
       disabledLabel: 'siteSettingsPdfsBlocked',
     },
@@ -379,9 +343,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_PROTECTED_CONTENT,
       id: Id.PROTECTED_CONTENT,
       label: 'siteSettingsProtectedContent',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:sync-saved-locally' :
-          'privacy:sync-saved-locally-old',
+      icon: 'privacy:sync-saved-locally',
       enabledLabel: 'siteSettingsProtectedContentAllowed',
       disabledLabel: 'siteSettingsProtectedContentBlocked',
     },
@@ -389,9 +351,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_HANDLERS,
       id: Id.PROTOCOL_HANDLERS,
       label: 'siteSettingsHandlers',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:protocol-handler' :
-          'privacy:protocol-handler-old',
+      icon: 'privacy:protocol-handler',
       enabledLabel: 'siteSettingsProtocolHandlersAllowed',
       disabledLabel: 'siteSettingsProtocolHandlersBlocked',
       shouldShow: () => !loadTimeData.getBoolean('isGuest'),
@@ -400,9 +360,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SENSORS,
       id: Id.SENSORS,
       label: 'siteSettingsSensors',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:sensors' :
-          'privacy:sensors-old',
+      icon: 'privacy:sensors',
       enabledLabel: 'siteSettingsSensorsAllowed',
       disabledLabel: 'siteSettingsSensorsBlocked',
       askLabel: 'siteSettingsSensorsAsk',
@@ -411,9 +369,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SERIAL_PORTS,
       id: Id.SERIAL_PORTS,
       label: 'siteSettingsSerialPorts',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:developer-board' :
-          'privacy:developer-board-old',
+      icon: 'privacy:developer-board',
       enabledLabel: 'siteSettingsSerialPortsAsk',
       disabledLabel: 'siteSettingsSerialPortsBlocked',
     },
@@ -421,18 +377,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SITE_DATA,
       id: Id.SITE_DATA,
       label: 'siteDataPageTitle',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:database' :
-          'privacy:database-old',
+      icon: 'privacy:database',
     },
     // <if expr="is_chromeos">
     {
       route: routes.SITE_SETTINGS_SMART_CARD_READERS,
       id: Id.SMART_CARD_READERS,
       label: 'siteSettingsSmartCardReaders',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:smart-card-reader' :
-          'privacy:smart-card-reader-old',
+      icon: 'privacy:smart-card-reader',
       enabledLabel: 'siteSettingsSmartCardReadersAsk',
       disabledLabel: 'siteSettingsSmartCardReadersBlocked',
       shouldShow: () =>
@@ -453,9 +405,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_SOUND,
       id: Id.SOUND,
       label: 'siteSettingsSound',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:volume-up' :
-          'privacy:volume-up-old',
+      icon: 'privacy:volume-up',
       enabledLabel: 'siteSettingsSoundAllowed',
       disabledLabel: 'siteSettingsSoundBlocked',
     },
@@ -463,9 +413,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_STORAGE_ACCESS,
       id: Id.STORAGE_ACCESS,
       label: 'siteSettingsStorageAccess',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:vr180-create2d' :
-          'privacy:storage-access-old',
+      icon: 'privacy:vr180-create2d',
       enabledLabel: 'storageAccessAsk',
       disabledLabel: 'storageAccessBlocked',
     },
@@ -473,9 +421,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_USB_DEVICES,
       id: Id.USB_DEVICES,
       label: 'siteSettingsUsbDevices',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:usb' :
-          'privacy:usb-old',
+      icon: 'privacy:usb',
       enabledLabel: 'siteSettingsUsbAsk',
       disabledLabel: 'siteSettingsUsbBlocked',
     },
@@ -483,9 +429,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_VR,
       id: Id.VR,
       label: 'siteSettingsVr',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:cardboard' :
-          'privacy:cardboard-old',
+      icon: 'privacy:cardboard',
       enabledLabel: 'siteSettingsVrAsk',
       disabledLabel: 'siteSettingsVrBlocked',
     },
@@ -502,9 +446,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
       id: Id.WINDOW_MANAGEMENT,
       label: 'siteSettingsWindowManagement',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:select-window' :
-          'privacy:select-window-old',
+      icon: 'privacy:select-window',
       enabledLabel: 'siteSettingsWindowManagementAsk',
       disabledLabel: 'siteSettingsWindowManagementBlocked',
     },
@@ -512,17 +454,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_ZOOM_LEVELS,
       id: Id.ZOOM_LEVELS,
       label: 'siteSettingsZoomLevels',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:zoom-in' :
-          'privacy:zoom-in-old',
+      icon: 'privacy:zoom-in',
     },
     {
       route: routes.COOKIES,
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
-      icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'privacy:cookie' :
-          'privacy:cookie-old',
+      icon: 'privacy:cookie',
     },
   ];
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));

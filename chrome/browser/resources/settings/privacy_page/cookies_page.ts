@@ -137,12 +137,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
-
-  protected getCookieIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:cookie' :
-        'privacy:cookie-old';
-  }
 }
 
 declare global {

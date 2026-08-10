@@ -26,7 +26,6 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -290,30 +289,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         control,
         `Failed to find associated control for child '${childViewId}'`);
     return control;
-  }
-
-  protected getSignpostIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy20:signpost' :
-        'privacy20:signpost-old';
-  }
-
-  protected getCookieIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:cookie' :
-        'privacy:cookie-old';
-  }
-
-  protected getLockIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:lock' :
-        'privacy:lock-old';
-  }
-
-  protected getPageInfoIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:page-info' :
-        'privacy:page-info-old';
   }
 }
 

@@ -872,12 +872,6 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     OpenWindowProxyImpl.getInstance().openUrl(
         'https://support.google.com/chrome?p=gic_media_questions');
   }
-
-  protected getCookieIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:cookie' :
-        'privacy:cookie-old';
-  }
 }
 
 declare global {

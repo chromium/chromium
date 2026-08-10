@@ -18,7 +18,6 @@ import './site_settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radio_button.js';
@@ -129,18 +128,6 @@ export class SettingsSiteDataElement extends SettingsSiteDataElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
-  }
-
-  protected getDatabaseIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:database' :
-        'privacy:database-old';
-  }
-
-  protected getDatabaseOffIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy:database-off' :
-        'privacy:database-off-old';
   }
 }
 
