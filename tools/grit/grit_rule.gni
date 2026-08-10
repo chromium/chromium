@@ -537,6 +537,7 @@ if (is_android) {
                              TESTONLY_AND_VISIBILITY + [
                                    "deps",
                                    "defines",
+                                   "inputs",
                                  ])
 
       # TODO(agrieve): Remove outputs from callers.
