@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/core/hints/test_hints_config.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
@@ -52,7 +53,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
  public:
   AboutThisSiteTabHelperTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::kPurgeHintsStore);
+        optimization_guide::kPurgeHintsStoreSwitch);
 
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints,
@@ -71,7 +72,7 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
         "type.googleapis.com/optimization_guide.proto.AboutThisSiteMetadata");
     site_info.SerializeToString(any_metadata.mutable_value());
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        optimization_guide::switches::kHintsProtoOverride,
+        optimization_guide::kHintsProtoOverrideSwitch,
         optimization_guide::CreateHintsConfig(
             GURL(url), optimization_guide::proto::ABOUT_THIS_SITE,
             &any_metadata));

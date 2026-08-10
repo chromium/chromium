@@ -652,6 +652,35 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const std::string& access_token);
 };
 
+// Overrides the Hints Protobuf that would come from the component updater. If
+// the value of this switch is invalid, regular hint processing is used.
+// The value of this switch should be a base64 encoding of a binary
+// Configuration message, found in optimization_guide's hints.proto. Providing a
+// valid value to this switch causes Chrome startup to block on hints parsing.
+inline constexpr char kHintsProtoOverrideSwitch[] =
+    "optimization_guide_hints_override";
+
+// Overrides the hints fetch scheduling and delay, causing a hints fetch
+// immediately on start up using the TopHostProvider. This is meant for testing.
+inline constexpr char kFetchHintsOverrideTimerSwitch[] =
+    "optimization-guide-fetch-hints-override-timer";
+
+// Purges the store of all hints before loading any new hints on start up.
+inline constexpr char kPurgeHintsStoreSwitch[] =
+    "purge-optimization-guide-store";
+
+// Disables fetching of hints in real-time at the time of navigation start.
+// Meant for testing only.
+inline constexpr char
+    kDisableFetchingHintsAtNavigationStartForTestingSwitch[] =
+        "disable-fetching-hints-at-navigation-start";
+
+// Attempts to parse a base64 encoded Optimization Guide Configuration proto
+// from the command line. If no proto is given or if it is encoded incorrectly,
+// nullptr is returned.
+std::unique_ptr<proto::Configuration>
+ParseComponentConfigFromCommandLine();
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_HINTS_MANAGER_H_

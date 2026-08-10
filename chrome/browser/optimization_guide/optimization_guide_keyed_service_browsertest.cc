@@ -38,6 +38,7 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/filters/test_hints_component_creator.h"
 #include "components/optimization_guide/core/hints/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/hints/hints_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -235,7 +236,7 @@ class OptimizationGuideKeyedServiceBrowserTest
   ~OptimizationGuideKeyedServiceBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch(switches::kPurgeHintsStore);
+    cmd->AppendSwitch(kPurgeHintsStoreSwitch);
   }
 
   void SetUp() override {
@@ -1183,7 +1184,7 @@ class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
 
     // Add switch to avoid racing navigations in the test.
     cmd->AppendSwitch(
-        switches::kDisableFetchingHintsAtNavigationStartForTesting);
+        kDisableFetchingHintsAtNavigationStartForTestingSwitch);
   }
 };
 

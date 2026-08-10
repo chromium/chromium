@@ -8,7 +8,6 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SWITCHES_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_SWITCHES_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -20,44 +19,7 @@
 #include "url/gurl.h"
 
 namespace optimization_guide {
-namespace proto {
-class Configuration;
-}  // namespace proto
-
 namespace switches {
-
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/hints/hints_manager.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kHintsProtoOverride[];
-// Returns whether the hint component should be processed.
-// Available hint components are only processed if a proto override isn't being
-// used; otherwise, the hints from the proto override are used instead.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsHintComponentProcessingDisabled();
-// Attempts to parse a base64 encoded Optimization Guide Configuration proto
-// from the command line. If no proto is given or if it is encoded incorrectly,
-// nullptr is returned.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::unique_ptr<optimization_guide::proto::Configuration>
-ParseComponentConfigFromCommandLine();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kFetchHintsOverrideTimer[];
-// Whether the hints fetcher timer should be overridden.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldOverrideFetchHintsTimer();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPurgeHintsStore[];
-// Returns whether all entries within the store should be purged during startup
-// if the explicit purge switch exists or if a proto override is being used, in
-// which case the hints need to come from the override instead.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldPurgeOptimizationGuideStoreOnStartup();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
-// Returns true if fetching of hints in real-time at the time of navigation
-// start should be disabled. Returns true only in tests.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool DisableFetchingHintsAtNavigationStartForTesting();
 
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/hints/command_line_top_host_provider.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

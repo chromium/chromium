@@ -82,7 +82,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
  public:
   OptimizationGuideServiceTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::kPurgeHintsStore);
+        optimization_guide::kPurgeHintsStoreSwitch);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
 

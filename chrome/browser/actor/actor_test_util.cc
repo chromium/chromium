@@ -43,7 +43,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/bloom_filter.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/hints/hints_manager.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -800,7 +800,7 @@ bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,
 void SetUpBlocklist(base::CommandLine* command_line,
                     const std::string& blocked_host) {
   command_line->AppendSwitchASCII(
-      optimization_guide::switches::kHintsProtoOverride,
+      optimization_guide::kHintsProtoOverrideSwitch,
       base::Base64Encode(CreateOptimizationGuideConfig(blocked_host)));
 }
 

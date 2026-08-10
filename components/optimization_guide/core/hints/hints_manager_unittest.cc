@@ -563,7 +563,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
   encoded_config = base::Base64Encode(encoded_config);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kHintsProtoOverride, encoded_config);
+      kHintsProtoOverrideSwitch, encoded_config);
   CreateHintsManager(/*top_host_provider=*/nullptr);
   hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
 
@@ -607,7 +607,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithInvalidCommandLineOverride) {
   base::HistogramTester histogram_tester;
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kHintsProtoOverride, "this-is-not-a-proto");
+      kHintsProtoOverrideSwitch, "this-is-not-a-proto");
   CreateHintsManager(/*top_host_provider=*/nullptr);
 
   // The below histogram should not be recorded since hints weren't coming
@@ -637,7 +637,7 @@ TEST_F(HintsManagerTest,
   {
     base::HistogramTester histogram_tester;
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kHintsProtoOverride, encoded_config);
+        kHintsProtoOverrideSwitch, encoded_config);
     CreateHintsManager(/*top_host_provider=*/nullptr);
     histogram_tester.ExpectUniqueSample("OptimizationGuide.ProcessHintsResult",
                                         ProcessHintsComponentResult::kSuccess,
@@ -1147,7 +1147,7 @@ TEST_F(HintsManagerTest,
   // Append the switch for processing hints to force the filter to not get
   // loaded.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kHintsProtoOverride);
+      kHintsProtoOverrideSwitch);
 
   hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
   OptimizationTypeDecision optimization_type_decision =
@@ -2112,7 +2112,7 @@ TEST_F(HintsManagerFetchingTest,
   config.SerializeToString(&encoded_config);
   encoded_config = base::Base64Encode(encoded_config);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kHintsProtoOverride, encoded_config);
+      kHintsProtoOverrideSwitch, encoded_config);
 
   // Re-create hints manager with override.
   CreateHintsManager(/*top_host_provider=*/nullptr);
@@ -3983,6 +3983,61 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   EXPECT_EQ(
       proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
       active_tabs_batch_update_hints_fetcher()->request_context_requested());
+}
+
+TEST(HintsManagerSwitchesTest, ParseComponentConfigFromCommandLine) {
+  optimization_guide::proto::Configuration config;
+  optimization_guide::proto::Hint* hint = config.add_hints();
+  hint->set_key("somedomain.org");
+  hint->set_key_representation(optimization_guide::proto::HOST);
+
+  std::string encoded_config;
+  config.SerializeToString(&encoded_config);
+  encoded_config = base::Base64Encode(encoded_config);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      kHintsProtoOverrideSwitch, encoded_config);
+
+  std::unique_ptr<optimization_guide::proto::Configuration> parsed_config =
+      ParseComponentConfigFromCommandLine();
+
+  EXPECT_EQ(1, parsed_config->hints_size());
+  EXPECT_EQ("somedomain.org", parsed_config->hints(0).key());
+}
+
+TEST(HintsManagerSwitchesTest, ParseComponentConfigFromCommandLineNotAProto) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      kHintsProtoOverrideSwitch, "not-a-proto");
+
+  std::unique_ptr<optimization_guide::proto::Configuration> parsed_config =
+      ParseComponentConfigFromCommandLine();
+
+  EXPECT_EQ(nullptr, parsed_config);
+}
+
+TEST(HintsManagerSwitchesTest,
+     ParseComponentConfigFromCommandLineSwitchNotSet) {
+  std::unique_ptr<optimization_guide::proto::Configuration> parsed_config =
+      ParseComponentConfigFromCommandLine();
+
+  EXPECT_EQ(nullptr, parsed_config);
+}
+
+TEST(HintsManagerSwitchesTest,
+     ParseComponentConfigFromCommandLineNotAConfiguration) {
+  optimization_guide::proto::HostInfo host_info;
+  host_info.set_host("whatever.com");
+  std::string encoded_proto;
+  host_info.SerializeToString(&encoded_proto);
+  encoded_proto = base::Base64Encode(encoded_proto);
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      kHintsProtoOverrideSwitch, encoded_proto);
+
+  std::unique_ptr<optimization_guide::proto::Configuration> parsed_config =
+      ParseComponentConfigFromCommandLine();
+
+  EXPECT_EQ(nullptr, parsed_config);
 }
 
 }  // namespace optimization_guide
