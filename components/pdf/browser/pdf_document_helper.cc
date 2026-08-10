@@ -55,14 +55,14 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFDocumentHelperCreationTracker);
 
 // static
 base::CallbackListSubscription PDFDocumentHelper::RegisterForCreate(
-    content::WebContents* web_contents,
+    content::WebContents& web_contents,
     base::OnceClosure callback) {
   // Disallow calling this if the helper already exists, as the caller is
   // expected to check this beforehand.
-  DCHECK(!MaybeGetForWebContents(*web_contents));
+  DCHECK(!MaybeGetForWebContents(web_contents));
 
   return PDFDocumentHelperCreationTracker::GetOrCreateForWebContents(
-             web_contents)
+             &web_contents)
       ->RegisterCallback(std::move(callback));
 }
 

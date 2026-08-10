@@ -283,7 +283,7 @@ void PageSettledMonitor::MoveToState(State new_state) {
         // Unretained(this) is safe here since `pdf_helper_subscription_` is a
         // member of `this`.
         pdf_helper_subscription_ = pdf::PDFDocumentHelper::RegisterForCreate(
-            web_contents(),
+            *web_contents(),
             base::BindOnce(&PageSettledMonitor::OnPdfDocumentHelperCreated,
                            base::Unretained(this)));
       }
