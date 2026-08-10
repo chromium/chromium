@@ -18265,6 +18265,21 @@
             ]
         }
     ],
+    "OpenDownloadInPreferredApp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OpenDownloadInPreferredApp"
+                    ]
+                }
+            ]
+        }
+    ],
     "OpenEditGroupViewByTappingTitle": [
         {
             "platforms": [
