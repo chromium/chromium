@@ -397,6 +397,8 @@ enum BadMessageReason {
   BIBI_BIND_VIBRATION_MANAGER_FOR_FENCED_FRAME = 369,
   RFH_BEGIN_NAVIGATION_NO_INITIATOR_TOKENS = 370,
   RFHI_INVALID_CLIENT_SIDE_REDIRECT_URL = 371,
+  RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED = 372,
+  RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED = 373,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
