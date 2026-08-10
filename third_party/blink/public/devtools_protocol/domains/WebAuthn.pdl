@@ -22,6 +22,7 @@ experimental domain WebAuthn
       ctap2_1
       ctap2_2
 
+  # LINT.IfChange(AuthenticatorTransport)
   type AuthenticatorTransport extends string
     enum
       # Cross-Platform authenticator attachments:
@@ -29,8 +30,11 @@ experimental domain WebAuthn
       nfc
       ble
       cable
+      hybrid
+      smart-card
       # Platform authenticator attachment:
       internal
+  # LINT.ThenChange(//content/browser/devtools/protocol/webauthn_handler.cc:ConvertToFidoTransportProtocol)
 
   type VirtualAuthenticatorOptions extends object
     properties

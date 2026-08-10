@@ -129,6 +129,32 @@ std::optional<device::Ctap2Version> ConvertToCtap2Version(
   return std::nullopt;
 }
 
+// LINT.IfChange(ConvertToFidoTransportProtocol)
+std::optional<device::FidoTransportProtocol> ConvertToFidoTransportProtocol(
+    std::string_view transport) {
+  if (transport == WebAuthn::AuthenticatorTransportEnum::Usb) {
+    return device::FidoTransportProtocol::kUsbHumanInterfaceDevice;
+  }
+  if (transport == WebAuthn::AuthenticatorTransportEnum::Nfc) {
+    return device::FidoTransportProtocol::kNearFieldCommunication;
+  }
+  if (transport == WebAuthn::AuthenticatorTransportEnum::Ble) {
+    return device::FidoTransportProtocol::kBluetoothLowEnergy;
+  }
+  if (transport == WebAuthn::AuthenticatorTransportEnum::Cable ||
+      transport == WebAuthn::AuthenticatorTransportEnum::Hybrid) {
+    return device::FidoTransportProtocol::kHybrid;
+  }
+  if (transport == WebAuthn::AuthenticatorTransportEnum::Internal) {
+    return device::FidoTransportProtocol::kInternal;
+  }
+  if (transport == WebAuthn::AuthenticatorTransportEnum::SmartCard) {
+    return device::FidoTransportProtocol::kSmartCard;
+  }
+  return std::nullopt;
+}
+// LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/WebAuthn.pdl:AuthenticatorTransport)
+
 std::vector<uint8_t> CopyBinaryToVector(const Binary& binary) {
   return std::vector<uint8_t>(binary.begin(), binary.end());
 }
@@ -226,8 +252,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
   if (!authenticator_manager)
     return Response::ServerError(kVirtualEnvironmentNotEnabled);
 
-  auto transport =
-      device::ConvertToFidoTransportProtocol(options->GetTransport());
+  auto transport = ConvertToFidoTransportProtocol(options->GetTransport());
   if (!transport)
     return Response::InvalidParams(kInvalidTransport);
 
