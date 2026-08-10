@@ -1060,7 +1060,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       }
       break;
     case kPseudoSkeleton:
-      if (Match() != kPseudoElement || mode != kUASheetMode) {
+      if (Match() != kPseudoElement) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
       break;
@@ -1871,6 +1871,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
     case kPseudoOverscrollAreaParent:
+    case kPseudoSkeleton:
       return true;
 
     // It's possible that we should support ::slotted() after ::part().
@@ -2038,11 +2039,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHostContext:
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoScope:
-      return false;
-
-    // ::skeleton is only generated on the document root element, which makes
-    // ::part()::skeleton useless.
-    case kPseudoSkeleton:
       return false;
 
     case kPseudoUnparsed:

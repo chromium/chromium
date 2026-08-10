@@ -2217,6 +2217,7 @@
     },
     {
       name: "DeclarativeSkeletons",
+      status: "test",
     },
     {
       // Killswitch for https://crbug.com/400317114 fix.

@@ -3367,7 +3367,7 @@ TEST(CSSSelectorParserTest, SkeletonPseudo) {
       {"::skeleton", kUASheetMode, true},
       {":root::skeleton", kUASheetMode, true},
       {"html::skeleton", kUASheetMode, true},
-      {"::skeleton", kHTMLStandardMode, false},
+      {"::skeleton", kHTMLStandardMode, true},
   };
 
   for (const auto& test_case : test_cases) {

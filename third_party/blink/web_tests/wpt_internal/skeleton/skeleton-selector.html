@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>::skeleton pseudo selector</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test_valid_selector("::skeleton");
+  test_valid_selector(":root::skeleton");
+  test_valid_selector("html::skeleton");
+  test_valid_selector("div::skeleton");
+  test_valid_selector("::part(my-part)::skeleton");
+  test_invalid_selector("::before::skeleton");
+  test_invalid_selector("::skeleton::before");
+  test_invalid_selector("::skeleton::skeleton");
+  test_invalid_selector("::skeleton::part(my-part)");
+  test_invalid_selector("::skeleton::first-line");
+  // Should user action pseudos be allowed?
+  test_invalid_selector("::skeleton:hover");
+</script>
