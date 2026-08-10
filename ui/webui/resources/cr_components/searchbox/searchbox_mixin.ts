@@ -346,14 +346,26 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     onSearchboxInputTextUpdated(
         e: CustomEvent<{value: string, isComposing: boolean}>) {
       const input = e.detail.value;
-      // For now, skip autocompletion and clear matches when the trimmed input
-      // is empty. But empty inputs in keyword mode will need to show results.
-      if (input.trim()) {
+
+      if (this.shouldAcceptSpaceAtEndKeywordEntry(input)) {
+        this.inputKeywordModel = {
+          ...this.inputKeywordModel!,
+          type: KeywordType.kInKeyword,
+        };
+        this.getInputElement().setInputText('');
+        this.queryAutocomplete(
+            '', /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
+        return;
+      }
+
+      const isEmpty = !input.trim() &&
+          this.inputKeywordModel?.type !== KeywordType.kInKeyword;
+      if (isEmpty) {
+        this.clearAutocompleteMatches();
+      } else {
         this.queryAutocomplete(
             input, /*preventInlineAutocomplete=*/ e.detail.isComposing,
             /*isOnFocus=*/ false);
-      } else {
-        this.clearAutocompleteMatches();
       }
     }
 
@@ -608,6 +620,41 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         keyword: this.selectedMatch.keywordModel.keyword,
         displayText: this.selectedMatch.keywordModel.chipHint,
       };
+    }
+
+    private shouldAcceptSpaceAtEndKeywordEntry(input: string): boolean {
+      // Cursor must be at end.
+      if (this.getInputElement().inputElement.selectionStart !== input.length) {
+        return false;
+      }
+
+      // Input must end in space.
+      if (!input.endsWith(' ') && !input.endsWith('\u3000')) {
+        return false;
+      }
+
+      // Chip must be shown.
+      if (this.inputKeywordModel?.type !== KeywordType.kChip) {
+        return false;
+      }
+
+      // Input must match keyword.
+      if (input.slice(0, -1) !== this.inputKeywordModel.keyword) {
+        return false;
+      }
+
+      // Space must have been typed, not backspaced to a space. E.g. 'keyword
+      // q<backspace>' should not accept keyword mode.
+      // TODO(b/504669216): this isn't handled yet.
+
+      // Space must have been typed, not pasted.
+      // TODO(b/504669216): webUI doesn't track paste state yet.
+
+      // Space triggering must be enabled.
+      // TODO(b/504669216): webUI isn't aware of
+      //   `kKeywordSpaceTriggeringEnabled` pref.
+
+      return true;
     }
 
     private computeInputAriaLive_(): string {

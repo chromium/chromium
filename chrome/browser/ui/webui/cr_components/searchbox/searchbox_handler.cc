@@ -1106,10 +1106,28 @@ void SearchboxHandler::QueryAutocomplete(
     bool is_on_focus,
     const std::string& keyword) {
   current_query_id_ = query_id;
+
+  std::u16string input_with_keyword = input;
+  bool is_keyword_selected = false;
+  if (!keyword.empty()) {
+    TemplateURLService* service =
+        client() ? client()->GetTemplateURLService() : nullptr;
+    if (service) {
+      std::u16string keyword16 = base::UTF8ToUTF16(keyword);
+      const TemplateURL* template_url =
+          service->GetTemplateURLForKeyword(keyword16);
+      if (template_url) {
+        is_keyword_selected = true;
+        input_with_keyword = keyword16 + u" " + input;
+        cursor_position += keyword16.length() + 1;
+      }
+    }
+  }
+
   // This shouldn't happen, but, e.g., users may do unintended actions in the
   // developer console and crashing with a `CHECK()` doesn't seem warranted.
-  cursor_position =
-      std::min(static_cast<size_t>(cursor_position), input.length());
+  cursor_position = std::min(
+      cursor_position, static_cast<uint32_t>(input_with_keyword.length()));
 
   // Early exit if a query is already in progress for on focus inputs.
   if (!autocomplete_controller()->done() && is_on_focus) {
@@ -1131,16 +1149,18 @@ void SearchboxHandler::QueryAutocomplete(
   const auto page_classification =
       client()->GetPageClassification(/*is_prefetch=*/false);
   AutocompleteInput autocomplete_input(
-      input, page_classification, ChromeAutocompleteSchemeClassifier(profile_));
+      input_with_keyword, cursor_position, page_classification,
+      ChromeAutocompleteSchemeClassifier(profile_));
   autocomplete_input.set_current_url(client()->GetURL());
   autocomplete_input.set_focus_type(
       is_on_focus ? metrics::OmniboxFocusType::INTERACTION_FOCUS
                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   autocomplete_input.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete);
-  // Disable keyword matches as NTP realbox has no UI affordance for it.
-  autocomplete_input.set_in_keyword_mode(false);
-  autocomplete_input.set_allow_exact_keyword_match(false);
+  // TODO(b/504669216): `set_allow_exact_keyword_match()` should be true even
+  //   when not in keyword mode.
+  autocomplete_input.set_allow_exact_keyword_match(is_keyword_selected);
+  autocomplete_input.set_in_keyword_mode(is_keyword_selected);
   // Set the lens overlay suggest inputs, if available.
   if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
           client()->GetLensOverlaySuggestInputs()) {
@@ -1535,21 +1555,23 @@ void SearchboxHandler::GetInputState(GetInputStateCallback callback) {
 
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
-  if (base::FeatureList::IsEnabled(
-          omnibox::kWebUISearchboxWithoutModelController)) {
-    page_->AutocompleteResultChanged(CreateAutocompleteResult(
-        current_query_id_, autocomplete_controller()->input().text(),
-        autocomplete_controller()->result(),
-        BookmarkModelFactory::GetForBrowserContext(profile_),
-        profile_->GetPrefs(), client()->GetTemplateURLService()));
-  } else {
-    page_->AutocompleteResultChanged(CreateAutocompleteResult(
-        current_query_id_, autocomplete_controller()->input().text(),
-        autocomplete_controller()->result(),
-        BookmarkModelFactory::GetForBrowserContext(profile_),
-        profile_->GetPrefs(),
-        omnibox_controller()->client()->GetTemplateURLService()));
+  TemplateURLService* template_url_service =
+      client() ? client()->GetTemplateURLService() : nullptr;
+
+  std::u16string input_text = controller->input().text();
+  if (controller->input().in_keyword_mode() && template_url_service) {
+    std::u16string keyword;
+    std::u16string query;
+    if (AutocompleteInput::ExtractKeywordFromInput(
+            controller->input(), template_url_service, &keyword, &query)) {
+      input_text = query;
+    }
   }
+
+  page_->AutocompleteResultChanged(CreateAutocompleteResult(
+      current_query_id_, input_text, autocomplete_controller()->result(),
+      BookmarkModelFactory::GetForBrowserContext(profile_),
+      profile_->GetPrefs(), template_url_service));
 
   // If the AutocompleteController is owned by the handler, notify the prerender
   // here to start preloading if the results are ready.
