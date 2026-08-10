@@ -96,6 +96,11 @@ inline constexpr char kGlicOpenNewTabDispositionBackground[] = "background";
 inline constexpr char kGlicOpenNewTabDispositionForegroundIfNotConsented[] =
     "foreground_if_not_consented";
 
+// Controls the availability of the enterprise.webrtc API. Acts as a remote
+// kill switch: with this disabled the API is not present in the extension
+// context at all.
+BASE_DECLARE_FEATURE(kApiEnterpriseWebrtc);
+
 // Controls the availability of the new `proxyOverrideRulesPrivate` API.
 BASE_DECLARE_FEATURE(kApiProxyOverrideRulesPrivate);
 
