@@ -81,13 +81,13 @@ import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
-import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.reflect.Constructor;
@@ -168,6 +168,9 @@ public class SettingsSearchCoordinator
 
     // Whether destroy() has been called on this object.
     private boolean mIsDestroyed;
+
+    // True once the search box margins in single-column layout are initialized.
+    private boolean mSingleColumnWidthInitialized;
 
     // Used for histogram that logs the user behavior for search.
     // LINT.IfChange(ExitReason)
@@ -298,6 +301,27 @@ public class SettingsSearchCoordinator
         //         |                  +------ help/menuButton
         //         +--- searchBox (single-column)
         ViewGroup appBar = requireViewById(R.id.app_bar_layout);
+        // Update the search bar width whenever the app bar layout width changes (e.g. when the
+        // side panel is opened/closed).
+        appBar.addOnLayoutChangeListener(
+                (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    int currentWidth = right - left;
+                    if (currentWidth <= 0) return;
+                    boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
+                    // If the column mode changed (e.g. switching between single and multi-column
+                    // layouts), notify configuration change to perform layout transfers.
+                    if (useMultiColumn != mUseMultiColumn) {
+                        onConfigurationChangedInternal();
+                    } else if (mUseMultiColumn) {
+                        if (currentWidth != oldRight - oldLeft) {
+                            updateSearchUiWidth();
+                        }
+                    } else {
+                        // In single-column mode, ensure search box margins match the new
+                        // container width.
+                        updateSingleColumnSearchUiWidth(currentWidth);
+                    }
+                });
         ViewGroup searchBoxParent = mUseMultiColumn ? mActionBar : appBar;
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_box, searchBoxParent, true);
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, mActionBar, true);
@@ -634,7 +658,7 @@ public class SettingsSearchCoordinator
     private void showUiInSingleColumn(View searchBox, boolean show) {
         // Delay showing the UI until its width gets set. This mitigates the UI being seen
         // with a wrong width initially.
-        if (show && searchBox.getLayoutParams().width == LayoutParams.MATCH_PARENT) {
+        if (show && !mSingleColumnWidthInitialized) {
             mHandler.post(() -> showUiInSingleColumn(searchBox, show));
             return;
         }
@@ -1115,49 +1139,75 @@ public class SettingsSearchCoordinator
         view.setLayoutParams(lp);
     }
 
+    /*
+     * Returns the root settings width if available, or falls back to app_bar_layout width.
+     * This provides the current tab/window container width even when child layout passes are
+     * mid-transition.
+     */
+    private int getContainerWidth() {
+        View settingsActivity = findViewById(R.id.settings_activity);
+        if (settingsActivity != null && settingsActivity.getWidth() > 0) {
+            return settingsActivity.getWidth();
+        }
+        View appBar = findViewById(R.id.app_bar_layout);
+        return appBar != null ? appBar.getWidth() : 0;
+    }
+
     public void updateSingleColumnSearchUiWidth() {
-        var menuView = getHelpMenuView();
-        if (menuView == null) {
-            mHandler.post(this::updateSingleColumnSearchUiWidth);
-            return;
+        updateSingleColumnSearchUiWidth(getContainerWidth());
+    }
+
+    private void updateSingleColumnSearchUiWidth(int appBarWidth) {
+        // If the available width is unknown, defer until the layout pass completes (via the
+        // existing onLayoutChangeListener).
+        if (appBarWidth == 0) return;
+
+        View searchBox = findViewById(R.id.search_box);
+        View query = findViewById(R.id.search_query_container);
+
+        int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
+        int wideMinWidthPx =
+                ViewUtils.dpToPx(
+                        mActivity.getResources().getDisplayMetrics(),
+                        UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP);
+        int margin = Math.max(minWidePadding, (appBarWidth - wideMinWidthPx) / 2);
+        boolean isOnWideScreen = margin > minWidePadding;
+        int menuWidth = getMenuWidth();
+        int startMargin = margin;
+        int endMargin = margin;
+        if (isOnWideScreen) {
+            int itemMargin = getPixelSize(R.dimen.settings_item_margin);
+            margin += itemMargin;
+            // The menu icon on the right pushes the UI to left. Adjust the margin.
+            startMargin = margin + menuWidth - itemMargin;
+            endMargin = margin - (menuWidth - itemMargin);
+        } else {
+            // On narrow screens (e.g. phone portrait mode), the search query container is
+            // placed inside the toolbar (mActionBar) and requires extra end margin to avoid
+            // overlapping the menu icon on the right.
+            endMargin = margin + menuWidth;
         }
 
-        View appBar = requireViewById(R.id.app_bar_layout);
-        appBar.post(
-                () -> {
-                    int appBarWidth = appBar.getWidth();
-                    View searchBox = findViewById(R.id.search_box);
-                    View query = findViewById(R.id.search_query_container);
-
-                    int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
-                    int margin =
-                            ViewResizerUtil.computePaddingForWideDisplay(
-                                    mActivity, /* view= */ null, minWidePadding);
-                    boolean isOnWideScreen =
-                            margin > minWidePadding
-                                    || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-                    int menuWidth = getMenuWidth();
-                    int searchBoxWidth;
-                    int queryWidth;
-                    int startMargin = margin;
-                    int endMargin = margin;
-                    if (isOnWideScreen) {
-                        int itemMargin = getPixelSize(R.dimen.settings_item_margin);
-                        margin += itemMargin;
-                        searchBoxWidth = appBarWidth - margin * 2;
-                        queryWidth = searchBoxWidth;
-                        // The menu icon on the right pushes the UI to left. Adjust the margin.
-                        startMargin += menuWidth - itemMargin;
-                        endMargin -= menuWidth - itemMargin;
-                    } else {
-                        searchBoxWidth = appBarWidth - margin * 2;
-                        // Only on narrow screens, query UI needs shrinking to avoid overlapping
-                        // with menu icon on the right side.
-                        queryWidth = searchBoxWidth - menuWidth;
-                    }
-                    if (searchBox != null) updateView(searchBox, margin, margin, searchBoxWidth);
-                    if (query != null) updateView(query, startMargin, endMargin, queryWidth);
-                });
+        // Use LayoutParams.MATCH_PARENT so the search views scale continuously with the parent
+        // container (AppBarLayout or Toolbar) during window resizes and side panel transitions,
+        // without setting fixed pixel widths that could cause layout overflow.
+        if (searchBox != null) {
+            var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+            if (lp.getMarginStart() != margin
+                    || lp.getMarginEnd() != margin
+                    || lp.width != LayoutParams.MATCH_PARENT) {
+                updateView(searchBox, margin, margin, LayoutParams.MATCH_PARENT);
+            }
+        }
+        if (query != null) {
+            var lp = (ViewGroup.MarginLayoutParams) query.getLayoutParams();
+            if (lp.getMarginStart() != startMargin
+                    || lp.getMarginEnd() != endMargin
+                    || lp.width != LayoutParams.MATCH_PARENT) {
+                updateView(query, startMargin, endMargin, LayoutParams.MATCH_PARENT);
+            }
+        }
+        mSingleColumnWidthInitialized = true;
     }
 
     /** Show/hide search bar UI. */
@@ -1287,6 +1337,9 @@ public class SettingsSearchCoordinator
             ViewGroup appBarLayout = requireViewById(R.id.app_bar_layout);
             setSearchBoxVerticalMargin(searchBox, false);
             appBarLayout.addView(searchBox);
+            var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+            lp.width = LayoutParams.MATCH_PARENT;
+            searchBox.setLayoutParams(lp);
             boolean showingMain = isShowingMainSettings();
             if (showingMain) {
                 // No need to check against |mSuppressUi| here since in single-column mode

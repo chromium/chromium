@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -183,5 +184,76 @@ public class SettingsSearchCoordinatorUnitTest {
                 .commitNow();
         // Clear when R.id.empty_state_icon is not present in Activity view hierarchy.
         emptyFragment.clear();
+    }
+
+    @Test
+    public void testSingleColumnSearchUiWidth_updatesOnAppBarLayoutResized() {
+        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
+
+        SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
+        when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.requireView()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        // Start in single-column mode.
+        mUseMultiColumn = false;
+        mCoordinator.initializeSearchUi(null);
+
+        View appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
+        assertNotNull(appBarLayout);
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+
+        int minPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
+
+        View rootView = mActivity.findViewById(R.id.settings_activity);
+        assertNotNull(rootView);
+
+        // Start with medium width.
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, 400, 100);
+        ShadowLooper.idleMainLooper();
+
+        // Verify search box has correct initial layout.
+        var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        assertEquals(minPadding, lp.getMarginStart());
+        assertEquals(minPadding, lp.getMarginEnd());
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, lp.width);
+
+        // Simulate available width shrinking (e.g. side panel opening) to 300px.
+        widthSpec = View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, 300, 100);
+        ShadowLooper.idleMainLooper();
+
+        // Search box width should adjust to the narrower container width while maintaining
+        // standard min padding on narrow screens.
+        lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        assertEquals(minPadding, lp.getMarginStart());
+        assertEquals(minPadding, lp.getMarginEnd());
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, lp.width);
+
+        // Simulate expanding to a wide display (e.g. 1000px).
+        widthSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, 1000, 100);
+        ShadowLooper.idleMainLooper();
+
+        // Search box width should adjust to the wider container width with appropriate
+        // margins.
+        int itemMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_item_margin);
+        int expectedMargin = (1000 - 600) / 2 + itemMargin;
+        lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        assertEquals(expectedMargin, lp.getMarginStart());
+        assertEquals(expectedMargin, lp.getMarginEnd());
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, lp.width);
     }
 }
