@@ -123,7 +123,8 @@ base::RepeatingCallback<scoped_refptr<UpdateService>()> MakeFakeService(
     const std::vector<UpdateService::AppState>& states) {
   return base::BindRepeating(
       [](UpdateService::Result result,
-         const std::vector<UpdateService::AppState>& states) {
+         const std::vector<UpdateService::AppState>& states)
+          -> scoped_refptr<UpdateService> {
         return base::MakeRefCounted<FakeUpdateService>(result, states);
       },
       result, states);
