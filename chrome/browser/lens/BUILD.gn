@@ -130,35 +130,3 @@ if (is_android) {
     ]
   }
 }
-
-source_set("lens_identity_delegation_helper") {
-  sources = [
-    "lens_identity_delegation_helper.cc",
-    "lens_identity_delegation_helper.h",
-  ]
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-    "//chrome/browser/lens/sapisid",
-    "//chrome/browser/profiles:profile",
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-    "//google_apis/common",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "lens_identity_delegation_helper_unittest.cc" ]
-  deps = [
-    ":lens_identity_delegation_helper",
-    "//base",
-    "//base/test:test_support",
-    "//build:branding_buildflags",
-    "//chrome/test:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-}
