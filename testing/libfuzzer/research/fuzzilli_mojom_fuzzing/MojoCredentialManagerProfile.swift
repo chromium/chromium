@@ -12,6 +12,8 @@ private enum MojoStrings {
     static let credentialManager = "blink.mojom.CredentialManager"
     static let credentialManagerRemote = "blink.mojom.CredentialManagerRemote"
     static let credentialManagerRemoteWrapper = "CredentialManagerRemoteWrapper"
+    static let credentialManagerGetResponse = "blink.mojom.CredentialManagerGetResponse"
+    static let credentialManagerError = "blink.mojom.CredentialManagerError"
     static let credentialType = "blink.mojom.CredentialType"
     static let credentialMediationRequirement = "blink.mojom.CredentialMediationRequirement"
     static let credentialInfo = "blink.mojom.CredentialInfo"
@@ -29,6 +31,10 @@ extension ILType {
     fileprivate static let jsCredentialManagerRemoteWrapper: ILType = .object(
         ofGroup: MojoStrings.credentialManagerRemoteWrapper,
         withMethods: ["close", "isBound"])
+    fileprivate static let jsCredentialManagerGetResponse: ILType = .object(
+        ofGroup: MojoStrings.credentialManagerGetResponse,
+        withProperties: ["error", "credential"]
+    )
 
     // Data types
     fileprivate static let jsCredentialType: ILType = .intEnumeration(
@@ -37,6 +43,10 @@ extension ILType {
         .intEnumeration(
             ofName: MojoStrings.credentialMediationRequirement,
             withValues: Array(0...3))
+    fileprivate static let jsCredentialManagerError: ILType = .intEnumeration(
+        ofName: MojoStrings.credentialManagerError,
+        withValues: Array(0...3)
+    )
 
     fileprivate static let jsUrlArray: ILType = .createJsArrayType(ofElementType: .jsUrl)
     fileprivate static let jsCredentialInfo: ILType = .object(
@@ -61,11 +71,11 @@ extension ObjectGroup {
             "$": .jsCredentialManagerRemoteWrapper
         ],
         methods: [
-            "preventSilentAccess": [] => .jsPromise,
-            "store": [.plain(.jsCredentialInfo)] => .jsPromise,
+            "preventSilentAccess": [] => .jsPromise(resolvingTo: ILType.undefined),
+            "store": [.plain(.jsCredentialInfo)] => .jsPromise(resolvingTo: ILType.undefined),
             "get": [
                 .plain(.jsCredentialMediationRequirement), .boolean, .plain(.jsUrlArray),
-            ] => .jsPromise,
+            ] => .jsPromise(resolvingTo: ILType.jsCredentialManagerGetResponse),
         ]
     )
 
@@ -77,6 +87,16 @@ extension ObjectGroup {
             "close": [] => .undefined,
             "isBound": [] => .boolean,
         ]
+    )
+
+    fileprivate static let credentialManagerGetResponse = ObjectGroup(
+        name: MojoStrings.credentialManagerGetResponse,
+        instanceType: .jsCredentialManagerGetResponse,
+        properties: [
+            "error": .jsCredentialInfo,
+            "credential": .jsCredentialInfo,
+        ],
+        methods: [:]
     )
 
     fileprivate static let credentialInfo = ObjectGroup(
@@ -220,10 +240,11 @@ let mojoCredentialManagerProfile = Profile(
         .credentialManager,
         .credentialManagerRemote,
         .credentialManagerRemoteWrapper,
+        .credentialManagerGetResponse,
         .credentialInfo,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
-        .jsCredentialType, .jsCredentialMediationRequirement,
+        .jsCredentialManagerError, .jsCredentialType, .jsCredentialMediationRequirement,
     ] + commonMojoEnumerations,
     additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil

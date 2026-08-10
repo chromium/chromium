@@ -12,6 +12,7 @@ private enum MojoStrings {
     static let lockManager = "blink.mojom.LockManager"
     static let lockManagerRemote = "blink.mojom.LockManagerRemote"
     static let lockManagerRemoteWrapper = "LockManagerRemoteWrapper"
+    static let lockManagerQueryStateResponse = "blink.mojom.LockManagerQueryStateResponse"
     static let lockRequestGrantedCallbackReceiver =
         "LockRequestGrantedCallbackReceiver"
     static let lockRequestCallbackRouterReceiverHelper =
@@ -43,6 +44,10 @@ extension ILType {
     fileprivate static let jsLockManagerRemoteWrapper: ILType = .object(
         ofGroup: MojoStrings.lockManagerRemoteWrapper,
         withMethods: ["close"])
+    fileprivate static let jsBlinkMojomLockManagerQueryStateResponse: ILType = .object(
+        ofGroup: MojoStrings.lockManagerQueryStateResponse,
+        withProperties: ["requested", "held"],
+        withMethods:[])
 
     // LockRequest
     fileprivate static let jsLockRequestCallbackRouter: ILType = .object(
@@ -115,7 +120,7 @@ extension ObjectGroup {
                 .string, .plain(.jsLockMode), .plain(.jsWaitMode),
                 .plain(.jsLockRequestRemote),
             ] => .undefined,
-            "queryState": [] => .jsPromise,  // Returns {requested: [LockInfo], held: [LockInfo]}
+            "queryState": [] => .jsPromise(resolvingTo: .jsBlinkMojomLockManagerQueryStateResponse),
         ]
     )
 
@@ -126,6 +131,16 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined
         ]
+    )
+
+    fileprivate static let blinkMojomLockManagerQueryStateResponse = ObjectGroup(
+        name: "blink.mojom.LockManagerQueryStateResponse",
+        instanceType: .jsBlinkMojomLockManagerQueryStateResponse,
+        properties: [
+            "requested": ILType.createJsArrayType(ofElementType: .jsLockInfo),
+            "held": ILType.createJsArrayType(ofElementType: .jsLockInfo),
+        ],
+        methods: [:]
     )
 
     fileprivate static let lockRequestCallbackRouter = ObjectGroup(
@@ -370,6 +385,7 @@ let mojoLockManagerProfile = Profile(
         .lockManager,
         .lockManagerRemote,
         .lockManagerRemoteWrapper,
+        .blinkMojomLockManagerQueryStateResponse,
         .lockRequestCallbackRouter,
         .lockRequestCallbackRouterReceiverHelper,
         .lockRequestGrantedCallbackReceiver,
