@@ -240,6 +240,7 @@ struct OsSignalsResponse : BaseSignalResponse {
   // - Linux: utsname.release, e.g 6.12.35-1rodete1-amd64
   // - Mac: <major>.<minor>.<bugfix>, e.g 15.7.0
   // - Android: The major version number, e.g 13
+  // - iOS: <major>.<minor>[.<patch>], e.g 18.2.1
   std::string os_version{};
   device_signals::SettingValue screen_lock_secured =
       device_signals::SettingValue::UNKNOWN;
