@@ -866,41 +866,23 @@ if (is_android) {
       # TODO(crbug.com/504985497): Remove this circular dependency.
       "//chrome/browser/keyboard_accessory/android:impl",
 
-      "//chrome/browser/feed:impl",
-
       # TODO(crbug.com/335257259): Resolve circular deps caused by including
       # `IdentityManagerFactory` in facilitated payments.
       "//chrome/browser/facilitated_payments",
 
-      "//chrome/browser/partnerbookmarks:android_impl",
-      "//chrome/browser/bookmarks/android:impl",
-
       # TODO(crbug.com/40261269): Remove when password_manager/android/
       # grouped_affiliations headers get componentized.
       "//chrome/browser/touch_to_fill/autofill/android:impl",
-      "//chrome/browser/touch_to_fill/password_manager:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/language/language_model_manager_factory.h gets componentized.
-      "//chrome/browser/translate/android:android_impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/net/qwac_web_contents_observer.h gets modularized.
-      ":tabs_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following Android browser headers get modularized.
       # - c/b/android/tab_web_contents_delegate_android.h
       # - c/b/android/webapk/webapk_install_service_factory.h
       "//chrome/browser/webapps:android_impl",
-      "//chrome/browser/webapps/installable:impl",
 
       # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get
       # modularized.
       "//chrome/browser/ui/android/tab_model:impl",
-      "//chrome/browser/glic/common",
-
-      "//chrome/browser/ui/webui/notifications_internals:impl",
 
       # TODO(crbug.com/441537619): Remove this circular dependency when the
       # following headers get componentized:
@@ -909,33 +891,10 @@ if (is_android) {
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
       "//chrome/browser/auxiliary_search:impl",
 
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following headers get componentized:
-      # - c/b/android/tab_android.h
-      "//chrome/browser/dom_distiller:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following headers get componentized:
-      # - c/b/android/tab_android.h
-      "//chrome/browser/complex_tasks:impl",
-
       # TODO(crbug.com/353332589): Remove this circular dependencies when the
       # following headers get componentized:
       # - c/b/android/service_tab_launcher.h
       "//chrome/browser/content_index:impl",
-
-      # TODO(crbug.com/): Remove this circular dependency when the following
-      # headers get componentized:
-      # c/b/net/dns_probe_runner.h
-      # c/b/net/secure_dns_util.h
-      # c/b/net/secure_dns_config.h
-      # c/b/net/stub_resolver_config_reader.h
-      # c/b/net/system_network_context_manager.h
-      "//chrome/browser/privacy:secure_dns_bridge",
-
-      # //chrome/browser/lens:impl includes chrome/browser/browser_process.h
-      # which is part of the //chrome/browser monolith.
-      "//chrome/browser/lens:impl",
 
       # Android-specific headers in :browser are included by these targets
       # under #if BUILDFLAG(IS_ANDROID) guards. These were modularized
@@ -945,22 +904,17 @@ if (is_android) {
       "//chrome/browser/browsing_data:impl",
       "//chrome/browser/devtools",
       "//chrome/browser/download:impl",
-      "//chrome/browser/glic:impl",
       "//chrome/browser/history:impl",
       "//chrome/browser/metrics:impl",
       "//chrome/browser/notifications:impl",
-      "//chrome/browser/optimization_guide:impl",
       "//chrome/browser/password_manager:impl",
       "//chrome/browser/permissions",
       "//chrome/browser/prefs:impl",
       "//chrome/browser/privacy_sandbox:impl",
-      "//chrome/browser/profiles:misc",
       "//chrome/browser/profiles:profiles_extra_parts_impl",
-      "//chrome/browser/push_messaging:impl",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/signin:impl",
       "//chrome/browser/sync",
-      "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui",
       "//chrome/browser/ui/autofill:impl",
       "//chrome/browser/ui/autofill/payments:impl",
