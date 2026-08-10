@@ -2079,7 +2079,7 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
   ~NetworkContextConfigurationManagedProxySettingsBrowserTest() override =
       default;
 
-  void SetUp() override {
+  void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -2100,7 +2100,8 @@ class NetworkContextConfigurationManagedProxySettingsBrowserTest
                  policy::POLICY_SOURCE_CLOUD, base::Value(false),
                  /*external_data_fetcher=*/nullptr);
     provider_.UpdateChromePolicy(policies);
-    NetworkContextConfigurationProxySettingsBrowserTest::SetUp();
+    NetworkContextConfigurationProxySettingsBrowserTest::
+        SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
