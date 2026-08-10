@@ -140,6 +140,19 @@ builder.
   This builder is only run when the CL owner is in the group:
   * [`google/optimization-guide-try-opt-in@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/optimization-guide-try-opt-in@google.com)
 
+* [optimization_guide-win-arm64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-win-arm64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-win-arm64""))
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/on_device_translation/.+`](https://cs.chromium.org/chromium/src/components/on_device_translation/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+  * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
+  * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
+
+  This builder is only run when the CL owner is in the group:
+  * [`google/optimization-guide-try-opt-in@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/optimization-guide-try-opt-in@google.com)
+
 * [optimization_guide-win64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-win64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-win64""))
 
   Location filters:

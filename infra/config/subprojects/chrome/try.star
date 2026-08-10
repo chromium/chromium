@@ -477,6 +477,12 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "optimization_guide-win-arm64",
+    cq_settings = optimization_guide_cq_settings,
+    owner_whitelist = optimization_guide_owner_whitelist,
+)
+
+chrome_internal_verifier(
     builder = "test-emulator",
 )
 

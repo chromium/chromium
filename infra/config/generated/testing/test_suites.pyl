@@ -3675,6 +3675,7 @@
     },
 
     'optimization_guide_win_arm64_script_tests': {
+      'chrome_ai_wpt_tests_manifest_suite': {},
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
       'ondevice_stability_tests_suite': {},

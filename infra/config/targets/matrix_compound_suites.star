@@ -860,8 +860,9 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_win_arm64_script_tests",
     basic_suites = {
-        "model_validation_tests_suite": None,
+        "chrome_ai_wpt_tests_manifest_suite": None,
         "model_validation_tests_light_suite": None,
+        "model_validation_tests_suite": None,
         "ondevice_stability_tests_suite": None,
     },
 )
