@@ -6,8 +6,8 @@
 
 dictionary RTCDataChannelInit {
     boolean ordered = true;
-    unsigned short maxPacketLifeTime;
-    unsigned short maxRetransmits;
+    [EnforceRange] unsigned short maxPacketLifeTime;
+    [EnforceRange] unsigned short maxRetransmits;
     USVString protocol = "";
     boolean negotiated = false;
     [EnforceRange] unsigned short id;
