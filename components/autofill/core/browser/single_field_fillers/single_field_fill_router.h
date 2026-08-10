@@ -34,7 +34,7 @@ class SingleFieldFillRouter {
   using OnSuggestionsReturnedCallback =
       base::OnceCallback<void(FieldGlobalId, std::vector<Suggestion>)>;
 
-  explicit SingleFieldFillRouter(
+  SingleFieldFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
       IbanManager* iban_manager,
       MerchantPromoCodeManager* merchant_promo_code_manager);
@@ -49,8 +49,7 @@ class SingleFieldFillRouter {
   // nullptr while |form| has data, which means there were fields in the form
   // that were not able to be parsed as autofill fields.
   virtual void OnWillSubmitForm(const FormData& form,
-                                const FormStructure* form_structure,
-                                bool is_autocomplete_enabled);
+                                const FormStructure* form_structure);
 
   // Cancels all pending queries. This is only applicable to single-field
   // fillers that fetch suggestions asynchronously.

@@ -168,10 +168,8 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   form.set_fields({valid_cc});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(),
-      /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Contrary test to AutocompleteHistoryManagerTest.CreditCardNumberValue.  The
@@ -193,9 +191,8 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   form.set_fields({invalid_cc});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Tests that IBANs are not sent to the WebDatabase to be saved.
@@ -214,9 +211,8 @@ TEST_F(AutocompleteHistoryManagerTest, IbanValue) {
   form.set_fields({iban});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Tests that SSNs are not sent to the WebDatabase to be saved.
@@ -235,9 +231,8 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   form.set_fields({ssn});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Verify that autocomplete text is saved for search fields.
@@ -257,9 +252,8 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
@@ -278,9 +272,10 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/false);
+  // Autocomplete saving is controlled by the address Autofill pref.
+  prefs::SetAutofillProfileEnabled(prefs_.get(), false);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Verify that we don't save invalid values in Autocomplete.
@@ -306,9 +301,8 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
                    make_field(u"Search3", u"other search", u"      ")});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Tests that text entered into fields specifying autocomplete="off" is not sent
@@ -332,9 +326,8 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   form.set_fields({field});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -358,9 +351,8 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   form.set_fields({search_field});
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 #endif
 
@@ -383,9 +375,8 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   form.set_fields({field});
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), /*form=*/nullptr,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    /*form=*/nullptr);
 }
 
 // Tests that creating an AutocompleteHistoryManager will trigger the
@@ -1062,9 +1053,8 @@ TEST_F(AutocompleteHistoryManagerTest, ClassificationBasedFiltering) {
               AddFormFields(testing::ElementsAre(
                   testing::Property(&FormFieldData::value, u"John"))));
 
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), &form_structure,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
 }
 
 // Tests that loyalty card fields are saved in autocomplete history if they
@@ -1083,9 +1073,8 @@ TEST_F(AutocompleteHistoryManagerTest, LoyaltyCardManualEntryIsSaved) {
               AddFormFields(testing::ElementsAre(
                   testing::Property(&FormFieldData::value, u"999"))));
 
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), &form_structure,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
 }
 
 // Tests that fields autofilled by standard Autofill or Autocomplete are not
@@ -1127,9 +1116,8 @@ TEST_F(AutocompleteHistoryManagerTest, PreventSavingAutofilledFields) {
               AddFormFields(testing::ElementsAre(testing::Property(
                   &FormFieldData::value, u"john.doe@example.com"))));
 
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), &form_structure,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
 }
 
 // Tests that if a field was autocompleted (filled by Autocomplete) and then
@@ -1170,9 +1158,8 @@ TEST_F(AutocompleteHistoryManagerTest,
               AddFormFields(testing::ElementsAre(
                   testing::Property(&FormFieldData::value, u"DoeEdited"))));
 
-  autocomplete_manager_->OnWillSubmitFormWithFields(
-      form.fields(), &form_structure,
-      /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                    &form_structure);
 }
 
 class AutocompleteHistoryManagerAtMemoryTest

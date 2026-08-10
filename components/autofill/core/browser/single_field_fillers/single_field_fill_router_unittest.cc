@@ -110,9 +110,8 @@ TEST_F(SingleFieldFillRouterTest, RouteToAllFillers_OnWillSubmitForm) {
 
   EXPECT_CALL(history_manager(),
               OnWillSubmitFormWithFields(SizeIs(form_data.fields().size()),
-                                         &form_structure, true));
-  router().OnWillSubmitForm(form_data, &form_structure,
-                            /*is_autocomplete_enabled=*/true);
+                                         &form_structure));
+  router().OnWillSubmitForm(form_data, &form_structure);
 }
 
 // Ensure that the router routes to fillers for this CancelPendingQueries call.

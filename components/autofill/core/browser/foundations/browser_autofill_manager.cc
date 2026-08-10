@@ -646,8 +646,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
         client.GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled(),
         ukm_source_id);
   }
-  client.GetSingleFieldFillRouter().OnWillSubmitForm(
-      form.ToFormData(), &form, client.IsAutocompleteEnabled());
+  client.GetSingleFieldFillRouter().OnWillSubmitForm(form.ToFormData(), &form);
 }
 
 // Generates a compose suggestion for the given `form` and `field` if conditions
@@ -983,8 +982,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (!submitted_form) {
     // We always give Autocomplete a chance to save the data.
     if (!client().IsOffTheRecord()) {
-      client().GetSingleFieldFillRouter().OnWillSubmitForm(
-          form, nullptr, client().IsAutocompleteEnabled());
+      client().GetSingleFieldFillRouter().OnWillSubmitForm(form, nullptr);
     }
     return;
   }

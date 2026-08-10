@@ -3859,19 +3859,6 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedActorActive) {
   EXPECT_THAT(adm.GetProfiles(), IsEmpty());
 }
 
-// Test that when Autocomplete is enabled and Autofill is disabled, form
-// submissions are still received by the SingleFieldFillRouter.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
-  autofill_client().SetAutofillProfileEnabled(false);
-  payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
-
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-
-  EXPECT_CALL(single_field_fill_router(), OnWillSubmitForm(_, _, true));
-  FormSubmitted(form);
-}
-
 // Test that the value patterns metric is reported.
 TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
   struct ValuePatternTestCase {

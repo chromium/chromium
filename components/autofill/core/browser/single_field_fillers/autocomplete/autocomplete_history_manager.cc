@@ -358,9 +358,8 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
-    const FormStructure* form,
-    bool is_autocomplete_enabled) {
-  if (!is_autocomplete_enabled) {
+    const FormStructure* form) {
+  if (!pref_service_ || !prefs::IsAutocompleteEnabled(pref_service_)) {
     return;
   }
   std::vector<FormFieldData> autocomplete_saveable_fields;

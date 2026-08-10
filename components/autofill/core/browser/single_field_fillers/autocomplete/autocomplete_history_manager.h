@@ -67,8 +67,7 @@ class AutocompleteHistoryManager : public KeyedService {
   // `fields` may be empty.
   virtual void OnWillSubmitFormWithFields(
       const std::vector<FormFieldData>& fields,
-      const FormStructure* form,
-      bool is_autocomplete_enabled);
+      const FormStructure* form);
 
   virtual void CancelPendingQuery();
 

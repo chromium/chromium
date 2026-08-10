@@ -35,12 +35,11 @@ SingleFieldFillRouter::~SingleFieldFillRouter() = default;
 
 void SingleFieldFillRouter::OnWillSubmitForm(
     const FormData& form,
-    const FormStructure* form_structure,
-    bool is_autocomplete_enabled) {
+    const FormStructure* form_structure) {
   CHECK(!form_structure ||
         form.fields().size() == form_structure->field_count());
-  autocomplete_history_manager_->OnWillSubmitFormWithFields(
-      form.fields(), form_structure, is_autocomplete_enabled);
+  autocomplete_history_manager_->OnWillSubmitFormWithFields(form.fields(),
+                                                            form_structure);
   if (iban_manager_) {
     iban_manager_->OnWillSubmitFormWithFields();
   }
