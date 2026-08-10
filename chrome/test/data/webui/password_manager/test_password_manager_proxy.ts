@@ -119,6 +119,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'undoRemoveSavedPasswordOrException',
       'unmuteInsecureCredential',
       'getPasswordManagerActionableError',
+      'startTrustedVaultUnlock',
     ]);
 
     // Set these to have non-empty data.
@@ -502,5 +503,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {
     this.methodCalled('getPasswordManagerActionableError');
     return Promise.resolve(this.data.getActionableError);
+  }
+
+  startTrustedVaultUnlock(): void {
+    this.methodCalled('startTrustedVaultUnlock');
   }
 }

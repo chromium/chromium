@@ -543,6 +543,7 @@ source_set("unit_tests") {
     "password_reuse_detector_impl_unittest.cc",
     "password_reuse_manager_impl_unittest.cc",
     "password_save_manager_impl_unittest.cc",
+    "password_store/password_store_util_unittest.cc",
     "password_string_unittest.cc",
     "password_suggestion_generator_unittest.cc",
     "password_sync_util_unittest.cc",

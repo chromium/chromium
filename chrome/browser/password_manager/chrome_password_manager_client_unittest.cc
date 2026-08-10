@@ -1789,6 +1789,22 @@ TEST_F(ChromePasswordManagerClientCriticalActionsTest,
   testing::Mock::VerifyAndClearExpectations(mock_service());
 }
 
+TEST_F(ChromePasswordManagerClientTest, GetActionableError) {
+  password_manager::MockPasswordStoreInterface* mock_profile_store =
+      static_cast<password_manager::MockPasswordStoreInterface*>(
+          GetClient()->GetProfilePasswordStore());
+  EXPECT_CALL(*mock_profile_store, GetError)
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+  EXPECT_EQ(password_manager::ActionableError::kTrustedVaultKeyNeeded,
+            GetClient()->GetActionableError());
+
+  EXPECT_CALL(*mock_profile_store, GetError)
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  EXPECT_EQ(password_manager::ActionableError::kNoError,
+            GetClient()->GetActionableError());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest
     : public ChromePasswordManagerClientTest {

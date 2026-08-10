@@ -1,0 +1,53 @@
+<style include="shared-style cr-shared-style">
+  cr-dialog {
+    --cr-dialog-title-slot-padding-bottom: 0px;
+    --cr-dialog-width: 380px;
+  }
+
+  .promo-image {
+    display: block;
+    height: 106px;
+    margin: 0 auto 10px auto;
+    width: 183px;
+  }
+
+  .title-heading {
+    line-height: 1.25rem;
+    margin: 0 0 10px 0;
+    padding: 0;
+  }
+
+  .body-text {
+    line-height: 1.25rem;
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+    <if expr="_google_chrome">
+      <picture>
+        <source srcset="./images/access_on_any_device_promo_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img class="promo-image" src="./images/access_on_any_device_promo.svg"
+            role="presentation" alt="">
+      </picture>
+    </if>
+    <div class="cr-title-text title-heading">$i18n{trustedVaultErrorDialogTitle}</div>
+  </div>
+  <div slot="body">
+    <div class="cr-secondary-text body-text">$i18n{trustedVaultErrorDialogDescription}</div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelButtonClick_">
+      $i18n{trustedVaultErrorDialogNotNow}
+    </cr-button>
+    <cr-button id="verifyButton" class="action-button" autofocus
+        on-click="onVerifyButtonClick_">
+      $i18n{trustedVaultErrorDialogContinue}
+    </cr-button>
+  </div>
+</cr-dialog>
+

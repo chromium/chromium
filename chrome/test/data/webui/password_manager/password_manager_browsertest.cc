@@ -156,6 +156,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SiteFavicon) {
   RunTest("password_manager/site_favicon_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, TrustedVaultErrorDialog) {
+  RunTest("password_manager/trusted_vault_error_dialog_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, UserUtilsMixin) {
   RunTest("password_manager/user_utils_mixin_test.js", "mocha.run()");
 }

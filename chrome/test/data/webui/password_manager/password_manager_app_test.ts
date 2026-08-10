@@ -4,8 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import type {PasswordManagerAppElement} from 'chrome://password-manager/password_manager.js';
-import {OpenWindowProxyImpl, Page, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import type {PasswordManagerAppElement, TrustedVaultErrorDialogElement} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerActionableError, PasswordManagerImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -23,6 +23,7 @@ suite('PasswordManagerAppTest', function() {
   let passwordManager: TestPasswordManagerProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -418,6 +419,39 @@ suite('PasswordManagerAppTest', function() {
 
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
   });
+
+  test('opens trusted vault error dialog when locked', async function() {
+    app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+    await flushTasks();
+
+    const errorDialog =
+        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+            'trusted-vault-error-dialog');
+    assertTrue(!!errorDialog);
+    assertTrue(errorDialog.$.dialog.open);
+  });
+
+  test(
+      'does not open trusted vault error dialog when feature disabled',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: false});
+        app.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        assertFalse(
+            !!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+      });
+
+  test(
+      'does not open trusted vault error dialog for different actionable error',
+      async function() {
+        app.actionableError = PasswordManagerActionableError.kNoError;
+        await flushTasks();
+
+        assertFalse(
+            !!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+      });
 });
 
 suite('WebuiRefresh2026', function() {

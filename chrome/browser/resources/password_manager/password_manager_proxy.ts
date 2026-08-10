@@ -148,6 +148,8 @@ export interface PasswordManagerProxy {
    */
   removeInsecureCredentialsListener(listener: CredentialsChangedListener): void;
 
+  startTrustedVaultUnlock(): void;
+
   /**
    * Request the list of saved passwords.
    */
@@ -1026,6 +1028,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {
     return this.handler.getPasswordManagerActionableError().then(
         result => result.error);
+  }
+
+  startTrustedVaultUnlock(): void {
+    this.handler.startTrustedVaultUnlock();
   }
 
   static getInstance(): PasswordManagerProxy {

@@ -67,6 +67,7 @@ build_webui("build") {
     "dialogs/multi_store_delete_password_dialog.ts",
     "dialogs/password_preview_item.ts",
     "dialogs/remove_actor_login_permission_dialog.ts",
+    "dialogs/trusted_vault_error_dialog.ts",
     "full_data_reset.ts",
     "password_change_details.ts",
     "password_details_section.ts",

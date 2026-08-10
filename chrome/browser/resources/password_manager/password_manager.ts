@@ -27,6 +27,7 @@ export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 export {MovePasswordsDialogElement} from './dialogs/move_passwords_dialog.js';
 export {RemoveActorLoginPermissionDialogElement} from './dialogs/remove_actor_login_permission_dialog.js';
+export {TrustedVaultErrorDialogElement} from './dialogs/trusted_vault_error_dialog.js';
 export {FullDataResetElement} from './full_data_reset.js';
 export type {NotificationCard, NotificationCardsProxy} from './notification_cards/notification_cards_browser_proxy.js';
 export {NotificationCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';

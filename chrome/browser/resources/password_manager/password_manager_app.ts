@@ -19,6 +19,7 @@ import './settings_section.js';
 import './shared_style.css.js';
 import './side_bar.js';
 import './toolbar.js';
+import './dialogs/trusted_vault_error_dialog.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
@@ -41,13 +42,14 @@ import type {BackupPasswordRemovedEvent} from './credential_details/backup_passw
 import type {PasswordRemovedEvent} from './credential_details/password_details_card.js';
 import type {FocusConfig} from './focus_config.js';
 import {getTemplate} from './password_manager_app.html.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordManagerActionableError, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PasswordsSectionElement} from './passwords_section.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixin, Router} from './router.js';
 import type {SettingsSectionElement} from './settings_section.js';
 import type {PasswordManagerSideBarElement} from './side_bar.js';
 import type {PasswordManagerToolbarElement} from './toolbar.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -83,8 +85,8 @@ export interface PasswordManagerAppElement {
   };
 }
 
-const PasswordManagerAppElementBase =
-    FindShortcutMixin(I18nMixin(RouteObserverMixin(PolymerElement)));
+const PasswordManagerAppElementBase = UserUtilMixin(
+    FindShortcutMixin(I18nMixin(RouteObserverMixin(PolymerElement))));
 
 export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   static get is() {
@@ -130,6 +132,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
         value: Page,
       },
 
+      showTrustedVaultErrorDialog_: Boolean,
+
       toastMessage_: String,
 
       /**
@@ -153,11 +157,18 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'onActionableErrorChanged_(actionableError)',
+    ];
+  }
+
   declare private prefs_: {[key: string]: unknown};
   declare private selectedPage_: Page;
   declare private narrow_: boolean;
   declare private collapsed_: boolean;
   declare private pageTitle_: string;
+  declare private showTrustedVaultErrorDialog_: boolean;
   declare private toastMessage_: string;
   declare private showUndo_: boolean;
   declare private focusConfig_: FocusConfig;
@@ -392,6 +403,18 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     link.rel = 'stylesheet';
     link.href = 'chrome://theme/colors.css?sets=ui,chrome';
     document.body.appendChild(link);
+  }
+
+  private onActionableErrorChanged_(
+      actionableError: PasswordManagerActionableError) {
+    this.showTrustedVaultErrorDialog_ =
+        loadTimeData.getBoolean('enableTrustedVaultUnlock') &&
+        actionableError ===
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+  }
+
+  private onTrustedVaultErrorDialogClose_() {
+    this.showTrustedVaultErrorDialog_ = false;
   }
 }
 declare global {
