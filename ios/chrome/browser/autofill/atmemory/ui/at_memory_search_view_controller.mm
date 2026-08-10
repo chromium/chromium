@@ -6,13 +6,13 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
-#import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -21,6 +21,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// The symbol point size for the cell icons.
+constexpr CGFloat kIconPointSize = 24;
 
 // Section identifiers in the "AtMemory" page table view.
 enum class SectionIdentifier {
@@ -45,12 +48,10 @@ enum class ItemIdentifier {
   kNoticeItem,
 };
 
-// The symbol point size for the cell icons.
-constexpr CGFloat kIconPointSize = 24;
-
 }  // namespace
 
-@interface AtMemorySearchViewController () <UISearchResultsUpdating,
+@interface AtMemorySearchViewController () <UISearchBarDelegate,
+                                            UISearchResultsUpdating,
                                             AtMemoryInlineNoticeViewDelegate>
 @end
 
@@ -67,6 +68,8 @@ constexpr CGFloat kIconPointSize = 24;
   BOOL _recentFillsAreVisible;
   // The current error type.
   AtMemoryErrorType _errorType;
+  // Represents the table view background style.
+  AtMemoryBackgroundStyle _backgroundStyle;
 }
 
 #pragma mark - UIViewController
@@ -79,6 +82,7 @@ constexpr CGFloat kIconPointSize = 24;
   _searchController.obscuresBackgroundDuringPresentation = NO;
   _searchController.hidesNavigationBarDuringPresentation = NO;
   _searchController.searchResultsUpdater = self;
+  _searchController.searchBar.delegate = self;
   _searchController.searchBar.accessibilityIdentifier =
       kAtMemorySearchBarAccessibilityIdentifier;
 
@@ -118,11 +122,45 @@ constexpr CGFloat kIconPointSize = 24;
   [self createSnapshotForViewState:AtMemoryViewState::kInitialState];
 }
 
+#pragma mark - UISearchBarDelegate
+
+- (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar {
+  [self.mutator startSearchWithQuery:searchBar.text];
+}
+
 #pragma mark - UISearchResultsUpdating
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  [self.mutator startSearchWithQuery:searchController.searchBar.text];
+  NSString* query = searchController.searchBar.text;
+
+  if (query.length == 0) {
+    [self createSnapshotForViewState:AtMemoryViewState::kInitialState];
+    return;
+  }
+
+  if ([[_dataSource snapshot]
+          indexOfItemIdentifier:@(static_cast<int>(
+                                    ItemIdentifier::kSearchItem))] !=
+      NSNotFound) {
+    [self updateSnapshotForItemIdentifier:ItemIdentifier::kSearchItem];
+  } else {
+    [self createSnapshotForViewState:AtMemoryViewState::kSearchState];
+  }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  ItemIdentifier itemIdentifier = static_cast<ItemIdentifier>(
+      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
+  if (itemIdentifier == ItemIdentifier::kSearchItem) {
+    [self.mutator startSearchWithQuery:_searchController.searchBar.text];
+    // TODO(crbug.com/542645452): Call createSnapshotForViewState for Fetching
+    // state once the Fetching cell has been implemented.
+  }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - Actions
@@ -151,6 +189,7 @@ constexpr CGFloat kIconPointSize = 24;
 }
 
 - (void)updateTableViewBackgroundStyle:(AtMemoryBackgroundStyle)style {
+  _backgroundStyle = style;
   switch (style) {
     case AtMemoryBackgroundStyle::kEmptyStyle:
       [self setEmptyTableViewBackground];
@@ -169,11 +208,14 @@ constexpr CGFloat kIconPointSize = 24;
     case AtMemoryViewState::kInitialState:
       [self createSnapshotForInitialState];
       return;
+    case AtMemoryViewState::kSearchState:
+      self.tableView.backgroundView = nil;
+      [self createSnapshotForSearchState];
+      return;
     case AtMemoryViewState::kErrorState:
       self.tableView.backgroundView = nil;
       [self createSnapshotForErrorState];
       return;
-    case AtMemoryViewState::kSearchState:
     case AtMemoryViewState::kFetchingState:
     case AtMemoryViewState::kResultState:
       self.tableView.backgroundView = nil;
@@ -184,6 +226,8 @@ constexpr CGFloat kIconPointSize = 24;
 
 // Creates the `snapshot` for the initial state.
 - (void)createSnapshotForInitialState {
+  [self updateTableViewBackgroundStyle:_backgroundStyle];
+
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
@@ -253,6 +297,20 @@ constexpr CGFloat kIconPointSize = 24;
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+// Creates the diffable data source snapshot for the search state.
+- (void)createSnapshotForSearchState {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(static_cast<int>(SectionIdentifier::kSearchSection))
+  ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(static_cast<int>(
+                                           ItemIdentifier::kSearchItem)) ]
+             intoSectionWithIdentifier:@(static_cast<int>(
+                                           SectionIdentifier::kSearchSection))];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 // Sets the table view background to the empty state.
 - (void)setEmptyTableViewBackground {
   UIImage* image = [UIImage imageNamed:@"at_memory_empty"];
@@ -261,16 +319,31 @@ constexpr CGFloat kIconPointSize = 24;
                                image:image];
 }
 
+// Reloads the snapshot for the cell with the given `itemIdentifier`.
+- (void)updateSnapshotForItemIdentifier:(ItemIdentifier)itemIdentifier {
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  if ([snapshot indexOfItemIdentifier:@(static_cast<int>(itemIdentifier))] ==
+      NSNotFound) {
+    return;
+  }
+  [snapshot
+      reconfigureItemsWithIdentifiers:@[ @(static_cast<int>(itemIdentifier)) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
 // Returns the cell for the corresponding `itemIdentifier`.
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   UITableViewCell* cell = nil;
   switch (itemIdentifier) {
+    case ItemIdentifier::kSearchItem:
+      cell = [self searchCellForTableView:tableView];
+      break;
     case ItemIdentifier::kNoticeItem:
       cell = [self noticeCellForTableView:tableView];
       break;
-    case ItemIdentifier::kSearchItem:
     case ItemIdentifier::kFetchingItem:
       // TODO(crbug.com/542645452): Implement cells for each item identifier.
       break;
@@ -285,6 +358,35 @@ constexpr CGFloat kIconPointSize = 24;
       break;
   }
   CHECK(cell);
+  return cell;
+}
+
+// Returns the table view cell for the "Search" state.
+- (UITableViewCell*)searchCellForTableView:(UITableView*)tableView {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _searchController.searchBar.text;
+  configuration.subtitle =
+      l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE);
+
+  ColorfulSymbolContentConfiguration* iconConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  iconConfiguration.symbolImage =
+      SymbolTemplateWithPointSize(SymbolGeminiBrandedLogo, kIconPointSize);
+#else
+  iconConfiguration.symbolImage =
+      SymbolTemplateWithPointSize(SymbolGeminiNonBrandedLogo, kIconPointSize);
+#endif
+  iconConfiguration.symbolTintColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  configuration.leadingConfiguration = iconConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.accessibilityIdentifier = kAtMemorySearchCellAccessibilityIdentifier;
+
   return cell;
 }
 
