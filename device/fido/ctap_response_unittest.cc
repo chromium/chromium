@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -15,7 +16,6 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
@@ -463,8 +463,7 @@ constexpr std::array<uint8_t, kAaguidLength> kTestDeviceAaguid = {
 std::vector<uint8_t> GetTestAttestedCredentialDataBytes() {
   // Combine kTestAttestedCredentialDataPrefix and kTestECPublicKeyCOSE.
   auto test_attested_data = base::ToVector(kTestAttestedCredentialDataPrefix);
-  fido_parsing_utils::Append(&test_attested_data,
-                             test_data::kTestECPublicKeyCOSE);
+  base::Extend(test_attested_data, test_data::kTestECPublicKeyCOSE);
   return test_attested_data;
 }
 
@@ -472,19 +471,18 @@ std::vector<uint8_t> GetTestAuthenticatorDataBytes() {
   // Build the test authenticator data.
   auto test_authenticator_data = base::ToVector(kTestAuthenticatorDataPrefix);
   auto test_attested_data = GetTestAttestedCredentialDataBytes();
-  fido_parsing_utils::Append(&test_authenticator_data, test_attested_data);
+  base::Extend(test_authenticator_data, test_attested_data);
   return test_authenticator_data;
 }
 
 std::vector<uint8_t> GetTestAttestationObjectBytes() {
   auto test_authenticator_object = base::ToVector(kFormatFidoU2fCBOR);
-  fido_parsing_utils::Append(&test_authenticator_object, kAttStmtCBOR);
-  fido_parsing_utils::Append(&test_authenticator_object,
-                             test_data::kU2fAttestationStatementCBOR);
-  fido_parsing_utils::Append(&test_authenticator_object, kAuthDataCBOR);
+  base::Extend(test_authenticator_object, kAttStmtCBOR);
+  base::Extend(test_authenticator_object,
+               test_data::kU2fAttestationStatementCBOR);
+  base::Extend(test_authenticator_object, kAuthDataCBOR);
   auto test_authenticator_data = GetTestAuthenticatorDataBytes();
-  fido_parsing_utils::Append(&test_authenticator_object,
-                             test_authenticator_data);
+  base::Extend(test_authenticator_object, test_authenticator_data);
   return test_authenticator_object;
 }
 
@@ -495,8 +493,8 @@ std::vector<uint8_t> GetTestSignResponse() {
 // Get a subset of the response for testing error handling.
 std::vector<uint8_t> GetTestCorruptedSignResponse(size_t length) {
   DCHECK_LE(length, std::size(test_data::kTestU2fSignResponse));
-  return base::ToVector(fido_parsing_utils::ExtractSpan(
-      test_data::kTestU2fSignResponse, 0, length));
+  return base::ToVector(
+      base::span(test_data::kTestU2fSignResponse).first(length));
 }
 
 // Return a key handle used for GetAssertion request.

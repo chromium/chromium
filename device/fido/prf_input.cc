@@ -6,8 +6,8 @@
 
 #include <array>
 
+#include "base/containers/to_array.h"
 #include "components/cbor/values.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
@@ -17,10 +17,12 @@ namespace device {
 
 namespace {
 bool CBORToPRFValue(const cbor::Value& v, std::array<uint8_t, 32>* out) {
-  if (!v.is_bytestring()) {
+  CHECK(out);
+  if (!v.is_bytestring() || v.GetBytestring().size() != out->size()) {
     return false;
   }
-  return fido_parsing_utils::ExtractArray(v.GetBytestring(), 0, out);
+  std::ranges::copy(v.GetBytestring(), out->begin());
+  return true;
 }
 
 // HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to

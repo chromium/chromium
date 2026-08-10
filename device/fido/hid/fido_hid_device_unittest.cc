@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/hid/fido_hid_message.h"
@@ -104,9 +104,9 @@ std::vector<uint8_t> CreateMockInitResponse(
     base::span<const uint8_t> channel_id,
     base::span<const uint8_t> payload = base::span<const uint8_t>()) {
   auto init_response = base::ToVector(kInitResponsePrefix);
-  fido_parsing_utils::Append(&init_response, nonce);
-  fido_parsing_utils::Append(&init_response, channel_id);
-  fido_parsing_utils::Append(&init_response, payload);
+  base::Extend(init_response, nonce);
+  base::Extend(init_response, channel_id);
+  base::Extend(init_response, payload);
   init_response.resize(64);
   return init_response;
 }
@@ -115,7 +115,7 @@ std::vector<uint8_t> CreateMockInitResponse(
 std::vector<uint8_t> GetKeepAliveHidMessage(
     base::span<const uint8_t> channel_id) {
   auto response = base::ToVector(channel_id);
-  fido_parsing_utils::Append(&response, kMockKeepAliveResponseSuffix);
+  base::Extend(response, kMockKeepAliveResponseSuffix);
   response.resize(64);
   return response;
 }
@@ -125,7 +125,7 @@ std::vector<uint8_t> CreateMockResponseWithChannelId(
     base::span<const uint8_t> channel_id,
     base::span<const uint8_t> response_buffer) {
   auto response = base::ToVector(channel_id);
-  fido_parsing_utils::Append(&response, response_buffer);
+  base::Extend(response, response_buffer);
   response.resize(64);
   return response;
 }

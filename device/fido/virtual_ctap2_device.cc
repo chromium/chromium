@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -35,7 +36,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/pin.h"
@@ -88,7 +88,7 @@ uint8_t GetSupportedPermissionsMask(const VirtualCtap2Device::Config& config) {
 std::vector<uint8_t> ConstructResponse(CtapDeviceResponseCode response_code,
                                        base::span<const uint8_t> data) {
   std::vector<uint8_t> response{base::strict_cast<uint8_t>(response_code)};
-  fido_parsing_utils::Append(&response, data);
+  base::Extend(response, data);
   return response;
 }
 
@@ -183,9 +183,8 @@ std::vector<uint8_t> ConstructSignatureBuffer(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash) {
   std::vector<uint8_t> signature_buffer;
-  fido_parsing_utils::Append(&signature_buffer,
-                             authenticator_data.SerializeToByteArray());
-  fido_parsing_utils::Append(&signature_buffer, client_data_hash);
+  base::Extend(signature_buffer, authenticator_data.SerializeToByteArray());
+  base::Extend(signature_buffer, client_data_hash);
   return signature_buffer;
 }
 

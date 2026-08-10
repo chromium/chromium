@@ -24,7 +24,6 @@
 #include "crypto/keypair.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
@@ -163,9 +162,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   // necessary in order to provide continuity between requests.
   class COMPONENT_EXPORT(DEVICE_FIDO) State : public base::RefCounted<State> {
    public:
-    using RegistrationsMap = std::map<std::vector<uint8_t>,
-                                      RegistrationData,
-                                      fido_parsing_utils::RangeLess>;
+    using RegistrationsMap =
+        std::map<std::vector<uint8_t>, RegistrationData, std::less<>>;
     using SimulatePressCallback =
         base::RepeatingCallback<bool(VirtualFidoDevice*)>;
 

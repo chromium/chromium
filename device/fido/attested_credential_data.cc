@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/extend.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/to_array.h"
 #include "base/containers/to_vector.h"
@@ -16,7 +17,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/ed25519_public_key.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
@@ -257,10 +257,10 @@ bool AttestedCredentialData::DeleteAaguid() {
 
 std::vector<uint8_t> AttestedCredentialData::SerializeAsBytes() const {
   std::vector<uint8_t> attestation_data;
-  fido_parsing_utils::Append(&attestation_data, aaguid_);
-  fido_parsing_utils::Append(&attestation_data, credential_id_length_);
-  fido_parsing_utils::Append(&attestation_data, credential_id_);
-  fido_parsing_utils::Append(&attestation_data, public_key_->cose_key_bytes);
+  base::Extend(attestation_data, aaguid_);
+  base::Extend(attestation_data, credential_id_length_);
+  base::Extend(attestation_data, credential_id_);
+  base::Extend(attestation_data, public_key_->cose_key_bytes);
   return attestation_data;
 }
 

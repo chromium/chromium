@@ -18,7 +18,6 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "device/fido/fido_parsing_utils.h"
 
 namespace device {
 namespace cablev2 {
@@ -221,9 +220,13 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     }
     base::span(event->pairing_id).copy_from(pairing_id);
 
-    if (!fido_parsing_utils::CopyCBORBytestring(&event->client_nonce, map, 2)) {
+    cbor_it = map.find(cbor::Value(2));
+    if (cbor_it == map.end() || !cbor_it->second.is_bytestring() ||
+        cbor_it->second.GetBytestring().size() != event->client_nonce.size()) {
       return std::nullopt;
     }
+    std::ranges::copy(cbor_it->second.GetBytestring(),
+                      event->client_nonce.begin());
 
     cbor_it = map.find(cbor::Value(3));
     if (cbor_it == map.end() || !cbor_it->second.is_string()) {

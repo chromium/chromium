@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -27,7 +28,6 @@
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/prf_input.h"
 #include "device/fido/public/fido_constants.h"
@@ -481,9 +481,9 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
   // Create the assertion signature.
   std::vector<uint8_t> sign_data;
-  fido_parsing_utils::Append(&sign_data, result->authenticator_data);
-  fido_parsing_utils::Append(
-      &sign_data,
+  base::Extend(sign_data, result->authenticator_data);
+  base::Extend(
+      sign_data,
       crypto::SHA256Hash(UNSAFE_TODO(base::span(
           client_data->pbClientDataJSON, client_data->cbClientDataJSON))));
   result->signature = registration->private_key->Sign(sign_data);

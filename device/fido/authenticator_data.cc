@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/extend.h"
 #include "base/containers/to_array.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -13,7 +14,6 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/attested_credential_data.h"
-#include "device/fido/fido_parsing_utils.h"
 
 namespace device {
 
@@ -181,21 +181,20 @@ bool AuthenticatorData::EraseExtension(std::string_view name) {
 
 std::vector<uint8_t> AuthenticatorData::SerializeToByteArray() const {
   std::vector<uint8_t> authenticator_data;
-  fido_parsing_utils::Append(&authenticator_data, application_parameter_);
+  base::Extend(authenticator_data, application_parameter_);
   authenticator_data.insert(authenticator_data.end(), flags_);
-  fido_parsing_utils::Append(&authenticator_data, counter_);
+  base::Extend(authenticator_data, counter_);
 
   if (attested_data_) {
     // Attestations are returned in registration responses but not in assertion
     // responses.
-    fido_parsing_utils::Append(&authenticator_data,
-                               attested_data_->SerializeAsBytes());
+    base::Extend(authenticator_data, attested_data_->SerializeAsBytes());
   }
 
   if (extensions_) {
     const auto maybe_extensions = cbor::Writer::Write(*extensions_);
     if (maybe_extensions) {
-      fido_parsing_utils::Append(&authenticator_data, *maybe_extensions);
+      base::Extend(authenticator_data, *maybe_extensions);
     }
   }
 
