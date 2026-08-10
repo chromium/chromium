@@ -308,6 +308,18 @@ bool ExtensionMayAttachToRenderFrameHost(
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
 
+        // A privileged WebContents (see //chrome's PrivilegedWebContents) is
+        // invisible to extensions: block the debugger from attaching so an
+        // extension with the "debugger" permission can neither inspect it nor
+        // run script in it.
+        if (content::WebContents* web_contents =
+                content::WebContents::FromRenderFrameHost(render_frame_host);
+            web_contents && web_contents->IsPrivileged()) {
+          *error = manifest_errors::kCannotAccessPage;
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
         // We check both the last committed URL and the SiteURL because this
         // method may be called in the middle of a navigation where the SiteURL
         // has been updated but navigation hasn't committed yet.
@@ -1120,6 +1132,13 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
     }
     if (!ExtensionMayAttachToTargetProfile(
             profile, include_incognito_information(), *host)) {
+      continue;
+    }
+    // Don't list a privileged WebContents (see //chrome's
+    // PrivilegedWebContents): it is invisible to extensions, so its target must
+    // not be enumerable (nor, per the attach check, attachable).
+    if (content::WebContents* web_contents = host->GetWebContents();
+        web_contents && web_contents->IsPrivileged()) {
       continue;
     }
 #if BUILDFLAG(ENABLE_PDF)

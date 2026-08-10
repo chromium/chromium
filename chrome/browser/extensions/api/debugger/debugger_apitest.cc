@@ -5,8 +5,11 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
@@ -15,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
@@ -29,6 +33,9 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
+#include "chrome/browser/pwc/pwc_component_policy.h"
+#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
@@ -47,6 +54,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -69,6 +77,7 @@
 #include "pdf/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/base_window.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/message_enums.h"
@@ -300,6 +309,55 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunctionOnTarget(
         << "expected: " << expected_error << ", found: " << actual_error;
   }
   return testing::AssertionSuccess();
+}
+
+class PwcDebuggerApiTest : public DebuggerApiTest {
+ public:
+  PwcDebuggerApiTest() {
+    feature_list_.InitAndEnableFeature(
+        pwc::mojom::features::kPrivilegedWebContents);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// An extension with the "debugger" permission cannot attach to, or even
+// enumerate, a privileged WebContents (see //chrome's PrivilegedWebContents):
+// it is invisible to extensions.
+IN_PROC_BROWSER_TEST_F(PwcDebuggerApiTest,
+                       CannotAttachToPrivilegedWebContents) {
+  std::unique_ptr<pwc::PrivilegedWebContents> privileged =
+      pwc::PrivilegedWebContents::Create(
+          pwc::PrivilegedComponent::kTestComponent, profile(),
+          std::make_unique<pwc::FixedPwcPolicyDelegate>(
+              std::vector<url::Origin>{}, std::vector<url::Origin>{}));
+  const std::string target_id =
+      content::DevToolsAgentHost::GetOrCreateFor(privileged->web_contents())
+          ->GetId();
+
+  // chrome.debugger.getTargets does not list the privileged WebContents.
+  scoped_refptr<DebuggerGetTargetsFunction> get_targets =
+      base::MakeRefCounted<DebuggerGetTargetsFunction>();
+  std::optional<base::Value> targets =
+      api_test_utils::RunFunctionAndReturnSingleResult(get_targets.get(), "[]",
+                                                       profile());
+  ASSERT_TRUE(targets && targets->is_list());
+  for (const base::Value& target : targets->GetList()) {
+    const std::string* id = target.GetDict().FindString("id");
+    EXPECT_FALSE(id && *id == target_id)
+        << "A privileged WebContents must not be listed by getTargets";
+  }
+
+  // Attaching by the privileged WebContents' target id fails.
+  scoped_refptr<DebuggerAttachFunction> attach =
+      base::MakeRefCounted<DebuggerAttachFunction>();
+  attach->set_extension(extension());
+  EXPECT_FALSE(api_test_utils::RunFunction(
+      attach.get(),
+      base::StringPrintf(R"([{"targetId": "%s"}, "1.1"])", target_id.c_str()),
+      profile()));
+  EXPECT_EQ(manifest_errors::kCannotAccessPage, attach->GetError());
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,

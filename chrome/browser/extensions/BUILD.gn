@@ -2497,6 +2497,8 @@ source_set("browser_tests") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/push_messaging",
     "//chrome/browser/push_messaging:service_impl_public",
+    "//chrome/browser/pwc",
+    "//chrome/browser/pwc:features",
     "//chrome/browser/reading_list",
     "//chrome/browser/renderer_host",
     "//chrome/browser/resource_coordinator:utils",
