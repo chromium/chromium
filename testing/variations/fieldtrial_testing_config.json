@@ -25439,6 +25439,25 @@
             ]
         }
     ],
+    "UtfConversionAsciiFastPath": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260810",
+                    "enable_features": [
+                        "UtfConversionAsciiFastPath"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8BytecodeVerification": [
         {
             "platforms": [
