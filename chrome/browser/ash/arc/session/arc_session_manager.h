@@ -558,6 +558,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   bool provisioning_reported_ = false;
   bool skipped_terms_of_service_negotiation_ = false;
   bool activation_is_allowed_ = false;
+  bool is_post_oobe_shutdown_4gb_device_ = false;
   // Tri-state of if Activation is delayed. 1) std::nullopt means it is yet
   // unknown, 2) true means Activation is delayed by ARC-on-demand, and 3)
   // false means Activation is not delayed by ARC-on-demand.

@@ -53,6 +53,7 @@ BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);
 BASE_DECLARE_FEATURE(kPerAppLanguage);
 BASE_DECLARE_FEATURE(kResizeCompat);
 BASE_DECLARE_FEATURE(kSaveRawFilesOnTracing);
+BASE_DECLARE_FEATURE(kShutDownArcPostOobeProvisioning);
 BASE_DECLARE_FEATURE(kSkipDropCaches);
 BASE_DECLARE_FEATURE(kUnthrottleOnActiveAudioV2);
 BASE_DECLARE_FEATURE(kVideoDecoder);

@@ -231,6 +231,11 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
              "ArcSaveRawFilesOnTracing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to shut down ARCVM after post-OOBE provisioning on 4GB
+// devices.
+BASE_FEATURE(kShutDownArcPostOobeProvisioning,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, skip dropping ARCVM page cache after boot.
 BASE_FEATURE(kSkipDropCaches,
              "ArcSkipDropPageCache",

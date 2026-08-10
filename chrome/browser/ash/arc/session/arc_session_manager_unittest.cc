@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -324,6 +325,12 @@ class ArcSessionManagerTestBase : public testing::Test {
     ash::DlcserviceClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
+    // Default physical memory to 8GB so tests run deterministically regardless
+    // of host test runner RAM size.
+    memory_override_ =
+        std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
+            base::GiBU(8));
+
     ash::UpstartClient::InitializeFake();
 
     SetArcAvailableCommandLineForTesting(
@@ -421,6 +428,26 @@ class ArcSessionManagerTestBase : public testing::Test {
         /*new_user=*/false, /*has_active_session=*/false);
   }
 
+  // Helper method to simulate successful ARC OOBE provisioning for testing.
+  void SimulateOobeProvisioning() {
+    PrefService* const prefs = profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+    prefs->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe, true);
+
+    arc_session_manager()->SetProfile(profile());
+    arc_session_manager()->Initialize();
+    arc_session_manager()->RequestEnable();
+    arc_session_manager()->StartArcForTesting();
+
+    EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+    arc::mojom::ArcSignInResultPtr result =
+        arc::mojom::ArcSignInResult::NewSuccess(
+            arc::mojom::ArcSignInSuccess::SUCCESS);
+    arc_session_manager()->OnProvisioningFinished(
+        ArcProvisioningResult(std::move(result)));
+  }
+
  private:
   void StartPreferenceSyncing() const {
     PrefServiceSyncableFromProfile(profile_.get())
@@ -442,6 +469,8 @@ class ArcSessionManagerTestBase : public testing::Test {
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
+  std::unique_ptr<base::test::ScopedAmountOfPhysicalMemoryOverride>
+      memory_override_;
 };
 
 class ArcSessionManagerTest : public ArcSessionManagerTestBase {
@@ -1098,6 +1127,60 @@ TEST_F(ArcSessionManagerTest, PlayStoreSuppressed) {
   EXPECT_FALSE(arc_session_manager()->IsPlaystoreLaunchRequestedForTesting());
 
   // Correctly stop service.
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_4GbDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kShutDownArcPostOobeProvisioning);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiBU(4));
+
+  SimulateOobeProvisioning();
+
+  // On 4GB device, provisioning initiated from OOBE shuts down ARCVM and
+  // transitions state to READY.
+  EXPECT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  // Subsequent user action (e.g. launching Play Store) activates ARCVM.
+  arc_session_manager()->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kUserLaunchAction);
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_8GbDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kShutDownArcPostOobeProvisioning);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiBU(8));
+
+  SimulateOobeProvisioning();
+
+  // On 8GB device, ARCVM remains active after OOBE provisioning.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(arc::kShutDownArcPostOobeProvisioning);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiBU(4));
+
+  SimulateOobeProvisioning();
+
+  // When feature is disabled, ARCVM remains active even on 4GB device.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
   arc_session_manager()->Shutdown();
 }
 
