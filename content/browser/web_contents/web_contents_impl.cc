@@ -1421,6 +1421,10 @@ WebContentsImpl::~WebContentsImpl() {
 
   rwh_input_event_router_.reset();
 
+  if (text_input_manager_ && text_input_manager_->HasObserver(this)) {
+    text_input_manager_->RemoveObserver(this);
+  }
+
   WebContentsImpl* outermost = GetOutermostWebContents();
   if (this != outermost && ContainsOrIsFocusedWebContents()) {
     // If the current WebContents is in focus, unset it.
@@ -6563,6 +6567,62 @@ const std::optional<gfx::Rect> WebContentsImpl::GetTextSelectionBounds(
     }
   }
   return std::nullopt;
+}
+
+const std::optional<gfx::Point> WebContentsImpl::GetFocusSelectionPoint(
+    RenderFrameHost* render_frame_host) const {
+  if (text_input_manager_ && render_frame_host) {
+    auto* view =
+        static_cast<RenderWidgetHostViewBase*>(render_frame_host->GetView());
+    RenderWidgetHostViewBase* root_view = view->GetRootView();
+    if (view && root_view) {
+      const auto* region = text_input_manager_->GetSelectionRegion(view);
+      if (region && region->focus.type() != gfx::SelectionBound::EMPTY) {
+        gfx::Point start = region->focus.edge_start_rounded();
+        gfx::Point end = region->focus.edge_end_rounded();
+        gfx::Rect bounds = gfx::BoundingRect(start, end);
+        gfx::Point origin = bounds.origin();
+        origin += root_view->GetViewBounds().OffsetFromOrigin();
+        origin += gfx::Vector2d(bounds.width(), bounds.height());
+        return origin;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+base::CallbackListSubscription
+WebContentsImpl::RegisterFocusSelectionBoundsChanged(
+    FocusSelectionBoundsChangedCallback callback) {
+  if (!text_input_manager_) {
+    // Although we could use `GetTextInputManager()`, we'd also need a lookup
+    // that only returns any existing manager during destruction, and current
+    // callers don't need this.
+    NOTIMPLEMENTED();
+    return {};
+  }
+  if (!text_input_manager_->HasObserver(this)) {
+    text_input_manager_->AddObserver(this);
+  }
+  focus_selection_bounds_changed_callback_list_.set_removal_callback(
+      base::BindRepeating(
+          &WebContentsImpl::OnFocusSelectionBoundsChangedSubscriptionRemoved,
+          base::Unretained(this)));
+
+  return focus_selection_bounds_changed_callback_list_.Add(std::move(callback));
+}
+
+void WebContentsImpl::OnFocusSelectionBoundsChangedSubscriptionRemoved() {
+  if (focus_selection_bounds_changed_callback_list_.empty() &&
+      text_input_manager_ && text_input_manager_->HasObserver(this)) {
+    text_input_manager_->RemoveObserver(this);
+  }
+}
+
+void WebContentsImpl::OnSelectionBoundsChanged(
+    TextInputManager* text_input_manager,
+    RenderWidgetHostViewBase* updated_view) {
+  focus_selection_bounds_changed_callback_list_.Notify(updated_view);
 }
 
 void WebContentsImpl::ResizeDueToAutoResize(

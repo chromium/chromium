@@ -18,6 +18,7 @@ namespace dictation {
 
 class SessionUiDelegate;
 class DictationBubbleUi;
+class DictationOverlayView;
 
 class SessionUiImpl : public SessionUi {
  public:
@@ -34,6 +35,7 @@ class SessionUiImpl : public SessionUi {
   void OnError(StreamType stream_type) override;
   void OnStopped() override;
   void UpdateAudioLevel(float audio_level) override;
+  void OnStartedStream(content::GlobalDOMNodeId target_id) override;
 
   void OnDictationBubbleCloseClicked();
   void OnToggleActiveStreamClicked();
@@ -57,6 +59,9 @@ class SessionUiImpl : public SessionUi {
   // This is the main bubble/toast that shows up at the top-center of the
   // screen.
   std::unique_ptr<DictationBubbleUi> bubble_ui_;
+
+  // This is the overlay button that follows the caret.
+  std::unique_ptr<DictationOverlayView> overlay_view_;
 
   base::WeakPtrFactory<SessionUiImpl> weak_ptr_factory_{this};
 };

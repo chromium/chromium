@@ -36,6 +36,9 @@ extern const base::FeatureParam<bool> kShowPartials;
 // If true, uses the Web Speech API backend instead of the cloud backend.
 extern const base::FeatureParam<bool> kWebSpeechApiBackend;
 
+// If true, shows the overlay bubble that follows the caret.
+extern const base::FeatureParam<bool> kShowCaretBubble;
+
 }  // namespace dictation
 
 #endif  // CHROME_BROWSER_DICTATION_FEATURES_H_

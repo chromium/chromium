@@ -3972,6 +3972,27 @@ TEST_F(WebContentsImplTest, OnKeepAliveRequestCreated) {
             observer.fetch_keepalive_request().keepalive_token);
 }
 
+TEST_F(WebContentsImplTest, RegisterFocusSelectionBoundsChanged) {
+  TextInputManager* text_input_manager = contents()->GetTextInputManager();
+  ASSERT_TRUE(text_input_manager);
+  EXPECT_FALSE(text_input_manager->HasObserver(contents()));
+
+  int call_count = 0;
+  base::CallbackListSubscription subscription =
+      contents()->RegisterFocusSelectionBoundsChanged(
+          base::BindLambdaForTesting(
+              [&call_count](RenderWidgetHostView* view) { call_count++; }));
+
+  EXPECT_TRUE(text_input_manager->HasObserver(contents()));
+  EXPECT_EQ(0, call_count);
+
+  contents()->OnSelectionBoundsChanged(text_input_manager, nullptr);
+  EXPECT_EQ(1, call_count);
+
+  subscription = base::CallbackListSubscription();
+  EXPECT_FALSE(text_input_manager->HasObserver(contents()));
+}
+
 class WebContentsImplTestKeyboardEvents
     : public WebContentsImplTest,
       public testing::WithParamInterface<blink::WebInputEvent::Type> {};

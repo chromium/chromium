@@ -49,6 +49,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
@@ -217,6 +218,7 @@ class CONTENT_EXPORT WebContentsImpl
       public ui::NativeThemeObserver,
       public ui::ColorProviderSourceObserver,
       public SlowWebPreferenceCacheObserver,
+      public TextInputManager::Observer,
       public input::RenderWidgetHostInputEventRouter::Delegate,
       public base::trace_event::TraceSessionObserver {
  public:
@@ -1186,6 +1188,10 @@ class CONTENT_EXPORT WebContentsImpl
                                         bool show_selection_menu) override;
   const std::optional<gfx::Rect> GetTextSelectionBounds(
       RenderFrameHost* render_frame_host) const override;
+  const std::optional<gfx::Point> GetFocusSelectionPoint(
+      RenderFrameHost* render_frame_host) const override;
+  base::CallbackListSubscription RegisterFocusSelectionBoundsChanged(
+      FocusSelectionBoundsChangedCallback callback) override;
   input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   void GetRenderWidgetHostAtPointAsynchronously(
       RenderWidgetHostViewBase* root_view,
@@ -1323,6 +1329,11 @@ class CONTENT_EXPORT WebContentsImpl
   gfx::ColorSpace GetOutputColorSpace(gfx::ContentColorUsage color_usage,
                                       bool needs_alpha) override;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // TextInputManager::Observer implementation:
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override;
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
@@ -2293,6 +2304,8 @@ class CONTENT_EXPORT WebContentsImpl
   void ApplyPrimaryPageSubframeImportance();
 #endif
 
+  void OnFocusSelectionBoundsChangedSubscriptionRemoved();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2649,6 +2662,9 @@ class CONTENT_EXPORT WebContentsImpl
   // IME-related state for RenderWidgetHosts on the inner WebContents is tracked
   // by the TextInputManager in the outer WebContents.
   std::unique_ptr<TextInputManager> text_input_manager_;
+
+  base::RepeatingCallbackList<void(RenderWidgetHostView*)>
+      focus_selection_bounds_changed_callback_list_;
 
   // Tests can set this to true in order to force this web contents to always
   // return nullptr for the above `text_input_manager_`, effectively blocking

@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace dictation {
 
@@ -49,14 +51,24 @@ DictationInteractiveBrowserTestBase::CheckHasSession(
 }
 
 DictationInteractiveBrowserTestBase::MultiStep
-DictationInteractiveBrowserTestBase::StartSession() {
+DictationInteractiveBrowserTestBase::StartSession(
+    std::unique_ptr<TargetDetails> target_details) {
   return Steps(
-      Do([this] {
-        tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+      Do([this, target_details = std::move(target_details)] {
+        TargetDetails target = target_details
+                                   ? *target_details
+                                   : DefaultInPageTarget(web_contents());
+        content::RenderFrameHost* rfh =
+            target.target_id.document.AsRenderFrameHostIfValid();
+        CHECK(rfh);
+        content::WebContents* web_contents =
+            content::WebContents::FromRenderFrameHost(rfh);
+        CHECK(web_contents);
+        tabs::TabInterface* tab =
+            tabs::TabInterface::GetFromContents(web_contents);
         CHECK(tab);
         dictation_service().StartSession(
-            *tab, DefaultInPageTarget(web_contents()),
-            DictationSessionEntryPoint::kContextMenu);
+            *tab, target, DictationSessionEntryPoint::kContextMenu);
         if (dictation_service().session_controller()) {
           last_started_provider_ = static_cast<ListenerStreamProvider*>(
                                        dictation_service()
@@ -76,6 +88,40 @@ DictationInteractiveBrowserTestBase::StartSession() {
         }
       }),
       ExtensionAPIWaitForStreamStart());
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::StartSession() {
+  return StartSession(nullptr);
+}
+
+DictationInteractiveBrowserTestBase::MultiStep
+DictationInteractiveBrowserTestBase::StartSessionWithTarget(
+    ui::ElementIdentifier web_contents_id,
+    std::string_view query_selector) {
+  const DeepQuery where{std::string(query_selector)};
+  auto target_details = std::make_unique<TargetDetails>();
+  TargetDetails* raw_target_details = target_details.get();
+  return Steps(
+      ExecuteJsAt(web_contents_id, where, "el => el.focus()"),
+      WithElement(
+          web_contents_id,
+          [raw_target_details,
+           selector_str = std::string(query_selector)](ui::TrackedElement* el) {
+            content::WebContents* wc =
+                AsInstrumentedWebContents(el)->web_contents();
+            CHECK(wc);
+            // TODO(mcnee): Don't assume the element is in the main frame.
+            std::optional<int> dom_node_id =
+                content::GetDOMNodeId(*wc->GetPrimaryMainFrame(), selector_str);
+            CHECK(dom_node_id.has_value());
+
+            // TODO(mcnee): Set whether the target is richly editable.
+            *raw_target_details = TargetDetails(content::GlobalDOMNodeId{
+                wc->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+                blink::DOMNodeIdType(dom_node_id.value())});
+          }),
+      StartSession(std::move(target_details)));
 }
 
 DictationInteractiveBrowserTestBase::MultiStep

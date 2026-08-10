@@ -9,17 +9,20 @@ assert(toolkit_views)
 source_set("dictation") {
   public = [
     "dictation_bubble_ui.h",
+    "dictation_overlay_view.h",
     "onboarding_dialog_controller.h",
     "waveform_view.h",
   ]
   sources = [
     "dictation_bubble_ui.cc",
+    "dictation_overlay_view.cc",
     "onboarding_dialog_controller.cc",
     "waveform_view.cc",
   ]
 
   public_deps = [
     "//base",
+    "//content/public/browser",
     "//ui/base",
     "//ui/gfx",
     "//ui/views",
@@ -43,7 +46,10 @@ source_set("dictation") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dictation_bubble_ui_unittest.cc" ]
+  sources = [
+    "dictation_bubble_ui_unittest.cc",
+    "dictation_overlay_view_unittest.cc",
+  ]
   deps = [
     ":dictation",
     "//base",
