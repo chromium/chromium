@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/uuid.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,25 +22,16 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace context_hub {
-struct TabGroupEntry;
-}  // namespace context_hub
-
 class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                               public context_hub::ContextHubService::Observer {
  public:
   class TabProvider {
    public:
     virtual ~TabProvider() = default;
-    virtual std::vector<content::WebContents*> GetTabs() = 0;
-    virtual std::vector<content::WebContents*> GetUngroupedTabs() = 0;
-    virtual void SwitchToTab(int64_t tab_id) = 0;
-    virtual bool ConfirmTabGroups(
-        base::span<const context_hub::TabGroupEntry> groups) = 0;
-    virtual void RemoveGroupFromTabstripIfOpen(
-        const base::Uuid& saved_guid) = 0;
-    virtual void UngroupGroupFromTabstripIfOpen(
-        const base::Uuid& saved_guid) = 0;
+    virtual std::vector<content::WebContents*> GetTabs(
+        content::WebContents* web_contents) = 0;
+    virtual void SwitchToTab(content::WebContents* web_contents,
+                             int64_t tab_id) = 0;
   };
 
   ContextHubPageHandler(

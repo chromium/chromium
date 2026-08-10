@@ -83,14 +83,7 @@ source_set("context_hub_page_handler") {
   ]
 
   if (!is_android) {
-    sources += [
-      "context_hub_tab_provider_desktop.cc",
-      "context_hub_tab_provider_desktop.h",
-    ]
-    deps += [
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//ui/base",
-    ]
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
 }
 
@@ -128,18 +121,12 @@ source_set("unit_tests") {
     "//chrome/browser/context_hub",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/personal_context",
-    "//chrome/browser/tab_group_sync:factories",
     "//chrome/test:test_support",
     "//components/personal_context/core:test_support",
     "//components/personal_context/proto:personal_context_proto",
-    "//components/saved_tab_groups/test_support",
     "//content/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (!is_android) {
-    sources += [ "context_hub_tab_provider_desktop_unittest.cc" ]
-  }
 }
