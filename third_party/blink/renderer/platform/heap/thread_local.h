@@ -46,7 +46,24 @@
 #endif
 #endif
 
-#if defined(BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY)
+// Only inline the getter where the TLS model resolves the variable with a
+// call-free access, so that inlining removes the call boundary entirely:
+// "initial-exec" on Windows and "local-exec" on Linux/ChromeOS. Elsewhere the
+// access is itself a call -- Android and all component builds go through
+// __tls_get_addr ("local-dynamic"), and Apple routes every thread_local
+// through Darwin's _tlv_get_addr thunk regardless of tls_model -- so keep the
+// out-of-line NOINLINE getter that has always shipped.
+// TODO(Shuangshuang): Inlining on Apple would still fold away the outer getter
+// call (2 -> 1), but measured a regression on M1. Investigate whether copying
+// the _tlv_get_addr sequence into every call site is the cause.
+#if !BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_APPLE)
+#define BLINK_HEAP_INLINE_THREAD_LOCAL_GETTER 1
+#else
+#define BLINK_HEAP_INLINE_THREAD_LOCAL_GETTER 0
+#endif
+
+#if !BLINK_HEAP_INLINE_THREAD_LOCAL_GETTER
 
 #define BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Name, Type, Member) \
   NOINLINE static Type Name();
@@ -55,7 +72,7 @@
     return Member;                                                \
   }
 
-#else  // !defined(BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY)
+#else  // BLINK_HEAP_INLINE_THREAD_LOCAL_GETTER
 
 #define BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Name, Type, Member) \
   ALWAYS_INLINE static Type Name() {                               \
@@ -63,6 +80,6 @@
   }
 #define BLINK_HEAP_DEFINE_THREAD_LOCAL_GETTER(Name, Type, Member)
 
-#endif  // defined(BLINK_HEAP_HIDE_THREAD_LOCAL_IN_LIBRARY)
+#endif  // BLINK_HEAP_INLINE_THREAD_LOCAL_GETTER
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_LOCAL_H_
