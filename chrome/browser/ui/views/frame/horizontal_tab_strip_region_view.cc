@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/shared/new_tab_button.h"
@@ -64,6 +65,7 @@
 #include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -771,6 +773,11 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
                                views::LayoutAlignment::kCenter);
   }
 
+  if (browser) {
+    scroll_button_container_ =
+        AddChildView(std::make_unique<TabScrollButtonContainer>(browser));
+  }
+
   if (browser && ShouldShowNewTabButton(browser)) {
     auto new_tab_button = std::make_unique<shared::NewTabButton>(
         browser,
@@ -797,6 +804,9 @@ HorizontalTabStripRegionViewNew::~HorizontalTabStripRegionViewNew() {
   if (new_tab_button_) {
     RemoveChildViewT(std::exchange(new_tab_button_, nullptr));
   }
+  if (scroll_button_container_) {
+    RemoveChildViewT(std::exchange(scroll_button_container_, nullptr));
+  }
 }
 
 bool HorizontalTabStripRegionViewNew::IsPositionInWindowCaption(
@@ -807,6 +817,16 @@ bool HorizontalTabStripRegionViewNew::IsPositionInWindowCaption(
   if (combo_button_ && IsHitInView(combo_button_, point)) {
     return false;
   }
+
+  if (scroll_button_container_ &&
+      IsHitInView(scroll_button_container_, point)) {
+    if (!scroll_button_container_->IsPositionInWindowCaption(
+            views::View::ConvertPointToTarget(this, scroll_button_container_,
+                                              point))) {
+      return false;
+    }
+  }
+
   if (tab_strip_view() && IsHitInView(tab_strip_view(), point)) {
     gfx::Point point_in_tab_strip = point;
     views::View::ConvertPointToTarget(this, tab_strip_view(),
@@ -835,10 +855,20 @@ views::View::Views HorizontalTabStripRegionViewNew::GetChildrenInZOrder() {
   if (reserved_grab_handle_space_) {
     children.emplace_back(reserved_grab_handle_space_.get());
   }
+  if (scroll_button_container_) {
+    children.emplace_back(scroll_button_container_.get());
+  }
   return children;
 }
 
 void HorizontalTabStripRegionViewNew::Layout(PassKey) {
+  views::LayoutManagerBase* layout_manager =
+      static_cast<views::LayoutManagerBase*>(GetLayoutManager());
+  views::ManualLayoutUtil layout_util(layout_manager);
+
+  bool show_scroll_buttons = ComputeIsUnpinnedTabsScrollable(layout_util);
+
+  layout_util.SetViewHidden(scroll_button_container_, !show_scroll_buttons);
   LayoutSuperclass<BaseTabStripRegionView>(this);
 }
 
@@ -944,6 +974,47 @@ gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
 void HorizontalTabStripRegionViewNew::OnTabStripViewSet() {
   const size_t index = combo_button_ ? 1 : 0;
   ReorderChildView(tab_strip_view(), index);
+
+  CHECK(tab_strip_view());
+
+  if (scroll_button_container_) {
+    scroll_button_container_->SetScrollView(
+        tab_strip_view()->unpinned_tabs_scroll_view());
+  }
+}
+
+void HorizontalTabStripRegionViewNew::OnTabStripViewWillClear() {
+  if (scroll_button_container_) {
+    scroll_button_container_->SetScrollView(nullptr);
+  }
+}
+
+bool HorizontalTabStripRegionViewNew::ComputeIsUnpinnedTabsScrollable(
+    views::ManualLayoutUtil& layout_util) {
+  if (!scroll_button_container_ || !tab_strip_view()) {
+    return false;
+  }
+
+  views::ManualLayoutUtil::TemporaryExclusion exclusion =
+      layout_util.TemporarilyExcludeFromLayout(scroll_button_container_);
+  views::ProposedLayout region_view_layout_without_scroll_buttons =
+      static_cast<views::LayoutManagerBase*>(GetLayoutManager())
+          ->GetProposedLayout(size());
+
+  gfx::Size tab_strip_view_size_no_scroll_buttons =
+      region_view_layout_without_scroll_buttons.GetLayoutFor(tab_strip_view())
+          ->bounds.size();
+  views::ProposedLayout tab_strip_view_layout_no_scroll_buttons =
+      static_cast<views::LayoutManagerBase*>(
+          tab_strip_view()->GetLayoutManager())
+          ->GetProposedLayout(tab_strip_view_size_no_scroll_buttons);
+
+  gfx::Size unpinned_scroll_view_size =
+      tab_strip_view_layout_no_scroll_buttons
+          .GetLayoutFor(tab_strip_view()->unpinned_tabs_scroll_view())
+          ->bounds.size();
+  return GetUnpinnedTabsContainer()->GetMinimumSize().width() >
+         unpinned_scroll_view_size.width();
 }
 
 BEGIN_METADATA(HorizontalTabStripRegionViewNew)
