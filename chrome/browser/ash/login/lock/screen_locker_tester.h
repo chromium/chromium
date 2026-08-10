@@ -8,12 +8,16 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_auto_reset.h"
 
 class AccountId;
 
 namespace ash {
 
+class Authenticator;
 class FakeSessionManagerClient;
+class ScreenLocker;
 class ScreenLockerController;
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
@@ -77,6 +81,10 @@ class ScreenLockerTester {
   // Same as UnlockWithPassword but submits even if the password auth disabled.
   void ForceSubmitPassword(const AccountId& account_id,
                            const std::string& password);
+
+ private:
+  base::WeakAutoReset<ScreenLocker, scoped_refptr<Authenticator>>
+      authenticator_reset_;
 };
 
 }  // namespace ash

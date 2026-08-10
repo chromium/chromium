@@ -194,8 +194,8 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
   session_manager::SessionManager::Get()->NotifyUnlockAttempt(
       /*success*/ false, TransformUnlockType());
 
-  if (auth_status_consumer_) {
-    auth_status_consumer_->OnAuthFailure(error);
+  if (auth_status_consumer_for_testing_) {
+    auth_status_consumer_for_testing_->OnAuthFailure(error);
   }
 
   if (pending_auth_state_) {
@@ -267,8 +267,8 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
     pending_auth_state_.reset();
   }
 
-  if (auth_status_consumer_) {
-    auth_status_consumer_->OnAuthSuccess(user_context);
+  if (auth_status_consumer_for_testing_) {
+    auth_status_consumer_for_testing_->OnAuthSuccess(user_context);
   }
   weak_factory_.InvalidateWeakPtrs();
 
@@ -311,8 +311,8 @@ void ScreenLocker::Authenticate(std::unique_ptr<UserContext> user_context,
   // Do not attempt authentication if it is disabled for the user.
   if (IsAuthTemporarilyDisabledForUser(user_context->GetAccountId())) {
     VLOG(1) << "Authentication disabled for user.";
-    if (auth_status_consumer_) {
-      auth_status_consumer_->OnAuthFailure(
+    if (auth_status_consumer_for_testing_) {
+      auth_status_consumer_for_testing_->OnAuthFailure(
           AuthFailure(AuthFailure::AUTH_DISABLED));
     }
     if (callback) {
@@ -357,8 +357,8 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
   // Do not attempt authentication if it is disabled for the user.
   if (IsAuthTemporarilyDisabledForUser(account_id)) {
     VLOG(1) << "Authentication disabled for user.";
-    if (auth_status_consumer_) {
-      auth_status_consumer_->OnAuthFailure(
+    if (auth_status_consumer_for_testing_) {
+      auth_status_consumer_for_testing_->OnAuthFailure(
           AuthFailure(AuthFailure::AUTH_DISABLED));
     }
     std::move(callback).Run(false);
@@ -370,8 +370,8 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
           CHECK_DEREF(g_browser_process->local_state()), account_id)) {
     LOG(ERROR)
         << "Challenge-response authentication isn't supported for the user";
-    if (auth_status_consumer_) {
-      auth_status_consumer_->OnAuthFailure(
+    if (auth_status_consumer_for_testing_) {
+      auth_status_consumer_for_testing_->OnAuthFailure(
           AuthFailure(AuthFailure::UNLOCK_FAILED));
     }
     std::move(callback).Run(false);
@@ -475,10 +475,6 @@ user_manager::UserList ScreenLocker::GetUsersToShow() const {
   return users_to_show;
 }
 
-void ScreenLocker::SetLoginStatusConsumer(AuthStatusConsumer* consumer) {
-  auth_status_consumer_ = consumer;
-}
-
 // static
 void ScreenLocker::Show() {
   VLOG(1) << "ScreenLocker::Show()";
@@ -568,9 +564,20 @@ bool ScreenLocker::IsAuthTemporarilyDisabledForUser(
   return users_with_temporarily_disabled_auth_.contains(account_id);
 }
 
-void ScreenLocker::SetAuthenticatorsForTesting(
+base::WeakAutoReset<ScreenLocker, scoped_refptr<Authenticator>>
+ScreenLocker::SetAuthenticatorsForTesting(
     scoped_refptr<Authenticator> authenticator) {
-  authenticator_ = std::move(authenticator);
+  return base::WeakAutoReset<ScreenLocker, scoped_refptr<Authenticator>>(
+      weak_factory_.GetWeakPtr(), &ScreenLocker::authenticator_,
+      std::move(authenticator));
+}
+
+base::WeakAutoReset<ScreenLocker, raw_ptr<AuthStatusConsumer>>
+ScreenLocker::SetLoginStatusConsumerForTesting(AuthStatusConsumer* consumer) {
+  CHECK(!auth_status_consumer_for_testing_);
+  return base::WeakAutoReset<ScreenLocker, raw_ptr<AuthStatusConsumer>>(
+      weak_factory_.GetWeakPtr(),
+      &ScreenLocker::auth_status_consumer_for_testing_, consumer);
 }
 
 // static
@@ -806,9 +813,9 @@ void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
     }
   }
 
-  if (auth_status_consumer_) {
+  if (auth_status_consumer_for_testing_) {
     AuthFailure failure(AuthFailure::UNLOCK_FAILED);
-    auth_status_consumer_->OnAuthFailure(failure);
+    auth_status_consumer_for_testing_->OnAuthFailure(failure);
   }
 }
 

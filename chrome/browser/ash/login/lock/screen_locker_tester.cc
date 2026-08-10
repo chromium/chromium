@@ -11,6 +11,8 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,17 +42,14 @@ bool IsScreenLockerLocked() {
 // it needs to directly reference the global ScreenLocker.
 class LoginAttemptObserver : public AuthStatusConsumer {
  public:
-  LoginAttemptObserver() : AuthStatusConsumer() {
-    ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(this);
-  }
+  LoginAttemptObserver()
+      : consumer_reset_(CHECK_DEREF(ScreenLocker::default_screen_locker())
+                            .SetLoginStatusConsumerForTesting(this)) {}
 
   LoginAttemptObserver(const LoginAttemptObserver&) = delete;
   LoginAttemptObserver& operator=(const LoginAttemptObserver&) = delete;
 
-  ~LoginAttemptObserver() override {
-    if (ScreenLocker::default_screen_locker())
-      ScreenLocker::default_screen_locker()->SetLoginStatusConsumer(nullptr);
-  }
+  ~LoginAttemptObserver() override = default;
 
   void WaitForAttempt() {
     if (!login_attempted_) {
@@ -73,10 +72,13 @@ class LoginAttemptObserver : public AuthStatusConsumer {
  private:
   void LoginAttempted() {
     login_attempted_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
+  base::WeakAutoReset<ScreenLocker, raw_ptr<AuthStatusConsumer>>
+      consumer_reset_;
   bool login_attempted_ = false;
   bool auth_succeeded_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -131,7 +133,7 @@ void ScreenLockerTester::SetUnlockPassword(const AccountId& account_id,
 
   auto* locker = ScreenLocker::default_screen_locker();
   CHECK(locker);
-  locker->SetAuthenticatorsForTesting(
+  authenticator_reset_ = locker->SetAuthenticatorsForTesting(
       base::MakeRefCounted<StubAuthenticator>(locker, user_context));
 }
 
