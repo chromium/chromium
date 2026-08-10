@@ -6,16 +6,26 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AT_MEMORY_HANDLER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace blink {
 class WebElement;
-}
+class WebFormControlElement;
+class WebKeyboardEvent;
+class WebLocalFrame;
+class WebRange;
+struct RendererPreferences;
+}  // namespace blink
 
 namespace autofill {
+
+class AutofillAgent;
+class SynchronousFormCache;
 
 // Handles AtMemory-related interactions on the renderer side.
 //
@@ -32,16 +42,41 @@ class AtMemoryHandler {
     size_t value_hash = 0;
   };
 
-  AtMemoryHandler();
+  explicit AtMemoryHandler(AutofillAgent* agent);
   AtMemoryHandler(const AtMemoryHandler&) = delete;
   AtMemoryHandler& operator=(const AtMemoryHandler&) = delete;
   ~AtMemoryHandler();
 
-  // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
-  // `element`. If `pop` is true, removes the entry found.
-  std::optional<AskForValuesToFillInfo> FindAskForValuesToFill(
-      const blink::WebElement& element,
-      bool pop);
+  // Handles value changes in contenteditable elements. Returns true if AtMemory
+  // handled the event (i.e. triggered suggestions).
+  bool ContentEditableDidChange(const blink::WebElement& element);
+
+  // Handles value changes in text fields. Returns true if AtMemory handled the
+  // event (i.e. triggered suggestions).
+  bool OnTextFieldValueChanged(const blink::WebFormControlElement& element,
+                               const SynchronousFormCache& form_cache);
+
+  // Handles key down events for AtMemory (e.g. keyboard shortcuts). Returns
+  // true if the event was handled (i.e. default action should be prevented).
+  bool DidReceiveKeyDown(const blink::WebElement& element,
+                         const blink::WebKeyboardEvent& event);
+
+  // Tries to preview filling `value` into `form_control` at the location where
+  // AtMemory was last triggered on `form_control`.
+  bool PreviewReplaceSelectionForAtMemory(
+      blink::WebFormControlElement& form_control,
+      const std::u16string& value);
+
+  // Tries to fill `value` into `form_control` at the location where AtMemory
+  // was last triggered on `form_control`.
+  void ReplaceSelectionForAtMemory(blink::WebFormControlElement& form_control,
+                                   const std::u16string& value);
+
+  // Tries to fill `value` into `content_editable` at the location where
+  // AtMemory was last triggered on `content_editable`.
+  void ReplaceSelectionForAtMemoryForContentEditable(
+      blink::WebElement& content_editable,
+      const std::u16string& value);
 
   // Stores metadata for an AskForValuesToFill() on `element` if
   // `trigger_source` is related to AtMemory.
@@ -50,6 +85,21 @@ class AtMemoryHandler {
       AutofillSuggestionTriggerSource trigger_source);
 
  private:
+  const blink::RendererPreferences* GetRendererPreferences() const;
+
+  bool ShouldTriggerAtMemorySearch(
+      const blink::WebFormControlElement& element) const;
+  bool ShouldTriggerAtMemorySearchForContentEditable(
+      blink::WebLocalFrame* frame,
+      const blink::WebRange& selection) const;
+
+  // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
+  // `element`. If `pop` is true, removes the entry found.
+  std::optional<AskForValuesToFillInfo> FindAskForValuesToFill(
+      const blink::WebElement& element,
+      bool pop);
+
+  const raw_ref<AutofillAgent> agent_;
   base::circular_deque<AskForValuesToFillInfo>
       last_at_memory_ask_for_values_to_fills_;
 };
