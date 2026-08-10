@@ -182,7 +182,6 @@ const CGFloat kFakeboxToQuickActionsPaddingPreferred = 12.0;
 const CGFloat kQuickActionsToMostVisitedPaddingPreferred = 36.0;
 
 // Control Padding.
-const CGFloat kLogoToFakeboxPaddingControl = 26.0;
 const CGFloat kFakeboxToQuickActionsPaddingControl = 8.0;
 const CGFloat kQuickActionsToMostVisitedPaddingControl = 20.0;
 const CGFloat kReducedModuleSpacingControl = 14.0;
@@ -300,9 +299,9 @@ CGFloat FakeToolbarHeight() {
 
 CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
                             UITraitCollection* trait_collection) {
-  CGFloat header_height = DoodleTopMargin(logo_state, trait_collection) +
+  CGFloat header_height = LogoTopPadding(logo_state, trait_collection) +
                           DoodleHeight(logo_state, trait_collection) +
-                          SearchFieldTopMargin(logo_state) +
+                          LogoToFakeboxPadding(logo_state) +
                           FakeOmniboxHeight() +
                           ntp_header::kScrolledToTopOmniboxBottomMargin +
                           ceil(HeaderSeparatorHeight());
@@ -330,23 +329,24 @@ CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
              : kNTPShrunkLogoSearchFieldBottomPadding;
 }
 
-CGFloat LogoTopPadding(UITraitCollection* trait_collection) {
+CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
+                       UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kDoodleTopMarginRegularXRegular;
   }
   switch (GetNTPPaddingUpdateVariation()) {
     case NTPPaddingUpdateVariation::kTightPadding:
-      return kLogoTopPaddingTight;
+      return FakeToolbarHeight() + kLogoTopPaddingTight;
     case NTPPaddingUpdateVariation::kMediumPadding:
-      return kLogoTopPaddingMedium;
+      return FakeToolbarHeight() + kLogoTopPaddingMedium;
     case NTPPaddingUpdateVariation::kPreferredPadding:
-      return kLogoTopPaddingPreferred;
+      return FakeToolbarHeight() + kLogoTopPaddingPreferred;
     case NTPPaddingUpdateVariation::kDisabled:
-      return DoodleTopMargin(SearchEngineLogoState::kLogo, trait_collection);
+      return DoodleTopMargin(logo_state, trait_collection);
   }
 }
 
-CGFloat LogoToFakeboxPadding() {
+CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
   switch (GetNTPPaddingUpdateVariation()) {
     case NTPPaddingUpdateVariation::kTightPadding:
       return kLogoToFakeboxPaddingTight;
@@ -355,7 +355,7 @@ CGFloat LogoToFakeboxPadding() {
     case NTPPaddingUpdateVariation::kPreferredPadding:
       return kLogoToFakeboxPaddingPreferred;
     case NTPPaddingUpdateVariation::kDisabled:
-      return kLogoToFakeboxPaddingControl;
+      return SearchFieldTopMargin(logo_state);
   }
 }
 

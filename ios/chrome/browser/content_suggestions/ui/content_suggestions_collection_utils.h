@@ -36,7 +36,6 @@ extern const CGFloat kFakeboxToQuickActionsPaddingPreferred;
 extern const CGFloat kQuickActionsToMostVisitedPaddingPreferred;
 
 // Control Padding.
-extern const CGFloat kLogoToFakeboxPaddingControl;
 extern const CGFloat kFakeboxToQuickActionsPaddingControl;
 extern const CGFloat kQuickActionsToMostVisitedPaddingControl;
 extern const CGFloat kReducedModuleSpacingControl;
@@ -50,12 +49,18 @@ extern const CGFloat kReducedModuleSpacingRegularXRegular;
 // in the computation.
 CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                      UITraitCollection* trait_collection);
-// Returns the proper margin to the top of the header for the doodle.
+// Legacy helper. Use `LogoTopPadding` instead. Returns the proper margin to the
+// top of the header for the doodle.
+// TODO(crbug.com/542594099): Remove legacy helpers once
+// `kNewTabPagePaddingUpdate` is launched.
 CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
                         UITraitCollection* trait_collection);
 // Returns the height of the separator line below the omnibox.
 CGFloat HeaderSeparatorHeight();
-// Returns the proper margin to the bottom of the doodle for the search field.
+// Legacy helper. Use `LogoToFakeboxPadding` instead. Returns the proper margin
+// to the bottom of the doodle for the search field.
+// TODO(crbug.com/542594099): Remove legacy helpers once
+// `kNewTabPagePaddingUpdate` is launched.
 CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state);
 // Returns the height of the Fake Omnibox on Home when it is not scrolled.
 CGFloat FakeOmniboxHeight();
@@ -77,10 +82,11 @@ CGFloat HeaderBottomPadding(UITraitCollection* trait_collection);
 // Spacing helper methods for kNewTabPagePaddingUpdate experiment arms.
 // Returns padding above the Google logo/doodle based on the enabled arm and
 // size class.
-CGFloat LogoTopPadding(UITraitCollection* trait_collection = nil);
+CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
+                       UITraitCollection* trait_collection);
 // Returns padding between the Google logo/doodle and fakebox based on the
 // enabled arm.
-CGFloat LogoToFakeboxPadding();
+CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state);
 // Returns padding between fakebox and Quick Actions based on the enabled arm.
 CGFloat FakeboxToQuickActionsPadding();
 // Returns padding between Quick Actions and Most Visited Tiles based on the
