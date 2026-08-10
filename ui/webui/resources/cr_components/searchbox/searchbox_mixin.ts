@@ -245,7 +245,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           },
           /*viaKeyboard=*/ e instanceof KeyboardEvent);
       this.getInputElement().setInput({
-        text: match.fillIntoEdit,
+        text: this.computeMatchFillIntoEdit_(match),
         inline: '',
         moveCursorToEnd: true,
       });
@@ -317,7 +317,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         // empty input will change to the value of the first result.
         await this.getDropdownElement().selectIndex(this.selectedMatchIndex);
         this.getInputElement().setInput({
-          text: this.selectedMatch!.fillIntoEdit,
+          text: this.computeMatchFillIntoEdit_(this.selectedMatch!),
           inline: '',
           moveCursorToEnd: true,
         });
@@ -567,7 +567,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       // Update the input.
-      const newFill = this.selectedMatch!.fillIntoEdit;
+      const newFill = this.computeMatchFillIntoEdit_(this.selectedMatch!);
       const newInline = this.selectedMatchIndex === 0 &&
               this.selectedMatch!.allowedToBeDefaultMatch ?
           this.selectedMatch!.inlineAutocompletion :
@@ -598,10 +598,20 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const input = this.getInputElement();
       assert(input);
       input.setInput({
-        text: this.selectedMatch!.fillIntoEdit,
+        text: this.computeMatchFillIntoEdit_(this.selectedMatch!),
         inline: '',
         moveCursorToEnd: true,
       });
+    }
+
+    private computeMatchFillIntoEdit_(match: AutocompleteMatch): string {
+      if (this.inputKeywordModel?.type === KeywordType.kInKeyword) {
+        const keyword = this.inputKeywordModel.keyword;
+        if (keyword && match.fillIntoEdit.startsWith(keyword + ' ')) {
+          return match.fillIntoEdit.substring(keyword.length + 1);
+        }
+      }
+      return match.fillIntoEdit;
     }
 
     private computeSelectedMatch_() {

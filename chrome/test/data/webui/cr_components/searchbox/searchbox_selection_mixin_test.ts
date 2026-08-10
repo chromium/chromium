@@ -30,6 +30,7 @@ class TestSearchboxSelectionMixinElement extends TestElementBase {
   override get isAimButtonVisible() {
     return this.isAimVisible;
   }
+
   override get showContextEntrypoint() {
     return this.showEntrypoint;
   }
