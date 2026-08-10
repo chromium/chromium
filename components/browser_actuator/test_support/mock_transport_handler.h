@@ -22,9 +22,8 @@ class MockTransportHandler : public TransportHandler {
   MockTransportHandler();
   ~MockTransportHandler() override;
 
-  MOCK_METHOD(void, OnMessage, (std::string_view payload), (override));
   MOCK_METHOD(void,
-              ProcessWakeUpMessage,
+              OnMessage,
               (const google::protobuf::MessageLite& message),
               (override));
 };
@@ -34,7 +33,7 @@ class CallbackTransportHandler : public TransportHandler {
   explicit CallbackTransportHandler(base::OnceClosure on_message_cb);
   ~CallbackTransportHandler() override;
 
-  void OnMessage(std::string_view payload) override;
+  void OnMessage(const google::protobuf::MessageLite& message) override;
 
  private:
   base::OnceClosure on_message_cb_;

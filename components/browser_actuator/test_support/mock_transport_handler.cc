@@ -17,7 +17,8 @@ CallbackTransportHandler::CallbackTransportHandler(
 
 CallbackTransportHandler::~CallbackTransportHandler() = default;
 
-void CallbackTransportHandler::OnMessage(std::string_view payload) {
+void CallbackTransportHandler::OnMessage(
+    const google::protobuf::MessageLite& message) {
   if (on_message_cb_) {
     base::OnceClosure cb = std::move(on_message_cb_);
     // The callback may synchronously delete `this`.

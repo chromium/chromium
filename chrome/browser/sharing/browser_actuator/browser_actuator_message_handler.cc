@@ -73,6 +73,6 @@ void BrowserActuatorMessageHandler::HandleGlicExperimentalTriggering(
     return;
   }
 
-  session->ProcessWakeUpMessage(
-      browser_actuator::PayloadType::kExperimentalTriggering, triggering);
+  session->OnMessage(browser_actuator::PayloadType::kExperimentalTriggering,
+                     triggering);
 }

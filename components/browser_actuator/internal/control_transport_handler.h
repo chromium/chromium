@@ -35,7 +35,7 @@ class ControlTransportHandler : public TransportHandler {
   ControlTransportHandler& operator=(const ControlTransportHandler&) = delete;
 
   // TransportHandler implementation:
-  void OnMessage(std::string_view payload) override;
+  void OnMessage(const google::protobuf::MessageLite& message) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

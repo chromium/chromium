@@ -19,14 +19,8 @@ class TransportHandler {
  public:
   virtual ~TransportHandler() = default;
 
-  // Process incoming downstream message.
-  // TODO(crbug.com/532660606): Replace this raw payload with a structured
-  // type once incoming payload protos are finalized.
-  virtual void OnMessage(std::string_view payload) = 0;
-
-  // Process initial or out-of-band message directed to this handler.
-  virtual void ProcessWakeUpMessage(
-      const google::protobuf::MessageLite& message) {}
+  // Process incoming downstream or wake-up message.
+  virtual void OnMessage(const google::protobuf::MessageLite& message) = 0;
 };
 
 }  // namespace browser_actuator

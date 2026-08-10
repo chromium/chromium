@@ -25,15 +25,18 @@ ControlTransportHandler::~ControlTransportHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ControlTransportHandler::OnMessage(std::string_view payload) {
+void ControlTransportHandler::OnMessage(
+    const google::protobuf::MessageLite& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ControlCommand command;
-  if (!command.ParseFromArray(payload.data(), payload.size())) {
-    DLOG(WARNING) << "Failed to parse ControlCommand payload";
+  if (message.GetTypeName() !=
+      ControlCommand::default_instance().GetTypeName()) {
+    DLOG(WARNING) << "Received unexpected message type: "
+                  << message.GetTypeName();
     return;
   }
+  const auto* command = static_cast<const ControlCommand*>(&message);
 
-  switch (command.command_case()) {
+  switch (command->command_case()) {
     case ControlCommand::kCloseChannel: {
       if (close_channel_cb_) {
         close_channel_cb_.Run();

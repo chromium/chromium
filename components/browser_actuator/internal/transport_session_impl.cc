@@ -42,21 +42,19 @@ base::expected<void, SendMessageError> TransportSessionImpl::SendMessage(
   return base::unexpected(SendMessageError::kChannelDisconnected);
 }
 
-void TransportSessionImpl::ProcessWakeUpMessage(
+void TransportSessionImpl::OnMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
-  std::ignore =
-      DispatchToHandlers(payload_type, [&message](TransportHandler* handler) {
-        handler->ProcessWakeUpMessage(message);
-      });
+  std::ignore = ProcessPayload(payload_type, message);
 }
 
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
-TransportSessionImpl::ProcessPayload(PayloadType payload_type,
-                                     std::string_view payload) {
-  return DispatchToHandlers(payload_type, [payload](TransportHandler* handler) {
-    handler->OnMessage(payload);
-  });
+TransportSessionImpl::ProcessPayload(
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message) {
+  return DispatchToHandlers(
+      payload_type,
+      [&message](TransportHandler* handler) { handler->OnMessage(message); });
 }
 
 base::expected<void, TransportSessionImpl::ProcessPayloadError>
@@ -164,23 +162,26 @@ void TransportSessionImpl::ProcessDownstreamMessage(
       break;
     }
     // Map ActuatorDownstreamPayloadType to public PayloadType
-    PayloadType public_type = PayloadType::kUnspecified;
     switch (typed_payload.payload_type()) {
+      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND: {
+        ControlCommand command;
+        if (!command.ParseFromString(typed_payload.proto_payload().value())) {
+          DLOG(WARNING) << "Failed to parse ControlCommand payload";
+          continue;
+        }
+        auto result = ProcessPayload(PayloadType::kControl, command);
+        if (!result.has_value()) {
+          DLOG(WARNING) << "Failed to process payload "
+                        << "error: " << static_cast<int>(result.error());
+        }
+        break;
+      }
       case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
-        public_type = PayloadType::kUnspecified;
-        break;
-      case ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND:
-        public_type = PayloadType::kControl;
-        break;
       default:
-        // Ignore unknown payload types
+        // Ignore unspecified or unknown payload types
+        DLOG(WARNING) << "Ignoring payload with unspecified or unknown type: "
+                      << typed_payload.payload_type();
         continue;
-    }
-    auto result =
-        ProcessPayload(public_type, typed_payload.proto_payload().value());
-    if (!result.has_value()) {
-      DLOG(WARNING) << "Failed to process payload "
-                    << "error: " << static_cast<int>(result.error());
     }
   }
 }

@@ -53,16 +53,15 @@ class TransportSessionImpl : public TransportSession {
       PayloadType payload_type,
       const google::protobuf::MessageLite& message) override;
 
-  void ProcessWakeUpMessage(
-      PayloadType payload_type,
-      const google::protobuf::MessageLite& message) override;
+  void OnMessage(PayloadType payload_type,
+                 const google::protobuf::MessageLite& message) override;
 
   // Routes a downstream message payload of a given `payload_type` to all active
   // handlers registered to receive it. Handlers are lazily instantiated from
   // the registry on the first message receipt for their payload_type.
   base::expected<void, ProcessPayloadError> ProcessPayload(
       PayloadType payload_type,
-      std::string_view payload);
+      const google::protobuf::MessageLite& message);
 
   // Processes a downstream message from the server by checking sequence numbers
   // and routing payloads to registered handlers.

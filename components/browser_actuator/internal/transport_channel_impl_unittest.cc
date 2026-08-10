@@ -78,16 +78,18 @@ class FakeMessageStreamClient : public MessageStreamClient {
 class FakeTransportHandler : public TransportHandler {
  public:
   explicit FakeTransportHandler(
-      base::RepeatingCallback<void(std::string_view)> on_message_cb)
+      base::RepeatingCallback<void(const google::protobuf::MessageLite&)>
+          on_message_cb)
       : on_message_cb_(std::move(on_message_cb)) {}
   ~FakeTransportHandler() override = default;
 
-  void OnMessage(std::string_view payload) override {
-    on_message_cb_.Run(payload);
+  void OnMessage(const google::protobuf::MessageLite& message) override {
+    on_message_cb_.Run(message);
   }
 
  private:
-  base::RepeatingCallback<void(std::string_view)> on_message_cb_;
+  base::RepeatingCallback<void(const google::protobuf::MessageLite&)>
+      on_message_cb_;
 };
 
 class FakeTransportHandlerFactory : public TransportHandlerFactory {
@@ -257,23 +259,27 @@ std::string SerializedDownstreamMessage(
 }
 
 TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
-  std::vector<std::string> received_messages;
+  ControlCommand command;
+
+  bool message_handled = false;
   FakeTransportHandlerFactory factory(
-      {PayloadType::kUnspecified},
+      {PayloadType::kControl},
       base::BindLambdaForTesting(
           [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
             return std::make_unique<FakeTransportHandler>(
-                base::BindLambdaForTesting([&](std::string_view payload) {
-                  received_messages.emplace_back(payload);
-                }));
+                base::BindLambdaForTesting(
+                    [&](const google::protobuf::MessageLite&) {
+                      message_handled = true;
+                    }));
           }));
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "payload_data"}}));
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
 
-  EXPECT_THAT(received_messages, testing::ElementsAre("payload_data"));
+  EXPECT_TRUE(message_handled);
 }
 
 TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
@@ -282,9 +288,11 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
           channel_->GetSessionRegistry());
   registry->GetOrCreateSession("s1");
 
+  ControlCommand command;
+
   bool first_message_handled = false;
   FakeTransportHandlerFactory factory(
-      {PayloadType::kUnspecified},
+      {PayloadType::kControl},
       base::BindLambdaForTesting(
           [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
             return std::make_unique<CallbackTransportHandler>(base::BindOnce(
@@ -298,8 +306,10 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "first_payload"},
-       {ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "second_payload"}}));
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()},
+       {ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
 
   EXPECT_TRUE(first_message_handled);
   EXPECT_EQ(registry->GetSession("s1"), nullptr);
