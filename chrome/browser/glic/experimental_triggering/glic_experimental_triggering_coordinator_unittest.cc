@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
@@ -29,12 +30,15 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -75,6 +79,13 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
   ~GlicExperimentalTriggeringCoordinatorTest() override = default;
 
   void SetUp() override {
+    // glic_enabling.cc returns UNAVAILABLE for managed machines, so force
+    // disable.
+    scoped_platform_management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetInstance()->GetForPlatform(),
+            policy::EnterpriseManagementAuthority::NONE);
+
     feature_list_.InitAndEnableFeature(features::kGlicExperimentalTriggering);
     ASSERT_TRUE(profile_manager_.SetUp());
 
@@ -153,6 +164,8 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_platform_management_override_;
   base::test::ScopedFeatureList feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
