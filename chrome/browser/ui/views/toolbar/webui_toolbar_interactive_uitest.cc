@@ -1638,7 +1638,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/538459286): Flaky on MSan due to clipboard synchronization
+// timeouts.
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
 #define MAYBE_CopyTextFromWebUIOmnibox CopyTextFromWebUIOmnibox
 #define MAYBE_CopyUrlFromWebUIOmnibox CopyUrlFromWebUIOmnibox
 #define MAYBE_CutUrlFromWebUIOmnibox CutUrlFromWebUIOmnibox
