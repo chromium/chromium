@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -97,12 +96,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactory {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE_CURSOR)
 std::vector<std::string> CursorNamesFromType(mojom::CursorType type);
-
-COMPONENT_EXPORT(UI_BASE_CURSOR)
-bool IsValidCursorThemeName(std::string_view name);
-
-COMPONENT_EXPORT(UI_BASE_CURSOR)
-bool IsValidCursorThemeSize(int size);
 #endif
 
 }  // namespace ui
