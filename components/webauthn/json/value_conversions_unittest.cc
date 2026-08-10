@@ -5,12 +5,12 @@
 #include "components/webauthn/json/value_conversions.h"
 
 #include <cstdint>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
@@ -55,21 +55,21 @@ using blink::mojom::RemoteDesktopClientOverridePtr;
 // Mojo structures for responses in `authenticator.mojom` are updated.
 constexpr bool kUpdateRobolectricTests = false;
 
-void PrintJava(const char* name, base::span<const uint8_t> data) {
-  UNSAFE_TODO(
-      fprintf(stderr, "private static final byte[] %s = new byte[] {", name));
-  for (size_t i = 0; i < data.size(); i++) {
-    const uint8_t byte = data[i];
-    if (i) {
-      fprintf(stderr, ", ");
+void PrintJava(std::string_view name, base::span<const uint8_t> data) {
+  std::cerr << "private static final byte[] " << name << " = new byte[] {";
+  bool first = true;
+  for (uint8_t byte : data) {
+    if (!first) {
+      std::cerr << ", ";
     }
+    first = false;
     if (byte < 0x80) {
-      fprintf(stderr, "%d", byte);
+      std::cerr << static_cast<int>(byte);
     } else {
-      fprintf(stderr, "%d", static_cast<int16_t>(byte) - 0x100);
+      std::cerr << static_cast<int16_t>(byte) - 0x100;
     }
   }
-  fprintf(stderr, "};\n");
+  std::cerr << "};\n";
 }
 
 std::vector<uint8_t> ToByteVector(std::string_view in) {
