@@ -38,7 +38,7 @@ bool PeerConnectionProcess::Start(
   DCHECK(!daemon_channel_);
 
   daemon_channel_ = IPC::ChannelProxy::Create(
-      channel_handle.release(), IPC::Channel::MODE_CLIENT, this,
+      std::move(channel_handle), IPC::Channel::MODE_CLIENT, this,
       io_task_runner_, caller_task_runner_);
 
   return true;

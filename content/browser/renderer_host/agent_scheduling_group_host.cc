@@ -21,7 +21,6 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/constants.mojom.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
 
@@ -29,7 +28,6 @@ namespace content {
 
 namespace {
 
-using ::IPC::ChannelFactory;
 using ::IPC::ChannelProxy;
 using ::IPC::Listener;
 using ::mojo::AssociatedReceiver;
@@ -372,16 +370,11 @@ void AgentSchedulingGroupHost::SetUpIPC() {
     process_->GetRendererInterface()->CreateAgentSchedulingGroup(
         bootstrap.InitWithNewPipeAndPassReceiver());
 
-    auto channel_factory = ChannelFactory::CreateServerFactory(
-        bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,
-        /*proxy_task_runner=*/
+    channel_ = ChannelProxy::Create(
+        bootstrap.PassPipe(), IPC::Channel::MODE_SERVER, /*listener=*/this,
+        /*ipc_task_runner=*/io_task_runner,
+        /*listener_task_runner=*/
         base::SingleThreadTaskRunner::GetCurrentDefault());
-
-    channel_ =
-        ChannelProxy::Create(std::move(channel_factory), /*listener=*/this,
-                             /*ipc_task_runner=*/io_task_runner,
-                             /*listener_task_runner=*/
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // TODO(crbug.com/40142495): Add necessary filters.
     // Most of the filters currently installed on the process-wide channel are:

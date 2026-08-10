@@ -775,7 +775,8 @@ void GpuChannel::Init(mojo::MessagePipeHandle channel_handle) {
       std::make_unique<IPC::ChannelProxy>(this, io_task_runner_, task_runner_);
   channel_proxy_->AddAssociatedInterfaceForIOThread(
       base::BindRepeating(&GpuChannelMessageFilter::BindGpuChannel, filter_));
-  channel_proxy_->Init(channel_handle, IPC::Channel::MODE_SERVER,
+  channel_proxy_->Init(mojo::ScopedMessagePipeHandle(channel_handle),
+                       IPC::Channel::MODE_SERVER,
                        /*create_pipe_now=*/false);
 }
 

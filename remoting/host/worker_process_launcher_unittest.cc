@@ -300,7 +300,7 @@ void WorkerProcessLauncherTest::TerminateWorker(int exit_code) {
 
 void WorkerProcessLauncherTest::ConnectClient() {
   channel_client_ = IPC::ChannelProxy::Create(
-      client_channel_handle_.release(), IPC::Channel::MODE_CLIENT,
+      std::move(client_channel_handle_), IPC::Channel::MODE_CLIENT,
       &client_listener_, task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
@@ -379,7 +379,7 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
   ASSERT_TRUE(worker_process_.IsValid());
 
   channel_server_ = IPC::ChannelProxy::Create(
-      pipe.handle1.release(), IPC::Channel::MODE_SERVER, this, task_runner_,
+      std::move(pipe.handle1), IPC::Channel::MODE_SERVER, this, task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 

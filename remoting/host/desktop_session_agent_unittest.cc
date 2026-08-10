@@ -122,8 +122,8 @@ TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
     proxy.reset();
   }));
   proxy = IPC::ChannelProxy::Create(
-      agent_->Initialize(delegate->GetWeakPtr()).release(),
-      IPC::Channel::MODE_CLIENT, &listener, task_runner_,
+      agent_->Initialize(delegate->GetWeakPtr()), IPC::Channel::MODE_CLIENT,
+      &listener, task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent;

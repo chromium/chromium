@@ -22,7 +22,6 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_navigation_metrics_manager.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -37,7 +36,6 @@
 
 namespace content {
 
-using ::IPC::ChannelFactory;
 using ::IPC::ChannelProxy;
 using ::IPC::Listener;
 using ::mojo::AssociatedReceiver;
@@ -134,12 +132,8 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   // 1. `UnfreezableMessageFilter` - in the process of being removed,
   // 2. `AutomationMessageFilter` - needs to be handled somehow.
 
-  channel_->Init(
-      ChannelFactory::CreateClientFactory(
-          bootstrap.PassPipe(),
-          /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
-          /*proxy_task_runner=*/agent_group_scheduler_->DefaultTaskRunner()),
-      /*create_pipe_now=*/true);
+  channel_->Init(bootstrap.PassPipe(), IPC::Channel::MODE_CLIENT,
+                 /*create_pipe_now=*/true);
 }
 
 AgentSchedulingGroup::AgentSchedulingGroup(

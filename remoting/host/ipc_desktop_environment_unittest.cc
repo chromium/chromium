@@ -613,7 +613,7 @@ void IpcDesktopEnvironmentTest::CreateDesktopProcess() {
   if (!desktop_channel_) {
     mojo::MessagePipe pipe;
     desktop_channel_ = IPC::ChannelProxy::Create(
-        pipe.handle0.release(), IPC::Channel::MODE_SERVER, &desktop_listener_,
+        std::move(pipe.handle0), IPC::Channel::MODE_SERVER, &desktop_listener_,
         io_task_runner_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     desktop_channel_client_pipe_ = std::move(pipe.handle1);

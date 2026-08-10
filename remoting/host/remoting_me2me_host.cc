@@ -749,9 +749,8 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 
     // Connect to the daemon process.
     daemon_channel_ = IPC::ChannelProxy::Create(
-        invitation
-            .ExtractMessagePipe(cmd_line->GetSwitchValueASCII(kMojoPipeToken))
-            .release(),
+        invitation.ExtractMessagePipe(
+            cmd_line->GetSwitchValueASCII(kMojoPipeToken)),
         IPC::Channel::MODE_CLIENT, this, context_->network_task_runner(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
   } else {  // Single-process

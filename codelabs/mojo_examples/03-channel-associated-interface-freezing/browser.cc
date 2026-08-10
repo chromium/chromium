@@ -12,7 +12,6 @@
 #include "base/threading/thread.h"
 #include "codelabs/mojo_examples/mojom/interface.mojom.h"
 #include "codelabs/mojo_examples/process_bootstrapper.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -93,12 +92,9 @@ class BrowserIPCListener : public IPC::Listener {
     //           message, for the same reasons above.
 
     // 1.) Bootstrap the IPC Channel.
-    std::unique_ptr<IPC::ChannelFactory> channel_factory =
-        IPC::ChannelFactory::CreateServerFactory(
-            std::move(ipc_bootstrap_pipe), io_task_runner,
-            base::SingleThreadTaskRunner::GetCurrentDefault());
     channel_proxy_ = IPC::ChannelProxy::Create(
-        std::move(channel_factory), this, /*ipc_task_runner=*/io_task_runner,
+        std::move(ipc_bootstrap_pipe), IPC::Channel::MODE_SERVER, this,
+        /*ipc_task_runner=*/io_task_runner,
         /*listener_task_runner=*/
         base::SingleThreadTaskRunner::GetCurrentDefault());
 

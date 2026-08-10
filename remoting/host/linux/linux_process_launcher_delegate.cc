@@ -196,7 +196,7 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
   mojo::OutgoingInvitation invitation;
   std::string message_pipe_token = base::NumberToString(base::RandUint64());
   std::unique_ptr<IPC::ChannelProxy> server = IPC::ChannelProxy::Create(
-      invitation.AttachMessagePipe(message_pipe_token).release(),
+      invitation.AttachMessagePipe(message_pipe_token),
       IPC::Channel::MODE_SERVER, this, io_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   base::CommandLine command_line = options_.command_line;

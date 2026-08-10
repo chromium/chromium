@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/param_traits_macros.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -51,12 +50,12 @@ void ChannelProxy::Context::ClearIPCTaskRunner() {
   ipc_task_runner_.reset();
 }
 
-void ChannelProxy::Context::CreateChannel(
-    std::unique_ptr<ChannelFactory> factory) {
+void ChannelProxy::Context::CreateChannel(mojo::ScopedMessagePipeHandle handle,
+                                          Channel::Mode mode) {
   base::AutoLock channel_lock(channel_lifetime_lock_);
   DCHECK(!channel_);
-  DCHECK_EQ(factory->GetIPCTaskRunner(), ipc_task_runner_);
-  channel_ = factory->BuildChannel(this);
+  channel_ = Channel::Create(std::move(handle), mode, this, ipc_task_runner_,
+                             default_listener_task_runner_);
   channel_->SetUrgentMessageObserver(urgent_message_observer_);
   thread_safe_channel_ = channel_->CreateThreadSafeChannel();
 
@@ -203,26 +202,14 @@ void ChannelProxy::Context::SetUrgentMessageObserver(
 
 // static
 std::unique_ptr<ChannelProxy> ChannelProxy::Create(
-    const mojo::MessagePipeHandle& channel_handle,
+    mojo::ScopedMessagePipeHandle channel_handle,
     Channel::Mode mode,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner) {
   std::unique_ptr<ChannelProxy> channel(
       new ChannelProxy(listener, ipc_task_runner, listener_task_runner));
-  channel->Init(channel_handle, mode, true);
-  return channel;
-}
-
-// static
-std::unique_ptr<ChannelProxy> ChannelProxy::Create(
-    std::unique_ptr<ChannelFactory> factory,
-    Listener* listener,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner) {
-  std::unique_ptr<ChannelProxy> channel(
-      new ChannelProxy(listener, ipc_task_runner, listener_task_runner));
-  channel->Init(std::move(factory), true);
+  channel->Init(std::move(channel_handle), mode, true);
   return channel;
 }
 
@@ -240,9 +227,11 @@ ChannelProxy::~ChannelProxy() {
   Close();
 }
 
-void ChannelProxy::Init(const mojo::MessagePipeHandle& channel_handle,
+void ChannelProxy::Init(mojo::ScopedMessagePipeHandle channel_handle,
                         Channel::Mode mode,
                         bool create_pipe_now) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!did_init_);
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // When we are creating a server on POSIX, we need its file descriptor
   // to be created immediately so that it can be accessed and passed
@@ -252,26 +241,17 @@ void ChannelProxy::Init(const mojo::MessagePipeHandle& channel_handle,
     create_pipe_now = true;
   }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  Init(
-      ChannelFactory::Create(channel_handle, mode, context_->ipc_task_runner()),
-      create_pipe_now);
-}
-
-void ChannelProxy::Init(std::unique_ptr<ChannelFactory> factory,
-                        bool create_pipe_now) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!did_init_);
 
   if (create_pipe_now) {
     // Create the channel immediately.  This effectively sets up the
     // low-level pipe so that the client can connect.  Without creating
     // the pipe immediately, it is possible for a listener to attempt
     // to connect and get an error since the pipe doesn't exist yet.
-    context_->CreateChannel(std::move(factory));
+    context_->CreateChannel(std::move(channel_handle), mode);
   } else {
     context_->ipc_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Context::CreateChannel, context_, std::move(factory)));
+        FROM_HERE, base::BindOnce(&Context::CreateChannel, context_,
+                                  std::move(channel_handle), mode));
   }
 
   // complete initialization on the background thread

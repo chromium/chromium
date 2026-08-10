@@ -462,7 +462,7 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
 
   std::string mojo_pipe_token = base::NumberToString(base::RandUint64());
   channel_ = IPC::ChannelProxy::Create(
-      mojo_invitation_.AttachMessagePipe(mojo_pipe_token).release(),
+      mojo_invitation_.AttachMessagePipe(mojo_pipe_token),
       IPC::Channel::MODE_SERVER, this, io_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   command_line.AppendSwitchASCII(kMojoPipeToken, mojo_pipe_token);

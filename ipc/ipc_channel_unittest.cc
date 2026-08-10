@@ -46,7 +46,6 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "ipc/ipc_test.test-mojom.h"
@@ -232,17 +231,9 @@ class ChannelProxyRunner {
   }
 
   void RunProxy() {
-    std::unique_ptr<IPC::ChannelFactory> factory;
-    if (for_server_) {
-      factory = IPC::ChannelFactory::CreateServerFactory(
-          std::move(handle_), io_thread_.task_runner(),
-          base::SingleThreadTaskRunner::GetCurrentDefault());
-    } else {
-      factory = IPC::ChannelFactory::CreateClientFactory(
-          std::move(handle_), io_thread_.task_runner(),
-          base::SingleThreadTaskRunner::GetCurrentDefault());
-    }
-    proxy_->Init(std::move(factory), true);
+    IPC::Channel::Mode mode =
+        for_server_ ? IPC::Channel::MODE_SERVER : IPC::Channel::MODE_CLIENT;
+    proxy_->Init(std::move(handle_), mode, true);
   }
 
   IPC::ChannelProxy* proxy() { return proxy_.get(); }
