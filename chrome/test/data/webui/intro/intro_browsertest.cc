@@ -58,3 +58,22 @@ IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRevampEnabled, FinishOrContinue) {
 IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithRevampEnabled, SignInCelebration) {
   RunTest("intro/sign_in_celebration_test.js", "mocha.run()");
 }
+
+class IntroBrowserTestWithPreFirstRunRefreshEnabled : public IntroBrowserTest {
+ protected:
+  IntroBrowserTestWithPreFirstRunRefreshEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kFirstRunDesktopRefresh,
+                              switches::kFirstRunDesktopChoiceScreenRefresh,
+                              switches::kFirstRunDesktopRevamp,
+                              switches::kPreFirstRunDesktopRefresh},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IntroBrowserTestWithPreFirstRunRefreshEnabled, Welcome) {
+  RunTest("intro/welcome_test.js", "mocha.run()");
+}

@@ -1144,6 +1144,10 @@
     </message>
 
     <!-- First Run Experience strings -->
+    <message name="IDS_FRE_WELCOME_TITLE" desc="This string is the main headline of the first onboarding screen intended to introduce users to Google Chrome. It highlights productivity as a core value proposition. The tone should be motivating and professional. (CHAR LIMIT = 45)">
+      The browser that gets more done
+    </message>
+
     <message name="IDS_FRE_SIGN_IN_SUBTITLE_0"
       desc="This is the subtitle on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. These features are also described in the cards below as 'All your devices', 'Stronger security', and 'Back up data'. The tone should be inviting and alluring.">
       Get additional features

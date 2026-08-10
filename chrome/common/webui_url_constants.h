@@ -482,10 +482,11 @@ inline constexpr char kChromeUIIntroDefaultBrowserURL[] =
     "chrome://intro/default-browser";
 inline constexpr char kChromeUIIntroFinishOrContinueSubPage[] =
     "finish-or-continue";
+inline constexpr char kChromeUIIntroHost[] = "intro";
 inline constexpr char kChromeUIIntroSignInCelebrationSubPage[] =
     "sign-in-celebration";
-inline constexpr char kChromeUIIntroHost[] = "intro";
 inline constexpr char kChromeUIIntroURL[] = "chrome://intro";
+inline constexpr char kChromeUIIntroWelcomeSubPage[] = "welcome";
 inline constexpr char kChromeUIManagedUserProfileNoticeHost[] =
     "managed-user-profile-notice";
 inline constexpr char kChromeUIManagedUserProfileNoticeUrl[] =

@@ -2605,6 +2605,10 @@ Chromium is unable to recover your settings.
         </message>
 
         <!-- First Run Experience -->
+        <message name="IDS_FRE_WELCOME_START_BUTTON_LABEL" desc="This string is found on a primary button that takes the user into the main browser experience. It is a verb-based call to action. (CHAR LIMIT = 20)">
+          Start Chromium
+        </message>
+
         <message name="IDS_FRE_SIGN_IN_TITLE_0" meaning="Title"
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
           Sign in to Chromium

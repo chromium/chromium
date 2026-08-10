@@ -95,6 +95,9 @@ IntroUI::IntroUI(content::WebUI* web_ui)
       {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
       {"createAccountDisclaimer", IDS_FRE_CREATE_ACCOUNT_DESCRIPTION},
       {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},
+      // Strings for welcome subpage.
+      {"welcomeTitle", IDS_FRE_WELCOME_TITLE},
+      {"welcomeStartButtonLabel", IDS_FRE_WELCOME_START_BUTTON_LABEL},
       // Strings for default browser promo subpage.
       {"defaultBrowserTitle", IDS_FRE_DEFAULT_BROWSER_TITLE_NEW},
       {"defaultBrowserSubtitle", IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW},
@@ -144,6 +147,12 @@ IntroUI::IntroUI(content::WebUI* web_ui)
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  source->AddResourcePath(
+      "images/profile_picker_dark_background.svg",
+      IDR_SIGNIN_IMAGES_PROFILE_PICKER_DARK_BACKGROUND_SVG);
+  source->AddResourcePath(
+      "images/profile_picker_light_background.svg",
+      IDR_SIGNIN_IMAGES_PROFILE_PICKER_LIGHT_BACKGROUND_SVG);
   source->AddResourcePath("tangible_sync_style_shared.css.js",
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
@@ -171,6 +180,12 @@ IntroUI::IntroUI(content::WebUI* web_ui)
     source->AddInteger(
         "signInPromoVariation",
         static_cast<int>(switches::kFirstRunDesktopSignInPromoVariation.Get()));
+  }
+
+  if (switches::IsPreFirstRunDesktopRefreshEnabled()) {
+    source->AddResourcePath(
+        chrome::kChromeUIIntroWelcomeSubPage,
+        IDR_INTRO_WELCOME_WELCOME_HTML);
   }
 
   // Setup chrome://intro/default-browser UI.
