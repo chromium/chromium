@@ -811,6 +811,10 @@ id<GREYMatcher> CloseButton() {
 // Tests that the Co-browse assistant is hidden on the New Tab Page (NTP)
 // when an NTP is opened after the app restarts with an active session.
 - (void)testAssistantHiddenOnNTPAfterColdStart {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Start surface NTP on cold start is not supported on iPad.");
+  }
   if ([ComposeboxAppInterface isServerSideStateEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped when kComposeboxServerSideState is enabled.");
