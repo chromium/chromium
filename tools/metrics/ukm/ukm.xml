@@ -27682,7 +27682,9 @@ be describing additional metrics about the same event.
   <metric name="ElementResultByInstalledApp" enum="WebInstallServiceResult">
     <summary>
       Records the result of one activation of the install element for the URL of
-      the target site that we attempted to install.
+      the target site that we attempted to install. As of M153, keyed on the
+      origin of the caller-supplied manifest URL (earlier milestones used the
+      install URL). Only recorded when the manifest URL is HTTPS.
     </summary>
     <aggregation>
       <history>
@@ -27708,7 +27710,9 @@ be describing additional metrics about the same event.
   <metric name="ResultByInstalledApp" enum="WebInstallServiceResult">
     <summary>
       Records the result of the Web Install API for the URL of the target site
-      that we attempted to install as a web app via the API.
+      that we attempted to install as a web app via the API. As of M153, keyed
+      on the origin of the caller-supplied manifest URL (earlier milestones used
+      the install URL). Only recorded when the manifest URL is HTTPS.
     </summary>
   </metric>
   <metric name="ResultByRequestingPage" enum="WebInstallServiceResult">

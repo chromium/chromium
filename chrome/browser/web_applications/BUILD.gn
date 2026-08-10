@@ -1167,6 +1167,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/test:test_support",
     "//components/component_updater:test_support",
     "//components/services/app_service",
+    "//components/ukm:test_support",
     "//components/user_manager",
     "//components/web_package",
     "//components/web_package/test_support",

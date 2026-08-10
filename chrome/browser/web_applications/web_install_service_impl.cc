@@ -361,10 +361,24 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
                      web_app::WebInstallServiceType::kBackgroundDocument);
 
   if (IsInstallInProgress()) {
-    // Emit the result UMA but no UKM: this exits before any per-install metrics
-    // context is set up.
     EmitInstallResultUma(triggered_from_element,
                          web_app::WebInstallServiceResult::kInstallInProgress);
+    // Emit the requesting-page UKM for abuse-monitoring coverage: repeated
+    // in-progress rejections attribute back to the calling page.
+    ukm::SourceId requesting_page_source_id =
+        render_frame_host().GetPageUkmSourceId();
+    if (requesting_page_source_id != ukm::kInvalidSourceId) {
+      auto builder =
+          ukm::builders::WebApp_WebInstall(requesting_page_source_id);
+      if (triggered_from_element) {
+        builder.SetElementResultByRequestingPage(static_cast<int>(
+            web_app::WebInstallServiceResult::kInstallInProgress));
+      } else {
+        builder.SetResultByRequestingPage(static_cast<int>(
+            web_app::WebInstallServiceResult::kInstallInProgress));
+      }
+      builder.Record(ukm::UkmRecorder::Get());
+    }
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
@@ -375,19 +389,75 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
   initiating_page_changed_during_install_ = false;
 
-  // Wrap the blink callback in another that records result UMA and releases
-  // the install guard before running the blink callback.
-  // TODO(crbug.com/525409692): Emit UKMs for the manifest URL flow.
+  // Available regardless of fetch/parse, so it is recorded on every exit path.
+  ukm::SourceId requesting_page_source_id =
+      render_frame_host().GetPageUkmSourceId();
+
+  // Origin used to key the installed-app UKM. Set only when the manifest URL
+  // is HTTPS; the actual APP_ID source is allocated lazily inside
+  // `callback_with_metrics` so that no source is created if this callback
+  // never runs (e.g. tab/browser closes mid-install).
+  std::optional<url::Origin> installed_app_origin;
+  if (options->manifest_url.SchemeIs(url::kHttpsScheme)) {
+    installed_app_origin = url::Origin::Create(options->manifest_url);
+  }
+
+  // Wrap the blink callback in another that records result UMA/UKMs and
+  // releases the install guard before running the blink callback.
   auto callback_with_metrics = base::BindOnce(
       [](InstallFromManifestCallback callback,
          base::ScopedClosureRunner install_guard, bool triggered_from_element,
+         ukm::SourceId requesting_page_source_id,
+         std::optional<url::Origin> installed_app_origin,
          web_app::WebInstallServiceResult metrics_result,
          blink::mojom::WebInstallServiceResult result) {
         EmitInstallResultUma(triggered_from_element, metrics_result);
+
+        // The requesting-page and installed-app UKMs are recorded
+        // independently: the requesting-page UKM keys on the calling page's
+        // NAVIGATION_ID and can be missing if the page has no source id.
+        if (requesting_page_source_id != ukm::kInvalidSourceId) {
+          auto requesting_page_builder =
+              ukm::builders::WebApp_WebInstall(requesting_page_source_id);
+          if (triggered_from_element) {
+            requesting_page_builder.SetElementResultByRequestingPage(
+                static_cast<int>(metrics_result));
+          } else {
+            requesting_page_builder.SetResultByRequestingPage(
+                static_cast<int>(metrics_result));
+          }
+          requesting_page_builder.Record(ukm::UkmRecorder::Get());
+        }
+
+        if (installed_app_origin.has_value()) {
+          // Allocate the APP_ID source lazily here (rather than up front) so
+          // no source is created when this callback never runs. Delete the
+          // source right after recording so it does not linger in the APP_ID
+          // quota, since APP_ID sources are not automatically purged.
+          ukm::SourceId installed_app_source_id =
+              ukm::AppSourceUrlRecorder::GetSourceIdForPWA(
+                  installed_app_origin->GetURL());
+          CHECK(ukm::GetSourceIdType(installed_app_source_id) ==
+                ukm::SourceIdType::APP_ID);
+          auto installed_app_builder =
+              ukm::builders::WebApp_WebInstall(installed_app_source_id);
+          if (triggered_from_element) {
+            installed_app_builder.SetElementResultByInstalledApp(
+                static_cast<int>(metrics_result));
+          } else {
+            installed_app_builder.SetResultByInstalledApp(
+                static_cast<int>(metrics_result));
+          }
+          installed_app_builder.Record(ukm::UkmRecorder::Get());
+          ukm::AppSourceUrlRecorder::MarkSourceForDeletion(
+              installed_app_source_id);
+        }
+
         // `install_guard` releases the guard when it goes out of scope.
         std::move(callback).Run(result);
       },
-      std::move(callback), std::move(install_guard), triggered_from_element);
+      std::move(callback), std::move(install_guard), triggered_from_element,
+      requesting_page_source_id, std::move(installed_app_origin));
 
   const GURL install_target = options->manifest_url;
 

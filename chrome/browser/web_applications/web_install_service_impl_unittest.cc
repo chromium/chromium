@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/net_errors.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -61,6 +63,21 @@ constexpr char kVariantedElementTypeUma[] =
 constexpr char kDocumentUrl[] = "https://requesting-app.com/index.html";
 constexpr char kManifestUrl[] = "https://example.com/app/manifest.json";
 constexpr char kIconUrl[] = "https://example.com/app/icon.png";
+
+using Entry = ukm::builders::WebApp_WebInstall;
+
+// Counts WebApp_WebInstall UKM entries recording `metric_name`, verifying each
+// stores `expected_result`. A count of 0 asserts the metric was not recorded.
+int CountUkmEntriesWithResult(ukm::TestAutoSetUkmRecorder& recorder,
+                              const char* metric_name,
+                              WebInstallServiceResult expected_result) {
+  std::vector<int64_t> values =
+      recorder.GetMetricsEntryValues(Entry::kEntryName, metric_name);
+  for (const int64_t& value : values) {
+    EXPECT_EQ(value, static_cast<int64_t>(expected_result));
+  }
+  return values.size();
+}
 
 // Unit tests for WebInstallServiceImpl shared logic. These tests cover
 // code paths common to both `navigator.install()` (JS API) and the
@@ -845,16 +862,89 @@ TEST_F(WebInstallServiceImplTest, InstallFromManifest_ChromeSchemeRejected) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // InstallFromManifest telemetry tests.
-// Verify the manifest URL flow records the expected UMAs, exercising
+// Verify the manifest URL flow records the expected UMAs/UKMs, exercising
 // pre-parse exits (reached without serving a manifest).
 ///////////////////////////////////////////////////////////////////////////////
 
+// A non-HTTPS manifest URL is rejected at the scheme gate: the
+// requesting-page UKM still records, but the installed-app UKM is not created
+// for non-HTTPS callers.
+TEST_F(WebInstallServiceImplTest,
+       InstallFromManifest_HttpManifestUrl_NoInstalledAppUkm) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  BindService();
+
+  EXPECT_EQ(InstallFromManifestUrl(GURL("http://example.com/manifest.json")),
+            blink::mojom::WebInstallServiceResult::kDataError);
+
+  histograms.ExpectBucketCount(kInstallApiTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kUnexpectedFailure, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kUnexpectedFailure, 1);
+
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kResultByRequestingPageName,
+                WebInstallServiceResult::kUnexpectedFailure),
+            1);
+  EXPECT_EQ(
+      CountUkmEntriesWithResult(ukm_recorder, Entry::kResultByInstalledAppName,
+                                WebInstallServiceResult::kUnexpectedFailure),
+      0);
+  // Verify no APP_ID source is created at all for non-HTTPS callers - the
+  // installed-app UKM path never runs, so no source should be allocated.
+  for (const auto& [source_id, source] : ukm_recorder.GetSources()) {
+    EXPECT_NE(ukm::GetSourceIdType(source_id), ukm::SourceIdType::APP_ID);
+  }
+}
+
+// Confirms the installed-app UKM is keyed on the origin of the manifest URL
+// (scheme + host + port), not the full URL.
+TEST_F(WebInstallServiceImplTest,
+       InstallFromManifest_InstalledAppUkm_KeyedOnManifestOrigin) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  BindService();
+
+  // Deep-path HTTPS manifest URL with query and fragment. Mock the fetch to
+  // fail so we exit before any real install, but after both UKM source ids
+  // have been created.
+  const GURL kDeepManifestUrl(
+      "https://example.com/deep/nested/path/manifest.json?v=1#frag");
+  profile_url_loader_factory().AddResponse(
+      kDeepManifestUrl, network::mojom::URLResponseHead::New(),
+      /*content=*/std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  EXPECT_EQ(InstallFromManifestUrl(kDeepManifestUrl),
+            blink::mojom::WebInstallServiceResult::kDataError);
+
+  // Locate the installed-app UKM's source and verify its URL is keyed on the
+  // manifest origin, not the full manifest URL. Exactly one APP_ID source is
+  // created per install (lazily, inside `callback_with_metrics`), so mirror
+  // the neighboring "no APP_ID source" tests and iterate over sources.
+  const ukm::UkmSource* app_source = nullptr;
+  for (const auto& [source_id, source] : ukm_recorder.GetSources()) {
+    if (ukm::GetSourceIdType(source_id) == ukm::SourceIdType::APP_ID) {
+      ASSERT_EQ(app_source, nullptr);
+      app_source = source.get();
+    }
+  }
+  ASSERT_NE(app_source, nullptr);
+  EXPECT_EQ(app_source->url(), GURL("https://example.com/"));
+}
+
 // The <install> element manifest entry point (ElementInstallFromManifest)
 // shares InstallFromManifestInternal, so it must record to the Element-variant
-// UMA rather than the Api ones. Uses an HTTPS URL with a mocked fetch failure.
+// UMA and UKM rather than the Api ones. Uses an HTTPS URL with a mocked
+// fetch failure so both element UKMs are recorded.
 TEST_F(WebInstallServiceImplTest,
        ElementInstallFromManifest_RecordsElementVariantTelemetry) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   BindService();
 
   profile_url_loader_factory().AddResponse(
@@ -878,10 +968,29 @@ TEST_F(WebInstallServiceImplTest,
                                WebInstallServiceType::kBackgroundDocument, 1);
   histograms.ExpectTotalCount(kInstallApiResultUma, 0);
   histograms.ExpectTotalCount(kInstallApiTypeUma, 0);
+
+  // Records the Element UKM setters, not the Api ones.
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kResultByRequestingPageName,
+                WebInstallServiceResult::kInstallCommandFailed),
+            0);
+  EXPECT_EQ(
+      CountUkmEntriesWithResult(ukm_recorder, Entry::kResultByInstalledAppName,
+                                WebInstallServiceResult::kInstallCommandFailed),
+      0);
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kElementResultByRequestingPageName,
+                WebInstallServiceResult::kInstallCommandFailed),
+            1);
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kElementResultByInstalledAppName,
+                WebInstallServiceResult::kInstallCommandFailed),
+            1);
 }
 
-// A concurrent manifest install reports kInstallInProgress for the rejected
-// call.
+// A concurrent manifest install reports kInstallInProgress. Records the
+// requesting-page UKM for abuse-monitoring coverage, but no installed-app UKM
+// because we exit before any manifest parse.
 TEST_F(WebInstallServiceImplTest,
        InstallFromManifest_ConcurrentInstall_ReportsInProgress) {
   BindService();
@@ -896,6 +1005,7 @@ TEST_F(WebInstallServiceImplTest,
 
   // Only measure the second (rejected) call.
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   EXPECT_EQ(InstallFromManifestUrl(GURL(kManifestUrl)),
             blink::mojom::WebInstallServiceResult::kAbortError);
@@ -904,13 +1014,29 @@ TEST_F(WebInstallServiceImplTest,
                                WebInstallServiceResult::kInstallInProgress, 1);
   histograms.ExpectBucketCount(kInstallApiTypeUma,
                                WebInstallServiceType::kBackgroundDocument, 1);
+
+  // Requesting-page UKM records the in-progress rejection.
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kResultByRequestingPageName,
+                WebInstallServiceResult::kInstallInProgress),
+            1);
+  // No installed-app UKM because no APP_ID source is allocated before the
+  // in-progress early exit.
+  EXPECT_EQ(
+      CountUkmEntriesWithResult(ukm_recorder, Entry::kResultByInstalledAppName,
+                                WebInstallServiceResult::kInstallInProgress),
+      0);
+  for (const auto& [source_id, source] : ukm_recorder.GetSources()) {
+    EXPECT_NE(ukm::GetSourceIdType(source_id), ukm::SourceIdType::APP_ID);
+  }
 }
 
 // A manifest fetch failure (network error) exits before parsing with
-// kInstallCommandFailed.
+// kInstallCommandFailed and records both UKMs.
 TEST_F(WebInstallServiceImplTest,
        InstallFromManifest_FetchFailureRecordsCommandFailed) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   BindService();
 
   // Simulate a network error for the manifest fetch. A minimal response
@@ -931,6 +1057,15 @@ TEST_F(WebInstallServiceImplTest,
                                1);
   histograms.ExpectBucketCount(kInstallApiTypeUma,
                                WebInstallServiceType::kBackgroundDocument, 1);
+
+  EXPECT_EQ(CountUkmEntriesWithResult(
+                ukm_recorder, Entry::kResultByRequestingPageName,
+                WebInstallServiceResult::kInstallCommandFailed),
+            1);
+  EXPECT_EQ(
+      CountUkmEntriesWithResult(ukm_recorder, Entry::kResultByInstalledAppName,
+                                WebInstallServiceResult::kInstallCommandFailed),
+      1);
 }
 
 }  // namespace
