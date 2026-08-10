@@ -31,6 +31,7 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
     private final ActorControlStateTracker mStateTracker;
 
     private PeekViewUiState mPeekViewUiState = PeekViewUiState.DEFAULT;
+    private boolean mHasAutoExpanded;
 
     /**
      * Constructs a new {@link ActorControlCoordinator}.
@@ -81,23 +82,33 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
                 case ActorTaskState.CREATED:
                 case ActorTaskState.CANCELLED:
                     setPeekViewContent(activeTaskTitle, PeekViewUiState.DEFAULT);
+                    mHasAutoExpanded = false;
                     break;
                 case ActorTaskState.ACTING:
                 case ActorTaskState.REFLECTING:
                     setPeekViewContent(activeTaskTitle, PeekViewUiState.ACTING);
+                    mHasAutoExpanded = false;
                     break;
                 case ActorTaskState.PAUSED_BY_USER:
                     setPeekViewContent(activeTaskTitle, PeekViewUiState.PAUSED);
+                    mHasAutoExpanded = false;
                     break;
                 case ActorTaskState.PAUSED_BY_ACTOR:
                 case ActorTaskState.WAITING_ON_USER:
                 case ActorTaskState.FINISHED:
                 case ActorTaskState.FAILED:
                     setPeekViewContent(activeTaskTitle, PeekViewUiState.WAITING);
+                    if (!mHasAutoExpanded
+                            && !mTabBottomSheetManager.isSheetShowing()
+                            && mStateTracker.isCurrentTabActuatedTab()) {
+                        mTabBottomSheetManager.setSheetExpanded(true);
+                        mHasAutoExpanded = true;
+                    }
                     break;
                 default:
                     assert false : "Unhandled ActorTaskState " + taskState;
                     clearPeekViewContent();
+                    mHasAutoExpanded = false;
                     break;
             }
         } else {
@@ -108,6 +119,7 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
                                 .getString(R.string.peek_state_new_chat);
             }
             setPeekViewContent(title, PeekViewUiState.DEFAULT);
+            mHasAutoExpanded = false;
         }
     }
 
@@ -173,6 +185,9 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
         assert mTabBottomSheetManager.isSheetInitialized();
         GlicMetrics.recordClosePeekView();
         mTabBottomSheetManager.tryToCloseBottomSheet(/* animate= */ true);
+        if (PeekViewUiState.WAITING.equals(mPeekViewUiState)) {
+            mStateTracker.clearWaitingState();
+        }
     }
 
     /** Called when the peek view is clicked. */

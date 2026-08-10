@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,6 +92,7 @@ public class ActorControlCoordinatorTest {
 
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         GlicInstanceHelper.setNativesForTesting(mGlicInstanceHelperNatives);
+        when(mTab.getId()).thenReturn(TAB_ID);
         when(mGlicInstanceHelperNatives.getForTab(mTab)).thenReturn(mGlicInstanceHelper);
 
         mProfileSupplier = ObservableSuppliers.createMonotonic();
@@ -127,6 +130,7 @@ public class ActorControlCoordinatorTest {
         when(mActorTask.getId()).thenReturn(TASK_ID);
         when(mActorTask.getTitle()).thenReturn(TASK_TITLE);
         when(mTab.getId()).thenReturn(TAB_ID);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(TAB_ID));
         when(mActorKeyedService.getTask(TASK_ID)).thenReturn(mActorTask);
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
         when(mGlicInstanceHelper.getTaskId()).thenReturn(TASK_ID);
@@ -449,6 +453,93 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnTaskStateChanged_finished_autoOpensBottomSheet_whenClosedAndOnActingTab() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        verify(mTabBottomSheetManager).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished_doesNotAutoOpen_whenInPeekMode() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(true);
+        when(mTabBottomSheetManager.isInPeekMode()).thenReturn(true);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        verify(mTabBottomSheetManager, never()).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished_doesNotAutoOpen_whenAlreadyExpanded() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(true);
+        when(mTabBottomSheetManager.isInPeekMode()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        verify(mTabBottomSheetManager, never()).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished_doesNotAutoOpen_whenOnDifferentTab() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(999);
+        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
+        when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_1);
+        when(helper2.getTaskId()).thenReturn(TASK_ID);
+        when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
+
+        // Switch active tab to tab2 (id 999) while acting tab is TAB_ID (456).
+        mTabSupplier.set(tab2);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+
+        verify(mTabBottomSheetManager, never()).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished_doesNotAutoOpenAgain_whenAlreadyAutoExpanded() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        verify(mTabBottomSheetManager).setSheetExpanded(true);
+
+        // Simulate user dismissing the sheet and state re-emitting for the same task.
+        clearInvocations(mTabBottomSheetManager);
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        verify(mTabBottomSheetManager, never()).setSheetExpanded(true);
+    }
+
+    @Test
+    public void testOnTaskStateChanged_finished_autoOpensAgain_afterTaskResumes() {
+        setUpForOnTaskStateChanged();
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        verify(mTabBottomSheetManager).setSheetExpanded(true);
+
+        // Transition back to ACTING.
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+
+        // Transition to FINISHED again; it should auto-open again.
+        clearInvocations(mTabBottomSheetManager);
+        when(mTabBottomSheetManager.isSheetShowing()).thenReturn(false);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        verify(mTabBottomSheetManager).setSheetExpanded(true);
+    }
+
+    @Test
     public void testOnTaskStateChanged_nullTask_notFinished_defaultsBackToConversationPeekView() {
         setUpProfileSupplier();
         expectValidGlicInstance1();
@@ -651,6 +742,19 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnCloseClick_inWaitingState_clearsWaitingState() {
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        assertEquals(PeekViewUiState.WAITING, mCoordinator.getPeekViewUiStateForTesting());
+
+        performCloseClick();
+
+        verify(mTabBottomSheetManager).tryToCloseBottomSheet(/* animate= */ true);
+        assertEquals(PeekViewUiState.DEFAULT, mCoordinator.getPeekViewUiStateForTesting());
+    }
+
+    @Test
     public void testOnPeekViewClick_expandsBottomSheet() {
         setUpProfileSupplier();
 
@@ -732,9 +836,9 @@ public class ActorControlCoordinatorTest {
         verify(helper1).addObserver(mStateTracker);
         assertEquals(CONVERSATION_TITLE_1, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
 
-        Tab tab2 = org.mockito.Mockito.mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
 
-        GlicInstanceHelper helper2 = org.mockito.Mockito.mock(GlicInstanceHelper.class);
+        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
         when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
         when(helper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
         when(mGlicInstanceHelperNatives.getForTab(tab2)).thenReturn(helper2);
@@ -752,7 +856,7 @@ public class ActorControlCoordinatorTest {
         expectValidProfile();
         mProfileSupplier.set(mProfile);
 
-        Tab incognitoTab = org.mockito.Mockito.mock(Tab.class);
+        Tab incognitoTab = mock(Tab.class);
         when(incognitoTab.isOffTheRecord()).thenReturn(true);
 
         mTabSupplier.set(incognitoTab);
@@ -769,13 +873,13 @@ public class ActorControlCoordinatorTest {
         when(mGlicInstanceHelper.getTaskId()).thenReturn(101);
 
         // Task 1 on Conversation 1
-        ActorTask task1 = org.mockito.Mockito.mock(ActorTask.class);
+        ActorTask task1 = mock(ActorTask.class);
         when(task1.getId()).thenReturn(101);
         when(task1.getTitle()).thenReturn("Task 1");
         when(task1.getState()).thenReturn(ActorTaskState.ACTING);
 
         // Task 2 on Conversation 2
-        ActorTask task2 = org.mockito.Mockito.mock(ActorTask.class);
+        ActorTask task2 = mock(ActorTask.class);
         when(task2.getId()).thenReturn(102);
         when(task2.getTitle()).thenReturn("Task 2");
         when(task2.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
@@ -797,9 +901,9 @@ public class ActorControlCoordinatorTest {
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // 2. Switch to Tab 2 (Conversation 2)
-        Tab tab2 = org.mockito.Mockito.mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
         when(tab2.getId()).thenReturn(2);
-        GlicInstanceHelper helper2 = org.mockito.Mockito.mock(GlicInstanceHelper.class);
+        GlicInstanceHelper helper2 = mock(GlicInstanceHelper.class);
         when(helper2.getConversationId()).thenReturn(CONVERSATION_ID_2);
         when(helper2.getConversationTitle()).thenReturn(CONVERSATION_TITLE_2);
         when(helper2.getTaskId()).thenReturn(102);
@@ -821,7 +925,7 @@ public class ActorControlCoordinatorTest {
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
 
         // 4. Open Tab 3 and switch to Conversation 1 -> should also show Task 1
-        Tab tab3 = org.mockito.Mockito.mock(Tab.class);
+        Tab tab3 = mock(Tab.class);
         when(tab3.getId()).thenReturn(3);
         // We reuse helper1 (mGlicInstanceHelper) which has CONVERSATION_ID_1
         when(mGlicInstanceHelperNatives.getForTab(tab3)).thenReturn(mGlicInstanceHelper);

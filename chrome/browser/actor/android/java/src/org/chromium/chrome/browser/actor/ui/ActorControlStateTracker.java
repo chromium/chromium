@@ -56,6 +56,9 @@ public class ActorControlStateTracker
     // when the user clicks the actor control button in the WAITING state.
     private int mActuatedTabId = Tab.INVALID_TAB_ID;
 
+    // The ID of the current active tab.
+    private int mCurrentTabId = Tab.INVALID_TAB_ID;
+
     /**
      * Constructs a new {@link ActorControlStateTracker}.
      *
@@ -76,6 +79,7 @@ public class ActorControlStateTracker
                 new TabSupplierObserver(tabSupplier, /* shouldTrigger= */ true) {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
+                        mCurrentTabId = tab != null ? tab.getId() : Tab.INVALID_TAB_ID;
                         if (mGlicInstanceHelper != null) {
                             mGlicInstanceHelper.removeObserver(ActorControlStateTracker.this);
                             mGlicInstanceHelper = null;
@@ -236,6 +240,11 @@ public class ActorControlStateTracker
     /** Returns the ID of the tab that Actor was last acting on. */
     public int getActuatedTabId() {
         return mActuatedTabId;
+    }
+
+    /** Returns whether the current active tab is the tab that Actor was last acting on. */
+    public boolean isCurrentTabActuatedTab() {
+        return mActuatedTabId != Tab.INVALID_TAB_ID && mActuatedTabId == mCurrentTabId;
     }
 
     /** Returns the title of the active task. */
