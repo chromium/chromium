@@ -409,3 +409,9 @@ cr-composebox-contextual-entrypoint-button,
 :host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }
+
+cr-searchbox-input::part(icon) {
+  -webkit-app-region: drag;
+  -webkit-user-drag: none;
+}
+

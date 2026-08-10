@@ -208,3 +208,9 @@ cr-composebox-tool-chip,
 :host-context([webui-rounded-icons]) #voiceSearchButton {
   background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }
+
+cr-composebox-input::part(icon-container) {
+  -webkit-app-region: drag;
+  -webkit-user-drag: none;
+}
+
