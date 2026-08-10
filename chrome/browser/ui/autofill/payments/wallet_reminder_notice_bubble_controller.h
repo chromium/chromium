@@ -1,0 +1,61 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_BUBBLE_CONTROLLER_H_
+
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
+}
+
+namespace autofill {
+
+// Controller class that exposes functionality to Wallet reminder notice
+// bubbles. Owned by TabFeatures.
+class WalletReminderNoticeBubbleController
+    : public AutofillBubbleControllerBase {
+ public:
+  DECLARE_USER_DATA(WalletReminderNoticeBubbleController);
+
+  WalletReminderNoticeBubbleController(tabs::TabInterface& tab_interface,
+                                       content::WebContents* web_contents);
+  WalletReminderNoticeBubbleController(
+      const WalletReminderNoticeBubbleController&) = delete;
+  WalletReminderNoticeBubbleController& operator=(
+      const WalletReminderNoticeBubbleController&) = delete;
+  ~WalletReminderNoticeBubbleController() override;
+
+  static WalletReminderNoticeBubbleController* From(
+      tabs::TabInterface& tab_interface);
+
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override {}
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
+ protected:
+  void DoShowBubble() override;
+
+ private:
+  const raw_ref<tabs::TabInterface> tab_interface_;
+
+  ui::ScopedUnownedUserData<WalletReminderNoticeBubbleController>
+      scoped_unowned_user_data_;
+
+  base::WeakPtrFactory<WalletReminderNoticeBubbleController> weak_ptr_factory_{
+      this};
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_BUBBLE_CONTROLLER_H_

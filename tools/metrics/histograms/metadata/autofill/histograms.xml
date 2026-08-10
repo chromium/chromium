@@ -3279,6 +3279,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="WalletablePassConsent"
         summary="Walletable pass consent bubble."/>
     <variant name="WalletablePassSave" summary="Walletable pass save bubble."/>
+    <variant name="WalletReminderNotice"
+        summary="Wallet reminder notice bubble."/>
   </token>
 <!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_manager_impl.cc:BubbleTypeToMetricSuffix) -->
 

@@ -85,6 +85,7 @@ class OmniboxAutofillBubbleController;
 class OmniboxAutofillPageActionController;
 class PaymentsChurnedUsersBubbleController;
 class PaymentsChurnedUsersPageActionController;
+class WalletReminderNoticeBubbleController;
 class WalletReminderNoticePageActionController;
 }  // namespace autofill
 
@@ -604,6 +605,11 @@ class TabFeatures {
   // autofill if they have turned it off.
   std::unique_ptr<autofill::PaymentsChurnedUsersBubbleController>
       payments_churned_users_bubble_controller_;
+
+  // Responsible for managing the bubble that displays the Wallet reminder
+  // notice.
+  std::unique_ptr<autofill::WalletReminderNoticeBubbleController>
+      wallet_reminder_notice_bubble_controller_;
 
   // Responsible for managing the "Wallet Reminder Notice" page action.
   std::unique_ptr<autofill::WalletReminderNoticePageActionController>

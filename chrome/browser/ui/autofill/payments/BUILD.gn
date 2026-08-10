@@ -55,6 +55,7 @@ source_set("payments") {
       "omnibox_autofill_page_action_controller.h",
       "payments_churned_users_bubble_controller.h",
       "payments_churned_users_page_action_controller.h",
+      "wallet_reminder_notice_bubble_controller.h",
       "wallet_reminder_notice_page_action_controller.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
@@ -156,6 +157,7 @@ source_set("impl") {
       "omnibox_autofill_page_action_controller.cc",
       "payments_churned_users_bubble_controller.cc",
       "payments_churned_users_page_action_controller.cc",
+      "wallet_reminder_notice_bubble_controller.cc",
       "wallet_reminder_notice_page_action_controller.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
@@ -323,6 +325,7 @@ source_set("unit_tests") {
       "omnibox_autofill_bubble_controller_unittest.cc",
       "omnibox_autofill_page_action_controller_unittest.cc",
       "save_card_bubble_controller_impl_unittest.cc",
+      "wallet_reminder_notice_bubble_controller_unittest.cc",
       "wallet_reminder_notice_page_action_controller_unittest.cc",
     ]
     deps += [
