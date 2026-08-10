@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/security_state/core/security_state.h"
@@ -106,7 +107,15 @@ ActorOneTimeTokenFillingServiceImpl::ActorOneTimeTokenFillingServiceImpl(
     Profile* profile,
     base::SafeRef<::actor::AggregatedJournal> journal,
     ::actor::TaskId task_id)
-    : profile_(profile), journal_(journal), task_id_(task_id) {}
+    : profile_(profile), journal_(journal), task_id_(task_id) {
+  if (one_time_tokens::OneTimeTokenService* service =
+          OneTimeTokenServiceFactory::GetForProfile(profile);
+      service && service->log_sink()) {
+    log_subscription_ = service->log_sink()->AddLogHandler(base::BindRepeating(
+        &ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage,
+        base::Unretained(this)));
+  }
+}
 
 ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() =
     default;
@@ -225,7 +234,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   // TODO(b/502907994): Do we want to check for incognito profiles here?
   // Gemini should not be available in incognito, but should we check just to
   // be sure (and future-proof)?
-  one_time_tokens::OneTimeTokenService* service =
+  one_time_tokens::OneTimeTokenService* const service =
       OneTimeTokenServiceFactory::GetForProfile(profile_);
   if (!service) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
@@ -539,6 +548,14 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
   }
 
   return FormFillingContextStatus::kSecure;
+}
+
+void ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage(
+    std::string_view message) {
+  journal_->Log(
+      GURL(), task_id_,
+      "ActorOneTimeTokenFillingServiceImpl::OneTimeTokenServiceLog",
+      ::actor::JournalDetailsBuilder().Add("message", message).Build());
 }
 
 base::WeakPtr<ActorOneTimeTokenFillingService>
