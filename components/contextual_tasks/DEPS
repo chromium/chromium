@@ -19,6 +19,7 @@ include_rules = [
   "+google_apis/gaia",
   "+net/base",
   "+services/network/public",
+  "+third_party/lens_server_proto",
   "+third_party/omnibox_proto",
   "+third_party/re2",
   "+third_party/skia/include/core",

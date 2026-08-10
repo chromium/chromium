@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/menus/simple_menu_model.h"
@@ -47,6 +46,7 @@ namespace lens {
 
 class LensOverlaySidePanelNavigationThrottle;
 class LensSearchboxController;
+enum LensOverlaySelectionType : int;
 
 // Data struct representing a previous search query.
 struct SearchQuery {

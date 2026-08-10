@@ -11,13 +11,13 @@
 
 #include "base/time/time.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
 
 class LensOverlayClusterInfo;
 class LensOverlayRequestId;
+enum LensOverlaySelectionType : int;
 
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,

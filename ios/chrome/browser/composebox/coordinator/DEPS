@@ -45,6 +45,7 @@ include_rules = [
   "+ios/chrome/browser/variations/model/client",
   "+ios/chrome/browser/web/model",
   "+mojo/public/cpp/base/big_buffer.h",
+  "+third_party/lens_server_proto",
   "+third_party/omnibox_proto/chrome_aim_entry_point.pb.h",
   "+third_party/omnibox_proto/model_config.pb.h",
   "+third_party/omnibox_proto/model_mode.pb.h",

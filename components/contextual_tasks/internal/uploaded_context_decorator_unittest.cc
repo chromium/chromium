@@ -20,6 +20,7 @@
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace contextual_tasks {
 

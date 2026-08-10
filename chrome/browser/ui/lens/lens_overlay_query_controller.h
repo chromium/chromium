@@ -29,7 +29,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
@@ -51,6 +50,7 @@ namespace lens {
 class ImageCrop;
 class ImageData;
 class LensComposeboxController;
+enum LensOverlaySelectionType : int;
 struct ImageCropAndBitmap;
 
 // Data struct representing content data to be sent to the Lens server.

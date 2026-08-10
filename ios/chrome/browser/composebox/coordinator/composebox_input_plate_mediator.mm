@@ -109,6 +109,7 @@
 #import "mojo/public/cpp/base/big_buffer.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #import "third_party/omnibox_proto/model_config.pb.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"

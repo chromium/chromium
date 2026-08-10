@@ -30,8 +30,6 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/lens_server_proto/added_inputs.pb.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
@@ -44,6 +42,8 @@ class TemplateURLService;
 
 namespace lens {
 enum class RequestIdUpdateMode;
+class AddedInputs;
+class ClientToAimMessage;
 class ImageData;
 class LensOverlayClientContext;
 }  // namespace lens

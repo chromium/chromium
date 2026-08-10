@@ -27,7 +27,6 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class ApplicationLocaleStorage;

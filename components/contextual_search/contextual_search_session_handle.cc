@@ -24,6 +24,8 @@
 #include "contextual_search_context_controller.h"
 #include "contextual_search_types.h"
 #include "pref_names.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 namespace contextual_search {
 

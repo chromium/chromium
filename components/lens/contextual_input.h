@@ -12,12 +12,14 @@
 #include "base/memory/raw_span.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/sessions/core/session_id.h"
-#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 namespace lens {
+
+enum LensOverlayContextualInputUploadType : int;
+
 // Data struct representing context input data bytes.
 // Moved from lens::PageContent
 struct ContextualInput {

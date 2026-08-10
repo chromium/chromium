@@ -14,13 +14,16 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
-#import "third_party/lens_server_proto/aim_communication.pb.h"
 
 @protocol AssistantContainerCommands;
 @protocol SceneCommands;
 class GURL;
 @class CobrowseContext;
 @class AimSRPDebuggerEvent;
+
+namespace lens {
+enum FeatureCapability : int;
+}  // namespace lens
 
 namespace contextual_tasks {
 class ContextualTasksService;

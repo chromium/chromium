@@ -45,7 +45,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -73,6 +72,10 @@ class ContextualTasksComposeboxHandlerInterface;
 class ContextualTasksUiService;
 
 }  // namespace contextual_tasks
+
+namespace lens {
+class ClientToAimMessage;
+}  // namespace lens
 
 namespace tabs {
 class TabInterface;

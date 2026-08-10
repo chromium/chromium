@@ -8,6 +8,7 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "components/lens/lens_bitmap_processing.h"
+#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {

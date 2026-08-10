@@ -16,7 +16,6 @@
 #include "base/task/task_runner.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "url/gurl.h"
 

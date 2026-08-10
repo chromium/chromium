@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -26,6 +25,10 @@ namespace contextual_search {
 enum class ContextualSearchSource;
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
+
+namespace lens {
+class ClientToAimMessage;
+}  // namespace lens
 
 namespace contextual_tasks {
 namespace mojom {

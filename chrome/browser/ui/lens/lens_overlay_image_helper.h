@@ -9,13 +9,14 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class SkBitmap;
 
 namespace lens {
+
+class ImageData;
 
 // A struct containing an ImageCrop proto and the bitmap that was used to
 // create the ImageCrop.

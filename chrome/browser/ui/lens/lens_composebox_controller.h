@@ -16,14 +16,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class LensSearchController;
 
 namespace lens {
+class ClientToAimMessage;
 class LensSessionMetricsLogger;
 class LensComposeboxHandler;
+enum FeatureCapability : int;
 
 // Controller for the Lens compose box. This class is responsible for handling
 // communications between the Lens WebUI compose box and other Lens components,
