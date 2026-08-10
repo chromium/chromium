@@ -669,7 +669,6 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 void ActorFormFillingServiceImpl::FillSuggestions(
     AutofillClient& client,
     base::span<const ActorFormFillingSelection> chosen_suggestions,
-    base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
     base::OnceCallback<void(base::expected<std::string, ActorFormFillingError>)>
         callback) {
   const bool is_payments_fill = std::ranges::any_of(
@@ -684,7 +683,6 @@ void ActorFormFillingServiceImpl::FillSuggestions(
   auto chain = base::BindOnce(
       [](bool is_payments_fill, base::TimeTicks start_time,
          base::WeakPtr<ActorFormFillingServiceImpl> service,
-         base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
          base::expected<base::flat_map<FieldGlobalId, std::string>,
                         ActorFormFillingError> result)
           -> base::expected<std::string, ActorFormFillingError> {
@@ -733,8 +731,7 @@ void ActorFormFillingServiceImpl::FillSuggestions(
                  .Get(),
              "\n", *serialized_value});
       },
-      is_payments_fill, base::TimeTicks::Now(), weak_ptr_factory_.GetWeakPtr(),
-      std::move(trigger_field_map));
+      is_payments_fill, base::TimeTicks::Now(), weak_ptr_factory_.GetWeakPtr());
 
   // filling_observer_->Activate() waits for all fill operations to conclude
   // and then calls the callback chain.

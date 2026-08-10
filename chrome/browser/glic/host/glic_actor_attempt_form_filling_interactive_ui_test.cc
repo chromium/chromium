@@ -397,8 +397,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
     EXPECT_CALL(
         mock_form_filling_service(),
         FillSuggestions(
-            _, ElementsAre(ActorFormFillingSelection(suggestion.id)), _, _))
-        .WillOnce(RunOnceCallback<3>(""));
+            _, ElementsAre(ActorFormFillingSelection(suggestion.id)), _))
+        .WillOnce(RunOnceCallback<2>(""));
   }
   TaskId task_id;
   DomNode address_field_node;
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
   EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
   EXPECT_CALL(mock_form_filling_service(), FillSuggestions)
-      .WillOnce(RunOnceCallback<3>(""));
+      .WillOnce(RunOnceCallback<2>(""));
 
   TaskId task_id;
   DomNode address_field_node;

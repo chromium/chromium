@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ACTOR_MOCK_ACTOR_FORM_FILLING_SERVICE_H_
 
-#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
@@ -32,7 +31,6 @@ class MockActorFormFillingService : public ActorFormFillingService {
       FillSuggestions,
       (AutofillClient& client,
        base::span<const ActorFormFillingSelection> chosen_suggestions,
-       (base::flat_map<FieldGlobalId, ::actor::PageTarget>)trigger_field_map,
        base::OnceCallback<
            void(base::expected<std::string, ActorFormFillingError>)>),
       (override));

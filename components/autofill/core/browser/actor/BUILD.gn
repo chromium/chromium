@@ -25,7 +25,6 @@ source_set("actor") {
   ]
 
   deps = [
-    "//components/actor/core",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//ui/gfx/geometry",

@@ -98,7 +98,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingAssistanceMetrics_AddressFilled) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION,
@@ -152,7 +152,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingAssistanceMetrics_CreditCardFilled) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -182,7 +182,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_AddressCorrect) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
   // Simulate all fields being submitted as autofilled (unchanged).
@@ -217,7 +217,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
   // Simulate one field being modified.
@@ -256,7 +256,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -294,7 +294,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
 
@@ -337,7 +337,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_MixedForm) {
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, addr_fill_future.GetCallback());
+      addr_fill_future.GetCallback());
   EXPECT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
@@ -352,7 +352,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_MixedForm) {
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, cc_fill_future.GetCallback());
+      cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(cc_fill_future.Get(), HasValue());
 
@@ -400,7 +400,7 @@ TEST_F(ActorKeyMetricsRecorderTest, FillingCorrectnessMetrics_PartialFilling) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
   // Verify that only the NAME_FULL field was filled by the actor.
@@ -451,7 +451,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
 
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION,
@@ -563,7 +563,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_Address_Perfect) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate perfect filling (no user edits).
@@ -596,7 +596,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_Address_Imperfect) {
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)}, {},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -638,7 +638,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_CreditCard_Perfect) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(fill_future.Get(), HasValue());
 
@@ -674,7 +674,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_CreditCard_Imperfect) {
                      ActorFormFillingSelection(requests[0].suggestions[0].id));
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
-      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)}, {},
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(fill_future.Get(), HasValue());
@@ -717,7 +717,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Perfect) {
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, addr_fill_future.GetCallback());
+      addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
@@ -732,7 +732,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Perfect) {
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, cc_fill_future.GetCallback());
+      cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(cc_fill_future.Get(), HasValue());
 
@@ -773,7 +773,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Imperfect) {
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, addr_fill_future.GetCallback());
+      addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
   // Fill credit card.
@@ -788,7 +788,7 @@ TEST_F(ActorKeyMetricsRecorderTest, PerfectFilling_MixedForm_Imperfect) {
   FillSuggestionsFuture cc_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, cc_fill_future.GetCallback());
+      cc_fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   ASSERT_THAT(cc_fill_future.Get(), HasValue());
 
@@ -834,7 +834,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate submission.
@@ -882,7 +882,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture addr_fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, addr_fill_future.GetCallback());
+      addr_fill_future.GetCallback());
   ASSERT_THAT(addr_fill_future.Get(), HasValue());
 
   // Manually add the kAutofill modifier to the cached field to perfectly
@@ -928,7 +928,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate submission. The actor fields are marked as autofilled.
@@ -967,7 +967,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate perfect filling (no user edits).
@@ -1010,7 +1010,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate imperfect filling (user edit).
@@ -1058,7 +1058,7 @@ TEST_F(ActorKeyMetricsRecorderTest,
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      /*trigger_field_map=*/{}, fill_future.GetCallback());
+      fill_future.GetCallback());
   ASSERT_THAT(fill_future.Get(), HasValue());
 
   // Simulate imperfect filling (user edit on an UNKNOWN_TYPE field that
