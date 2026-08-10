@@ -686,6 +686,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
 
     remote_actor_forms_.clear();
     auto form1 = std::make_unique<password_manager::PasswordForm>();
+    form1->url = GURL("https://terracottaand.co");
     form1->username_value = u"peter@pan.test";
     form1->password_value = u"I can fly!";
     form1->match_type = password_manager::PasswordForm::MatchType::kExact;
@@ -693,6 +694,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
 
     if (name == "RemoteActorMultiple") {
       auto form2 = std::make_unique<password_manager::PasswordForm>();
+      form2->url = GURL("https://terracottaand.co");
       form2->username_value = u"notpeter@pan.test";
       form2->password_value = u"I cannot fly!";
       form2->match_type = password_manager::PasswordForm::MatchType::kExact;
