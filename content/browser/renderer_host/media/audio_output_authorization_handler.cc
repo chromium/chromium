@@ -16,6 +16,7 @@
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "media/audio/audio_system.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::mojom::MediaDeviceType;
 
@@ -70,11 +71,13 @@ void CheckAccessOnUIThread(
 
 class AudioOutputAuthorizationHandler::TraceScope {
  public:
-  explicit TraceScope(const std::string& device_id) {
+  explicit TraceScope(const std::string& device_id)
+      : trace_track_(perfetto::NamedTrack::FromPointer(
+            "content::AudioOutputAuthorizationHandler",
+            this)) {
     TRACE_EVENT_BEGIN("audio", "Audio output device authorization",
-                      perfetto::Track::FromPointer(this));
-    TRACE_EVENT_BEGIN("audio", "Request for device",
-                      perfetto::Track::FromPointer(this), "device id",
+                      trace_track_);
+    TRACE_EVENT_BEGIN("audio", "Request for device", trace_track_, "device id",
                       device_id);
   }
 
@@ -84,61 +87,56 @@ class AudioOutputAuthorizationHandler::TraceScope {
   ~TraceScope() {
     if (waiting_for_params_) {
       // End "Getting audio parameters" trace event.
-      TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "cancelled",
-                      true);
+      TRACE_EVENT_END("audio", trace_track_, "cancelled", true);
     }
     if (checking_access_) {
       // End "Checking access" trace event.
-      TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "cancelled",
-                      true);
+      TRACE_EVENT_END("audio", trace_track_, "cancelled", true);
     }
     // End "Request for device" trace event.
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("audio", trace_track_);
     // End "Audio output device authorization" trace event.
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("audio", trace_track_);
   }
 
   void SimpleEvent(perfetto::StaticString event) {
-    TRACE_EVENT_INSTANT("audio", event, perfetto::Track::FromPointer(this));
+    TRACE_EVENT_INSTANT("audio", event, trace_track_);
   }
 
   void UsingSessionId(const base::UnguessableToken& session_id,
                       const std::string& device_id) {
-    TRACE_EVENT_INSTANT("audio", "Using session id",
-                        perfetto::Track::FromPointer(this), "session id",
+    TRACE_EVENT_INSTANT("audio", "Using session id", trace_track_, "session id",
                         session_id.ToString(), "device id", device_id);
   }
 
   void CheckAccessStart(const std::string& device_id) {
     checking_access_ = true;
-    TRACE_EVENT_BEGIN("audio", "Checking access",
-                      perfetto::Track::FromPointer(this), "device id",
+    TRACE_EVENT_BEGIN("audio", "Checking access", trace_track_, "device id",
                       device_id);
   }
 
   void AccessChecked(bool has_access) {
     checking_access_ = false;
     // End "Checking access" trace event.
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
-                    "access granted", has_access);
+    TRACE_EVENT_END("audio", trace_track_, "access granted", has_access);
   }
 
   void StartedGettingAudioParameters(const std::string& raw_device_id) {
     waiting_for_params_ = true;
-    TRACE_EVENT_BEGIN("audio", "Getting audio parameters",
-                      perfetto::Track::FromPointer(this), "device id",
-                      raw_device_id);
+    TRACE_EVENT_BEGIN("audio", "Getting audio parameters", trace_track_,
+                      "device id", raw_device_id);
   }
 
   void FinishedGettingAudioParameters() {
     waiting_for_params_ = false;
     // End "Getting audio parameters" trace event.
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("audio", trace_track_);
   }
 
  private:
   bool checking_access_ = false;
   bool waiting_for_params_ = false;
+  const perfetto::NamedTrack trace_track_;
 };
 
 AudioOutputAuthorizationHandler::AudioOutputAuthorizationHandler(

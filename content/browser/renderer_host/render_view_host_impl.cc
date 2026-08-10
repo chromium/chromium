@@ -89,6 +89,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/device_form_factor.h"
@@ -322,7 +323,7 @@ RenderViewHostImpl::RenderViewHostImpl(
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
   TRACE_EVENT_BEGIN("navigation.debug", "RenderViewHost",
-                    perfetto::Track::FromPointer(this),
+                    perfetto::NamedTrack::FromPointer("RenderViewHost", this),
                     "render_view_host_when_created", this);
 
   CHECK(delegate_, base::NotFatalUntil::M152);
@@ -384,7 +385,8 @@ RenderViewHostImpl::~RenderViewHostImpl() {
     frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
 
   // Corresponds to the TRACE_EVENT_BEGIN in RenderViewHostImpl's constructor.
-  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug",
+                  perfetto::NamedTrack::FromPointer("RenderViewHost", this));
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {

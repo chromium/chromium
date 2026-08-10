@@ -22,6 +22,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/common/content_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
@@ -64,9 +65,8 @@ CommitDeferringConditionRunner::CommitDeferringConditionRunner(
 CommitDeferringConditionRunner::~CommitDeferringConditionRunner() {
   if (is_deferred_) {
     // End `condition->TraceEventName()` trace event.
-    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
-    // End "CommitDeferringConditionRunning" trace event.
-    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("navigation", perfetto::NamedTrack::FromPointer(
+                                      "CommitDeferringConditionRunner", this));
   }
 }
 
@@ -98,9 +98,8 @@ void CommitDeferringConditionRunner::ResumeProcessing() {
   CHECK(is_deferred_, base::NotFatalUntil::M152);
   is_deferred_ = false;
   // End `condition->TraceEventName()` trace event.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
-  // End "CommitDeferringConditionRunning" trace event.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation", perfetto::NamedTrack::FromPointer(
+                                    "CommitDeferringConditionRunner", this));
   // This is resuming from a check that resolved asynchronously. The current
   // check is always at the front of the vector so pop it and then proceed with
   // the next one.
@@ -248,11 +247,10 @@ void CommitDeferringConditionRunner::ProcessConditions() {
           break;
         }
         is_deferred_ = true;
-        TRACE_EVENT_BEGIN("navigation", "CommitDeferringConditionRunning",
-                          perfetto::Track::FromPointer(this));
         TRACE_EVENT_BEGIN("navigation",
-                          perfetto::DynamicString(condition->TraceEventName()),
-                          perfetto::Track::FromPointer(this));
+                          perfetto::StaticString(condition->TraceEventName()),
+                          perfetto::NamedTrack::FromPointer(
+                              "CommitDeferringConditionRunner", this));
         return;
       case CommitDeferringCondition::Result::kCancelled:
         return;

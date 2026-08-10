@@ -56,6 +56,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace content {
@@ -138,9 +139,10 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       render_frame_proxy_created_(false),
       render_view_host_(std::move(render_view_host)),
       frame_token_(frame_token) {
-  TRACE_EVENT_BEGIN("navigation.debug", "RenderFrameProxyHost",
-                    perfetto::Track::FromPointer(this),
-                    "render_frame_proxy_host_when_created", *this);
+  TRACE_EVENT_BEGIN(
+      "navigation.debug", "RenderFrameProxyHost",
+      perfetto::NamedTrack::FromPointer("RenderFrameProxyHost", this),
+      "render_frame_proxy_host_when_created", *this);
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   CHECK(g_routing_id_frame_proxy_map.Get()
             .insert(std::make_pair(
@@ -202,7 +204,8 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetDeprecatedID(), routing_id_));
   GetTokenFrameProxyMap().erase(frame_token_);
-  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::NamedTrack::FromPointer(
+                                          "RenderFrameProxyHost", this));
 }
 
 void RenderFrameProxyHost::SetChildRWHView(RenderWidgetHostViewChildFrame* view,
