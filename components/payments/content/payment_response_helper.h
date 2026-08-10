@@ -18,6 +18,7 @@
 
 namespace payments {
 
+class JourneyLogger;
 class PaymentRequestDelegate;
 class PaymentRequestSpec;
 
@@ -45,6 +46,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
       base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
       autofill::AutofillProfile* selected_shipping_profile,
       autofill::AutofillProfile* selected_contact_profile,
+      base::WeakPtr<JourneyLogger> journey_logger,
       base::WeakPtr<Delegate> delegate);
 
   PaymentResponseHelper(const PaymentResponseHelper&) = delete;
@@ -84,6 +86,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
 
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
+  base::WeakPtr<JourneyLogger> journey_logger_;
   base::WeakPtr<PaymentApp> selected_app_;
   base::WeakPtr<PaymentRequestDelegate> payment_request_delegate_;
 

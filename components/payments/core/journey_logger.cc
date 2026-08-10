@@ -396,6 +396,36 @@ void JourneyLogger::SetPaymentAppUkmSourceId(
   payment_app_source_id_ = payment_app_source_id;
 }
 
+void JourneyLogger::SetPaymentAppWindowOpened() {
+  was_payment_app_window_opened_ = true;
+}
+
+void JourneyLogger::SetPaymentAppUserInteractionCaptured() {
+  was_payment_app_user_interaction_captured_ = true;
+}
+
+void JourneyLogger::RecordRespondWithResolvedStatus() {
+  base::UmaHistogramBoolean(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "RespondWithResolvedBeforeOpenWindow",
+      !was_payment_app_window_opened_);
+  base::UmaHistogramBoolean(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "RespondWithResolvedBeforeUserGesture",
+      !was_payment_app_user_interaction_captured_);
+}
+
+void JourneyLogger::RecordRespondWithRejectedStatus() {
+  base::UmaHistogramBoolean(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "RespondWithRejectedBeforeOpenWindow",
+      !was_payment_app_window_opened_);
+  base::UmaHistogramBoolean(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "RespondWithRejectedBeforeUserGesture",
+      !was_payment_app_user_interaction_captured_);
+}
+
 void JourneyLogger::SetWindowSizeCheckRejectionReason(
     WindowSizeCheckRejectionReason reason) {
   window_size_check_rejection_reason_ = reason;

@@ -255,12 +255,36 @@ class JourneyLogger {
   // Sets the UKM source id of the selected app when it gets invoked.
   void SetPaymentAppUkmSourceId(ukm::SourceId payment_app_source_id);
 
+  // Records that the service worker payment app opened a window.
+  void SetPaymentAppWindowOpened();
+
+  // Records that user interaction was captured in the payment app.
+  // Note: this may not be called for all types of apps, only those where Chrome
+  // can detect the interaction, e.g. service worker payment app
+  void SetPaymentAppUserInteractionCaptured();
+
+  // Records whether the service worker payment app resolved its respondWith()
+  // promise before opening a window or capturing user interaction.
+  void RecordRespondWithResolvedStatus();
+
+  // Records whether the service worker payment app rejected its respondWith()
+  // promise before opening a window or capturing user interaction.
+  void RecordRespondWithRejectedStatus();
+
   // Sets the reason why the browser window size check failed. The reason
   // will eventually be logged when the PaymentRequest is completed or aborted.
   // If this method is called multiple times, the last value will be used.
   void SetWindowSizeCheckRejectionReason(WindowSizeCheckRejectionReason reason);
 
   base::WeakPtr<JourneyLogger> GetWeakPtr();
+
+  bool was_payment_app_window_opened_for_testing() const {
+    return was_payment_app_window_opened_;
+  }
+
+  bool was_payment_app_user_interaction_captured_for_testing() const {
+    return was_payment_app_user_interaction_captured_;
+  }
 
  private:
   // Records that an event occurred.
@@ -321,6 +345,9 @@ class JourneyLogger {
 
   WindowSizeCheckRejectionReason window_size_check_rejection_reason_ =
       WindowSizeCheckRejectionReason::kNotRejectedOrNotShown;
+
+  bool was_payment_app_window_opened_ = false;
+  bool was_payment_app_user_interaction_captured_ = false;
 
   base::WeakPtrFactory<JourneyLogger> weak_ptr_factory_{this};
 };

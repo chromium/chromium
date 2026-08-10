@@ -214,6 +214,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.RespondWithRejectedBeforeOpenWindow"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the promise passed to PaymentRequestEvent.respondWith() was
+    rejected before a call to PaymentRequestEvent.openWindow(). Recorded when
+    the respondWith() promise is rejected in a payment handler.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.RespondWithRejectedBeforeUserGesture"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the promise passed to PaymentRequestEvent.respondWith() was
+    rejected before a user gesture was captured in the payment app window.
+    Recorded when the respondWith() promise is rejected in a payment handler.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.RespondWithResolvedBeforeOpenWindow"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the promise passed to PaymentRequestEvent.respondWith() was
+    resolved before a call to PaymentRequestEvent.openWindow(). Recorded when
+    the respondWith() promise is resolved in a payment handler.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.RespondWithResolvedBeforeUserGesture"
+    enum="Boolean" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether the promise passed to PaymentRequestEvent.respondWith() was
+    resolved before a user gesture was captured in the payment app window.
+    Recorded when the respondWith() promise is resolved in a payment handler.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
   <owner>smcgruer@chromium.org</owner>

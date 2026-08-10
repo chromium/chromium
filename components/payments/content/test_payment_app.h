@@ -16,6 +16,9 @@ class TestPaymentApp : public PaymentApp {
   explicit TestPaymentApp(
       const std::string& method,
       PaymentApp::Type type = PaymentApp::Type::SERVICE_WORKER_APP);
+  TestPaymentApp(const std::string& method,
+                 mojom::PaymentEventResponseType error_response_type,
+                 PaymentApp::Type type = PaymentApp::Type::SERVICE_WORKER_APP);
   ~TestPaymentApp() override;
 
   TestPaymentApp(const TestPaymentApp& other) = delete;
@@ -40,6 +43,7 @@ class TestPaymentApp : public PaymentApp {
 
  private:
   const std::string method_;
+  std::optional<mojom::PaymentEventResponseType> error_response_type_;
   base::WeakPtrFactory<TestPaymentApp> weak_ptr_factory_{this};
 };
 
