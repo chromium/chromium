@@ -693,7 +693,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
       case EntityInstance::RecordType::kServerWallet:
         return EntityInstance::WalletRecordTypePayload{};
       case EntityInstance::RecordType::kPersonalContext:
-        return EntityInstance::PersonalContextRecordTypePayload{};
+        // pContext entities are not stored in `EntityTable`.
+        NOTREACHED();
     }
     NOTREACHED();
   }();

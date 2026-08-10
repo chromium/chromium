@@ -146,7 +146,8 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
       case EntityInstance::RecordType::kServerWallet:
         return EntityInstance::WalletRecordTypePayload{};
       case EntityInstance::RecordType::kPersonalContext:
-        return EntityInstance::PersonalContextRecordTypePayload{};
+        // pContext entities cannot be created from settings.
+        NOTREACHED();
     }
     NOTREACHED();
   }();

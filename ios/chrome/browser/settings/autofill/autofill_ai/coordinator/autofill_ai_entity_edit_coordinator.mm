@@ -51,7 +51,8 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       case autofill::EntityInstance::RecordType::kServerWallet:
         return autofill::EntityInstance::WalletRecordTypePayload{};
       case autofill::EntityInstance::RecordType::kPersonalContext:
-        return autofill::EntityInstance::PersonalContextRecordTypePayload{};
+        // pContext entities cannot be created from settings.
+        NOTREACHED();
     }
     NOTREACHED();
   }();

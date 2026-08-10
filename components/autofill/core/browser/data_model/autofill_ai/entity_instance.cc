@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -447,6 +448,31 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+std::ostream& operator<<(
+    std::ostream& os,
+    const EntityInstance::PersonalContextRecordTypePayload::Source::Type& t) {
+  using Type = EntityInstance::PersonalContextRecordTypePayload::Source::Type;
+  switch (t) {
+    case Type::kUnspecified:
+      os << "kUnspecified";
+      break;
+    case Type::kGmail:
+      os << "kGmail";
+      break;
+    case Type::kPhotos:
+      os << "kPhotos";
+      break;
+  }
+  return os;
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const EntityInstance::PersonalContextRecordTypePayload::Source& s) {
+  os << "Source(type: " << s.type << ", url: \"" << s.url << "\")";
+  return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   os << "- name: " << '"' << e.type() << '"' << std::endl;
   os << "- nickname: " << '"' << e.nickname() << '"' << std::endl;
@@ -458,6 +484,17 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
   for (const AttributeInstance& a : e.attributes()) {
     os << "- attribute " << a << std::endl;
   }
+
+  std::visit(
+      absl::Overload{
+          [&](const EntityInstance::PersonalContextRecordTypePayload& p) {
+            for (const EntityInstance::PersonalContextRecordTypePayload::Source&
+                     s : p.sources) {
+              os << "- source " << s << std::endl;
+            }
+          },
+          [](const auto&) {}},
+      e.record_type_data());
   return os;
 }
 
@@ -725,8 +762,10 @@ EntityInstance EntityInstance::CopyWithNewRecordType(
       new_entity.record_type_data_ = WalletRecordTypePayload();
       break;
     case RecordType::kPersonalContext:
-      new_entity.record_type_data_ = PersonalContextRecordTypePayload();
-      break;
+      // TODO(crbug.com/542083924): Converting to a pContext entity is currently
+      // not supported because no source can be specified. It is not needed at
+      // the moment since pContext entities don't support migrations.
+      NOTIMPLEMENTED();
   }
   return new_entity;
 }

@@ -180,7 +180,8 @@ EntityInstance GetMergedEntity(
       case EntityInstance::RecordType::kServerWallet:
         return EntityInstance::WalletRecordTypePayload{};
       case EntityInstance::RecordType::kPersonalContext:
-        return EntityInstance::PersonalContextRecordTypePayload{};
+        // pContext entities are read-only.
+        NOTREACHED();
     }
     NOTREACHED();
   }();

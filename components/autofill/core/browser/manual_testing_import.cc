@@ -244,7 +244,9 @@ std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
       case EntityInstance::RecordType::kServerWallet:
         return EntityInstance::WalletRecordTypePayload{};
       case EntityInstance::RecordType::kPersonalContext:
-        return EntityInstance::PersonalContextRecordTypePayload{};
+        // TODO(crbug.com/542083924): Consider adding support for payloads to
+        // manual testing imports.
+        return EntityInstance::PersonalContextRecordTypePayload{.sources = {}};
     }
     NOTREACHED();
   }();

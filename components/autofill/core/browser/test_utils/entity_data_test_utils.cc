@@ -471,7 +471,10 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
       case EntityInstance::RecordType::kServerWallet:
         return EntityInstance::WalletRecordTypePayload{};
       case EntityInstance::RecordType::kPersonalContext:
-        return EntityInstance::PersonalContextRecordTypePayload{};
+        // TODO(crbug.com/542083924): Consider adding support for payloads to
+        // `EntityOptions`. For now, an empty payload is ok as most tests don't
+        // care about the sources.
+        return EntityInstance::PersonalContextRecordTypePayload{.sources = {}};
     }
     NOTREACHED();
   }();

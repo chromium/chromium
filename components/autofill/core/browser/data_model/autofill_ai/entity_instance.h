@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/is_required.h"
 
 namespace sync_pb {
 class AutofillValuableSpecifics;
@@ -310,6 +311,22 @@ class EntityInstance final {
                            const WalletRecordTypePayload&) = default;
   };
   struct PersonalContextRecordTypePayload {
+    // Captures the provenance of an entity (e.g., its product source and URL).
+    struct Source {
+      enum class Type {
+        kUnspecified = 0,
+        kGmail = 1,
+        kPhotos = 2,
+      };
+
+      Type type = Type::kUnspecified;
+      std::string url;
+
+      friend bool operator==(const Source&, const Source&) = default;
+    };
+
+    std::vector<Source> sources = internal::IsRequired();
+
     friend bool operator==(const PersonalContextRecordTypePayload&,
                            const PersonalContextRecordTypePayload&) = default;
   };
@@ -542,6 +559,12 @@ class EntityInstance final {
 std::ostream& operator<<(std::ostream& os,
                          const EntityInstance::EntityMetadata& m);
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
+std::ostream& operator<<(
+    std::ostream& os,
+    const EntityInstance::PersonalContextRecordTypePayload::Source::Type& t);
+std::ostream& operator<<(
+    std::ostream& os,
+    const EntityInstance::PersonalContextRecordTypePayload::Source& s);
 std::ostream& operator<<(std::ostream& os, const EntityInstance::RecordType& t);
 std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
 
