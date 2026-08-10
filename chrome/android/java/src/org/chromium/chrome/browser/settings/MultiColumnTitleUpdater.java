@@ -335,9 +335,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
         float scaleX = LocalizationUtils.isLayoutRtl() ? -1f : 1f;
 
-        if (SettingsInTab.isEnabled() && titles.size() > 1) {
+        int prevIndex = titles.size() - 2;
+        // Do not show the back button if the previous title is hidden (e.g. Search results).
+        if (SettingsInTab.isEnabled() && prevIndex >= mFirstVisibleTitleIndex) {
             // Set up a back button to go to the section for the previous title.
-            int prevIndex = titles.size() - 2;
             var prevTitle = titles.get(prevIndex);
             var backButton = new ChromeImageButton(mContext);
             backButton.setImageResource(R.drawable.ic_arrow_back_24dp);
