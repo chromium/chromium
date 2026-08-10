@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/display/device_display_cros_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -106,6 +107,9 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationDefaultTest, ConnectSecondDisplay) {
   const display::Display::Rotation policy_rotation = GetParam();
   SetRotationPolicy(policy_rotation);
   display_helper()->ToggleSecondDisplay();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return display_helper()->GetRotationOfSecondDisplay() == policy_rotation;
+  }));
   EXPECT_EQ(policy_rotation, display_helper()->GetRotationOfFirstDisplay())
       << "Rotation of primary display after policy";
   EXPECT_EQ(policy_rotation, display_helper()->GetRotationOfSecondDisplay())
