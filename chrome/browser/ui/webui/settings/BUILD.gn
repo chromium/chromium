@@ -331,6 +331,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/default_browser",
+      "//chrome/browser/profiles:gaia_info_update_service",
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/webui:profile_helper",
     ]

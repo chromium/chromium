@@ -182,12 +182,8 @@ source_set("misc") {
   }
 
   if (!is_chromeos) {
-    sources += [
-      "gaia_info_update_service.cc",
-      "gaia_info_update_service.h",
-      "gaia_info_update_service_factory.cc",
-      "gaia_info_update_service_factory.h",
-    ]
+    # profiles_state.cc uses GAIAInfoUpdateService on non-ChromeOS platforms.
+    deps += [ ":gaia_info_update_service" ]
   }
 
   if (!is_android && !is_chromeos) {
@@ -262,6 +258,42 @@ source_set("misc") {
 
   if (enable_bound_session_credentials) {
     deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+  }
+}
+
+if (!is_chromeos) {
+  source_set("gaia_info_update_service") {
+    public = [
+      "gaia_info_update_service.h",
+      "gaia_info_update_service_factory.h",
+    ]
+    sources = [
+      "gaia_info_update_service.cc",
+      "gaia_info_update_service_factory.cc",
+    ]
+    public_deps = [
+      ":profile",
+      ":profile_downloader",
+      ":profile_util",
+      "//base",
+      "//components/keyed_service/core",
+      "//components/signin/public/identity_manager",
+      "//skia",
+      "//ui/gfx",
+    ]
+    deps = [
+      ":profile_manager",
+      ":profiles",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/signin",
+      "//chrome/common:buildflags",
+      "//chrome/common:constants",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//content/public/browser",
+      "//google_apis",
+    ]
   }
 }
 
@@ -900,6 +932,10 @@ source_set("profiles_extra_parts_impl") {
     ]
   }
 
+  if (!is_chromeos) {
+    deps += [ ":gaia_info_update_service" ]
+  }
+
   if (!is_chromeos && !is_android) {
     deps += [
       ":profile_util",
@@ -1082,7 +1118,10 @@ source_set("unit_tests") {
 
   if (!is_chromeos) {
     sources += [ "gaia_info_update_service_unittest.cc" ]
-    deps += [ "//chrome/browser:global_features" ]
+    deps += [
+      ":gaia_info_update_service",
+      "//chrome/browser:global_features",
+    ]
     if (!is_android) {
       deps += [ "//chrome/browser/glic/test_support" ]
     }
