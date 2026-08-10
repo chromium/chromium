@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 
+#include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -48,7 +51,20 @@ WalletReminderNoticeBubbleController::GetBubbleControllerBaseWeakPtr() {
 }
 
 void WalletReminderNoticeBubbleController::DoShowBubble() {
-  // TODO(crbug.com/543546376): Show Wallet reminder notice bubble.
+  BrowserWindowInterface* browser = tab_interface_->GetBrowserWindowInterface();
+  if (!browser) {
+    return;
+  }
+  BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
+  if (!browser_window) {
+    return;
+  }
+  if (AutofillBubbleBase* bubble_view =
+          browser_window->GetAutofillBubbleHandler()
+              ->ShowWalletReminderNoticeBubble(web_contents(), this,
+                                               is_reshow_)) {
+    SetBubbleView(*bubble_view);
+  }
 }
 
 }  // namespace autofill

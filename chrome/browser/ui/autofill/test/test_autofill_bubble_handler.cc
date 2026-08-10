@@ -196,4 +196,15 @@ TestAutofillBubbleHandler::ShowPaymentsChurnedUsersConfirmationBubble(
   return payments_churned_users_confirmation_bubble_view_.get();
 }
 
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowWalletReminderNoticeBubble(
+    content::WebContents* web_contents,
+    WalletReminderNoticeBubbleController* controller,
+    bool is_user_gesture) {
+  if (!wallet_reminder_notice_bubble_view_) {
+    wallet_reminder_notice_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return wallet_reminder_notice_bubble_view_.get();
+}
+
 }  // namespace autofill
