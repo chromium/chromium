@@ -1215,8 +1215,9 @@ ClientFrameElementInfo BrowserView::GetFrameElementInfo() const {
   // So return what the tabstrip height _ought_ to be right now.
   ClientFrameElementInfo info;
   info.tabstrip_preferred_height =
-      horizontal_tab_strip_region_view_ && ShouldDrawTabStrip() &&
-              !ShouldDrawVerticalTabStrip()
+      ShouldDrawTabStrip() && !ShouldDrawVerticalTabStrip() &&
+              horizontal_tab_strip_region_view_ &&
+              horizontal_tab_strip_region_view_->GetTabStripView()
           ? horizontal_tab_strip_region_view_->GetTabStripView()
                 ->GetPreferredSize()
                 .height()
