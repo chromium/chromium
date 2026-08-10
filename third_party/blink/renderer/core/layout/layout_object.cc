@@ -3598,6 +3598,8 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                       TransformState& transform_state,
                                       MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK_EQ(transform_state.Direction(),
+           TransformState::kApplyTransformDirection);
   if (ancestor == this)
     return;
 
@@ -3612,17 +3614,18 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
 
   PhysicalOffset container_offset = OffsetFromContainer(container, mode);
 
-  // Text objects just copy their parent's computed style, so we need to ignore
-  // them.
   bool use_transforms = !mode.Has(MapCoordinatesMode::kIgnoreTransforms);
 
-  const bool container_preserves_3d = container->StyleRef().Preserves3D();
+  // Text objects just copy their parent's computed style, so we need to ignore
+  // them.
+  const bool container_preserves_3d =
+      container->StyleRef().Preserves3D() && !container->IsText();
   // Just because container and this have preserve-3d doesn't mean all
   // the DOM elements between them do.  (We know they don't have a
   // transform, though, since otherwise they'd be the container.)
   const bool path_preserves_3d = container == NearestAncestorForElement();
-  const bool preserve3d = use_transforms && container_preserves_3d &&
-                          !container->IsText() && path_preserves_3d;
+  const bool preserve3d =
+      use_transforms && container_preserves_3d && path_preserves_3d;
 
   if (use_transforms && ShouldUseTransformFromContainer(container)) {
     gfx::Transform t;
@@ -3653,6 +3656,8 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                                       TransformState& transform_state,
                                       MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK_EQ(transform_state.Direction(),
+           TransformState::kUnapplyInverseTransformDirection);
   if (this == ancestor)
     return;
 

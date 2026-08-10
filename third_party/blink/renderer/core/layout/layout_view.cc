@@ -321,6 +321,8 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                     TransformState& transform_state,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK_EQ(transform_state.Direction(),
+           TransformState::kApplyTransformDirection);
   if (!ancestor && !mode.Has(MapCoordinatesMode::kIgnoreTransforms) &&
       ShouldUseTransformFromContainer(nullptr)) {
     gfx::Transform t;
@@ -354,11 +356,11 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                                     TransformState& transform_state,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK_EQ(transform_state.Direction(),
+           TransformState::kUnapplyInverseTransformDirection);
   if (this != ancestor &&
       mode.Has(MapCoordinatesMode::kTraverseDocumentBoundaries)) {
     if (auto* parent_doc_layout_object = GetFrame()->OwnerLayoutObject()) {
-      // A LayoutView is a containing block for fixed-position elements, so
-      // don't carry this state across frames.
       parent_doc_layout_object->MapAncestorToLocal(ancestor, transform_state,
                                                    mode);
 
@@ -367,7 +369,7 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     } else {
       DCHECK(!ancestor);
       // Note that MapLocalToRemoteMainFrame is correct here because
-      // transform_state will be set to kUnapplyInverseTransformDirection.
+      // transform_state has kUnapplyInverseTransformDirection.
       if (mode.HasAny({MapCoordinatesMode::kApplyRemoteMainFrameTransform,
                        MapCoordinatesMode::kApplyRemoteViewportTransform}) &&
           GetFrame()->IsLocalRoot()) {

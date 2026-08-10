@@ -2311,15 +2311,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Convert a rect/quad/point in ancestor coordinates to local physical
   // coordinates, taking transforms into account unless kIgnoreTransforms (not
-  // allowed in the quad versions) is specified.
+  // allowed in the quad versions) is specified. See MapCoordinatesMode for
+  // the meaning of local and ancestor coordinates.
   // PhysicalRect parameter/return value is preferred to Float because they
   // force physical coordinates, unless we do need quads or float precision.
-  // If the LayoutBoxModelObject ancestor is non-null, the input is in the
-  // space of the ancestor.
-  // Otherwise:
-  //   If kTraverseDocumentBoundaries is specified, the input is in the space of
-  //   the local root frame.
-  //   Otherwise, the input is in the space of the containing frame.
   PhysicalRect AncestorToLocalRect(const LayoutBoxModelObject* ancestor,
                                    const PhysicalRect& rect,
                                    MapCoordinatesFlags mode = {}) const {
@@ -2344,16 +2339,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Convert a rect/quad/point in local physical coordinates into ancestor
   // coordinates, taking transforms into account unless kIgnoreTransforms is
-  // specified.
+  // specified. See MapCoordinatesMode for the meaning of local and ancestor
+  // coordinates.
   // PhysicalRect parameter/return value is preferred to Float because they
   // force physical coordinates, unless we do need quads or float precision.
-  // If the LayoutBoxModelObject ancestor is non-null, the result will be in the
-  // space of the ancestor.
-  // Otherwise:
-  //   If TraverseDocumentBoundaries is specified, the result will be in the
-  //   space of the outermost root frame.
-  //   Otherwise, the result will be in the space of the containing frame.
-  // This method supports kUseGeometryMapperMode.
   PhysicalRect LocalToAncestorRect(const PhysicalRect& rect,
                                    const LayoutBoxModelObject* ancestor,
                                    MapCoordinatesFlags mode = {}) const;
@@ -2379,8 +2368,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Return the transformation matrix to map points from local to the coordinate
   // system of a container, taking transforms into account (kIgnoreTransforms is
-  // not allowed).
-  // Passing null for |ancestor| behaves the same as LocalToAncestorRect.
+  // not allowed). See MapCoordinatesMode for the meaning of local and ancestor
+  // coordinates.
   gfx::Transform LocalToAncestorTransform(const LayoutBoxModelObject* ancestor,
                                           MapCoordinatesFlags = {}) const;
   gfx::Transform LocalToAbsoluteTransform(MapCoordinatesFlags mode = {}) const {
@@ -2389,9 +2378,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Shorthands of the above LocalToAncestor* and AncestorToLocal* functions,
-  // with nullptr as the ancestor. See the above functions for the meaning of
-  // "absolute" coordinates.
-  // This method supports kUseGeometryMapperMode.
+  // with nullptr as the ancestor. See MapCoordinatesMode for the meaning of
+  // local and "absolute" coordinates.
   PhysicalRect LocalToAbsoluteRect(const PhysicalRect& rect,
                                    MapCoordinatesFlags mode = {}) const {
     NOT_DESTROYED();
@@ -2708,18 +2696,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return StyleRef().VisibleToHitTesting();
   }
 
-  // Map points and quads through elements, potentially via 3d transforms. You
-  // should never need to call these directly; use localToAbsolute/
-  // absoluteToLocal methods instead.
+  // These two functions map points and quads through elements, potentially
+  // via 3d transforms. The direction of TransformState must be:
+  // - kApplyTransformDirection for MapLocalToAncestor()
+  // - kUnapplyInverseTransformDirection for MapAncestorToLocal().
+  // See MapCoordinatesMode for the meaning of local and ancestor coordinates.
+  // In most cases, we should use LocalToAncestor*/AncestorToLocal*/
+  // LocalToAbsolute*/AbsoluteToLocal*, instead of using these two functions
+  // directly.
   virtual void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                   TransformState&,
                                   MapCoordinatesFlags) const;
-  // If the LayoutBoxModelObject ancestor is non-null, the input quad is in the
-  // space of the ancestor.
-  // Otherwise:
-  //   If TraverseDocumentBoundaries is specified, the input quad is in the
-  //   space of the local root frame.
-  //   Otherwise, the input quad is in the space of the containing frame.
   virtual void MapAncestorToLocal(const LayoutBoxModelObject*,
                                   TransformState&,
                                   MapCoordinatesFlags) const;
