@@ -46,6 +46,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/one_time_tokens/core/common:features",
     "//components/signin/public/identity_manager",
+    "//components/url_formatter",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",

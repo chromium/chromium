@@ -2,6 +2,7 @@ include_rules = [
   "+components/affiliations",
   "+components/keyed_service",
   "+components/signin",
+  "+components/url_formatter",
   "+google_apis",
   "+net",
   "+services/network",

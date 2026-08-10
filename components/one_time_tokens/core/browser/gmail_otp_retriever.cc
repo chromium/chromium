@@ -20,6 +20,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
+#include "components/url_formatter/url_formatter.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -131,15 +132,25 @@ void GmailOtpRetriever::CheckSenderDomainMatchesFrameToFill(
   std::string sender_domain = ExtractEmailDomain(sender_address);
 
   CHECK(!otp_frame_origin_.opaque());
+
+  std::string stripped_frame_host =
+      url_formatter::StripWWW(otp_frame_origin_.host());
+
   LOG_OTT(one_time_token_service_->log_sink())
       << "GmailOtpRetriever checking sender domain match: sender_address="
       << sender_address << ", sender_domain=" << sender_domain
-      << ", otp_frame_origin=" << otp_frame_origin_;
-  domain_relation_checker_->Check(
-      otp_frame_origin_.GetTupleOrPrecursorTupleIfOpaque(),
-      url::SchemeHostPort(url::kHttpsScheme, std::move(sender_domain),
-                          url::DefaultPortForScheme(url::kHttpsScheme)),
-      std::move(callback));
+      << ", otp_frame_origin=" << otp_frame_origin_
+      << " (normalized frame: " << stripped_frame_host << ")";
+
+  url::SchemeHostPort normalized_frame_tuple(otp_frame_origin_.scheme(),
+                                             std::move(stripped_frame_host),
+                                             otp_frame_origin_.port());
+  url::SchemeHostPort sender_tuple(
+      url::kHttpsScheme, std::move(sender_domain),
+      url::DefaultPortForScheme(url::kHttpsScheme));
+
+  domain_relation_checker_->Check(normalized_frame_tuple, sender_tuple,
+                                  std::move(callback));
 }
 
 void GmailOtpRetriever::CheckCachedTokenMatch(
