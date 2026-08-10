@@ -1400,10 +1400,7 @@ static String ValueStateOrNull(const EditorInternalCommand& self,
 static String ValueJustifyOrStateOrNull(const EditorInternalCommand& self,
                                         LocalFrame& frame,
                                         Event* triggering_event) {
-  if (RuntimeEnabledFeatures::FixJustifyQueryCommandValueEnabled()) {
-    return StyleCommands::ValueJustify(self, frame, triggering_event);
-  }
-  return ValueStateOrNull(self, frame, triggering_event);
+  return StyleCommands::ValueJustify(self, frame, triggering_event);
 }
 
 // The command has no value.

@@ -66,8 +66,7 @@ bool InsertLineBreakCommand::ShouldUseBreakElement(
     return IsA<HTMLTextAreaElement>(text_control);
   }
   // Use <br> for <pre> elements to align with other browsers
-  if (RuntimeEnabledFeatures::FixLinebreakForPreTagEnabled() &&
-      EnclosingElementWithTag(p, html_names::kPreTag)) {
+  if (EnclosingElementWithTag(p, html_names::kPreTag)) {
     return true;
   }
   return IsRichlyEditablePosition(p) && p.AnchorNode()->GetLayoutObject() &&

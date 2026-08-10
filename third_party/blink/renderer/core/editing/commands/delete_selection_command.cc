@@ -750,9 +750,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
       // content from any descendant text nodes to ensure selectionchange
       // event fires. This handles nested contenteditable elements and
       // deeply nested text nodes.
-      if (is_root_editable &&
-          RuntimeEnabledFeatures::
-              DeleteTextInContentEditableBeforeRemovingChildrenEnabled()) {
+      if (is_root_editable) {
         HeapVector<Member<Text>> text_nodes_to_clear;
         for (Node& descendant :
              NodeTraversal::DescendantsOf(*node_to_be_removed)) {

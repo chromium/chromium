@@ -1144,13 +1144,6 @@
       status: "stable",
     },
     {
-      // Clamps word boundary detection to the contenteditable scope when
-      // adjacent contenteditable spans have no whitespace between them.
-      // See https://crbug.com/40848794.
-      name: "ClampWordBoundaryToContentEditableScope",
-      status: "stable",
-    },
-    {
       // Set currentTarget to null after dispatch for EventTarget.
       // This was added in M142 and can be removed after M144.
       // https://issues.chromium.org/issues/346766786
@@ -2229,12 +2222,6 @@
       name: "DelegatesFocusTextControlInputFix",
       status: "stable",
     },
-    {
-      // Delete text from descendant text nodes before removing children of
-      // a root editable element to ensure selectionchange event fires.
-      name: "DeleteTextInContentEditableBeforeRemovingChildren",
-      status: "stable",
-    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
@@ -3046,15 +3033,6 @@
     // types that don't support readonly.
     {
       name: "FixHTMLFormControlElementIsReadOnly",
-      status: "stable",
-    },
-    {
-      // Returns alignment value instead of a boolean
-      name: "FixJustifyQueryCommandValue",
-      status: "stable",
-    },
-    {
-      name: "FixLinebreakForPreTag",
       status: "stable",
     },
     {
@@ -5771,22 +5749,7 @@
       status: "stable",
     },
     {
-      // When enabled, cursor movement (arrow keys) will skip over non-editable
-      // atomic or empty inline elements within editable content, instead of
-      // getting stuck or moving into the non-editable content.
-      name: "SkipNonEditableInAtomicMove",
-      status: "stable",
-    },
-    {
       name: "SkipOofItemForBreakCandidate",
-      status: "stable",
-    },
-    {
-      // Skips paragraph split in insertHTML when the fragment contains only
-      // inline content, preventing inline elements from being inserted
-      // outside their containing block.
-      // See https://crbug.com/41024699.
-      name: "SkipParagraphSplitForInlineInsertHTML",
       status: "stable",
     },
     {

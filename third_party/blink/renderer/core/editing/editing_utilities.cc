@@ -436,9 +436,7 @@ static PositionTemplate<Strategy> NextVisuallyDistinctCandidateAlgorithm(
   // Only skip non-editable content when explicitly requested via
   // kCanSkipOverEditingBoundary (used for caret navigation).
   const bool skip_non_editable =
-      rule == kCanSkipOverEditingBoundary &&
-      RuntimeEnabledFeatures::SkipNonEditableInAtomicMoveEnabled() &&
-      IsEditablePosition(position);
+      rule == kCanSkipOverEditingBoundary && IsEditablePosition(position);
   const EditingBoundaryCrossingRule boundary_rule =
       skip_non_editable ? kCanCrossEditingBoundary : rule;
   const PositionTemplate<Strategy> downstream_start =
@@ -531,9 +529,7 @@ PositionTemplate<Strategy> PreviousVisuallyDistinctCandidateAlgorithm(
   // Only skip non-editable content when explicitly requested via
   // kCanSkipOverEditingBoundary (used for caret navigation).
   const bool skip_non_editable =
-      rule == kCanSkipOverEditingBoundary &&
-      RuntimeEnabledFeatures::SkipNonEditableInAtomicMoveEnabled() &&
-      IsEditablePosition(position);
+      rule == kCanSkipOverEditingBoundary && IsEditablePosition(position);
   const EditingBoundaryCrossingRule boundary_rule =
       skip_non_editable ? kCanCrossEditingBoundary : rule;
   const PositionTemplate<Strategy> downstream_start =

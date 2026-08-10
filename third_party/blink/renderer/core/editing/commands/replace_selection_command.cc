@@ -1469,19 +1469,16 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
     //   <div>xbar<div>bar</div><div>bazx</div></div>
     // Don't do this if the selection started in a Mail blockquote.
     //
-    // When SkipParagraphSplitForInlineInsertHTML is enabled, skip the
-    // paragraph split for insertHTML commands (InputType::kNone) whose
-    // fragment contains only inline content, since splitting incorrectly
-    // pushes inline elements outside their containing block.
+    // Skip the paragraph split for insertHTML commands (InputType::kNone)
+    // whose fragment contains only inline content, since splitting
+    // incorrectly pushes inline elements outside their containing block.
     // See https://crbug.com/41024699.
     const VisiblePosition visible_start_position =
         EndingVisibleSelection().VisibleStart();
     if (prevent_nesting_ && !start_is_inside_mail_blockquote &&
         !IsEndOfParagraph(visible_start_position) &&
         !IsStartOfParagraph(visible_start_position) &&
-        (!RuntimeEnabledFeatures::
-             SkipParagraphSplitForInlineInsertHTMLEnabled() ||
-         fragment.HasBlockLevelContent() ||
+        (fragment.HasBlockLevelContent() ||
          input_type_ == InputEvent::InputType::kInsertFromPaste ||
          input_type_ == InputEvent::InputType::kInsertFromDrop ||
          input_type_ == InputEvent::InputType::kInsertReplacementText)) {

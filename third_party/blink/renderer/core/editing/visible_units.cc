@@ -243,15 +243,12 @@ AdjustBackwardPositionToAvoidCrossingEditingBoundariesTemplate(
   // Return first position in the anchor's text node if |pos| is not somewhere
   // inside the editable region containing this position.
   if (highest_root && !highest_root->contains(pos.AnchorNode())) {
-    if (RuntimeEnabledFeatures::
-            ClampWordBoundaryToContentEditableScopeEnabled()) {
-      const Node* first_editable = anchor.ComputeContainerNode();
-      if (first_editable->IsTextNode()) {
-        PositionTemplate<Strategy> first_position =
-            PositionTemplate<Strategy>::FirstPositionInNode(*first_editable);
-        if (anchor != first_position) {
-          return PositionWithAffinityTemplate<Strategy>(first_position);
-        }
+    if (const Node* first_editable = anchor.ComputeContainerNode();
+        first_editable->IsTextNode()) {
+      const PositionTemplate<Strategy> first_position =
+          PositionTemplate<Strategy>::FirstPositionInNode(*first_editable);
+      if (anchor != first_position) {
+        return PositionWithAffinityTemplate<Strategy>(first_position);
       }
     }
     return PositionWithAffinityTemplate<Strategy>();
