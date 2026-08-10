@@ -131,7 +131,9 @@ void ChromeWebUIDialog::CloseUI() {
 
 void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
                                               const gfx::Size& new_size) {
-  if (!GetWidget()) {
+  // OnViewIsDeleting() can clear `web_view_` while the wrapper still holds its
+  // host reference.
+  if (!GetWidget() || !web_view_) {
     return;
   }
 
