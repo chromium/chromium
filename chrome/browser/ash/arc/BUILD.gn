@@ -113,32 +113,13 @@ static_library("arc") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service/app_icon",
-    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/app_restore",
-    "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/app_shortcuts",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/arc/boot_phase_monitor",
-    "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/extensions",
-    "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/arc/input_method_manager",
-    "//chrome/browser/ash/arc/input_overlay",
-    "//chrome/browser/ash/arc/intent_helper",
-    "//chrome/browser/ash/arc/instance_throttle",
-    "//chrome/browser/ash/arc/metrics",
-    "//chrome/browser/ash/arc/nearby_share",
-    "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/optin",
-    "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/exo",
-    "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/login/session",
-    "//chrome/browser/ash/platform_keys/key_permissions",
   ]
 }
 
