@@ -49,29 +49,32 @@ def _modify_plists(paths, dist, config):
                                   'Info.plist')
     with commands.PlistContext(app_plist_path, rewrite=True) as app_plist:
         if dist.channel_customize:
-            alert_helper_app_path = os.path.join(
-                paths.work, config.framework_dir, 'Helpers',
-                '{} Helper (Alerts).app'.format(config.product))
-            alert_helper_plist_path = os.path.join(alert_helper_app_path,
-                                                   'Contents', 'Info.plist')
-            with commands.PlistContext(
-                    alert_helper_plist_path,
-                    rewrite=True) as alert_helper_plist:
-                alert_helper_plist[_CF_BUNDLE_ID] = \
-                        alert_helper_plist[_CF_BUNDLE_ID].replace(
-                                config.base_config.base_bundle_id,
-                                config.base_bundle_id)
+            for alert_app in ('{} Helper (Alerts).app'.format(config.product),
+                              '{} Helper (Aperitif Alerts).app'.format(
+                                  config.product)):
+                alert_helper_app_path = os.path.join(paths.work,
+                                                     config.framework_dir,
+                                                     'Helpers', alert_app)
+                alert_helper_plist_path = os.path.join(alert_helper_app_path,
+                                                       'Contents', 'Info.plist')
+                with commands.PlistContext(
+                        alert_helper_plist_path,
+                        rewrite=True) as alert_helper_plist:
+                    alert_helper_plist[_CF_BUNDLE_ID] = \
+                            alert_helper_plist[_CF_BUNDLE_ID].replace(
+                                    config.base_config.base_bundle_id,
+                                    config.base_bundle_id)
 
-            alert_helper_plist_strings_path = os.path.join(
-                alert_helper_app_path, 'Contents', 'Resources', 'base.lproj',
-                'InfoPlist.strings')
-            with commands.PlistContext(
-                    alert_helper_plist_strings_path, rewrite=True,
-                    binary=True) as alert_helper_plist_strings:
-                alert_helper_plist_strings[_CF_BUNDLE_DISPLAY_NAME] = \
-                        '{} {}'.format(
-                            alert_helper_plist_strings[_CF_BUNDLE_DISPLAY_NAME],
-                            dist.app_name_fragment)
+                alert_helper_plist_strings_path = os.path.join(
+                    alert_helper_app_path, 'Contents', 'Resources',
+                    'base.lproj', 'InfoPlist.strings')
+                with commands.PlistContext(
+                        alert_helper_plist_strings_path, rewrite=True,
+                        binary=True) as alert_helper_plist_strings:
+                    alert_helper_plist_strings[_CF_BUNDLE_DISPLAY_NAME] = \
+                            '{} {}'.format(
+                                alert_helper_plist_strings[_CF_BUNDLE_DISPLAY_NAME],
+                                dist.app_name_fragment)
 
             app_plist[_CF_BUNDLE_DISPLAY_NAME] = '{} {}'.format(
                 app_plist[_CF_BUNDLE_DISPLAY_NAME], dist.app_name_fragment)
@@ -156,14 +159,17 @@ def _replace_icons(paths, dist, config):
     commands.copy_files(new_app_icon, os.path.join(resources_dir, 'app.icns'))
 
     # Also update the icon in the Alert Helper app.
-    alert_helper_resources_dir = os.path.join(
-        paths.work, config.framework_dir, 'Helpers',
-        '{} Helper (Alerts).app'.format(config.product), 'Contents',
-        'Resources')
-    commands.copy_files(new_asset_catalog,
-                        os.path.join(alert_helper_resources_dir, 'Assets.car'))
-    commands.copy_files(new_app_icon,
-                        os.path.join(alert_helper_resources_dir, 'app.icns'))
+    for alert_app in ('{} Helper (Alerts).app'.format(config.product),
+                      '{} Helper (Aperitif Alerts).app'.format(config.product)):
+        alert_helper_resources_dir = os.path.join(paths.work,
+                                                  config.framework_dir,
+                                                  'Helpers', alert_app,
+                                                  'Contents', 'Resources')
+        commands.copy_files(
+            new_asset_catalog,
+            os.path.join(alert_helper_resources_dir, 'Assets.car'))
+        commands.copy_files(
+            new_app_icon, os.path.join(alert_helper_resources_dir, 'app.icns'))
 
 
 def _rename_enterprise_manifest(paths, dist, config):
@@ -209,11 +215,11 @@ def _process_entitlements(paths, dist, config):
     """
     packaging_dir = paths.packaging_dir(config)
 
-    entitlements_names = [
+    entitlements_names = set([
         part.entitlements
         for part in parts.get_parts(config).values()
         if part.entitlements
-    ]
+    ])
     for entitlements_name in sorted(entitlements_names):
         entitlements_file = os.path.join(paths.work, entitlements_name)
         commands.copy_files(

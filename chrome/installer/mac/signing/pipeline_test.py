@@ -289,6 +289,18 @@ class TestPipelineHelpers(unittest.TestCase):
             mock.call(
                 '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
             ),
+            mock.call('/$W/App Product.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif).app'),
+            mock.call('/$W/App Product.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif Renderer).app'),
+            mock.call('/$W/App Product.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif GPU).app'),
+            mock.call('/$W/App Product.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif Alerts).app'),
             mock.call(
                 '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app'
             ),
@@ -317,6 +329,18 @@ class TestPipelineHelpers(unittest.TestCase):
             mock.call(
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
             ),
+            mock.call('/$W/App Product Canary.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif).app'),
+            mock.call('/$W/App Product Canary.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif Renderer).app'),
+            mock.call('/$W/App Product Canary.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif GPU).app'),
+            mock.call('/$W/App Product Canary.app/Contents/Frameworks/'
+                      'Product Framework.framework/Helpers/'
+                      'Product Helper (Aperitif Alerts).app'),
             mock.call(
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app'
             ),

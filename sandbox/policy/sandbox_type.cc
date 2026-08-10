@@ -217,6 +217,9 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
       process_type == switches::kAppShimProcessType) {
     return Sandbox::kNoSandbox;
   }
+  if (process_type == switches::kNoOpForTestingProcessType) {
+    return Sandbox::kUtility;
+  }
 #endif
 
   NOTREACHED()

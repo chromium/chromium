@@ -98,6 +98,7 @@ if (is_component_build) {
 }
 
 if (is_mac) {
+  import("//build/util/branding.gni")
   import("//chrome/version.gni")
   shared_library("aperitif") {
     sources = [ "aperitif_mac.h" ]
@@ -105,7 +106,6 @@ if (is_mac) {
     public_deps = [ "//content/app:aperitif" ]
 
     ldflags = [
-      "-Wl,-install_name,@loader_path/libaperitif.dylib",
       "-compatibility_version",
       chrome_dylib_version,
       "-current_version",
@@ -113,10 +113,16 @@ if (is_mac) {
     ]
 
     if (is_component_build) {
-      # Typically packaged at Content Shell.app/Contents/Frameworks/Content
-      #     Shell Framework.framework/Versions/C/Libraries/libaperitif.dylib
-      # so set rpath up to the root out directory.
-      ldflags += [ "-Wl,-rpath,@loader_path/../../../../../../.." ]
+      ldflags += [
+        "-Wl,-install_name,@rpath/libaperitif.dylib",
+
+        # Typically packaged at Content Shell.app/Contents/Frameworks/Content
+        #     Shell Framework.framework/Versions/C/Libraries/libaperitif.dylib
+        # so set rpath up to the root out directory.
+        "-Wl,-rpath,@loader_path/../../../../../../..",
+      ]
+    } else {
+      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_product_full_name Framework.framework/Versions/$chrome_version_full/Libraries/libaperitif.dylib" ]
     }
 
     allow_circular_includes_from = [
