@@ -243,7 +243,7 @@ crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLos
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Failure ]
 
 # Renderer crash on Pixel 6 after GPU process crash during worker rAF loop
-crbug.com/544279911 [ android android-pixel-6 angle-opengles passthrough no-asan ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
+crbug.com/544279911 [ android android-pixel-6 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
