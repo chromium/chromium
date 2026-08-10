@@ -1430,8 +1430,8 @@ void AutofillAgent::ApplyFieldAction(
                                        /*smart_replace=*/true);
             break;
           case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            at_memory_handler_.ReplaceSelectionForAtMemoryForContentEditable(
-                content_editable, value);
+            at_memory_handler_.ReplaceSelectionForAtMemory(content_editable,
+                                                           value);
             break;
           }
           case mojom::FieldActionType::kSelectAll:

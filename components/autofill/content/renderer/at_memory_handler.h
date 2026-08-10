@@ -17,8 +17,6 @@ namespace blink {
 class WebElement;
 class WebFormControlElement;
 class WebKeyboardEvent;
-class WebLocalFrame;
-class WebRange;
 struct RendererPreferences;
 }  // namespace blink
 
@@ -67,16 +65,10 @@ class AtMemoryHandler {
       blink::WebFormControlElement& form_control,
       const std::u16string& value);
 
-  // Tries to fill `value` into `form_control` at the location where AtMemory
-  // was last triggered on `form_control`.
-  void ReplaceSelectionForAtMemory(blink::WebFormControlElement& form_control,
+  // Tries to fill `value` into `element` at the location where AtMemory was
+  // last triggered on `element`.
+  void ReplaceSelectionForAtMemory(blink::WebElement& element,
                                    const std::u16string& value);
-
-  // Tries to fill `value` into `content_editable` at the location where
-  // AtMemory was last triggered on `content_editable`.
-  void ReplaceSelectionForAtMemoryForContentEditable(
-      blink::WebElement& content_editable,
-      const std::u16string& value);
 
   // Stores metadata for an AskForValuesToFill() on `element` if
   // `trigger_source` is related to AtMemory.
@@ -87,11 +79,7 @@ class AtMemoryHandler {
  private:
   const blink::RendererPreferences* GetRendererPreferences() const;
 
-  bool ShouldTriggerAtMemorySearch(
-      const blink::WebFormControlElement& element) const;
-  bool ShouldTriggerAtMemorySearchForContentEditable(
-      blink::WebLocalFrame* frame,
-      const blink::WebRange& selection) const;
+  bool ShouldTriggerAtMemorySearch(const blink::WebElement& element) const;
 
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
   // `element`. If `pop` is true, removes the entry found.

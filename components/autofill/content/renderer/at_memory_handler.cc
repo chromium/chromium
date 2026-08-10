@@ -70,48 +70,48 @@ AtMemoryHandler::~AtMemoryHandler() = default;
 // AtMemory should be triggered if the field is not a password field, no text is
 // selected and the cursor is located behind the trigger string.
 bool AtMemoryHandler::ShouldTriggerAtMemorySearch(
-    const WebFormControlElement& element) const {
+    const WebElement& element) const {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
   }
-  if (element.FormControlTypeForAutofill() ==
-      blink::mojom::FormControlType::kInputPassword) {
-    return false;
-  }
-  const RendererPreferences* renderer_prefs = GetRendererPreferences();
-  if (!renderer_prefs || renderer_prefs->autofill_trigger_string.empty()) {
-    return false;
-  }
-  // TODO(crbug.com/494158096): Add WebString::EndsWith().
-  const WebString trigger =
-      WebString::FromUtf8(renderer_prefs->autofill_trigger_string);
-  const unsigned int sel_start = element.SelectionStart();
-  const unsigned int sel_end = element.SelectionEnd();
-  return sel_start == sel_end && sel_start >= trigger.length() &&
-         element.EditingValue()
-             .Substring(sel_start - trigger.length(), trigger.length())
-             .Equals(trigger);
-}
 
-bool AtMemoryHandler::ShouldTriggerAtMemorySearchForContentEditable(
-    WebLocalFrame* frame,
-    const WebRange& selection) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-    return false;
-  }
   const RendererPreferences* renderer_prefs = GetRendererPreferences();
   if (!renderer_prefs || renderer_prefs->autofill_trigger_string.empty()) {
     return false;
   }
-  // TODO(crbug.com/494158096): Add WebString::EndsWith().
+
+  const auto form_control = element.DynamicTo<WebFormControlElement>();
+  if (form_util::GetAutofillFormControlType(form_control) ==
+          FormControlType::kInputPassword ||
+      element.DynamicTo<WebFormElement>()) {
+    return false;
+  }
+
   const WebString trigger =
       WebString::FromUtf8(renderer_prefs->autofill_trigger_string);
   const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
-  const int sel_start = selection.StartOffset();
-  const int sel_end = selection.EndOffset();
-  return sel_start == sel_end && sel_start >= trigger_len &&
-         frame->RangeAsText(WebRange(sel_start - trigger_len, trigger_len))
-             .Equals(trigger);
+
+  if (form_control) {
+    const unsigned int sel_start = form_control.SelectionStart();
+    const unsigned int sel_end = form_control.SelectionEnd();
+    return sel_start == sel_end && sel_start >= trigger.length() &&
+           form_control.EditingValue()
+               .Substring(sel_start - trigger.length(), trigger.length())
+               .Equals(trigger);
+  }
+
+  if (auto* frame = agent_->unsafe_render_frame()) {
+    const WebRange selection =
+        frame->GetWebFrame()->GetInputMethodController()->GetSelectionOffsets();
+    const int sel_start = selection.StartOffset();
+    const int sel_end = selection.EndOffset();
+    return sel_start == sel_end && sel_start >= trigger_len &&
+           frame->GetWebFrame()
+               ->RangeAsText(WebRange(sel_start - trigger_len, trigger_len))
+               .Equals(trigger);
+  }
+
+  return false;
 }
 
 bool AtMemoryHandler::OnTextFieldValueChanged(
@@ -127,12 +127,7 @@ bool AtMemoryHandler::OnTextFieldValueChanged(
 }
 
 bool AtMemoryHandler::ContentEditableDidChange(const WebElement& element) {
-  if (!agent_->unsafe_render_frame()) {
-    return false;
-  }
-  WebLocalFrame* frame = agent_->unsafe_render_frame()->GetWebFrame();
-  if (ShouldTriggerAtMemorySearchForContentEditable(
-          frame, frame->GetInputMethodController()->GetSelectionOffsets())) {
+  if (ShouldTriggerAtMemorySearch(element)) {
     agent_->ShowSuggestionsForContentEditable(
         element, AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
     return true;
@@ -179,6 +174,7 @@ bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& element,
   return false;
 }
 
+// TODO(crbug.com/540805115): Remove or merge with the rest of the code.
 bool AtMemoryHandler::PreviewReplaceSelectionForAtMemory(
     WebFormControlElement& form_control,
     const std::u16string& value) {
@@ -213,66 +209,35 @@ bool AtMemoryHandler::PreviewReplaceSelectionForAtMemory(
   return true;
 }
 
-void AtMemoryHandler::ReplaceSelectionForAtMemory(
-    WebFormControlElement& form_control,
-    const std::u16string& value) {
+void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
+                                                  const std::u16string& value) {
   const std::optional<AskForValuesToFillInfo> info =
-      FindAskForValuesToFill(form_control, /*pop=*/true);
+      FindAskForValuesToFill(element, /*pop=*/true);
   if (!info) {
     return;
   }
 
-  const RendererPreferences* prefs = GetRendererPreferences();
-  WebString trigger =
-      WebString::FromUtf8(prefs ? prefs->autofill_trigger_string : "");
-  const unsigned int sel_start = form_control.SelectionStart();
-  const unsigned int sel_end = form_control.SelectionEnd();
-  // If there is no selection and the cursor is immediately preceded
-  // by the trigger string, we select the trigger so it gets replaced
-  // by `PasteText` below. Otherwise (e.g. if the user has already
-  // selected text or triggered via context menu), we just perform
-  // a regular insertion/replacement at the current position.
-  if (info->caused_by_trigger_string && !trigger.IsEmpty() &&
-      sel_start == sel_end && sel_start >= trigger.length() &&
-      form_control.EditingValue()
-          .Substring(sel_start - trigger.length(), trigger.length())
-          .Equals(trigger)) {
-    form_control.SetSelectionRange(sel_start - trigger.length(), sel_start);
-  }
-  form_control.PasteText(WebString::FromUtf16(value),
-                         /*replace_all=*/false,
-                         /*smart_replace=*/true);
-}
-
-void AtMemoryHandler::ReplaceSelectionForAtMemoryForContentEditable(
-    WebElement& content_editable,
-    const std::u16string& value) {
-  const std::optional<AskForValuesToFillInfo> info =
-      FindAskForValuesToFill(content_editable, /*pop=*/true);
-  if (!info) {
-    return;
-  }
-
-  if (info->caused_by_trigger_string) {
-    if (auto* frame = agent_->unsafe_render_frame()) {
-      WebRange selection = frame->GetWebFrame()
-                               ->GetInputMethodController()
-                               ->GetSelectionOffsets();
-      if (ShouldTriggerAtMemorySearchForContentEditable(frame->GetWebFrame(),
-                                                        selection)) {
-        const RendererPreferences* prefs = GetRendererPreferences();
-        WebString trigger =
-            WebString::FromUtf8(prefs ? prefs->autofill_trigger_string : "");
-        int offset = selection.StartOffset();
-        int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
-        frame->GetWebFrame()->SetEditableSelectionOffsets(offset - trigger_len,
-                                                          offset);
-      }
+  if (info->caused_by_trigger_string && ShouldTriggerAtMemorySearch(element)) {
+    const RendererPreferences* prefs = GetRendererPreferences();
+    const WebString trigger =
+        WebString::FromUtf8(prefs ? prefs->autofill_trigger_string : "");
+    const int trigger_len = std::max(static_cast<int>(trigger.length()), 0);
+    if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
+      const unsigned int offset = form_control.SelectionStart();
+      form_control.SetSelectionRange(offset - trigger_len, offset);
+    } else if (auto* frame = agent_->unsafe_render_frame()) {
+      const WebRange selection = frame->GetWebFrame()
+                                     ->GetInputMethodController()
+                                     ->GetSelectionOffsets();
+      const int offset = selection.StartOffset();
+      frame->GetWebFrame()->SetEditableSelectionOffsets(offset - trigger_len,
+                                                        offset);
     }
   }
-  content_editable.PasteText(WebString::FromUtf16(value),
-                             /*replace_all=*/false,
-                             /*smart_replace=*/true);
+
+  element.PasteText(WebString::FromUtf16(value),
+                    /*replace_all=*/false,
+                    /*smart_replace=*/true);
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
@@ -292,7 +257,7 @@ AtMemoryHandler::FindAskForValuesToFill(const WebElement& element, bool pop) {
     last_at_memory_ask_for_values_to_fills_.erase(it);
   }
 
-  WebString value = [&] {
+  const WebString value = [&] {
     if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
       return form_control.Value();
     }
@@ -323,7 +288,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     last_at_memory_ask_for_values_to_fills_.pop_front();
   }
 
-  WebString value = [&] {
+  const WebString value = [&] {
     if (auto form_control = element.DynamicTo<WebFormControlElement>()) {
       return form_control.Value();
     }
