@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/timezone.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -161,15 +162,16 @@ bool CreateUniqueFilename(int max_path_component_length,
        uniquifier <= DownloadPathReservationTracker::kMaxUniqueFiles + 1;
        ++uniquifier) {
     // Append uniquifier.
-    std::string suffix =
-        (uniquifier > DownloadPathReservationTracker::kMaxUniqueFiles)
-            ? base::UnlocalizedTimeFormatWithPattern(
-                  download_start_time,
-                  // ISO8601-compliant local timestamp suffix that avoids
-                  // reserved characters that are forbidden on some OSes like
-                  // Windows.
-                  " - yyyy-MM-dd'T'HHmmss.SSS")
-            : base::StringPrintf(" (%d)", uniquifier);
+    std::string suffix;
+    if (uniquifier > DownloadPathReservationTracker::kMaxUniqueFiles) {
+      std::string formatted = base::TimeFormatAsIso8601WithTimeZone(
+          download_start_time, base::i18n::TimeZone::Default(),
+          /*include_offset_suffix=*/false);
+      std::erase(formatted, ':');
+      suffix = " - " + formatted;
+    } else {
+      suffix = base::StringPrintf(" (%d)", uniquifier);
+    }
 
     base::FilePath path_to_check(*path);
     // If the name length limit is available (max_length != -1), and the
