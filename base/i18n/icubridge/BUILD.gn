@@ -10,9 +10,13 @@ source_set("icubridge") {
     "date_time_formatter.h",
     "default_icu_locale.cc",
     "default_icu_locale.h",
+    "features.cc",
+    "features.h",
     "icu_bridge.cc",
     "icu_bridge.h",
     "icu_bridge_helpers.h",
+    "normalizer.cc",
+    "normalizer.h",
     "supported_locales.cc",
     "supported_locales.h",
   ]
@@ -29,7 +33,10 @@ source_set("icubridge") {
     "//base/i18n:timezone",
   ]
 
-  deps = [ "//third_party/icu" ]
+  deps = [
+    "//third_party/icu",
+    "//third_party/rust/icu_capi/v2:lib",
+  ]
 
   visibility = [
     ":*",
@@ -45,6 +52,7 @@ source_set("unittests") {
     "calendar_unittest.cc",
     "date_time_formatter_unittest.cc",
     "default_icu_locale_unittest.cc",
+    "normalizer_unittest.cc",
     "supported_locales_unittest.cc",
   ]
   deps = [

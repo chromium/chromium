@@ -34,12 +34,15 @@ class BASE_I18N_EXPORT IcuBridge {
 
   class BASE_I18N_EXPORT DateTimeFormatter;
   class BASE_I18N_EXPORT Calendar;
+  class BASE_I18N_EXPORT Normalizer;
 
   const DateTimeFormatter& date_time_formatter() const {
     return *date_time_formatter_;
   }
 
   const Calendar& calendar() const { return *calendar_; }
+
+  const Normalizer& normalizer() const;
 
  private:
   friend class base::NoDestructor<IcuBridge>;
@@ -49,6 +52,8 @@ class BASE_I18N_EXPORT IcuBridge {
 
   std::unique_ptr<DateTimeFormatter> date_time_formatter_;
   std::unique_ptr<Calendar> calendar_;
+  std::unique_ptr<Normalizer> icu4x_normalizer_;
+  std::unique_ptr<Normalizer> icu4c_normalizer_;
 };
 
 }  // namespace base::i18n
