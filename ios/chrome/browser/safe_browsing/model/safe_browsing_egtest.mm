@@ -231,9 +231,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
     config.additional_args.push_back(
         std::string("--mark_as_enterprise_blocked=") +
         _enterpriseBlockURL.spec());
-  } else if ([self isRunningTest:@selector(MAYBE_testEnterpriseWarningPage)] ||
-             [self isRunningTest:@selector(
-                                     MAYBE_testEnterpriseWarningPageBypass)] ||
+  } else if ([self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+             [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
              [self
                  isRunningTest:
                      @selector(testEnterpriseWarningPageRefreshedThenBypass)]) {
@@ -375,19 +374,18 @@ void EnableEnterpriseUrlFilteringPrefs() {
       [self
           isRunningTest:@selector(testProceedingPastMalwareWarningReported)] ||
       [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
-      [self isRunningTest:@selector(MAYBE_testEnterpriseWarningPage)] ||
-      [self isRunningTest:@selector(MAYBE_testEnterpriseWarningPageBypass)] ||
+      [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+      [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
       [self isRunningTest:@selector(
                               testEnterpriseWarningPageRefreshedThenBypass)];
 }
 
 - (BOOL)isRunningEntepriseUrlFilteringTest {
-  return
-      [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
-      [self isRunningTest:@selector(MAYBE_testEnterpriseWarningPage)] ||
-      [self isRunningTest:@selector(MAYBE_testEnterpriseWarningPageBypass)] ||
-      [self isRunningTest:@selector(
-                              testEnterpriseWarningPageRefreshedThenBypass)];
+  return [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+         [self isRunningTest:@selector(
+                                 testEnterpriseWarningPageRefreshedThenBypass)];
 }
 
 - (void)waitForEnterpriseReports:(int)count {
@@ -1045,7 +1043,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 // Verifies that the Enteprise warning interstitial is displayed for urls
 // flagged by Enterprise organizations.
-- (void)MAYBE_testEnterpriseWarningPage {
+- (void)testEnterpriseWarningPage {
   EnableEnterpriseUrlFilteringPrefs();
 
   [ChromeEarlGrey loadURL:_safeURL1];
@@ -1076,7 +1074,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 // Verifies that the Enteprise warning interstitial allows to bypass the warning
 // and navigate to urls flagged by Enterprise organizations.
 // TODO(crbug.com/522400526): Test fails on physical iOS 18 devices.
-- (void)MAYBE_testEnterpriseWarningPageBypass {
+- (void)testEnterpriseWarningPageBypass {
 #if !TARGET_OS_SIMULATOR
   if (!@available(iOS 26.0, *)) {
     EARL_GREY_TEST_DISABLED(@"Fails on physical iOS 18 devices.");
