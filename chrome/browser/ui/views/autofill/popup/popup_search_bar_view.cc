@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/types/event_type.h"
@@ -31,6 +32,61 @@
 #include "ui/views/view.h"
 
 namespace autofill {
+
+namespace {
+
+// Custom textfield for the search input in `PopupSearchBarView`.
+class SearchBarTextfield : public views::Textfield {
+  METADATA_HEADER(SearchBarTextfield, views::Textfield)
+ public:
+  SearchBarTextfield(const std::u16string& placeholder,
+                     views::TextfieldController* controller) {
+    SetPlaceholderText(placeholder);
+    SetController(controller);
+    SetBorder(nullptr);
+    SetAccessibleName(placeholder);
+    SetProperty(views::kElementIdentifierKey, PopupSearchBarView::kInputField);
+    SetProperty(views::kFlexBehaviorKey,
+                views::FlexSpecification(views::FlexSpecification(
+                    views::LayoutOrientation::kHorizontal,
+                    views::MinimumFlexSizeRule::kPreferred,
+                    views::MaximumFlexSizeRule::kUnbounded)));
+  }
+
+  ~SearchBarTextfield() override = default;
+};
+
+BEGIN_METADATA(SearchBarTextfield)
+END_METADATA
+
+// Custom image button to clear the text input in `PopupSearchBarView`.
+class SearchBarClearButton : public views::ImageButton {
+  METADATA_HEADER(SearchBarClearButton, views::ImageButton)
+ public:
+  explicit SearchBarClearButton(PressedCallback callback)
+      : views::ImageButton(std::move(callback)) {
+    views::ConfigureVectorImageButton(this);
+    views::SetImageFromVectorIconWithColor(
+        this,
+        ::features::IsRoundedIconsEnabled()
+            ? vector_icons::kCloseIcon
+            : vector_icons::kCloseChromeRefreshOldIcon,
+        views::IconColors(ui::kColorIcon, ui::kColorIconDisabled));
+    SetBorder(nullptr);
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME));
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    views::InstallCircleHighlightPathGenerator(this);
+    SetVisible(false);
+  }
+
+  ~SearchBarClearButton() override = default;
+};
+
+BEGIN_METADATA(SearchBarClearButton)
+END_METADATA
+
+}  // namespace
 
 PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
                                        Delegate& delegate,
@@ -66,19 +122,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   throbber_ = AddChildView(std::make_unique<views::Throbber>(icon_size));
   SetLoading(false);
 
-  input_ = AddChildView(
-      views::Builder<views::Textfield>()
-          .SetPlaceholderText(placeholder)
-          .SetController(this)
-          .SetBorder(nullptr)
-          .SetAccessibleName(placeholder)
-          .SetProperty(views::kElementIdentifierKey, kInputField)
-          .SetProperty(views::kFlexBehaviorKey,
-                       views::FlexSpecification(views::FlexSpecification(
-                           views::LayoutOrientation::kHorizontal,
-                           views::MinimumFlexSizeRule::kPreferred,
-                           views::MaximumFlexSizeRule::kUnbounded)))
-          .Build());
+  input_ =
+      AddChildView(std::make_unique<SearchBarTextfield>(placeholder, this));
 
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
@@ -87,23 +132,9 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
   // TODO(crbug.com/325246516): Clarify whether the clear button should be
   // rendered on top of the input field and rework the layout (probably with a
   // custom LayoutManager).
-  clear_ = AddChildView(
-      views::Builder<views::ImageButton>(
-          views::CreateVectorImageButtonWithNativeTheme(
-              base::BindRepeating(&PopupSearchBarView::OnClearPressed,
-                                  base::Unretained(this)),
-              ::features::IsRoundedIconsEnabled()
-                  ? vector_icons::kCloseIcon
-                  : vector_icons::kCloseChromeRefreshOldIcon))
-          // Reset the border set by `CreateVectorImageButtonWithNativeTheme()`
-          // as it sets an unnecessary padding to the highlighting circle.
-          .SetBorder(nullptr)
-          .SetAccessibleName(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_SEARCH_BAR_CLEAR_SEARCH_BUTTON_A11Y_NAME))
-          .Build());
-  clear_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::InstallCircleHighlightPathGenerator(clear_);
-  clear_->SetVisible(false);
+  clear_ =
+      AddChildView(std::make_unique<SearchBarClearButton>(base::BindRepeating(
+          &PopupSearchBarView::OnClearPressed, base::Unretained(this))));
 
   if (show_indicator) {
     indicator_ = AddChildView(views::Builder<views::Label>()
