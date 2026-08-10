@@ -15,7 +15,11 @@
 #include "components/device_signals/core/common/win/win_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#include "net/base/backoff_entry.h"
+
 namespace enterprise_reporting {
+
+extern const net::BackoffEntry::Policy kDefaultReportUploadBackoffPolicy;
 
 // Represents the error of a report generation attempt.
 // tools/metrics/histograms/metadata/enterprise/enums.xml.

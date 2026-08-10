@@ -9,9 +9,11 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -77,7 +79,9 @@ class ReportUploaderTest : public ::testing::Test {
 
   void UploadReportAndSetExpectation(
       int number_of_request,
-      ReportUploader::ReportStatus expected_status) {
+      ReportUploader::ReportStatus expected_status,
+      SecuritySignalsMode security_signals_mode =
+          SecuritySignalsMode::kNoSignals) {
     DCHECK_LE(number_of_request, 2)
         << "Please update kBrowserVersionNames above.";
     ReportRequestQueue requests;
@@ -101,7 +105,7 @@ class ReportUploaderTest : public ::testing::Test {
     has_responded_ = false;
     uploader_->SetRequestAndUpload(
         ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
-                               SecuritySignalsMode::kNoSignals, use_cookies_),
+                               security_signals_mode, use_cookies_),
         std::move(requests),
         base::BindOnce(&ReportUploaderTest::OnReportUploaded,
                        base::Unretained(this), expected_status));
@@ -364,6 +368,68 @@ TEST_F(ReportUploaderTestWithProfileReportType, ProfileReportWithCookies) {
 
   RunNextTask();
   EXPECT_TRUE(has_responded_);
+}
+
+class MockReportUploaderListener : public ReportUploader::Listener {
+ public:
+  MOCK_METHOD(void,
+              OnReportWillRetry,
+              (const ReportGenerationConfig& config),
+              (override));
+};
+
+// Tests that the listener is notified when ReportUploader retries.
+TEST_F(ReportUploaderTestWithProfileReportType, ListenerNotifiedOnRetry) {
+  CreateUploader(/* retry_count = */ 1);
+  MockReportUploaderListener listener;
+  uploader_->SetListener(&listener);
+
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/false, _, _))
+      .WillOnce(ScheduleProfileResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+
+  EXPECT_CALL(listener, OnReportWillRetry(_))
+      .WillOnce([&](const ReportGenerationConfig& config) {
+        ReportRequestQueue requests;
+        requests.push(
+            std::make_unique<ReportRequest>(ReportType::kProfileReport));
+        uploader_->SetRequestAndUpload(
+            config, std::move(requests),
+            base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                           base::Unretained(this), ReportUploader::kSuccess));
+      });
+
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kSuccess,
+                                SecuritySignalsMode::kSignalsAttached);
+  RunNextTask();
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  uploader_->RemoveListener(&listener);
+}
+
+// Tests that internal retries are not skipped if the feature is enabled but
+// the report has no security signals.
+TEST_F(ReportUploaderTestWithProfileReportType,
+       RetryNotSkippedWhenFeatureEnabledAndNoSignals) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_signals::features::kCertificateCollectionEnabled);
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/false, _, _))
+      .Times(2)
+      .WillRepeatedly(ScheduleProfileResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
+  CreateUploader(/* retry_count = */ 1);
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kTransientError,
+                                SecuritySignalsMode::kNoSignals);
+  RunNextTask();
+  EXPECT_FALSE(has_responded_);
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  ::testing::Mock::VerifyAndClearExpectations(&client_);
 }
 
 // Verified three DM server error that is transient.

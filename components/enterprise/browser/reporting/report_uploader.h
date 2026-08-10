@@ -8,7 +8,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
+#include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
@@ -55,6 +57,22 @@ class ReportUploader {
                                    ReportRequestQueue requests,
                                    ReportCallback callback);
 
+  class Listener {
+   public:
+    virtual ~Listener() = default;
+
+    // Called right before ReportUploader retries an upload attempt.
+    // The listener is responsible for resending the request by calling
+    // `SetRequestAndUpload` again.
+    virtual void OnReportWillRetry(const ReportGenerationConfig& config) = 0;
+  };
+
+  void SetListener(Listener* listener);
+  void RemoveListener(Listener* listener);
+  bool HasListener(Listener* listener) const;
+
+  void NotifyReportWillRetry(const ReportGenerationConfig& config);
+
  private:
   // Uploads the first request in the queue.
   void Upload();
@@ -65,6 +83,7 @@ class ReportUploader {
 
   // Retries the first request in the queue.
   void Retry();
+  void OnRetryTimerFired();
   bool HasRetriedTooOften();
 
   // Notifies the upload result.
@@ -81,6 +100,7 @@ class ReportUploader {
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;
   const int maximum_number_of_retries_;
+  raw_ptr<Listener> listener_ = nullptr;
 
   base::WeakPtrFactory<ReportUploader> weak_ptr_factory_{this};
 };
