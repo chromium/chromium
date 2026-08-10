@@ -210,15 +210,13 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
   for (FilterSuggestionCandidateAttribute& candidate_attribute :
        candidate.attributes) {
-    auto it = std::ranges::find_if(
-        matching_annotation_it->attributes,
-        [&](const FilterAttribute& annotation_attribute) {
-          return annotation_attribute.key == candidate_attribute.key;
-        });
-    if (it != matching_annotation_it->attributes.end()) {
-      attribute_ui_labels.emplace_back(std::move(candidate_attribute),
-                                       std::move(*it));
+    auto matching_attribute_it =
+        std::ranges::find(matching_annotation_it->attributes,
+                          candidate_attribute.key, &FilterAttribute::key);
+    if (matching_attribute_it == matching_annotation_it->attributes.end()) {
+      continue;
     }
+    attribute_ui_labels.emplace_back(std::move(candidate_attribute));
   }
 
   if (attribute_ui_labels.size() <= 1) {

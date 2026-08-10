@@ -18,12 +18,14 @@ namespace multistep_filter {
 
 FilterSuggestionCandidateAttribute::FilterSuggestionCandidateAttribute(
     std::string key,
-    std::u16string label)
-    : key(std::move(key)), label(std::move(label)) {}
+    std::u16string label,
+    std::u16string value)
+    : key(std::move(key)), label(std::move(label)), value(std::move(value)) {}
 
 std::string FilterSuggestionCandidateAttribute::ToString() const {
   return base::StrCat({"FilterSuggestionCandidateAttribute(key=", key,
-                       ", label=", base::UTF16ToUTF8(label), ")"});
+                       ", label=", base::UTF16ToUTF8(label),
+                       ", value=", base::UTF16ToUTF8(value), ")"});
 }
 
 FilterSuggestionCandidate::FilterSuggestionCandidate(

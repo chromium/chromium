@@ -18,13 +18,10 @@
 namespace multistep_filter {
 
 FilterAttributeUiLabel::FilterAttributeUiLabel(
-    FilterSuggestionCandidateAttribute candidate_attribute,
-    FilterAttribute annotation_attribute)
-    : key(annotation_attribute.key),
+    FilterSuggestionCandidateAttribute candidate_attribute)
+    : key(std::move(candidate_attribute.key)),
       attribute_label(std::move(candidate_attribute.label)),
-      attribute_value(base::UTF8ToUTF16(annotation_attribute.value)) {
-  CHECK_EQ(candidate_attribute.key, annotation_attribute.key);
-}
+      attribute_value(std::move(candidate_attribute.value)) {}
 
 std::string FilterAttributeUiLabel::ToString() const {
   return base::StrCat({"FilterAttributeUiLabel(key=", key,

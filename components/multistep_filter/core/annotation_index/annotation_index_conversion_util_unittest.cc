@@ -96,10 +96,12 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   AppliedFilterUIString* filter1 = strategy->add_applied_filters();
   filter1->set_key("PRICE_MIN");
   filter1->set_label("Min Price");
+  filter1->set_value("100");
 
   AppliedFilterUIString* filter2 = strategy->add_applied_filters();
   filter2->set_key("PRICE_MAX");
   filter2->set_label("Max Price");
+  filter2->set_value("500");
 
   strategy->mutable_execution()->mutable_url_navigation()->set_navigation_url(
       "https://travel.com/flights?min=100&max=500");
@@ -123,8 +125,10 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   ASSERT_EQ(suggestion.attributes.size(), 2u);
   EXPECT_EQ(suggestion.attributes[0].key, "PRICE_MIN");
   EXPECT_EQ(suggestion.attributes[0].label, u"Min Price");
+  EXPECT_EQ(suggestion.attributes[0].value, u"100");
   EXPECT_EQ(suggestion.attributes[1].key, "PRICE_MAX");
   EXPECT_EQ(suggestion.attributes[1].label, u"Max Price");
+  EXPECT_EQ(suggestion.attributes[1].value, u"500");
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToFilterAnnotation) {

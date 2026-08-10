@@ -135,16 +135,15 @@ TEST_F(FilterSuggestionGeneratorTest,
 
   FilterSuggestionCandidate expected_candidate(
       annotation.id, GURL(kTestSuggestionUrl),
-      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
-                                          kTestAttributeValue16),
+      {FilterSuggestionCandidateAttribute(
+           kTestAttributeKey, kTestAttributeValue16, kTestAttributeValue16),
        FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16,
                                           kTestAttributeValue2_16)},
       u"Template", u"Template");
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[0],
-                                   attributes[0]);
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[1],
-                                   attributes[1]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[0]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[1]);
   UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
       .navigation_url = expected_candidate.navigation_url,
       .source_host = base::UTF8ToUTF16(annotation.source_host),
@@ -359,17 +358,16 @@ TEST_F(FilterSuggestionGeneratorTest,
   FilterSuggestionCandidate expected_candidate(
       annotation.id,
       GURL("http://example.com/search?category=shoes&size=large"),
-      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
-                                          kTestAttributeValue16),
+      {FilterSuggestionCandidateAttribute(
+           kTestAttributeKey, kTestAttributeValue16, kTestAttributeValue16),
        FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16,
                                           kTestAttributeValue2_16)},
       u"Template", u"Template");
 
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[0],
-                                   attributes[0]);
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[1],
-                                   attributes[1]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[0]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[1]);
 
   UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
       .navigation_url = expected_candidate.navigation_url,
@@ -428,17 +426,16 @@ TEST_F(FilterSuggestionGeneratorTest,
   FilterSuggestionCandidate expected_candidate(
       annotation.id,
       GURL("https://sub.example.com/search?category=shoes&size=large"),
-      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
-                                          kTestAttributeValue16),
+      {FilterSuggestionCandidateAttribute(
+           kTestAttributeKey, kTestAttributeValue16, kTestAttributeValue16),
        FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16,
                                           kTestAttributeValue2_16)},
       u"Template", u"Template");
 
   std::vector<FilterAttributeUiLabel> attribute_ui_labels;
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[0],
-                                   attributes[0]);
-  attribute_ui_labels.emplace_back(expected_candidate.attributes[1],
-                                   attributes[1]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[0]);
+  attribute_ui_labels.emplace_back(expected_candidate.attributes[1]);
 
   UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
       .navigation_url = expected_candidate.navigation_url,
@@ -684,10 +681,12 @@ TEST_F(FilterSuggestionGeneratorTest,
   FilterSuggestionCandidate candidate(
       annotation.id, GURL(kTestSuggestionUrl),
       {FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16,
                                           kTestAttributeValue2_16),
-       FilterSuggestionCandidateAttribute(kTestAttributeKey,
-                                          kTestAttributeValue16),
+       FilterSuggestionCandidateAttribute(
+           kTestAttributeKey, kTestAttributeValue16, kTestAttributeValue16),
        FilterSuggestionCandidateAttribute(kTestAttributeKey3,
+                                          kTestAttributeValue3_16,
                                           kTestAttributeValue3_16)},
       u"Template", u"Template");
 

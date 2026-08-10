@@ -87,9 +87,8 @@ UrlFilterSuggestion CreateSuggestionWithAttributes(
   params.task_type = std::move(task_type);
   params.extraction_timestamp = base::Time::Now();
   for (const auto& [key, val] : attrs) {
-    params.attribute_ui_labels.emplace_back(
-        FilterSuggestionCandidateAttribute(key, base::UTF8ToUTF16(key)),
-        FilterAttribute(key, val));
+    params.attribute_ui_labels.emplace_back(FilterSuggestionCandidateAttribute(
+        key, base::UTF8ToUTF16(key), base::UTF8ToUTF16(val)));
   }
   return UrlFilterSuggestion(std::move(params));
 }

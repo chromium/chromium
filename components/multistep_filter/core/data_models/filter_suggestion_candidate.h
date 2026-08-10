@@ -20,8 +20,12 @@ struct FilterSuggestionCandidateAttribute {
   std::string key;
   // User-visible label for the filter (e.g., "Minimum Price").
   std::u16string label;
+  // The resolved value of the filter (e.g., "2" or "LGA").
+  std::u16string value;
 
-  FilterSuggestionCandidateAttribute(std::string key, std::u16string label);
+  FilterSuggestionCandidateAttribute(std::string key,
+                                     std::u16string label,
+                                     std::u16string value = u"");
 
   FilterSuggestionCandidateAttribute(
       const FilterSuggestionCandidateAttribute&) = default;

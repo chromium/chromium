@@ -67,7 +67,8 @@ std::vector<FilterSuggestionCandidate> ToFilterSuggestionCandidates(
        response.execution_strategies()) {
     std::vector<FilterSuggestionCandidateAttribute> attributes;
     for (const AppliedFilterUIString& filter : strategy.applied_filters()) {
-      attributes.emplace_back(filter.key(), base::UTF8ToUTF16(filter.label()));
+      attributes.emplace_back(filter.key(), base::UTF8ToUTF16(filter.label()),
+                              base::UTF8ToUTF16(filter.value()));
     }
 
     GURL navigation_url;

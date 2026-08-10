@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -366,9 +367,8 @@ class FilterTabControllerTest : public testing::Test {
     params.triggering_navigation_id = triggering_navigation_id;
     params.triggering_host = "example.com";
     params.task_type = "Task1";
-    params.attribute_ui_labels.emplace_back(
-        FilterSuggestionCandidateAttribute(key, label),
-        FilterAttribute(key, value));
+    params.attribute_ui_labels.emplace_back(FilterSuggestionCandidateAttribute(
+        key, label, base::UTF8ToUTF16(value)));
     return UrlFilterSuggestion(std::move(params));
   }
 

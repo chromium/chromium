@@ -120,4 +120,7 @@ message AppliedFilterUIString {
 
   // User-visible label for the filter (e.g., "Minimum Price").
   string label = 2;
+
+  // The resolved value of the filter (e.g., "2" or "LGA").
+  string value = 3;
 }

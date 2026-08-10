@@ -85,11 +85,9 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
 std::vector<FilterAttributeUiLabel> DefaultAttributes() {
   return {FilterAttributeUiLabel(
-              FilterSuggestionCandidateAttribute("color", u"Color"),
-              FilterAttribute("color", "red")),
+              FilterSuggestionCandidateAttribute("color", u"Color", u"red")),
           FilterAttributeUiLabel(
-              FilterSuggestionCandidateAttribute("size", u"Size"),
-              FilterAttribute("size", "large"))};
+              FilterSuggestionCandidateAttribute("size", u"Size", u"large"))};
 }
 
 UrlFilterSuggestion CreateDummySuggestion(
