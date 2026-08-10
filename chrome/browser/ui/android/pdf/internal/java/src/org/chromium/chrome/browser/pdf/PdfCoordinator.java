@@ -987,7 +987,7 @@ public class PdfCoordinator
                                 () -> {
                                     pdfView.setZoom(newZoom);
                                     // Scroll to the top of the page after zooming.
-                                    if (fitToPageHeight) scrollToPage(pageIndex);
+                                    scrollToPage(pageIndex);
                                 });
                     });
         }
