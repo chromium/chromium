@@ -1046,7 +1046,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::IfElementMatches(
           },
           base::RectifyCallback<FunctionType>(
               internal::MaybeBind(std::forward<F>(function))),
-          testing::Matcher<MatcherType>(std::forward<M>(matcher))));
+          internal::MakeMatcher<R>(std::forward<M>(matcher))));
   if (!else_steps.steps().empty()) {
     step.AddSubsequence(
         internal::BuildSubsequence(std::move(else_steps.steps())));
@@ -1386,7 +1386,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
                       MatcherType(std::move(function).Run()));
                 },
                 internal::MaybeBind(std::forward<C>(function)),
-                testing::Matcher<MatcherType>(std::forward<M>(matcher))))
+                internal::MakeMatcher<R>(std::forward<M>(matcher))))
           .SetDescription(base::StringPrintf("CheckResult(\"%s\")",
                                              check_description.c_str())));
 }
@@ -1440,7 +1440,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckElement(
         }
       },
       internal::MaybeBind(std::forward<F>(function)),
-      testing::Matcher<MatcherType>(std::forward<M>(matcher))));
+      internal::MakeMatcher<R>(std::forward<M>(matcher))));
   return builder;
 }
 

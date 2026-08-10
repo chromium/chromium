@@ -170,14 +170,11 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
                        return !GetTemporaryValue(kSidePanelBounds)
                                    .Intersects(el->GetScreenBounds());
                      }),
-        CheckView(
-            ToolbarView::kToolbarElementId,
-            [=](ToolbarView* toolbar) {
-              LOG(INFO) << "Toolbar minimum size is "
-                        << toolbar->GetMinimumSize().ToString();
-              return toolbar->width() >= toolbar->GetMinimumSize().width();
-            },
-            "Toolbar is at least minimum size"));
+        CheckView(ToolbarView::kToolbarElementId, [=](ToolbarView* toolbar) {
+          LOG(INFO) << "Toolbar minimum size is "
+                    << toolbar->GetMinimumSize().ToString();
+          return toolbar->width() >= toolbar->GetMinimumSize().width();
+        }).SetDescription("Toolbar is at least minimum size"));
   }
 
   auto CloseSidePanel() {

@@ -150,8 +150,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
             views::View::ConvertPointFromScreen(vt_region_view, &pt_above);
             return !vt_region_view->IsPositionInWindowCaption(pt_center) &&
                    !vt_region_view->IsPositionInWindowCaption(pt_above);
-          },
-          "Check that clicking new tab does not expose caption space"));
+          })
+          .SetDescription(
+              "Check that clicking new tab does not expose caption space"));
 }
 
 class NewTabButtonContextMenuInteractiveUITest

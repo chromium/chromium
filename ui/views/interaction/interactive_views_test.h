@@ -571,8 +571,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfViewMatches(
                 return std::move(condition).Run(view);
               },
               ui::test::internal::MaybeBind(std::forward<F>(function))),
-          testing::Matcher<ui::test::internal::MatcherTypeFor<R>>(
-              std::forward<M>(matcher)),
+          ui::test::internal::MakeMatcher<R>(std::forward<M>(matcher)),
           std::move(then_steps), std::move(else_steps))
           .SetDescription("IfViewMatches()"));
 }
@@ -669,8 +668,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckView(
   using MatcherType = ui::test::internal::MatcherTypeFor<R>;
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<R(V*)> function,
-         testing::Matcher<MatcherType> matcher,
-         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+         testing::Matcher<MatcherType> matcher, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
         if (!ui::test::internal::MatchAndExplain(
                 "CheckView()", matcher,
                 MatcherType(std::move(function).Run(AsView<V>(el))))) {
@@ -678,7 +677,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckView(
         }
       },
       ui::test::internal::MaybeBind(std::forward<F>(function)),
-      testing::Matcher<MatcherType>(std::forward<M>(matcher))));
+      ui::test::internal::MakeMatcher<R>(std::forward<M>(matcher))));
   return builder;
 }
 
@@ -702,7 +701,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
           seq->FailForTesting();
         }
       },
-      property, testing::Matcher<MatcherType>(std::forward<M>(matcher))));
+      property, ui::test::internal::MakeMatcher<R>(std::forward<M>(matcher))));
   return builder;
 }
 
@@ -751,7 +750,7 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
         }
       },
       base::Unretained(this), kSubscription, property, add_listener, event_type,
-      testing::Matcher<MatcherType>(std::forward<M>(matcher)));
+      ui::test::internal::MakeMatcher<R>(std::forward<M>(matcher)));
 
   auto steps = Steps(
       AfterShow(view, std::move(observe_property)).SetMustRemainVisible(true),

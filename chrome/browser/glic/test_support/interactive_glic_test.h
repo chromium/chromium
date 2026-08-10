@@ -906,7 +906,7 @@ class InteractiveGlicTestMixin : public T {
   }
 
   auto CheckGlicInstanceIsShowing() {
-    return Api::CheckResult(
+    return Api::Check(
         [this]() {
           auto* instance = GetGlicInstance();
           return instance && instance->IsShowing();
@@ -914,7 +914,7 @@ class InteractiveGlicTestMixin : public T {
         "glic panel must be open");
   }
   auto CheckGlicIsClosed() {
-    return Api::CheckResult(
+    return Api::Check(
         [this]() {
           views::View* view = GetGlicView();
           return !view || !view->GetVisible();

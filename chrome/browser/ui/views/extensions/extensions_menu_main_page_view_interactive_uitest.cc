@@ -660,22 +660,20 @@ class ExtensionsMenuMainPageViewInteractiveTest
 
   // Verifies whether the 'reload' section is hidden on the menu.
   auto CheckReloadSectionHidden() {
-    return CheckView(
-        kExtensionsMenuMainPageElementId,
-        [](ExtensionsMenuMainPageView* page) {
-          return !page->reload_section()->GetVisible();
-        },
-        "Reload section is hidden");
+    return CheckView(kExtensionsMenuMainPageElementId,
+                     [](ExtensionsMenuMainPageView* page) {
+                       return !page->reload_section()->GetVisible();
+                     })
+        .SetDescription("CheckReloadSectionHidden()");
   }
 
   // Verifies whether the 'requests' section is hidden on the menu.
   auto CheckRequestsSectionHidden() {
-    return CheckView(
-        kExtensionsMenuMainPageElementId,
-        [](ExtensionsMenuMainPageView* page) {
-          return !page->requests_section()->GetVisible();
-        },
-        "Requests section is hidden");
+    return CheckView(kExtensionsMenuMainPageElementId,
+                     [](ExtensionsMenuMainPageView* page) {
+                       return !page->requests_section()->GetVisible();
+                     })
+        .SetDescription("CheckRequestsSectionHidden()");
   }
 
   // Verifies whether `extension` has `expected_site_interaction` on the current

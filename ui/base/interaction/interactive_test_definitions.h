@@ -181,6 +181,16 @@ struct MatcherTypeHelper<std::basic_string_view<CharT, Traits>> {
 template <typename T>
 using MatcherTypeFor = MatcherTypeHelper<std::decay_t<T>>::ActualType;
 
+template <typename M, typename T>
+auto MakeMatcher(T&& value) {
+  if constexpr (std::same_as<std::decay_t<T>, MatcherTypeFor<T>>) {
+    return testing::Matcher<MatcherTypeFor<M>>(std::forward<T>(value));
+  } else {
+    return testing::Matcher<MatcherTypeFor<M>>(
+        MatcherTypeFor<T>(std::forward<T>(value)));
+  }
+}
+
 // Determines if `T` is a valid type to be used in a matcher. This precludes
 // string-like types (const char*, constexpr char16_t[], etc.) in favor of
 // `std::string` and `std::u16string`.
