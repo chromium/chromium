@@ -22,11 +22,15 @@
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/metrics.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/button_test_api.h"
@@ -325,6 +329,51 @@ TEST_F(DialogClientViewTest, ContentsSize) {
   CheckContentsIsSetToPreferredSize();
   EXPECT_EQ(delegate()->GetContentsView()->size(), client_view()->size());
   EXPECT_EQ(gfx::Size(300, 200), client_view()->size());
+}
+
+// Closing a CLIENT_OWNS_WIDGET dialog runs WidgetDelegate::DeleteDelegate(),
+// which detaches the delegate from the Widget without destroying the view
+// hierarchy. Laying out in that window used to dereference the resulting null
+// DialogDelegate. See crbug.com/543499040.
+TEST_F(DialogClientViewTest, LayoutAfterCloseWithDetachedDelegate) {
+  SetSizeConstraints(gfx::Size(200, 100), gfx::Size(300, 200),
+                     gfx::Size(400, 300));
+
+  // Owned by the view hierarchy of `closed_widget`.
+  auto* const dialog_delegate = new DialogClientViewTestDelegate(this);
+  dialog_delegate->set_use_custom_frame(false);
+  dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  dialog_delegate->set_margins(gfx::Insets(10));
+
+  auto closed_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.delegate = dialog_delegate;
+  closed_widget->Init(std::move(params));
+  closed_widget->SetSize(gfx::Size(300, 200));
+
+  auto* const closed_client_view =
+      static_cast<DialogClientView*>(closed_widget->client_view());
+  ASSERT_NE(nullptr, closed_client_view);
+  View* const contents_view = dialog_delegate->GetContentsView();
+  ASSERT_EQ(closed_client_view, contents_view->parent());
+
+  closed_widget->CloseNow();
+
+  // The Widget dropped its handle to the delegate, but the view hierarchy lives
+  // until the client releases the Widget.
+  ASSERT_EQ(nullptr, closed_widget->widget_delegate());
+  ASSERT_EQ(closed_client_view, contents_view->parent());
+
+  // A size that differs from the last layout, so the cached layout is not
+  // reused and DialogClientView::CalculateProposedLayout() runs again.
+  constexpr gfx::Size kRelayoutSize(400, 300);
+  const ProposedLayout layout =
+      static_cast<LayoutManagerBase*>(closed_client_view->GetLayoutManager())
+          ->GetProposedLayout(kRelayoutSize);
+
+  EXPECT_EQ(kRelayoutSize, layout.host_size);
+  EXPECT_NE(nullptr, layout.GetLayoutFor(contents_view));
 }
 
 // Test the effect of the button strip on layout.

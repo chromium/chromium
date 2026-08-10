@@ -224,7 +224,12 @@ ProposedLayout DialogClientView::CalculateProposedLayout(
       size_bounds);
   if (contents_view()) {
     gfx::Rect contents_bounds(size_bounds.width().value(), container_y);
-    contents_bounds.Inset(GetDialogDelegate()->margins());
+    // A closed Widget drops its delegate while this view hierarchy is still
+    // alive, and the hierarchy can still be laid out until the Widget itself is
+    // destroyed. See crbug.com/543499040.
+    if (const DialogDelegate* const delegate = GetDialogDelegate()) {
+      contents_bounds.Inset(delegate->margins());
+    }
     layouts.child_layouts.emplace_back(contents_view(),
                                        contents_view()->GetVisible(),
                                        contents_bounds, size_bounds);
