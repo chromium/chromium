@@ -106,6 +106,8 @@ build_webui("build") {
       #  - have a checked-in *.html.ts wrapper file instead of auto-generated
       "cr_a11y_announcer/cr_a11y_announcer.html.ts",
       "cr_a11y_announcer/cr_a11y_announcer.ts",
+      "cr_chip/cr_chip.html.ts",
+      "cr_chip/cr_chip.ts",
       "cr_collapse/cr_collapse.html.ts",
       "cr_collapse/cr_collapse.ts",
       "cr_drawer/cr_drawer.html.ts",
@@ -143,6 +145,7 @@ build_webui("build") {
       "action_link_lit.css",
       "cr_a11y_announcer/cr_a11y_announcer.css",
       "cr_actionable_row_style_lit.css",
+      "cr_chip/cr_chip.css",
       "cr_collapse/cr_collapse.css",
       "cr_drawer/cr_drawer.css",
       "cr_expand_button/cr_expand_button.css",
@@ -183,8 +186,6 @@ build_webui("build") {
       # Web components files that either
       #  - don't have a corresponding .html file or
       #  - have a checked-in *.html.ts wrapper file instead of auto-generated
-      "cr_chip/cr_chip.html.ts",
-      "cr_chip/cr_chip.ts",
       "cr_feedback_buttons/cr_feedback_buttons.html.ts",
       "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_grid/cr_grid.html.ts",
@@ -207,7 +208,6 @@ build_webui("build") {
     css_files += [
       "action_link.css",
       "cr_actionable_row_style.css",
-      "cr_chip/cr_chip.css",
       "cr_feedback_buttons/cr_feedback_buttons.css",
       "cr_grid/cr_grid.css",
       "cr_hidden_style.css",

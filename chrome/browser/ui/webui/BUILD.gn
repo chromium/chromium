@@ -93,6 +93,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//chrome/browser/ui/webui/saved_tab_groups_unsupported",
     "//chrome/browser/ui/webui/segmentation_internals",
+    "//chrome/browser/ui/webui/suggest_internals",
     "//chrome/browser/ui/webui/sync_internals",
     "//chrome/browser/ui/webui/translate_internals",
     "//chrome/browser/ui/webui/usb_internals",

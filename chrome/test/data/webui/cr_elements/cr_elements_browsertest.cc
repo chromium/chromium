@@ -19,6 +19,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrButton) {
   RunTest("cr_elements/cr_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrChip) {
+  RunTest("cr_elements/cr_chip_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrDialog) {
   RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
 }
@@ -66,10 +70,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrUrlListItem) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrA11yAnnouncer) {
   RunTest("cr_elements/cr_a11y_announcer_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrChip) {
-  RunTest("cr_elements/cr_chip_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrCollapse) {

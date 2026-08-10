@@ -85,8 +85,6 @@
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
-#include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
-#include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom.h"
@@ -401,9 +399,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       omnibox_everywhere_debug::mojom::PageHandlerFactory, OmniboxEverywhereUI>(
       map);
-
-  RegisterWebUIControllerInterfaceBinder<suggest_internals::mojom::PageHandler,
-                                         SuggestInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       password_manager::mojom::PageHandlerFactory, PasswordManagerUI>(map);

@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 #include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
+#include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
@@ -132,7 +133,6 @@
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
-#include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
@@ -306,6 +306,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<
                      subresource_filter::SubresourceFilterInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SiteEngagementUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SuggestInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SyncInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<TranslateInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<UsbInternalsUIConfig>());
@@ -382,7 +383,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<SearchEngineChoiceUIConfig>());
   map.AddWebUIConfig(std::make_unique<settings::SettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ShoppingInsightsSidePanelUIConfig>());
-  map.AddWebUIConfig(std::make_unique<SuggestInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SupportToolUIConfig>());
   map.AddWebUIConfig(std::make_unique<SyncConfirmationUIConfig>());
   map.AddWebUIConfig(std::make_unique<SystemInfoUIConfig>());

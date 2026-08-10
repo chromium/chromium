@@ -1090,6 +1090,7 @@ source_set("core") {
     "//chrome/browser/ui/webui/segmentation_internals",
     "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
     "//chrome/browser/ui/webui/subresource_filter",
+    "//chrome/browser/ui/webui/suggest_internals",
     "//chrome/browser/ui/webui/usb_internals",
     "//chrome/browser/update_client",
     "//chrome/browser/updater",
