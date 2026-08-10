@@ -1,12 +1,12 @@
 <style include="cr-shared-style settings-shared md-select"></style>
 <settings-section page-title="$i18n{translatePageTitle}">
 <settings-toggle-button id="offerTranslateOtherLanguages"
-    pref="{{prefs.translate.enabled}}"
+    pref-key="translate.enabled"
     label="$i18n{offerToEnableTranslate}"
     sub-label="$i18n{offerToEnableTranslateSublabel}"
     on-settings-boolean-control-change="onTranslateToggleChange_">
 </settings-toggle-button>
-<cr-collapse opened="[[prefs.translate.enabled.value]]">
+<cr-collapse opened="[[translateEnabledPref_.value]]">
   <div class="cr-row continuation">
     <div id="targetLanguageLabel" class="flex cr-padded-text"
         aria-hidden="true">

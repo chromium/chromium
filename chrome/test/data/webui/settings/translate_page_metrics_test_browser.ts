@@ -10,7 +10,6 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestLanguageSettingsMetricsProxy} from './test_languages_settings_metrics_proxy.js';
@@ -48,11 +47,6 @@ suite('TranslatePageMetricsBrowser', function() {
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
     // Sets up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
@@ -61,20 +55,11 @@ suite('TranslatePageMetricsBrowser', function() {
     languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-    // Sets up fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-    (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
-        .setSettingsPrefs(settingsPrefs);
-
     const settingsLanguages = document.createElement('settings-languages');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 
     translatePage = document.createElement('settings-translate-page');
-
-    // Prefs would normally be data-bound to settings-languages-page.
-    translatePage.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, translatePage, 'prefs');
 
     translatePage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, translatePage, 'languages');
@@ -97,7 +82,7 @@ suite('TranslatePageMetricsBrowser', function() {
   });
 
   test('records when disabling translate.enable toggle', async () => {
-    translatePage.setPrefValue('translate.enabled', true);
+    PrefService.getInstance().setPrefValue('translate.enabled', true);
     translatePage.shadowRoot!
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     flush();
@@ -108,7 +93,7 @@ suite('TranslatePageMetricsBrowser', function() {
   });
 
   test('records when enabling translate.enable toggle', async () => {
-    translatePage.setPrefValue('translate.enabled', false);
+    PrefService.getInstance().setPrefValue('translate.enabled', false);
     translatePage.shadowRoot!
         .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
     flush();

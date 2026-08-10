@@ -6,60 +6,33 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsEditDictionaryPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
+import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
-
-function getFakePrefs() {
-  return [
-    {
-      key: 'intl.app_locale',
-      type: chrome.settingsPrivate.PrefType.STRING,
-      value: 'en-US',
-    },
-    {
-      key: 'intl.accept_languages',
-      type: chrome.settingsPrivate.PrefType.STRING,
-      value: 'en-US,sw',
-    },
-    {
-      key: 'spellcheck.dictionaries',
-      type: chrome.settingsPrivate.PrefType.LIST,
-      value: ['en-US'],
-    },
-    {
-      key: 'translate_blocked_languages',
-      type: chrome.settingsPrivate.PrefType.LIST,
-      value: ['en-US'],
-    },
-  ];
-}
 
 suite('EditDictionaryPage', function() {
   let editDictPage: SettingsEditDictionaryPageElement;
   let languageSettingsPrivate: FakeLanguageSettingsPrivate;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
-    settingsPrefs.initialize(settingsPrivate);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.setLanguageSettingsPrivate(
@@ -198,20 +171,19 @@ suite('EditDictionaryPage', function() {
 suite('EditDictionaryPageFocus', function() {
   let editDictPage: SettingsEditDictionaryPageElement;
   let languageSettingsPrivate: FakeLanguageSettingsPrivate;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
-    settingsPrefs.initialize(settingsPrivate);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
 
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.setLanguageSettingsPrivate(

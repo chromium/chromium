@@ -20,7 +20,7 @@ import '../icons.html.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -36,7 +36,8 @@ import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {convertLanguageCodeForChrome, getFullName, isTranslateBaseLanguage} from './languages_util.js';
 import {getTemplate} from './translate_page.html.js';
 
-const SettingsTranslatePageElementBase = PrefsMixin(I18nMixin(PolymerElement));
+const SettingsTranslatePageElementBase =
+    PrefServiceObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsTranslatePageElement extends
     SettingsTranslatePageElementBase {
@@ -59,10 +60,13 @@ export class SettingsTranslatePageElement extends
       showAddAlwaysTranslateDialog_: Boolean,
       showAddNeverTranslateDialog_: Boolean,
       addLanguagesDialogLanguages_: Array,
+      translateEnabledPref_: Object,
     };
   }
 
   declare languages?: LanguagesModel;
+  declare protected translateEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private showAddAlwaysTranslateDialog_: boolean;
   declare private showAddNeverTranslateDialog_: boolean;
   declare private addLanguagesDialogLanguages_:
@@ -73,6 +77,10 @@ export class SettingsTranslatePageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPrefs({
+      'translate.enabled': 'translateEnabledPref_',
+    });
 
     this.languageHelper_ = getLanguageHelperInstance();
   }

@@ -39,11 +39,6 @@ suite('settings-languages', function() {
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
-
     // Setup test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
@@ -51,7 +46,6 @@ suite('settings-languages', function() {
     // Setup fake languageSettingsPrivate API.
     languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
         unknown as FakeLanguageSettingsPrivate;
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
     document.body.appendChild(settingsLanguages);

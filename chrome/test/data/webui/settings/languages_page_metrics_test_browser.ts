@@ -5,16 +5,14 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 // <if expr="is_win">
 import {LanguageSettingsActionType} from 'chrome://settings/lazy_load.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 
-import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestLanguageSettingsMetricsProxy} from './test_languages_settings_metrics_proxy.js';
@@ -26,19 +24,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   let browserProxy: TestLanguagesBrowserProxy;
   let languageSettingsMetricsProxy: TestLanguageSettingsMetricsProxy;
 
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-  });
-
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(settingsPrivate);
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
-
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
@@ -51,11 +38,6 @@ suite('LanguagesPageMetricsBrowser', function() {
     // Sets up test browser proxy.
     languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
-
-    // Sets up fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-    (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
-        .setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
     document.body.appendChild(settingsLanguages);

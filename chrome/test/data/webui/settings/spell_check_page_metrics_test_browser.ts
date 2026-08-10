@@ -10,7 +10,6 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -49,11 +48,6 @@ suite('SpellCheckPageMetricsBrowser', function() {
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
     // Sets up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
@@ -62,19 +56,10 @@ suite('SpellCheckPageMetricsBrowser', function() {
     languageSettingsMetricsProxy = new TestSpellCheckSettingsMetricsProxy();
     LanguageSettingsMetricsProxyImpl.setInstance(languageSettingsMetricsProxy);
 
-    // Sets up fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-    (languageSettingsPrivate as unknown as FakeLanguageSettingsPrivate)
-        .setSettingsPrefs(settingsPrefs);
-
     const settingsLanguages = document.createElement('settings-languages');
     document.body.appendChild(settingsLanguages);
 
     spellCheckPage = document.createElement('settings-spell-check-page');
-
-    // Prefs would normally be data-bound to settings-languages-page.
-    spellCheckPage.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, spellCheckPage, 'prefs');
 
     spellCheckPage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, spellCheckPage, 'languages');
@@ -89,7 +74,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
   suite('Metrics', function() {
     test('records when disabling spellCheck globally', async () => {
-      spellCheckPage.setPrefValue('browser.enable_spellchecking', true);
+      PrefService.getInstance().setPrefValue(
+          'browser.enable_spellchecking', true);
       const spellCheckToggle = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#enableSpellcheckingToggle');
       assertTrue(!!spellCheckToggle, 'no spellCheckToggle');
@@ -102,7 +88,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
     });
 
     test('records when enabling spellCheck globally', async () => {
-      spellCheckPage.setPrefValue('browser.enable_spellchecking', false);
+      PrefService.getInstance().setPrefValue(
+          'browser.enable_spellchecking', false);
 
       const spellCheckToggle = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#enableSpellcheckingToggle');
@@ -119,7 +106,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
   // <if expr="_google_chrome">
   suite('MetricsOfficialBuild', function() {
     test('records when selecting basic spell check', async () => {
-      spellCheckPage.setPrefValue('spellcheck.use_spelling_service', true);
+      PrefService.getInstance().setPrefValue(
+          'spellcheck.use_spelling_service', true);
       const basicServiceSelect = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#spellingServiceDisable');
       assertTrue(!!basicServiceSelect);
@@ -132,7 +120,8 @@ suite('SpellCheckPageMetricsBrowser', function() {
     });
 
     test('records when selecting enhanced spell check', async () => {
-      spellCheckPage.setPrefValue('spellcheck.use_spelling_service', false);
+      PrefService.getInstance().setPrefValue(
+          'spellcheck.use_spelling_service', false);
       const enhancedServiceSelect = spellCheckPage.shadowRoot!
           .querySelector<HTMLElement>('#spellingServiceEnable');
       assertTrue(!!enhancedServiceSelect);
@@ -149,11 +138,13 @@ suite('SpellCheckPageMetricsBrowser', function() {
   // <if expr="not is_macosx">
   suite('MetricsNotMacOS', function() {
     test('records when enabling spellCheck for a language', async () => {
-      assertTrue(spellCheckPage.getPref<boolean>('browser.enable_spellchecking')
+      assertTrue(PrefService.getInstance()
+                     .getPref<boolean>('browser.enable_spellchecking')
                      .value);
 
       // Enable spellcheck only for the 1st entry.
-      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US']);
+      PrefService.getInstance().setPrefValue(
+          'spellcheck.dictionaries', ['en-US']);
 
       const list = spellCheckPage.shadowRoot!.querySelector<HTMLElement>(
           '#spellCheckLanguagesList');
@@ -172,11 +163,13 @@ suite('SpellCheckPageMetricsBrowser', function() {
     });
 
     test('records when disabling spellCheck for a language', async () => {
-      assertTrue(spellCheckPage.getPref<boolean>('browser.enable_spellchecking')
+      assertTrue(PrefService.getInstance()
+                     .getPref<boolean>('browser.enable_spellchecking')
                      .value);
 
       // Enable spellcheck for both language entries.
-      spellCheckPage.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
+      PrefService.getInstance().setPrefValue(
+          'spellcheck.dictionaries', ['en-US', 'sw']);
 
       const list = spellCheckPage.shadowRoot!.querySelector<HTMLElement>(
           '#spellCheckLanguagesList');

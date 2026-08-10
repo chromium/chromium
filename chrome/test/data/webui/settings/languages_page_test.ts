@@ -14,7 +14,6 @@ import {assertEquals, assertFalse, assertGE, assertGT, assertTrue} from 'chrome:
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
-import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -55,27 +54,15 @@ suite('LanguagesPage', function() {
     PrefService.resetInstanceForTesting();
     await PrefService.getInstance().whenInitialized();
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
     // Set up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
-
-    // Set up fake languageSettingsPrivate API.
-    const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate() as
-        unknown as FakeLanguageSettingsPrivate;
-    languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
     const settingsLanguages = document.createElement('settings-languages');
     document.body.appendChild(settingsLanguages);
     languageHelper = settingsLanguages;
 
     languagesPage = document.createElement('settings-languages-page');
-
-    languagesPage.prefs = settingsPrefs.prefs!;
-    fakeDataBind(settingsPrefs, languagesPage, 'prefs');
 
     languagesPage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, languagesPage, 'languages');
@@ -189,7 +176,7 @@ suite('LanguagesPage', function() {
       await dialogClosedResolver.promise;
       assertEquals(
           initialLanguages,
-          languagesPage.getPref('intl.accept_languages').value);
+          PrefService.getInstance().getPref('intl.accept_languages').value);
     });
 
     test('add languages and confirm', async function() {
@@ -222,7 +209,7 @@ suite('LanguagesPage', function() {
 
       assertEquals(
           initialLanguages + ',en,tk',
-          languagesPage.getPref('intl.accept_languages').value);
+          PrefService.getInstance().getPref('intl.accept_languages').value);
 
       return dialogClosedResolver.promise;
     });
@@ -374,7 +361,7 @@ suite('LanguagesPage', function() {
 
       assertEquals(
           initialLanguages,
-          languagesPage.getPref('intl.accept_languages').value);
+          PrefService.getInstance().getPref('intl.accept_languages').value);
     });
 
     test('remove language when starting with 2 languages', function() {
@@ -400,7 +387,8 @@ suite('LanguagesPage', function() {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          'en-US', languagesPage.getPref('intl.accept_languages').value);
+          'en-US',
+          PrefService.getInstance().getPref('intl.accept_languages').value);
     });
 
     test('move up/down buttons', function() {
