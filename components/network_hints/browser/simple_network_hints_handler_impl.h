@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 #define COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 
+#include <vector>
+
 #include "components/network_hints/common/network_hints.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -17,7 +20,8 @@ namespace network_hints {
 // Each renderer process requires its own filter.
 class SimpleNetworkHintsHandlerImpl : public mojom::NetworkHintsHandler {
  public:
-  SimpleNetworkHintsHandlerImpl(int render_process_id, int render_frame_id);
+  explicit SimpleNetworkHintsHandlerImpl(
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
   SimpleNetworkHintsHandlerImpl(const SimpleNetworkHintsHandlerImpl&) = delete;
   SimpleNetworkHintsHandlerImpl& operator=(
@@ -35,8 +39,7 @@ class SimpleNetworkHintsHandlerImpl : public mojom::NetworkHintsHandler {
                   bool allow_credentials) override;
 
  private:
-  const int render_process_id_;
-  const int render_frame_id_;
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
 };
 
 }  // namespace network_hints
