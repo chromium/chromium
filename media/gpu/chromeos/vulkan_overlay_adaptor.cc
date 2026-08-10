@@ -661,6 +661,9 @@ VulkanOverlayAdaptor::VulkanTextureImage::Create(
     if (vkCreateImageView(logical_device, &view_info, nullptr, &image_view) !=
         VK_SUCCESS) {
       LOG(ERROR) << "Could not create image view!";
+      for (VkImageView created_image_view : image_views) {
+        vkDestroyImageView(logical_device, created_image_view, nullptr);
+      }
       return nullptr;
     }
 
@@ -683,6 +686,13 @@ VulkanOverlayAdaptor::VulkanTextureImage::Create(
       if (vkCreateFramebuffer(logical_device, &framebuffer_info, nullptr,
                               &framebuffer) != VK_SUCCESS) {
         LOG(ERROR) << "Could not create framebuffer!";
+        for (VkFramebuffer created_framebuffer : framebuffers) {
+          vkDestroyFramebuffer(logical_device, created_framebuffer, nullptr);
+        }
+        for (VkImageView created_image_view : image_views) {
+          vkDestroyImageView(logical_device, created_image_view, nullptr);
+        }
+        return nullptr;
       }
 
       framebuffers.emplace_back(std::move(framebuffer));
