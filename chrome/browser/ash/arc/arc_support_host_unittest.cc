@@ -11,13 +11,10 @@
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,12 +65,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-    // The code under test should not be tied to browser sync consent.
-    identity_test_env_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("testing@account.com",
-                                      signin::ConsentLevel::kSignin);
 
     support_host_ = std::make_unique<ArcSupportHost>(
         TestingBrowserProcess::GetGlobal()->local_state(),
@@ -90,9 +81,15 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
     fake_arc_support_.reset();
     support_host_.reset();
-    identity_test_env_adaptor_.reset();
 
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  // BrowserWithTestWindowTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return TestingProfile::TestingFactory{
+        ConsentAuditorFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeConsentAuditor)};
   }
 
   ArcSupportHost* support_host() { return support_host_.get(); }
@@ -115,20 +112,9 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
         ConsentAuditorFactory::GetForProfile(profile()));
   }
 
-  // BrowserWithTestWindowTest:
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return IdentityTestEnvironmentProfileAdaptor::
-        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
-            {TestingProfile::TestingFactory{
-                ConsentAuditorFactory::GetInstance(),
-                base::BindRepeating(&BuildFakeConsentAuditor)}});
-  }
-
  private:
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
 
   std::unique_ptr<MockTermsOfServiceDelegate> tos_delegate_;
   std::unique_ptr<MockErrorDelegate> error_delegate_;

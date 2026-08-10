@@ -24,22 +24,21 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/url_data_source.h"
 #include "crypto/obsolete/sha1.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -675,7 +674,7 @@ bool ArcSupportHost::Initialize() {
 
   user_manager::KnownUser known_user(&local_state_.get());
   const std::string device_id = known_user.GetDeviceId(
-      multi_user_util::GetAccountIdFromProfile(profile_));
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_)));
   message.Set(kDeviceId, device_id);
 
   message_host_->SendMessage(message);
@@ -746,13 +745,10 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
       is_location_service_enabled = false;
     }
 
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-    // This class doesn't care about browser sync consent.
-    DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-    GaiaId gaia_id =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-            .gaia;
-    bool is_child = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
+    const auto& user = CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+    GaiaId gaia_id = user.GetAccountId().GetGaiaId();
+    bool is_child = user.GetType() == user_manager::UserType::kChild;
 
     // Record acceptance of ToS if it was shown to the user, otherwise simply
     // record acceptance of an empty ToS.
