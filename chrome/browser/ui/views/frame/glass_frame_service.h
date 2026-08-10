@@ -68,7 +68,7 @@ class GlassFrameService : public BrowserCollectionObserver,
   // Returns the set of BrowserWindowInterfaces for the most recently activated
   // browser window interfaces. The returned set has at most `kMaxGlassWindows`
   // elements.
-  base::flat_set<BrowserWindowInterface*> MostRecentActivatedBrowsers();
+  base::flat_set<BrowserWindowInterface*> ActivationOrderedEligibleBrowsers();
 
   // Returns the set of BrowserWindowInterfaces that are eligible to display
   // the glass frame.
@@ -78,13 +78,18 @@ class GlassFrameService : public BrowserCollectionObserver,
 
   void LogGlassFramePreferredLook();
 
-  void NotifyEligibilityChanged();
+  void MaybeTrackBrowser(BrowserWindowInterface* browser);
+
+  void StopTrackingBrowser(BrowserWindowInterface* browser);
+
+  void OnEligibleStateChanged();
 
   std::map<BrowserWindowInterface*, base::RepeatingCallbackList<void(bool)>>
       window_callbacks_;
-  // Deque of tracked browsers, ordered from most recently activated to
-  // least recently activated.
-  std::deque<BrowserWindowInterface*> activated_browsers_;
+  std::map<BrowserWindowInterface*, base::CallbackListSubscription>
+      fullscreen_subscriptions_;
+  // Set of tracked normal browsers.
+  base::flat_set<BrowserWindowInterface*> tracked_browsers_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
@@ -94,6 +99,7 @@ class GlassFrameService : public BrowserCollectionObserver,
       battery_saver_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
+  bool is_glass_frame_enabled_ = true;
   bool is_battery_saver_mode_active_ = false;
   ::ui::ScopedUnownedUserData<GlassFrameService> scoped_unowned_user_data_;
 };

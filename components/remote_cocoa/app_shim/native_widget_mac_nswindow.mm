@@ -893,13 +893,6 @@ struct NSEdgeAndCornerThicknesses {
   return ![self immersiveFullscreen];
 }
 
-- (BOOL)isOpaque {
-  if (features::IsGlassFrameEnabled()) {
-    return NO;
-  }
-  return [super isOpaque];
-}
-
 - (BOOL)respondsToSelector:(SEL)aSelector {
   // If this window or its parent does not handle commands, remove it from the
   // chain.

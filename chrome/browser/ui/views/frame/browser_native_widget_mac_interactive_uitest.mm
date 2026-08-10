@@ -197,6 +197,30 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
+                       FullscreenWindowIsOpaque) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame feature is disabled.";
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  NSView* content_view = [ns_window contentView];
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  EXPECT_FALSE([ns_window isOpaque]);
+  auto [glass_view, tint_view] = GetGlassViews(content_view);
+  EXPECT_NE(glass_view, nil);
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  EXPECT_TRUE([ns_window isOpaque]);
+  auto [fs_glass_view, fs_tint_view] = GetGlassViews(content_view);
+  EXPECT_EQ(fs_glass_view, nil);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
                        IneligibleBrowserWindowIsOpaque) {
   if (!features::IsGlassFrameEnabled()) {
     GTEST_SKIP() << "Glass frame feature is disabled.";
@@ -213,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   Browser* second_browser = CreateBrowser(browser()->GetProfile());
   GlassFrameService::GetInstance()->OnBrowserActivated(second_browser);
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
-  auto [glass1_ineligible, tint1_ineligible] = GetGlassViews(first_content_view);
+  auto [glass1_ineligible, tint1_ineligible] =
+      GetGlassViews(first_content_view);
   EXPECT_EQ(glass1_ineligible, nil);
 
   Browser* third_browser = CreateBrowser(browser()->GetProfile());
@@ -227,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
 
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
   EXPECT_EQ(1.0, [[second_window backgroundColor] alphaComponent]);
-  auto [glass2_ineligible, tint2_ineligible] = GetGlassViews(second_content_view);
+  auto [glass2_ineligible, tint2_ineligible] =
+      GetGlassViews(second_content_view);
   EXPECT_EQ(glass2_ineligible, nil);
 
   CloseBrowserSynchronously(third_browser);

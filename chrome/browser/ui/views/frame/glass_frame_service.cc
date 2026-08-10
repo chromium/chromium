@@ -13,8 +13,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -22,12 +25,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
-
-namespace {
-// The maximum number of windows tracked by this service that can be eligible
-// for the glass frame.
-constexpr size_t kMaxWindowsTrackedForGlassFrame = 50;
-}  // namespace
 
 DEFINE_USER_DATA(GlassFrameService);
 
@@ -51,6 +48,7 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
   CHECK(g_browser_process);
   PrefService* const pref_service = g_browser_process->local_state();
   CHECK(pref_service);
+  is_glass_frame_enabled_ = pref_service->GetBoolean(prefs::kGlassFrameEnabled);
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       prefs::kGlassFrameEnabled,
@@ -66,18 +64,7 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
   // Pre-populate the deque with the most recently activated browsers.
   browser_collection->ForEach(
       [this](BrowserWindowInterface* browser) {
-        // Break out of ForEach early when we reached the maximum number of
-        // tracked windows.
-        if (activated_browsers_.size() >= kMaxWindowsTrackedForGlassFrame) {
-          return false;
-        }
-
-        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
-          activated_browsers_.push_back(browser);
-        }
-
-        // Keep iterating if we haven't hit the maximum number of tracked
-        // windows.
+        MaybeTrackBrowser(browser);
         return true;
       },
       BrowserCollection::Order::kActivation);
@@ -100,42 +87,13 @@ bool GlassFrameService::IsBrowserWindowEligible(
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
-  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-    return;
-  }
-
-  // If the browser is already in the list, remove it since it
-  // needs to be re-added to the front of the list.
-  auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
-                      browser);
-  if (it != activated_browsers_.end()) {
-    activated_browsers_.erase(it);
-  }
-
-  // If the list size has exceeded the maximum, remove the oldest browser.
-  if (activated_browsers_.size() >= kMaxWindowsTrackedForGlassFrame) {
-    activated_browsers_.pop_back();
-  }
-
-  activated_browsers_.push_front(browser);
-
-  NotifyEligibilityChanged();
+  MaybeTrackBrowser(browser);
+  OnEligibleStateChanged();
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
-  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-    return;
-  }
-
-  window_callbacks_.erase(browser);
-
-  auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
-                      browser);
-  if (it != activated_browsers_.end()) {
-    activated_browsers_.erase(it);
-  }
-
-  NotifyEligibilityChanged();
+  StopTrackingBrowser(browser);
+  OnEligibleStateChanged();
 }
 
 void GlassFrameService::OnBatterySaverActiveChanged(bool is_active) {
@@ -143,7 +101,7 @@ void GlassFrameService::OnBatterySaverActiveChanged(bool is_active) {
     return;
   }
   is_battery_saver_mode_active_ = is_active;
-  NotifyEligibilityChanged();
+  OnEligibleStateChanged();
 }
 
 void GlassFrameService::OnBatterySaverModeManagerDestroyed() {
@@ -151,23 +109,39 @@ void GlassFrameService::OnBatterySaverModeManagerDestroyed() {
   // a dangling pointer to the BatterySaverModeManager on destruction.
   battery_saver_observation_.Reset();
   is_battery_saver_mode_active_ = false;
+  OnEligibleStateChanged();
 }
 
 base::flat_set<BrowserWindowInterface*>
-GlassFrameService::MostRecentActivatedBrowsers() {
-  base::flat_set<BrowserWindowInterface*> eligible;
-  const size_t max_eligible_count =
-      std::min(activated_browsers_.size(), kMaxGlassWindows);
-  for (size_t i = 0; i < max_eligible_count; i++) {
-    eligible.insert(activated_browsers_[i]);
-  }
-  return eligible;
+GlassFrameService::ActivationOrderedEligibleBrowsers() {
+  base::flat_set<BrowserWindowInterface*> activation_ordered_eligible_browsers;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&activation_ordered_eligible_browsers,
+       this](BrowserWindowInterface* browser) {
+        if (activation_ordered_eligible_browsers.size() >= kMaxGlassWindows) {
+          return false;
+        }
+        if (!tracked_browsers_.contains(browser)) {
+          return true;
+        }
+        auto* const exclusive_access_manager =
+            browser->GetFeatures().exclusive_access_manager();
+        if (exclusive_access_manager &&
+            exclusive_access_manager->fullscreen_controller() &&
+            exclusive_access_manager->fullscreen_controller()
+                ->IsFullscreenForBrowser()) {
+          return true;
+        }
+        activation_ordered_eligible_browsers.insert(browser);
+        return activation_ordered_eligible_browsers.size() < kMaxGlassWindows;
+      },
+      BrowserCollection::Order::kActivation);
+  return activation_ordered_eligible_browsers;
 }
 
 base::flat_set<BrowserWindowInterface*>
 GlassFrameService::GetEligibleBrowserWindowInterfaces() {
-  if (!g_browser_process->local_state()->GetBoolean(
-          prefs::kGlassFrameEnabled)) {
+  if (!is_glass_frame_enabled_) {
     return {};
   }
 
@@ -175,19 +149,52 @@ GlassFrameService::GetEligibleBrowserWindowInterfaces() {
     return {};
   }
 
-  return MostRecentActivatedBrowsers();
+  return ActivationOrderedEligibleBrowsers();
 }
 
 void GlassFrameService::OnGlassFrameEnabledPrefChanged() {
-  NotifyEligibilityChanged();
+  PrefService* const pref_service = g_browser_process->local_state();
+  CHECK(pref_service);
+  const bool is_enabled = pref_service->GetBoolean(prefs::kGlassFrameEnabled);
+  if (is_glass_frame_enabled_ == is_enabled) {
+    return;
+  }
+  is_glass_frame_enabled_ = is_enabled;
+  OnEligibleStateChanged();
 }
 
-void GlassFrameService::NotifyEligibilityChanged() {
+void GlassFrameService::OnEligibleStateChanged() {
   const base::flat_set<BrowserWindowInterface*> eligible =
       GetEligibleBrowserWindowInterfaces();
   for (auto& [browser, callback_list] : window_callbacks_) {
     callback_list.Notify(eligible.contains(browser));
   }
+}
+
+void GlassFrameService::MaybeTrackBrowser(BrowserWindowInterface* browser) {
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+  if (!fullscreen_subscriptions_.contains(browser)) {
+    if (auto* const exclusive_access_manager =
+            browser->GetFeatures().exclusive_access_manager()) {
+      if (auto* const fullscreen_controller =
+              exclusive_access_manager->fullscreen_controller()) {
+        fullscreen_subscriptions_[browser] =
+            fullscreen_controller->RegisterOnFullscreenStateChanged(
+                base::BindRepeating(&GlassFrameService::OnEligibleStateChanged,
+                                    base::Unretained(this)));
+      }
+    }
+  }
+
+  tracked_browsers_.insert(browser);
+}
+
+void GlassFrameService::StopTrackingBrowser(BrowserWindowInterface* browser) {
+  fullscreen_subscriptions_.erase(browser);
+  window_callbacks_.erase(browser);
+  tracked_browsers_.erase(browser);
 }
 
 void GlassFrameService::LogGlassFramePreferredLook() {
