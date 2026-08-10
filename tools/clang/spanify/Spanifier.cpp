@@ -3070,6 +3070,26 @@ void RewriteFunctionPointerType(const MatchFinder::MatchResult& result) {
   EmitEdge(rhs_key, lhs_key);
 }
 
+// Helper to check if a specific redeclaration's parameter/return type is in a
+// macro body.
+bool IsParamOrReturnInMacroBody(const clang::FunctionDecl* redecl,
+                                const clang::ParmVarDecl* parm_var_decl,
+                                const clang::SourceManager& source_manager) {
+  auto is_in_macro_body = [&](clang::SourceLocation loc) {
+    return loc.isMacroID() && source_manager.isMacroBodyExpansion(loc);
+  };
+
+  if (parm_var_decl) {
+    unsigned int param_index = parm_var_decl->getFunctionScopeIndex();
+    assert(param_index < redecl->getNumParams());
+    const clang::ParmVarDecl* param = redecl->getParamDecl(param_index);
+    return is_in_macro_body(param->getLocation()) ||
+           is_in_macro_body(param->getSourceRange().getBegin());
+  }
+  clang::SourceLocation loc = redecl->getReturnTypeSourceRange().getBegin();
+  return is_in_macro_body(loc);
+}
+
 // Spanifies the matched function parameter/return type, and connects relevant
 // function declarations (forward declarations and overridden methods) to each
 // other bidirectionally per the matched function parameter/return type. Note
@@ -3145,9 +3165,10 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
   // `parm_or_return_id` than making a unique node key from the clang::Decl
   // that matches the function parameter/return type of each forward
   // declaration or overridden method.
+  const clang::ParmVarDecl* parm_var_decl =
+      result.Nodes.getNodeAs<clang::ParmVarDecl>("rhs_begin");
   std::string parm_or_return_id;
-  if (const clang::ParmVarDecl* parm_var_decl =
-          result.Nodes.getNodeAs<clang::ParmVarDecl>("rhs_begin")) {
+  if (parm_var_decl) {
     parm_or_return_id = llvm::formatv("{0}-th parm type",
                                       parm_var_decl->getFunctionScopeIndex());
   } else {
@@ -3170,7 +3191,8 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
     }
     const std::string& redecl_key =
         NodeKey(redecl, source_manager, parm_or_return_id);
-    if (GetProject()->IsExcludedFromProject(*redecl)) {
+    if (GetProject()->IsExcludedFromProject(*redecl) ||
+        IsParamOrReturnInMacroBody(redecl, parm_var_decl, source_manager)) {
       // A declaration in third party codebase is found, so we do not want to
       // rewrite the parameter/return type in a third party function. This one-
       // way edge prevents making a flow from a source to a sink, hence the
@@ -3200,7 +3222,9 @@ void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
          method_decl->getCanonicalDecl()->overridden_methods()) {
       const std::string& overridden_method_key =
           NodeKey(overridden_method_decl, source_manager, parm_or_return_id);
-      if (GetProject()->IsExcludedFromProject(*overridden_method_decl)) {
+      if (GetProject()->IsExcludedFromProject(*overridden_method_decl) ||
+          IsParamOrReturnInMacroBody(overridden_method_decl, parm_var_decl,
+                                     source_manager)) {
         // A declaration in third party codebase is found, so we do not want to
         // rewrite the parameter/return type in a third party function. This
         // one-way edge prevents making a flow from a source to a sink, hence
