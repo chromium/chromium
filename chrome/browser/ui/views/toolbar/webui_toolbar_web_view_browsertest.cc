@@ -5919,8 +5919,8 @@ class WebUIToolbarSynchronousStartupBrowserTest
 // `true` directly upon cold window display confirms that the initial window
 // dependencies accurately hydrated synchronous startup data during early
 // `BrowserView::Init()` sequences.
-// TODO(crbug.com/540971327): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/540971327): Test is flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ColdWindowLaunch DISABLED_ColdWindowLaunch
 #else
 #define MAYBE_ColdWindowLaunch ColdWindowLaunch
