@@ -212,6 +212,10 @@ export class
         null;
   }
 
+  override getLensButtonElement(): HTMLElement|null {
+    return this.shadowRoot?.querySelector('#lensIcon') || null;
+  }
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;

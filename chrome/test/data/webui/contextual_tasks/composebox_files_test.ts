@@ -655,6 +655,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
                       '#lensIcon');
               assertTrue(
                   lensIcon !== null, 'Lens icon should render in side panel');
+              assertEquals(lensIcon, innerComposebox.getLensButtonElement());
 
               lensIcon.click();
               await mockComposeboxPageHandler.whenCalled(
