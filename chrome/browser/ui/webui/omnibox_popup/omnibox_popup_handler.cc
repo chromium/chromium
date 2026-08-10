@@ -201,6 +201,10 @@ void OmniboxPopupHandler::ClearAutocompleteMatches() {
   page_->ClearAutocompleteMatches();
 }
 
+void OmniboxPopupHandler::ClearPopup(base::OnceClosure callback) {
+  page_->ClearPopup(std::move(callback));
+}
+
 void OmniboxPopupHandler::LogEscapeAction(
     omnibox_popup::mojom::OmniboxEscapeAction action) {
   base::UmaHistogramEnumeration("Omnibox.Escape", action);

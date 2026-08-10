@@ -99,4 +99,8 @@ interface Page {
 
   // Clears autocomplete results and resets active query ID in WebUI.
   ClearAutocompleteMatches();
+
+  // Called when the popup is hidden. The page is expected to perform any
+  // necessary cleanup and complete the callback.
+  ClearPopup() => ();
 };

@@ -55,8 +55,10 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   // updates or asynchronous tab-switch restorations from opening the popup
   // when the user is interacting with other parts of the UI, while allowing
   // typing into the WebUI omnibox after clicking the top container.
-  DCHECK(controller()->popup_state_manager()->popup_state() ==
-         OmniboxPopupState::kFull);
+  if (controller()->popup_state_manager()->popup_state() !=
+      OmniboxPopupState::kFull) {
+    return;
+  }
   views::Widget* widget = presenter()->delegate().GetLocationBarWidget();
   if (widget && widget->IsActive() && location_bar()->IsFocusWithin()) {
     if (!IsReverting()) {

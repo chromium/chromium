@@ -280,6 +280,8 @@ export class OmniboxPopupSearchboxElement extends
           this.onSetFocus_.bind(this)),
       this.popupCallbackRouter_.clearAutocompleteMatches.addListener(
           this.clearAutocompleteMatches.bind(this)),
+      this.popupCallbackRouter_.clearPopup.addListener(
+          this.onClearPopup_.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'selectionchange', this.onSelectionChanged_.bind(this));
@@ -611,10 +613,7 @@ export class OmniboxPopupSearchboxElement extends
 
     // Clear any stale results and close the dropdown on a hard state reset.
     // Clear results here since focusout event may not fire.
-    if (this.result && this.isAutocompleteResultStale(this.result)) {
-      this.result = null;
-      this.dropdownIsVisible = false;
-    }
+    this.clearAutocompleteMatches();
 
     this.isLogicallyFocused_ = state.isFocused;
 
@@ -640,14 +639,13 @@ export class OmniboxPopupSearchboxElement extends
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
     // If zero-prefix suggestions are requested by the new state, initiate
-    // an on-focus autocomplete query. Otherwise, clear any existing matches
-    // so the suggestion dropdown is closed on state resets and tab switches.
+    // an on-focus autocomplete query.
     if (state.queryZps) {
       this.queryAutocomplete(
           state.text, /*preventInlineAutocomplete=*/ false,
           /*isOnFocus=*/ true);
     } else {
-      this.clearAutocompleteMatches();
+      // Prevent stale tracking of queried input across state updates.
       this.lastQueriedInput = state.text;
     }
   }
@@ -675,6 +673,17 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  /**
+   * Called by C++ via `ClearPopup` Mojo IPC when the popup is being hidden.
+   * Clears input text, selection range, and matches before resolving the Mojo
+   * callback to complete the hide handshake.
+   */
+  private async onClearPopup_(): Promise<void> {
+    this.$.input.setInputText('');
+    this.getInputElement().blur();
+    this.clearAutocompleteMatches();
+    await this.updateComplete;
+  }
   /**
    * Resets selection range, blurs input, and clears autocomplete matches when
    * focus is lost to external targets or when clicking outside.

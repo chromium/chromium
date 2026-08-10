@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
@@ -70,6 +71,17 @@ TEST_F(OmniboxPopupHandlerTest, SetFocus) {
   EXPECT_CALL(page_, SetFocus(true));
   handler_->SetFocus(true);
   page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, ClearPopup) {
+  EXPECT_CALL(page_, ClearPopup(testing::_))
+      .WillOnce([](omnibox_popup::mojom::Page::ClearPopupCallback callback) {
+        std::move(callback).Run();
+      });
+  base::test::TestFuture<void> future;
+  handler_->ClearPopup(future.GetCallback());
+  page_.FlushForTesting();
+  EXPECT_TRUE(future.Wait());
 }
 
 TEST_F(OmniboxPopupHandlerTest, ShowContextMenu) {

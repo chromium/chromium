@@ -1462,4 +1462,48 @@ suite('OmniboxPopupSearchboxTest', function() {
      });
    });
  });
+
+ test('HandlesClearPopup', async () => {
+   // Populate autocomplete result to show dropdown.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 123,
+     input: 'test',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Trigger clearPopup callback from Mojo.
+   callbackRouter.clearPopup();
+   await microtasksFinished();
+
+   // Ensure result is null, dropdown is closed, and input text is cleared.
+   assertFalse(searchbox.dropdownIsVisible);
+   assertFalse(!!searchbox.result);
+   assertEquals('', searchbox.$.input.lastInput()?.text ?? '');
+ });
+
+ test('ClearsAutocompleteMatchesOnSetInputState', async () => {
+   // Populate autocomplete result to show dropdown.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: searchbox.activeQueryId,
+     sequenceId: 123,
+     input: 'test',
+     matches: [createSearchMatchForTesting()],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Update input state via Mojo (simulating tab switch / state reset).
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'new tab input',
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   // Ensure matches and dropdown are cleared for the new input state.
+   assertFalse(searchbox.dropdownIsVisible);
+   assertFalse(!!searchbox.result);
+ });
 });
