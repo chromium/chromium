@@ -244,6 +244,16 @@ size_t WebNNContextProviderImpl::GetContextCountForTesting() const {
   return context_impls_.size();
 }
 
+std::vector<std::string_view>
+WebNNContextProviderImpl::GetContextBackendNamesForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  std::vector<std::string_view> backend_names;
+  for (const auto& context_impl : context_impls_) {
+    backend_names.push_back(context_impl->GetBackendName());
+  }
+  return backend_names;
+}
+
 void WebNNContextProviderImpl::BindWebNNServiceIntrospection(
     mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

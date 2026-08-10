@@ -92,6 +92,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void SetDisconnectHandlerForTesting(base::RepeatingClosure handler);
 
   size_t GetContextCountForTesting() const;
+  std::vector<std::string_view> GetContextBackendNamesForTesting() const;
 
   void BindWebNNServiceIntrospection(
       mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver);

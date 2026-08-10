@@ -140,6 +140,16 @@ class WebnnGraphLPMFuzzer {
       return;
     }
 
+    static bool logged_backend = false;
+    if (!logged_backend) {
+      logged_backend = true;
+      for (const auto backend_name :
+           init_globals->webnn_test_environment_->GetContextBackendNames()) {
+        LOG(INFO) << "[WebNN Fuzzer] Created WebNN context with backend: "
+                  << backend_name;
+      }
+    }
+
     webnn_context_remote.Bind(
         std::move(create_context_result->get_success()->context_remote));
 

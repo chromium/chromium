@@ -3185,6 +3185,16 @@ void WebNNGraphImplFuzzerBase::SetUp() {
         std::move(create_context_result->get_success()->context_remote));
     context_properties_ =
         create_context_result->get_success()->context_properties;
+    static bool logged_backend = false;
+    if (!logged_backend) {
+      logged_backend = true;
+      for (const auto backend_name : GetGlobalFuzzEnvironment()
+                                         .GetWebNNTestEnvironment()
+                                         .GetContextBackendNames()) {
+        LOG(INFO) << "[WebNN Fuzzer] Created WebNN context with backend: "
+                  << backend_name;
+      }
+    }
   } else {
     GTEST_SKIP() << "Failed to create WebNN context: "
                  << create_context_result->get_error()->message;

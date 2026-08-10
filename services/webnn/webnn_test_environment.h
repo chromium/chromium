@@ -104,6 +104,10 @@ class WebNNTestEnvironment {
   // resetting remotes to ensure deterministic cleanup.
   void TearDown();
 
+  std::vector<std::string_view> GetContextBackendNames() const {
+    return context_provider_->GetContextBackendNamesForTesting();
+  }
+
  private:
   void OnReceiverDisconnected();
   void OnContextDestroyed();
