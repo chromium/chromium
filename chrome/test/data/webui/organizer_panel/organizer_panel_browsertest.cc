@@ -8,7 +8,14 @@
 
 using OrganizerPanelTest = WebUIMochaBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, App) {
+// TODO(crbug.com/544415102): Re-enable on Mac once shortcut expectation is
+// fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
+#endif
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, MAYBE_App) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
   RunTest("organizer_panel/app_test.js", "mocha.run()");
 }

@@ -6,10 +6,7 @@ import 'chrome://organizer-panel.top-chrome/app.js';
 
 import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// TODO(crbug.com/544415102): Failing.
-// <if expr="not is_macosx">
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// </if>
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('OrganizerPanelAppTest', () => {
@@ -27,8 +24,6 @@ suite('OrganizerPanelAppTest', () => {
     await microtasksFinished();
   });
 
-  // TODO(crbug.com/544415102): Failing.
-  // <if expr="not is_macosx">
   test('renders search field with correct label and shortcut', () => {
     const searchField = app.shadowRoot.querySelector('cr-toolbar-search-field');
     assertTrue(!!searchField);
@@ -39,5 +34,4 @@ suite('OrganizerPanelAppTest', () => {
     assertTrue(!!shortcut);
     assertEquals('Ctrl+Shift+A', shortcut.textContent);
   });
-  // </if>
 });
