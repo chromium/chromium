@@ -19,7 +19,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,19 +86,20 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningPartOnly) {
   EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
 
+// Tests reading from the buffer when data spans both beginning and end parts
+// without wrapping.
 TEST_F(PartialCircularBufferTest, NoWrapBeginningAndEndParts) {
   InitWriteBuffer(false);
   WriteToBuffer(2);
   InitReadBuffer();
 
-  uint8_t output_data[2 * sizeof(kInputData)] = {};
-  EXPECT_EQ(sizeof(output_data), pcb_read_->Read(output_data));
+  std::array<uint8_t, 2 * sizeof(kInputData)> output_data = {};
+  EXPECT_EQ(output_data.size(), pcb_read_->Read(output_data));
 
-  const uint8_t output_ref_data[2 * sizeof(kInputData)] = {
+  constexpr std::array<uint8_t, 2 * sizeof(kInputData)> output_ref_data = {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-  UNSAFE_TODO(
-      EXPECT_EQ(0, memcmp(output_ref_data, output_data, sizeof(output_data))));
+  EXPECT_EQ(output_ref_data, output_data);
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data));
 }
