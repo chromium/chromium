@@ -48,11 +48,24 @@ using ::testing::Not;
 #if !BUILDFLAG(IS_ANDROID)
 class MockTabProvider : public ContextHubPageHandler::TabProvider {
  public:
+  MOCK_METHOD(std::vector<content::WebContents*>, GetTabs, (), (override));
   MOCK_METHOD(std::vector<content::WebContents*>,
-              GetTabs,
-              (content::WebContents*),
+              GetUngroupedTabs,
+              (),
               (override));
-  MOCK_METHOD(void, SwitchToTab, (content::WebContents*, int64_t), (override));
+  MOCK_METHOD(void, SwitchToTab, (int64_t), (override));
+  MOCK_METHOD(bool,
+              ConfirmTabGroups,
+              (base::span<const context_hub::TabGroupEntry>),
+              (override));
+  MOCK_METHOD(void,
+              RemoveGroupFromTabstripIfOpen,
+              (const base::Uuid&),
+              (override));
+  MOCK_METHOD(void,
+              UngroupGroupFromTabstripIfOpen,
+              (const base::Uuid&),
+              (override));
 };
 #endif
 
@@ -831,13 +844,13 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextHubPageHandlerTest, SwitchToTab) {
-  EXPECT_CALL(*mock_tab_provider_, SwitchToTab(_, 42)).Times(1);
+  EXPECT_CALL(*mock_tab_provider_, SwitchToTab(42)).Times(1);
 
   handler_->SwitchToTab(42);
 }
 
 TEST_F(ContextHubPageHandlerTest, GetTabs_NoTabs) {
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabInfoPtr>>
@@ -860,7 +873,7 @@ TEST_F(ContextHubPageHandlerTest, GetTabs_WithTabs) {
     test_tabs.push_back(std::move(tab));
   }
 
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(raw_test_tabs));
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabInfoPtr>>
@@ -872,7 +885,7 @@ TEST_F(ContextHubPageHandlerTest, GetTabs_WithTabs) {
 }
 
 TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
@@ -905,7 +918,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
     test_tabs.push_back(std::move(tab));
   }
 
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(raw_test_tabs));
 
   EXPECT_CALL(
@@ -986,7 +999,7 @@ TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_WithGroups) {
   }
 
   // 1. Group tabs so that service stores tab groups.
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(raw_test_tabs));
 
   EXPECT_CALL(
@@ -1040,7 +1053,7 @@ TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_WithGroups) {
       optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "Hello");
 
   // 3. Call GetExistingTabGroupsAndChats and verify output.
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(raw_test_tabs));
 
   base::test::TestFuture<
@@ -1069,7 +1082,7 @@ TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_WithGroups) {
 }
 
 TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_NoGroups) {
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetUngroupedTabs())
       .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
   base::test::TestFuture<
@@ -1099,7 +1112,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateTabBasedTodos) {
   raw_test_tabs.push_back(tab.get());
   test_tabs.push_back(std::move(tab));
 
-  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+  EXPECT_CALL(*mock_tab_provider_, GetTabs())
       .WillOnce(testing::Return(raw_test_tabs));
 
   EXPECT_CALL(mock_page_, OnAutoTodosChanged(_)).Times(0);
