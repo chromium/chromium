@@ -377,21 +377,21 @@ message ContentAttributes {
 
 // The geometry of the content, in the page coordinate system.
 // Next ID: 9
-// NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
+// NOTE: If `visible_bounding_box` is empty, i.e., the content is offscreen and
 // it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
 // for details.
 //
 // Only populated for ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
 message Geometry {
   // The bounding box of the content node mapped to the viewport ignoring any
-  // ancestor clips (including the viewport clip). This can be thought of as the
+  // ancestor clips (including the viewport clip). This can be thought of as
   // where the element would be relative to the viewport if it "popped out" of
   // the page and was painted on top of all the content. A few use-case for this
   // are:
   //
   // - If empty, this implies the node is not hit-testable, even once
   //   scrolled onscreen.
-  // - The rect's origin indicates whether whether it starts above or below the
+  // - The rect's origin indicates whether it starts above or below the
   //   viewport. A negative y-coordinate means the node's content starts above
   //   the viewport.
   BoundingRect outer_bounding_box = 1 [features = { field_presence: EXPLICIT }];

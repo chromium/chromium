@@ -47,6 +47,9 @@ message ContextHubRequest {
   // The conversation history context representing prior user queries and model
   // responses.
   repeated ChatHistoryTurn chat_history = 5;
+
+  // The request for the auto todos deduplication feature.
+  AutoTodosDeduplicationRequest auto_todos_deduplication_request = 6 [features = { field_presence: EXPLICIT }];
 }
 
 message EntryItem {
@@ -100,6 +103,63 @@ message ChatHistoryTurn {
   }
 }
 
+// Holds the input data for the auto todos deduplication feature.
+message AutoTodosDeduplicationRequest {
+  // The existing todos already stored for the user, each populated with a
+  // unique identifier in `id` (e.g. "todo_1", "todo_2").
+  repeated ContextHubAutoTodoItem existing_todos = 1;
+
+  // The newly extracted candidate todos to deduplicate against existing todos,
+  // each populated with a temporary candidate identifier in `id` (e.g.
+  // "new_todo_1").
+  repeated ContextHubAutoTodoItem new_todos = 2;
+}
+
+message ContextHubAutoTodoItem {
+  string title = 1 [features = { field_presence: EXPLICIT }];
+
+  string description = 2 [features = { field_presence: EXPLICIT }];
+
+  string actionable_url = 3 [features = { field_presence: EXPLICIT }];
+
+  float importance_score = 4 [features = { field_presence: EXPLICIT }];
+
+  Status status = 5 [features = { field_presence: EXPLICIT }];
+
+  // In request:
+  //   - For existing todos: the cached ID of the todo (e.g. "todo_1").
+  //   - For new candidate todos: a temporary candidate ID (e.g. "new_todo_1").
+  // In response:
+  //   - For modified existing todos: populated with the existing todo's ID.
+  //   - For newly created todos: omitted or empty string.
+  string id = 6 [features = { field_presence: EXPLICIT }];
+
+  // Provenance tracking of which input todos contributed to this item.
+  //
+  // In response:
+  //   Lists all input `id`s (from `existing_todos` and/or `new_todos`) that
+  //   were merged into this item (e.g. ["todo_1", "new_todo_1"] or
+  //   ["new_todo_2"]).
+  //
+  //   Purpose & Usage:
+  //   To minimize LLM prompt token overhead and prevent URL hallucination,
+  //   full source reference metadata (such as Gmail email URLs, subjects, and
+  //   Photos URLs) is kept in the caller service CMS and mapped to these IDs.
+  //   The caller uses `todo_ids_merged` to retrieve and combine the underlying
+  //   source references of all merged input todos onto the final output item.
+  repeated string todo_ids_mergeds = 7;
+
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+
+    STATUS_ACTIVE = 1;
+
+    STATUS_COMPLETED = 2;
+
+    STATUS_DISMISSED = 3;
+  }
+}
+
 // Holds the output data for the context hub feature.
 message ContextHubResponse {
   oneof feature_response {
@@ -113,6 +173,10 @@ message ContextHubResponse {
     // The response for a request of type
     // CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS.
     BrowserBasedTodosResponse browser_based_todos_response = 3;
+
+    // The response for a request of type
+    // CONTEXT_HUB_REQUEST_TYPE_AUTO_TODOS_DEDUPLICATION.
+    AutoTodosDeduplicationResponse auto_todos_deduplication_response = 4;
   }
 }
 
@@ -165,6 +229,19 @@ message BrowserBasedTodosResponse {
   }
 }
 
+// Holds the output data for a request of type
+// CONTEXT_HUB_REQUEST_TYPE_AUTO_TODOS_DEDUPLICATION.
+message AutoTodosDeduplicationResponse {
+  // The delta list of deduplicated todos containing ONLY:
+  // 1. Modified existing todos (with `id` set to the existing todo ID and
+  //    `matched_todo_ids` listing all merged existing and new IDs).
+  // 2. Newly created todos (with `id` omitted/empty and `matched_todo_ids`
+  //    listing the contributing new IDs).
+  //
+  // Unchanged existing todos are omitted from this response.
+  repeated ContextHubAutoTodoItem deduplicated_todos = 1;
+}
+
 enum ContextHubRequestType {
   CONTEXT_HUB_REQUEST_TYPE_UNSPECIFIED = 0;
 
@@ -176,6 +253,9 @@ enum ContextHubRequestType {
 
   // For the generation of browser-based todos.
   CONTEXT_HUB_REQUEST_TYPE_BROWSER_BASED_TODOS = 3;
+
+  // For the deduplication of auto todos.
+  CONTEXT_HUB_REQUEST_TYPE_AUTO_TODOS_DEDUPLICATION = 4;
 }
 
 // Type of entry in the memory bank.
