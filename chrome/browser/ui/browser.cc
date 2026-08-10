@@ -55,7 +55,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -135,7 +134,6 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
-#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -428,7 +426,7 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
-  if (!is_delete_scheduled_) {
+  if (!IsDeleteScheduled()) {
     // Guarantee the Browser has performed the necessary cleanup in the
     // `OnWindowClosing()` lifecycle hook. This may not be invoked during
     // Browser shutdown specifically in cases where clients directly reset
@@ -490,11 +488,6 @@ base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, OnBeforeUnload handling:
 
-void Browser::NotifyWindowCloseCancelled(
-    BrowserWindowInterface::ClosingStatus status) {
-  browser_close_cancelled_callback_list_.Notify(this, status);
-}
-
 std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
   return GetStatusBubbles();
 }
@@ -508,7 +501,7 @@ const Profile* Browser::GetProfile() const {
 }
 
 bool Browser::IsDeleteScheduled() const {
-  return is_delete_scheduled_;
+  return UnloadController::From(this)->is_delete_scheduled();
 }
 
 void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
@@ -536,12 +529,14 @@ bool Browser::IsTabStripVisible() {
 
 base::CallbackListSubscription Browser::RegisterBrowserDidClose(
     BrowserDidCloseCallback callback) {
-  return browser_did_close_callback_list_.Add(std::move(callback));
+  return UnloadController::From(this)->RegisterBrowserDidClose(
+      std::move(callback));
 }
 
 base::CallbackListSubscription Browser::RegisterBrowserCloseCancelled(
     BrowserCloseCancelledCallback callback) {
-  return browser_close_cancelled_callback_list_.Add(std::move(callback));
+  return UnloadController::From(this)->RegisterBrowserCloseCancelled(
+      std::move(callback));
 }
 
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
@@ -659,43 +654,6 @@ const DesktopBrowserWindowCapabilities* Browser::capabilities() const {
   return DesktopBrowserWindowCapabilities::From(this);
 }
 
-void Browser::OnWindowCloseComplete() {
-  // If there are no tabs, then a task will be scheduled (by views) to delete
-  // this Browser.
-  is_delete_scheduled_ = true;
-
-  // At this point the browser has successfully closed and is scheduled for
-  // deletion.
-  browser_did_close_callback_list_.Notify(this);
-
-  // Application should shutdown on last window close if the user is
-  // explicitly trying to quit, or if there is nothing keeping the browser
-  // alive (such as AppController on the Mac, or BackgroundContentsService for
-  // background pages).
-  const bool should_quit_if_last_browser =
-      browser_shutdown::IsTryingToQuit() ||
-      KeepAliveRegistry::GetInstance()->IsKeepingAliveOnlyByBrowserOrigin();
-
-  // Below will not consider browsers for which delete has already been
-  // scheduled.
-  const bool is_last_browser =
-      !GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-
-  if (should_quit_if_last_browser && is_last_browser) {
-    browser_shutdown::OnShutdownStarting(
-        browser_shutdown::ShutdownType::kWindowClose);
-  }
-
-  // Once a Browser has successfully closed, client code expects control to
-  // return to the run loop before the instance is finally deleted. To
-  // maintain existing expectations schedule the delete asynchronously here.
-  // TODO(crbug.com/413168662): Explore synchronously destroying the browser
-  // instead.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
-                                weak_factory_.GetWeakPtr()));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, PageNavigator implementation:
 
@@ -802,7 +760,7 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   // scheduled (WebContents is leaked, unload handlers aren't checked...).
   // TODO(crbug.com/40064092): this should check that `is_delete_scheduled_` is
   // false.
-  DUMP_WILL_BE_CHECK(!is_delete_scheduled_);
+  DUMP_WILL_BE_CHECK(!IsDeleteScheduled());
 
   SetAsDelegate(contents, true);
 

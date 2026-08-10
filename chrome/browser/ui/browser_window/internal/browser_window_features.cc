@@ -259,6 +259,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // dependency ordering takes precedence and exceptions are called out with
   // `// Must be after X.` comments):
 
+  // UnloadController must be created first / destroyed last to ensure
+  // features are able to register / de-register close callbacks.
+  unload_controller_ = std::make_unique<UnloadController>(browser);
+
   if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
       features::kGlicActorUiBorderGlow.Get()) {
     actor_border_view_controller_ =
@@ -532,8 +536,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   translate_bubble_controller_ =
       GetUserDataFactory().CreateInstance<TranslateBubbleController>(
           *browser, browser, browser_actions_->root_action_item());
-
-  unload_controller_ = std::make_unique<UnloadController>(browser);
 
   user_education_ =
       GetUserDataFactory().CreateInstance<BrowserUserEducationInterfaceImpl>(
