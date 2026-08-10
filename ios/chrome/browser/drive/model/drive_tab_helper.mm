@@ -11,21 +11,13 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/task/thread_pool.h"
-#import "components/enterprise/common/proto/connectors.pb.h"
-#import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
-#import "components/enterprise/connectors/core/common.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -180,44 +172,16 @@ void DriveTabHelper::RemoveComplete(bool remove_completed) {
 }
 
 void DriveTabHelper::ProcessCompleteDownloadTask(web::DownloadTask* task) {
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  const GURL& url = task->GetRedirectedUrl();
-  std::optional<enterprise_connectors::AnalysisSettings> settings =
-      std::nullopt;
-  enterprise_connectors::ConnectorsService* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
-  if (connectors_service) {
-    settings = connectors_service->GetAnalysisSettings(
-        url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  }
+  enterprise_connectors::FileDownloadScanningResources resources =
+      enterprise_connectors::PrepareCloudContentScanning(
+          web_state_, task->GetRedirectedUrl(), task->GetResponsePath(),
+          enterprise_connectors::TriggerType::kSavePrompt,
+          base::BindOnce(&DriveTabHelper::MaybeUploadDownloadToDrive,
+                         weak_ptr_factory_.GetWeakPtr(), task));
+  files_request_handler_ = std::move(resources.files_request_handler);
+  content_analysis_info_ = std::move(resources.content_analysis_info);
 
-  content_analysis_info_ =
-      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
-          url,
-          std::move(settings).value_or(
-              enterprise_connectors::AnalysisSettings()),
-          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
-          *web_state_);
-
-  auto files_request_handler_delegate =
-      std::make_unique<enterprise_connectors::FilesRequestHandlerIOS>(
-          profile, task->GetResponsePath(),
-          base::BindOnce(
-              &enterprise_connectors::HandleScanDecision,
-              web_state_->GetWeakPtr(),
-              enterprise_connectors::TriggerType::kSavePrompt,
-              base::BindOnce(&DriveTabHelper::MaybeUploadDownloadToDrive,
-                             weak_ptr_factory_.GetWeakPtr(), task)));
-
-  // Send the download file for enterprise DLP download content scanning.
-  files_request_handler_ = std::make_unique<
-      enterprise_connectors::FilesRequestHandlerBase>(
-      content_analysis_info_.get(),
-      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
-          profile),
-      url, "", enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-      std::move(files_request_handler_delegate));
+  // Upload the file for content scanning.
   files_request_handler_->UploadData();
 }
 

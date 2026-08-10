@@ -256,12 +256,12 @@ TEST_F(CloudContentScanningHelperTest, CloseTabWithPendingDecision) {
   EXPECT_FALSE(future.Get());
 }
 
-// Tests that StartCloudContentScanning constructs
+// Tests that PrepareCloudContentScanning constructs
 // `FileDownloadScanningResources` correctly.
-TEST_F(CloudContentScanningHelperTest, StartCloudContentScanning) {
+TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanning) {
   base::test::TestFuture<bool> future;
   base::FilePath file_path(FILE_PATH_LITERAL("/path/to/fake/file.txt"));
-  FileDownloadScanningResources resources = StartCloudContentScanning(
+  FileDownloadScanningResources resources = PrepareCloudContentScanning(
       web_state_, GURL("https://example.com/download"), file_path,
       TriggerType::kSavePrompt, future.GetCallback());
 

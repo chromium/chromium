@@ -12,10 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/enterprise/common/proto/connectors.pb.h"
-#import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
-#import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
@@ -30,12 +27,7 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -392,45 +384,16 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
     return;
   }
 
-  CHECK(web_state_);
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-
-  const GURL& url = task_->GetRedirectedUrl();
-  std::optional<enterprise_connectors::AnalysisSettings> settings =
-      std::nullopt;
-
-  enterprise_connectors::ConnectorsService* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
-  if (connectors_service) {
-    settings = connectors_service->GetAnalysisSettings(
-        url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
-  }
-
-  content_analysis_info_ =
-      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
-          url,
-          std::move(settings).value_or(
-              enterprise_connectors::AnalysisSettings()),
-          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
-          *web_state_);
-  auto files_request_handler_delegate = std::make_unique<
-      enterprise_connectors::FilesRequestHandlerIOS>(
-      profile, task_->GetResponsePath(),
-      base::BindOnce(
-          &enterprise_connectors::HandleScanDecision, web_state_->GetWeakPtr(),
+  enterprise_connectors::FileDownloadScanningResources resources =
+      enterprise_connectors::PrepareCloudContentScanning(
+          web_state_, task_->GetRedirectedUrl(), task_->GetResponsePath(),
           enterprise_connectors::TriggerType::kSavePrompt,
           base::BindOnce(
               &DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory,
-              weak_ptr_factory_.GetWeakPtr(), task_->GetWeakPtr())));
+              weak_ptr_factory_.GetWeakPtr(), task_->GetWeakPtr()));
+  files_request_handler_ = std::move(resources.files_request_handler);
+  content_analysis_info_ = std::move(resources.content_analysis_info);
 
-  // Send the download file for enterprise DLP download content scanning.
-  files_request_handler_ = std::make_unique<
-      enterprise_connectors::FilesRequestHandlerBase>(
-      content_analysis_info_.get(),
-      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
-          profile),
-      url, "", enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-      std::move(files_request_handler_delegate));
+  // Upload the file for content scanning.
   files_request_handler_->UploadData();
 }

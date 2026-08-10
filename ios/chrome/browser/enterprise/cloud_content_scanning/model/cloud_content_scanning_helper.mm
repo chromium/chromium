@@ -297,7 +297,7 @@ FileDownloadScanningResources::FileDownloadScanningResources(
 FileDownloadScanningResources& FileDownloadScanningResources::operator=(
     FileDownloadScanningResources&&) = default;
 
-FileDownloadScanningResources StartCloudContentScanning(
+FileDownloadScanningResources PrepareCloudContentScanning(
     web::WebState* web_state,
     const GURL& url,
     const base::FilePath& file_path,
@@ -326,12 +326,11 @@ FileDownloadScanningResources StartCloudContentScanning(
           base::BindOnce(&HandleScanDecision, web_state->GetWeakPtr(),
                          trigger_type, std::move(download_proceed)));
 
-  // Send the download file for enterprise DLP download content scanning.
+  // Prepare the filesRequestHandler that uploads the file for scanning.
   auto files_request_handler = std::make_unique<FilesRequestHandlerBase>(
       content_analysis_info.get(),
       IOSCloudBinaryUploadServiceFactory::GetForProfile(profile), url, "",
       DeepScanAccessPoint::DOWNLOAD, std::move(files_request_handler_delegate));
-  files_request_handler->UploadData();
 
   FileDownloadScanningResources resources;
   resources.content_analysis_info = std::move(content_analysis_info);

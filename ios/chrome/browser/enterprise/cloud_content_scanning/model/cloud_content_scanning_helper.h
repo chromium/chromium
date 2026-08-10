@@ -51,10 +51,10 @@ void HandleScanDecision(base::WeakPtr<web::WebState> web_state,
                         base::OnceCallback<void(bool)> download_proceed,
                         RequestHandlerResult result);
 
-// Starts the file download scanning process for a file.
+// Prepares the file download scanning process for a file.
 // Returns a `FileDownloadScanningResources` object that must be kept alive by
 // the caller while the scanning is in progress.
-FileDownloadScanningResources StartCloudContentScanning(
+FileDownloadScanningResources PrepareCloudContentScanning(
     web::WebState* web_state,
     const GURL& url,
     const base::FilePath& file_path,
