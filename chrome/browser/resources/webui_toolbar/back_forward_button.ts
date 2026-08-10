@@ -15,7 +15,7 @@ import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
-import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
+import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
 const BackForwardButtonElementBase =
     HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));
@@ -47,6 +47,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       state: {type: Object},
       leadingMargin: {type: Number},
       touchUi: {type: Boolean},
+      glowUpEnabled: {type: Boolean},
     };
   }
 
@@ -58,6 +59,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   };
   accessor leadingMargin: number = 0;
   accessor touchUi: boolean = false;
+  accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
 
   private manualRippleTriggered_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -86,6 +88,9 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       this.browserProxy_.browserControlsHandler.back(flags);
     } else {
       this.browserProxy_.browserControlsHandler.forward(flags);
+    }
+    if (this.glowUpEnabled) {
+      playIconAnimation(this.$.button);
     }
   }
 
@@ -166,6 +171,11 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
   }
 
   protected getIronIcon_(): string {
+    if (this.glowUpEnabled) {
+      return this.direction === 'back' ? 'webui-toolbar:back_arrow_glow_up' :
+                                         'webui-toolbar:forward_arrow_glow_up';
+    }
+
     if (this.direction === 'back') {
       if (roundedIconsEnabled()) {
         return 'webui-toolbar:arrow_back';

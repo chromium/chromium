@@ -26,9 +26,12 @@ export function getHtml(this: BackForwardButtonElement) {
     @pointerenter="${this.onPointerenter_}"
     @contextmenu="${this.pressHandler_.onContextmenu}"
     @click="${this.onClick_}">
+  <!-- Disable standard ink ripple when Glow Up is enabled to avoid visual
+    clashing with the interactive SMIL icon animation and glow styling. -->
   <cr-icon-button id="button"
       iron-icon="${this.getIronIcon_()}"
       ?disabled="${!this.state.enabled}"
+      ?noink="${this.glowUpEnabled}"
       aria-label="${this.getAriaLabel_()}"
       title="${this.getTooltip_()}"
       ?is-menu-open="${this.state.isContextMenuVisible}">

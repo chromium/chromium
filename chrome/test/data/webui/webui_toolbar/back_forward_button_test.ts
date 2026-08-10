@@ -150,7 +150,9 @@ suite('BackForwardButtonTest', function() {
     }));
     assertTrue(button.hasRipple());
     assertTrue(downActionCalled);
-    assertEquals(1, ripple.shadowRoot.querySelectorAll('.ripple').length);
+    assertEquals(
+        backForwardButton.glowUpEnabled ? 0 : 1,
+        ripple.shadowRoot.querySelectorAll('.ripple').length);
 
     buttonWrapper.dispatchEvent(new PointerEvent('pointerup', {
       button: 0,
