@@ -63,7 +63,7 @@ DOMUint8Array* ConvertUnsignedDataToUint8Array(
            String::Number(unsigned_data[i]), ") is greater than 0xFF."}));
       return nullptr;
     }
-    array_data[i] = unsigned_data[i];
+    array_data[i] = static_cast<uint8_t>(unsigned_data[i]);
   }
   return array;
 }
@@ -157,21 +157,22 @@ class MessageValidator {
   }
 
  private:
-  bool IsEndOfData() const { return offset_ >= data_.size(); }
-  bool IsSysex() const { return data_[offset_] == 0xf0; }
-  bool IsSystemMessage() const { return data_[offset_] >= 0xf0; }
-  bool IsEndOfSysex() const { return data_[offset_] == 0xf7; }
-  bool IsRealTimeMessage() const { return data_[offset_] >= 0xf8; }
-  bool IsStatusByte() const { return data_[offset_] & 0x80; }
-  bool IsReservedStatusByte() const {
+  constexpr bool IsEndOfData() const { return offset_ >= data_.size(); }
+  constexpr bool IsSysex() const { return data_[offset_] == 0xf0; }
+  constexpr bool IsSystemMessage() const { return data_[offset_] >= 0xf0; }
+  constexpr bool IsEndOfSysex() const { return data_[offset_] == 0xf7; }
+  constexpr bool IsRealTimeMessage() const { return data_[offset_] >= 0xf8; }
+  constexpr bool IsStatusByte() const { return data_[offset_] & 0x80; }
+  constexpr bool IsReservedStatusByte() const {
     return data_[offset_] == 0xf4 || data_[offset_] == 0xf5 ||
            data_[offset_] == 0xf9 || data_[offset_] == 0xfd;
   }
 
   bool AcceptRealTimeMessages() {
     for (; !IsEndOfData(); offset_++) {
-      if (IsRealTimeMessage() && !IsReservedStatusByte())
+      if (IsRealTimeMessage() && !IsReservedStatusByte()) {
         continue;
+      }
       return true;
     }
     return false;
@@ -180,16 +181,19 @@ class MessageValidator {
   bool AcceptCurrentSysex() {
     DCHECK(IsSysex());
     for (offset_++; !IsEndOfData(); offset_++) {
-      if (IsReservedStatusByte())
+      if (IsReservedStatusByte()) {
         return false;
-      if (IsRealTimeMessage())
+      }
+      if (IsRealTimeMessage()) {
         continue;
+      }
       if (IsEndOfSysex()) {
         offset_++;
         return true;
       }
-      if (IsStatusByte())
+      if (IsStatusByte()) {
         return false;
+      }
     }
     return false;
   }
@@ -209,15 +213,19 @@ class MessageValidator {
                         : kChannelMessageLength[(data_[offset_] >> 4) - 8];
     offset_++;
     DCHECK_GT(length, 0UL);
-    if (length == 1)
+    if (length == 1) {
       return true;
+    }
     for (size_t count = 1; !IsEndOfData(); offset_++) {
-      if (IsReservedStatusByte())
+      if (IsReservedStatusByte()) {
         return false;
-      if (IsRealTimeMessage())
+      }
+      if (IsRealTimeMessage()) {
         continue;
-      if (IsStatusByte())
+      }
+      if (IsStatusByte()) {
         return false;
+      }
       if (++count == length) {
         offset_++;
         return true;
@@ -260,8 +268,9 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
                       double timestamp_in_milliseconds,
                       ExceptionState& exception_state) {
   ExecutionContext* context = GetExecutionContext();
-  if (!context)
+  if (!context) {
     return;
+  }
 
   base::TimeTicks timestamp;
   if (timestamp_in_milliseconds == 0.0) {
@@ -276,8 +285,9 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
 void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
                       double timestamp_in_milliseconds,
                       ExceptionState& exception_state) {
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   DOMUint8Array* array =
       ConvertUnsignedDataToUint8Array(unsigned_data, exception_state);
@@ -292,8 +302,9 @@ void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
 
 void MIDIOutput::send(NotShared<DOMUint8Array> data,
                       ExceptionState& exception_state) {
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   DCHECK(data);
   SendInternal(data.Get(), base::TimeTicks::Now(), exception_state);
@@ -301,8 +312,9 @@ void MIDIOutput::send(NotShared<DOMUint8Array> data,
 
 void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
                       ExceptionState& exception_state) {
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   DOMUint8Array* array =
       ConvertUnsignedDataToUint8Array(unsigned_data, exception_state);
@@ -315,8 +327,9 @@ void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
 }
 
 void MIDIOutput::DidOpen(bool opened) {
-  if (!opened)
+  if (!opened) {
     pending_data_.clear();
+  }
 
   HeapVector<std::pair<Member<DOMUint8Array>, base::TimeTicks>> queued_data;
   queued_data.swap(pending_data_);
@@ -345,8 +358,9 @@ void MIDIOutput::SendInternal(DOMUint8Array* array,
   open();
 
   if (!MessageValidator::Validate(array, exception_state,
-                                  midiAccess()->sysexEnabled()))
+                                  midiAccess()->sysexEnabled())) {
     return;
+  }
 
   if (IsOpening()) {
     pending_data_.emplace_back(array, timestamp);

@@ -51,7 +51,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<InterfaceType> {
     return false;
   }
 
-  // Note: This template class relies on the fact that m_map.m_entries will
+  // Note: This template class relies on the fact that entries_ will
   // never be modified once it is created.
   class MapIterationSource final
       : public PairSyncIterable<InterfaceType>::IterationSource {

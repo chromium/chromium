@@ -127,8 +127,8 @@ class MIDIAccess final : public EventTarget,
 
  private:
   Member<MIDIDispatcher> dispatcher_;
-  bool sysex_enabled_;
-  bool has_pending_activity_;
+  bool sysex_enabled_ = false;
+  bool has_pending_activity_ = false;
   HeapVector<Member<MIDIInput>> inputs_;
   HeapVector<Member<MIDIOutput>> outputs_;
 };

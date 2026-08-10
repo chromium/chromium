@@ -51,9 +51,27 @@ using midi::mojom::PortState;
 // Since "open" status is separately managed per MIDIAccess instance, we do not
 // expose service level PortState directly.
 constexpr PortState ToDeviceState(PortState state) {
-  if (state == PortState::OPENED)
+  if (state == PortState::OPENED) {
     return PortState::CONNECTED;
+  }
   return state;
+}
+
+template <typename MapType, typename PortType>
+MapType* CreatePortMap(const HeapVector<Member<PortType>>& port_list) {
+  HeapVector<Member<PortType>> ports;
+  HashSet<String> ids;
+  for (PortType* port : port_list) {
+    if (port->GetState() != PortState::DISCONNECTED) {
+      ports.push_back(port);
+      ids.insert(port->id());
+    }
+  }
+  if (ports.size() != ids.size()) {
+    // There is id duplication that violates the spec.
+    ports.clear();
+  }
+  return MakeGarbageCollected<MapType>(ports);
 }
 
 }  // namespace
@@ -66,8 +84,7 @@ MIDIAccess::MIDIAccess(
     : ActiveScriptWrappable<MIDIAccess>({}),
       ExecutionContextLifecycleObserver(execution_context),
       dispatcher_(dispatcher),
-      sysex_enabled_(sysex_enabled),
-      has_pending_activity_(false) {
+      sysex_enabled_(sysex_enabled) {
   dispatcher_->SetClient(this);
   for (const auto& port : ports) {
     if (port.type == MIDIPortType::kInput) {
@@ -99,35 +116,11 @@ bool MIDIAccess::HasPendingActivity() const {
 }
 
 MIDIInputMap* MIDIAccess::inputs() const {
-  HeapVector<Member<MIDIInput>> inputs;
-  HashSet<String> ids;
-  for (MIDIInput* input : inputs_) {
-    if (input->GetState() != PortState::DISCONNECTED) {
-      inputs.push_back(input);
-      ids.insert(input->id());
-    }
-  }
-  if (inputs.size() != ids.size()) {
-    // There is id duplication that violates the spec.
-    inputs.clear();
-  }
-  return MakeGarbageCollected<MIDIInputMap>(inputs);
+  return CreatePortMap<MIDIInputMap>(inputs_);
 }
 
 MIDIOutputMap* MIDIAccess::outputs() const {
-  HeapVector<Member<MIDIOutput>> outputs;
-  HashSet<String> ids;
-  for (MIDIOutput* output : outputs_) {
-    if (output->GetState() != PortState::DISCONNECTED) {
-      outputs.push_back(output);
-      ids.insert(output->id());
-    }
-  }
-  if (outputs.size() != ids.size()) {
-    // There is id duplication that violates the spec.
-    outputs.clear();
-  }
-  return MakeGarbageCollected<MIDIOutputMap>(outputs);
+  return CreatePortMap<MIDIOutputMap>(outputs_);
 }
 
 void MIDIAccess::DidAddInputPort(const String& id,
@@ -157,30 +150,35 @@ void MIDIAccess::DidAddOutputPort(const String& id,
 
 void MIDIAccess::DidSetInputPortState(unsigned port_index, PortState state) {
   DCHECK(IsMainThread());
-  if (port_index >= inputs_.size())
+  if (port_index >= inputs_.size()) {
     return;
+  }
 
   PortState device_state = ToDeviceState(state);
-  if (inputs_[port_index]->GetState() != device_state)
+  if (inputs_[port_index]->GetState() != device_state) {
     inputs_[port_index]->SetState(device_state);
+  }
 }
 
 void MIDIAccess::DidSetOutputPortState(unsigned port_index, PortState state) {
   DCHECK(IsMainThread());
-  if (port_index >= outputs_.size())
+  if (port_index >= outputs_.size()) {
     return;
+  }
 
   PortState device_state = ToDeviceState(state);
-  if (outputs_[port_index]->GetState() != device_state)
+  if (outputs_[port_index]->GetState() != device_state) {
     outputs_[port_index]->SetState(device_state);
+  }
 }
 
 void MIDIAccess::DidReceiveMIDIData(unsigned port_index,
                                     base::span<const uint8_t> data,
                                     base::TimeTicks time_stamp) {
   DCHECK(IsMainThread());
-  if (port_index >= inputs_.size())
+  if (port_index >= inputs_.size()) {
     return;
+  }
 
   inputs_[port_index]->DidReceiveMIDIData(port_index, data, time_stamp);
 }
@@ -189,8 +187,7 @@ void MIDIAccess::SendMIDIData(unsigned port_index,
                               base::span<const uint8_t> data,
                               base::TimeTicks time_stamp) {
   DCHECK(!time_stamp.is_null());
-  if (!GetExecutionContext() || !data.data() || data.empty() ||
-      port_index >= outputs_.size()) {
+  if (!GetExecutionContext() || data.empty() || port_index >= outputs_.size()) {
     return;
   }
 

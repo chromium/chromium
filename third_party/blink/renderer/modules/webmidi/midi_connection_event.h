@@ -51,7 +51,7 @@ class MIDIConnectionEvent final : public Event {
       const MIDIConnectionEventInit* initializer) {
     return MakeGarbageCollected<MIDIConnectionEvent>(type, initializer);
   }
-  MIDIConnectionEvent(MIDIPort* port)
+  explicit MIDIConnectionEvent(MIDIPort* port)
       : Event(event_type_names::kStatechange, Bubbles::kNo, Cancelable::kNo),
         port_(port) {}
   MIDIConnectionEvent(const AtomicString&, const MIDIConnectionEventInit*);

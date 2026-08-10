@@ -116,7 +116,7 @@ class MIDIPort : public EventTarget,
   String version_;
   Member<MIDIAccess> access_;
   midi::mojom::PortState state_;
-  MIDIPortConnectionState connection_;
+  MIDIPortConnectionState connection_ = MIDIPortConnectionState::kClosed;
   unsigned running_open_count_ = 0;
 };
 

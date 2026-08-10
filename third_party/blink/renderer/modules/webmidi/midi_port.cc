@@ -62,11 +62,10 @@ MIDIPort::MIDIPort(MIDIAccess* access,
       type_(type),
       version_(version),
       access_(access),
-      connection_(MIDIPortConnectionState::kClosed) {
+      state_(state) {
   DCHECK(access);
   DCHECK(type == MIDIPortType::kInput || type == MIDIPortType::kOutput);
   DCHECK(state == PortState::DISCONNECTED || state == PortState::CONNECTED);
-  state_ = state;
 }
 
 V8MIDIPortConnectionState MIDIPort::connection() const {
@@ -90,8 +89,9 @@ V8MIDIPortType MIDIPort::type() const {
 }
 
 ScriptPromise<MIDIPort> MIDIPort::open(ScriptState* script_state) {
-  if (connection_ == MIDIPortConnectionState::kOpen)
+  if (connection_ == MIDIPortConnectionState::kOpen) {
     return Accept(script_state);
+  }
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<MIDIPort>>(script_state);
@@ -105,8 +105,9 @@ ScriptPromise<MIDIPort> MIDIPort::open(ScriptState* script_state) {
 }
 
 void MIDIPort::open() {
-  if (connection_ == MIDIPortConnectionState::kOpen || running_open_count_)
+  if (connection_ == MIDIPortConnectionState::kOpen || running_open_count_) {
     return;
+  }
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE, BindOnce(&MIDIPort::OpenAsynchronously,
@@ -115,8 +116,9 @@ void MIDIPort::open() {
 }
 
 ScriptPromise<MIDIPort> MIDIPort::close(ScriptState* script_state) {
-  if (connection_ == MIDIPortConnectionState::kClosed)
+  if (connection_ == MIDIPortConnectionState::kClosed) {
     return Accept(script_state);
+  }
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<MIDIPort>>(script_state);
@@ -186,8 +188,9 @@ void MIDIPort::Trace(Visitor* visitor) const {
 void MIDIPort::OpenAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kMIDIPortOpen);
   DCHECK_NE(0u, running_open_count_);
@@ -206,15 +209,17 @@ void MIDIPort::OpenAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
     case PortState::OPENED:
       NOTREACHED();
   }
-  if (resolver)
+  if (resolver) {
     resolver->Resolve(this);
+  }
 }
 
 void MIDIPort::CloseAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   DCHECK(resolver);
   // TODO(toyoshim): Do clear() operation on MIDIOutput.
@@ -230,8 +235,9 @@ ScriptPromise<MIDIPort> MIDIPort::Accept(ScriptState* script_state) {
 void MIDIPort::SetStates(PortState state, MIDIPortConnectionState connection) {
   DCHECK(state != PortState::DISCONNECTED ||
          connection != MIDIPortConnectionState::kOpen);
-  if (state_ == state && connection_ == connection)
+  if (state_ == state && connection_ == connection) {
     return;
+  }
   state_ = state;
   connection_ = connection;
   DispatchEvent(*MIDIConnectionEvent::Create(this));
