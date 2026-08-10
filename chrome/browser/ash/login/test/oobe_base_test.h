@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -17,6 +18,10 @@
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace base {
+class ScopedPathOverride;
+}  // namespace base
 
 namespace ash {
 
@@ -91,6 +96,9 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
       nullptr;
 
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<base::ScopedPathOverride> token_path_override_;
 };
 
 }  // namespace ash
