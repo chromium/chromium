@@ -78,17 +78,17 @@ public class EntitySuggestionProcessorUnitTest {
     private static final GURL WEB_URL_2 = JUnitTestGURLs.URL_2;
     private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock Bitmap mBitmap;
-    private @Mock BookmarkState mBookmarkState;
-    private @Mock UrlBarEditingTextStateProvider mTextProvider;
-    private @Mock AutocompleteInput mInput;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Mock OmniboxActionDelegate mActionDelegate;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private Bitmap mBitmap;
+    @Mock private BookmarkState mBookmarkState;
+    @Mock private UrlBarEditingTextStateProvider mTextProvider;
+    @Mock private AutocompleteInput mInput;
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     private Context mContext;
     private EntitySuggestionProcessor mProcessor;

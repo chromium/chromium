@@ -35,9 +35,9 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BottomSheetRectProviderUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private @Mock View mAnchorView;
+    @Mock private View mAnchorView;
     private Activity mActivity;
     private BottomSheetRectProvider mProvider;
 

@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionLayoutUnitTest {
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final Context mContext = ContextUtils.getApplicationContext();
     private final View mDecorationView = new View(mContext);

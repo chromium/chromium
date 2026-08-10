@@ -83,16 +83,16 @@ public class AnswerSuggestionProcessorUnitTest {
         AnswerType.ANSWER_TYPE_CURRENCY
     };
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock AutocompleteInput mInput;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Mock BookmarkState mBookmarkState;
-    private @Mock OmniboxActionDelegate mActionDelegate;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private UrlBarEditingTextStateProvider mUrlStateProvider;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private AutocompleteInput mInput;
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private BookmarkState mBookmarkState;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;

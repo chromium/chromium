@@ -45,12 +45,12 @@ import org.chromium.url.GURL;
 public class FuseboxSessionStateUnitTest {
     private static final GURL SAMPLE_PAGE_URL = new GURL("https://www.google.com");
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock LocationBarDataProvider mLocationBarDataProvider;
-    private @Mock Profile mProfile;
-    private @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
-    private @Mock AutocompleteController mAutocompleteController;
+    @Mock private LocationBarDataProvider mLocationBarDataProvider;
+    @Mock private Profile mProfile;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
+    @Mock private AutocompleteController mAutocompleteController;
 
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 

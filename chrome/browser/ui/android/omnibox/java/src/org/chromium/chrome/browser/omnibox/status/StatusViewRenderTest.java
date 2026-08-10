@@ -69,7 +69,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class StatusViewRenderTest {
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
@@ -79,13 +79,13 @@ public class StatusViewRenderTest {
     private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
+    public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
                     .setRevision(RENDER_TEST_REVISION)
                     .build();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private Profile mProfile;

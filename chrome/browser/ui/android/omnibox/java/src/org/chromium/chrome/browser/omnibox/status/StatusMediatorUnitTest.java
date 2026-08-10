@@ -106,7 +106,7 @@ public final class StatusMediatorUnitTest {
     private static final int CURRENT_TAB_ID = 5;
     private static final int NEW_TAB_ID = 1;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
@@ -123,7 +123,7 @@ public final class StatusMediatorUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private NavigationController mNavigationController;
     @Mock private NavigationEntry mNavigationEntry;
-    @Mock UserPrefsJni mMockUserPrefsJni;
+    @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock private PrefService mPrefs;
     @Mock private Tracker mTracker;
     @Mock private OnClickListener mOnClickListener;

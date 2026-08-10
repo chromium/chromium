@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 public class SelectionControllerUnitTest {
     private static final int DEFAULT_NUM_ITEMS = 3;
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private SelectionController createTestController(@Mode int mode) {
         return spy(

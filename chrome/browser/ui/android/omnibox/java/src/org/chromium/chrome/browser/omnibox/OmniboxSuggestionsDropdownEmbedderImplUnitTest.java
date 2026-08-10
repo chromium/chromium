@@ -77,18 +77,18 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     // being inadvertently converted to px.
     private static final float DIP_SCALE = 10.0f;
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock WindowAndroid mWindowAndroid;
-    private @Mock ViewTreeObserver mViewTreeObserver;
-    private @Mock ViewGroup mContentView;
-    private @Mock ViewGroup mAnchorView;
-    private @Mock ViewGroup mIntermediateView;
-    private @Mock View mHorizontalAlignmentView;
-    private @Mock DisplayAndroid mDisplay;
-    private @Mock InsetObserver mInsetObserver;
-    private @Mock TopInsetProvider mTopInsetProvider;
-    private @Mock Callback<OmniboxAlignment> mAlignmentChanged;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ViewTreeObserver mViewTreeObserver;
+    @Mock private ViewGroup mContentView;
+    @Mock private ViewGroup mAnchorView;
+    @Mock private ViewGroup mIntermediateView;
+    @Mock private View mHorizontalAlignmentView;
+    @Mock private DisplayAndroid mDisplay;
+    @Mock private InsetObserver mInsetObserver;
+    @Mock private TopInsetProvider mTopInsetProvider;
+    @Mock private Callback<OmniboxAlignment> mAlignmentChanged;
 
     private OmniboxResourceProvider mResourceProvider;
     private OmniboxSuggestionsDropdownEmbedderImpl mImpl;

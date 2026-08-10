@@ -57,12 +57,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsDropdownUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock Runnable mDropdownScrollListener;
-    private @Mock Runnable mDropdownScrollToTopListener;
-    private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
-    private @Mock View mView;
-    private @Mock OmniboxSuggestionsDropdown.NavigationListener mNavigationListener;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Runnable mDropdownScrollListener;
+    @Mock private Runnable mDropdownScrollToTopListener;
+    @Mock private OmniboxSuggestionsDropdownAdapter mAdapter;
+    @Mock private View mView;
+    @Mock private OmniboxSuggestionsDropdown.NavigationListener mNavigationListener;
 
     private Context mContext;
     private OmniboxSuggestionsDropdown mDropdown;

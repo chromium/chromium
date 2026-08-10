@@ -39,8 +39,8 @@ import java.util.Arrays;
 /** Unit tests for {@link PreWarmingRecycledViewPool}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PreWarmingRecycledViewPoolTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock View mView;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private View mView;
 
     private Context mContext;
     private OmniboxViewHolderFactory mFactory;

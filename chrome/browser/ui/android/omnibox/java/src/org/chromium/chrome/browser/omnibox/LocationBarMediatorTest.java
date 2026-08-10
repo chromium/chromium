@@ -192,8 +192,10 @@ public class LocationBarMediatorTest {
     private static int sGeoHeaderPrimeCount;
     private static int sGeoHeaderStopCount;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private LocationBarLayout mLocationBarLayout;
     @Mock private LocationBarTablet mLocationBarTablet;

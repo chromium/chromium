@@ -40,7 +40,7 @@ public class BaseSuggestionViewProcessorUnitTest {
     private static final int FAKE_STRING_LENGTH = 10;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Spannable mText;
+    @Mock private Spannable mText;
 
     private ArgumentMatcher<StyleSpan> mIsHighlightStyle;
 

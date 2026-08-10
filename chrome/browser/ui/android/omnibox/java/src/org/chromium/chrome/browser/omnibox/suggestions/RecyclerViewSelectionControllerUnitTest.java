@@ -40,15 +40,15 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RecyclerViewSelectionControllerUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock LayoutManager mLayoutManager;
-    private @Mock View mChildView1;
-    private @Mock View mChildView2;
-    private @Mock View mChildView3;
-    private @Mock View mChildView4;
-    private @Mock View mChildView5;
-    private @Mock Callback<Boolean> mVirtualCallback;
+    @Mock private LayoutManager mLayoutManager;
+    @Mock private View mChildView1;
+    @Mock private View mChildView2;
+    @Mock private View mChildView3;
+    @Mock private View mChildView4;
+    @Mock private View mChildView5;
+    @Mock private Callback<Boolean> mVirtualCallback;
     RecyclerViewSelectionController mSelectionController;
     RecyclerViewSelectionController mSelectionControllerWithSentinel;
 

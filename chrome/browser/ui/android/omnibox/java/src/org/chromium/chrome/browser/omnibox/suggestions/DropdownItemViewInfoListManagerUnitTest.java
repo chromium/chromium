@@ -44,13 +44,13 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DropdownItemViewInfoListManagerUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private @Spy SuggestionProcessor mBasicSuggestionProcessor;
-    private @Spy SuggestionProcessor mEditUrlSuggestionProcessor;
-    private @Mock PropertyModel mModel;
-    private @Mock ListObserver<Void> mListObserver;
-    private @Mock OmniboxResourceProvider mResourceProvider;
+    @Spy private SuggestionProcessor mBasicSuggestionProcessor;
+    @Spy private SuggestionProcessor mEditUrlSuggestionProcessor;
+    @Mock private PropertyModel mModel;
+    @Mock private ListObserver<Void> mListObserver;
+    @Mock private OmniboxResourceProvider mResourceProvider;
 
     private ModelList mSuggestionModels;
     private SettableNonNullObservableSupplier<Integer> mRoundSidesSupplier;

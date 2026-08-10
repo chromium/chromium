@@ -40,7 +40,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @Batch(Batch.UNIT_TESTS)
 public class OmniboxChipViewBinderTest {
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;

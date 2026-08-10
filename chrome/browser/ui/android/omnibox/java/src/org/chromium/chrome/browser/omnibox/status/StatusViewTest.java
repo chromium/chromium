@@ -66,7 +66,7 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 public class StatusViewTest {
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;

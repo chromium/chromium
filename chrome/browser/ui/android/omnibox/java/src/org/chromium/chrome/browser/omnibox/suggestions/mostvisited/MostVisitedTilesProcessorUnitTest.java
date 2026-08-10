@@ -77,25 +77,25 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL_2 = JUnitTestGURLs.URL_2;
     private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
     private PropertyModel mPropertyModel;
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
 
-    private @Captor ArgumentCaptor<Callback<Drawable>> mFavIconCallbackCaptor;
-    private @Captor ArgumentCaptor<Callback<Drawable>> mGenIconCallbackCaptor;
-    private @Mock Bitmap mFaviconBitmap;
-    private @Mock Drawable mFallbackDrawable;
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock AutocompleteInput mInput;
-    private @Mock UrlBarEditingTextStateProvider mTextProvider;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Mock BookmarkState mBookmarkState;
-    private @Mock OmniboxActionDelegate mActionDelegate;
+    @Captor private ArgumentCaptor<Callback<Drawable>> mFavIconCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Drawable>> mGenIconCallbackCaptor;
+    @Mock private Bitmap mFaviconBitmap;
+    @Mock private Drawable mFallbackDrawable;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private AutocompleteInput mInput;
+    @Mock private UrlBarEditingTextStateProvider mTextProvider;
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private BookmarkState mBookmarkState;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     static class TileData {
         public final String title;

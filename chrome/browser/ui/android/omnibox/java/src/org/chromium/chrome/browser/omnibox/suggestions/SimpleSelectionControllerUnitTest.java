@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 public class SimpleSelectionControllerUnitTest {
     private static final int MAX_POSITION = 3; // Items 0‒2 inclusive.
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock SimpleSelectionController.OnSelectionChangedListener mListener;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SimpleSelectionController.OnSelectionChangedListener mListener;
 
     private void verifyPositionSet(SelectionController c, int position) {
         verify(mListener).onSelectionChanged(position, true);

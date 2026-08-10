@@ -93,20 +93,20 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public static final GURL ESCAPED_PATH_URL =
             new GURL("https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock ShareDelegate mShareDelegate;
-    private @Mock Tab mTab;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock ClipboardManager mClipboardManager;
-    private @Mock WebContents mWebContents;
-    private @Mock UrlBarEditingTextStateProvider mTextProvider;
-    private @Mock BookmarkState mBookmarkState;
-    private @Mock OmniboxActionDelegate mActionDelegate;
-    private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
-    private @Mock AutocompleteInput mInput;
-    private @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private ShareDelegate mShareDelegate;
+    @Mock private Tab mTab;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private ClipboardManager mClipboardManager;
+    @Mock private WebContents mWebContents;
+    @Mock private UrlBarEditingTextStateProvider mTextProvider;
+    @Mock private BookmarkState mBookmarkState;
+    @Mock private OmniboxActionDelegate mActionDelegate;
+    @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
+    @Mock private AutocompleteInput mInput;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
     private final UserDataHost mTabUserData = new UserDataHost();
     private final Supplier<Tab> mTabSupplier = () -> mTab;

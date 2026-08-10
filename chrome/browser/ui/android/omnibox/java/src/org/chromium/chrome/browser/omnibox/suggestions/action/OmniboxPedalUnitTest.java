@@ -36,8 +36,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OmniboxPedalUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    private @Mock OmniboxActionDelegate mDelegate;
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Mock private OmniboxActionDelegate mDelegate;
     private static final List<Integer> sPedalsWithCustomIcons =
             List.of(OmniboxPedalId.PLAY_CHROME_DINO_GAME);
 

@@ -38,7 +38,7 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 62, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 84);
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private DeferredIMEWindowInsetApplicationCallback mCallback;
     private WindowInsetsCompat.Builder mBaseWindowInsets;

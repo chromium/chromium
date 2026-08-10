@@ -43,16 +43,16 @@ import java.util.function.Supplier;
 /** Tests for {@link TailSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TailSuggestionProcessorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock AutocompleteInput mInput;
-    private @Mock UrlBarEditingTextStateProvider mTextProvider;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Mock BookmarkState mBookmarkState;
-    private @Mock OmniboxActionDelegate mActionDelegate;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private AutocompleteInput mInput;
+    @Mock private UrlBarEditingTextStateProvider mTextProvider;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private BookmarkState mBookmarkState;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     private TailSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;

@@ -34,10 +34,10 @@ import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMetricsTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final PropertyModel mPropertyModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
-    private @Mock Tracker mTracker;
+    @Mock private Tracker mTracker;
     private FuseboxMetrics mMetrics;
 
     @Before

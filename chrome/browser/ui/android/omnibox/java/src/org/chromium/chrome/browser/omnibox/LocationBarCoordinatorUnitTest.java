@@ -40,7 +40,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TOOLBAR_PHONE_ANIMATION_REFACTOR)
 public class LocationBarCoordinatorUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;

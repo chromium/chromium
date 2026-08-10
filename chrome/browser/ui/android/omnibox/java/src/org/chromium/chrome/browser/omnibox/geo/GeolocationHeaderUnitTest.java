@@ -98,12 +98,12 @@ public class GeolocationHeaderUnitTest {
             "CAEQDBiAtRgqCg3AiBkMFYAx3Vw9AECcRsgBAQ==";
     private int mRefreshLastKnownLocationCount;
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-    @Mock Profile mProfileMock;
-    @Mock TemplateUrlService mTemplateUrlServiceMock;
-    @Mock FusedLocationProviderClient mLocationProviderClient;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock private Profile mProfileMock;
+    @Mock private TemplateUrlService mTemplateUrlServiceMock;
+    @Mock private FusedLocationProviderClient mLocationProviderClient;
     @Captor private ArgumentCaptor<LocationListener> mLocationListenerCaptor;
     @Captor private ArgumentCaptor<LocationRequest> mLocationRequestCaptor;
 

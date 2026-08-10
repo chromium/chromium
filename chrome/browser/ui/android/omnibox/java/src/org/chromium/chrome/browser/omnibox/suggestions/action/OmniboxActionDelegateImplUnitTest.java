@@ -61,20 +61,20 @@ public class OmniboxActionDelegateImplUnitTest {
     private static final int TEST_TAB_ID = 1;
     private static final int TEST_WINDOW_ID = 2;
     private static final GURL TEST_URL = new GURL("https://www.example.com/");
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock Tab mTab;
-    private @Mock Consumer<String> mMockOpenUrl;
-    private @Mock Runnable mMockOpenIncognitoPage;
-    private @Mock Runnable mMockOpenPasswordSettings;
-    private @Mock Runnable mMockOpenQuickDeleteDialog;
-    private @Mock TabWindowManager mTabManager;
-    private @Mock OmniboxActionDelegateImpl.BringTabToFrontCallback mBringTabToFrontCallback;
+    @Mock private Tab mTab;
+    @Mock private Consumer<String> mMockOpenUrl;
+    @Mock private Runnable mMockOpenIncognitoPage;
+    @Mock private Runnable mMockOpenPasswordSettings;
+    @Mock private Runnable mMockOpenQuickDeleteDialog;
+    @Mock private TabWindowManager mTabManager;
+    @Mock private OmniboxActionDelegateImpl.BringTabToFrontCallback mBringTabToFrontCallback;
 
-    private @Mock SettingsNavigation mMockSettingsNavigation;
-    private @Mock TabModel mTabModel;
-    private @Mock TabModelSelector mTabModelSelector;
-    private @Mock LensOverlayCoordinator mLensOverlayCoordinator;
+    @Mock private SettingsNavigation mMockSettingsNavigation;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private LensOverlayCoordinator mLensOverlayCoordinator;
 
     private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private SettableMonotonicObservableSupplier<TabWindowManager> mTabManagerSupplier;

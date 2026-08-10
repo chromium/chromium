@@ -59,21 +59,21 @@ public final class OmniboxImageSupplierUnitTest {
     private static final GURL NAV_URL_2 = JUnitTestGURLs.URL_2;
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
 
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private final ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private OmniboxImageSupplier mSupplier;
 
-    private @Mock Bitmap mBitmap1;
-    private @Mock Bitmap mBitmap2;
-    private @Mock LargeIconBridge.Natives mLargeIconBridgeJni;
-    private @Mock UrlFormatter.Natives mUrlFormatterJni;
-    private @Mock Callback<Drawable> mCallback1;
-    private @Mock Callback<Drawable> mCallback2;
-    private @Mock Profile mProfile;
-    private @Mock ImageFetcher mImageFetcher;
+    @Mock private Bitmap mBitmap1;
+    @Mock private Bitmap mBitmap2;
+    @Mock private LargeIconBridge.Natives mLargeIconBridgeJni;
+    @Mock private UrlFormatter.Natives mUrlFormatterJni;
+    @Mock private Callback<Drawable> mCallback1;
+    @Mock private Callback<Drawable> mCallback2;
+    @Mock private Profile mProfile;
+    @Mock private ImageFetcher mImageFetcher;
     private @Px int mFaviconSize;
 
     @Before

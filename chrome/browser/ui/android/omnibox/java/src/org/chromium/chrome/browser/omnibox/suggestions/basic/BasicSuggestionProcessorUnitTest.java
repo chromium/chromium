@@ -126,14 +126,14 @@ public class BasicSuggestionProcessorUnitTest {
         SUGGESTION_TYPE_NAMES = map;
     }
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock SuggestionHost mSuggestionHost;
-    private @Mock Bitmap mBitmap;
-    private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock Supplier<Tab> mTabSupplier;
-    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Mock OmniboxActionDelegate mActionDelegate;
+    @Mock private SuggestionHost mSuggestionHost;
+    @Mock private Bitmap mBitmap;
+    @Mock private OmniboxImageSupplier mImageSupplier;
+    @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private OmniboxActionDelegate mActionDelegate;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteUIContext mUiContext;

@@ -65,7 +65,7 @@ public class SearchEngineServiceUnitTest {
     private static final String LOGO_URL = "https://www.search.com/";
     private static final String TEMPLATE_URL = "https://www.search.com/search?q={query}";
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
     @Captor private ArgumentCaptor<StatusIconResource> mStatusIconCaptor;

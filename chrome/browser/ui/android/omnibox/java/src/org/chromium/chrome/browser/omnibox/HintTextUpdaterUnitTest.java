@@ -56,7 +56,7 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link HintTextUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HintTextUpdaterUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private SearchEngineService mSearchEngineService;

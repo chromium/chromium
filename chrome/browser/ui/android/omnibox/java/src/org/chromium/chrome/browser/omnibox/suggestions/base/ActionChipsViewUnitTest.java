@@ -29,10 +29,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionCont
 /** Tests for {@link ActionChipsView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionChipsViewUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock RecyclerViewSelectionController mController;
-    private @Mock View mChild;
-    private @Spy ActionChipsView mView = new ActionChipsView(ContextUtils.getApplicationContext());
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private RecyclerViewSelectionController mController;
+    @Mock private View mChild;
+    @Spy private ActionChipsView mView = new ActionChipsView(ContextUtils.getApplicationContext());
 
     private void installAdapter() {
         mView.setSelectionControllerForTesting(mController);

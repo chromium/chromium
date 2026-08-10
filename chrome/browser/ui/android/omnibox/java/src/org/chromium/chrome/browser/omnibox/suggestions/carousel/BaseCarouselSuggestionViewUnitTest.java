@@ -36,12 +36,14 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Tests for {@link BaseCarouselSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseCarouselSuggestionViewUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock SimpleRecyclerViewAdapter mAdapter;
-    private @Mock RecyclerViewSelectionController mController;
-    private @Mock DynamicSpacingRecyclerViewItemDecoration mDecoration;
-    private @Mock View mChild;
-    private @Spy BaseCarouselSuggestionView mView =
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private SimpleRecyclerViewAdapter mAdapter;
+    @Mock private RecyclerViewSelectionController mController;
+    @Mock private DynamicSpacingRecyclerViewItemDecoration mDecoration;
+    @Mock private View mChild;
+
+    @Spy
+    private BaseCarouselSuggestionView mView =
             new BaseCarouselSuggestionView(ContextUtils.getApplicationContext(), mAdapter);
 
     @Before

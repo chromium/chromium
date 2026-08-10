@@ -32,9 +32,9 @@ import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable.Hairlin
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocationBarBackgroundDrawableUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock GradientDrawable mGradientDrawable;
-    private @Mock Canvas mCanvas;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private GradientDrawable mGradientDrawable;
+    @Mock private Canvas mCanvas;
 
     private LocationBarBackgroundDrawable mDrawable;
 

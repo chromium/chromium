@@ -47,9 +47,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
 public class OmniboxSuggestionsContainerUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock OmniboxSuggestionsDropdown mDropdown;
-    private @Mock RecyclerView.RecycledViewPool mRecycledViewPool;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private OmniboxSuggestionsDropdown mDropdown;
+    @Mock private RecyclerView.RecycledViewPool mRecycledViewPool;
 
     private Context mContext;
     private TestOmniboxSuggestionsContainer mContainer;

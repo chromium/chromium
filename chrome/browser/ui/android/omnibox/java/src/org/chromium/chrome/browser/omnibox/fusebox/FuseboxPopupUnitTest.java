@@ -64,17 +64,17 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FuseboxPopupUnitTest {
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private @Mock AnchoredPopupWindow mPopupWindow;
-    private @Mock DynamicRectProvider mDynamicRectProvider;
-    private @Mock WindowAndroid mWindowAndroid;
-    private @Mock InsetObserver mInsetObserver;
-    private @Mock WindowInsetsCompat mWindowInsets;
-    private @Mock WindowMetricsCalculator mWindowMetricsCalculator;
+    @Mock private AnchoredPopupWindow mPopupWindow;
+    @Mock private DynamicRectProvider mDynamicRectProvider;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private InsetObserver mInsetObserver;
+    @Mock private WindowInsetsCompat mWindowInsets;
+    @Mock private WindowMetricsCalculator mWindowMetricsCalculator;
 
-    private @Captor ArgumentCaptor<RectProvider.Observer> mObserverCaptor;
-    private @Captor ArgumentCaptor<OnDismissListener> mDismissListenerCaptor;
+    @Captor private ArgumentCaptor<RectProvider.Observer> mObserverCaptor;
+    @Captor private ArgumentCaptor<OnDismissListener> mDismissListenerCaptor;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;

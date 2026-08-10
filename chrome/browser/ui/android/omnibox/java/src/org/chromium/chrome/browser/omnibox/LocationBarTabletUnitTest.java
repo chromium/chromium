@@ -71,14 +71,14 @@ public class LocationBarTabletUnitTest {
     private static final int MIN_TABLET_WIDTH_DP = 504;
     private static final int CENTERING_THRESHOLD_DP = 16;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock WindowAndroid mWindowAndroid;
-    private @Mock DisplayAndroid mDisplay;
-    private @Mock UrlBarCoordinator mUrlBarCoordinator;
-    private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
-    private @Mock StatusCoordinator mStatusCoordinator;
-    private @Mock LocationBarDataProvider mLocationBarDataProvider;
-    private @Mock ViewOutlineProvider mOutlineProvider;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private DisplayAndroid mDisplay;
+    @Mock private UrlBarCoordinator mUrlBarCoordinator;
+    @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
+    @Mock private StatusCoordinator mStatusCoordinator;
+    @Mock private LocationBarDataProvider mLocationBarDataProvider;
+    @Mock private ViewOutlineProvider mOutlineProvider;
 
     private Activity mActivity;
     private LocationBarTablet mLocationBarTablet;

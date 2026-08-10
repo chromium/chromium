@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link AutocompleteCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteCoordinatorUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private final MonotonicObservableSupplier<Profile> mProfileObservableSupplier =

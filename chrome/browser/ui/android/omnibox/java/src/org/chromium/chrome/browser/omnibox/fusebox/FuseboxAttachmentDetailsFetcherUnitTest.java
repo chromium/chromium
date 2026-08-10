@@ -73,7 +73,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     private static final Uri SAMPLE_URI = Uri.parse("content://media/external/1");
     private static final Uri SAMPLE_URI_NO_FINAL_PATH_SEGMENT = Uri.parse("content://media");
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ContentResolver mContentResolver;
     @Mock private Callback<@Nullable FuseboxAttachment> mCallback;

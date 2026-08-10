@@ -43,7 +43,7 @@ public class FuseboxAttachmentUnitTest {
     private static final String CACHE_TOKEN = "cache_token";
     private static final int TAB_ID = 1;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private ComposeboxQueryControllerBridge mBridge;

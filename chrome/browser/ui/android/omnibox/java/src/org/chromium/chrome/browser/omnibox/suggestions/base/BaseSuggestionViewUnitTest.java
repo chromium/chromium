@@ -43,10 +43,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionCont
 /** Tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewUnitTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock Callback<Integer> mOnActivateListener;
-    private @Mock View.OnLongClickListener mOnLongClickListener;
+    @Mock private Callback<Integer> mOnActivateListener;
+    @Mock private View.OnLongClickListener mOnLongClickListener;
 
     private Context mContext;
     private View mInnerView;

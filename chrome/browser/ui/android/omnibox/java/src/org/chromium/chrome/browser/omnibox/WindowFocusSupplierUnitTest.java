@@ -27,7 +27,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link WindowFocusSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WindowFocusSupplierUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private WindowAndroid mWindowAndroid;

@@ -28,7 +28,7 @@ import org.chromium.components.omnibox.action.OmniboxActionId;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CrossDeviceTabActionUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private OmniboxActionDelegate mGenericDelegate;
 

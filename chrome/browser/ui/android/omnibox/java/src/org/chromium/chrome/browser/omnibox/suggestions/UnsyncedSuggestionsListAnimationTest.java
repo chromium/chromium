@@ -32,12 +32,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class UnsyncedSuggestionsListAnimationTest {
 
     private static final int VERTICAL_OFFSET = 20;
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private UnsyncedSuggestionsListAnimation mDriver;
     private final PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
     private final boolean mIsToolbarBottomAnchored = true;
-    @Mock Runnable mShowRunnable;
+    @Mock private Runnable mShowRunnable;
     @Mock private ValueAnimator mValueAnimator;
     private Context mContext;
     private float mTranslation;

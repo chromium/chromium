@@ -42,7 +42,7 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link OmniboxChipManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxChipManagerUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private ActivityController<TestActivity> mActivityController;
     private OmniboxChipManager mManager;

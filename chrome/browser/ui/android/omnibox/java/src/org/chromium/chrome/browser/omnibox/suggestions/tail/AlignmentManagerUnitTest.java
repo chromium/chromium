@@ -25,10 +25,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class AlignmentManagerUnitTest {
     private static final int TEXT_AREA_WIDTH = 100;
 
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    private @Mock TailSuggestionView mTailView1;
-    private @Mock TailSuggestionView mTailView2;
-    private @Mock TailSuggestionView mTailView3;
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Mock private TailSuggestionView mTailView1;
+    @Mock private TailSuggestionView mTailView2;
+    @Mock private TailSuggestionView mTailView3;
     private AlignmentManager mManager;
 
     @Before

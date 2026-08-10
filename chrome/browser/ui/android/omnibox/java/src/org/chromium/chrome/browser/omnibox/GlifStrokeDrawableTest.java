@@ -26,8 +26,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GlifStrokeDrawableTest {
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock Canvas mCanvas;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Canvas mCanvas;
     private GlifStrokeDrawable mDrawable;
     private final float mCornerRadius = 12f;
     private final float mStrokePx = 2f;

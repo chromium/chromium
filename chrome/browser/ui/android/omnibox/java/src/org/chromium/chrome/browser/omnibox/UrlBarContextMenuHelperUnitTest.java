@@ -32,10 +32,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class UrlBarContextMenuHelperUnitTest {
     @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UrlBar mUrlBar;
     @Mock private ContextMenu mContextMenu;

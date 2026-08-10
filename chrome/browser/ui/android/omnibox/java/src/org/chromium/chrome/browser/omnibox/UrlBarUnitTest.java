@@ -129,15 +129,15 @@ public class UrlBarUnitTest {
             "www.a.com/"
                     + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH + 100, "a"));
 
-    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule TestName mTestName = new TestName();
+    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public final TestName mTestName = new TestName();
 
-    private @Mock UrlBarDelegate mUrlBarDelegate;
-    private @Mock ViewStructure mViewStructure;
-    private @Mock Layout mLayout;
-    private @Mock TextPaint mPaint;
-    private @Mock Clipboard mClipboard;
-    private @Mock UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
+    @Mock private UrlBarDelegate mUrlBarDelegate;
+    @Mock private ViewStructure mViewStructure;
+    @Mock private Layout mLayout;
+    @Mock private TextPaint mPaint;
+    @Mock private Clipboard mClipboard;
+    @Mock private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
 
     private ActivityController<TestActivity> mController;
     private Activity mActivity;
