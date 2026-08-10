@@ -25,6 +25,10 @@ namespace base {
 class Time;
 class TimeDelta;
 
+namespace i18n {
+class TimeZone;
+}
+
 // Returns the time of day, e.g., "3:07 PM".
 BASE_I18N_EXPORT std::u16string TimeFormatTimeOfDay(Time time);
 
@@ -115,6 +119,15 @@ BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
 
 // Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
 BASE_I18N_EXPORT std::string TimeFormatAsIso8601(Time time);
+
+// Formats a time compliant to ISO 8601 in the specified timezone.
+// If the timezone is UTC, appends a 'Z' suffix, otherwise appends the offset,
+// e.g. "2020-12-31T23:59:59.999-08:00".
+// If |include_offset_suffix| is false, no offset or 'Z' suffix is appended.
+BASE_I18N_EXPORT std::string TimeFormatAsIso8601WithTimeZone(
+    Time time,
+    const i18n::TimeZone& time_zone,
+    bool include_offset_suffix = true);
 
 // Formats a time in POSIX "unixtime" format with microsecond precision and
 // local timezone offset, e.g., "2020-01-01T12:34:56.000000+00:00".

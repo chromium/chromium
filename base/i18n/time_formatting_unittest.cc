@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/timezone.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -344,6 +345,22 @@ TEST(TimeFormattingTest, TimeFormatAsIso8601) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
   EXPECT_EQ("2011-04-30T22:42:07.000Z", TimeFormatAsIso8601(time));
+}
+
+TEST(TimeFormattingTest, TimeFormatAsIso8601WithTimeZone) {
+  test::ScopedRestoreDefaultTimezone time_zone("Asia/Tokyo");
+  Time time;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+  EXPECT_EQ("2011-04-30T22:42:07.000Z",
+            TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::GMT()));
+  EXPECT_EQ("2011-04-30T22:42:07.000",
+            TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::GMT(),
+                                            /*include_offset_suffix=*/false));
+  EXPECT_EQ("2011-05-01T07:42:07.000+09:00",
+            TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::Default()));
+  EXPECT_EQ("2011-05-01T07:42:07.000",
+            TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::Default(),
+                                            /*include_offset_suffix=*/false));
 }
 
 TEST(TimeFormattingTest, TimeFormatHTTP) {

@@ -148,7 +148,7 @@ std::u16string TimeFormatMonthAndYearForTimeZone(
 
   return GetDateTimeFormatter().Format(
       time, i18n::datetime_options::YM::Long().with_time_zone(
-                i18n::TimeZone::FromString(id_str)));
+                base::i18n::TimeZone::FromString(id_str)));
 }
 #endif
 
@@ -238,22 +238,54 @@ std::string UnlocalizedTimeFormatWithPattern(Time time,
 }
 
 std::string TimeFormatAsIso8601(Time time) {
+  return TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::GMT());
+}
+
+std::string TimeFormatAsIso8601WithTimeZone(Time time,
+                                            const i18n::TimeZone& time_zone,
+                                            bool include_offset_suffix) {
+  base::TimeDelta raw_offset;
+  base::TimeDelta dst_offset;
+  time_zone.GetOffset(time, /*is_local=*/false, raw_offset, dst_offset);
+  base::TimeDelta total_offset = raw_offset + dst_offset;
+
+  Time local_time = time + total_offset;
   Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year,
+  local_time.UTCExplode(&exploded);
+
+  std::string offset_suffix;
+  if (include_offset_suffix) {
+    if (time_zone == i18n::TimeZone::GMT()) {
+      offset_suffix = "Z";
+    } else {
+      int total_minutes = total_offset.InMinutes();
+      char sign = total_minutes >= 0 ? '+' : '-';
+      total_minutes = std::abs(total_minutes);
+      int hours = total_minutes / 60;
+      int minutes = total_minutes % 60;
+      offset_suffix = StringPrintf("%c%02d:%02d", sign, hours, minutes);
+    }
+  }
+
+  return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d%s", exploded.year,
                       exploded.month, exploded.day_of_month, exploded.hour,
-                      exploded.minute, exploded.second, exploded.millisecond);
+                      exploded.minute, exploded.second, exploded.millisecond,
+                      offset_suffix.c_str());
 }
 
 std::string TimeFormatUnix(Time time) {
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
 
-  base::i18n::TimeZone local_tz = base::i18n::TimeZone::Default();
-  base::TimeDelta raw_offset;
-  base::TimeDelta dst_offset;
-  local_tz.GetOffset(time, true, raw_offset, dst_offset);
-  base::TimeDelta total_offset = raw_offset + dst_offset;
+  std::unique_ptr<icu::TimeZone> local_tz(icu::TimeZone::createDefault());
+  int32_t raw_offset = 0;
+  int32_t dst_offset = 0;
+  UErrorCode status = U_ZERO_ERROR;
+  local_tz->getOffset(
+      static_cast<UDate>(time.InSecondsFSinceUnixEpoch() * 1000),
+      /*local=*/false, raw_offset, dst_offset, status);
+  base::TimeDelta total_offset =
+      base::Milliseconds(raw_offset) + base::Milliseconds(dst_offset);
 
   int total_minutes = total_offset.InMinutes();
   char sign = total_minutes >= 0 ? '+' : '-';
@@ -276,7 +308,7 @@ std::string TimeFormatHTTP(Time time) {
   // English locale would localize the names, and for a near-midnight-UTC
   // instant in a non-GMT zone the weekday/month would disagree with the UTC day
   // (e.g. "Sat, 01 Apr" for a Sunday, May 1 GMT instant).
-  const i18n::TimeZone gmt = i18n::TimeZone::GMT();
+  const base::i18n::TimeZone gmt = base::i18n::TimeZone::GMT();
   static constexpr i18n::LanguageTag en_us = i18n::GetKnownLanguageTag("en-US");
   std::string day_of_week = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
       time, en_us, i18n::datetime_options::E::Medium().with_time_zone(gmt)));
