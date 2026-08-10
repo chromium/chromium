@@ -33,6 +33,10 @@ TEST(AvailLanguageTest, ParseAvailLanguage) {
   result = ParseAvailLanguage("\"en\", \"zh\"");
   EXPECT_FALSE(result.has_value());
 
+  // Must not be a single-element inner list of tokens either.
+  result = ParseAvailLanguage("(en)");
+  EXPECT_FALSE(result.has_value());
+
   // Parameters to the tokens are ignored.
   result = ParseAvailLanguage("en;q=1.0, zh");
   ASSERT_TRUE(result.has_value());
