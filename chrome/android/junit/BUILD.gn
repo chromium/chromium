@@ -1575,6 +1575,7 @@ if (is_android) {
       ":chrome_junit_tests_helper",
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/actor/android:java",
+      "//chrome/browser/prefetch/android:java",
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/settings:java",
       "//chrome/browser/settings:settings_in_tab_java",
