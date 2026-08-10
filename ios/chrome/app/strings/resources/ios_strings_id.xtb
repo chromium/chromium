@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menu → Setelan → Browser default</translation>
 <translation id="2818821771744632548">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPhone. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
 <translation id="2819667972867209401">Jika diaktifkan, data akan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini dan akan dihapus saat Anda logout.</translation>
-<translation id="2825777862277359739">Login untuk mendapatkan sandi, tab, bookmark, dan info lainnya.</translation>
 <translation id="2827760117436553203">Tetap pisahkan data?</translation>
 <translation id="2829172210806130158">Menelusuri layar Anda</translation>
 <translation id="2831109159746537587">Coba lingkari atau ketuk gambar untuk menelusuri</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
 <translation id="3378214228000661758">Buat kunci sandi untuk</translation>
 <translation id="3380352560400387991">Situs ini mencoba membuka aplikasi. Tindakan ini akan membuat Anda keluar dari mode Samaran.</translation>
-<translation id="3385742921291399323">Dapatkan sandi, tab, bookmark, dan info tersimpan Anda lainnya.</translation>
 <translation id="3391765987934722383">Jangan lewatkan penurunan harga</translation>
 <translation id="3392923070107623576">Tetap teratur dengan membuat grup tab</translation>
 <translation id="3404232721752787413">Simpan di Google Foto</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Impor Safari</translation>
 <translation id="5152483358138813104">Login lebih cepat di semua perangkat Anda</translation>
 <translation id="515315847398512535">Fitur Telusuri layar dinonaktifkan untuk akun Anda. Hubungi admin untuk mengetahui informasi selengkapnya.</translation>
-<translation id="5155502059906700593">Ganti posisi kolom URL ke bagian atas atau bawah.</translation>
 <translation id="5157638238828697074">Terjadi error. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Dibuat untuk iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196207969502475924">Penelusuran Suara</translation>
 <translation id="6198252989419008588">Ubah PIN</translation>
-<translation id="6199783146233591178">Dapatkan perlindungan real-time dengan Safe Browsing yang Disempurnakan</translation>
 <translation id="6210079381482819663">Tab yang tidak digunakan selama <ph name="THRESHOLD" /> hari atau lebih akan dipindahkan ke sini. Anda dapat mengubahnya kapan saja di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Alamat tidak ditemukan</translation>
 <translation id="6218508144653756827">Tema merah muda cerah</translation>
@@ -1720,7 +1716,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">Dari: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Tambahkan lapisan perlindungan ekstra terhadap ancaman online.</translation>
 <translation id="6634432609054530164">Organisasi Anda menonaktifkan mode Samaran</translation>
 <translation id="6637478299472506933">Download Gagal</translation>
 <translation id="6638511529934826365">Zoom Teks…</translation>

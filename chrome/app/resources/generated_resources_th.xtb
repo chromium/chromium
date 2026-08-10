@@ -857,6 +857,7 @@
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
 <translation id="1658424621194652532">หน้านี้กำลังเข้าถึงไมโครโฟนของคุณ</translation>
+<translation id="1660405268563702784">มีอัปเดตสำหรับ <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}other{แก้ไขแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลง}}</translation>
 <translation id="16620462294541761">ขออภัย ไม่สามารถยืนยันรหัสผ่านของคุณได้ โปรดลองอีกครั้ง</translation>
 <translation id="1662572015199460525">แชทด้วยเสียงหรือข้อความเพื่อรับคำตอบ ประเด็นสำคัญ และอื่นๆ ขณะท่องเว็บ</translation>
@@ -2532,6 +2533,7 @@
 <translation id="2948287943780377675">{FILE_COUNT,plural, =1{วางไฟล์ที่นี่}other{วางไฟล์ที่นี่}}</translation>
 <translation id="2948300991547862301">ไปที่ <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">เว็บเบราว์เซอร์ที่รวดเร็ว ใช้งานง่าย และปลอดภัย สร้างขึ้นมาเพื่อเว็บสมัยใหม่</translation>
+<translation id="2952552057375331929">เปิดลิงก์ในหน้าต่างที่แยกต่างหาก</translation>
 <translation id="2953218713108551165">ไม่อนุญาตให้ <ph name="SITE" /> ส่งการแจ้งเตือน ระบบจะถามคุณอีกครั้งเมื่อเข้าชมครั้งถัดไป</translation>
 <translation id="2954777802959138493">ดูสถานะของโปรแกรมอัปเดตไม่ได้</translation>
 <translation id="2955048943983973430">บริการของ Google ที่เกี่ยวข้อง</translation>
@@ -3195,6 +3197,7 @@
 <translation id="3454213325559396544">นี่เป็นการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัติครั้งสุดท้ายสำหรับ <ph name="DEVICE_TYPE" /> เครื่องนี้ โปรดอัปเกรดเป็นรุ่นที่ใหม่กว่าเพื่อรับการอัปเดตในอนาคต</translation>
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ .pdf 1 รายการเพื่อใช้กับคำถาม}other{อัปโหลดไฟล์ .pdf สูงสุด # รายการเพื่อใช้กับคำถาม}}</translation>
 <translation id="3454818737556063691">ย้าย 1 ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
+<translation id="3456750372063895499">เปิดลิงก์ในหน้าต่างที่แยกต่างหาก</translation>
 <translation id="345693547134384690">เปิด&amp;รูปภาพในแท็บใหม่</translation>
 <translation id="3458794975359644386">เลิกแชร์ไม่สำเร็จ</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{เก็บกลุ่มไว้}other{เก็บกลุ่มไว้}}</translation>
@@ -3263,6 +3266,7 @@
 <translation id="3513563267917474897">แถบเลื่อนโทนสีจาก <ph name="MIN_VALUE" /> ถึง <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">คุณกำลังได้รับการป้องกันความปลอดภัยแบบมาตรฐาน หากต้องการรับการป้องกันมากยิ่งขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย ให้เปิดฟีเจอร์ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นในการตั้งค่า Chrome</translation>
 <translation id="3514681096978190000">ไฟล์ที่เก็บถาวรนี้มีไฟล์อื่นๆ ที่อาจซ่อนมัลแวร์ไว้</translation>
+<translation id="3515783508789430906">เวอร์ชันใหม่ (<ph name="VERSION" />) พร้อมใช้งานแล้ว รีสตาร์ทแอปเพื่อใช้การอัปเดต ข้อมูลที่ไม่ได้บันทึกอาจสูญหาย</translation>
 <translation id="3515983984924808886">แตะคีย์ความปลอดภัยอีกครั้งเพื่อยืนยันการรีเซ็ต ระบบจะลบข้อมูลทั้งหมดที่เก็บไว้ในคีย์ความปลอดภัย รวมถึง PIN ของคีย์ด้วย</translation>
 <translation id="3518866566087677312">บุ๊กมาร์กสิ่งที่คุณต้องการกลับมาดูภายหลัง</translation>
 <translation id="3519014757432845220">ช่วยปรับปรุงการป้องกันสแปมโดยแชร์เนื้อหาการแจ้งเตือนและ URL ของเว็บไซต์กับ Google เนื้อหาอาจได้รับการตรวจสอบโดยเจ้าหน้าที่</translation>
@@ -3417,6 +3421,7 @@
 <translation id="3627671146180677314">เวลาการต่ออายุใบรับรองของ Netscape</translation>
 <translation id="3628275722731025472">ปิดบลูทูธ</translation>
 <translation id="3629630597033136279">ปิด • ส่วนขยายนี้ไม่ได้เผยแพร่หลักปฏิบัติเกี่ยวกับนโยบายความเป็นส่วนตัว เช่น วิธีเก็บรวบรวมและใช้ข้อมูล</translation>
+<translation id="3629657562876345602">ตรวจสอบข้อมูลสำคัญ</translation>
 <translation id="3629664892718440872">จำตัวเลือกนี้</translation>
 <translation id="3630132874740063857">โทรศัพท์ของคุณ</translation>
 <translation id="3630995161997703415">เพิ่มเว็บไซต์นี้ลงในชั้นวางเพื่อใช้งานได้ทุกเมื่อ</translation>
@@ -6037,6 +6042,7 @@
 <translation id="5663653125349867535">เรื่องรออ่าน</translation>
 <translation id="5663918299073387939">โดยปกติแล้วเว็บไซต์จะขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่เพื่อสร้างเพลง แก้ไขเพลง หรืออัปเดตเฟิร์มแวร์อุปกรณ์</translation>
 <translation id="5666911576871845853">&amp;เพิ่มโปรไฟล์ใหม่</translation>
+<translation id="566956875537427204">เปิดแชท</translation>
 <translation id="5669863904928111203">ChromeOS เป็นเวอร์ชันเก่า</translation>
 <translation id="5671641761787789573">บล็อกรูปภาพ</translation>
 <translation id="567210741546439261">บุ๊กมาร์กและรายการ</translation>
@@ -7222,6 +7228,7 @@
 <translation id="6613231539539868591">ข้อมูลที่คงอยู่</translation>
 <translation id="6613267708691765962">กำลังสแกนหามัลแวร์...</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
+<translation id="6616000047939888167">เสนอ Google แปลภาษาสำหรับเว็บไซต์และไฟล์ PDF ในภาษาอื่นๆ</translation>
 <translation id="6618013221808317456">ไม่อนุญาตให้เว็บไซต์ใช้การเพิ่มประสิทธิภาพ JavaScript</translation>
 <translation id="6618154741503063152">อัปโหลดไม่ได้ ไม่อนุญาตให้ใช้ไฟล์แนบ</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7574,6 +7581,7 @@
 <translation id="6871644448911473373">OCSP Responder: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ภาษา...</translation>
 <translation id="6873156759937047811">PIN:</translation>
+<translation id="6873499199714317035">เมื่อเปิดไว้ Google แปลภาษาจะเสนอการแปลเว็บไซต์และไฟล์ PDF เป็นภาษาที่คุณต้องการ และยังแปลเว็บไซต์โดยอัตโนมัติได้ด้วย</translation>
 <translation id="6873571253135628430">เปลี่ยนสิทธิ์ของเว็บไซต์</translation>
 <translation id="6874986444867497677">ติดตั้งไม่สำเร็จ โปรดลองอีกครั้งหรือปิดหน้าต่างนี้</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
@@ -8819,6 +8827,7 @@
 <translation id="7855258394151767387">ใช้ปุ่ม "w" เพื่อกดปุ่มเมาส์</translation>
 <translation id="7855678561139483478">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
 <translation id="7858120906780498731">อุปกรณ์อินพุตที่เชื่อมต่อกับ ChromeOS</translation>
+<translation id="7859486605922206511">เปิดแอปใหม่</translation>
 <translation id="7859560813397128941">นำส่วนขยาย <ph name="EXTENSION_NAME" /> ออก</translation>
 <translation id="786073089922909430">บริการ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ดาวน์โหลด</translation>
@@ -9781,6 +9790,7 @@
 <translation id="8602867356511778172">Google ใช้ข้อมูลมากขึ้น (เช่น URL, ตัวอย่างเนื้อหาในหน้าเว็บ, ข้อมูลระบบ) เพื่อตรวจหาภัยคุกคามได้เร็วและแม่นยำยิ่งขึ้น</translation>
 <translation id="860399903490378651">ปิดมุมมองนี้</translation>
 <translation id="8605428685123651449">หน่วยความจำ SQLite</translation>
+<translation id="8606857385325125054">แอปนี้ติดตั้งโดย <ph name="PARENT_APP_NAME" /> การถอนการติดตั้ง <ph name="APP_NAME" /> จะไม่ส่งผลต่อ <ph name="PARENT_APP_NAME" /> หรือแอปอื่นๆ ที่ติดตั้งไว้</translation>
 <translation id="8607171490667464784">ขณะที่ไม่มีการใช้งานและใช้แบตเตอรี่อยู่</translation>
 <translation id="8607661817136110841">กลุ่มแท็บของคุณ</translation>
 <translation id="8607828412110648570">โปรดตรวจสอบว่าอุปกรณ์บลูทูธอยู่ในโหมดการจับคู่และอยู่ใกล้ จับคู่กับอุปกรณ์ที่คุณเชื่อถือเท่านั้น ทุกบัญชีใน Chromebook เครื่องนี้จะมองเห็นอุปกรณ์ที่จับคู่แล้ว <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10065,6 +10075,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">ภาษาสำหรับการตรวจตัวสะกดขึ้นอยู่กับค่ากำหนดของภาษา</translation>
 <translation id="8814644416678422095">ฮาร์ดไดรฟ์</translation>
+<translation id="8815742860876889867">เปิดลิงก์ในหน้าต่างที่แยกต่างหาก</translation>
 <translation id="881782782501875829">เพิ่มหมายเลขพอร์ต</translation>
 <translation id="881799181680267069">ซ่อนรายการอื่นๆ</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>

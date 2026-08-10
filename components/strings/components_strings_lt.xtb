@@ -304,6 +304,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1504042622576912555">Kaneliūra</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ši klaida rodoma, jei naudojate „Wi-Fi“ portalą, prie kurio reikia prisijungti, kad galėtumėte naudotis internetu.&lt;/p&gt;
     &lt;p&gt;Kad ištaisytumėte šią klaidą, puslapyje, kurį bandote atidaryti, spustelėkite &lt;strong&gt;Prisijungti&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Įjungiamas automatinis pildymas</translation>
 <translation id="1508605873202255562">Sukurk tinkintą stebėjimo priemonę, kad galėčiau siekti savo tikslų</translation>
 <translation id="1513706915089223971">Istorijos įrašų sąrašas</translation>
 <translation id="1515436033764190215">Prieš tiek valandų:</translation>
@@ -541,6 +542,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="192020519938775529">{COUNT,plural, =0{Nėra}=1{1 svetainė}one{# svetainė}few{# svetainės}many{# svetainės}other{# svetainių}}</translation>
 <translation id="192095259937375524">Mygtukas „Bendrinti šį skirtuką“; suaktyvinkite, jei norite bendrinti šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami turinį ir kt.</translation>
 <translation id="1924727005275031552">Naujas</translation>
+<translation id="1925757445192941004">Paieškos variklį galite bet kada pakeisti „Chrome“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Teikėjas bus rodomas kaip neseniai aplankytas paieškos teikėjas „Chrome“ nustatymuose ir galėsite nustatyti jį kaip numatytąjį.</translation>
 <translation id="1927930548546198515">„Chrome“ registruoja, kaip naudojate šią funkciją, pvz., užklausas ir elgseną, kai priimate ar ignoruojate pasiūlymus</translation>
 <translation id="1932098463447129402">Nuo</translation>
 <translation id="1935353813610900265">Siųsti atsiliepimus apie DI teikiamą istorijos paiešką</translation>
@@ -630,6 +632,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2093982008204312032">„Google Chrome“ bando išjungti „Windows Hello“ slaptažodžiams užpildyti.</translation>
 <translation id="2094505752054353250">Domeno neatitikimas</translation>
 <translation id="2094704029599359040">Versijos informacija</translation>
+<translation id="2096183846792489672">Puslapių, kuriuose lankotės, turinys ir URL gali būti apdorojami privačioje erdvėje debesyje</translation>
 <translation id="209961642949927292">Sparčiau atsiskaityti kitą kartą?</translation>
 <translation id="2099652385553570808">Trys sankabėlės kairėje</translation>
 <translation id="2101225219012730419">Versija:</translation>
@@ -1591,6 +1594,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3738166223076830879">Jūsų naršyklę tvarko jūsų administratorius.</translation>
 <translation id="3739842843727261045">Spustelėjus mygtuką „Patinka“ pateikiamas atsiliepimas, kad jums patinka šie rezultatai</translation>
 <translation id="3740447166056383374">Prieš kopijuojant reikia peržiūrėti</translation>
+<translation id="3742104862808477448">Padėkite „Chromium“ geriau suprasti ir užpildyti sudėtingas formas saugiai apdorodami duomenis „Google“ serveriuose. Jūsų informacija lieka privati ir niekas jos neperžiūri.</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3744212718085287312">Kitą kartą labiau apsaugoti naudojant virtualią kortelę?</translation>
 <translation id="3744899669254331632">Negalite dabar apsilankyti svetainėje <ph name="SITE" />, nes ji atsiuntė užšifruotus prisijungimo duomenis, kurių „Chromium“ negali apdoroti. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
@@ -1614,6 +1618,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3769584711865378220"><ph name="URL" /> nori pakeisti prieigą prie vietovės iš apytikslės į tikslią</translation>
 <translation id="3772211998634047851">Popierius (standusis)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – klavišą „Enter“, jei norite greitai sukurti naują „Google Keep“ užrašą</translation>
+<translation id="3778045607993018262">„Pix“ paskyra bus susieta su <ph name="ACCOUNT_EMAIL" />. Jei norite išjungti „Pix“ kodo aptikimą, eikite į <ph name="BEGIN_LINK1" />„Chrome“ nustatymus<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Išvesties dėklas</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">„Bluetooth“ įrenginiai</translation>
@@ -1633,6 +1638,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="380329542618494757">Vardas ir pavardė</translation>
 <translation id="3803481123869276674">Kai perkate naršyklėje „Chrome“, pateikiama el. piniginės parinktis</translation>
 <translation id="3803801106042434208">Šie paieškos varikliai populiarūs jūsų regione</translation>
+<translation id="3804112825000113857">Peržiūrėti automatinio pildymo nustatymus</translation>
 <translation id="380666903981445943">Išsaugokite mokėjimo metodą „Google“ paskyroje, kad galėtumėte jį automatiškai užpildyti „Chrome“ atliekamiems pirkiniams</translation>
 <translation id="3807366285948165054">Vaizdo sukimas pagal X ašį</translation>
 <translation id="3807873520724684969">Žalingas turinys užblokuotas.</translation>
@@ -3310,6 +3316,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="666259744093848177">(x86_64 išversta)</translation>
 <translation id="6665553082534466207">Trys skylės dešinėje</translation>
 <translation id="6668389483194953109">Rastas popieriaus dydžio pavadinimas „custom“, bet ypatybės „custom_size“ laukas tuščias arba netinkamas.</translation>
+<translation id="667044980437620424">Automatinis pildymas įjungtas</translation>
 <translation id="6670729408462528018">Galerija</translation>
 <translation id="6671697161687535275">Pašalinti formos pasiūlymą iš „Chromium“?</translation>
 <translation id="6675846980676550611">AR neleidžiama</translation>
@@ -3539,6 +3546,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="7064851114919012435">Kontaktinė informacija</translation>
 <translation id="7070144569727915108">sistemos nustatymai</translation>
 <translation id="70705239631109039">Jūsų ryšys nėra visiškai saugus</translation>
+<translation id="7074595960655571061">Dabar galite išsaugoti mokėjimo metodus, kad galėtumėte automatiškai užpildyti atsiskaitydami naršyklėje „Chrome“. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Užklausa per didelė</translation>
 <translation id="7075513071073410194">PKCS Nr. 1 MD5 su RSA šifruote</translation>
 <translation id="7075896597860500885">Nerekomenduojama kopijuoti iš šios svetainės</translation>
@@ -4065,6 +4073,7 @@ Papildoma išsami informacija:
 <translation id="7952327717479677595">Mygtukas „Valdyti paieškos variklius“; suaktyvinkite, jei norite valdyti numatytąjį paieškos variklį ir svetainių paiešką</translation>
 <translation id="7953236668995583915">Įkelkite šį puslapį iš naujo, kad pritaikytumėte atnaujintus nustatymus šioje svetainėje</translation>
 <translation id="7953569069500808819">Kraštų sukabinimas viršuje</translation>
+<translation id="7953610917406434396">Paieškos variklį galite bet kada pakeisti „Chromium“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Teikėjas bus rodomas kaip neseniai aplankytas paieškos teikėjas „Chromium“ nustatymuose ir galėsite jį nustatyti kaip numatytąjį.</translation>
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
 <translation id="7956713633345437162">Žymės mobiliesiems</translation>
 <translation id="7961015016161918242">Niekada</translation>
@@ -4402,6 +4411,7 @@ Papildoma išsami informacija:
 <translation id="8564182942834072828">Atskiras dokumentas / nesugretintos kopijos</translation>
 <translation id="8564466070529550495">Šiuo metu virtuali kortelė nepasiekiama. Vėliau bandykite dar kartą</translation>
 <translation id="8564985650692024650">„Chromium“ rekomenduoja iš naujo nustatyti <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> slaptažodį, jei naudojate jį kitose svetainėse.</translation>
+<translation id="8568406155558596128">Padėkite „Chrome“ geriau suprasti ir užpildyti sudėtingas formas saugiai apdorodami duomenis „Google“ serveriuose. Jūsų informacija lieka privati ir niekas jos neperžiūri.</translation>
 <translation id="8574570240981266561">Elementas ištrintas</translation>
 <translation id="8577192028579836704">Visos parinktys paprastai <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Virtuali kortelė nepasiekiama</translation>

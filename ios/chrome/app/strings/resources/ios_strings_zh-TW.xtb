@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="2818821771744632548">你已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="2819667972867209401">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置，並在你登出後刪除。</translation>
-<translation id="2825777862277359739">登入後即可存取密碼、分頁、書籤等資料。</translation>
 <translation id="2827760117436553203">要區分資料嗎？</translation>
 <translation id="2829172210806130158">搜尋畫面</translation>
 <translation id="2831109159746537587">請試著在圖片上圈起或輕觸要搜尋的內容</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
 <translation id="3378214228000661758">使用以下名稱建立密碼金鑰：</translation>
 <translation id="3380352560400387991">這個網站正在嘗試開啟某個應用程式，這會使你退出無痕模式。</translation>
-<translation id="3385742921291399323">取得儲存的密碼、分頁、書籤等資料。</translation>
 <translation id="3391765987934722383">別錯過降價資訊</translation>
 <translation id="3392923070107623576">建立分頁群組，讓一切井然有序</translation>
 <translation id="3404232721752787413">儲存在 Google 相簿中</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">從 Safari 匯入</translation>
 <translation id="5152483358138813104">在所有裝置上快速登入</translation>
 <translation id="515315847398512535">你的帳戶已停用搜尋畫面功能，詳情請洽詢管理員。</translation>
-<translation id="5155502059906700593">網址列可以放在頂端，也可以移到底部。</translation>
 <translation id="5157638238828697074">發生錯誤，無法開啟應用程式。</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">專為 iPadOS 打造</translation>
@@ -1569,7 +1566,6 @@
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
-<translation id="6199783146233591178">安全瀏覽強化防護功能提供即時保護</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6213281885682386884">找不到地址</translation>
 <translation id="6218508144653756827">紫紅色主題</translation>
@@ -1720,7 +1716,6 @@
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">多了這層防護，有效防範線上威脅。</translation>
 <translation id="6634432609054530164">貴機構已關閉無痕模式</translation>
 <translation id="6637478299472506933">下載失敗</translation>
 <translation id="6638511529934826365">縮放文字…</translation>

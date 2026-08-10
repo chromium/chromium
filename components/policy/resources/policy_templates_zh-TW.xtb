@@ -7916,14 +7916,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 
 如果停用這項政策，金鑰捷徑應用程式將進入唯讀模式，屆時將不允許自訂系統捷徑。</translation>
 <translation id="6150320133676152520">在鎖定畫面和登入畫面上停用 PIN 碼自動提交功能</translation>
-<translation id="6152224988699207920">允許管理員自訂資料遺失防護 (DLP) 規則套用的浮水印外觀，包括設定填滿/外框不透明度、定義字型大小，以及設定時間戳記時區。
-如果未設定這項政策或部分值，Chrome 會採用預設浮水印行為。
-預設值如下：填滿不透明度為 4、外框不透明度為 6、字型大小為 24，以及時間戳記時區設為「user_device」(使用者裝置的當地時區)。
-
-「填滿不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「外框不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「字型大小」以點為指定單位。
-「時間戳記時區」指定用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。這個 ID 採用 IANA 時區資料庫 (https://www.iana.org/time-zones) 中的名稱。</translation>
 <translation id="6155350825868160236">允許使用者選擇是否要使用 Google 網路服務來解決拼字錯誤</translation>
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>

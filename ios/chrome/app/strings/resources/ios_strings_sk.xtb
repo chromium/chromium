@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Ponuka → Nastavenia → Predvolený prehliadač</translation>
 <translation id="2818821771744632548">V rámci resetu iPhonu vás systém odhlásil z účtu <ph name="USER_NAME" />. Ak sa chcete znova prihlásiť, klepnite nižšie na Pokračovať.</translation>
 <translation id="2819667972867209401">Keď je táto možnosť zapnutá, údaje sa ukladajú do vášho účtu Google. Keď je vypnutá, údaje sa ukladajú iba do tohto zariadenia a odstránia sa po vašom odhlásení.</translation>
-<translation id="2825777862277359739">Prihláste sa a získajte svoje heslá, karty, záložky a ďalší obsah.</translation>
 <translation id="2827760117436553203">Chcete ponechať dáta oddelené?</translation>
 <translation id="2829172210806130158">Vyhľadávať na obrazovke</translation>
 <translation id="2831109159746537587">Skúste vyhľadávať zakrúžkovaním obrázka alebo klepnutím naň</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Uložené záložky, heslá a ďalšie položky nájdete odteraz na začiatku.</translation>
 <translation id="3378214228000661758">Vytvorte prístupový kľúč pre používateľa</translation>
 <translation id="3380352560400387991">Tento web sa pokúša otvoriť aplikáciu. Opustíte tým režim inkognito.</translation>
-<translation id="3385742921291399323">Získajte svoje uložené heslá, karty, záložky a ďalší obsah.</translation>
 <translation id="3391765987934722383">Nepremeškajte pokles ceny</translation>
 <translation id="3392923070107623576">Zachovajte si poriadok vytvorením skupín kariet</translation>
 <translation id="3404232721752787413">Uložiť vo Fotkách Google</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Import z prehliadača Safari</translation>
 <translation id="5152483358138813104">Prihlasujte sa vo svojich zariadeniach rýchlejšie</translation>
 <translation id="515315847398512535">Obrazovka vyhľadávania je pre váš účet vypnutá. Bližšie informácie vám poskytne správca.</translation>
-<translation id="5155502059906700593">Presuňte panel s adresou nahor alebo nadol.</translation>
 <translation id="5157638238828697074">Niečo sa pokazilo. Aplikáciu sa nepodarilo otvoriť.</translation>
 <translation id="5163417375525818870">Súbory PDF</translation>
 <translation id="5168414296986405587">Vytvorené pre iPadOS</translation>
@@ -1569,7 +1566,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196207969502475924">Hlasové vyhľadávanie</translation>
 <translation id="6198252989419008588">Zmeniť PIN</translation>
-<translation id="6199783146233591178">Získajte Zlepšené bezpečné prehliadanie a s ním ochranu v reálnom čase</translation>
 <translation id="6210079381482819663">Presunú sa sem karty, ktoré sa nepoužívajú <ph name="THRESHOLD" /> alebo viac dní. Túto možnosť môžete kedykoľvek zmeniť v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nenašli sa žiadne adresy</translation>
 <translation id="6218508144653756827">Červenofialový motív</translation>
@@ -1720,7 +1716,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Pridajte túto ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
 <translation id="6637478299472506933">Stiahnutie zlyhalo</translation>
 <translation id="6638511529934826365">Textová lupa…</translation>

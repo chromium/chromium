@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Izvēlne → Iestatījumi → Noklusējuma pārlūks</translation>
 <translation id="2818821771744632548">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPhone tālruņa atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="2819667972867209401">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē un tiek dzēsti, kad izrakstāties.</translation>
-<translation id="2825777862277359739">Pierakstieties, lai piekļūtu savām parolēm, cilnēm, grāmatzīmēm un citiem datiem.</translation>
 <translation id="2827760117436553203">Vai glabāt datus atsevišķi?</translation>
 <translation id="2829172210806130158">Meklējiet ekrānā.</translation>
 <translation id="2831109159746537587">Lai meklētu, apvelciet objektu vai pieskarieties attēlam</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Tagad jūsu saglabātās grāmatzīmes, paroles un citi dati atrodas augšdaļā.</translation>
 <translation id="3378214228000661758">Izveidojiet piekļuves atslēgu vietnei</translation>
 <translation id="3380352560400387991">Šī vietne mēģina atvērt lietojumprogrammu. Tādējādi tiks iziets no inkognito režīma.</translation>
-<translation id="3385742921291399323">Piekļūstiet saglabātajām parolēm, cilnēm, grāmatzīmēm un citam saturam.</translation>
 <translation id="3391765987934722383">Nepalaidiet garām cenas kritumu</translation>
 <translation id="3392923070107623576">Izveidojiet ciļņu grupas, lai saglabātu kārtību</translation>
 <translation id="3404232721752787413">Saglabāt pakalpojumā Google fotoattēli</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari datu importēšana</translation>
 <translation id="5152483358138813104">Ātrāka pierakstīšanās visās jūsu ierīcēs</translation>
 <translation id="515315847398512535">Meklēšana ekrānā ir izslēgta jūsu kontam. Lai iegūtu plašāku informāciju, sazinieties ar administratoru.</translation>
-<translation id="5155502059906700593">Pārvietojiet adreses joslu uz augšdaļu vai apakšdaļu.</translation>
 <translation id="5157638238828697074">Radās problēma. Lietojumprogrammu nevarēja atvērt.</translation>
 <translation id="5163417375525818870">PDF faili</translation>
 <translation id="5168414296986405587">Izstrādāts operētājsistēmai iPadOS</translation>
@@ -1569,7 +1566,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6196207969502475924">Meklēšana ar balsi</translation>
 <translation id="6198252989419008588">Mainīt PIN</translation>
-<translation id="6199783146233591178">Iegūstiet reāllaika aizsardzību, izmantojot drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="6210079381482819663">Šeit tiek pārvietotas cilnes, kas nav izmantotas vismaz <ph name="THRESHOLD" /> dienu(-as). <ph name="BEGIN_LINK" />Iestatījumos<ph name="END_LINK" /> varat jebkurā laikā to mainīt.</translation>
 <translation id="6213281885682386884">Netika atrasta neviena adrese</translation>
 <translation id="6218508144653756827">Fuksīnsarkans motīvs</translation>
@@ -1720,7 +1716,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Rediģēt mapi</translation>
 <translation id="6629759408545977279">No: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Pievienojiet šo papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="6634432609054530164">Jūsu organizācija izslēdza inkognito režīmu.</translation>
 <translation id="6637478299472506933">Lejupiel. neizdevās</translation>
 <translation id="6638511529934826365">Veikt teksta tālummaiņu…</translation>

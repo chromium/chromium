@@ -26,7 +26,6 @@
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="1516692594929310090">開啟 Chrome 分頁方格。</translation>
-<translation id="152319127067424683">從 iPhone Dock 更快存取 Chrome。</translation>
 <translation id="1526327845902180576">開啟時：
 <ph name="BEGIN_INDENT" /> • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
 
@@ -64,7 +63,6 @@
 <translation id="2212318912894837281">輸入通關密語才能儲存這個密碼，並在所有裝置上使用 Chrome 資料</translation>
 <translation id="2213327331203157297">如要停用 Chrome 的鎖定模式，請在 iPhone 上將該模式關閉。</translation>
 <translation id="2242467532204595597">隨時可以使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
-<translation id="2256384876478573507">用 iPhone 上網時，可以更快開啟 Chrome。</translation>
 <translation id="2270691132923135296">Chrome 基本操作一次上手</translation>
 <translation id="2311240109311056604">開啟 Chrome 恐龍遊戲。</translation>
 <translation id="2339201583852607431">密碼會儲存至你的 Google 帳戶 (<ph name="EMAIL" />)。</translation>
@@ -74,7 +72,6 @@
 <translation id="2427791862912929107">Chrome 的功能可讓你輕鬆管理網際網路數據傳輸和網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。影響範圍可能包含歷史記錄和自動填入功能。}}</translation>
-<translation id="2531823184391665648">用 iPad 上網時，可以更快開啟 Chrome。</translation>
 <translation id="2561231791489583059">使用 Chrome 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
@@ -105,7 +102,6 @@
 <translation id="3140589780564632473">在 Chrome 中搜尋影像內容</translation>
 <translation id="314782365035065913">從主畫面 Dock 更快存取 Chrome</translation>
 <translation id="3167189358072330585">無法使用您的帳戶登入 Google Chrome，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
-<translation id="320747600144551583">Chrome 提示：安全瀏覽強化防護功能隨時保護上網安全</translation>
 <translation id="322254490661677575">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請輸入通關密語。</translation>
 <translation id="3303503998967553377">在 iOS 上使用 Chrome 快捷操作</translation>
 <translation id="3348862487678490430">將閱讀清單項目加入 Chrome</translation>
@@ -135,7 +131,6 @@
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="411154422556990518">隨時掌握價格追蹤動態和 Chrome 提示。</translation>
-<translation id="4167555379306984168">查看 Chrome 新功能</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4409545895715116037">以下密碼不符合規定，因此未匯入 Google 密碼管理工具。</translation>
@@ -148,7 +143,6 @@
 <translation id="4636900170638246267">登入這個網站和 Chrome。</translation>
 <translation id="4647910807533196601">在 Chrome 中開啟我的最新分頁。</translation>
 <translation id="4693084815234024320">目前使用 Chrome 無痕模式</translation>
-<translation id="4708857722625759026">從 iPad Dock 更快存取 Chrome。</translation>
 <translation id="4713740144985377441">返回 Chrome 上傳檔案</translation>
 <translation id="4724297637870447613">在所有裝置上使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 頁面</translation>
@@ -162,7 +156,6 @@
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
 <translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。管理員可以設定或限制特定功能。</translation>
 <translation id="4925322001044117929">把 Chrome 設為 iPad 的預設瀏覽器</translation>
-<translation id="4934496192263958600">登入 Chrome 即可存取你的資料</translation>
 <translation id="496747131578053942">Chrome 提示：使用 Google 智慧鏡頭搜尋你的視界</translation>
 <translation id="498985224078955265">如要將這個分頁傳送到另一部裝置，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可防範資料侵害事件、封鎖不安全的網站或採取其他措施，協助提升網路安全。</translation>
@@ -247,7 +240,6 @@
 <translation id="6684809838922667136">讓 Chrome 更臻完美</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
-<translation id="6718973358446066955">即將完成 Chrome 設定！</translation>
 <translation id="6820553595690137150">通關密語加密資料不包括付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
@@ -336,7 +328,6 @@
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8371138994040262994">在 Chrome 中開啟設定。</translation>
-<translation id="8375378038757507658">隨時都能輕鬆使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
 <translation id="8392023217086447677">已在 Chrome 無痕模式中開啟</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
@@ -376,7 +367,6 @@
 <translation id="9122931302567044771">這代表 Chrome 每次都會對電腦版網站發出要求。</translation>
 <translation id="9176561303811134420">在 Chrome 中管理付款方式</translation>
 <translation id="9181628561061032322">開啟最近使用 Chrome 開啟的分頁。</translation>
-<translation id="924447568950697217">將 Chrome 設為預設瀏覽器</translation>
 <translation id="948597495737267756">開啟 Chrome 歷史記錄頁面。</translation>
 <translation id="954347330803595209">匯入資料即可在 Chrome 中使用密碼、歷史記錄、書籤和信用卡</translation>
 <translation id="97300214378190234">隨時可以使用 Chrome 開啟其他應用程式中的連結。</translation>

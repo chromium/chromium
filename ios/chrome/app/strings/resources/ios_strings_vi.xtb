@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Trình đơn → Cài đặt → Trình duyệt mặc định</translation>
 <translation id="2818821771744632548">Bạn đã bị đăng xuất khỏi tài khoản <ph name="USER_NAME" /> trong quá trình đặt lại iPhone. Để đăng nhập lại, hãy nhấn vào "Tiếp tục" ở dưới.</translation>
 <translation id="2819667972867209401">Khi bạn bật các lựa chọn này, dữ liệu sẽ được lưu vào Tài khoản Google của bạn. Khi bạn tắt các lựa chọn này, dữ liệu chỉ được lưu trên thiết bị này và sẽ bị xoá nếu bạn đăng xuất.</translation>
-<translation id="2825777862277359739">Đăng nhập để sử dụng mật khẩu, thẻ, dấu trang và nhiều dữ liệu khác.</translation>
 <translation id="2827760117436553203">Tách riêng dữ liệu?</translation>
 <translation id="2829172210806130158">Tìm trên màn hình</translation>
 <translation id="2831109159746537587">Hãy thử khoanh tròn hoặc nhấn vào hình ảnh để tìm kiếm</translation>
@@ -720,7 +719,6 @@
 <translation id="3377063233124932127">Dấu trang, mật khẩu, v.v. mà bạn đã lưu hiện sẽ xuất hiện ở trên cùng.</translation>
 <translation id="3378214228000661758">Tạo một khoá truy cập cho</translation>
 <translation id="3380352560400387991">Trang web này đang tìm cách mở một ứng dụng. Thao tác này sẽ đưa bạn ra khỏi chế độ ẩn danh.</translation>
-<translation id="3385742921291399323">Sử dụng mật khẩu, thẻ, dấu trang mà bạn đã lưu và nhiều dữ liệu khác.</translation>
 <translation id="3391765987934722383">Đừng bỏ lỡ đợt giảm giá</translation>
 <translation id="3392923070107623576">Sắp xếp bằng cách tạo các nhóm thẻ</translation>
 <translation id="3404232721752787413">Lưu vào Google Photos</translation>
@@ -1252,7 +1250,6 @@
 <translation id="5148717509369231739">Nhập từ Safari</translation>
 <translation id="5152483358138813104">Đăng nhập nhanh hơn trên các thiết bị</translation>
 <translation id="515315847398512535">Màn hình tìm kiếm đã bị tắt cho tài khoản của bạn. Hãy liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
-<translation id="5155502059906700593">Di chuyển thanh địa chỉ lên trên cùng hoặc xuống dưới cùng.</translation>
 <translation id="5157638238828697074">Đã xảy ra lỗi. Không thể mở ứng dụng.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Thiết kế cho iPadOS</translation>
@@ -1572,7 +1569,6 @@
 <translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6196207969502475924">Tìm kiếm bằng giọng nói</translation>
 <translation id="6198252989419008588">Thay đổi mã PIN</translation>
-<translation id="6199783146233591178">Được bảo vệ theo thời gian thực nhờ chế độ Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="6210079381482819663">Các thẻ bạn không dùng đến trong <ph name="THRESHOLD" /> ngày trở lên sẽ được chuyển đến đây. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào trong <ph name="BEGIN_LINK" />phần cài đặt<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Không tìm thấy địa chỉ nào</translation>
 <translation id="6218508144653756827">Giao diện màu hồng hoa vân anh</translation>
@@ -1723,7 +1719,6 @@
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
 <translation id="6629759408545977279">Từ: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Bổ sung lớp bảo vệ tăng cường này trước các mối đe doạ trên mạng.</translation>
 <translation id="6634432609054530164">Tổ chức của bạn đã tắt Chế độ ẩn danh</translation>
 <translation id="6637478299472506933">Tải xuống không thành công</translation>
 <translation id="6638511529934826365">Thu phóng văn bản…</translation>

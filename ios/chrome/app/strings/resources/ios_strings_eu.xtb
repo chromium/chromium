@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menua → Ezarpenak → Arakatzaile lehenetsia</translation>
 <translation id="2818821771744632548">iPhone-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
 <translation id="2819667972867209401">Aktibatuta badago, datuak Google-ko kontuan gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira. Saioa amaitzen baduzu, datu horiek ezabatuko dira.</translation>
-<translation id="2825777862277359739">Hasi saioa pasahitzak, fitxak, laster-markak eta bestelako datuak atzitzeko.</translation>
 <translation id="2827760117436553203">Datuak bereiz mantendu nahi dituzu?</translation>
 <translation id="2829172210806130158">Bilatu pantailan</translation>
 <translation id="2831109159746537587">Inguratu edo sakatu irudia bilatzeko</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Orain, gordetako laster-markak, pasahitzak eta gauza gehiago goialdean daude.</translation>
 <translation id="3378214228000661758">Sortu sarbide-gako bat honetarako:</translation>
 <translation id="3380352560400387991">Webgunea aplikazio bat irekitzen saiatzen ari da. Horrek ezkutuko modutik aterako zaitu.</translation>
-<translation id="3385742921291399323">Lortu gordetako pasahitzak, fitxak, laster-markak eta abar.</translation>
 <translation id="3391765987934722383">Ez galdu prezio-jaitsierarik</translation>
 <translation id="3392923070107623576">Eduki dena antolatuta fitxa taldeak sortuta</translation>
 <translation id="3404232721752787413">Gorde Google Argazkiak zerbitzuan</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari-ko inportazioa</translation>
 <translation id="5152483358138813104">Hasi saioa bizkorrago gailuetan.</translation>
 <translation id="515315847398512535">Pantailan bilatzeko aukera desaktibatuta dago zure kontuan. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
-<translation id="5155502059906700593">Aldatu helbide-barraren posizioa eta ezar ezazu goian edo behean.</translation>
 <translation id="5157638238828697074">Arazoren bat izan da. Ezin izan da ireki aplikazioa.</translation>
 <translation id="5163417375525818870">PDFak</translation>
 <translation id="5168414296986405587">iPadOS-erako sortua</translation>
@@ -1569,7 +1566,6 @@
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6196207969502475924">Ahozko bilaketa</translation>
 <translation id="6198252989419008588">Aldatu PINa</translation>
-<translation id="6199783146233591178">Lortu denbora errealeko babesa Arakatze seguru hobetua erabilita</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> egunez edo gehiagoz erabili ez diren fitxak hona ekartzen dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6213281885682386884">Ez da aurkitu helbiderik</translation>
 <translation id="6218508144653756827">Fuksia-koloreko gaia</translation>
@@ -1720,7 +1716,6 @@
 <translation id="6626281667717553020">CPSaren URIa</translation>
 <translation id="6627583120233659107">Editatu karpeta</translation>
 <translation id="6629759408545977279">Igorlea: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Gehitu babes-geruza gehigarri hau sareko mehatxuen aurka.</translation>
 <translation id="6634432609054530164">Zure erakundeak ezkutuko modua desaktibatu du</translation>
 <translation id="6637478299472506933">Ezin izan da deskargatu.</translation>
 <translation id="6638511529934826365">Aplikatu zooma testuari…</translation>

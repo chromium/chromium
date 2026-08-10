@@ -26,7 +26,6 @@
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="1516692594929310090">Chrome-ren fitxen sareta irekitzen du.</translation>
-<translation id="152319127067424683">Sartu Chrome-n bizkorrago iPhone-ko zintaren bidez.</translation>
 <translation id="1526327845902180576">Aktibatuta dagoenean:
 <ph name="BEGIN_INDENT" />  • Chrome zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
 
@@ -64,7 +63,6 @@ Kontuan hartu beharrekoak:
 <translation id="2212318912894837281">Idatzi pasaesaldia pasahitz hau gordetzeko eta Chrome-ko datuak gailu guztietan lortzeko</translation>
 <translation id="2213327331203157297">Chrome-n blokeo modua desgaitzeko, desaktiba ezazu iPhone-an.</translation>
 <translation id="2242467532204595597">Erabili Chrome mezuetako, dokumentuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
-<translation id="2256384876478573507">Ireki Chrome bizkorrago iPhone-an arakatzeko prest zaudenean.</translation>
 <translation id="2270691132923135296">Erabiltzen hasteko, lortu Chrome-ri buruzko oinarrizko ezagutza lagungarriak</translation>
 <translation id="2311240109311056604">Chrome-ko Dino jokoa irekitzen du.</translation>
 <translation id="2339201583852607431">Pasahitza Google-ko kontuan gordeko da (<ph name="EMAIL" />).</translation>
@@ -74,7 +72,6 @@ Kontuan hartu beharrekoak:
 <translation id="2427791862912929107">Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Baliteke historia eta betetze automatikoa barnean sartzea.}}</translation>
-<translation id="2531823184391665648">Ireki Chrome bizkorrago iPad-ean arakatzeko prest zaudenean.</translation>
 <translation id="2561231791489583059">Erabili Chrome arakatzaile lehenetsi gisa webgune arriskutsuen aurka babestuta egoteko eta pasahitzak seguru mantentzeko</translation>
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
@@ -107,7 +104,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="3140589780564632473">Bilatu irudi bidez Chrome-n</translation>
 <translation id="314782365035065913">Sartu Chrome-n bizkorrago orri nagusiko zintaren bidez</translation>
 <translation id="3167189358072330585">Kontua ez dabil Google Chrome-n. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
-<translation id="320747600144551583">Chrome-rako aholkua: arakatze seguru hobetua oso lagungarria egingo zaizu</translation>
 <translation id="322254490661677575">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia.</translation>
 <translation id="3303503998967553377">Erabili Chrome-ren Ekintzak iOS-en</translation>
 <translation id="3348862487678490430">Gehitu irakurketa-zerrendako elementu bat Chrome-n</translation>
@@ -137,7 +133,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="3988789688219830639">Google Chrome-k ez du argazki eta bideoetarako sarbiderik. Gaitu ezazu iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4064699917955374540">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela.</translation>
 <translation id="411154422556990518">Egin prezioen jarraipenaren informazio eguneratuaren eta Chrome-ri buruzko aholku lagungarrien jarraipena.</translation>
-<translation id="4167555379306984168">Ikusi Chrome-ren berritasunak</translation>
 <translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4409545895715116037">Sarbide-gako hauek ez dira inportatu Google-ren Pasahitz-kudeatzailea zerbitzura, eskakizunak betetzen ez dituztelako.</translation>
@@ -150,7 +145,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="4636900170638246267">Hasi saioa webgune honetan eta Chrome-n.</translation>
 <translation id="4647910807533196601">Ireki nire azken fitxa Chrome-n.</translation>
 <translation id="4693084815234024320">Chrome-ren ezkutuko moduan zaude</translation>
-<translation id="4708857722625759026">Sartu Chrome-n bizkorrago iPad-eko zintaren bidez.</translation>
 <translation id="4713740144985377441">Itzuli Chrome-ra fitxategia kargatzeko</translation>
 <translation id="4724297637870447613">Erabili Chrome edonon</translation>
 <translation id="4738647308035481133">Google Chrome-ko orri bat</translation>
@@ -164,7 +158,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="4903674399067644695">Txartel horretan, Chrome-ri ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="49200511069271369"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chrome erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
 <translation id="4925322001044117929">Erabili Chrome iPad-ean modu lehenetsian</translation>
-<translation id="4934496192263958600">Hasi saioa Chrome-n zure gauzak atzitzeko</translation>
 <translation id="496747131578053942">Chrome-rako aholkua: bilatu ikusten duzuna Google Lens-ekin</translation>
 <translation id="498985224078955265">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bi gailuetan.</translation>
 <translation id="5030102366287574140">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
@@ -249,7 +242,6 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chrome-ko datuak Google-ko kontuan g
 <translation id="6684809838922667136">Hobetu Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chrome {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>
 <translation id="6709398533399187136">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Google-ren Pasahitz-kudeatzailea zerbitzuak hura orain aldatzea gomendatzen du.</translation>
-<translation id="6718973358446066955">Ia amaitu duzu Chrome konfiguratzen!</translation>
 <translation id="6820553595690137150">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira ordainketa-metodoak eta helbideak.
 
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
@@ -337,7 +329,6 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8371138994040262994">Chrome-ren ezarpenak irekitzen ditu.</translation>
-<translation id="8375378038757507658">Erabili Chrome erraz mezuetako edo beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="8387459386171870978">Jarraitu Chrome erabiltzen</translation>
 <translation id="8392023217086447677">Ireki da Chrome-ren ezkutuko moduan</translation>
 <translation id="840168496893712993">Gehigarri batzuek Chrome huts egitea eragiten dute. Saiatu horiek desinstalatzen.</translation>
@@ -377,7 +368,6 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="9122931302567044771">Ondorioz, Chrome-k beti eskatuko du ordenagailuetarako webgunea.</translation>
 <translation id="9176561303811134420">Kudeatu ordainketa-metodoak Chrome-n</translation>
 <translation id="9181628561061032322">Chrome-ren azkenaldiko fitxak irekitzen ditu.</translation>
-<translation id="924447568950697217">Bihurtu Chrome arakatzaile lehenetsi</translation>
 <translation id="948597495737267756">Chrome-ko historiaren orria irekitzen du.</translation>
 <translation id="954347330803595209">Pasahitzak, historia, laster-markak eta kreditu-txartelak Chrome-n erabiltzeko, inportatu zure datuak</translation>
 <translation id="97300214378190234">Erabili Chrome beste aplikazioetako estekak sakatzen dituzunean.</translation>

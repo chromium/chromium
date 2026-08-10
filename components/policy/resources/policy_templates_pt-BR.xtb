@@ -8375,14 +8375,6 @@ Quando esta política for ativada ou deixada sem definição, os usuários poder
 
 Quando ela estiver desativada, o app vai estar no modo somente leitura, impedindo qualquer personalização.</translation>
 <translation id="6150320133676152520">Desativar o envio automático do PIN nas telas de bloqueio e login</translation>
-<translation id="6152224988699207920">Permite que os admins personalizem a aparência das marcas-d'água aplicadas pelas regras de Prevenção Contra Perda de Dados (DLP, na sigla em inglês). Isso inclui configurar a opacidade do preenchimento/contorno, o tamanho da fonte e o fuso horário do carimbo de data/hora.
-Se a política ou alguns valores não forem definidos, o Chrome vai usar o comportamento padrão de marca-d'água.
-Os valores padrão são: opacidade do preenchimento em 4, opacidade do contorno em 6, tamanho da fonte em 24 e fuso horário do carimbo de data/hora definido como "user_device" (fuso horário local do dispositivo do usuário).
-
-A opacidade do preenchimento é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-A opacidade do contorno é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-O tamanho da fonte é definido em pontos.
-O fuso horário do carimbo de data/hora especifica o identificador da IANA, como "America/Toronto", usado para formatar marcas-d'água com carimbo de data/hora (disponível a partir do Chrome 152), seguindo os nomes no banco de dados dessa organização (https://www.iana.org/time-zones, site em inglês).</translation>
 <translation id="6155350825868160236">Permitir que o usuário escolha se serviços da Web do Google serão usados para solucionar erros de ortografia</translation>
 <translation id="6155936611791017817">Definir estado padrão do cursor grande na tela de login</translation>
 <translation id="6157537876488211233">Lista separada por vírgulas das regras de proxies ignoráveis</translation>

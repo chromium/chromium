@@ -8395,14 +8395,6 @@ Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna akan dapat meny
 
 Jika kebijakan ini disetel ke nonakitf, aplikasi Pintasan Keyboard akan berada dalam mode hanya baca, sehingga pengguna tidak dapat melakukan penyesuaian.</translation>
 <translation id="6150320133676152520">Nonaktifkan pengiriman otomatis PIN di layar kunci dan layar login</translation>
-<translation id="6152224988699207920">Mengizinkan administrator menyesuaikan tampilan watermark yang diterapkan oleh aturan Pencegahan Kebocoran Data (DLP). Penyesuaian ini mencakup setelan opasitas isian/garis tepi, penentuan ukuran font, serta setelan zona waktu untuk stempel waktu.
-Jika kebijakan ini atau beberapa nilainya tidak disetel, Chrome akan menggunakan perilaku watermark default.
-Nilai defaultnya adalah: opasitas isian 4, opasitas garis tepi 6, ukuran font 24, dan zona waktu stempel waktu disetel ke 'user_device' (zona waktu perangkat lokal pengguna).
-
-'Opasitas Isian' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'Opasitas Garis Tepi' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'Ukuran Font' ditentukan dalam satuan poin.
-'Zona Waktu Stempel Waktu' menentukan ID zona waktu IANA (mis. 'America/Toronto') yang digunakan untuk memformat stempel waktu watermark (didukung mulai Chrome 152 ke atas), yang mengacu pada nama-nama di Database Zona Waktu IANA ( https://www.iana.org/time-zones ).</translation>
 <translation id="6155350825868160236">Izinkan pengguna memilih apakah akan menggunakan layanan web Google untuk mengatasi kesalahan ejaan</translation>
 <translation id="6155936611791017817">Setel status default kursor besar di layar masuk</translation>
 <translation id="6157537876488211233">Peraturan mengabaikan proxy yang dipisahkan koma</translation>

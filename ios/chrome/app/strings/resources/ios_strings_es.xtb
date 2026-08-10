@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Se ha cerrado la sesión de tu cuenta (<ph name="USER_NAME" />) al restablecer tu iPhone. Para volver a iniciar sesión, toca Continuar abajo.</translation>
 <translation id="2819667972867209401">Si esta opción está activada, los datos se guardan en tu cuenta de Google. Si está desactivada, los datos solo se guardan en este dispositivo y se eliminan al cerrar sesión.</translation>
-<translation id="2825777862277359739">Inicia sesión para acceder a tus contraseñas, pestañas y marcadores, entre otras cosas.</translation>
 <translation id="2827760117436553203">¿Mantener los datos separados?</translation>
 <translation id="2829172210806130158">Hacer búsquedas en la pantalla</translation>
 <translation id="2831109159746537587">Prueba a rodear o tocar la imagen para buscar</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Ahora tus marcadores, contraseñas y otros elementos guardados se muestran en la parte superior.</translation>
 <translation id="3378214228000661758">Crea una llave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está intentando abrir una aplicación. Como resultado, saldrás del modo Incógnito.</translation>
-<translation id="3385742921291399323">Accede a tus contraseñas, pestañas y marcadores, entre otras cosas.</translation>
 <translation id="3391765987934722383">No te pierdas ninguna bajada de precio</translation>
 <translation id="3392923070107623576">Organízate creando grupos de pestañas</translation>
 <translation id="3404232721752787413">Guardar en Google Fotos</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Importación desde Safari</translation>
 <translation id="5152483358138813104">Inicia sesión más rápido en tus dispositivos</translation>
 <translation id="515315847398512535">La pantalla de búsqueda está desactivada en tu cuenta. Ponte en contacto con tu administrador para obtener más información.</translation>
-<translation id="5155502059906700593">Cambia la posición de la barra de direcciones a la parte superior o inferior.</translation>
 <translation id="5157638238828697074">Se ha producido un error. No se ha podido abrir la aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
-<translation id="6199783146233591178">Obtén protección en tiempo real con Navegación segura mejorada</translation>
 <translation id="6210079381482819663">Las pestañas que no se usen durante <ph name="THRESHOLD" /> días o más se moverán aquí. Puedes cambiar esta opción en cualquier momento desde la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">No se ha encontrado ninguna dirección</translation>
 <translation id="6218508144653756827">Tema fucsia</translation>
@@ -1720,7 +1716,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6626281667717553020">URI de CPS</translation>
 <translation id="6627583120233659107">Editar carpeta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Añade esta capa adicional de protección frente a las amenazas online.</translation>
 <translation id="6634432609054530164">Tu organización ha desactivado el modo Incógnito</translation>
 <translation id="6637478299472506933">Error de descarga</translation>
 <translation id="6638511529934826365">Ampliar texto…</translation>

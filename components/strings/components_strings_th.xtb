@@ -193,6 +193,7 @@
 <translation id="132301787627749051">ค้นหารูปภาพในคลิปบอร์ด</translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
 <translation id="1330449323196174374">พับทบด้านซ้าย</translation>
+<translation id="1330952240988133220">บันทึกเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยงไว้ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="133173645041092770">ปิดเว็บไซต์</translation>
 <translation id="1333745675627230582">เล่นเกมไดโนเสาร์ Chrome</translation>
 <translation id="1333989956347591814">บุคคลหรือองค์กรต่อไปนี้<ph name="BEGIN_EMPHASIS" />อาจยังมองเห็น<ph name="END_EMPHASIS" />กิจกรรมของคุณ
@@ -341,6 +342,7 @@
 <translation id="1569487616857761740">ป้อนวันที่หมดอายุ</translation>
 <translation id="1569694109004336106">Google Chrome กำลังพยายามเปิด Windows Hello เพื่อป้อนรหัสผ่าน</translation>
 <translation id="1569905000953679183">การดึงข้อมูลนโยบายการติดตั้งส่วนขยาย</translation>
+<translation id="1572383686781055412">อัปเดต KTN อย่างปลอดภัย</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> นิ้ว</translation>
 <translation id="1574714699824202614">กําลังยืนยันวิธีการชําระเงิน</translation>
 <translation id="1576277203042721907">ข้อมูลเชิงลึกเกี่ยวกับ Shopping</translation>
@@ -397,6 +399,7 @@
 <translation id="1658918301167915956">อุปกรณ์บลูทูธ</translation>
 <translation id="1662550410081243962">บันทึกและกรอกวิธีการชำระเงิน</translation>
 <translation id="1662980953334786797">ลำดับเดียวกัน</translation>
+<translation id="1663578299724791827">บันทึก KTN อย่างปลอดภัย</translation>
 <translation id="1663943134801823270">ข้อมูลบัตรและที่อยู่มาจาก Chrome คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="1664389769577564606">เฟล็กโซโฟโต้โพลิเมอร์</translation>
 <translation id="1667730174533834274">ยืนยันตัวตนของคุณก่อนเปลี่ยนการตั้งค่า</translation>
@@ -404,6 +407,7 @@
 <translation id="1670861525135254448">บันทึกยานพาหนะ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">ด้านขอบสั้นก่อน</translation>
+<translation id="1683083957814090281">อัปเดตยานพาหนะอย่างปลอดภัย</translation>
 <translation id="168693727862418163">ตรวจสอบค่านโยบายนี้กับสคีมาไม่ได้ ระบบจะเพิกเฉยต่อค่านี้</translation>
 <translation id="168841957122794586">ใบรับรองของเซิร์ฟเวอร์มีคีย์การเข้ารหัสที่ไม่รัดกุม</translation>
 <translation id="1688718429648938412">บันทึกบัตรสะสมคะแนนลงใน Wallet</translation>
@@ -868,6 +872,7 @@
 <translation id="2469153820345007638">ลำดับ 1 ถึง N</translation>
 <translation id="24699311393038040">กระดาษ (เคลือบ)</translation>
 <translation id="2471632709106952369">ตารางเปรียบเทียบ</translation>
+<translation id="2472396075297339227">บันทึกหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) ไว้ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="2477607419416067650">ข้อมูลอื่นๆ ใน Google</translation>
 <translation id="247903268499247848">ไม่อนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและเซ็นเซอร์แสง</translation>
 <translation id="2479148705183875116">ไปที่การตั้งค่า</translation>
@@ -926,6 +931,7 @@
 <translation id="2553352788023127673">คุณลบประวัติการค้นหาและรหัสผ่านได้ในการตั้งค่าการจัดการ</translation>
 <translation id="2553853292994445426">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย คุณอาจกำหนดค่าเซิร์ฟเวอร์ DNS ที่ปลอดภัยไว้ซึ่งทำการเชื่อมต่อไม่สำเร็จ</translation>
 <translation id="2555855727505718984">การป้อนข้อความอัตโนมัติจะไม่มีข้อมูลนี้ในอุปกรณ์นี้เพื่อช่วยกรอกแบบฟอร์ม</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;เลิกทำการแก้ไข</translation>
 <translation id="2559566667529177711">หลายชั้น</translation>
 <translation id="2570734079541893434">จัดการการตั้งค่า</translation>
@@ -1325,6 +1331,7 @@
 <translation id="3273738040255912340">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">ข้อความแจ้งให้บันทึก IBAN ที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="327455571215090823">การป้อนข้อความอัตโนมัติที่ชาญฉลาดยิ่งขึ้นและเป็นส่วนตัว</translation>
+<translation id="3280440382387335343">อัปเดตหนังสือเดินทางอย่างปลอดภัยใน Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์นี้ใน <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์เหล่านี้ใน <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
 <translation id="3286372614333682499">แนวตั้ง</translation>
@@ -1464,6 +1471,7 @@
 <translation id="3543597750097719865">ลายเซ็น X9.62 ECDSA ที่มี SHA-512</translation>
 <translation id="3543935938072367282">ชำระเงินได้เร็วขึ้นด้วยฟีเจอร์ป้อนข้อความอัตโนมัติ</translation>
 <translation id="3547442767634383572">ภาพรวมของโปรไฟล์งาน</translation>
+<translation id="3547673868874844776">บันทึกบัตรประจำตัวอย่างปลอดภัย</translation>
 <translation id="3547746132308051926">20 x 24 นิ้ว</translation>
 <translation id="3549904448933807997">ข้อมูลเบราว์เซอร์และโปรไฟล์ (รวมถึงโปรไฟล์ส่วนตัวและโปรไฟล์งาน)</translation>
 <translation id="3552155506104542239">คำเตือน: นโยบายนี้ขัดแย้งกับ <ph name="POLICY_NAME" /> และจะไม่มีผลกับแอป Android หากมิเช่นนั้น นโยบายนี้จะทำงานตามที่ตั้งใจไว้</translation>
@@ -1672,6 +1680,7 @@
 <translation id="388632593194507180">ตรวจพบการตรวจสอบ</translation>
 <translation id="3886948180919384617">สแต็กเกอร์ 3</translation>
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
+<translation id="3892626428170730309">บันทึกหนังสือเดินทางอย่างปลอดภัย</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
 <translation id="390391808978419508">การเปิดหมดเวลาแล้ว</translation>
@@ -1827,6 +1836,7 @@
 <translation id="4153858337812834972">แท็บล่าสุด</translation>
 <translation id="4154277373259957087">ตอนนี้ Chrome จะยืนยันตัวตนของคุณก่อนกรอกวิธีการชําระเงิน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /></translation>
 <translation id="4157273919218514718">ขับเคลื่อนโดย Personal Intelligence จาก Gemini <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">อัปเดตใบขับขี่อย่างปลอดภัย</translation>
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4165422751765527461">เปิดบทความในศูนย์ช่วยเหลือในแท็บใหม่</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>
@@ -1841,6 +1851,7 @@
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4178863275556660738">ชำระเงินด้วยวิธีการชำระเงินที่ไม่ใช่บัตร</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">อัปเดตหมายเลข Redress อย่างปลอดภัย</translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
 <translation id="4190446002599583608">การค้นหาประวัติการเข้าชม ซึ่งทำงานด้วย AI</translation>
 <translation id="4191334393248735295">ความยาว</translation>
@@ -1882,6 +1893,7 @@
 <translation id="4231448684371260244">8 x 13 นิ้ว</translation>
 <translation id="4234996384188431444">ชำระเงินด้วย Pix โดยไม่ต้องเปลี่ยนแอปใน Google Chrome</translation>
 <translation id="4238607350028440048">ช่วยฉันฝึกสัมภาษณ์งานโดยถามคำถามเหมือนคุณเป็นผู้จัดการฝ่ายสรรหาบุคลากร</translation>
+<translation id="4239215166147486528">บันทึกใบขับขี่ไว้ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="4239799716689808527">ป้าย</translation>
 <translation id="424063167283213501">บันทึกหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว</translation>
 <translation id="4241830393007970744">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์</translation>
@@ -1994,6 +2006,7 @@
 <translation id="4407758156081352648">เพื่อรักษาความปลอดภัย องค์กรของคุณไม่อนุญาตให้นำรหัสผ่านกลับมาใช้ใหม่ใน Chrome รหัสผ่านใน Chrome ได้รับการเข้ารหัสเพื่อปกป้องความเป็นส่วนตัวของผู้ใช้</translation>
 <translation id="4409271659088619928">เครื่องมือค้นหาของคุณคือ <ph name="DSE" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="4409556632583862731">ชุดข้อความใหม่</translation>
+<translation id="4410614037742891410">อัปเดตบัตรประจำตัวใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="4412074349188076601">การกําหนดค่านี้ทําเครื่องหมายเป็น "ติดตั้งได้" แต่ไม่ได้ระบุอิมเมจสําหรับสถาปัตยกรรมนี้ จึงติดตั้งไม่ได้</translation>
 <translation id="4412377069090572315">ความคิดเห็นจากผู้อื่น</translation>
 <translation id="4414515549596849729">คุกกี้และข้อมูลเว็บไซต์</translation>
@@ -2207,9 +2220,11 @@
 <translation id="4800132727771399293">ตรวจสอบวันหมดอายุและ CVC แล้วลองอีกครั้ง</translation>
 <translation id="4800546479758254481">อนุญาต AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">อัปเดตบัตรประจำตัวอย่างปลอดภัย</translation>
 <translation id="4807098396393229769">ชื่อบนบัตร</translation>
 <translation id="4809079943450490359">วิธีการจากผู้ดูแลระบบอุปกรณ์ของคุณ</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
+<translation id="4811696127853690432">บันทึกยานพาหนะอย่างปลอดภัยใน Google Wallet</translation>
 <translation id="4811918461974803225">Google Pay, โลโก้ Affirm</translation>
 <translation id="4813512666221746211">ข้อผิดพลาดของเครือข่าย</translation>
 <translation id="4814114628197290459">ลบ IBAN</translation>
@@ -2339,11 +2354,13 @@
 <translation id="5020862932518041900">ไม่ว่าคุณจะเลือกหรือข้ามคำแนะนำไป Chrome จะปรับเปลี่ยนเพื่อให้มั่นใจว่าคุณจะเห็นเฉพาะสิ่งที่เกี่ยวข้องกับคุณเท่านั้น</translation>
 <translation id="5021500396464456616">ติดต่อผู้ที่ส่งลิงก์นี้</translation>
 <translation id="5021557570875267742">ติดตามราคาด้วย Chrome</translation>
+<translation id="502229363433123770">บันทึกหมายเลข Redress อย่างปลอดภัย</translation>
 <translation id="5023310440958281426">ตรวจสอบนโยบายของผู้ดูแลระบบของคุณ</translation>
 <translation id="5024171724744627792">ชำระเงินได้เร็วขึ้นเมื่อบันทึกบัตร รายละเอียดบัตรจะได้รับการเข้ารหัสในบัญชี Google ของคุณ</translation>
 <translation id="5026121202864677765">เขียนจดหมายสมัครงานให้ฉัน</translation>
 <translation id="5030338702439866405">ออกโดย</translation>
 <translation id="503069730517007720">ไม่ได้ติดตั้งใบรับรองรากที่จำเป็นของ "<ph name="SOFTWARE_NAME" />" ผู้ดูแลระบบ IT ควรดูวิธีการกำหนดค่าของ "<ph name="SOFTWARE_NAME" />" เพื่อแก้ไขปัญหานี้ <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">บันทึก KTN อย่างปลอดภัยใน Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ต้องการใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">ขนาดแบบอักษร</translation>
@@ -2720,6 +2737,7 @@
 <translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5649053991847567735">การดาวน์โหลดโดยอัตโนมัติ</translation>
 <translation id="5651323159439184939">ถาดป้อนกระดาษด้วยเฟืองขับด้านหลัง</translation>
+<translation id="5653681867130739344">อัปเดตบัตรประจำตัวใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="5654927323611874862">รหัสรายงานข้อขัดข้องที่อัปโหลด:</translation>
 <translation id="5654965123204121933">URL ไม่มีสตริงการแทนที่ <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">อีเมล</translation>
@@ -2832,6 +2850,7 @@
 <translation id="5866898949289125849">คุณกำลังดูหน้าเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="5869405914158311789">ไม่สามารถเข้าถึงเว็บไซต์นี้</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
+<translation id="5872115357279348603">อัปเดต KTN อย่างปลอดภัยใน Google Wallet</translation>
 <translation id="5872215789867188990">กลุ่มแท็บ "<ph name="GROUP_TITLE" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="5872692522325383488">บันทึก IBAN แล้ว</translation>
 <translation id="5879989559903563723">ไม่อนุญาตในโหมดผู้มาเยือน</translation>
@@ -2855,6 +2874,7 @@
 <translation id="5914185423510719251">บันทึก KTN ใน Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> เพิ่มแท็บนี้แล้ว</translation>
 <translation id="59174027418879706">เปิดใช้งาน</translation>
+<translation id="5917538780499455803">บันทึกบัตรประชาชนอย่างปลอดภัย</translation>
 <translation id="5918847752193018339">ชำระเงินได้เร็วขึ้นเมื่อบันทึกรหัส CVC ของคุณไว้ <ph name="LINK_BEGIN" />ลบรหัสความปลอดภัยที่บันทึกไว้<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">เปิด</translation>
@@ -3161,6 +3181,7 @@
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">ตรวจสอบว่าข้อมูลธุรกิจหรือข้อมูลส่วนตัวที่สำคัญจัดเก็บไว้ภายนอก</translation>
+<translation id="6422648598133086441">อัปเดตรถอย่างปลอดภัยใน Google Wallet</translation>
 <translation id="6425092077175753609">วัสดุ</translation>
 <translation id="6427730057873428458">พับทบ</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3334,6 +3355,7 @@
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
 <translation id="6743841972744298686">การตั้งค่าการซิงค์</translation>
 <translation id="6745212570062463886">ป้อนชื่อและอีเมลจากบัญชี Google โดยอัตโนมัติ</translation>
+<translation id="674580074662200768">อัปเดตหนังสือเดินทางอย่างปลอดภัย</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ค่านโยบาย</translation>
 <translation id="6753434778807740853">ลบรายการข้อมูล <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3493,6 +3515,7 @@
 <translation id="7023765275461720661">ลิงก์บัญชีและชำระเงินด้วย <ph name="BNPL_ISSUER_NAME" /> ไหม</translation>
 <translation id="7030164307377592766">แก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="7031110846419387930">ข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้งไว้ ไฟล์ และที่อยู่ IP</translation>
+<translation id="7031356333130415891">อัปเดตบัตรประชาชนอย่างปลอดภัย</translation>
 <translation id="7031646650991750659">แอปจาก Google Play ที่คุณติดตั้ง</translation>
 <translation id="7035705295266423040">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
@@ -3617,6 +3640,7 @@
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">หากต้องการลบข้อมูลนี้ ให้ไปที่การตั้งค่าการจัดการ</translation>
+<translation id="7253051586755429279">อัปเดต Redress ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="7255540419660272073">ปุ่มไม่ชอบ กด Enter เพื่อเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบ<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">ถาดหลัง</translation>
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
@@ -3981,6 +4005,7 @@
 <translation id="7860345425589240791">ป้อนวันที่หมดอายุใหม่และ CVC ที่<ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">ออกจากเว็บไซต์ไหม</translation>
 <translation id="7862306158978555061">แสดงข้อมูลที่ละเอียดอ่อน</translation>
+<translation id="7863122976993412643">บันทึกใบขับขี่อย่างปลอดภัย</translation>
 <translation id="7865448901209910068">เร็วที่สุด</translation>
 <translation id="7865482168955081228">หน้าจอข้อผิดพลาดของ "ซื้อก่อน จ่ายทีหลัง" ปิดอยู่</translation>
 <translation id="7869655448736341731">ไม่จำกัด</translation>
@@ -4029,6 +4054,7 @@
 <translation id="7943893128817522649">สามารถขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้</translation>
 <translation id="7947285636476623132">ตรวจสอบปีหมดอายุแล้วลองอีกครั้ง</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ของ Chrome</translation>
+<translation id="7947964969544524438">บันทึกหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) อย่างปลอดภัย</translation>
 <translation id="7948579849190819732">แท็บปัจจุบัน</translation>
 <translation id="7950027195171824198">จัดการค่ากำหนดเกี่ยวกับคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="7951415247503192394">(32 บิต)</translation>
@@ -4227,6 +4253,7 @@
 <translation id="8297545700510100061">ระบบจะใช้คุกกี้และข้อมูลอื่นของเว็บไซต์ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้หรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="SETTINGS" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8298399736867690281">บัตรได้รับการบันทึกไว้ในอุปกรณ์เท่านั้น</translation>
+<translation id="8300302621078931927">บันทึกบัตรประชาชนใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="8301894345671534559">ป้อนรหัส</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="830868413617744215">เบต้า</translation>
@@ -4437,6 +4464,8 @@
 <translation id="8710842507289500830">รูปแบบตัวอักษร</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8715198179991802709">Chrome เพิ่งแจ้งเตือนเกี่ยวกับเว็บไซต์ที่คุณพยายามเข้าชม ช่วยเราปรับปรุงคำเตือนเหล่านี้โดยตอบแบบสำรวจซึ่งใช้เวลาเพียง 1 นาที</translation>
+<translation id="8716983145825913456">บันทึกยานพาหนะอย่างปลอดภัย</translation>
+<translation id="8717177139469452440">บันทึกหนังสือเดินทางอย่างปลอดภัยใน Google Wallet</translation>
 <translation id="8718314106902482036">การชำระเงินไม่เสร็จสมบูรณ์</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, คำแนะนำการค้นหา</translation>
 <translation id="8719528812645237045">เจาะรูด้านบนหลายรู</translation>
@@ -4538,6 +4567,7 @@
 <translation id="888169490072887292">ค้นหาร้านอาหารที่เหมาะสำหรับครอบครัวและมีเมนูสำหรับเด็ก</translation>
 <translation id="8883863364960302898">โฟลเดอร์ Google ไดรฟ์</translation>
 <translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
+<translation id="8889525327610245418">อัปเดตใบขับขี่ไว้ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="8891031436559779793">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="8891727572606052622">โหมดพร็อกซีไม่ถูกต้อง</translation>
 <translation id="8894794286471754040">ด้านขอบยาวก่อน</translation>
@@ -4773,6 +4803,7 @@
 <translation id="978750072783101994">ป้อนข้อมูลบัตรนี้โดยอัตโนมัติสำหรับการซื้อใน Chromium เมื่อบันทึกบัตรไว้ใน Google Wallet</translation>
 <translation id="979107176848483472">เบราว์เซอร์และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
+<translation id="98237783946365638">บันทึกบัตรประจำตัวไว้ใน Google Wallet อย่างปลอดภัย</translation>
 <translation id="983587187183716432">ปุ่ม<ph name="AI_ENGINE_NAME" /> กด Enter เพื่อถาม<ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="985199708454569384">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้หากวันที่และเวลาของคอมพิวเตอร์หรือมือถือไม่ถูกต้อง&lt;/p&gt;

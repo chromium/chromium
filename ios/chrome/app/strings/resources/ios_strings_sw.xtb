@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menyu → Mipangilio → Kivinjari chaguomsingi</translation>
 <translation id="2818821771744632548">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPhone yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="2819667972867209401">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, inahifadhi data kwenye kifaa hiki pekee na inafutwa iwapo utaondoka kwenye akaunti.</translation>
-<translation id="2825777862277359739">Ingia katika akaunti ili upate manenosiri, vichupo, alamisho zako na zaidi.</translation>
 <translation id="2827760117436553203">Ungependa kuhifadhi data kivyake?</translation>
 <translation id="2829172210806130158">Tafuta maudhui kwenye skrini yako</translation>
 <translation id="2831109159746537587">Jaribu kuchora mviringo au kugusa picha ili utafute</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Sasa alamisho, manenosiri yako yaliyohifadhiwa na zaidi huonekana juu ya ukurasa.</translation>
 <translation id="3378214228000661758">Unda ufunguo wa siri wa</translation>
 <translation id="3380352560400387991">Tovuti hii inajaribu kufungua programu. Hatua hii itakuondoa kwenye hali ya faraghani.</translation>
-<translation id="3385742921291399323">Pata manenosiri, vichupo, alamisho ulizohifadhi na zaidi.</translation>
 <translation id="3391765987934722383">Usikose punguzo la bei</translation>
 <translation id="3392923070107623576">Panga shughuli zako kwa kuanzisha vikundi vya vichupo</translation>
 <translation id="3404232721752787413">Hifadhi katika Picha kwenye Google</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Upakiaji kwenye Safari</translation>
 <translation id="5152483358138813104">Ingia katika akaunti haraka ukitumia vifaa vyako</translation>
 <translation id="515315847398512535">Kipengele cha kutafuta kwenye skrini kimezimwa katika akaunti yako. Wasiliana na msimamizi wako ili upate maelezo zaidi.</translation>
-<translation id="5155502059906700593">Badilisha nafasi ya sehemu yako ya anwani iwe juu au chini.</translation>
 <translation id="5157638238828697074">Hitilafu fulani imetokea. Imeshindwa kufungua programu.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Imetengenezwa kwa ajili ya iPadOS</translation>
@@ -1569,7 +1566,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6193448654517602979">Chagua vichupo</translation>
 <translation id="6196207969502475924">Utafutaji wa Sauti</translation>
 <translation id="6198252989419008588">Badilisha PIN</translation>
-<translation id="6199783146233591178">Pata ulinzi katika wakati halisi ukitumia Kipengele cha kuvinjari salama kilichoboreshwa</translation>
 <translation id="6210079381482819663">Vichupo ambavyo havijatumika kwa siku <ph name="THRESHOLD" /> au zaidi vinahamishiwa hapa. Unaweza kubadilisha hali hii wakati wowote katika <ph name="BEGIN_LINK" />mipangilio<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Hakuna anwani zinazopatikana</translation>
 <translation id="6218508144653756827">Mandhari ya rangi ya fushia</translation>
@@ -1720,7 +1716,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6626281667717553020">URI ya CPS</translation>
 <translation id="6627583120233659107">Badilisha folda</translation>
 <translation id="6629759408545977279">Kutoka: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Weka safu hii ya ziada ya ulinzi dhidi ya vitisho vya mtandaoni.</translation>
 <translation id="6634432609054530164">Shirika lako limezima Hali fiche</translation>
 <translation id="6637478299472506933">Upakuaji Umeshindwa</translation>
 <translation id="6638511529934826365">Kuza Maandishi…</translation>

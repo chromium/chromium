@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menyu → Ayarlar → Defolt brauzer</translation>
 <translation id="2818821771744632548">iPhone-u sıfırlayarkən <ph name="USER_NAME" /> hesabından çıxdınız. Yenidən daxil olmaq üçün aşağıda "Davam edin" üzərinə toxunun.</translation>
 <translation id="2819667972867209401">Yanılı olduqda data Google Hesabında yadda saxlanılır. Sönülü olduqda data yalnız bu cihazda yadda saxlanılır və çıxdığınız zaman silinir.</translation>
-<translation id="2825777862277359739">Parol, tab, əlfəcin və s. əldə etmək üçün daxil olun.</translation>
 <translation id="2827760117436553203">Data ayrı saxlanılsın?</translation>
 <translation id="2829172210806130158">Ekranda axtarın</translation>
 <translation id="2831109159746537587">Axtarış üçün şəkli dairəyə alın və ya ona toxunun</translation>
@@ -693,6 +692,7 @@
 <translation id="3259451381796379533">Bu hesab Gemini ilə işləməyəcək. Başqa Google Hesabı ilə daxil olun.</translation>
 <translation id="3265736395246760288">Sinxronlaşdırılmış cihazlarınızdan daha sürətlə daxil olun.</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
+<translation id="3272955648592358996">Datanız Google Sİ-ni təkmilləşdirir</translation>
 <translation id="3273510436356991673">Əsas ekranı fərdiləşdirin</translation>
 <translation id="3277021493514034324">Sayt ünvanı kopyalandı</translation>
 <translation id="3280562213547448728">Səsli axtarış</translation>
@@ -719,7 +719,6 @@
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
 <translation id="3378214228000661758">Bunun üçün parol yaradın</translation>
 <translation id="3380352560400387991">Bu sayt tətbiqi açmağa çalışır. Anonim rejimdən çıxacaqsınız.</translation>
-<translation id="3385742921291399323">Yadda saxlanılmış parollar, tablar, əlfəcinlər və s. əldə edin.</translation>
 <translation id="3391765987934722383">Endirimi qaçırmayın</translation>
 <translation id="3392923070107623576">Tab qrupları yaradaraq nizamlı qalın</translation>
 <translation id="3404232721752787413">Google Fotoda yadda saxlayın</translation>
@@ -861,6 +860,7 @@
 <translation id="3888863481921783344">Bu, tədbirinizə mümkün dəvətliləri göstərmək üçün istifadə olunacaq.</translation>
 <translation id="3891414008432200754">Qiymət</translation>
 <translation id="3892144330757387737">Tarixçəni burada tapa bilərsiniz</translation>
+<translation id="3892695492576181257">Bu ayar aktiv olduqda fəaliyyətiniz Gemini tətbiq fəaliyyətində 18 ay yadda saxlanılır. Bu müddəti 3 və ya 36 ay olaraq dəyişə bilərsiniz. Google fəaliyyətinizdən xidmətlərini, o cümlədən Gemini modellərini təkmilləşdirmək və inkişaf etdirmək, eləcə də Google-u, istifadəçilərini və ictimaiyyəti mütəxəssislərin yardımı ilə qorumaq üçün istifadə edir. Xidmət təminatçıları tərəfindən nəzərdən keçirilən datanın hesabınızla əlaqəsi ləğv edilir və 3 il yadda saxlanılır.</translation>
 <translation id="3893858854379998374">Əlfəcinləri hesabınızda yadda saxlamaq üçün istifadə olunmayan əlfəcinləri silin</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904270275864974753">Karuselə düzəliş edin</translation>
@@ -1250,7 +1250,6 @@
 <translation id="5148717509369231739">Safari importu</translation>
 <translation id="5152483358138813104">Cihazlarınızda daha sürətli daxil olun</translation>
 <translation id="515315847398512535">Hesabınız üçün ekranda axtarış deaktiv edilib. Ətraflı məlumat üçün admininizlə əlaqə saxlayın.</translation>
-<translation id="5155502059906700593">Ünvan panelinin mövqeyini yuxarı və ya aşağı dəyişin.</translation>
 <translation id="5157638238828697074">Xəta oldu. Tətbiq açılmadı.</translation>
 <translation id="5163417375525818870">PDF-lər</translation>
 <translation id="5168414296986405587">iPadOS üçün hazırlanıb</translation>
@@ -1497,6 +1496,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5971459446352190251">QR kod axtarışı</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 əlfəcin silindi}other{{count} əlfəcin silindi}}</translation>
 <translation id="5972844218283131174">Bütün seçimləri silin</translation>
+<translation id="597482816780655631">Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. <ph name="BEGIN_LINK" />Seçimləriniz haqqında məlumat əldə edin<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Şərtlər<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Məxfilik Bildirişi<ph name="END_LINK" /> tətbiq olunur.</translation>
 <translation id="5976160379964388480">Digərləri</translation>
 <translation id="5977976211062815271">Bu cihazda</translation>
 <translation id="5986043348928676121">Növbəti</translation>
@@ -1569,7 +1569,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6196207969502475924">Səsli Axtarış</translation>
 <translation id="6198252989419008588">PİN kodu dəyişdirin</translation>
-<translation id="6199783146233591178">Təkmil güvənli baxış ilə real vaxtda qorunma əldə edin</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> gün və ya daha uzun müddət istifadə edilməyən tablar bura köçürülür. <ph name="BEGIN_LINK" />Ayarlarda<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="6213281885682386884">Ünvan tapılmadı</translation>
 <translation id="6218508144653756827">Fuşya tema</translation>
@@ -1720,7 +1719,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Qovluğa düzəliş edin</translation>
 <translation id="6629759408545977279">Haradan: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Onlayn təhlükələrə qarşı bu əlavə qoruma səviyyəsini əlavə edin.</translation>
 <translation id="6634432609054530164">Təşkilatınız Anonim rejimi deaktiv edib</translation>
 <translation id="6637478299472506933">Endirmə uğursuz oldu</translation>
 <translation id="6638511529934826365">Mətni Böyüdün…</translation>
@@ -1865,6 +1863,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7102005569666697658">Endirilir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyu → Ayarlar → Ödəniş metodları</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
+<translation id="7119533351103192286">Gemini-dan istifadə edin</translation>
 <translation id="7127922377013221748">Alətlər panelini gizlədin</translation>
 <translation id="7128693485119315539">Təşkilatınız idarə olunan hesab ilə əlaqəli brauzer datasına (məsələn, brauzer tarixçəsi və parollar) baxmalı və onu idarə etməli ola bilər.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2391,6 +2390,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8796634520835503150">Oxu rejimi əlçatandır</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8803639129939845298">Güvənli</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> üzvlüyü</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8814308045751067027">Live-dan istifadə etmək üçün ayarlarda Chrome-un mikrofona daxil olmasına icazə verin</translation>
 <translation id="8814719628147284151">Davam edin</translation>
@@ -2402,6 +2402,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="882557203579758546">Səhifədə tapın…</translation>
 <translation id="8829809207373502270">Bu giriş açarı artıq işləmir. O, <ph name="WEBSITE" /> veb-saytından silinib və qısa müddətdən sonra buradan silinəcək. <ph name="BEGIN_LINK" />Giriş açarı haqqında<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Deaktiv tabları bağlayın</translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Şərtlərimiz<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreya Məkan Şərtlərimiz<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />Məxfilik Bildirişimiz<ph name="END_LINK" /> tətbiq olunur. Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. Gemini Sİ-dir və insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlərə yol verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. Məkan məlumatı da daxil olmaqla <ph name="BEGIN_LINK" />fəaliyyətinizi idarə edə<ph name="END_LINK" /> bilərsiniz. <ph name="BEGIN_LINK" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Naşir üzrə çeşidləyin</translation>
 <translation id="884351711508006491">Məlumatınız cihazda yadda saxlanılır.</translation>
 <translation id="8844136307393039959">İzlədiyiniz məhsulun qiyməti düşüb</translation>

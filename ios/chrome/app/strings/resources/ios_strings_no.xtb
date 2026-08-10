@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="2818821771744632548">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPhone. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="2819667972867209401">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten og slettes hvis du logger av.</translation>
-<translation id="2825777862277359739">Logg på for å få passordene, fanene, bokmerkene dine med mer.</translation>
 <translation id="2827760117436553203">Vil du holde dataene adskilt?</translation>
 <translation id="2829172210806130158">Søk på skjermen</translation>
 <translation id="2831109159746537587">Tegn en sirkel rundt eller trykk på bildet for å søke</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Nå finner du blant annet de lagrede bokmerkene og passordene dine øverst.</translation>
 <translation id="3378214228000661758">Opprett en passnøkkel for</translation>
 <translation id="3380352560400387991">Dette nettstedet prøver å åpne en app. Dette medfører at du går ut av Inkognito.</translation>
-<translation id="3385742921291399323">Hent lagrede passord, faner, bokmerker med mer.</translation>
 <translation id="3391765987934722383">Ikke gå glipp av prisfall</translation>
 <translation id="3392923070107623576">Hold orden ved å opprette fanegrupper</translation>
 <translation id="3404232721752787413">Lagre i Google Foto</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari-import</translation>
 <translation id="5152483358138813104">Logg på raskere på alle enhetene dine</translation>
 <translation id="515315847398512535">Søkeskjermen er slått av for kontoen din. Kontakt administratoren for å få mer informasjon.</translation>
-<translation id="5155502059906700593">Flytt adressefeltet til toppen eller bunnen.</translation>
 <translation id="5157638238828697074">Noe gikk galt. Kunne ikke åpne appen.</translation>
 <translation id="5163417375525818870">PDF-filer</translation>
 <translation id="5168414296986405587">Laget for iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
-<translation id="6199783146233591178">Få beskyttelse i sanntid med Safe Browsing med økt beskyttelse</translation>
 <translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Fant ingen adresser</translation>
 <translation id="6218508144653756827">Fuksia tema</translation>
@@ -1720,7 +1716,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
 <translation id="6634432609054530164">Organisasjonen din har slått av inkognitomodus</translation>
 <translation id="6637478299472506933">Nedlastingen mislyktes</translation>
 <translation id="6638511529934826365">Forstørr tekst</translation>

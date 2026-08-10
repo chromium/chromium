@@ -8220,14 +8220,6 @@ Khi bạn bật hoặc không đặt chính sách này, người dùng có thể
 
 Khi bạn tắt chính sách này, ứng dụng Phím tắt sẽ ở chế độ chỉ có thể đọc và không cho phép tuỳ chỉnh.</translation>
 <translation id="6150320133676152520">Tắt chế độ tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá</translation>
-<translation id="6152224988699207920">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Điều này bao gồm việc cài đặt độ mờ của phần tô/viền, xác định cỡ chữ và cài đặt múi giờ của dấu thời gian.
-Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
-Giá trị mặc định là: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24 và múi giờ của dấu thời gian được đặt thành "user_device" (múi giờ trên thiết bị của người dùng).
-
-"Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
-"Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
-"Cỡ chữ" được xác định theo điểm.
-"Múi giờ của dấu thời gian" chỉ định giá trị nhận dạng múi giờ IANA (ví dụ: "America/Toronto") dùng để định dạng dấu thời gian của hình mờ (được hỗ trợ từ Chrome 152 trở đi), theo tên trong Cơ sở dữ liệu múi giờ IANA ( https://www.iana.org/time-zones ).</translation>
 <translation id="6155350825868160236">Cho phép người dùng chọn xem có sử dụng các dịch vụ web của Google để sửa lỗi chính tả hay không</translation>
 <translation id="6155936611791017817">Đặt trạng thái của con trỏ lớn mặc định trên màn hình đăng nhập</translation>
 <translation id="6157537876488211233">Danh sách quy tắc bỏ qua proxy được phân cách bằng dấu phẩy</translation>

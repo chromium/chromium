@@ -26,7 +26,6 @@
 <translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="1516692594929310090">Abre la cuadrícula de pestañas de Chrome.</translation>
-<translation id="152319127067424683">Accede a Chrome más rápido desde el Dock de tu iPhone.</translation>
 <translation id="1526327845902180576">Cuando se activa:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma forma que tú.<ph name="END_INDENT" />
 
@@ -64,7 +63,6 @@ Aspectos que debes tener en cuenta:
 <translation id="2212318912894837281">Ingresa la frase de contraseña para guardar esta contraseña y obtener los datos de Chrome en todos tus dispositivos</translation>
 <translation id="2213327331203157297">Para inhabilitar el modo hermético en Chrome, desactívalo en tu iPhone.</translation>
 <translation id="2242467532204595597">Usa Chrome cada vez que presiones vínculos que aparecen en mensajes, documentos y otras apps.</translation>
-<translation id="2256384876478573507">Abre Chrome más rápido cuando quieras navegar en tu iPhone.</translation>
 <translation id="2270691132923135296">Conoce los conceptos básicos de Chrome para comenzar</translation>
 <translation id="2311240109311056604">Abre el juego del dinosaurio de Chrome.</translation>
 <translation id="2339201583852607431">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
@@ -74,7 +72,6 @@ Aspectos que debes tener en cuenta:
 <translation id="2427791862912929107">Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto. Esto podría incluir el historial y la función Autocompletar.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos. Esto podría incluir el historial y la función Autocompletar.}}</translation>
-<translation id="2531823184391665648">Abre Chrome más rápido cuando quieras navegar en tu iPad.</translation>
 <translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
@@ -107,7 +104,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="3140589780564632473">Buscar elementos visuales en Chrome</translation>
 <translation id="314782365035065913">Accede a Chrome más rápido desde el Dock de la pantalla de inicio</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
-<translation id="320747600144551583">Sugerencia de Chrome: La Navegación segura mejorada te salvará el día</translation>
 <translation id="322254490661677575">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña.</translation>
 <translation id="3303503998967553377">Usa acciones de Chrome en iOS</translation>
 <translation id="3348862487678490430">Agregar el elemento de la lista de lectura a Chrome</translation>
@@ -137,7 +133,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos ni videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
 <translation id="4064699917955374540">Para usar y guardar datos de Chrome en tu Cuenta de Google, verifica tu identidad.</translation>
 <translation id="411154422556990518">Mantente al tanto de las actualizaciones sobre el seguimiento de precios y las sugerencias de Chrome.</translation>
-<translation id="4167555379306984168">Descubre las novedades de Chrome</translation>
 <translation id="417201473131094001">No es compatible con Chrome Canary</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4409545895715116037">No se importaron las siguientes llaves de acceso al Administrador de contraseñas de Google porque no cumplen con los requisitos.</translation>
@@ -150,7 +145,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="4636900170638246267">Accede a este sitio y a Chrome.</translation>
 <translation id="4647910807533196601">Abre mi pestaña más reciente en Chrome.</translation>
 <translation id="4693084815234024320">Estás en el modo Incógnito de Chrome</translation>
-<translation id="4708857722625759026">Accede a Chrome más rápido desde el Dock de tu iPad.</translation>
 <translation id="4713740144985377441">Regresa a Chrome para subir tu archivo</translation>
 <translation id="4724297637870447613">Usa Chrome en todas partes</translation>
 <translation id="4738647308035481133">Página de Google Chrome</translation>
@@ -164,7 +158,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="4903674399067644695">En esta tarjeta, se muestran sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="4925322001044117929">Usa Chrome en iPad de forma predeterminada</translation>
-<translation id="4934496192263958600">Accede a Chrome para obtener tu contenido</translation>
 <translation id="496747131578053942">Sugerencia de Chrome: Busca lo que ves con Google Lens</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="5030102366287574140">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
@@ -249,7 +242,6 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="6684809838922667136">Mejora Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
 <translation id="6709398533399187136">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
-<translation id="6718973358446066955">¡Ya casi terminas de configurar Chrome!</translation>
 <translation id="6820553595690137150">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones.
 
 Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
@@ -337,7 +329,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8371138994040262994">Abre la configuración en Chrome.</translation>
-<translation id="8375378038757507658">Usa fácilmente Chrome cada vez que presiones vínculos en mensajes o demás apps.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8392023217086447677">Se abrió en Chrome en Incógnito</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
@@ -377,7 +368,6 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="9122931302567044771">Esto significa que Chrome solicitará la versión de escritorio del sitio cada vez.</translation>
 <translation id="9176561303811134420">Administrar las formas de pago en Chrome</translation>
 <translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>
-<translation id="924447568950697217">Cómo establecer Chrome como navegador predeterminado</translation>
 <translation id="948597495737267756">Abre la página del Historial de Chrome.</translation>
 <translation id="954347330803595209">Importa tus datos para usar tus contraseñas, historial, favoritos y tarjetas de crédito en Chrome</translation>
 <translation id="97300214378190234">Usa Chrome cada vez que presiones vínculos en otras apps.</translation>

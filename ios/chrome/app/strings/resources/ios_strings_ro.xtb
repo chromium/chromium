@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Meniu → Setări → Browser prestabilit</translation>
 <translation id="2818821771744632548">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul procesului de resetare a dispozitivului iPhone. Pentru a te conecta din nou, atinge Continuă mai jos.</translation>
 <translation id="2819667972867209401">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv și se șterg dacă te deconectezi.</translation>
-<translation id="2825777862277359739">Conectează-te pentru a-ți accesa parolele, filele, marcajele și multe altele.</translation>
 <translation id="2827760117436553203">Păstrezi datele separat?</translation>
 <translation id="2829172210806130158">Caută pe ecran</translation>
 <translation id="2831109159746537587">Încercuiește sau atinge imaginea pentru a căuta</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Marcajele, parolele și alte elemente salvate apar acum în partea de sus.</translation>
 <translation id="3378214228000661758">Creează o cheie de acces pentru</translation>
 <translation id="3380352560400387991">Site-ul încearcă să deschidă o aplicație. Astfel, vei ieși din modul incognito.</translation>
-<translation id="3385742921291399323">Accesează parolele, filele, marcajele salvate și multe altele.</translation>
 <translation id="3391765987934722383">Nu rata nicio scădere de preț</translation>
 <translation id="3392923070107623576">Organizează-te creând grupuri de file</translation>
 <translation id="3404232721752787413">Salvează în Google Foto</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Importare din Safari</translation>
 <translation id="5152483358138813104">Conectează-te mai rapid pe toate dispozitivele</translation>
 <translation id="515315847398512535">Ecranul de căutare este dezactivat pentru contul tău. Contactează administratorul pentru mai multe informații.</translation>
-<translation id="5155502059906700593">Mută poziția barei de adrese în partea de sus sau în partea de jos.</translation>
 <translation id="5157638238828697074">A apărut o eroare. Aplicația nu s-a putut deschide.</translation>
 <translation id="5163417375525818870">Fișiere PDF</translation>
 <translation id="5168414296986405587">Creat pentru iPadOS</translation>
@@ -1569,7 +1566,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6196207969502475924">Căutare vocală</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
-<translation id="6199783146233591178">Beneficiază de protecție în timp real cu Navigarea sigură îmbunătățită</translation>
 <translation id="6210079381482819663">Filele care nu sunt folosesc timp de minimum <ph name="THRESHOLD" /> zile se mută aici. Poți modifica oricând opțiunea din <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nu s-a găsit nicio adresă</translation>
 <translation id="6218508144653756827">Temă fucsia</translation>
@@ -1720,7 +1716,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6626281667717553020">URI-ul CPS</translation>
 <translation id="6627583120233659107">Editați dosarul</translation>
 <translation id="6629759408545977279">De la: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Adaugă acest nivel suplimentar de protecție împotriva amenințărilor online.</translation>
 <translation id="6634432609054530164">Organizația ta a dezactivat modul incognito</translation>
 <translation id="6637478299472506933">Descărc. nu a reușit</translation>
 <translation id="6638511529934826365">Fă zoom pe text…</translation>

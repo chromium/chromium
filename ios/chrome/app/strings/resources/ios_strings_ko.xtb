@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">메뉴 → 설정 → 기본 브라우저</translation>
 <translation id="2818821771744632548">iPhone 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
 <translation id="2819667972867209401">사용 설정하면 데이터가 Google 계정에 저장됩니다. 사용 중지하면 데이터가 이 기기에만 저장되며, 로그아웃하는 경우 삭제됩니다.</translation>
-<translation id="2825777862277359739">비밀번호, 탭, 북마크 등을 사용하려면 로그인하세요.</translation>
 <translation id="2827760117436553203">데이터를 별도로 유지하시겠습니까?</translation>
 <translation id="2829172210806130158">화면 검색</translation>
 <translation id="2831109159746537587">검색하려면 사진에 원을 그리거나 탭하세요.</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">저장된 북마크, 비밀번호 등이 상단에 표시됩니다</translation>
 <translation id="3378214228000661758">다음의 패스키 생성</translation>
 <translation id="3380352560400387991">사이트에서 애플리케이션을 열려고 합니다. 이렇게 하면 시크릿 모드가 종료됩니다.</translation>
-<translation id="3385742921291399323">저장된 비밀번호, 탭, 북마크 등을 가져오세요.</translation>
 <translation id="3391765987934722383">가격 인하 알림을 받으세요</translation>
 <translation id="3392923070107623576">탭 그룹을 만들어 깔끔하게 정리</translation>
 <translation id="3404232721752787413">Google 포토에 저장</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari 가져오기</translation>
 <translation id="5152483358138813104">여러 기기에서 더 빠르게 로그인합니다.</translation>
 <translation id="515315847398512535">계정에서 Google 검색 화면이 사용 중지되었습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
-<translation id="5155502059906700593">주소 표시줄 위치를 상단 또는 하단으로 전환하세요.</translation>
 <translation id="5157638238828697074">문제가 발생했습니다. 애플리케이션을 열 수 없습니다.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">iPadOS 최적화</translation>
@@ -1569,7 +1566,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196207969502475924">음성 검색</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
-<translation id="6199783146233591178">향상된 세이프 브라우징으로 실시간 보호를 받으세요.</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" />일 이상 사용하지 않은 탭은 여기로 이동됩니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="6213281885682386884">주소를 찾을 수 없음</translation>
 <translation id="6218508144653756827">푸시아 테마</translation>
@@ -1720,7 +1716,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6629759408545977279">호스트: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">온라인 위협에 대비해 한층 강화된 보호 기능을 사용하세요</translation>
 <translation id="6634432609054530164">조직에서 시크릿 모드를 사용 중지함</translation>
 <translation id="6637478299472506933">다운로드 실패</translation>
 <translation id="6638511529934826365">텍스트 확대/축소…</translation>

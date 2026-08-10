@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Para poder restablecer o iPhone, pechouse a sesión da túa conta (<ph name="USER_NAME" />). Se queres volver iniciar a sesión, toca Continuar máis abaixo.</translation>
 <translation id="2819667972867209401">Cando a opción está activada, os datos gárdanse na túa Conta de Google. Cando está desactivada, os datos gárdanse só neste dispositivo e elimínanse ao pechar a sesión.</translation>
-<translation id="2825777862277359739">Inicia sesión para poder acceder aos teus contrasinais, as pestanas, os marcadores e outros datos.</translation>
 <translation id="2827760117436553203">Queres manter os datos separados?</translation>
 <translation id="2829172210806130158">Busca na pantalla</translation>
 <translation id="2831109159746537587">Proba a rodear ou tocar a imaxe que queiras buscar</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
 <translation id="3378214228000661758">Crea unha clave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está tentando abrir unha aplicación. Con esta acción, sairás do modo de incógnito.</translation>
-<translation id="3385742921291399323">Accede aos contrasinais, as pestanas e os marcadores que teñas gardados, entre outras cousas.</translation>
 <translation id="3391765987934722383">Mantente ao tanto de todas as baixadas de prezo</translation>
 <translation id="3392923070107623576">Organízate creando grupos de pestanas</translation>
 <translation id="3404232721752787413">Gardar en Google Fotos</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Importación de Safari</translation>
 <translation id="5152483358138813104">Inicia sesión máis rápido en todos os dispositivos</translation>
 <translation id="515315847398512535">A función de buscar na pantalla está desactivada para a túa conta. Fala con quen a administra se necesitas máis información.</translation>
-<translation id="5155502059906700593">Cambia a posición da barra de enderezos á parte superior ou á inferior.</translation>
 <translation id="5157638238828697074">Produciuse un erro. Non se puido abrir a aplicación.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Creado para iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
-<translation id="6199783146233591178">Desfruta de protección en tempo real con Navegación segura mellorada</translation>
 <translation id="6210079381482819663">As pestanas que non se usen durante <ph name="THRESHOLD" /> días ou máis moveranse aquí. Podes cambiar esta opción en calquera momento en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Non se atopou ningún enderezo</translation>
 <translation id="6218508144653756827">Tema fucsia</translation>
@@ -1720,7 +1716,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6626281667717553020">URI de CPS</translation>
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6629759408545977279">Desde: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Engade esta capa adicional de protección contra as ameazas en liña.</translation>
 <translation id="6634432609054530164">A túa organización desactivou o modo de incógnito</translation>
 <translation id="6637478299472506933">Erro ao descargar</translation>
 <translation id="6638511529934826365">Aplicar zoom ao texto…</translation>

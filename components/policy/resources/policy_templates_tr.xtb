@@ -8236,14 +8236,6 @@ Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında kullan�
 
 Bu politika devre dışı bırakıldığında anahtar kısayolları uygulaması salt okuma modunda olur ve hiçbir özelleştirmeye izin vermez.</translation>
 <translation id="6150320133676152520">Kilit ve giriş ekranlarında otomatik PIN gönderme özelliğini devre dışı bırak</translation>
-<translation id="6152224988699207920">Yöneticilere, Veri Kaybını Önleme (DLP) kuralları tarafından uygulanan filigranların görünümünü özelleştirme olanağı tanır. Dolgu/çizgi opaklığının ayarlanması, yazı tipi boyutunun belirlenmesi ve zaman damgası saat diliminin ayarlanması buna dahildir.
-Bu politika veya bazı değerler ayarlanmazsa Chrome, varsayılan filigran davranışını kullanır.
-Varsayılan değerler şunlardır: Dolgu opaklığı 4, çizgi opaklığı 6, yazı tipi boyutu 24 ve zaman damgası saat dilimi "user_device" (kullanıcının yerel cihaz saat dilimi) olarak ayarlanır.
-
-"Dolgu Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Çizgi Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Yazı Tipi Boyutu" değeri punto cinsinden belirtilir.
-"Zaman Damgası Saat Dilimi", filigran zaman damgalarını biçimlendirmek için kullanılan IANA saat dilimi tanımlayıcısını (ör. "Amerika/Toronto") (Chrome 152 ve sonraki sürümlerde desteklenir) belirtir. Bu tanımlayıcı, IANA Saat Dilimi Veritabanı'ndaki ( https://www.iana.org/time-zones ) adları kullanır.</translation>
 <translation id="6155350825868160236">Kullanıcının, Google web hizmetlerinin yazım hatalarını çözmek için kullanılıp kullanılmayacağını seçmesine izin ver</translation>
 <translation id="6155936611791017817">Giriş ekranında büyük imleç modunun varsayılan durumunu ayarla</translation>
 <translation id="6157537876488211233">Proxy atlama kurallarının noktalı virgül ile ayrılmış listesi</translation>

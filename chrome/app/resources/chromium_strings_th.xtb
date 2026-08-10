@@ -682,6 +682,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium จะเตือนคุณ<ph name="END_LINK" />เกี่ยวกับเว็บไซต์และการดาวน์โหลดที่ไม่ปลอดภัย</translation>
 <translation id="8295827201165805317">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION" />ออกแล้ว</translation>
 <translation id="8296236834352487533">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องในแอป Chromium สำหรับ iOS</translation>
+<translation id="8310603974518734211">คิวอาร์โค้ดสำหรับลงชื่อเข้าใช้ Chromium <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">ข้อผิดพลาดในการเริ่มต้น: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">องค์กรจะปิด Chromium เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /></translation>
 <translation id="8321888067342493336">บันทึกเป็นรูปภาพ</translation>

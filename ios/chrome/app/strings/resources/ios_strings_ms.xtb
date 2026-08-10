@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menu → Tetapan → Penyemak imbas lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
-<translation id="2825777862277359739">Log masuk untuk mendapatkan kata laluan, tab dan penanda halaman anda serta pelbagai lagi.</translation>
 <translation id="2827760117436553203">Simpan data berasingan?</translation>
 <translation id="2829172210806130158">Cari pada skrin anda</translation>
 <translation id="2831109159746537587">Cuba membulatkan atau mengetik gambar untuk mencari</translation>
@@ -693,6 +692,7 @@
 <translation id="3259451381796379533">Akaun ini tidak akan berfungsi dengan Gemini. Log masuk dengan Google Account yang lain.</translation>
 <translation id="3265736395246760288">Log masuk dengan lebih pantas daripada mana-mana peranti anda yang disegerakkan.</translation>
 <translation id="3272527697863656322">Batal</translation>
+<translation id="3272955648592358996">Data anda meningkatkan Google AI</translation>
 <translation id="3273510436356991673">Sesuaikan skrin utama</translation>
 <translation id="3277021493514034324">Alamat tapak disalin</translation>
 <translation id="3280562213547448728">Carian suara</translation>
@@ -719,7 +719,6 @@
 <translation id="3377063233124932127">Kini penanda halaman, kata laluan anda yang disimpan dan pelbagai lagi berada di bahagian atas.</translation>
 <translation id="3378214228000661758">Buat kunci laluan untuk</translation>
 <translation id="3380352560400387991">Laman ini sedang mencuba membuka aplikasi. Tindakan ini akan membawa anda keluar daripada Inkognito.</translation>
-<translation id="3385742921291399323">Dapatkan kata laluan, tab dan penanda halaman anda yang disimpan serta pelbagai lagi.</translation>
 <translation id="3391765987934722383">Jangan terlepas penurunan harga</translation>
 <translation id="3392923070107623576">Kekal teratur dengan membuat kumpulan tab</translation>
 <translation id="3404232721752787413">Simpan dalam Google Photos</translation>
@@ -861,6 +860,7 @@
 <translation id="3888863481921783344">Ini akan digunakan untuk menunjukkan kepada anda kenalan yang mungkin diundang ke acara anda.</translation>
 <translation id="3891414008432200754">Harga</translation>
 <translation id="3892144330757387737">Anda dapat menemukan sejarah anda di sini</translation>
+<translation id="3892695492576181257">Apabila Simpan Aktiviti dihidupkan, aktiviti anda disimpan dalam Aktiviti Apl Gemini selama 18 bulan yang boleh anda tukar kepada 3 atau 36 bulan. Google menggunakan aktiviti anda untuk membangunkan dan meningkatkan perkhidmatan Google (termasuk model Gemini) serta untuk melindungi Google, pengguna Google dan orang awam dengan bantuan jurusemak. Data yang disemak oleh penyedia perkhidmatan diputuskan sambungan daripada akaun anda dan disimpan selama 3 tahun.</translation>
 <translation id="3893858854379998374">Untuk menyimpan penanda halaman dalam akaun anda, padamkan penanda halaman anda yang tidak digunakan</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit karusel</translation>
@@ -1250,7 +1250,6 @@
 <translation id="5148717509369231739">Import Safari</translation>
 <translation id="5152483358138813104">Log masuk dengan lebih pantas merentas peranti anda</translation>
 <translation id="515315847398512535">Carian skrin dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
-<translation id="5155502059906700593">Tukar kedudukan bar alamat anda kepada bahagian atas atau bahagian bawah.</translation>
 <translation id="5157638238828697074">Ada masalah. Aplikasi tidak dapat dibuka.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Dibina untuk iPadOS</translation>
@@ -1497,6 +1496,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5971459446352190251">Carian Kod QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
 <translation id="5972844218283131174">Nyahpilih semua</translation>
+<translation id="597482816780655631">Gemini ialah AI dan mungkin melakukan kesilapan, termasuk tentang orang. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Sembang disemak dan akan digunakan untuk meningkatkan Google AI. <ph name="BEGIN_LINK" />Ketahui perihal pilihan anda<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Syarat<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Notis Privasi<ph name="END_LINK" /> kami digunakan.</translation>
 <translation id="5976160379964388480">Lain-lain</translation>
 <translation id="5977976211062815271">Pada peranti ini</translation>
 <translation id="5986043348928676121">Seterusnya</translation>
@@ -1569,7 +1569,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196207969502475924">Carian Suara</translation>
 <translation id="6198252989419008588">Tukar PIN</translation>
-<translation id="6199783146233591178">Dapatkan perlindungan masa nyata dengan Penyemakan imbas selamat dipertingkat</translation>
 <translation id="6210079381482819663">Tab yang tidak digunakan selama <ph name="THRESHOLD" /> hari atau lebih dialihkan kepada bahagian ini. Anda boleh menukar pilihan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Tiada alamat ditemukan</translation>
 <translation id="6218508144653756827">Tema fuchsia</translation>
@@ -1720,7 +1719,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">Daripada: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Tambahkan lapisan perlindungan tambahan terhadap ancaman dalam talian ini.</translation>
 <translation id="6634432609054530164">Organisasi anda telah mematikan mod Inkognito</translation>
 <translation id="6637478299472506933">Muat Turun Gagal</translation>
 <translation id="6638511529934826365">Zum Teks…</translation>
@@ -1865,6 +1863,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7102005569666697658">Memuat turun… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Tetapan → Kaedah pembayaran</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
+<translation id="7119533351103192286">Gunakan Gemini</translation>
 <translation id="7127922377013221748">Sembunyikan Bar Alat</translation>
 <translation id="7128693485119315539">Organisasi anda mungkin perlu melihat dan mengurus data penyemakan imbas yang dikaitkan dengan akaun terurus anda, seperti sejarah penyemakan imbas dan kata laluan anda.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2391,6 +2390,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8796634520835503150">Mod membaca tersedia</translation>
 <translation id="8803526663383843427">Apabila dihidupkan</translation>
 <translation id="8803639129939845298">Selamat</translation>
+<translation id="8809212245338455710">Keahlian <ph name="AI_TIER_NAME" /></translation>
 <translation id="8813277370772331957">Ingatkan saya kemudian</translation>
 <translation id="8814308045751067027">Untuk menggunakan Live, berikan akses kepada Chrome untuk menggunakan mikrofon anda dalam tetapan</translation>
 <translation id="8814719628147284151">Teruskan</translation>
@@ -2402,6 +2402,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="882557203579758546">Cari dalam Halaman…</translation>
 <translation id="8829809207373502270">Kunci laluan ini tidak berfungsi lagi. Kunci laluan ini telah dipadamkan daripada <ph name="WEBSITE" /> dan akan dipadamkan daripada laman web ini tidak lama lagi. <ph name="BEGIN_LINK" />Perihal kunci laluan<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Tutup semua butang yang tidak aktif</translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Syarat<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Syarat Lokasi Korea<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />Notis Privasi<ph name="END_LINK" /> kami digunakan. Sembang disemak dan akan digunakan untuk meningkatkan Google AI. Gemini ialah AI dan mungkin melakukan kesilapan, termasuk tentang orang. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Anda boleh <ph name="BEGIN_LINK" />mengurus aktiviti anda<ph name="END_LINK" />, termasuk maklumat tentang lokasi anda. <ph name="BEGIN_LINK" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Isih mengikut penerbit</translation>
 <translation id="884351711508006491">Maklumat anda disimpan pada peranti anda.</translation>
 <translation id="8844136307393039959">Penurunan harga pada produk yang anda jejaki</translation>

@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
-<translation id="2825777862277359739">Sign in to get your passwords, tabs, bookmarks and more.</translation>
 <translation id="2827760117436553203">Keep data separate?</translation>
 <translation id="2829172210806130158">Search your screen</translation>
 <translation id="2831109159746537587">Try circling or tapping the picture to search</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Now your saved bookmarks, passwords and more are at the top.</translation>
 <translation id="3378214228000661758">Create a passkey for</translation>
 <translation id="3380352560400387991">This site is trying to open an application. This will take you out of Incognito.</translation>
-<translation id="3385742921291399323">Get your saved passwords, tabs, bookmarks and more.</translation>
 <translation id="3391765987934722383">Don't miss a price drop</translation>
 <translation id="3392923070107623576">Stay organised by creating tab groups</translation>
 <translation id="3404232721752787413">Save in Google Photos</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari import</translation>
 <translation id="5152483358138813104">Sign in faster across your devices</translation>
 <translation id="515315847398512535">Search screen is turned off for your account. Contact your admin for more information.</translation>
-<translation id="5155502059906700593">Switch the position of your address bar to the top or bottom.</translation>
 <translation id="5157638238828697074">Something went wrong. The application couldn’t be opened.</translation>
 <translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">Built for iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196207969502475924">Voice search</translation>
 <translation id="6198252989419008588">Change PIN</translation>
-<translation id="6199783146233591178">Get real-time protection with Enhanced Safe Browsing</translation>
 <translation id="6210079381482819663">Tabs not used for <ph name="THRESHOLD" /> days or more are moved here. You can change this at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">No addresses found</translation>
 <translation id="6218508144653756827">Fuchsia theme</translation>
@@ -1720,7 +1716,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6629759408545977279">From: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Add this extra layer of protection against online threats.</translation>
 <translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
 <translation id="6637478299472506933">Download Failed</translation>
 <translation id="6638511529934826365">Zoom text…</translation>

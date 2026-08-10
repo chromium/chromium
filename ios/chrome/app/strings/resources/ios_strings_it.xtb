@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="2818821771744632548">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPhone. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="2819667972867209401">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
-<translation id="2825777862277359739">Accedi per trovare le password, le schede, i preferiti e altro ancora.</translation>
 <translation id="2827760117436553203">Mantenere i dati separati?</translation>
 <translation id="2829172210806130158">Cerca sullo schermo</translation>
 <translation id="2831109159746537587">Prova a cerchiare o a toccare l'immagine per cercarla</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Ora i tuoi preferiti, le password e altri dati salvati sono visualizzati in alto.</translation>
 <translation id="3378214228000661758">Crea una passkey per</translation>
 <translation id="3380352560400387991">Questo sito sta tentando di aprire un'applicazione. Uscirai dalla modalità Incognito.</translation>
-<translation id="3385742921291399323">Trova le password, le schede, i preferiti e altri dati salvati.</translation>
 <translation id="3391765987934722383">Non perderti un calo di prezzo</translation>
 <translation id="3392923070107623576">Mantieni l'organizzazione creando gruppi di schede</translation>
 <translation id="3404232721752787413">Salva in Google Foto</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Importazione da Safari</translation>
 <translation id="5152483358138813104">Accedi più velocemente su tutti i tuoi dispositivi</translation>
 <translation id="515315847398512535">La Ricerca dallo schermo è disattivata per il tuo account. Contatta l'amministratore per ulteriori informazioni.</translation>
-<translation id="5155502059906700593">Sposta la barra degli indirizzi in alto o in basso.</translation>
 <translation id="5157638238828697074">Si è verificato un problema. Impossibile aprire l'applicazione.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Realizzato per iPadOS</translation>
@@ -1569,7 +1566,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6196207969502475924">Ricerca vocale</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
-<translation id="6199783146233591178">Ricevi protezione in tempo reale con la Navigazione sicura avanzata</translation>
 <translation id="6210079381482819663">Le schede che non vengono utilizzate per almeno <ph name="THRESHOLD" /> giorni vengono spostate qui. Puoi modificare questa preferenza in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nessun indirizzo trovato</translation>
 <translation id="6218508144653756827">Tema fucsia</translation>
@@ -1720,7 +1716,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
 <translation id="6629759408545977279">Da: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Aggiungi un ulteriore livello di protezione contro le minacce online.</translation>
 <translation id="6634432609054530164">La tua organizzazione ha disattivato la modalità Incognito</translation>
 <translation id="6637478299472506933">Download non riuscito</translation>
 <translation id="6638511529934826365">Zoom del testo…</translation>

@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">菜单 → 设置 → 默认浏览器</translation>
 <translation id="2818821771744632548">您在 iPhone 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="2819667972867209401">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上，并且会在您退出账号后被删除。</translation>
-<translation id="2825777862277359739">登录即可获取您的密码、标签页、书签等。</translation>
 <translation id="2827760117436553203">要将数据分开吗？</translation>
 <translation id="2829172210806130158">在屏幕中搜索</translation>
 <translation id="2831109159746537587">圈一圈，点一点，即刻探索</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3378214228000661758">使用以下名称创建通行密钥</translation>
 <translation id="3380352560400387991">此网站正在尝试打开某款应用。这会使您退出无痕模式。</translation>
-<translation id="3385742921291399323">获取您保存的密码、标签页、书签等。</translation>
 <translation id="3391765987934722383">别错过降价</translation>
 <translation id="3392923070107623576">创建标签页分组，让一切井井有条</translation>
 <translation id="3404232721752787413">保存在 Google 相册中</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">从 Safari 导入</translation>
 <translation id="5152483358138813104">跨设备更快登录</translation>
 <translation id="515315847398512535">您的账号已停用屏幕搜索功能。如需了解详情，请与管理员联系。</translation>
-<translation id="5155502059906700593">您可以将地址栏移至顶部或底部。</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
@@ -1569,7 +1566,6 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196207969502475924">语音搜索</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
-<translation id="6199783146233591178">开启增强型安全浏览功能，获得实时保护</translation>
 <translation id="6210079381482819663">连续 <ph name="THRESHOLD" /> 天或更长时间未使用的标签页会被移至此处。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6213281885682386884">未找到任何地址</translation>
 <translation id="6218508144653756827">紫红色主题</translation>
@@ -1720,7 +1716,6 @@
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6629759408545977279">下载触发者：<ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">再添一层安全保障，防范在线威胁。</translation>
 <translation id="6634432609054530164">贵单位关闭了无痕模式</translation>
 <translation id="6637478299472506933">下载失败</translation>
 <translation id="6638511529934826365">缩放文字…</translation>

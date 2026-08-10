@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="2818821771744632548">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPhone. Pour vous reconnecter, touchez « Continuer » ci-dessous.</translation>
 <translation id="2819667972867209401">Activé : les données sont enregistrées dans votre compte Google. Désactivé : les données sont uniquement enregistrées sur cet appareil et sont supprimées lorsque vous vous déconnectez.</translation>
-<translation id="2825777862277359739">Connectez-vous pour accéder à vos mots de passe, à vos onglets, à vos favoris et plus encore.</translation>
 <translation id="2827760117436553203">Garder les données séparées?</translation>
 <translation id="2829172210806130158">Rechercher sur votre écran</translation>
 <translation id="2831109159746537587">Essayez d'encercler ou de toucher l'image pour effectuer une recherche</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
 <translation id="3378214228000661758">Créer une clé d'accès pour</translation>
 <translation id="3380352560400387991">Ce site essaie d'ouvrir une application. Vous serez redirigé en dehors du mode Navigation privée.</translation>
-<translation id="3385742921291399323">Accédez à vos mots de passe enregistrés, à vos onglets, à vos favoris et plus encore.</translation>
 <translation id="3391765987934722383">Ne manquez pas une baisse de prix</translation>
 <translation id="3392923070107623576">Restez organisé en créant des groupes d'onglets</translation>
 <translation id="3404232721752787413">Enregistrer dans Google Photos</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Importation Safari</translation>
 <translation id="5152483358138813104">Connectez-vous plus rapidement à vos appareils.</translation>
 <translation id="515315847398512535">L'écran de recherche est désactivé pour votre compte. Communiquez avec votre administrateur pour en savoir plus.</translation>
-<translation id="5155502059906700593">Placez votre barre d'adresse en haut ou en bas de l'écran.</translation>
 <translation id="5157638238828697074">Un problème est survenu. L'application n'a pas pu être ouverte.</translation>
 <translation id="5163417375525818870">Fichiers PDF</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
@@ -1569,7 +1566,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
-<translation id="6199783146233591178">Obtenez une protection en temps réel en activant la navigation sécurisée améliorée</translation>
 <translation id="6210079381482819663">Les onglets non utilisés pendant <ph name="THRESHOLD" /> jours ou plus sont déplacés ici. Vous pouvez changer cette option en tout temps dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Adresse introuvable</translation>
 <translation id="6218508144653756827">Thème fuchsia</translation>
@@ -1720,7 +1716,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6626281667717553020">URI de la CPS</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6629759408545977279">De : <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Ajoutez une couche de sécurité contre les menaces en ligne.</translation>
 <translation id="6634432609054530164">Votre organisation a désactivé le mode de navigation privée</translation>
 <translation id="6637478299472506933">Échec du téléchargement</translation>
 <translation id="6638511529934826365">Zoomer sur le texte…</translation>

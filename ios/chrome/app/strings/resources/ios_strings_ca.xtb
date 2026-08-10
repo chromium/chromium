@@ -570,7 +570,6 @@
 <translation id="2816489851009559785">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="2818821771744632548">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPhone. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="2819667972867209401">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
-<translation id="2825777862277359739">Inicia la sessió per accedir a les teves contrasenyes, pestanyes, adreces d'interès i altres elements.</translation>
 <translation id="2827760117436553203">Vols mantenir les dades separades?</translation>
 <translation id="2829172210806130158">Fes cerques a la pantalla</translation>
 <translation id="2831109159746537587">Prova d'encerclar o de tocar la imatge per cercar</translation>
@@ -717,7 +716,6 @@
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
 <translation id="3378214228000661758">Crea una clau d'accés per a</translation>
 <translation id="3380352560400387991">Aquest lloc web està provant d'obrir una aplicació. Aquesta acció farà que surtis del mode d'incògnit.</translation>
-<translation id="3385742921291399323">Accedeix a les teves contrasenyes, pestanyes, adreces d'interès i altres elements desats.</translation>
 <translation id="3391765987934722383">No et perdis cap baixada de preu</translation>
 <translation id="3392923070107623576">Organitza't creant grups de pestanyes</translation>
 <translation id="3404232721752787413">Desa a Google Fotos</translation>
@@ -1246,7 +1244,6 @@
 <translation id="5148717509369231739">Importació de Safari</translation>
 <translation id="5152483358138813104">Inicia la sessió més ràpidament en tots els dispositius</translation>
 <translation id="515315847398512535">La pantalla de cerca està desactivada per al teu compte. Contacta amb el teu administrador per obtenir més informació.</translation>
-<translation id="5155502059906700593">Canvia la posició de la barra d'adreces a la part superior o inferior.</translation>
 <translation id="5157638238828697074">S'ha produït un error. No s'ha pogut obrir l'aplicació.</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Creat per a iPadOS</translation>
@@ -1564,7 +1561,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6196207969502475924">Cerca per veu</translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>
-<translation id="6199783146233591178">Obtén protecció en temps real amb Navegació segura millorada</translation>
 <translation id="6210079381482819663">Les pestanyes que no s'utilitzen durant <ph name="THRESHOLD" /> dies o més es mouen aquí. Pots canviar aquesta opció en qualsevol moment a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">No s'ha trobat cap adreça</translation>
 <translation id="6218508144653756827">Tema fúcsia</translation>
@@ -1715,7 +1711,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6626281667717553020">URI de CPS</translation>
 <translation id="6627583120233659107">Edita la carpeta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Afegeix aquesta capa addicional de protecció contra les amenaces en línia.</translation>
 <translation id="6634432609054530164">La teva organització ha desactivat el mode d'incògnit</translation>
 <translation id="6637478299472506933">Ha fallat la baixada</translation>
 <translation id="6638511529934826365">Fes zoom al text…</translation>

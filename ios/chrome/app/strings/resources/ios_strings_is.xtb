@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">Valmynd → Stillingar → Sjálfgefinn vafri</translation>
 <translation id="2818821771744632548">Þú skráðist út af reikningnum þínum, <ph name="USER_NAME" />, í tengslum við endurstillingu iPhone. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig aftur inn.</translation>
 <translation id="2819667972867209401">Ef kveikt er á þessu verða gögn vistuð á Google-reikningnum þínum. Ef slökkt er á þessu eru gögn eingöngu vistuð í þessu tæki og þeim er eytt ef þú skráir þig út.</translation>
-<translation id="2825777862277359739">Skráðu þig inn til að sækja aðgangsorð, flipa, bókamerki og fleira.</translation>
 <translation id="2827760117436553203">Halda gögnum aðskildum?</translation>
 <translation id="2829172210806130158">Leita á skjánum þínum</translation>
 <translation id="2831109159746537587">Prófaðu að draga hring um eða ýta á myndina á skjánum</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Nú eru vistuð bókamerki, aðgangsorð og fleira efst</translation>
 <translation id="3378214228000661758">Búðu til aðgangslykil að:</translation>
 <translation id="3380352560400387991">Þetta vefsvæði er að reyna að opna forrit. Slökkt verður á huliðsstillingu í kjölfarið.</translation>
-<translation id="3385742921291399323">Sæktu vistuðu aðgangsorðin, flipana, bókamerkin og fleira.</translation>
 <translation id="3391765987934722383">Ekki missa af verðlækkun</translation>
 <translation id="3392923070107623576">Haltu skipulagi með því að búa til flipahópa</translation>
 <translation id="3404232721752787413">Vista í Google-myndum</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari-innflutningur</translation>
 <translation id="5152483358138813104">Vertu fljótari að skrá þig inn í tækin þín</translation>
 <translation id="515315847398512535">Slökkt er á leitarskjá fyrir reikninginn þinn. Hafðu samband við stjórnanda til að fá frekari upplýsingar.</translation>
-<translation id="5155502059906700593">Færðu veffangastikuna efst eða neðst.</translation>
 <translation id="5157638238828697074">Eitthvað fór úrskeiðis. Ekki tókst að opna forritið.</translation>
 <translation id="5163417375525818870">PDF-skrár</translation>
 <translation id="5168414296986405587">Hannað fyrir iPadOS</translation>
@@ -1569,7 +1566,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
-<translation id="6199783146233591178">Fáðu rauntímavernd með Enn öruggri vefskoðun</translation>
 <translation id="6210079381482819663">Flipar sem eru ekki notaðir í <ph name="THRESHOLD" /> daga eða meira eru færðir hingað. Þú getur breytt þessu hvenær sem er í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Engin heimilisföng fundust</translation>
 <translation id="6218508144653756827">Fúksíuþema</translation>
@@ -1720,7 +1716,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Breyta möppu</translation>
 <translation id="6629759408545977279">Af: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Auktu vörn gegn netógnum.</translation>
 <translation id="6634432609054530164">Fyrirtækið þitt slökkti á huliðsstillingu</translation>
 <translation id="6637478299472506933">Niðurhal mistókst</translation>
 <translation id="6638511529934826365">Stækka/minnka texta…</translation>

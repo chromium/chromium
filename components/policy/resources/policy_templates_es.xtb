@@ -8137,14 +8137,6 @@ Si se habilita esta política o no se define, los usuarios podrán personalizar 
 
 Si esta política está inhabilitada, la aplicación Accesos directos estará en modo de solo lectura y no se podrá personalizar.</translation>
 <translation id="6150320133676152520">Inhabilitar el envío automático de PIN en la pantalla de bloqueo y de inicio de sesión</translation>
-<translation id="6152224988699207920">Permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de la pérdida de datos (DLP). Esto incluye establecer la opacidad del relleno o del contorno, definir el tamaño de la fuente y configurar la zona horaria de la marca de tiempo.
-Si no se definen esta política o algunos valores, Chrome usará su comportamiento predeterminado para las marcas de agua.
-Los valores predeterminados son: opacidad del relleno 4, opacidad del contorno 6, tamaño de la fuente 24 y zona horaria de la marca de tiempo definida como "user_device" (zona horaria local del dispositivo del usuario).
-
-La opacidad del relleno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-La opacidad del contorno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-El tamaño de la fuente se especifica en puntos.
-La zona horaria de la marca de tiempo especifica el identificador de zona horaria de la IANA (por ejemplo, "America/Toronto") que se usa para dar formato a las marcas de tiempo en de las marcas de agua (disponibles a partir de Chrome 152), que sigue los nombres de la base de datos de zonas horarias de la IANA (https://www.iana.org/time-zones).</translation>
 <translation id="6155350825868160236">Permitir que el usuario elija si se utilizan servicios web de Google para corregir errores ortográficos</translation>
 <translation id="6155936611791017817">Establecer el estado predeterminado del cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="6157537876488211233">Lista de reglas de omisión de proxy separadas por comas</translation>

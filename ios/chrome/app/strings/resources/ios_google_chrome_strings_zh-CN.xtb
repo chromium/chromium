@@ -26,7 +26,6 @@
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="1516692594929310090">打开 Chrome 标签页网格。</translation>
-<translation id="152319127067424683">从 iPhone 程序坞更快地访问 Chrome。</translation>
 <translation id="1526327845902180576">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
 
@@ -64,7 +63,6 @@
 <translation id="2212318912894837281">输入口令才能保存此密码，并在所有设备上获取 Chrome 数据</translation>
 <translation id="2213327331203157297">若要在 Chrome 中停用锁定模式，请在您的 iPhone 上关闭该模式。</translation>
 <translation id="2242467532204595597">随时可以使用 Chrome 打开消息、文档和其他应用中的链接。</translation>
-<translation id="2256384876478573507">在 iPhone 上更快地打开 Chrome 浏览网页。</translation>
 <translation id="2270691132923135296">掌握 Chrome 必备小技巧，即刻畅游网络世界</translation>
 <translation id="2311240109311056604">打开 Chrome 恐龙游戏。</translation>
 <translation id="2339201583852607431">您的密码将会保存到您的 Google 账号 (<ph name="EMAIL" />) 中。</translation>
@@ -74,7 +72,6 @@
 <translation id="2427791862912929107">Chrome 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}other{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。清除的数据可能包括历史记录和自动填充数据。}}</translation>
-<translation id="2531823184391665648">在 iPad 上更快地打开 Chrome 浏览网页。</translation>
 <translation id="2561231791489583059">使用 Chrome 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
@@ -107,7 +104,6 @@
 <translation id="3140589780564632473">在 Chrome 中搜索影像内容</translation>
 <translation id="314782365035065913">从主屏幕程序坞更快访问 Chrome</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
-<translation id="320747600144551583">Chrome 提示：增强型安全浏览功能可为您保驾护航</translation>
 <translation id="322254490661677575">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令。</translation>
 <translation id="3303503998967553377">在 iOS 中使用 Chrome 操作</translation>
 <translation id="3348862487678490430">将阅读清单项添加到 Chrome</translation>
@@ -137,7 +133,6 @@
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="4064699917955374540">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请确认是您本人在操作。</translation>
 <translation id="411154422556990518">及时了解价格跟踪资讯和 Chrome 提示。</translation>
-<translation id="4167555379306984168">了解 Chrome 的新变化</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="424864128008805179">要在 Chrome 中退出账号吗？</translation>
 <translation id="4409545895715116037">以下通行密钥不符合要求，因此未导入 Google 密码管理工具。</translation>
@@ -150,7 +145,6 @@
 <translation id="4636900170638246267">登录此网站和 Chrome。</translation>
 <translation id="4647910807533196601">在 Chrome 中打开我最近打开的标签页。</translation>
 <translation id="4693084815234024320">您正在使用 Chrome 无痕模式</translation>
-<translation id="4708857722625759026">从 iPad 程序坞更快地访问 Chrome。</translation>
 <translation id="4713740144985377441">返回到 Chrome 以上传文件</translation>
 <translation id="4724297637870447613">随时随地使用 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 页面</translation>
@@ -164,7 +158,6 @@
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
 <translation id="49200511069271369">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="4925322001044117929">默认在 iPad 上使用 Chrome</translation>
-<translation id="4934496192263958600">登录 Chrome 即可获取您的数据</translation>
 <translation id="496747131578053942">Chrome 提示：使用 Google 智能镜头搜索所见内容</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可为您提供保护，帮助您免受数据泄露、不安全网站等问题的影响。</translation>
@@ -247,7 +240,6 @@
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}other{当 Chrome 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}}</translation>
 <translation id="6709398533399187136">您的密码在数据泄露事件中外泄。Google 密码管理工具建议您立即更改此密码。</translation>
-<translation id="6718973358446066955">您即将完成 Chrome 设置！</translation>
 <translation id="6820553595690137150">口令加密不涵盖付款方式和地址。
 
 如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -335,7 +327,6 @@
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8371138994040262994">在 Chrome 中打开设置。</translation>
-<translation id="8375378038757507658">随时使用 Chrome 轻松打开消息或其他应用中的链接。</translation>
 <translation id="8387459386171870978">继续使用 Chrome</translation>
 <translation id="8392023217086447677">已在 Chrome 无痕模式下打开</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
@@ -373,7 +364,6 @@
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 <translation id="9176561303811134420">在 Chrome 中管理支付方式</translation>
 <translation id="9181628561061032322">打开最近使用 Chrome 打开的标签页。</translation>
-<translation id="924447568950697217">将 Chrome 设置为您的默认浏览器</translation>
 <translation id="948597495737267756">打开 Chrome 历史记录页面。</translation>
 <translation id="954347330803595209">导入数据，以便在 Chrome 上使用您的密码、历史记录、书签和信用卡</translation>
 <translation id="97300214378190234">每次点按其他应用中的链接时，都使用 Chrome 打开。</translation>

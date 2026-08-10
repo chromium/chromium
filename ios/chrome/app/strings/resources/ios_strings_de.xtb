@@ -572,7 +572,6 @@
 <translation id="2816489851009559785">„Menü“ → Einstellungen → „Standardbrowser“</translation>
 <translation id="2818821771744632548">Du wurdest beim Zurücksetzen deines iPhones von deinem Konto <ph name="USER_NAME" /> abgemeldet. Tippe unten auf „Weiter“, um dich wieder anzumelden.</translation>
 <translation id="2819667972867209401">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
-<translation id="2825777862277359739">Melde dich an, um deine Passwörter, Tabs, Lesezeichen und andere Daten abzurufen.</translation>
 <translation id="2827760117436553203">Daten getrennt halten?</translation>
 <translation id="2829172210806130158">Auf dem Bildschirm suchen</translation>
 <translation id="2831109159746537587">Zum Suchen kannst du das Bild einkreisen oder darauf tippen</translation>
@@ -719,7 +718,6 @@
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
 <translation id="3378214228000661758">Passkey für dieses Konto erstellen</translation>
 <translation id="3380352560400387991">Diese Website versucht, eine App zu öffnen. Dadurch verlässt du den Inkognitomodus.</translation>
-<translation id="3385742921291399323">Du kannst deine gespeicherten Passwörter, Tabs, Lesezeichen und andere Daten abrufen.</translation>
 <translation id="3391765987934722383">Keine Preissenkung verpassen</translation>
 <translation id="3392923070107623576">Mit Tabgruppen den Überblick behalten</translation>
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
@@ -1250,7 +1248,6 @@
 <translation id="5148717509369231739">Safari-Daten importieren</translation>
 <translation id="5152483358138813104">Schneller auf allen deinen Geräten anmelden</translation>
 <translation id="515315847398512535">Die Bildschirmsuche ist für dein Konto deaktiviert. Weitere Informationen erhältst du von deinem Administrator.</translation>
-<translation id="5155502059906700593">Du kannst die Adressleiste nach oben oder unten verschieben.</translation>
 <translation id="5157638238828697074">Ein Fehler ist aufgetreten. Die App konnte nicht geöffnet werden.</translation>
 <translation id="5163417375525818870">PDF‑Dateien</translation>
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
@@ -1569,7 +1566,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196207969502475924">Sprachsuche</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
-<translation id="6199783146233591178">Mit dem erweiterten Safe Browsing in Echtzeit geschützt sein</translation>
 <translation id="6210079381482819663">Tabs, die <ph name="THRESHOLD" /> Tage oder länger nicht verwendet wurden, werden hierhin verschoben. Du kannst dies jederzeit <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="6213281885682386884">Keine Adressen gefunden</translation>
 <translation id="6218508144653756827">Fuchsiafarbenes Design</translation>
@@ -1720,7 +1716,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6629759408545977279">Von: <ph name="ORIGINATING_HOST" /></translation>
-<translation id="66306952800092318">Dank zusätzlicher Schutzmaßnahmen kannst du dich besser vor Onlinebedrohungen schützen.</translation>
 <translation id="6634432609054530164">Deine Organisation hat den Inkognitomodus deaktiviert</translation>
 <translation id="6637478299472506933">Fehler beim Download</translation>
 <translation id="6638511529934826365">Text zoomen…</translation>

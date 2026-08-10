@@ -677,6 +677,7 @@
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
 <translation id="8295827201165805317">Не сте посещавали този сайт наскоро. Chromium премахна разрешението „<ph name="PERMISSION" />“.</translation>
 <translation id="8296236834352487533">Пазарувайте, превеждайте и идентифицирайте това, което виждате с камерата си, в приложението Chromium за iOS</translation>
+<translation id="8310603974518734211">QR код за влизане в Chromium като <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Грешка при стартирането: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Организацията ви затваря Chromium, когато не се използва в продължение на <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Запазване като изображение</translation>

@@ -193,6 +193,7 @@
 <translation id="132301787627749051">Търсене на изображението от буферната памет</translation>
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="1330449323196174374">Сгъване на левия край навътре</translation>
+<translation id="1330952240988133220">Запазване на номера за коригирани данни по сигурен начин в Google Wallet</translation>
 <translation id="133173645041092770">Затваряне на уебсайта</translation>
 <translation id="1333745675627230582">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="1333989956347591814">Активността ви <ph name="BEGIN_EMPHASIS" />може да остане видима<ph name="END_EMPHASIS" /> за:
@@ -341,6 +342,7 @@
 <translation id="1569487616857761740">Въведете дата на валидност</translation>
 <translation id="1569694109004336106">Google Chrome се опитва да включи Windows Hello за попълване на паролите.</translation>
 <translation id="1569905000953679183">Извличане на правилата за инсталиране на разширения</translation>
+<translation id="1572383686781055412">Актуализиране на KTN по сигурен начин</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> инча</translation>
 <translation id="1574714699824202614">Начинът на плащане се потвърждава</translation>
 <translation id="1576277203042721907">Статистика за Пазаруване</translation>
@@ -397,6 +399,7 @@
 <translation id="1658918301167915956">устройства с Bluetooth</translation>
 <translation id="1662550410081243962">Запазване и попълване на начини на плащане</translation>
 <translation id="1662980953334786797">Същият ред</translation>
+<translation id="1663578299724791827">Запазване на KTN по сигурен начин</translation>
 <translation id="1663943134801823270">Картите и адресите са от Chrome. Можете да ги управлявате от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Фотополимер за флексопечат</translation>
 <translation id="1667730174533834274">потвърди самоличността ви, преди да промените настройките</translation>
@@ -404,6 +407,7 @@
 <translation id="1670861525135254448">Запазване на превозното средство</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Късата страна напред</translation>
+<translation id="1683083957814090281">Актуализиране на превозното средство по сигурен начин</translation>
 <translation id="168693727862418163">Стойността на това правило не бе потвърдена спрямо съответната схема и ще бъде пренебрегната.</translation>
 <translation id="168841957122794586">Сертификатът на сървъра съдържа слаб криптографски ключ.</translation>
 <translation id="1688718429648938412">Запазване на картата за лоялност в Wallet</translation>
@@ -868,6 +872,7 @@
 <translation id="2469153820345007638">Подредба от 1 до N</translation>
 <translation id="24699311393038040">Хартия (с покритие)</translation>
 <translation id="2471632709106952369">Таблици за сравнение</translation>
+<translation id="2472396075297339227">Запазване на номера на проверен пътник по сигурен начин в Google Wallet</translation>
 <translation id="2477607419416067650">Други данни в Google</translation>
 <translation id="247903268499247848">Използването на сензорите за движение и светлина не е разрешено</translation>
 <translation id="2479148705183875116">Към настройките</translation>
@@ -926,6 +931,7 @@
 <translation id="2553352788023127673">Историята в Търсене и паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
 <translation id="2555855727505718984">Автоматичното попълване няма да разполага с тази информация на това устройство, за да ви помага при попълването на формуляри</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
 <translation id="2559566667529177711">Многослоен носител</translation>
 <translation id="2570734079541893434">Управление на настройките</translation>
@@ -1325,6 +1331,7 @@
 <translation id="3273738040255912340">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Подканата за запазване на IBAN е отворена на пълната височина.</translation>
 <translation id="327455571215090823">По-интелигентно автоматично попълване, което остава частно</translation>
+<translation id="3280440382387335343">Актуализиране на паспорта по сигурен начин в Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{Според администраторско правило отварянето на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило отварянето на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
@@ -1465,6 +1472,7 @@
 <translation id="3543597750097719865">Подпис по X9.62 ECDSA с SHA-512</translation>
 <translation id="3543935938072367282">По-бързо плащане с автоматично попълване</translation>
 <translation id="3547442767634383572">обща информация за служебния потребителски профил;</translation>
+<translation id="3547673868874844776">Запазване на документа за самоличност по сигурен начин</translation>
 <translation id="3547746132308051926">20 x 24 инча</translation>
 <translation id="3549904448933807997">Информация за браузърите и потребителските профили (включително личните и служебните потребителски профили).</translation>
 <translation id="3552155506104542239">Предупреждение: Това правило е в конфликт с правилото <ph name="POLICY_NAME" /> и няма да има ефект върху приложенията за Android. Иначе то работи нормално.</translation>
@@ -1673,6 +1681,7 @@
 <translation id="388632593194507180">Установено е наблюдение</translation>
 <translation id="3886948180919384617">Стакер 3</translation>
 <translation id="3890664840433101773">Добавяне на имейл адрес</translation>
+<translation id="3892626428170730309">Запазване на паспорта по сигурен начин</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3901925938762663762">Картата е с изтекла валидност</translation>
 <translation id="390391808978419508">Времето за изчакване при отваряне изтече</translation>
@@ -1828,6 +1837,7 @@
 <translation id="4153858337812834972">Най-скорошни раздели</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="4157273919218514718">Функцията е базирана на Personal Intelligence с Gemini. <ph name="BEGIN_LINK" />Управление на настройките<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Актуализиране на шофьорската книжка по сигурен начин</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165422751765527461">Отваря статия в Помощния център в нов раздел</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
@@ -1842,6 +1852,7 @@
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4178863275556660738">Начини на плащане, различни от карти</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> – <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Актуализиране на номера за коригирани данни по сигурен начин</translation>
 <translation id="4186035307311647330">Спиране на проследяването на цената</translation>
 <translation id="4190446002599583608">Търсене в историята, базирано на AI</translation>
 <translation id="4191334393248735295">Продължителност</translation>
@@ -1883,6 +1894,7 @@
 <translation id="4231448684371260244">8 x 13 инча</translation>
 <translation id="4234996384188431444">Плащане чрез Pix без превключване между приложенията в Google Chrome</translation>
 <translation id="4238607350028440048">Помогни ми да се упражня за интервюто си, като влезеш в ролята на мениджър по наемането на служители и ми задаваш въпроси</translation>
+<translation id="4239215166147486528">Запазване на шофьорската книжка по сигурен начин в Google Wallet</translation>
 <translation id="4239799716689808527">Етикети</translation>
 <translation id="424063167283213501">Запазване на известния номер на пътника</translation>
 <translation id="4241830393007970744">Хакерите, използващи сайта, който опитахте да посетите, може да ви подведат да инсталирате софтуер или да разкриете информация за себе си, като например пароли, телефон или номера на кредитни карти.</translation>
@@ -1995,6 +2007,7 @@
 <translation id="4407758156081352648">От съображения за сигурност организацията ви не позволява повторното използване на пароли в Chrome. Паролите в браузъра са шифровани с цел защита на поверителността на потребителите.</translation>
 <translation id="4409271659088619928">Търсещата ви машина е <ph name="DSE" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="4409556632583862731">Нова нишка</translation>
+<translation id="4410614037742891410">Актуализиране на личната карта по сигурен начин в Google Wallet</translation>
 <translation id="4412074349188076601">Тази конфигурация е означена като такава с възможност за инсталиране, но не може да се инсталира, тъй като не е предоставен образ за съответната архитектура.</translation>
 <translation id="4412377069090572315">Какво казват хората</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
@@ -2208,9 +2221,11 @@
 <translation id="4800132727771399293">Прегледайте датата на валидност и кода за проверка и оптитайте отново</translation>
 <translation id="4800546479758254481">Разрешено е използването на AR</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4805128460707321168">Актуализиране на документа за самоличност по сигурен начин</translation>
 <translation id="4807098396393229769">Име върху картата</translation>
 <translation id="4809079943450490359">Инструкции от администратора на устройството ви:</translation>
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
+<translation id="4811696127853690432">Запазване на превозното средство по сигурен начин в Google Wallet</translation>
 <translation id="4811918461974803225">Лого на Google Pay и Affirm</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4814114628197290459">Изтриване на IBAN</translation>
@@ -2340,11 +2355,13 @@
 <translation id="5020862932518041900">Ако изберете или пренебрегнете дадено предложение, Chrome ще се адаптира така, че да виждате само това, което е уместно за вас</translation>
 <translation id="5021500396464456616">Свържете се с човека, изпратил тази връзка</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
+<translation id="502229363433123770">Запазване на номера за коригирани данни по сигурен начин</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
 <translation id="5024171724744627792">Плащайте по-бързо, когато картата ви е запазена. Данните за нея се шифроват в профила ви в Google.</translation>
 <translation id="5026121202864677765">Напиши мотивационното ми писмо</translation>
 <translation id="5030338702439866405">Издаден от</translation>
 <translation id="503069730517007720">За <ph name="SOFTWARE_NAME" /> се изисква основен сертификат, но такъв не е инсталиран. Системният ви администратор трябва да прегледа инструкциите за конфигуриране на <ph name="SOFTWARE_NAME" />, за да отстрани проблема. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Запазване на KTN по сигурен начин в Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> иска да използва камерата и микрофона ви</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Размер на шрифта</translation>
@@ -2721,6 +2738,7 @@
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5649053991847567735">Автоматични изтегляния</translation>
 <translation id="5651323159439184939">Непрекъснат печат</translation>
+<translation id="5653681867130739344">Актуализиране на документа за самоличност по сигурен начин в Google Wallet</translation>
 <translation id="5654927323611874862">Идентификатор на качения сигнал за срив:</translation>
 <translation id="5654965123204121933">URL адресът не включва задължителния низ за замяна <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Имейл</translation>
@@ -2833,6 +2851,7 @@
 <translation id="5866898949289125849">Преглеждате страница с инструменти за програмисти</translation>
 <translation id="5869405914158311789">Няма достъп до този сайт</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
+<translation id="5872115357279348603">Актуализиране на KTN по сигурен начин в Google Wallet</translation>
 <translation id="5872215789867188990">Групата раздели „<ph name="GROUP_TITLE" />“ вече не е налице</translation>
 <translation id="5872692522325383488">IBAN номерът е запазен</translation>
 <translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
@@ -2856,6 +2875,7 @@
 <translation id="5914185423510719251">Запазване на KTN в Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> добави този раздел</translation>
 <translation id="59174027418879706">Активирано</translation>
+<translation id="5917538780499455803">Запазване на личната карта по сигурен начин</translation>
 <translation id="5918847752193018339">Плащайте по-бързо, когато кодовете за проверка са запазени. <ph name="LINK_BEGIN" />Изтриване на запазени кодове за сигурност<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Включено</translation>
@@ -3162,6 +3182,7 @@
 <translation id="6415778972515849510">Chromium може да ви помогне да защитите профила си в Google и да промените паролата си.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Уверете се, че всички важни бизнес или лични данни се съхраняват извън устройството.</translation>
+<translation id="6422648598133086441">Актуализиране на превозното средство по сигурен начин в Google Wallet</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Сгъване на двата края навътре</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3335,6 +3356,7 @@
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>
 <translation id="6743841972744298686">Настройки за синхронизиране</translation>
 <translation id="6745212570062463886">Автоматично попълване на името и имейл адреса ви от профила ви в Google</translation>
+<translation id="674580074662200768">Актуализиране на паспорта по сигурен начин</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Стойност за правилото</translation>
 <translation id="6753434778807740853">Изтриване на записа <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3494,6 +3516,7 @@
 <translation id="7023765275461720661">Искате ли да свържете профила и да платите с(ъс) <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">промени настройките за попълване на начините на плащане</translation>
 <translation id="7031110846419387930">Информация за вашия браузър, операционна система, устройство, инсталиран софтуер, файлове и IP адреси</translation>
+<translation id="7031356333130415891">Актуализиране на личната карта по сигурен начин</translation>
 <translation id="7031646650991750659">Кои приложения от Google Play сте инсталирали</translation>
 <translation id="7035705295266423040">Банката иска да потвърди самоличността ви</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате настройките за поверителност за профила си в Google</translation>
@@ -3618,6 +3641,7 @@
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">За да изтриете тези данни, отворете съответните настройки за управление</translation>
+<translation id="7253051586755429279">Актуализиране на номера за коригирани данни по сигурен начин в Google Wallet</translation>
 <translation id="7255540419660272073">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задна тава</translation>
 <translation id="725866823122871198">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на компютъра ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
@@ -3982,6 +4006,7 @@
 <translation id="7860345425589240791">Въведете новата дата на валидност и кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Искате ли да напуснете сайта?</translation>
 <translation id="7862306158978555061">покаже поверителна информация</translation>
+<translation id="7863122976993412643">Запазване на шофьорската книжка по сигурен начин</translation>
 <translation id="7865448901209910068">Най-добра скорост</translation>
 <translation id="7865482168955081228">Екранът за грешка на „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="7869655448736341731">Всички</translation>
@@ -4030,6 +4055,7 @@
 <translation id="7943893128817522649">Може да поиска разрешение да изтегли автоматично няколко файла</translation>
 <translation id="7947285636476623132">Проверете годината на валидност и опитайте отново</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да научите повече за функциите на Chrome</translation>
+<translation id="7947964969544524438">Запазване на номера на проверен пътник по сигурен начин</translation>
 <translation id="7948579849190819732">Текущ раздел</translation>
 <translation id="7950027195171824198">Управление на предпочитанията ви за „бисквитките“ от настройките на Chrome</translation>
 <translation id="7951415247503192394">(32 бита)</translation>
@@ -4228,6 +4254,7 @@
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">Картата е запазена само на устройството</translation>
+<translation id="8300302621078931927">Запазване на личната карта по сигурен начин в Google Wallet</translation>
 <translation id="8301894345671534559">Въвеждане на кодa</translation>
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="830868413617744215">Бета</translation>
@@ -4437,6 +4464,8 @@
 <translation id="8710842507289500830">Стил на шрифта</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8715198179991802709">Chrome току-що сигнализира за уебсайт, който се опитвахте да посетите. Помогнете ни да подобрим тези предупреждения, като попълните едноминутна анкета.</translation>
+<translation id="8716983145825913456">Запазване на превозното средство по сигурен начин</translation>
+<translation id="8717177139469452440">Запазване на паспорта по сигурен начин в Google Wallet</translation>
 <translation id="8718314106902482036">Плащането не е завършено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предложение за търсене</translation>
 <translation id="8719528812645237045">Няколко перфорации в горната част</translation>
@@ -4538,6 +4567,7 @@
 <translation id="888169490072887292">Намери ресторанти, подходящи за цялото семейство, с детско меню</translation>
 <translation id="8883863364960302898">Папка на Google Диск</translation>
 <translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
+<translation id="8889525327610245418">Актуализиране на шофьорската книжка по сигурен начин в Google Wallet</translation>
 <translation id="8891031436559779793">Ще получите известие при понижение на цената в който и да е сайт.</translation>
 <translation id="8891727572606052622">Невалиден режим на прокси сървъра.</translation>
 <translation id="8894794286471754040">Дългата страна напред</translation>
@@ -4774,6 +4804,7 @@
 <translation id="978750072783101994">Автоматично попълване на тази карта за покупки в Chromium, когато данните ѝ са запазени в Google Wallet</translation>
 <translation id="979107176848483472">Браузърът и потребителският ви профил се управляват от <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">Офлайн</translation>
+<translation id="98237783946365638">Запазване на документа за самоличност по сигурен начин в Google Wallet</translation>
 <translation id="983587187183716432">Бутон „<ph name="AI_ENGINE_NAME" />“. Натиснете Enter, за да попитате <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Начини на плащане</translation>
 <translation id="985199708454569384">&lt;p&gt;Ще виждате това съобщение за грешка, ако датата и часът на компютъра или мобилното ви устройство не са верни.&lt;/p&gt;

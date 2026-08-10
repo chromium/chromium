@@ -26,7 +26,6 @@
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="1516692594929310090">Otwiera siatkę kart w Chrome.</translation>
-<translation id="152319127067424683">Uruchamiaj Chrome szybciej z Docka na iPhonie.</translation>
 <translation id="1526327845902180576">Po włączeniu:
 <ph name="BEGIN_INDENT" /> • Pomagaj w udoskonalaniu Chrome pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />
 
@@ -64,7 +63,6 @@ Pamiętaj, że:
 <translation id="2212318912894837281">Wpisz hasło wielowyrazowe, aby zapisać to hasło i uzyskać dostęp do danych z Chrome na wszystkich swoich urządzeniach</translation>
 <translation id="2213327331203157297">Aby wyłączyć tryb blokady w Chrome, wyłącz go na iPhonie.</translation>
 <translation id="2242467532204595597">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach, dokumentach i w innych aplikacjach.</translation>
-<translation id="2256384876478573507">Uruchamiaj Chrome szybciej, gdy chcesz przeglądać internet na iPhonie.</translation>
 <translation id="2270691132923135296">Aby zacząć, zapoznaj się z najważniejszymi przydatnymi informacjami o Chrome</translation>
 <translation id="2311240109311056604">Otwiera grę z dinozaurem w Chrome.</translation>
 <translation id="2339201583852607431">Hasło zostanie zapisane na Twoim koncie Google (<ph name="EMAIL" />).</translation>
@@ -74,7 +72,6 @@ Pamiętaj, że:
 <translation id="2427791862912929107">W Chrome są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minutę. Może to obejmować historię i autouzupełnianie.}few{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}many{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minut. Może to obejmować historię i autouzupełnianie.}other{Dzieje się tak, gdy nie korzystasz z Chrome przez {THRESHOLD} minuty. Może to obejmować historię i autouzupełnianie.}}</translation>
-<translation id="2531823184391665648">Uruchamiaj Chrome szybciej, gdy chcesz przeglądać internet na iPadzie.</translation>
 <translation id="2561231791489583059">Używaj Chrome jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="2576431527583832481">Chrome jest teraz jeszcze lepszy! Dostępna jest nowa wersja.</translation>
@@ -107,7 +104,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="3140589780564632473">Wyszukaj elementy wizualne w Chrome</translation>
 <translation id="314782365035065913">Szybszy dostęp do Chrome z Docka na ekranie głównym</translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
-<translation id="320747600144551583">Wskazówka dotycząca Chrome: Ulepszone bezpieczne przeglądanie uchroni Cię od problemów</translation>
 <translation id="322254490661677575">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, wpisz hasło wielowyrazowe.</translation>
 <translation id="3303503998967553377">Korzystaj z Działań w Chrome na iOS</translation>
 <translation id="3348862487678490430">Dodaj element listy Do przeczytania do Chrome</translation>
@@ -137,7 +133,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="4064699917955374540">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
 <translation id="411154422556990518">Otrzymuj powiadomienia ze śledzenia cen i wskazówki dotyczące Chrome.</translation>
-<translation id="4167555379306984168">Zobacz, co nowego w Chrome</translation>
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4409545895715116037">Nie udało się zaimportować tych kluczy dostępu do Menedżera haseł Google, ponieważ nie spełniają wymagań.</translation>
@@ -150,7 +145,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="4636900170638246267">Zaloguj się w na tej stronie i w Chrome.</translation>
 <translation id="4647910807533196601">Otwórz moją ostatnio używaną kartę w Chrome.</translation>
 <translation id="4693084815234024320">Jesteś w trybie incognito w Chrome</translation>
-<translation id="4708857722625759026">Uruchamiaj Chrome szybciej z Docka na iPadzie.</translation>
 <translation id="4713740144985377441">Wróć do Chrome, aby przesłać plik</translation>
 <translation id="4724297637870447613">Korzystaj z Chrome w dowolnym miejscu</translation>
 <translation id="4738647308035481133">Strona Google Chrome</translation>
@@ -164,7 +158,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="4903674399067644695">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="49200511069271369">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, oraz sposobem korzystania z Chrome. Administrator może konfigurować lub ograniczać pewne funkcje.</translation>
 <translation id="4925322001044117929">Domyślnie używaj Chrome na iPada</translation>
-<translation id="4934496192263958600">Zaloguj się w Chrome, aby mieć dostęp do swoich danych</translation>
 <translation id="496747131578053942">Wskazówka dotycząca Chrome: wyszukaj to, co widzisz, za pomocą Obiektywu Google</translation>
 <translation id="498985224078955265">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome.</translation>
 <translation id="5030102366287574140">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>
@@ -249,7 +242,6 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 <translation id="6684809838922667136">Ulepsz Chrome</translation>
 <translation id="6695698548122852044">{THRESHOLD,plural, =1{Dzieje się tak, gdy nie używasz Chrome przez {THRESHOLD} minutę. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}few{Dzieje się tak, gdy nie używasz Chrome przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}many{Dzieje się tak, gdy nie używasz Chrome przez {THRESHOLD} minut. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}other{Dzieje się tak, gdy nie używasz Chrome przez {THRESHOLD} minuty. Dane zapisane tylko na tym urządzeniu, gdy korzystałeś(-aś) z niego po zalogowaniu, zostaną usunięte. Może to obejmować historię i hasła.}}</translation>
 <translation id="6709398533399187136">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł Google zaleca, aby jak najszybciej je zmienić.</translation>
-<translation id="6718973358446066955">Konfiguracja Chrome jest już prawie zakończona.</translation>
 <translation id="6820553595690137150">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
@@ -337,7 +329,6 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8371138994040262994">Otwiera ustawienia w Chrome.</translation>
-<translation id="8375378038757507658">Z łatwością otwieraj w Chrome wszystkie linki, które klikasz w wiadomościach lub innych aplikacjach.</translation>
 <translation id="8387459386171870978">Nadal korzystaj z Chrome</translation>
 <translation id="8392023217086447677">Otwarto w Chrome w trybie incognito</translation>
 <translation id="840168496893712993">Niektóre dodatki mogą powodować awarie Chrome. Spróbuj je odinstalować.</translation>
@@ -377,7 +368,6 @@ Dane zostały zaszyfrowane za pomocą hasła wielowyrazowego <ph name="TIME" />.
 <translation id="9122931302567044771">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 <translation id="9176561303811134420">Zarządzaj formami płatności w Chrome</translation>
 <translation id="9181628561061032322">Otwiera ostatnie karty w Chrome.</translation>
-<translation id="924447568950697217">Ustawianie Chrome jako przeglądarki domyślnej</translation>
 <translation id="948597495737267756">Otwiera stronę historii Chrome.</translation>
 <translation id="954347330803595209">Zaimportuj dane, aby używać haseł, historii, zakładek i kart kredytowych w Chrome</translation>
 <translation id="97300214378190234">Używaj Chrome, zawsze gdy klikasz linki w innych aplikacjach.</translation>
