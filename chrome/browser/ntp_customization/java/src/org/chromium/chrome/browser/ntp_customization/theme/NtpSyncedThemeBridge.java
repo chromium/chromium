@@ -55,6 +55,12 @@ public class NtpSyncedThemeBridge {
         NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mNativeNtpSyncedThemeBridge);
     }
 
+    /** Exposes whether the C++ service is actively processing a sync update. */
+    public boolean isProcessingSyncUpdate() {
+        if (mNativeNtpSyncedThemeBridge == 0) return false;
+        return NtpSyncedThemeBridgeJni.get().isProcessingSyncUpdate(mNativeNtpSyncedThemeBridge);
+    }
+
     /**
      * Callback from native code, triggered when the custom background image has been successfully
      * updated. This can occur after a new theme is selected or when a daily refresh happens.
@@ -99,5 +105,7 @@ public class NtpSyncedThemeBridge {
         void fetchNextThemeCollectionImage(long nativeNtpSyncedThemeBridge);
 
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
+
+        boolean isProcessingSyncUpdate(long nativeNtpSyncedThemeBridge);
     }
 }

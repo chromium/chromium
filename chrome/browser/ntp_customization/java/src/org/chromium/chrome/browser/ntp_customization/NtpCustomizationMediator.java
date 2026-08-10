@@ -156,6 +156,12 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                                     mNewThemeCollectionImage, themeCollectionData);
                         }
                         mBottomSheetContent.onSheetClosed();
+                        // Clears any pending synced background data received while the bottom sheet
+                        // was open, ensuring it does not override the user's manual local selection
+                        // upon closing.
+                        // TODO(https://crbug.com/488439751): Clean up any unused synced background
+                        // image files from disk.
+                        configManager.clearSyncedNtpBackgroundData();
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
                         // Notify to recreate activities if a new customized theme color is selected
                         // or removed.

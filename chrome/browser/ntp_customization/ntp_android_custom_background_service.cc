@@ -6,14 +6,25 @@
 
 #include <climits>
 
+#include "base/auto_reset.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
+#include "chrome/browser/ntp_customization/ntp_android_theme_sync_bridge.h"
 #include "chrome/browser/ntp_customization/ntp_synced_theme_bridge.h"
 #include "chrome/browser/ntp_customization/ntp_theme_collection_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/protocol/theme_android_specifics.pb.h"
 #include "components/themes/ntp_background_service.h"
+#include "components/themes/theme_utils.h"
+#include "ui/webui/buildflags.h"
 
 // static
 void NtpAndroidCustomBackgroundService::RegisterProfilePrefs(
@@ -26,13 +37,33 @@ void NtpAndroidCustomBackgroundService::RegisterProfilePrefs(
 }
 
 NtpAndroidCustomBackgroundService::NtpAndroidCustomBackgroundService(
-    Profile* profile)
+    Profile* profile,
+    syncer::OnceDataTypeStoreFactory store_factory)
     : NtpCustomBackgroundServiceBase(
           profile->GetPrefs(),
           NtpAndroidBackgroundServiceFactory::GetForProfile(profile),
           prefs::kNtpAndroidCustomBackgroundDict,
           prefs::kNtpAndroidCustomBackgroundLocalToDevice) {
   active_custom_background_ = GetCustomBackground();
+
+  // TODO(crbug.com/488439751): Desktop Android devices manage NTP themes using
+  // desktop UI/theme mechanisms. Skip initializing theme sync bridge on
+  // Desktop Android devices until Desktop Android theme sync requirements are
+  // finalized.
+#if !BUILDFLAG(ENABLE_WEBUI_NTP)
+  if (base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync)) {
+    theme_sync_bridge_ =
+        std::make_unique<ntp_customization::NtpAndroidThemeSyncBridge>(
+            std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+                syncer::THEMES_ANDROID,
+                /*dump_stack=*/base::BindRepeating(
+                    []() { base::debug::DumpWithoutCrashing(); })),
+            std::move(store_factory),
+            base::BindRepeating(
+                &NtpAndroidCustomBackgroundService::OnThemeChangedFromSync,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 NtpAndroidCustomBackgroundService::~NtpAndroidCustomBackgroundService() {
@@ -46,9 +77,11 @@ NtpAndroidCustomBackgroundService::~NtpAndroidCustomBackgroundService() {
 
 void NtpAndroidCustomBackgroundService::SelectLocalBackgroundImage(
     const base::FilePath& path) {
+  processing_sync_update_ = false;
   active_custom_background_ = std::nullopt;
   pref_service_->SetBoolean(prefs::kNtpAndroidCustomBackgroundLocalToDevice,
                             true);
+  NotifySyncBridge();
 }
 
 std::optional<int> NtpAndroidCustomBackgroundService::GetNextRefreshTimestamp()
@@ -57,6 +90,14 @@ std::optional<int> NtpAndroidCustomBackgroundService::GetNextRefreshTimestamp()
   // daily_refresh_enabled to true. Actual daily refresh scheduling on Android
   // is handled by NtpThemeDailyRefreshManager.
   return INT_MAX;
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+NtpAndroidCustomBackgroundService::GetSyncControllerDelegate() {
+  if (!theme_sync_bridge_) {
+    return nullptr;
+  }
+  return theme_sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
 void NtpAndroidCustomBackgroundService::SetThemeCollectionBridge(
@@ -76,6 +117,7 @@ void NtpAndroidCustomBackgroundService::SetCustomBackgroundInfo(
     const std::string& attribution_line_2,
     const GURL& action_url,
     const std::string& collection_id) {
+  processing_sync_update_ = false;
   if (!background_url.is_valid() && !collection_id.empty()) {
     // Daily refresh setup.
     CustomBackground active;
@@ -97,6 +139,13 @@ void NtpAndroidCustomBackgroundService::SetCustomBackgroundInfo(
   NtpCustomBackgroundServiceBase::SetCustomBackgroundInfo(
       background_url, thumbnail_url, attribution_line_1, attribution_line_2,
       action_url, collection_id);
+  NotifySyncBridge();
+}
+
+void NtpAndroidCustomBackgroundService::ResetCustomBackgroundInfo() {
+  processing_sync_update_ = false;
+  NtpCustomBackgroundServiceBase::ResetCustomBackgroundInfo();
+  NotifySyncBridge();
 }
 
 void NtpAndroidCustomBackgroundService::OnNextCollectionImageAvailable() {
@@ -114,12 +163,18 @@ void NtpAndroidCustomBackgroundService::NotifyAboutBackgrounds() {
   std::optional<CustomBackground> current = GetCustomBackground();
   if (!current) {
     // Background was reset.
+    // TODO(crbug.com/488439751): Handle the transition back to the default
+    // background and Chrome colors when theme is reset from sync.
     active_custom_background_ = std::nullopt;
     NtpCustomBackgroundServiceBase::NotifyAboutBackgrounds();
     return;
   }
 
-  if (current->daily_refresh_enabled) {
+  if (processing_sync_update_) {
+    if (synced_theme_bridge_) {
+      synced_theme_bridge_->OnCustomBackgroundImageUpdated();
+    }
+  } else if (current->daily_refresh_enabled) {
     // Route the update based on whether this is a background pre-fetch for
     // the next daily refresh cycle or the initial daily refresh setup.
     if (IsNextThemeCollectionImage(*current)) {
@@ -165,4 +220,48 @@ bool NtpAndroidCustomBackgroundService::IsNextThemeCollectionImage(
          new_info.daily_refresh_enabled &&
          !active_custom_background_->custom_background_url.is_empty() &&
          active_custom_background_->collection_id == new_info.collection_id;
+}
+
+void NtpAndroidCustomBackgroundService::OnThemeChangedFromSync(
+    const sync_pb::ThemeAndroidSpecifics& specifics) {
+  // TODO(crbug.com/488439751): Skip applying sync theme changes on Desktop
+  // Android devices.
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  return;
+#else
+  processing_sync_update_ = true;
+  if (specifics.has_ntp_background()) {
+    base::DictValue dict =
+        themes::GetBackgroundDictFromProto(specifics.ntp_background());
+    if (!dict.empty()) {
+      pref_service_->SetDict(prefs::kNtpAndroidCustomBackgroundDict,
+                             std::move(dict));
+      return;
+    }
+  }
+  pref_service_->ClearPref(prefs::kNtpAndroidCustomBackgroundDict);
+#endif
+}
+
+void NtpAndroidCustomBackgroundService::NotifySyncBridge() {
+  // TODO(crbug.com/488439751): Skip pushing theme updates to sync bridge on
+  // Desktop Android devices.
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  return;
+#else
+  if (!theme_sync_bridge_) {
+    return;
+  }
+  sync_pb::ThemeAndroidSpecifics specifics;
+  if (!pref_service_->GetBoolean(
+          prefs::kNtpAndroidCustomBackgroundLocalToDevice)) {
+    const base::Value* pref =
+        pref_service_->GetUserPrefValue(prefs::kNtpAndroidCustomBackgroundDict);
+    if (pref && pref->is_dict() && !pref->GetDict().empty()) {
+      *specifics.mutable_ntp_background() =
+          themes::GetProtoFromBackgroundDict(pref->GetDict());
+    }
+  }
+  theme_sync_bridge_->UpdateTheme(specifics);
+#endif
 }

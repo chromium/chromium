@@ -162,6 +162,7 @@ public class NewTabPage
     protected final NewTabPageManagerImpl mNewTabPageManager;
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsLff;
+    private final boolean mIsNtpCustomizationSyncEnabled;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BottomSheetController mBottomSheetController;
     private final NewTabPageLayout mNewTabPageLayout;
@@ -349,6 +350,8 @@ public class NewTabPage
 
             // If not visible when loading completes, wait until onShown is received.
             if (!mTab.isHidden()) recordNtpShown();
+
+            maybeUpdateCustomBackgroundFromDeviceSync();
         }
 
         @Override
@@ -458,6 +461,7 @@ public class NewTabPage
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBottomSheetController = bottomSheetController;
         mIsInNightMode = isInNightMode;
+        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mTopInsetProvider = topInsetProvider;
 
@@ -490,6 +494,7 @@ public class NewTabPage
                         if (mIsLoaded) {
                             recordNtpShown();
                         }
+                        maybeUpdateCustomBackgroundFromDeviceSync();
                         mNewTabPageCoordinator.maybeUpdateHomeModules(mIsLoaded);
                         mNewTabPageCoordinator.onSwitchToForeground();
                     }
@@ -510,6 +515,7 @@ public class NewTabPage
                 new PauseResumeWithNativeObserver() {
                     @Override
                     public void onResumeWithNative() {
+                        maybeUpdateCustomBackgroundFromDeviceSync();
                         mNewTabPageCoordinator.maybeUpdateHomeModules(mIsLoaded);
                     }
 
@@ -756,6 +762,40 @@ public class NewTabPage
                 };
         NtpCustomizationConfigManager.getInstance()
                 .addListener(mHomepageStateListener, mContext, /* skipNotify= */ false);
+    }
+
+    /**
+     * Compares standard SharedPreferences with our active in-memory cached state and applies
+     * updates from background sync.
+     *
+     * <p>This method is invoked during:
+     *
+     * <ul>
+     *   <li>Cold/Warm Starts (via {@link #onLoadingComplete} and {@link EmptyTabObserver#onShown}):
+     *       Updating background state once native initialization and page loading finish.
+     *   <li>Hot Starts / Foregrounding (via {@link
+     *       PauseResumeWithNativeObserver#onResumeWithNative}): When returning to an already-loaded
+     *       NTP.
+     *   <li>Tab Switching (via {@link EmptyTabObserver#onShown}): When switching back to an
+     *       already-loaded NTP tab.
+     * </ul>
+     */
+    private void maybeUpdateCustomBackgroundFromDeviceSync() {
+        if (!mIsNtpCustomizationSyncEnabled) {
+            return;
+        }
+
+        // Defer background state updates until native initialization has completed.
+        // During Cold/Warm starts, onResumeWithNative and onShown run early while native
+        // initialization is still in-flight. Skipping early calls prevents tearing down the
+        // Activity mid-startup. Once native initialization finishes, subsequent checks trigger
+        // cleanly.
+        if (mActivityLifecycleDispatcher == null
+                || !mActivityLifecycleDispatcher.isNativeInitializationFinished()) {
+            return;
+        }
+
+        NtpCustomizationConfigManager.getInstance().maybeApplyBackgroundUpdateFromDeviceSync();
     }
 
     private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {

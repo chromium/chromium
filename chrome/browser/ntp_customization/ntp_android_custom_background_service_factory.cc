@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
 
+#include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/model/data_type_store_service.h"
 
 // static
 NtpAndroidCustomBackgroundService*
@@ -33,6 +35,7 @@ NtpAndroidCustomBackgroundServiceFactory::
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(NtpAndroidBackgroundServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 NtpAndroidCustomBackgroundServiceFactory::
@@ -41,6 +44,8 @@ NtpAndroidCustomBackgroundServiceFactory::
 std::unique_ptr<KeyedService>
 NtpAndroidCustomBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<NtpAndroidCustomBackgroundService>(
-      Profile::FromBrowserContext(context));
+      profile,
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }

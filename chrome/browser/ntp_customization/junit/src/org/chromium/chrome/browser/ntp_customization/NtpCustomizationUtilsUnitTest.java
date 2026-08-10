@@ -1997,4 +1997,20 @@ public class NtpCustomizationUtilsUnitTest {
         verify(mMockJni).decodeImage(eq(bitmapBytes), any());
         verify(callback).onImageLoaded(eq(mockBitmap), eq(expectedFileIdHash));
     }
+
+    @Test
+    public void testGetFileName() {
+        String expectedFileName = TEST_FILE_NAME;
+        String directoryPath = "path" + File.separator + "to" + File.separator;
+        assertNull(NtpCustomizationUtils.getFileName(/* path= */ null));
+        assertNull(NtpCustomizationUtils.getFileName(""));
+        assertEquals(expectedFileName, NtpCustomizationUtils.getFileName(expectedFileName));
+        assertEquals(
+                expectedFileName,
+                NtpCustomizationUtils.getFileName(
+                        File.separator + directoryPath + expectedFileName));
+        assertEquals(
+                expectedFileName,
+                NtpCustomizationUtils.getFileName(directoryPath + expectedFileName));
+    }
 }

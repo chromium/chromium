@@ -54,6 +54,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
@@ -83,11 +84,13 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Mock private HomepageStateListener mListener;
     @Mock private NtpThemeDailyRefreshManager mNtpThemeDailyRefreshManager;
     @Mock private NtpBackgroundDataManager mNtpBackgroundDataManager;
+    @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
     @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
     @Captor private ArgumentCaptor<BackgroundImageInfo> mBackgroundImageInfoCaptor;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
     private static final String FILE_ID_HASH = "fileIdHash";
+    private static final String TEST_COLLECTION_ID = "collectionId";
 
     private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -103,6 +106,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         NtpThemeDailyRefreshManager.setInstanceForTesting(mNtpThemeDailyRefreshManager);
+        NtpThemeStateProvider.setInstanceForTesting(mNtpThemeStateProvider);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mNtpCustomizationConfigManager = new NtpCustomizationConfigManager());
         mNtpCustomizationConfigManager.setNtpBackgroundDataManagerForTesting(
@@ -1020,5 +1024,90 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     private Bitmap createBitmap() {
         return Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+    }
+
+    @Test
+    public void testOnSyncedThemeCollectionImageChanged() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+
+        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(
+                NtpBackgroundType.THEME_COLLECTION,
+                NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+        assertEquals(info, NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
+    public void testMaybeApplyBackgroundUpdateFromDeviceSync_withThemeMismatch() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+
+        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+
+        verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
+    }
+
+    @Test
+    public void testMaybeApplyBackgroundUpdateFromDeviceSync_withoutMismatch() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+
+        // No synced data has been received.
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+    }
+
+    @Test
+    public void testClearSyncedNtpBackgroundData() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+
+        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Clear synced background data before NTP foregrounds.
+        manager.clearSyncedNtpBackgroundData();
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+
+        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+    }
+
+    private NtpCustomizationConfigManager createConfigManagerWithListener() {
+        NtpCustomizationConfigManager manager =
+                ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
+        manager.setNtpBackgroundDataManagerForTesting(mNtpBackgroundDataManager);
+        manager.addListener(mListener, mContext, /* skipNotify= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        return manager;
+    }
+
+    private CustomBackgroundInfo createTestCustomBackgroundInfo() {
+        return new CustomBackgroundInfo(
+                JUnitTestGURLs.URL_1,
+                TEST_COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ false);
+    }
+
+    private NtpBackgroundDataThemeCollection createTestThemeCollectionData(
+            CustomBackgroundInfo info) {
+        return new NtpBackgroundDataThemeCollection(
+                PlatformType.ANDROID,
+                info,
+                mBackgroundImageInfo,
+                mBitmap,
+                /* primaryColor= */ null,
+                FILE_ID_HASH);
     }
 }

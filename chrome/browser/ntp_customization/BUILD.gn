@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(is_android)
 
@@ -35,6 +36,7 @@ source_set("ntp_customization") {
     "//build:android_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/sync:factories",
     "//chrome/common:constants",
     "//components/application_locale_storage",
     "//components/sync",
@@ -452,12 +454,12 @@ robolectric_library("junit") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ntp_android_custom_background_service_unittest.cc",
-    "ntp_customization_utils_unittest.cc",
-  ]
-  if (!is_desktop_android) {
-    sources += [ "ntp_android_theme_sync_bridge_unittest.cc" ]
+  sources = [ "ntp_customization_utils_unittest.cc" ]
+  if (!enable_webui_ntp) {
+    sources += [
+      "ntp_android_custom_background_service_unittest.cc",
+      "ntp_android_theme_sync_bridge_unittest.cc",
+    ]
   }
   deps = [
     ":ntp_customization",

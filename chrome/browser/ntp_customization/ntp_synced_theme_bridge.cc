@@ -80,6 +80,13 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
       background->daily_refresh_enabled);
 }
 
+bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return false;
+  }
+  return ntp_custom_background_service_->IsProcessingSyncUpdate();
+}
+
 void NtpSyncedThemeBridge::OnCustomBackgroundImageUpdated() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NtpSyncedThemeBridge_onCustomBackgroundImageUpdated(env, j_java_obj_);

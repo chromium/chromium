@@ -45,7 +45,6 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.io.File;
 import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionManager}. */
@@ -408,19 +407,6 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
 
         verifyThemeUpdateOutcome(info, /* shouldUpdateTheme= */ false);
-    }
-
-    @Test
-    public void testGetFileName() {
-        String expectedFileName = "image.jpg";
-        assertNull(NtpThemeCollectionManager.getFileName(/* path= */ null));
-        assertNull(NtpThemeCollectionManager.getFileName(""));
-        assertEquals(expectedFileName, NtpThemeCollectionManager.getFileName(expectedFileName));
-        assertEquals(expectedFileName, NtpThemeCollectionManager.getFileName("/path/to/image.jpg"));
-        assertEquals(
-                expectedFileName,
-                NtpThemeCollectionManager.getFileName(
-                        "path" + File.separator + "to" + File.separator + "image.jpg"));
     }
 
     private CustomBackgroundInfo createBackgroundInfo(boolean isDailyRefresh) {

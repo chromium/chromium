@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -180,7 +179,7 @@ public class NtpThemeCollectionManager {
 
                     String fileId = null;
                     if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
-                        fileId = getFileName(info.backgroundUrl.getPath());
+                        fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
                     }
                     NtpBackgroundDataThemeCollection backgroundData =
                             new NtpBackgroundDataThemeCollection(
@@ -253,25 +252,6 @@ public class NtpThemeCollectionManager {
 
         // Otherwise, the update should only be processed if it's for the daily refresh feature.
         return info.isDailyRefreshEnabled;
-    }
-
-    /** Returns a unique file name from the path. */
-    @VisibleForTesting
-    public static @Nullable String getFileName(@Nullable String path) {
-        if (path == null || path.isEmpty()) {
-            return null;
-        }
-
-        // Find the position of the last File.separator ("/").
-        int lastFileSeparatorIndex = path.lastIndexOf(File.separator);
-
-        // If lastFileSeparatorIndex is -1, it means file separator wasn't found in the string.
-        if (lastFileSeparatorIndex == -1) {
-            return path;
-        }
-
-        // Extract everything after the last file separator.
-        return path.substring(lastFileSeparatorIndex + 1);
     }
 
     @Nullable CollectionImage getSelectingThemeCollectionImageForTesting() {

@@ -42,6 +42,9 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(
       JNIEnv* env);
 
+  // Exposes whether the underlying service is processing a sync update.
+  bool IsProcessingSyncUpdate(JNIEnv* env);
+
   // Disconnects from the custom background service when the service is
   // destroyed.
   void DisconnectCustomBackgroundService();

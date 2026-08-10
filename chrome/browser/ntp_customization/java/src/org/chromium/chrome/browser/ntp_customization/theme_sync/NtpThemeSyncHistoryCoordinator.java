@@ -479,7 +479,7 @@ public class NtpThemeSyncHistoryCoordinator {
     private void buildDefaultForThemeCollectionData(
             NtpBackgroundDataThemeCollection themeCollectionData) {
         String fileHashId =
-                NtpThemeCollectionManager.getFileName(
+                NtpCustomizationUtils.getFileName(
                         themeCollectionData.getCustomBackgroundInfo().backgroundUrl.getPath());
         BackgroundImageInfo backgroundImageInfo =
                 NtpCustomizationUtils.getDefaultBackgroundImageInfo(
