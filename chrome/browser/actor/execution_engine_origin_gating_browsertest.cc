@@ -950,12 +950,12 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   StopAllTasks();
 
   // Each actual navigation should not have applied the gate. The origin was
-  // confirmed when during MayActOnTab.
+  // confirmed when during SafetyChecksForNextAction.
   histogram_tester.ExpectUniqueSample("Actor.NavigationGating.AppliedGate",
                                       false, 2);
-  // Permission should have been explicitly granted once during MayActOnTab. The
-  // navigation to to `www.example.com` had implicit permission via the tool
-  // request.
+  // Permission should have been explicitly granted once during
+  // SafetyChecksForNextAction. The navigation to to `www.example.com` had
+  // implicit permission via the tool request.
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.PermissionGranted", true, 1);
   // The allow-list should have 2 entries at the end of the task.
@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
-                       BlocklistAppliesToMayActOnTab) {
+                       BlocklistAppliesToTabAction) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "bad.example.com", "/actor/link.html");
 
@@ -1653,7 +1653,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
-                       ConfirmWithUserForMayActOnTab) {
+                       ConfirmWithUserForTabAction) {
   base::HistogramTester histogram_tester;
   const GURL start_url = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");

@@ -499,8 +499,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
 
 // Regression test for https://crbug.com/502819675.
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, HistoryBackIsChecked) {
-  // Disable SafeBrowsing so that MayActOnUrl rejects every non-localhost URL
-  // with kSafeBrowsing.
+  // Disable SafeBrowsing so that IsAcceptableNavigationDestination rejects
+  // every non-localhost URL with kSafeBrowsing.
   safe_browsing::SetSafeBrowsingState(
       browser()->GetProfile()->GetPrefs(),
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, HistoryBackIsChecked) {
 
   // A `history.back()` navigation should be classified as renderer-initiated
   // (even though the initiator is std::nullopt), and should be blocked by
-  // MayActOnUrl.
+  // IsAcceptableNavigationDestination.
   content::NavigationHandleObserver navigation_handle_observer(web_contents(),
                                                                first_url);
   content::TestNavigationManager test_navigation_manager(web_contents(),

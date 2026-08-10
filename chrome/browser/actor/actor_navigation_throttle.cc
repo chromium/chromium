@@ -305,13 +305,14 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 
   execution_engine_->IsAcceptableNavigationDestination(
       navigation_url,
-      base::BindOnce(&ActorNavigationThrottle::OnMayActOnUrlResult,
-                     weak_factory_.GetWeakPtr(), std::move(journal_entry)));
+      base::BindOnce(
+          &ActorNavigationThrottle::OnIsAcceptableNavigationDestinationResult,
+          weak_factory_.GetWeakPtr(), std::move(journal_entry)));
 
   return content::NavigationThrottle::DEFER;
 }
 
-void ActorNavigationThrottle::OnMayActOnUrlResult(
+void ActorNavigationThrottle::OnIsAcceptableNavigationDestinationResult(
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
     MayActOnUrlBlockReason block_reason) {
   if (block_reason == MayActOnUrlBlockReason::kAllowed) {

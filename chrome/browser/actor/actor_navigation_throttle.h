@@ -76,7 +76,7 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
   content::NavigationThrottle::ThrottleCheckResult WillStartOrRedirectRequest(
       bool is_redirection);
 
-  void OnMayActOnUrlResult(
+  void OnIsAcceptableNavigationDestinationResult(
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       MayActOnUrlBlockReason block_reason);
 

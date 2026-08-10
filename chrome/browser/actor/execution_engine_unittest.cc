@@ -1245,7 +1245,8 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
       mock_optimization_guide_keyed_service_;
 
   // Lazily creates a real ActorTask/ExecutionEngine and returns its engine, so
-  // that MayActOnUrl tests can exercise the OriginGatingChecker-backed path.
+  // that IsAcceptableNavigationDestination tests can exercise the
+  // OriginGatingChecker-backed path.
   ExecutionEngine& GetExecutionEngine() {
     if (!task_) {
       std::unique_ptr<ui::UiEventDispatcher> engine_dispatcher =
@@ -1479,7 +1480,8 @@ TEST_F(ExecutionEngineUrlGatingAllowlistOnlyTest,
   CheckUrl(GURL("https://exact.test/"), true);
 }
 
-TEST_F(ExecutionEngineUrlGatingTest, MayActOnUrl_AllowedByCache) {
+TEST_F(ExecutionEngineUrlGatingTest,
+       IsAcceptableNavigationDestination_AllowedByCache) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1504,7 +1506,8 @@ TEST_F(ExecutionEngineUrlGatingTest, MayActOnUrl_AllowedByCache) {
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
-TEST_F(ExecutionEngineUrlGatingTest, MayActOnUrl_FailsOpen) {
+TEST_F(ExecutionEngineUrlGatingTest,
+       IsAcceptableNavigationDestination_FailsOpen) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
