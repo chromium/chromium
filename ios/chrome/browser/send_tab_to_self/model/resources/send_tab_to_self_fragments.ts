@@ -32,9 +32,8 @@ function getLinkToTextForReadingPosition() {
   // viewport coordinates.
   const kViewportYRatio = 0.35;
   const viewport = window.visualViewport;
-  const centerX = viewport
-      ? (viewport.width / 2 + viewport.offsetLeft)
-      : window.innerWidth / 2;
+  const centerX = viewport ? (viewport.width / 2 + viewport.offsetLeft) :
+                             window.innerWidth / 2;
   const centerY = viewport ?
       (viewport.height * kViewportYRatio + viewport.offsetTop) :
       window.innerHeight * kViewportYRatio;
@@ -105,19 +104,24 @@ function scrollRangeIntoView(range: Range) {
     span.id = 'stts-scroll-target';
     range.insertNode(span);
 
-    // Synchronize scrolling with the next layout frame so WKWebView has
-    // completed visual geometry restoration after foregrounding.
+    // Synchronize scrolling with a double requestAnimationFrame loop. The tab
+    // transition animation on foregrounding the background tab can execute the
+    // first requestAnimationFrame before WKWebView's active visual geometry
+    // has updated, which causes WebKit to silently ignore scrollIntoView.
+    // Bypassing the first frame ensures the web view completes layout first.
     window.requestAnimationFrame(() => {
-      span.scrollIntoView({
-        behavior: 'auto',
-        block: 'center',
-        inline: 'nearest',
-      });
+      window.requestAnimationFrame(() => {
+        span.scrollIntoView({
+          behavior: 'auto',
+          block: 'center',
+          inline: 'nearest',
+        });
 
-      // Delay removal to allow native scroll to complete in WKWebView.
-      window.setTimeout(() => {
-        span.remove();
-      }, 1000);
+        // Delay removal to allow native scroll to complete in WKWebView.
+        window.setTimeout(() => {
+          span.remove();
+        }, 1000);
+      });
     });
   } catch (e: any) {
     // Ignore errors during scroll to avoid crashing page scripts.
@@ -162,4 +166,3 @@ sttsApi.addFunction('scrollToTextFragment', (fragment: string) => {
   return true;
 });
 gCrWeb.registerApi(sttsApi);
-
