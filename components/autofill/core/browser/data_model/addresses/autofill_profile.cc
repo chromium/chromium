@@ -716,10 +716,13 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
   token_quality_ = std::move(token_quality);
 }
 
-bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
-                                    std::string_view app_locale) {
+AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
+    const AutofillProfile& profile,
+    std::string_view app_locale) {
   AutofillProfileComparator comparator(app_locale);
-  DCHECK(comparator.AreMergeable(*this, profile));
+  if (!comparator.AreMergeable(*this, profile)) {
+    return ProfileMergeResult::kMergeFailed;
+  }
 
   NameInfo name(
       /*alternative_names_supported=*/profile.GetAddressCountryCode() ==
@@ -747,7 +750,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
       !comparator.MergePhoneNumbers(profile, *this, phone_number) ||
       !comparator.MergeAddresses(profile, *this, address)) {
     DUMP_WILL_BE_NOTREACHED();
-    return false;
+    return ProfileMergeResult::kMergeFailed;
   }
 
   set_language_code(profile.language_code());
@@ -790,7 +793,8 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
     modified = true;
   }
 
-  return modified;
+  return modified ? ProfileMergeResult::kMergeSucceededWithModification
+                  : ProfileMergeResult::kMergeSucceededWithoutModification;
 }
 
 void AutofillProfile::MergeFormGroupTokenQuality(

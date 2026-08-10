@@ -343,8 +343,12 @@ ProfileImportProcess::GetImportCandidates(
   result.reserve(mergeable_profiles.size());
   for (const AutofillProfile* merge_candidate : mergeable_profiles) {
     AutofillProfile merged_profile = *merge_candidate;
-    const bool was_profile_altered =
+    const AutofillProfile::ProfileMergeResult merge_result =
         merged_profile.MergeDataFrom(observed_profile_, app_locale_);
+    CHECK_NE(merge_result, AutofillProfile::ProfileMergeResult::kMergeFailed);
+    const bool was_profile_altered =
+        merge_result ==
+        AutofillProfile::ProfileMergeResult::kMergeSucceededWithModification;
     ImportCandidate::Change change_type = [&] {
       if (!was_profile_altered) {
         return ImportCandidate::Change::kNoChange;

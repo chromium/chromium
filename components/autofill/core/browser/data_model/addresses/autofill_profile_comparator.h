@@ -96,7 +96,8 @@ class AutofillProfileComparator {
   //
   // Note that mergeability is non-directional; merging two profiles will likely
   // incorporate data from both profiles.
-  // TODO(crbug.com/359768803): Move this function to AutofillProfile.
+  // TODO(crbug.com/453945181): Delete this function once callers are migrated to
+  // `AutofillProfile::MergeDataFrom`.
   bool AreMergeable(const AutofillProfile& p1, const AutofillProfile& p2) const;
 
   // Populates `email_info` with the result of merging the email addresses in

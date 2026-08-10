@@ -95,6 +95,19 @@ class AutofillProfile : public FormGroup {
     kMaxValue = kAccountNameEmail,
   };
 
+  // Result of merging another profile into this profile via `MergeDataFrom()`.
+  enum class ProfileMergeResult {
+    // The merge failed, either because profiles are not mergeable or
+    // because merging one of the sub-components failed. The target profile is
+    // unchanged.
+    kMergeFailed = 0,
+    // The merge succeeded and the target profile was modified.
+    kMergeSucceededWithModification = 1,
+    // The merge succeeded and the target profile was not modified.
+    kMergeSucceededWithoutModification = 2,
+    kMaxValue = kMergeSucceededWithoutModification,
+  };
+
   // These fields are, by default, the only candidates for being added to the
   // list of profile labels. Note that the call to generate labels can specify a
   // custom set of fields, in which case such set would be used instead of this
@@ -258,11 +271,11 @@ class AutofillProfile : public FormGroup {
   // Expects that the profiles have the same guid.
   void OverwriteDataFromForLegacySync(const AutofillProfile& profile);
 
-  // Merges the data from `this` profile and the given `profile` into `this`
-  // profile. Expects that `this` and `profile` have already been deemed
-  // mergeable by an AutofillProfileComparator.
-  bool MergeDataFrom(const AutofillProfile& profile,
-                     std::string_view app_locale);
+  // Merges the data from `profile` into `this` profile if they are mergeable.
+  // Returns a `ProfileMergeResult` indicating whether the merge succeeded and
+  // whether `this` was modified. If mergeable, modifies `this` in-place.
+  ProfileMergeResult MergeDataFrom(const AutofillProfile& profile,
+                                   std::string_view app_locale);
 
   // Creates a differentiating label for each of the `profiles`.
   // Labels consist of the minimal differentiating combination of:

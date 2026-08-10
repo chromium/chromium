@@ -44,6 +44,8 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 
 namespace {
 
+using ProfileMergeResult = AutofillProfile::ProfileMergeResult;
+
 std::u16string GetSuggestionLabel(AutofillProfile* profile) {
   return AutofillProfile::CreateDifferentiatingLabels(
       base::span_from_ref(profile), "en-US")[0];
@@ -1671,7 +1673,8 @@ TEST_F(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   b.FinalizeAfterImport();
   a.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
   // Merge has modified profile a, the validation is not updated.
   EXPECT_EQ(base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)),
             "Unit 5, area 51");
@@ -1693,7 +1696,8 @@ TEST_F(AutofillProfileTest, MergeDataFrom_SameProfile) {
   b.SetRawInfoWithVerificationStatus(NAME_FULL, b.GetRawInfo(NAME_FULL),
                                      VerificationStatus::kUserVerified);
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
   // Merge has modified profile a, the validation is not updated.
   EXPECT_EQ(1u, a.usage_history().use_count());
 
@@ -1702,9 +1706,25 @@ TEST_F(AutofillProfileTest, MergeDataFrom_SameProfile) {
   AutofillProfile c = a;
   c.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   c.usage_history().set_use_count(3);
-  EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
+  EXPECT_EQ(a.MergeDataFrom(c, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithoutModification);
   // Merge has not modified anything.
   EXPECT_EQ(3u, a.usage_history().use_count());
+}
+
+// Tests that merging two non-mergeable profiles fails and leaves the target
+// profile unchanged.
+TEST_F(AutofillProfileTest, MergeDataFrom_NotMergeable) {
+  AutofillProfile a = test::GetFullProfile();
+
+  AutofillProfile b = a;
+  b.SetRawInfo(EMAIL_ADDRESS, u"different@example.com");
+  a.FinalizeAfterImport();
+  b.FinalizeAfterImport();
+
+  const AutofillProfile expected_a = a;
+  EXPECT_EQ(a.MergeDataFrom(b, "en-US"), ProfileMergeResult::kMergeFailed);
+  EXPECT_EQ(a, expected_a);
 }
 
 // Tests that when merging two profiles, the token quality is merged.
@@ -1727,7 +1747,8 @@ TEST_F(AutofillProfileTest, MergeDataFrom_TokenQuality) {
   // Finalize, merge and verify expectations.
   a.FinalizeAfterImport();
   b.FinalizeAfterImport();
-  ASSERT_TRUE(a.MergeDataFrom(b, "en-US"));
+  ASSERT_EQ(a.MergeDataFrom(b, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_THAT(
       a.token_quality().GetObservationTypesForFieldType(ADDRESS_HOME_STATE),
       testing::UnorderedElementsAre(ObservationType::kAccepted));
@@ -1750,7 +1771,8 @@ TEST_F(AutofillProfileTest, OverwriteName_AddNameFull) {
                                      VerificationStatus::kUserVerified);
   b.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
   EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
@@ -1780,7 +1802,8 @@ TEST_F(AutofillProfileTest, OverwriteName_DifferentCase) {
   a.FinalizeAfterImport();
   b.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
+  EXPECT_EQ(a.MergeDataFrom(b, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
   EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
   EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
@@ -2255,7 +2278,8 @@ TEST_F(AutofillProfileTest, ProfilesMerge_InvalidCountryCode) {
 
   // This will call `MergeDataFrom(incoming, "en-US")` region hint will be "US"
   // (from app_locale).
-  ASSERT_TRUE(existing.MergeDataFrom(incoming, "en-US"));
+  ASSERT_EQ(existing.MergeDataFrom(incoming, "en-US"),
+            ProfileMergeResult::kMergeSucceededWithModification);
 }
 
 }  // namespace
