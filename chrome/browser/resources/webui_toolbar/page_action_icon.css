@@ -14,7 +14,6 @@
   width: auto;
 
   /* Matches the C++ slide duration in PageActionView. */
-  /* TODO(crbug.com/526706879): Support reduced motion. */
   --chip-slide-duration: 600ms;
 }
 

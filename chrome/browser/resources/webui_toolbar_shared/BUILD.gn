@@ -12,6 +12,7 @@ build_webui("build") {
   grd_resource_path_prefix = "shared"
 
   ts_files = [
+    "animation_tracker.ts",
     "icon_from_table.ts",
     "icon_from_table.html.ts",
     "icon_table.ts",

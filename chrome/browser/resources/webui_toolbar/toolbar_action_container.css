@@ -66,3 +66,11 @@ webui-toolbar-extension.drag-placeholder {
     opacity: 0;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  pinned-toolbar-action,
+  toolbar-divider {
+    animation: none !important;
+    transition: none !important;
+  }
+}

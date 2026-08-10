@@ -9,6 +9,7 @@ import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {AnimationTracker} from '/shared/animation_tracker.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -79,11 +80,17 @@ export class PageActionIconElement extends CrLitElement {
     if (changedProperties.has('state')) {
       const oldState = changedProperties.get('state');
       if (!oldState || oldState.shouldShowChip !== this.state.shouldShowChip) {
-        const button = this.$.button;
         const fireIpc = () => {
           this.browserProxy_.toolbarUIHandler.onPageActionChipShowingChanged(
               this.state.pageActionId);
         };
+
+        if (!AnimationTracker.showAnimations) {
+          fireIpc();
+          return;
+        }
+
+        const button = this.$.button;
         button.addEventListener('transitionend', fireIpc, {once: true});
         ensureTransitionEndEvent(button);
       }

@@ -4,6 +4,7 @@
 
 import {assertNotReached} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {AnimationTracker} from '/shared/animation_tracker.js';
 
 // State pushed to Lit template for rendering.
 export interface KeyedActionState<T> {
@@ -23,30 +24,6 @@ export interface KeyedActionState<T> {
 }
 
 type Constructor<T> = new (...args: any[]) => T;
-
-// Class to track whether the user desires animations to be shown. This is
-// exposed via `AnimationTracker.showAnimations`. For testing, `showAnimations`
-// can be directly set, then `resetForTesting()` can be used to reset it during
-// test teardown.
-export class AnimationTracker {
-  private static reducedMotion_: MediaQueryList =
-      window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  static showAnimations: boolean = !AnimationTracker.reducedMotion_.matches;
-
-  static {
-    AnimationTracker.reducedMotion_.addEventListener('change', () => {
-      AnimationTracker.showAnimations =
-          !AnimationTracker.reducedMotion_.matches;
-    });
-  }
-
-  // If tests directly modify `showAnimations`, the tests should call this
-  // method during teardown to reset it.
-  static resetForTesting() {
-    AnimationTracker.showAnimations = !AnimationTracker.reducedMotion_.matches;
-  }
-}
 
 export interface ToolbarActionContainerMixinInterface<T> {
   states: T[];
@@ -395,6 +372,7 @@ export const ToolbarActionContainerMixin =
                 // already in `keyedStates` we use the transition to smoothly
                 // change to its desired width.
                 const animateIn = !isInitial &&
+                    AnimationTracker.showAnimations &&
                     !this.keyedStates.some(
                         old => old.key === key && !old.animateIn);
                 const oldKeyedState =

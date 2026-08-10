@@ -272,3 +272,13 @@
     inset: 0;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  #button,
+  #button::before,
+  #button::after,
+  ::slotted(*) {
+    animation: none !important;
+    transition: none !important;
+  }
+}

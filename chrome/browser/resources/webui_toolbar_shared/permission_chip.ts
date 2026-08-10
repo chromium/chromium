@@ -7,6 +7,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
+import {AnimationTracker} from './animation_tracker.js';
 import {getCss} from './permission_chip.css.js';
 import {getHtml} from './permission_chip.html.js';
 import type {PermissionChipDelegate} from './permission_chip_delegate.js';
@@ -96,6 +97,16 @@ export class PermissionChipElement extends PermissionChipElementBase {
         this.delegate?.onChipExpandAnimationEnded(this.getIdentifier_());
       }
     };
+
+    // When animations are disabled (e.g. prefers-reduced-motion), Native Views
+    // (AnimatingLayoutManager) transitions state synchronously. We purposely
+    // fire the IPC immediately here (without waiting for DOM updates or CSS
+    // transitions) to enforce correct timeline parity with the backend and
+    // prevent race conditions.
+    if (!AnimationTracker.showAnimations) {
+      fireIpc();
+      return;
+    }
 
     const messageEl = this.$.message;
     messageEl.addEventListener('transitionend', fireIpc, {once: true});

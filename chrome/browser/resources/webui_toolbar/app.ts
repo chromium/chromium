@@ -74,7 +74,10 @@ import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
-import {AnimationTracker, ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
+
+import {AnimationTracker} from '/shared/animation_tracker.js';
+
+import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 import type {KeyedActionState, ToolbarActionContainerMixinInterface} from './toolbar_action_container_mixin.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';

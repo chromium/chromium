@@ -201,7 +201,7 @@ suite('ToolbarActionContainerMixinTest', function() {
 
     assertEquals(1, element.keyedStates.length);
     assertEquals('b', element.keyedStates[0]!.key);
-    assertTrue(element.animateInDivider());
+    assertFalse(element.animateInDivider());
     assertFalse(element.allExiting());
 
     AnimationTracker.showAnimations = true;
