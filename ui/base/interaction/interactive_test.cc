@@ -576,6 +576,28 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForElementMatchingImpl(
   return steps;
 }
 
+InteractiveTestApi::MultiStep InteractiveTestApi::NameElementWithSecondaryId(
+    ui::ElementIdentifier id,
+    std::string_view secondary_id,
+    std::string_view name,
+    bool wait_for_present) {
+  MultiStep steps;
+  std::string to_find(secondary_id);
+  const auto predicate = [to_find](const ui::TrackedElement* el) {
+    return el->GetSecondaryIdentifier() == to_find;
+  };
+  auto name_step = NameElementMatching(id, name, predicate);
+  if (wait_for_present) {
+    // Don't allow waiting between finding the element and naming it.
+    steps += WithoutDelay(WaitForElementMatching(id, predicate),
+                          std::move(name_step));
+  } else {
+    steps += std::move(name_step);
+  }
+  AddDescriptionPrefix(steps, "NameElementWithSecondaryId()");
+  return steps;
+}
+
 InteractionSequence::StepBuilder InteractiveTestApi::NameElementMatchingImpl(
     ui::ElementIdentifier id,
     std::string_view name,

@@ -209,7 +209,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     ui::TrackedElementWebUI* element,
     HelpBubbleParams params) {
   const auto identifier = element->identifier();
-  const std::string& secondary_id = element->secondary_identifier();
+  const std::string& secondary_id = element->GetSecondaryIdentifier();
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
     NOTREACHED() << "Identifier " << identifier << " was never registered.";
@@ -221,7 +221,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   });
 
   // Get or create the value for the secondary ID.
-  auto& data = it->second[element->secondary_identifier()];
+  auto& data = it->second[element->GetSecondaryIdentifier()];
   if (data.has_webui_help_bubble()) {
     LOG(WARNING) << "A help bubble is already being shown for " << identifier;
     auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
@@ -428,12 +428,12 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
     HelpBubble* help_bubble) {
   const auto anchor_id = element->identifier();
   GetClient()->ExternalHelpBubbleUpdated(
-      MakeId(element->identifier(), element->secondary_identifier()), true);
+      MakeId(element->identifier(), element->GetSecondaryIdentifier()), true);
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
     return;
   }
-  auto& data = it->second[element->secondary_identifier()];
+  auto& data = it->second[element->GetSecondaryIdentifier()];
   DCHECK(!data.external_bubble_subscription);
   if (tracked_element_handler_) {
     data.visibility_lock = element->LockVisible();
@@ -441,7 +441,7 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
   data.external_bubble_subscription = help_bubble->AddOnClosingCallback(
       base::BindOnce(&HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed,
                      weak_ptr_factory_.GetWeakPtr(), anchor_id,
-                     element->secondary_identifier()));
+                     element->GetSecondaryIdentifier()));
 }
 
 void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(

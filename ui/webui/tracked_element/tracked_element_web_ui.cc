@@ -114,10 +114,13 @@ gfx::NativeView TrackedElementWebUI::GetNativeView() const {
 #endif
 }
 
+std::string TrackedElementWebUI::GetSecondaryIdentifier() const {
+  return secondary_identifier_;
+}
+
 std::string TrackedElementWebUI::ToString() const {
   std::ostringstream oss;
-  oss << TrackedElement::ToString() << " with secondary id "
-      << secondary_identifier() << " in page ";
+  oss << TrackedElement::ToString() << " in page ";
   if (const auto* contents = handler_->web_contents()) {
     oss << contents->GetLastCommittedURL();
   } else {

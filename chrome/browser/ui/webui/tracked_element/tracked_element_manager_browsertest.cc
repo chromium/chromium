@@ -66,12 +66,9 @@ IN_PROC_BROWSER_TEST_F(TrackedElementManagerBrowsertest, CheckElementsExist) {
           // Wait for all menu items to be present.
           WaitForElementCount(UserEducationInternalsUI::kMenuItemElementId, 8U),
           // Grab the menu item for section 2.
-          NameElementMatching(
-              UserEducationInternalsUI::kMenuItemElementId, kElementName,
-              [](const ui::TrackedElement* el) {
-                auto* const dom_el = el->AsA<ui::TrackedElementWebUI>();
-                return dom_el && dom_el->secondary_identifier() == "index:2";
-              })),
+          NameElementWithSecondaryId(
+              UserEducationInternalsUI::kMenuItemElementId, "index:2",
+              kElementName, /*wait_for_present=*/false)),
       // Verify that the menu item is inside the menu.
       CheckElement(kElementName,
                    [&menu_bounds](ui::TrackedElement* el) {

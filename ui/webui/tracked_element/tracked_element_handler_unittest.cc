@@ -392,8 +392,7 @@ TEST_F(TrackedElementHandlerTest, DestroyHandlerCleansUpElement) {
       ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
           kTestElementIdentifier1);
   ASSERT_TRUE(element);
-  EXPECT_EQ(kTestSecondaryId1,
-            element->AsA<TrackedElementWebUI>()->secondary_identifier());
+  EXPECT_EQ(kTestSecondaryId1, element->GetSecondaryIdentifier());
   const ui::ElementContext context = element->context();
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kTestElementIdentifier1, context));
@@ -663,9 +662,8 @@ class TrackedElementHandlerSecondaryIdentifierTest
         tracker->GetAllMatchingElementsInAnyContext(kTestElementIdentifier1);
     ElementMap result;
     for (TrackedElement* el : elements) {
-      auto* const web_el = el->AsA<TrackedElementWebUI>();
-      CHECK(web_el);
-      CHECK(result.emplace(web_el->secondary_identifier(), web_el).second);
+      CHECK(el->IsA<TrackedElementWebUI>());
+      CHECK(result.emplace(el->GetSecondaryIdentifier(), el).second);
     }
     return result;
   }

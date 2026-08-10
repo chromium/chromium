@@ -1059,6 +1059,89 @@ TEST_F(InteractiveTestTest, NameElementMatching_InAnyContext) {
           CheckElement(kName, [](ui::TrackedElement* el) { return el; }, &e2)));
 }
 
+TEST_F(InteractiveTestTest, NameElementWithSecondaryId_NoWait) {
+  constexpr std::string_view kSecondaryId = "secondary-id";
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1, kSecondaryId);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+
+  constexpr std::string_view kName = "name";
+
+  RunTestSequenceInContext(
+      kTestContext1,
+      NameElementWithSecondaryId(kTestId1, kSecondaryId, kName,
+                                 /*wait_for_present=*/false),
+      CheckElement(kName, [](ui::TrackedElement* el) { return el; }, &e3));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithSecondaryId_NoWait_InAnyContext) {
+  constexpr std::string_view kSecondaryId = "secondary-id";
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext2, kSecondaryId);
+  TestElement e3(kTestId1, kTestContext1);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+
+  constexpr std::string_view kName = "name";
+
+  RunTestSequenceInContext(
+      kTestContext1,
+      InAnyContext(
+          NameElementWithSecondaryId(kTestId1, kSecondaryId, kName,
+                                     /*wait_for_present=*/false),
+          CheckElement(kName, [](ui::TrackedElement* el) { return el; }, &e2)));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithSecondaryId_Wait) {
+  constexpr std::string_view kSecondaryId = "secondary-id";
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext1);
+  TestElement e3(kTestId1, kTestContext1, kSecondaryId);
+
+  bool expect_done = false;
+
+  QueueActions([&e1] { e1.Show(); }, [&e2] { e2.Show(); },
+               [&e3, &expect_done] {
+                 expect_done = true;
+                 e3.Show();
+               });
+
+  constexpr std::string_view kName = "name";
+
+  RunTestSequenceInContext(
+      kTestContext1,
+      InAnyContext(WithoutDelay(
+          NameElementWithSecondaryId(kTestId1, kSecondaryId, kName),
+          Check([&expect_done] { return expect_done; }))));
+}
+
+TEST_F(InteractiveTestTest, NameElementWithSecondaryId_Wait_InAnyContext) {
+  constexpr std::string_view kSecondaryId = "secondary-id";
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId1, kTestContext1);
+  TestElement e3(kTestId1, kTestContext2, kSecondaryId);
+
+  bool expect_done = false;
+
+  QueueActions([&e1] { e1.Show(); }, [&e2] { e2.Show(); },
+               [&e3, &expect_done] {
+                 expect_done = true;
+                 e3.Show();
+               });
+
+  constexpr std::string_view kName = "name";
+
+  RunTestSequenceInContext(
+      kTestContext1,
+      InAnyContext(WithoutDelay(
+          NameElementWithSecondaryId(kTestId1, kSecondaryId, kName),
+          Check([&expect_done] { return expect_done; }))));
+}
+
 TEST_F(InteractiveTestTest, NameElementWithPointer) {
   UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(TrackedElement*)>, cb);
 

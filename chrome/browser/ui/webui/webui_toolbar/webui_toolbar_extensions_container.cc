@@ -490,9 +490,7 @@ ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
        ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
            GetElementId(extension_id),
            views::ElementTrackerViews::GetContextForWidget(GetWidget()))) {
-    auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
-    if (webui_element &&
-        webui_element->secondary_identifier() == secondary_id) {
+    if (element->GetSecondaryIdentifier() == secondary_id) {
       return element;
     }
   }

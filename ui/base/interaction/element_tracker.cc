@@ -102,6 +102,16 @@ class ElementTracker::ElementData {
     if (context()) {
       DCHECK_EQ(static_cast<intptr_t>(context()),
                 static_cast<intptr_t>(element->context()));
+#if DCHECK_IS_ON()
+      const auto existing = std::ranges::find_if(
+          elements_, [secondary_id = element->GetSecondaryIdentifier()](
+                         const auto& to_check) {
+            return to_check->GetSecondaryIdentifier() == secondary_id;
+          });
+      DCHECK(*existing != element) << "Added same element twice: " << *element;
+      DCHECK(existing == elements_.end())
+          << "Duplicate secondary ID found for " << *element;
+#endif
       const auto it = elements_.insert(elements_.end(), element);
       const bool success = element_lookup_.emplace(element, it).second;
       DCHECK(success);
@@ -223,10 +233,16 @@ gfx::NativeView TrackedElement::GetNativeView() const {
   return gfx::NativeView();
 }
 
+std::string TrackedElement::GetSecondaryIdentifier() const {
+  std::ostringstream oss;
+  oss << "address:" << this;
+  return oss.str();
+}
+
 std::string TrackedElement::ToString() const {
   std::ostringstream oss;
-  oss << GetSafeCastableClassName() << "(" << identifier() << ", " << context()
-      << ")";
+  oss << GetSafeCastableClassName() << "(" << identifier() << " ["
+      << GetSecondaryIdentifier() << "], " << context() << ")";
   return oss.str();
 }
 

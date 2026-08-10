@@ -67,13 +67,11 @@ class TrackedElementWebUI : public ui::TrackedElement {
   DECLARE_SAFE_CAST_TARGET()
 
   TrackedElementHandler* handler() const { return handler_; }
-  const std::string& secondary_identifier() const {
-    return secondary_identifier_;
-  }
 
   // ui::TrackedElement:
   gfx::Rect GetScreenBounds() const override;
   gfx::NativeView GetNativeView() const override;
+  std::string GetSecondaryIdentifier() const override;
   std::string ToString() const override;
 
   bool can_highlight() const { return can_highlight_; }

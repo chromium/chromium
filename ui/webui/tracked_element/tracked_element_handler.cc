@@ -81,7 +81,7 @@ void TrackedElementHandler::SetHighlightState(
   if (manager_remote_) {
     manager_remote_->OnElementHighlightChanged(
         tracked_element::mojom::TrackedElementIdentifier::New(
-            element.identifier().GetName(), element.secondary_identifier()),
+            element.identifier().GetName(), element.GetSecondaryIdentifier()),
         highlight);
   }
 }
@@ -99,7 +99,7 @@ bool TrackedElementHandler::ClickElement(TrackedElementWebUI& element) {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->ClickElement(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
             *success_ptr = result;
@@ -119,7 +119,7 @@ bool TrackedElementHandler::FocusElement(TrackedElementWebUI& element) {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->FocusElement(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
             *success_ptr = result;
@@ -140,7 +140,7 @@ bool TrackedElementHandler::SelectTab(TrackedElementWebUI& element,
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->SelectTab(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       index,
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
@@ -162,7 +162,7 @@ bool TrackedElementHandler::SelectDropdownItem(TrackedElementWebUI& element,
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->SelectDropdownItem(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       index,
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
@@ -186,7 +186,7 @@ bool TrackedElementHandler::EnterText(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->EnterText(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       text, mode,
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
@@ -207,7 +207,7 @@ bool TrackedElementHandler::Confirm(TrackedElementWebUI& element) {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   manager_remote_->Confirm(
       tracked_element::mojom::TrackedElementIdentifier::New(
-          element.identifier().GetName(), element.secondary_identifier()),
+          element.identifier().GetName(), element.GetSecondaryIdentifier()),
       base::BindOnce(
           [](bool* success_ptr, base::OnceClosure quit_closure, bool result) {
             *success_ptr = result;

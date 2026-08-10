@@ -370,6 +370,19 @@ class InteractiveTestApi {
                                                 std::string_view name,
                                                 P&& predicate);
 
+  // Names the first element with identifier `id` and secondary identifier
+  // `secondary_id` in either the current or any context `name`. By default,
+  // waits for the element to be present; if `wait_for_present` is set to false,
+  // will fail if the element is not present.
+  //
+  // Only useful for elements with specified secondary IDs; auto-generated or
+  // default secondary IDs are not predictable in a way that can be tested.
+  [[nodiscard]] MultiStep NameElementWithSecondaryId(
+      ui::ElementIdentifier id,
+      std::string_view secondary_id,
+      std::string_view name,
+      bool wait_for_present = true);
+
   // Adds an observed state with identifier `id` in the current context. Use
   // `WaitForState()` to wait for state changes. This is a useful way to wait
   // for an asynchronous state that isn't a UI element.

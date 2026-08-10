@@ -4231,15 +4231,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring) {
   ui::TrackedElement* ext_anchor = container->GetExtensionAnchor(extension_id);
   ASSERT_NE(ext_anchor, nullptr);
   EXPECT_EQ(ext_anchor->identifier(), kToolbarActionViewElementId);
-  EXPECT_EQ(ext_anchor->AsA<ui::TrackedElementWebUI>()->secondary_identifier(),
-            "ext:" + extension_id);
+  EXPECT_EQ(ext_anchor->GetSecondaryIdentifier(), "ext:" + extension_id);
 
   ui::TrackedElement* puzzle_anchor = container->GetExtensionAnchor("");
   ASSERT_NE(puzzle_anchor, nullptr);
   EXPECT_EQ(puzzle_anchor->identifier(), kExtensionsMenuButtonElementId);
-  EXPECT_EQ(
-      puzzle_anchor->AsA<ui::TrackedElementWebUI>()->secondary_identifier(),
-      "ext:");
+  EXPECT_EQ(puzzle_anchor->GetSecondaryIdentifier(), "ext:");
 
   // 1. Left click on extension icon (opens popup).
   {
