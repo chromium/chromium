@@ -131,6 +131,8 @@ public class BookmarkBarSettingsFragmentTest {
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
         Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
@@ -155,6 +157,8 @@ public class BookmarkBarSettingsFragmentTest {
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(false));
