@@ -117,6 +117,10 @@ class BaseTabStripRegionView : public TabStripRegionView,
   virtual gfx::Point GetLinkDropArrowPosition(
       const BrowserRootView::DropIndex& drop_index,
       DropArrow::Direction* direction) = 0;
+  views::View* GetTabViewAt(int tab_index) const;
+  bool IsDropBeforeGroupHeader(const BrowserRootView::DropIndex& drop_index,
+                               const tabs::TabInterface* tab) const;
+  views::View* GetGroupHeaderView(const tab_groups::TabGroupId& group_id) const;
 
   BrowserView* browser_view() const { return browser_view_; }
   actions::ActionItem* root_action_item() const { return root_action_item_; }

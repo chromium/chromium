@@ -871,27 +871,73 @@ gfx::Rect HorizontalTabStripRegionViewNew::GetTabStripDraggableBounds() const {
 gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
     const BrowserRootView::DropIndex& drop_index,
     DropArrow::Direction* direction) {
-  int target_x = GetBoundsInScreen().x();
-  int target_y = GetBoundsInScreen().y();
-
+  // By default, have the arrow point down towards the tab strip.
   *direction = DropArrow::Direction::kDown;
-  if (root_node() && drop_index.index < tab_strip_model()->count()) {
+
+  if (tab_strip_model()->count() == 0) {
+    return GetBoundsInScreen().origin();
+  }
+
+  const int overlap = TabStyle::Get()->GetTabOverlap();
+  const bool is_rtl = base::i18n::IsRTL();
+  const bool replace_index =
+      drop_index.relative_to_index ==
+      BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+
+  // Calculates the X coordinate for the drop arrow at a view's edge,
+  // factoring in RTL and tab overlap. `is_after` indicates whether
+  // the drop is placed after the provided bounds (true) or before them (false).
+  auto GetAdjustedXForDrop = [&](const gfx::Rect& bounds, bool is_after) {
+    const bool at_right_edge = is_rtl != is_after;
+    return at_right_edge ? (bounds.right() - overlap / 2)
+                         : (bounds.x() + overlap / 2);
+  };
+
+  int target_x = 0;
+  int target_y = 0;
+
+  if (drop_index.index < tab_strip_model()->count()) {
     tabs::TabInterface* tab =
         tab_strip_model()->GetTabAtIndex(drop_index.index);
-    if (TabCollectionNode* node =
-            root_node()->GetNodeForHandle(tab->GetHandle())) {
-      views::View* target_view = node->view();
-      if (target_view) {
-        target_x = target_view->GetBoundsInScreen().x();
-        target_y = target_view->GetBoundsInScreen().y();
+    views::View* target_view = GetTabViewAt(drop_index.index);
+
+    if (replace_index && target_view) {
+      // When a tab is being replaced, point at the center of the tab.
+      target_x = target_view->GetBoundsInScreen().CenterPoint().x();
+      target_y = target_view->GetBoundsInScreen().y();
+    } else if (IsDropBeforeGroupHeader(drop_index, tab)) {
+      // Drop before the group header.
+      views::View* header_view = GetGroupHeaderView(tab->GetGroup().value());
+      views::View* anchor_view = header_view ? header_view : target_view;
+      if (anchor_view) {
+        gfx::Rect bounds = anchor_view->GetBoundsInScreen();
+        target_x = GetAdjustedXForDrop(bounds, /*is_after=*/false);
+        target_y = bounds.y();
       }
+    } else if (target_view) {
+      // Otherwise, point at the slot before the tab.
+      gfx::Rect bounds = target_view->GetBoundsInScreen();
+      target_x = GetAdjustedXForDrop(bounds, /*is_after=*/false);
+      target_y = bounds.y();
     }
   } else {
-    if (auto* unpinned_container = GetUnpinnedTabsContainer()) {
-      target_x = unpinned_container->GetBoundsInScreen().right();
-      target_y = unpinned_container->GetBoundsInScreen().y();
+    // Drop at the end of the unpinned container.
+    views::View* last_view = GetTabViewAt(tab_strip_model()->count() - 1);
+    if (last_view) {
+      gfx::Rect bounds = last_view->GetBoundsInScreen();
+      target_x = GetAdjustedXForDrop(bounds, /*is_after=*/true);
+      target_y = bounds.y();
+    } else if (auto* unpinned_container = GetUnpinnedTabsContainer()) {
+      gfx::Rect bounds = unpinned_container->GetBoundsInScreen();
+      target_x = is_rtl ? bounds.x() : bounds.right();
+      target_y = bounds.y();
     }
   }
+
+  if (target_x == 0 && target_y == 0) {
+    return GetBoundsInScreen().origin();
+  }
+
   return gfx::Point(target_x, target_y);
 }
 

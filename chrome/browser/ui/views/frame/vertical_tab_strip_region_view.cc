@@ -539,8 +539,10 @@ gfx::Point VerticalTabStripRegionView::GetLinkDropArrowPosition(
   if (drop_index.index < tab_strip_model()->count()) {
     tabs::TabInterface* tab =
         tab_strip_model()->GetTabAtIndex(drop_index.index);
-    TabCollectionNode* node = root_node()->GetNodeForHandle(tab->GetHandle());
-    views::View* target_view = node->view();
+    views::View* target_view = GetTabViewAt(drop_index.index);
+    if (!target_view) {
+      return GetBoundsInScreen().origin();
+    }
 
     // In the expanded view, pinned and split tabs will have an arrow pointing
     // down at the tab. We don't support dropping a tab in the middle of a
@@ -561,20 +563,11 @@ gfx::Point VerticalTabStripRegionView::GetLinkDropArrowPosition(
       target_y = target_view->GetBoundsInScreen().CenterPoint().y();
     } else {
       // Otherwise, we are pointing at the slot before the tab.
-      if (drop_index.group_inclusion ==
-              BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup &&
-          tab->GetGroup().has_value() &&
-          tab_strip_model()
-                  ->group_model()
-                  ->GetTabGroup(tab->GetGroup().value())
-                  ->GetFirstTab() == tab) {
+      if (IsDropBeforeGroupHeader(drop_index, tab)) {
         // Drop before the group header.
-        TabCollectionNode* group_node = root_node()->GetNodeForHandle(
-            tab_strip_model()
-                ->group_model()
-                ->GetTabGroup(tab->GetGroup().value())
-                ->GetCollectionHandle());
-        target_y = group_node->view()->GetBoundsInScreen().y();
+        views::View* header_view = GetGroupHeaderView(tab->GetGroup().value());
+        target_y =
+            (header_view ? header_view : target_view)->GetBoundsInScreen().y();
       } else {
         target_y = target_view->GetBoundsInScreen().y();
       }

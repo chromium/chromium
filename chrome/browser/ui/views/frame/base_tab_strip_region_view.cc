@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
@@ -561,6 +562,52 @@ void BaseTabStripRegionView::SetLinkDropArrow(
   } else if (index != drop_arrow_->index()) {
     drop_arrow_->SetIndex(*index);
   }
+}
+
+views::View* BaseTabStripRegionView::GetTabViewAt(int tab_index) const {
+  if (!root_node_ || !tab_strip_model_ || tab_index < 0 ||
+      tab_index >= tab_strip_model_->count()) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+  if (!tab) {
+    return nullptr;
+  }
+  TabCollectionNode* node = root_node_->GetNodeForHandle(tab->GetHandle());
+  return node ? node->view() : nullptr;
+}
+
+bool BaseTabStripRegionView::IsDropBeforeGroupHeader(
+    const BrowserRootView::DropIndex& drop_index,
+    const tabs::TabInterface* tab) const {
+  if (!tab || !tab->GetGroup().has_value()) {
+    return false;
+  }
+  if (drop_index.relative_to_index ==
+          BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex &&
+      drop_index.group_inclusion ==
+          BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup) {
+    return tab_strip_model_->group_model()
+               ->GetTabGroup(tab->GetGroup().value())
+               ->GetFirstTab() == tab;
+  }
+  return false;
+}
+
+views::View* BaseTabStripRegionView::GetGroupHeaderView(
+    const tab_groups::TabGroupId& group_id) const {
+  if (!root_node_) {
+    return nullptr;
+  }
+  TabCollectionNode* group_node =
+      root_node_->GetNodeForHandle(tab_strip_model_->group_model()
+                                       ->GetTabGroup(group_id)
+                                       ->GetCollectionHandle());
+  if (!group_node || !group_node->view()) {
+    return nullptr;
+  }
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  return group_view ? group_view->group_header() : nullptr;
 }
 
 gfx::Rect BaseTabStripRegionView::GetLinkDropBounds(
