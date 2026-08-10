@@ -607,7 +607,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   aura::Window* window = widget->GetNativeWindow();
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+  EXPECT_EQ(shadow->rounded_corners_for_testing().upper_left(),
             chromeos::kRoundedWindowSmallCornerRadius);
 
   shell_surface->SetPip();
@@ -615,14 +615,14 @@ TEST_F(ClientControlledShellSurfaceTest,
 
   shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+  EXPECT_EQ(shadow->rounded_corners_for_testing().upper_left(),
             chromeos::kPipRoundedCornerRadius);
 
   shell_surface->UnsetPip();
   root_surface->Commit();
 
   ASSERT_TRUE(shadow);
-  EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
+  EXPECT_EQ(shadow->rounded_corners_for_testing().upper_left(),
             chromeos::kRoundedWindowSmallCornerRadius);
 }
 

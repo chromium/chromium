@@ -12,6 +12,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_util.h"
 
 namespace ui {
@@ -59,9 +60,10 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // Sets the shadow's appearance, animating opacity as necessary.
   void SetElevation(int elevation);
 
-  // Sets the radius for the rounded corners to take into account when
-  // adjusting the shadow layer to frame |content_bounds|. 0 or greater.
+  // Sets the radii for the rounded corners to take into account when
+  // adjusting the shadow layer to frame |content_bounds|.
   void SetRoundedCornerRadius(int rounded_corner_radius);
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 
   // Set shadow style.
   void SetShadowStyle(gfx::ShadowStyle style);
@@ -70,8 +72,8 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   void SetElevationToColorsMap(const ElevationToColorsMap& color_map);
 
   const gfx::ShadowDetails* details_for_testing() const { return details_; }
-  int rounded_corner_radius_for_testing() const {
-    return rounded_corner_radius_;
+  const gfx::RoundedCornersF& rounded_corners_for_testing() const {
+    return rounded_corners_;
   }
 
   // ui::ImplicitAnimationObserver overrides:
@@ -112,7 +114,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Rounded corners are drawn on top of the window's content layer,
   // we need to exclude them from the occlusion area.
-  int rounded_corner_radius_ = 2;
+  gfx::RoundedCornersF rounded_corners_{2};
 
   // The details of the shadow image that's currently set on |shadow_layer()|.
   // This will be null until a positive elevation has been set. Once set, it

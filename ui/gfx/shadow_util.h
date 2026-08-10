@@ -7,6 +7,8 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/shadow_value.h"
 
@@ -30,31 +32,61 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
   ShadowDetails(const ShadowDetails& other);
   ~ShadowDetails();
 
-  // Returns a cached ShadowDetails for the given elevation, corner radius, and
-  // shadow style. Creates the ShadowDetails first if necessary.
+  // Returns a cached ShadowDetails for the given elevation, rounded corners,
+  // and shadow style. Creates the ShadowDetails first if necessary.
   static const ShadowDetails& Get(
       int elevation,
-      int radius,
+      const gfx::RoundedCornersF& rounded_corners,
       bool is_pill_shaped = false,
       ShadowStyle style = ShadowStyle::kMaterialDesign);
+
   // Returns a cached ShadowDetails for the given elevation, corner radius,
   // key shadow color, ambient shadow color, and shadow style.
   static const ShadowDetails& Get(int elevation,
-                                  int radius,
+                                  const gfx::RoundedCornersF& rounded_corners,
                                   SkColor key_color,
                                   SkColor ambient_color,
                                   bool is_pill_shaped,
                                   ShadowStyle style);
+
   // Returns a cached ShadowDetails for given corner radius and shadow values.
-  static const ShadowDetails& Get(int radius, const gfx::ShadowValues& values);
+  static const ShadowDetails& Get(const gfx::RoundedCornersF& rounded_corners,
+                                  const gfx::ShadowValues& values);
+
+  // Returns the insets required to accommodate the corner radii.
+  //
+  // Left Inset = max(r_UL, r_LL)
+  // ◄─────►
+  //  (r_UL : Large)                           (r_UR: Medium)
+  //        ╭──────────────────────────────────────────────╮     ▲
+  //     ╭──╯                                              ╰──╮  |
+  //   ╭─╯                                                    │  |  Top Inset =
+  //   max(r_UL, r_UR)
+  //  ╭╯                                                      │  |
+  //  │                                                       │  ▼
+  //  │                                                       │
+  //  │                                                       │
+  //  │                                                       │
+  //  │                                                       │
+  //  ╰╮                                                      │  ▲
+  //   ╰──────────────────────────────────────────────────────┘  ▼  Bottom Inset
+  //   = max(r_LL, r_LR)
+  //  (r_LL: Small)                             (r_LR: Sharp)
+  //                                                       ◄──►
+  //                                                       Right Inset =
+  //                                                       max(r_UR, r_LR)
+  //
+  static gfx::Insets GetInsetsForRoundedCorners(
+      const gfx::RoundedCornersF& rounded_corners);
 
   static size_t GetDetailsCacheSizeForTest();
 
   // Returns the insets for the ninebox aperture given the shadows and corner
   // radius. Represents the total space need to draw  the full range of blur and
   // the corner rounding around the aperture.
-  static gfx::Insets GetNineboxApertureInsets(const gfx::ShadowValues& shadows,
-                                              int corner_radius);
+  static gfx::Insets GetNineboxApertureInsets(
+      const gfx::ShadowValues& shadows,
+      const gfx::RoundedCornersF& rounded_corners);
 
   // Description of the shadows.
   const gfx::ShadowValues values;

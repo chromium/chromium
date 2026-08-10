@@ -85,7 +85,7 @@ gfx::Size GetPreviewSize(
 const gfx::ShadowDetails& GetShadowDetails() {
   const gfx::Size size(GetPreviewSize());
   const int radius = std::min(size.height(), size.width()) / 2;
-  return gfx::ShadowDetails::Get(kElevation, radius);
+  return gfx::ShadowDetails::Get(kElevation, gfx::RoundedCornersF(radius));
 }
 
 // Adjust the specified `origin` for shadow margins.

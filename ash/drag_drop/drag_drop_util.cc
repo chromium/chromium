@@ -17,7 +17,8 @@ const ui::ColorId kDragImageBackgroundColor = kColorAshShieldAndBaseOpaque;
 
 const gfx::ShadowDetails& GetDragImageShadowDetails(
     const std::optional<size_t>& corner_radius) {
-  return gfx::ShadowDetails::Get(kShadowElevation, corner_radius.value_or(0));
+  return gfx::ShadowDetails::Get(
+      kShadowElevation, gfx::RoundedCornersF(corner_radius.value_or(0)));
 }
 
 }  // namespace ash::drag_drop
