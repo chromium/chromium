@@ -283,9 +283,14 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->attached_tabs_;
   }
 
+  // Getter for an attached tab context by ID.
+  GeminiPageContext* GetRawAttachedTabContext(web::WebStateID id) {
+    return gemini_browser_agent_->GetAttachedPageContext(id);
+  }
+
   // Setter for raw `attached_tabs_` member.
-  void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* context) {
-    gemini_browser_agent_->attached_tabs_[id] = context;
+  void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* page_context) {
+    gemini_browser_agent_->SetAttachedPageContext(id, page_context);
   }
 
   // Wrapper for `AttachedTabsCount`.
@@ -1226,7 +1231,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
   // Verify that attached tabs now contains only the new active tab.
   auto raw_tabs = GetRawAttachedTabs();
   EXPECT_EQ(raw_tabs.size(), 1u);
-  EXPECT_TRUE(raw_tabs.count(new_active_id));
+  EXPECT_NE(nil, GetRawAttachedTabContext(new_active_id));
 
   // Simulate un-minimizing the floaty.
   gemini_browser_agent_->OnViewStateChanged(
@@ -1236,7 +1241,7 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
 
   // Verify that attached tabs now remains only the new active tab.
   EXPECT_EQ(raw_tabs.size(), 1u);
-  EXPECT_TRUE(raw_tabs.count(new_active_id));
+  EXPECT_NE(nil, GetRawAttachedTabContext(new_active_id));
 }
 
 // Tests that switching from live to floaty mode on an eligible page keeps the
@@ -1360,8 +1365,9 @@ TEST_F(GeminiBrowserAgentTest,
   // Verify it starts as attached.
   auto tabs = GetRawAttachedTabs();
   ASSERT_EQ(1u, tabs.size());
-  ASSERT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
-            tabs[active_id].geminiPageContextAttachmentState);
+  ASSERT_EQ(
+      ios::provider::GeminiPageContextAttachmentState::kAttached,
+      GetRawAttachedTabContext(active_id).geminiPageContextAttachmentState);
 
   NSString* tab_id_str =
       [NSString stringWithFormat:@"%d", active_id.identifier()];
@@ -1371,8 +1377,9 @@ TEST_F(GeminiBrowserAgentTest,
   // Verify it is still in the map but detached.
   tabs = GetRawAttachedTabs();
   EXPECT_EQ(1u, tabs.size());
-  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kDetached,
-            tabs[active_id].geminiPageContextAttachmentState);
+  EXPECT_EQ(
+      ios::provider::GeminiPageContextAttachmentState::kDetached,
+      GetRawAttachedTabContext(active_id).geminiPageContextAttachmentState);
 }
 
 // Tests that DetachTabWithID completely removes a shared tab from the cache.
@@ -1409,7 +1416,7 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
   // Verify the shared tab is completely removed.
   tabs = GetRawAttachedTabs();
   EXPECT_EQ(1u, tabs.size());
-  EXPECT_EQ(0u, tabs.count(other_id));
+  EXPECT_EQ(nil, GetRawAttachedTabContext(other_id));
 }
 
 // Tests that disabling the page content sharing pref clears attached tabs.
@@ -1471,7 +1478,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnTabPickerSelectionChangedNewlyAddedTab) {
   auto tabs = GetRawAttachedTabs();
   ASSERT_EQ(2u, tabs.size());
 
-  GeminiPageContext* other_context = tabs[other_id];
+  GeminiPageContext* other_context = GetRawAttachedTabContext(other_id);
   ASSERT_TRUE(other_context);
   EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
             other_context.geminiPageContextAttachmentState);
@@ -1516,8 +1523,7 @@ TEST_F(GeminiBrowserAgentTest,
   // because FakeWebState is naturally ineligible (no URL or MIME type), it
   // falls back to kBlocked without attempting to take a native view snapshot
   // (which would crash the test runner).
-  auto tabs = GetRawAttachedTabs();
-  GeminiPageContext* other_context = tabs[other_id];
+  GeminiPageContext* other_context = GetRawAttachedTabContext(other_id);
   EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kBlocked,
             other_context.geminiPageContextComputationState);
 }
@@ -1554,8 +1560,7 @@ TEST_F(GeminiBrowserAgentTest,
   TriggerPersistTabContextLookupComplete(std::move(cache_map));
 
   // Since cached APC exists, the page context should be updated to kSuccess.
-  auto tabs = GetRawAttachedTabs();
-  GeminiPageContext* other_context = tabs[other_id];
+  GeminiPageContext* other_context = GetRawAttachedTabContext(other_id);
   EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kSuccess,
             other_context.geminiPageContextComputationState);
   EXPECT_TRUE(other_context.uniquePageContext != nullptr);
@@ -1587,8 +1592,7 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
 
   // Switch to `other_id` and manually set its computation state to kSuccess.
   browser_->GetWebStateList()->ActivateWebStateAt(1);
-  auto tabs = GetRawAttachedTabs();
-  tabs[other_id].geminiPageContextComputationState =
+  GetRawAttachedTabContext(other_id).geminiPageContextComputationState =
       ios::provider::GeminiPageContextComputationState::kSuccess;
 
   // Switch back to `active_id` so that we switch away from `other_id`, which
@@ -1598,9 +1602,9 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
   // Verify that a fresh partial context was generated for `other_id`. Since
   // `FakeWebState` lacks a URL, it is ineligible and the refetch immediately
   // sets its partial context state to `kBlocked`.
-  tabs = GetRawAttachedTabs();
-  EXPECT_EQ(ios::provider::GeminiPageContextComputationState::kBlocked,
-            tabs[other_id].geminiPageContextComputationState);
+  EXPECT_EQ(
+      ios::provider::GeminiPageContextComputationState::kBlocked,
+      GetRawAttachedTabContext(other_id).geminiPageContextComputationState);
 }
 
 // Tests the logic backing the metrics block providers.

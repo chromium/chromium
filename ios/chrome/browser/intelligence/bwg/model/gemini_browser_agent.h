@@ -435,6 +435,16 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Handler for Gemini actor.
   __strong GeminiActuationHandler* gemini_actuation_handler_ = nullptr;
 
+  // Returns the attached page context for `tab_id`, or nil if not found.
+  GeminiPageContext* GetAttachedPageContext(web::WebStateID tab_id) const;
+
+  // Adds or updates `page_context` for `tab_id` in `attached_tabs_`.
+  void SetAttachedPageContext(web::WebStateID tab_id,
+                              GeminiPageContext* page_context);
+
+  // Removes the entry for `tab_id` from `attached_tabs_`.
+  void RemoveAttachedPageContext(web::WebStateID tab_id);
+
   // Mediator for the Gemini container. Remove after bottom sheet migrations.
   __strong GeminiContainerMediator* gemini_container_mediator_ = nil;
 
