@@ -233,6 +233,26 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
     return source_wc;
   }
 
+  [[nodiscard]] bool SimulateMouseDownAndWait(content::WebContents* source_wc,
+                                              const gfx::Point& point) {
+    if (!content::ExecJs(
+            source_wc,
+            "window.__mouseDownReceived = false;"
+            "window.addEventListener('mousedown', () => "
+            "{ window.__mouseDownReceived = true; }, {once: true});")) {
+      return false;
+    }
+
+    content::SimulateMouseEvent(source_wc,
+                                blink::WebInputEvent::Type::kMouseDown,
+                                blink::WebMouseEvent::Button::kLeft, point);
+
+    return base::test::RunUntil([&]() {
+      return content::EvalJs(source_wc, "window.__mouseDownReceived")
+          .ExtractBool();
+    });
+  }
+
   void SimulateMouseDragFromImage(content::WebContents* source_wc) {
     // We use Javascript to find the image center and then click+drag it.
     double img_x = content::EvalJs(source_wc,
@@ -249,9 +269,8 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
     gfx::Point drag_start_point(img_x, img_y);
     gfx::Point drag_end_point = drag_start_point + gfx::Vector2d(100, 100);
 
-    content::SimulateMouseEvent(
-        source_wc, blink::WebInputEvent::Type::kMouseDown,
-        blink::WebMouseEvent::Button::kLeft, drag_start_point);
+    ASSERT_TRUE(SimulateMouseDownAndWait(source_wc, drag_start_point));
+
     content::SimulateMouseEvent(source_wc,
                                 blink::WebInputEvent::Type::kMouseMove,
                                 blink::WebMouseEvent::Button::kLeft,
