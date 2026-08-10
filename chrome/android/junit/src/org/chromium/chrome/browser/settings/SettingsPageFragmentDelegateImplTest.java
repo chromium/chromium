@@ -787,4 +787,11 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mMultiColumnSettings).addObserver(searchCoordinator);
         verify(mockContainmentHelper).getItemDecorations();
     }
+
+    @Test
+    public void testOnHeaderLayoutUpdated_updatesContainment() {
+        mDelegate.initSettings(mContainerView, "");
+        mDelegate.onHeaderLayoutUpdated();
+        verify(mMockSettingsHostFragment).updateContainmentForAttachedFragments();
+    }
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -187,6 +188,43 @@ public class SettingsContainmentHelperTest {
         assertEquals(
                 ContainmentItemDecoration.class, recyclerView.getItemDecorationAt(0).getClass());
         assertEquals(expectedAdapter, recyclerView.getAdapter());
+    }
+
+    @Test
+    public void
+            testUpdateFragmentContainment_twoColumn_mainSettings_removesContainmentDecoration() {
+        when(mDelegate.isTwoColumnSettingsVisible()).thenReturn(true);
+
+        MainSettings mockMainSettings = mock(MainSettings.class);
+        when(mockMainSettings.getContext()).thenReturn(mContext);
+
+        RecyclerView recyclerView = createRecyclerView();
+        setFragmentList(mockMainSettings, recyclerView);
+
+        PreferenceManager preferenceManager = new PreferenceManager(mContext);
+        PreferenceScreen preferenceScreen = preferenceManager.createPreferenceScreen(mContext);
+        when(mockMainSettings.getPreferenceScreen()).thenReturn(preferenceScreen);
+
+        // First apply single-column containment.
+        when(mDelegate.isTwoColumnSettingsVisible()).thenReturn(false);
+        mContainmentHelper.updateFragmentContainment(mockMainSettings);
+        assertEquals(1, recyclerView.getItemDecorationCount());
+        assertEquals(
+                ContainmentItemDecoration.class, recyclerView.getItemDecorationAt(0).getClass());
+
+        MultiColumnSettings mockMultiColumnSettings = mock(MultiColumnSettings.class);
+        doReturn(mockMultiColumnSettings).when(mDelegate).getMultiColumnSettings();
+        when(mDelegate.isTwoColumnSettingsVisible()).thenReturn(true);
+        mContainmentHelper.updateFragmentContainment(mockMainSettings);
+
+        // Verify setMultiColumnSettings was called with non-null SelectionDecoration in two-column
+        // mode.
+        verify(mockMainSettings)
+                .setMultiColumnSettings(
+                        eq(mockMultiColumnSettings), any(SelectionDecoration.class));
+
+        // Verify ContainmentItemDecoration was removed from RecyclerView
+        assertEquals(0, recyclerView.getItemDecorationCount());
     }
 
     /** Creates a no-op {@link RecyclerView} with an adapter for testing. */

@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -121,6 +122,10 @@ public class SettingsHostFragment extends Fragment
 
     public @Nullable SettingsContainmentHelper getContainmentHelper() {
         return mContainmentHelper;
+    }
+
+    void setContainmentHelperForTesting(SettingsContainmentHelper containmentHelper) {
+        mContainmentHelper = containmentHelper;
     }
 
     @Override
@@ -423,6 +428,19 @@ public class SettingsHostFragment extends Fragment
         if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
             multiColumnSettings.getChildFragmentManager().executePendingTransactions();
         }
+    }
+
+    /** Updates containment styling for all attached child fragments recursively. */
+    public void updateContainmentForAttachedFragments() {
+        if (isAttachedToActivity() && mContainmentHelper != null) {
+            mContainmentHelper.updateContainmentForAttachedFragments(getChildFragmentManager());
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateContainmentForAttachedFragments();
     }
 
     /** Returns the number of entries in the child fragment manager back stack. */

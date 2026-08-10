@@ -513,6 +513,9 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public void onHeaderLayoutUpdated() {
+        if (mSettingsHostFragment != null) {
+            mSettingsHostFragment.updateContainmentForAttachedFragments();
+        }
         updateNavigationIcon();
         updateBackPressState();
     }

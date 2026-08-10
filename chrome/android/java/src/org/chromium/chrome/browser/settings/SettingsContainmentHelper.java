@@ -156,6 +156,23 @@ class SettingsContainmentHelper {
     }
 
     /**
+     * Updates containment styling for all attached fragments recursively in the given
+     * FragmentManager.
+     *
+     * @param fragmentManager The FragmentManager containing the fragments to update.
+     */
+    void updateContainmentForAttachedFragments(FragmentManager fragmentManager) {
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment != null && fragment.isAdded()) {
+                if (fragment instanceof PreferenceFragmentCompat preferenceFragment) {
+                    updateFragmentContainment(preferenceFragment);
+                }
+                updateContainmentForAttachedFragments(fragment.getChildFragmentManager());
+            }
+        }
+    }
+
+    /**
      * Applies or removes containment styling for fragments within the multi-column settings layout
      * based on whether the multi-column layout is currently active.
      *
@@ -218,6 +235,13 @@ class SettingsContainmentHelper {
         // Use getContext() instead of requireContext() for mocking in tests.
         Context context = mainSettings.getContext();
         if (context == null) return;
+
+        // Ensure any ContainmentItemDecoration previously added to MainSettings (e.g. during
+        // single-column mode or initial layout pass) is removed when entering two-column mode.
+        ContainmentItemDecoration itemDecoration = mItemDecorations.remove(mainSettings);
+        if (itemDecoration != null && mainSettings.getListView() != null) {
+            mainSettings.getListView().removeItemDecoration(itemDecoration);
+        }
 
         if (mThemedFragments.add(mainSettings)) {
             context.getTheme().applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);

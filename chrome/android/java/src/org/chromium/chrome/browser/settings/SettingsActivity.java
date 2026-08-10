@@ -401,13 +401,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (mMultiColumnSettings != null) {
-            for (Fragment fragment :
-                    mMultiColumnSettings.getChildFragmentManager().getFragments()) {
-                if (fragment.isAdded()
-                        && fragment instanceof PreferenceFragmentCompat preferenceFragmentCompat) {
-                    mContainmentHelper.postUpdateContainmentOnLayout(preferenceFragmentCompat);
-                }
-            }
+            mContainmentHelper.updateContainmentForAttachedFragments(getSupportFragmentManager());
         }
         if (mSearchCoordinator != null) mSearchCoordinator.onConfigurationChanged(newConfig);
     }

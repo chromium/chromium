@@ -8,12 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -391,6 +393,17 @@ public class SettingsHostFragmentTest {
                                     "ModalDialogManager should be present",
                                     restoredMain.getModalDialogManagerSupplierForTesting().get());
                         });
+    }
+
+    @Test
+    public void testOnConfigurationChanged_updatesContainment() {
+        attachHostFragment();
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsHostFragment.setContainmentHelperForTesting(mockHelper);
+
+        mSettingsHostFragment.onConfigurationChanged(new Configuration());
+
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
     }
 
     /** A test PreferenceFragmentCompat subclass. */

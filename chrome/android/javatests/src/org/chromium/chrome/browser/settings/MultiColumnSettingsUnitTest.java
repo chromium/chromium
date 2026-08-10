@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -61,7 +62,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -173,7 +173,7 @@ public class MultiColumnSettingsUnitTest {
     @SmallTest
     @UiThreadTest
     public void testFragmentTracker() {
-        List<MultiColumnSettings.Observer> observers = new ArrayList<>();
+        ObserverList<MultiColumnSettings.Observer> observers = new ObserverList<>();
         var fragmentManager = new TestFragmentManager();
 
         var fragmentTracker = new MultiColumnSettings.FragmentTracker(observers);

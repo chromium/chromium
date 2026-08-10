@@ -29,6 +29,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -98,7 +99,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     private @Nullable Intent mPendingFragmentIntent;
 
-    private final List<Observer> mObservers = new ArrayList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     private final FragmentTracker mFragmentTracker = new FragmentTracker(mObservers);
 
@@ -677,9 +678,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // need to display the breadcrumb from the restored titles.
         private boolean mTitleInitialized;
 
-        private final List<Observer> mObservers;
+        private final ObserverList<Observer> mObservers;
 
-        FragmentTracker(List<Observer> observers) {
+        FragmentTracker(ObserverList<Observer> observers) {
             mObservers = observers;
         }
 
@@ -834,11 +835,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     }
 
     public void addObserver(Observer o) {
-        mObservers.add(o);
+        mObservers.addObserver(o);
     }
 
     public void removeObserver(Observer o) {
-        mObservers.remove(o);
+        mObservers.removeObserver(o);
     }
 
     @Override
