@@ -322,9 +322,8 @@ DwaService::BuildPrivateMetricEndpointPayloadFromEncryptedReport(
     case ::private_metrics::EncryptedPrivateMetricReport::DWA:
       report_type = ::private_metrics::PrivateMetricEndpointPayload::DWA;
       break;
+    // TODO(b/540830448): Remove
     case ::private_metrics::EncryptedPrivateMetricReport::DKM:
-      report_type = ::private_metrics::PrivateMetricEndpointPayload::DKM;
-      break;
     case ::private_metrics::EncryptedPrivateMetricReport::REPORT_TYPE_INVALID:
       return std::nullopt;
   }
