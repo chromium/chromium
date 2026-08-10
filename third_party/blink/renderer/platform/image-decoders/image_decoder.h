@@ -217,7 +217,8 @@ class PLATFORM_EXPORT ImageDecoder {
   // This is useful for callers to determine whether a decoder instantiation
   // failure is due to insufficient or bad data. If |all_data_received| is
   // true, the data is always considered sufficient, since no more data will
-  // ever arrive.
+  // ever arrive. Pass all_data_received=false to be conservative if the value
+  // of all_data_received is unknown.
   static bool HasSufficientDataToSniffMimeType(const SharedBuffer&,
                                                bool all_data_received);
 

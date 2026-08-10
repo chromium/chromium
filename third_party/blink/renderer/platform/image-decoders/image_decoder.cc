@@ -187,7 +187,8 @@ inline bool MatchesBMPSignature(base::span<const uint8_t> contents) {
 
 constexpr wtf_size_t kLongestSignatureLength = sizeof("RIFF????WEBPVP") - 1;
 
-// static
+// Pass data_complete=false to be conservative if the value of
+// all_data_received is unknown.
 String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader,
                              bool data_complete) {
   // At least kLongestSignatureLength bytes are needed to sniff the signature,

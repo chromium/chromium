@@ -127,7 +127,8 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
                            ColorBehavior::kIgnore));
 
     // Append the rest of the data.  We should be able to sniff the signature
-    // now, even if segmented.
+    // now, even if segmented. Keep all_data_received false to exercise the
+    // incremental data path.
     buffer->Append(rest_of_data);
     EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(
         *buffer, /*all_data_received=*/false));
