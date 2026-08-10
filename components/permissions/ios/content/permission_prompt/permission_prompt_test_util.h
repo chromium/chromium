@@ -61,6 +61,11 @@ class StubPermissionPromptDelegate : public PermissionPrompt::Delegate {
 
   const PermissionPrompt* GetCurrentPrompt() const override;
 
+  EmbeddedPermissionPromptFlowModel* GetEmbeddedPromptFlowModel()
+      const override;
+  void CalculateCurrentVariantForEmbeddedPrompt() override;
+  void AdvanceOrFinalizeEmbeddedPromptFlow() override;
+
   void AddRequest(std::unique_ptr<PermissionRequest> request);
 
   bool accept_called() const;

@@ -92,6 +92,15 @@ const PermissionPrompt* StubPermissionPromptDelegate::GetCurrentPrompt() const {
   return nullptr;
 }
 
+EmbeddedPermissionPromptFlowModel*
+StubPermissionPromptDelegate::GetEmbeddedPromptFlowModel() const {
+  return nullptr;
+}
+
+void StubPermissionPromptDelegate::CalculateCurrentVariantForEmbeddedPrompt() {}
+
+void StubPermissionPromptDelegate::AdvanceOrFinalizeEmbeddedPromptFlow() {}
+
 void StubPermissionPromptDelegate::AddRequest(
     std::unique_ptr<PermissionRequest> request) {
   requests_.push_back(std::move(request));
