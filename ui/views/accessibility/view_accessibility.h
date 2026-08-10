@@ -589,6 +589,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   virtual Widget* GetWidget() const;
 
+  bool IsRootViewForWidget() const;
+
   // Gets or creates a wrapper suitable for use with tree sources.
   // Returns nullptr if the view is null or on platforms that don't use Aura.
   virtual AXAuraObjWrapper* GetOrCreateWrapper(AXAuraObjCache* cache);
@@ -647,6 +649,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // higher priority than real children (views), this function returns them
   // first if any. If there are no virtual children, it returns the
   // ViewAccessibility objects associated with the children of the `view_`.
+  // The root view also appends the hosts of the child Widget trees, which
+  // stand for separate Widgets rather than for content of this view.
   std::vector<raw_ptr<ViewAccessibility>> GetChildren() const;
 
   virtual std::string GetDebugString() const;

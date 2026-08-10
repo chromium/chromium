@@ -855,8 +855,9 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   OnIntAttributeChanged(ax::mojom::IntAttribute::kRestriction,
                         static_cast<int32_t>(data_.GetRestriction()));
 
-  // Ignored nodes are not exposed to the platform accessibility tree. Firing state-change
-  // events on them is incorrect and produces noise that may confuse assistive technologies.
+  // Ignored nodes are not exposed to the platform accessibility tree. Firing
+  // state-change events on them is incorrect and produces noise that may
+  // confuse assistive technologies.
   if (!GetIsIgnored()) {
     NotifyEvent(ax::mojom::Event::kEnabledChanged, true);
   }
@@ -1800,7 +1801,6 @@ void ViewAccessibility::UpdateInvisibleState() {
 }
 
 void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
-  CHECK(view_);
   CHECK_NE(tree_id, ui::AXTreeIDUnknown())
       << "Call RemoveChildTreeID to remove the bridge to a child tree.";
 
@@ -1917,6 +1917,14 @@ Widget* ViewAccessibility::GetWidget() const {
   return view_->GetWidget();
 }
 
+bool ViewAccessibility::IsRootViewForWidget() const {
+  if (!view_) {
+    return false;
+  }
+  const Widget* widget = view_->GetWidget();
+  return widget && widget->GetRootView() == view_;
+}
+
 AXAuraObjWrapper* ViewAccessibility::GetOrCreateWrapper(AXAuraObjCache* cache) {
 #if defined(USE_AURA)
   if (!view_) {
@@ -1970,24 +1978,32 @@ std::vector<raw_ptr<ViewAccessibility>> ViewAccessibility::GetChildren() const {
     return out;
   }
 
+  WidgetAXManager* ax_manager =
+      IsRootViewForWidget() ? view_->GetWidget()->ax_manager() : nullptr;
+  const size_t child_widget_count =
+      ax_manager ? ax_manager->child_widget_tree_host_count() : 0u;
+
   // The virtual children always override any real children the view might have.
   if (!virtual_children_.empty()) {
-    out.reserve(virtual_children_.size());
+    out.reserve(virtual_children_.size() + child_widget_count);
     for (auto& v : virtual_children_) {
       out.push_back(v.get());
     }
-    return out;
+  } else if (view_) {
+    const auto& view_children = view_->children();
+    out.reserve(view_children.size() + child_widget_count);
+    for (auto child_view : view_children) {
+      out.push_back(&child_view->GetViewAccessibility());
+    }
   }
 
-  if (!view_) {
-    return out;
+  // Child Widgets don't have a corresponding view or virtual view. They are
+  // attached on the RootView through ignored virtual views maintained by the
+  // widget manager.
+  if (ax_manager) {
+    ax_manager->AppendChildWidgetTreeHosts(out);
   }
 
-  const auto& view_children = view_->children();
-  out.reserve(view_children.size());
-  for (auto child_view : view_children) {
-    out.push_back(&child_view->GetViewAccessibility());
-  }
   return out;
 }
 

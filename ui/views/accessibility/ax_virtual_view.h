@@ -41,6 +41,7 @@ class AXAuraObjCache;
 class AXVirtualViewWrapper;
 class View;
 class ViewAXPlatformNodeDelegate;
+class WidgetAXManager;
 
 namespace test {
 class AXVirtualViewTest;
@@ -285,6 +286,7 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   bool parent_view_is_drawn_ = true;
 
   friend class ViewAccessibility;
+  friend class WidgetAXManager;
 };
 
 }  // namespace views
