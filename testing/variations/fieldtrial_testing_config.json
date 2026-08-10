@@ -20141,10 +20141,12 @@
                 {
                     "name": "Enabled_Cancel_NotServable",
                     "params": {
-                        "prefetch_cancel_unrelated_prefetch_cancel_policy": "NotServable"
+                        "prefetch_cancel_unrelated_prefetch_cancel_policy": "NotServable",
+                        "unblock_async_policy": "AsyncBlocked"
                     },
                     "enable_features": [
-                        "PrefetchCancelUnrelatedPrefetch"
+                        "PrefetchCancelUnrelatedPrefetch",
+                        "PrefetchMatchResolverUnblockAsync"
                     ]
                 }
             ]
@@ -20164,26 +20166,6 @@
                     "enable_features": [
                         "NetworkContextPrefetch",
                         "PrefetchManagerUseNetworkContextPrefetch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrefetchMatchResolverUnblockAsync": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefetchMatchResolverUnblockAsync"
                     ]
                 }
             ]
