@@ -59,7 +59,7 @@ export function getHtml(this: TodoItemElement) {
         @expanded-changed="${this.onExpandedChanged_}">
       <div class="todo-content">
         <cr-icon-button id="check-circle"
-            disabled=true
+            ?disabled="${this.disable_state_mgmt}"
             iron-icon="cr:check-circle"
             @click="${this.onCheckCircleClick_}">
         </cr-icon-button>
@@ -105,8 +105,9 @@ export function getHtml(this: TodoItemElement) {
             </div>
           </div>
         </div>
-        <cr-button disabled=true class="dismiss-button" @click="${
-                               this.onDismissClick_}">
+        <cr-button class="dismiss-button"
+            ?disabled="${this.disable_state_mgmt}"
+            @click="${this.onDismissClick_}">
           Dismiss Todo
         </cr-button>
       </div>
