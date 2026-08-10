@@ -141,7 +141,7 @@ if (is_android && enable_java_templates &&
       deps = []
       if (use_v8_context_snapshot) {
         deps += [ "//tools/v8_context_snapshot" ]
-        sources += [ "$root_build_dir/$v8_context_snapshot_filename" ]
+        sources += [ "$root_out_dir/$v8_context_snapshot_filename" ]
       }
       if (!use_v8_context_snapshot || include_both_v8_snapshots) {
         if (current_cpu == "arm" || current_cpu == "x86") {
