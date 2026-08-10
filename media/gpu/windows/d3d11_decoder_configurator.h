@@ -28,7 +28,6 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
   D3D11DecoderConfigurator(DXGI_FORMAT decoder_output_dxgifmt,
                            GUID decoder_guid,
                            gfx::Size coded_size,
-                           bool is_encrypted,
                            bool supports_swap_chain);
   virtual ~D3D11DecoderConfigurator() = default;
 
@@ -69,7 +68,6 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
   const GUID decoder_guid_;
 
   const bool supports_swap_chain_;
-  const bool is_encrypted_;
 };
 
 }  // namespace media
