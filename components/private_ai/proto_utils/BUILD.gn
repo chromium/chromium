@@ -6,6 +6,8 @@ source_set("proto_utils") {
   sources = [
     "attestation_evidence_utils.cc",
     "attestation_evidence_utils.h",
+    "client_metadata_utils.cc",
+    "client_metadata_utils.h",
     "generate_content_response_utils.cc",
     "generate_content_response_utils.h",
     "google_rpc_code.cc",
@@ -15,6 +17,7 @@ source_set("proto_utils") {
     "//base",
     "//components/private_ai:proto",
     "//components/private_ai/attestation",
+    "//components/version_info",
     "//third_party/oak:oak_proto",
   ]
 }
@@ -23,6 +26,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "attestation_evidence_utils_unittest.cc",
+    "client_metadata_utils_unittest.cc",
     "generate_content_response_utils_unittest.cc",
     "google_rpc_code_unittest.cc",
   ]
@@ -31,6 +35,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/private_ai:proto",
     "//components/private_ai/attestation",
+    "//components/version_info",
     "//testing/gtest",
     "//third_party/oak:oak_proto",
   ]

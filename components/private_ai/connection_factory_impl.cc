@@ -45,6 +45,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
     PrivateAiOakSessionDriver* oak_session_driver,
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
     base::OnceClosure on_established,
+    version_info::Channel channel,
     network::mojom::NetworkContext* network_context) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
@@ -61,7 +62,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
         std::move(connection), feature_name, token_manager, logger,
-        on_disconnect);
+        on_disconnect, channel);
   }
 
   return connection;
@@ -74,12 +75,14 @@ ConnectionFactoryImpl::ConnectionFactoryImpl(
     network::mojom::NetworkContext* network_context,
     PrivateAiLogger* logger,
     PrivateAiOakSessionDriver* oak_session_driver,
-    PrivateAiNetworkDriver* network_driver)
+    PrivateAiNetworkDriver* network_driver,
+    version_info::Channel channel)
     : url_(url),
       network_context_(network_context),
       logger_(logger),
       oak_session_driver_(oak_session_driver),
-      network_driver_(network_driver) {
+      network_driver_(network_driver),
+      channel_(channel) {
   CHECK(logger_);
   CHECK(oak_session_driver_);
   CHECK(network_driver_);
@@ -114,7 +117,7 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     CHECK(network_context_);
     connection = CreateConnectionStack(
         url_, feature_name, logger_, token_manager_, secure_channel_override_,
-        oak_session_driver_, on_disconnect, std::move(on_established),
+        oak_session_driver_, on_disconnect, std::move(on_established), channel_,
         network_context_);
   } else {
     logger_->LogInfo(FROM_HERE,
@@ -126,7 +129,7 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     auto inner_connection_factory = base::BindOnce(
         &CreateConnectionStack, url_, feature_name, logger_, token_manager_,
         secure_channel_override_, oak_session_driver_, on_disconnect,
-        std::move(on_established));
+        std::move(on_established), channel_);
 
     connection = std::make_unique<ConnectionProxy>(
         proxy_url_, logger_, token_manager_, network_driver_,

@@ -141,6 +141,48 @@ message Candidate {
   FinishReason finish_reason = 3;
 }
 
+// Chrome-specific metadata for traffic segmentation.
+// See go/privateinference-traffic-segmentation for the design.
+message ChromeClientMetadata {
+  // The browser product name (e.g., "Google Chrome", "Chromium").
+  string product_name = 1;
+
+  // The OS platform the client is running on.
+  enum Platform {
+    PLATFORM_UNKNOWN = 0;
+    PLATFORM_WINDOWS = 1;
+    PLATFORM_MAC = 2;
+    PLATFORM_LINUX = 3;
+    PLATFORM_CHROMEOS = 4;
+    PLATFORM_ANDROID = 5;
+    PLATFORM_IOS = 6;
+  }
+  Platform platform = 2;
+
+  // The release channel of the browser.
+  enum Channel {
+    CHANNEL_UNKNOWN = 0;
+    CHANNEL_STABLE = 1;
+    CHANNEL_BETA = 2;
+    CHANNEL_DEV = 3;
+    CHANNEL_CANARY = 4;
+  }
+  Channel channel = 3;
+}
+
+// General client metadata wrapper for traffic segmentation.
+// See go/privateinference-traffic-segmentation for the design.
+message ClientMetadata {
+  // Ensure only one platform's metadata is set at a time.
+  oneof platform_metadata {
+    ChromeClientMetadata chrome_client_metadata = 2;
+  }
+}
+
 message AnonymousTokenRequest {
   bytes anonymous_token = 1;
+
+  // Session-level metadata for traffic segmentation.
+  // Sent inside the encrypted session, visible only within the TCB.
+  ClientMetadata client_metadata = 15;
 }

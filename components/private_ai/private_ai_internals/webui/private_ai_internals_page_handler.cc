@@ -122,7 +122,7 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_, &webui_logger_,
-                     oak_session_driver_, network_driver_);
+                     oak_session_driver_, network_driver_, channel_);
   std::move(callback).Run();
 }
 

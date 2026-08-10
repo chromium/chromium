@@ -33,13 +33,14 @@ std::unique_ptr<Client> Client::Create(
     phosphor::TokenManager* token_manager,
     PrivateAiLogger* logger,
     PrivateAiOakSessionDriver* oak_session_driver,
-    PrivateAiNetworkDriver* network_driver) {
+    PrivateAiNetworkDriver* network_driver,
+    version_info::Channel channel) {
   CHECK(!api_key.empty());
   GURL formatted_url = Client::FormatUrl(url, api_key);
 
   auto connection_factory = std::make_unique<ConnectionFactoryImpl>(
       formatted_url, network_context, logger, oak_session_driver,
-      network_driver);
+      network_driver, channel);
 
   if (use_token_attestation) {
     connection_factory->EnableTokenAttestation(token_manager);

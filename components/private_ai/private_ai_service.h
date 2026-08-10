@@ -64,7 +64,8 @@ class PrivateAiService : public KeyedService,
       const std::string& url,
       const std::string& api_key,
       const std::string& proxy_url,
-      bool use_token_attestation);
+      bool use_token_attestation,
+      version_info::Channel channel);
   ~PrivateAiService() override;
 
   PrivateAiService(const PrivateAiService&) = delete;

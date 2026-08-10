@@ -16,6 +16,7 @@
 #include "components/private_ai/private_ai_oak_session_driver.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
+#include "components/version_info/channel.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -59,6 +60,7 @@ class Client {
   // to Oak sessions.
   // `network_driver`: Interface for platform-specific capabilities related to
   // networking.
+  // `channel`: The browser release channel.
   static std::unique_ptr<Client> Create(
       const std::string& url,
       const std::string& api_key,
@@ -68,7 +70,8 @@ class Client {
       phosphor::TokenManager* token_manager,
       PrivateAiLogger* logger,
       PrivateAiOakSessionDriver* oak_session_driver,
-      PrivateAiNetworkDriver* network_driver);
+      PrivateAiNetworkDriver* network_driver,
+      version_info::Channel channel);
 
   virtual ~Client() = default;
 

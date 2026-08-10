@@ -59,7 +59,7 @@ class PrivateAiServiceBrowserTest : public PlatformBrowserTest {
               base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
               std::make_unique<PrivateAiNetworkDriverContent>(),
               std::make_unique<PrivateAiOakSessionDriverContent>(),
-              std::move(test_bsa_factory));
+              std::move(test_bsa_factory), chrome::GetChannel());
         }));
   }
 

@@ -47,7 +47,8 @@ PrivateAiService::PrivateAiService(
     const std::string& url,
     const std::string& api_key,
     const std::string& proxy_url,
-    bool use_token_attestation)
+    bool use_token_attestation,
+    version_info::Channel channel)
     : identity_manager_(identity_manager),
       network_driver_(std::move(network_driver)),
       oak_session_driver_(std::move(oak_session_driver)) {
@@ -65,9 +66,10 @@ PrivateAiService::PrivateAiService(
   token_manager_ = std::make_unique<phosphor::TokenManagerImpl>(
       std::move(token_fetcher), &logger_);
 
-  client_ = Client::Create(url, api_key, proxy_url, use_token_attestation,
-                           network_context, GetTokenManager(), GetLogger(),
-                           oak_session_driver_.get(), network_driver_.get());
+  client_ =
+      Client::Create(url, api_key, proxy_url, use_token_attestation,
+                     network_context, GetTokenManager(), GetLogger(),
+                     oak_session_driver_.get(), network_driver_.get(), channel);
 }
 
 PrivateAiService::~PrivateAiService() {

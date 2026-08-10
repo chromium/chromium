@@ -15,6 +15,8 @@ BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateAiSendClientMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPrivateAiApiKey{
     &kPrivateAi, /*name=*/"api-key", /*default_value=*/""};
 

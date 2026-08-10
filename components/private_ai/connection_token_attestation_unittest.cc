@@ -9,9 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/common/private_ai_logger.h"
+#include "components/private_ai/features.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_connection.h"
@@ -28,15 +30,16 @@ class ConnectionTokenAttestationTest : public testing::Test {
   ConnectionTokenAttestationTest() = default;
   ~ConnectionTokenAttestationTest() override = default;
 
-  void CreateConnectionAttestation(
-      proto::FeatureName feature_name =
-          proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION) {
+  void CreateConnectionAttestation() {
     auto fake_connection = std::make_unique<FakeConnection>(base::DoNothing());
     fake_connection_ = fake_connection.get();
     connection_attestation_ = std::make_unique<ConnectionTokenAttestation>(
-        std::move(fake_connection), feature_name, &token_manager_, &logger_,
+        std::move(fake_connection),
+        proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+        &token_manager_, &logger_,
         base::BindOnce(&ConnectionTokenAttestationTest::OnDisconnect,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        version_info::Channel::STABLE);
   }
 
   void OnDisconnect(StatusCode status_code) {
@@ -58,6 +61,9 @@ class ConnectionTokenAttestationTest : public testing::Test {
 };
 
 TEST_F(ConnectionTokenAttestationTest, Success) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPrivateAiSendClientMetadata);
+
   CreateConnectionAttestation();
 
   // No requests should be sent yet, waiting for token.
@@ -88,8 +94,13 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
     privacy::ppn::PrivacyPassTokenData expected_token_data;
     expected_token_data.set_token("dGVzdF90b2tlbg");
     expected_token_data.set_encoded_extensions("dGVzdF9leHRlbnNpb25z");
-    EXPECT_EQ(pending_request.anonymous_token_request().anonymous_token(),
+    const auto& anon_req = pending_request.anonymous_token_request();
+    EXPECT_EQ(anon_req.anonymous_token(),
               expected_token_data.SerializeAsString());
+    EXPECT_TRUE(anon_req.has_client_metadata());
+    EXPECT_TRUE(anon_req.client_metadata().has_chrome_client_metadata());
+    EXPECT_EQ(anon_req.client_metadata().chrome_client_metadata().channel(),
+              proto::ChromeClientMetadata::CHANNEL_STABLE);
   }
 
   EXPECT_EQ(fake_connection_->pending_requests()[1].request.request_id(), 123);
@@ -106,6 +117,27 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
   EXPECT_EQ(result.value().request_id(), 123);
 
   EXPECT_EQ(on_disconnect_counter_, 0);
+}
+
+TEST_F(ConnectionTokenAttestationTest, MetadataDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kPrivateAiSendClientMetadata);
+
+  CreateConnectionAttestation();
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future;
+  proto::PrivateAiRequest request;
+  request.set_request_id(123);
+  connection_attestation_->Send(std::move(request), base::Seconds(1),
+                                future.GetCallback());
+
+  token_manager_.RunPendingCallbacks();
+
+  ASSERT_EQ(fake_connection_->pending_requests().size(), 2u);
+  const auto& pending_request = fake_connection_->pending_requests()[0].request;
+  ASSERT_TRUE(pending_request.has_anonymous_token_request());
+  EXPECT_FALSE(pending_request.anonymous_token_request().has_client_metadata());
 }
 
 TEST_F(ConnectionTokenAttestationTest, NoToken) {

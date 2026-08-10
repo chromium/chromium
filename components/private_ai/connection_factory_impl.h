@@ -14,6 +14,7 @@
 #include "components/private_ai/private_ai_network_driver.h"
 #include "components/private_ai/private_ai_oak_session_driver.h"
 #include "components/private_ai/secure_channel.h"
+#include "components/version_info/channel.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -37,7 +38,8 @@ class ConnectionFactoryImpl : public ConnectionFactory {
                         network::mojom::NetworkContext* network_context,
                         PrivateAiLogger* logger,
                         PrivateAiOakSessionDriver* oak_session_driver,
-                        PrivateAiNetworkDriver* network_driver);
+                        PrivateAiNetworkDriver* network_driver,
+                        version_info::Channel channel);
   ~ConnectionFactoryImpl() override;
 
   ConnectionFactoryImpl(const ConnectionFactoryImpl&) = delete;
@@ -62,6 +64,7 @@ class ConnectionFactoryImpl : public ConnectionFactory {
   const raw_ptr<PrivateAiLogger> logger_;
   const raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
   const raw_ptr<PrivateAiNetworkDriver> network_driver_;
+  const version_info::Channel channel_;
 
   SecureChannelFactoryOverride secure_channel_override_;
 

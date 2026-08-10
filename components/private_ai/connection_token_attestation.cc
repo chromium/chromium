@@ -18,8 +18,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/private_ai/common/base64_utils.h"
 #include "components/private_ai/common/private_ai_logger.h"
+#include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/private_ai.pb.h"
+#include "components/private_ai/proto_utils/client_metadata_utils.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
 namespace private_ai {
@@ -46,11 +48,13 @@ ConnectionTokenAttestation::ConnectionTokenAttestation(
     proto::FeatureName feature_name,
     phosphor::TokenManager* token_manager,
     PrivateAiLogger* logger,
-    base::OnceCallback<void(StatusCode)> on_disconnect)
+    base::OnceCallback<void(StatusCode)> on_disconnect,
+    version_info::Channel channel)
     : inner_connection_(std::move(inner_connection)),
       feature_name_(feature_name),
       token_manager_(token_manager),
       logger_(logger),
+      channel_(channel),
       on_disconnect_(std::move(on_disconnect)) {
   CHECK(inner_connection_);
   CHECK(token_manager_);
@@ -124,8 +128,11 @@ void ConnectionTokenAttestation::OnTokenFetched(
   proto::PrivateAiRequest request_proto;
 
   request_proto.set_feature_name(feature_name_);
-  request_proto.mutable_anonymous_token_request()->set_anonymous_token(
-      token_data.SerializeAsString());
+  auto* anon_token_req = request_proto.mutable_anonymous_token_request();
+  anon_token_req->set_anonymous_token(token_data.SerializeAsString());
+  if (base::FeatureList::IsEnabled(kPrivateAiSendClientMetadata)) {
+    *anon_token_req->mutable_client_metadata() = CreateClientMetadata(channel_);
+  }
 
   logger_->LogInfo(FROM_HERE, "Sending auth token");
 

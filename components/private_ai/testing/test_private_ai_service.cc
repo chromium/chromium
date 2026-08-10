@@ -20,7 +20,8 @@ TestPrivateAiService::TestPrivateAiService(
     bool use_token_attestation,
     std::unique_ptr<PrivateAiNetworkDriver> network_driver,
     std::unique_ptr<PrivateAiOakSessionDriver> oak_session_driver,
-    std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory)
+    std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory,
+    version_info::Channel channel)
     : PrivateAiService(identity_manager,
                        test_bsa_factory.get(),
                        std::move(url_loader_factory),
@@ -30,7 +31,8 @@ TestPrivateAiService::TestPrivateAiService(
                        url,
                        api_key,
                        proxy_url,
-                       use_token_attestation),
+                       use_token_attestation,
+                       channel),
       test_bsa_factory_(std::move(test_bsa_factory)) {}
 
 TestPrivateAiService::~TestPrivateAiService() = default;

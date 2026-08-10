@@ -47,7 +47,8 @@ class TestPrivateAiService : public PrivateAiService {
       bool use_token_attestation,
       std::unique_ptr<PrivateAiNetworkDriver> network_driver,
       std::unique_ptr<PrivateAiOakSessionDriver> oak_session_driver,
-      std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory);
+      std::unique_ptr<TestBlindSignAuthFactory> test_bsa_factory,
+      version_info::Channel channel);
 
   ~TestPrivateAiService() override;
 
