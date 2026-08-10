@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -12,11 +13,13 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace contextual_tasks {
 
@@ -162,6 +165,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   ASSERT_TRUE(model_weak);
   EXPECT_TRUE(model_weak->browser_identity_matches_aim_identity_for_testing());
 
+  // Reset testing factory to prevent dangling references to stack variables.
   ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::NullCallback());
 }
@@ -195,6 +199,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   ASSERT_TRUE(model_weak);
   EXPECT_FALSE(model_weak->browser_identity_matches_aim_identity_for_testing());
 
+  // Reset testing factory to prevent dangling references to stack variables.
   ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::NullCallback());
 }
@@ -234,6 +239,62 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
   // Model A weak pointer should now be null (deleted from map).
   EXPECT_FALSE(model_a_weak);
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    GetOrCreateInputStateModel_InvalidatesStaleEmptyConfigWhenValidConfigAvailable) {
+  // Prepare a valid searchbox config containing active tool definitions.
+  omnibox::SearchboxConfig valid_config;
+  valid_config.mutable_rule_set();
+  auto* tool = valid_config.add_tool_configs();
+  tool->set_tool(omnibox::TOOL_MODE_DEEP_SEARCH);
+  // Set up MockAimEligibilityService to dynamically return `current_config`.
+  const omnibox::SearchboxConfig* current_config = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](const omnibox::SearchboxConfig** config_ptr,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(),
+                    /*template_url_service=*/nullptr,
+                    /*url_loader_factory=*/nullptr,
+                    /*identity_manager=*/nullptr);
+            ON_CALL(*mock, GetSearchboxConfig()).WillByDefault([config_ptr]() {
+              return *config_ptr;
+            });
+            return mock;
+          },
+          &current_config));
+  // Initialize WebContents user data and create a mock session handle.
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  auto mock_handle =
+      std::make_shared<contextual_search::MockContextualSearchSessionHandle>();
+
+  // Initial creation with empty/null config: model has has_valid_config() ==
+  // false.
+  auto model_initial = user_data->GetOrCreateInputStateModel(*mock_handle);
+  ASSERT_TRUE(model_initial);
+  EXPECT_FALSE(model_initial->has_valid_config());
+  // A non-empty searchbox configuration becomes available.
+  current_config = &valid_config;
+
+  // Calling `GetOrCreateInputStateModel` again should invalidate the stale
+  // empty cached model and create a new valid one.
+  auto model_updated = user_data->GetOrCreateInputStateModel(*mock_handle);
+  ASSERT_TRUE(model_updated);
+  EXPECT_TRUE(model_updated->has_valid_config());
+  // The old initial weak pointer should now be null/invalidated.
+  EXPECT_FALSE(model_initial);
+
+  // Reset testing factory to prevent dangling references to stack variables.
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::NullCallback());
 }
 
 }  // namespace contextual_tasks

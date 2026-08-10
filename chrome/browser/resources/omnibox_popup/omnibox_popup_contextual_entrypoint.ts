@@ -142,8 +142,14 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
               }));
     }
 
+    // Fetch the initial input state async, but only apply it if
+    // `onInputStateChanged` push updates haven't already populated it. This
+    // prevents a race condition where a late-resolving `getInputState` response
+    // could clobber newer state received via push notifications.
     this.searchboxBrowserProxy_.handler.getInputState().then(({state}) => {
-      this.inputState = state;
+      if (this.inputState === null && state) {
+        this.inputState = state;
+      }
     });
   }
 

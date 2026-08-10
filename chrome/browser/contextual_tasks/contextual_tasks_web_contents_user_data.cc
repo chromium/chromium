@@ -48,12 +48,6 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
     return !pair.second->session_handle();
   });
 
-  auto it = input_state_models_.find(session_handle.session_id());
-  if (it != input_state_models_.end()) {
-    last_active_model_ = it->second->AsWeakPtr();
-    return last_active_model_;
-  }
-
   content::WebContents* web_contents = &GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -61,6 +55,23 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
   auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
   const omnibox::SearchboxConfig* config =
       service ? service->GetSearchboxConfig() : nullptr;
+
+  auto it = input_state_models_.find(session_handle.session_id());
+  if (it != input_state_models_.end()) {
+    // If the cached model was initialized without a valid searchbox config
+    // (e.g. during initial session startup before eligibility service response
+    // arrived), but a non-empty searchbox configuration has since become
+    // available, invalidate the stale cached model so a new model with active
+    // tools can be built.
+    if (!it->second->has_valid_config() && config &&
+        (config->has_rule_set() || !config->tool_configs().empty() ||
+         !config->model_configs().empty())) {
+      input_state_models_.erase(it);
+    } else {
+      last_active_model_ = it->second->AsWeakPtr();
+      return last_active_model_;
+    }
+  }
 
   auto* ui_service = profile
                          ? contextual_tasks::ContextualTasksUiServiceFactory::

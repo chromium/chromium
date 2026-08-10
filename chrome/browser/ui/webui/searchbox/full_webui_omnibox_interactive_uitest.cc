@@ -815,18 +815,10 @@ class FullWebUIOmniboxAimInteractiveTestBase
     });
   }
 
-  auto WaitForAimStateReady(const ui::ElementIdentifier& contents_id) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimStateReady);
-    StateChange state_ready;
-    state_ready.event = kAimStateReady;
-    state_ready.where = {"omnibox-full-app", "omnibox-popup-searchbox"};
-    state_ready.test_function =
-        "(el) => { const ep = "
-        "el?.shadowRoot?.querySelector('omnibox-popup-contextual-entrypoint'); "
-        "return ep && ep.isAimPopupEligible && ep.inputState && "
-        "ep.inputState.allowedTools.length > 0; }";
-    state_ready.continue_across_navigation = true;
-    return WaitForStateChange(contents_id, state_ready);
+  auto WaitForOmniboxAimStateReady(
+      const ui::ElementIdentifier& omnibox_context_entrypoint_contents_id) {
+    return SearchboxInteractiveTestMixin::WaitForOmniboxAimStateReady(
+        omnibox_context_entrypoint_contents_id, kPopupSearchbox);
   }
 };
 
@@ -853,16 +845,17 @@ class FullWebUIOmniboxSimplificationInteractiveTest
     enabled_features.emplace_back(omnibox::kAimUsePecApi,
                                   base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(
-        enabled_features, {omnibox::internal::kWebUIOmniboxPopup});
+        enabled_features, {omnibox::internal::kWebUIOmniboxPopup,
+                           omnibox::kAimServerEligibilityEnabled,
+                           omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/512348269): Reenable tests.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
-                       DISABLED_HasBackgroundApplied) {
+                       HasBackgroundApplied) {
   const DeepQuery kContextButton = {
       "omnibox-full-app",
       "omnibox-popup-searchbox",
@@ -873,8 +866,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      InAnyContext(WaitForAimStateReady(kPopupWebView)),
-      SeedSearchboxResult("a"), InputWebUIText("a"),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InputWebUIText("a"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
@@ -886,9 +879,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
           true)));
 }
 
-// TODO(crbug.com/512348269): Reenable tests.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
-                       DISABLED_OblongShapeApplied) {
+                       OblongShapeApplied) {
   const DeepQuery kContextButton = {
       "omnibox-full-app",
       "omnibox-popup-searchbox",
@@ -905,8 +897,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      InAnyContext(WaitForAimStateReady(kPopupWebView)),
-      SeedSearchboxResult("a"), InputWebUIText("a"),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InputWebUIText("a"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
@@ -915,9 +907,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
       InAnyContext(WaitForStateChange(kPopupWebView, style_applied)));
 }
 
-// TODO(crbug.com/512348269): Reenable tests.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
-                       DISABLED_HasSuggestionLabel) {
+                       HasSuggestionLabel) {
   const DeepQuery kSuggestionLabel = {
       "omnibox-full-app",
       "omnibox-popup-searchbox",
@@ -930,8 +921,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxSimplificationInteractiveTest,
   RunTestSequence(
       SetAimEligibleResponse(),
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      InAnyContext(WaitForAimStateReady(kPopupWebView)),
-      SeedSearchboxResult("a"), InputWebUIText("a"),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InputWebUIText("a"),
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
                    "suggestion-1"),
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,

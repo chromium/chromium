@@ -164,6 +164,24 @@ class SearchboxInteractiveTestMixin : public T {
                            result.c_str()))));
   }
 
+  // Waits for AIM contextual entrypoint state to be eligible and ready.
+  auto WaitForOmniboxAimStateReady(
+      const ui::ElementIdentifier& omnibox_context_entrypoint_contents_id,
+      const WebContentsInteractionTestUtil::DeepQuery& where) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimStateReady);
+    WebContentsInteractionTestUtil::StateChange state_ready;
+    state_ready.event = kAimStateReady;
+    state_ready.where = where;
+    state_ready.test_function =
+        "(el) => { const ep = "
+        "el?.shadowRoot?.querySelector('omnibox-popup-contextual-entrypoint'); "
+        "return ep && ep.isAimPopupEligible && ep.inputState && "
+        "ep.inputState.allowedTools.length > 0; }";
+    state_ready.continue_across_navigation = true;
+    return T::Steps(T::InAnyContext(T::WaitForStateChange(
+        omnibox_context_entrypoint_contents_id, state_ready)));
+  }
+
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     SetUpUrlLoaderInterceptor();

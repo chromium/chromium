@@ -1781,4 +1781,28 @@ TEST_F(InputStateModelTest, CopyConstructorCopiesAllRelevantFields) {
               testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
 }
 
+TEST_F(InputStateModelTest, HasValidConfig) {
+  // Empty config has no rule_set -> has_valid_config() should be false.
+  omnibox::SearchboxConfig empty_config;
+  auto model_without_config = std::make_unique<InputStateModel>(
+      session_handle_, empty_config, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_FALSE(model_without_config->has_valid_config());
+
+  // Config with rule_set -> has_valid_config() should be true.
+  omnibox::SearchboxConfig valid_config;
+  valid_config.mutable_rule_set();
+  auto model_with_config = std::make_unique<InputStateModel>(
+      session_handle_, valid_config, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_TRUE(model_with_config->has_valid_config());
+
+  // Copy constructor preserves has_valid_config().
+  InputStateModel copied_empty(*model_without_config, session_handle_);
+  EXPECT_FALSE(copied_empty.has_valid_config());
+
+  InputStateModel copied_valid(*model_with_config, session_handle_);
+  EXPECT_TRUE(copied_valid.has_valid_config());
+}
+
 }  // namespace contextual_search

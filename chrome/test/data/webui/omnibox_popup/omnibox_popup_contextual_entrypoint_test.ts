@@ -7,7 +7,8 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxPopupContextualEntrypointElement, OmniboxPopupPageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -233,5 +234,35 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
 
     entrypointButton = element.getContextEntrypointElement();
     assertFalse(!!entrypointButton);
+  });
+
+  test('GetInputStateDoesNotOverwriteExistingPushState', async () => {
+    let resolveGetInputState: (value: {state: InputState}) => void;
+    testProxy.handler.setResultFor('getInputState', new Promise(resolve => {
+                                     resolveGetInputState = resolve;
+                                   }));
+    const newElement =
+        document.createElement('omnibox-popup-contextual-entrypoint');
+    document.body.appendChild(newElement);
+    testProxy.initVisibilityPrefs();
+
+    // Simulate push update arriving before getInputState resolves.
+    const pushedState: InputState = {
+      ...createDefaultInputState(),
+      allowedTools: [ToolMode.kDeepSearch],
+    };
+    testProxy.page.onInputStateChanged(pushedState);
+    await microtasksFinished();
+
+    assertEquals(1, newElement.inputState?.allowedTools.length);
+    assertEquals(ToolMode.kDeepSearch, newElement.inputState?.allowedTools[0]);
+
+    // Now resolve getInputState with empty state.
+    resolveGetInputState!({state: createDefaultInputState()});
+    await microtasksFinished();
+
+    // Verify inputState was not overwritten with empty allowedTools.
+    assertEquals(1, newElement.inputState?.allowedTools.length);
+    assertEquals(ToolMode.kDeepSearch, newElement.inputState?.allowedTools[0]);
   });
 });

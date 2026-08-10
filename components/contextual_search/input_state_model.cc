@@ -205,6 +205,11 @@ InputStateModel::InputStateModel(
       browser_identity_matches_aim_identity_(
           browser_identity_matches_aim_identity),
       current_url_(active_url) {
+  // Track whether the model was constructed with a valid, non-empty searchbox
+  // configuration. Models created with an empty config can be invalidated once
+  // a populated config becomes available.
+  has_valid_config_ = config.has_rule_set();
+
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
@@ -303,6 +308,7 @@ InputStateModel::InputStateModel(
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   configured_input_types_ = new_input_state_model.configured_input_types_;
+  has_valid_config_ = new_input_state_model.has_valid_config_;
   is_smart_tab_sharing_active_ =
       new_input_state_model.is_smart_tab_sharing_active_;
   permanently_disabled_tools_ =
@@ -312,6 +318,8 @@ InputStateModel::InputStateModel(
   if (new_input_state_model.pref_service_) {
     SetPrefService(new_input_state_model.pref_service_);
   }
+  user_modified_tool_in_thread_ =
+      new_input_state_model.user_modified_tool_in_thread_;
 }
 
 InputStateModel::~InputStateModel() = default;
