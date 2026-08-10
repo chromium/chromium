@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "url/gurl.h"
@@ -25,9 +26,8 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
  public:
   // Queries `send_tab_to_self_service` until it indicates the device list is
   // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
-  // calls `on_list_known_callback`. The callback may run synchronously inside
-  // this constructor if the display reason is already known. Destroying the
-  // object aborts the waiting.
+  // asynchronously calls `on_list_known_callback`. Destroying the object
+  // aborts the waiting and cancels callback execution.
   TargetDeviceListWaiter(
       syncer::SyncService* sync_service,
       SendTabToSelfSyncService* send_tab_to_self_service,
@@ -44,11 +44,15 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
  private:
+  void RunCallback();
+
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
   raw_ptr<SendTabToSelfSyncService> send_tab_to_self_service_;
   const GURL url_to_share_;
   base::OnceClosure on_list_known_callback_;
+
+  base::WeakPtrFactory<TargetDeviceListWaiter> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self

@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/service/sync_service.h"
@@ -46,8 +48,16 @@ void TargetDeviceListWaiter::OnStateChanged(syncer::SyncService* /*sync_service*
     case EntryPointDisplayReason::kOfferFeature:
     case EntryPointDisplayReason::kInformNoTargetDevice:
       sync_observation_.Reset();
-      std::move(on_list_known_callback_).Run();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&TargetDeviceListWaiter::RunCallback,
+                                    weak_ptr_factory_.GetWeakPtr()));
       break;
+  }
+}
+
+void TargetDeviceListWaiter::RunCallback() {
+  if (on_list_known_callback_) {
+    std::move(on_list_known_callback_).Run();
   }
 }
 

@@ -6,9 +6,11 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,6 +26,7 @@ namespace send_tab_to_self {
 namespace {
 
 using base::test::TestFuture;
+using testing::Eq;
 using testing::IsNull;
 using testing::Test;
 
@@ -138,16 +141,39 @@ TEST_F(TargetDeviceListWaiterTest,
 }
 
 // Verifies that if the display reason is already resolved at construction
-// time, the callback triggers synchronously in the constructor.
+// time, the callback triggers asynchronously rather than synchronously in the
+// constructor.
 TEST_F(TargetDeviceListWaiterTest,
-       TriggersCallbackImmediatelyIfAlreadyResolvedAtConstruction) {
+       TriggersCallbackAsynchronouslyIfAlreadyResolvedAtConstruction) {
   TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
 
-  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+}
+
+// Verifies that destroying the waiter before the posted callback has executed
+// cancels the callback execution.
+TEST_F(TargetDeviceListWaiterTest, DestroyingWaiterCancelsCallback) {
+  TestFuture<void> future;
+  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+
+  {
+    TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                  GURL(kTestUrl), future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+    // `waiter` is destroyed at the end of this scope.
+  }
+
+  // Post a sentinel task to ensure all prior tasks in the queue have run.
+  TestFuture<void> sentinel_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, sentinel_future.GetCallback());
+  EXPECT_TRUE(sentinel_future.Wait());
+  EXPECT_FALSE(future.IsReady());
 }
 
 // Verifies that null SyncService pointers are handled gracefully without
@@ -182,20 +208,22 @@ TEST_F(TargetDeviceListWaiterTest, HandlesNullSendTabToSelfServiceGracefully) {
 // Verifies that deleting the waiter inside its own completion callback is safe
 // and does not cause a crash or use-after-free.
 TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {
+  TestFuture<void> future;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
   std::unique_ptr<TargetDeviceListWaiter> waiter;
   waiter = std::make_unique<TargetDeviceListWaiter>(
       sync_service(), send_tab_to_self_service(), GURL(kTestUrl),
-      base::BindOnce(
-          [](std::unique_ptr<TargetDeviceListWaiter>* waiter_ptr) {
-            waiter_ptr->reset();
-          },
-          &waiter));
+      base::BindLambdaForTesting(
+          [&waiter, callback = future.GetCallback()]() mutable {
+            waiter.reset();
+            std::move(callback).Run();
+          }));
 
   SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
   sync_service()->FireStateChanged();
 
+  EXPECT_TRUE(future.Wait());
   EXPECT_THAT(waiter, IsNull());
 }
 
@@ -221,19 +249,24 @@ TEST_F(TargetDeviceListWaiterTest, HandlesSyncShutdownWithoutCrashing) {
 // do not crash or re-trigger completion.
 TEST_F(TargetDeviceListWaiterTest,
        MultipleStateChangesDoNotCrashOrReTriggerCallback) {
+  TestFuture<void> future;
   int callback_count = 0;
   SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
 
-  TargetDeviceListWaiter waiter(
-      sync_service(), send_tab_to_self_service(), GURL(kTestUrl),
-      base::BindLambdaForTesting([&]() { callback_count++; }));
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl),
+                                base::BindLambdaForTesting([&]() {
+                                  callback_count++;
+                                  future.SetValue();
+                                }));
 
   SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
   // Trigger state change twice in succession.
   sync_service()->FireStateChanged();
   sync_service()->FireStateChanged();
 
-  EXPECT_EQ(callback_count, 1);
+  EXPECT_TRUE(future.Wait());
+  EXPECT_THAT(callback_count, Eq(1));
 }
 
 }  // namespace

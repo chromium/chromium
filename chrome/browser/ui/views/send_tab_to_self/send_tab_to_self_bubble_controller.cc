@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
@@ -383,9 +382,9 @@ void SendTabToSelfBubbleController::StartWaitingForTargetDeviceList() {
   target_device_list_waiter_ = std::make_unique<TargetDeviceListWaiter>(
       sync_service, send_tab_to_self_service,
       GetWebContents().GetLastCommittedURL(),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
+      base::BindOnce(
           &SendTabToSelfBubbleController::ShowBubbleWhenTargetDeviceListReady,
-          weak_ptr_factory_.GetWeakPtr())));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Static:
