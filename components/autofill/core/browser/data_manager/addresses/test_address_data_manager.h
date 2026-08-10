@@ -52,6 +52,10 @@ class TestAddressDataManager : public AddressDataManager {
     eligible_for_account_storage_ = eligible;
   }
 
+  std::optional<bool> was_last_account_profile_removal_non_permanent() const {
+    return was_last_account_profile_removal_non_permanent_;
+  }
+
  private:
   void RemoveProfileImpl(const std::string& guid,
                          bool non_permanent_account_profile_removal) override;
@@ -59,6 +63,7 @@ class TestAddressDataManager : public AddressDataManager {
   std::optional<AddressCountryCode> default_country_code_;
   std::optional<bool> autofill_profile_enabled_;
   std::optional<bool> eligible_for_account_storage_;
+  std::optional<bool> was_last_account_profile_removal_non_permanent_;
   strike_database::TestInMemoryStrikeDatabase inmemory_strike_database_;
 };
 

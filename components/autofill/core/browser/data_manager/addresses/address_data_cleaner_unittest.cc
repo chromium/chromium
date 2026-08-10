@@ -401,9 +401,13 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   EXPECT_THAT(test_adm_.GetProfiles(),
               testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
                                           {expected}));
+  EXPECT_TRUE(
+      test_adm_.was_last_account_profile_removal_non_permanent().value_or(
+          false));
 }
 
 TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
+  base::Time now = base::Time::Now();
   test_api(data_cleaner_).SetAreCleanupsPending(false);
 
   AutofillProfile account_name_email_profile(AddressCountryCode("XX"));
@@ -412,6 +416,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
   account_name_email_profile.SetInfoWithVerificationStatus(
       EMAIL_ADDRESS, u"test@gmail.com", "en-US",
       VerificationStatus::kUserVerified);
+  account_name_email_profile.usage_history().set_use_date(now);
   account_name_email_profile.FinalizeAfterImport();
   test_api(account_name_email_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountNameEmail);
@@ -423,6 +428,7 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
   superset_profile.SetInfoWithVerificationStatus(
       EMAIL_ADDRESS, u"test@gmail.com", "en-US",
       VerificationStatus::kUserVerified);
+  superset_profile.usage_history().set_use_date(now);
   superset_profile.FinalizeAfterImport();
   test_api(superset_profile)
       .set_record_type(AutofillProfile::RecordType::kAccount);
@@ -433,6 +439,9 @@ TEST_P(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
   EXPECT_THAT(test_adm_.GetProfiles(),
               testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
                                           {superset_profile}));
+  EXPECT_FALSE(
+      test_adm_.was_last_account_profile_removal_non_permanent().value_or(
+          true));
 }
 
 TEST_P(AddressDataCleanerTest, DeduplicateOncePerMilestone) {

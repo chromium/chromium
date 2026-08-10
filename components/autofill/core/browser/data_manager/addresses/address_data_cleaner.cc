@@ -232,8 +232,16 @@ void ApplyProfileActions(
         address_data_manager->UpdateProfile(profile);
         break;
       case ProfileAction::kRemove:
+        // Account profiles are hidden rather than permanently deleted to avoid
+        // removing them from the user's account. However, `kAccountNameEmail`
+        // is a local profile created from GAIA info; removing it during
+        // deduplication should be permanent so that it is not immediately
+        // recreated.
         address_data_manager->RemoveProfile(
-            profile.guid(), /*non_permanent_account_profile_removal=*/true);
+            profile.guid(),
+            /*non_permanent_account_profile_removal=*/
+            profile.record_type() !=
+                AutofillProfile::RecordType::kAccountNameEmail);
         break;
       case ProfileAction::kNone:
         break;
