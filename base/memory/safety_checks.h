@@ -12,6 +12,7 @@
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/stack_allocated.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/safety_checks.h"  // nogncheck
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/scheduler_loop_quarantine_support.h"
@@ -31,21 +32,7 @@ BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 // to the function, and it may use that for debugging purpose.
 void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
 
-// Utility class to exclude deallocation from optional safety checks when an
-// instance is on the stack. Can be applied to performance critical functions.
-class BASE_EXPORT ScopedSafetyChecksExclusion {
-  STACK_ALLOCATED();
-
- public:
-  // Make this non-trivially-destructible to suppress unused variable warning.
-  ~ScopedSafetyChecksExclusion() {}  // NOLINT(modernize-use-equals-default)
-
- private:
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::ScopedSchedulerLoopQuarantineExclusion
-      opt_out_scheduler_loop_quarantine_;
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-};
+using partition_alloc::ScopedSafetyChecksExclusion;
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 using base::allocator::SchedulerLoopQuarantineScanPolicyUpdater;

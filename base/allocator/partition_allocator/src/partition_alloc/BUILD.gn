@@ -520,6 +520,7 @@ if (is_clang_or_gcc) {
       "reservation_offset_table.cc",
       "reservation_offset_table.h",
       "reverse_bytes.h",
+      "safety_checks.h",
       "scheduler_loop_quarantine.cc",
       "scheduler_loop_quarantine.h",
       "scheduler_loop_quarantine_support.cc",
