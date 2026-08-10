@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.Initializer;
@@ -122,10 +125,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                 resources.getDimensionPixelOffset(R.dimen.location_bar_icon_width);
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
-        mFocusedPopupDrawable =
-                OmniboxResourceProvider.getDrawable(
-                        context,
-                        R.drawable.modern_toolbar_tablet_text_box_background_focused_popup);
+        @DrawableRes
+        int popupBgRes = R.drawable.modern_toolbar_tablet_text_box_background_focused_popup;
+        mFocusedPopupDrawable = (LayerDrawable) assumeNonNull(context.getDrawable(popupBgRes));
         mFocusedPopupDrawable.mutate();
         mOuterRect =
                 (GradientDrawable)
@@ -149,9 +151,8 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mAiChipMarginEnd =
                 resources.getDimensionPixelSize(R.dimen.location_bar_desktop_popover_margin_end);
 
-        mHoverDrawable =
-                OmniboxResourceProvider.getDrawable(
-                        getContext(), R.drawable.modern_toolbar_text_box_background_highlight);
+        @DrawableRes int highlightRes = R.drawable.modern_toolbar_text_box_background_highlight;
+        mHoverDrawable = (LayerDrawable) assumeNonNull(getContext().getDrawable(highlightRes));
         mHoverDrawable.mutate();
 
         @Px float strokeWidth = resources.getDimension(R.dimen.fusebox_glif_stroke_width);

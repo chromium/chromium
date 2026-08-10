@@ -393,20 +393,25 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getDrawableCached() {
-        Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
-        ConstantState constantState = drawable.getConstantState();
+        Drawable drawable1 = mProvider.getDrawable(R.drawable.btn_suggestion_refine_up);
+        assertNotNull(drawable1);
+        ConstantState constantState = drawable1.getConstantState();
+        assertNotNull(constantState);
 
         assertEquals(
                 constantState,
-                OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine_up));
+                mProvider.getDrawableCacheForTesting().get(R.drawable.btn_suggestion_refine_up));
 
-        drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
-        assertNotNull(drawable);
+        Drawable drawable2 = mProvider.getDrawable(R.drawable.btn_suggestion_refine_up);
+        assertNotNull(drawable2);
+        assertEquals(1, mProvider.getDrawableCacheForTesting().size());
+
+        Drawable popupBackground = mProvider.getPopupBackgroundDrawable();
+        assertNotNull(popupBackground);
+
+        Drawable popoverPlusBackground = mProvider.getPopoverPlusButtonBackground();
+        assertNotNull(popoverPlusBackground);
     }
 
     @Test
@@ -454,22 +459,6 @@ public class OmniboxResourceProviderUnitTest {
         assertEquals(
                 "NaNaNaNaNaNa BATMAN!!!",
                 OmniboxResourceProvider.getString(mContext, 1238, "Na", "BATMAN"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
-    public void invalidateDrawableCache() {
-        Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
-        ConstantState constantState = drawable.getConstantState();
-
-        assertEquals(
-                constantState,
-                OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine_up));
-
-        OmniboxResourceProvider.invalidateDrawableCache();
-        assertEquals(0, OmniboxResourceProvider.getDrawableCacheForTesting().size());
     }
 
     @Test

@@ -272,6 +272,7 @@ public class FuseboxMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
+                        new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT),
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mPopupStateSupplier,

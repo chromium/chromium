@@ -121,4 +121,8 @@ class ResourceCache {
         mDrawables.put(resId, drawable.getConstantState());
         return drawable;
     }
+
+    SparseArray<ConstantState> getDrawableCacheForTesting() {
+        return mDrawables;
+    }
 }

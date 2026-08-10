@@ -139,6 +139,7 @@ import java.util.function.Supplier;
     private final SettableNonNullObservableSupplier<Boolean> mHasAttachmentsSupplier;
     private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
     private final Callback<Boolean> mOnWindowFocusChanged = hasFocus -> updateActivationChip();
+    private final OmniboxResourceProvider mResourceProvider;
     private @Nullable AttachmentsSelectionController mSelectionController;
 
     private boolean mIsTextWrapping;
@@ -173,6 +174,7 @@ import java.util.function.Supplier;
             WindowAndroid windowAndroid,
             PropertyModel model,
             FuseboxViewHolder viewHolder,
+            OmniboxResourceProvider resourceProvider,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SettableNonNullObservableSupplier<@PopupState Integer> popupStateSupplier,
@@ -192,6 +194,7 @@ import java.util.function.Supplier;
         mPermissionDelegate = windowAndroid;
         mModel = model;
         mViewHolder = viewHolder;
+        mResourceProvider = resourceProvider;
         mViewHolder.popup.addOnDismissListener(this::hidePopup);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
@@ -343,7 +346,7 @@ import java.util.function.Supplier;
         mModelList = modelList;
 
         if (mModelList != null) {
-            var adapter = mModelList.getAdapter();
+            var adapter = mModelList.createAdapter(mResourceProvider);
             mViewHolder.attachmentsView.setAdapter(adapter);
             mModel.set(FuseboxProperties.ADAPTER, adapter);
             mModelList.setAttachmentUploadFailedListener(this::onAttachmentUploadFailed);

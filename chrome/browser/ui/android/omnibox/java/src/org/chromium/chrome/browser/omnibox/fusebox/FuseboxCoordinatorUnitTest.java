@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -173,6 +174,8 @@ public class FuseboxCoordinatorUnitTest {
                 mActivityController.get(),
                 mWindowAndroid,
                 mParent,
+                new OmniboxResourceProvider(
+                        mActivityController.get(), BrandedColorScheme.APP_DEFAULT),
                 mTabModelSelectorSupplier,
                 mTemplateUrlServiceSupplier,
                 mSnackbarManager,

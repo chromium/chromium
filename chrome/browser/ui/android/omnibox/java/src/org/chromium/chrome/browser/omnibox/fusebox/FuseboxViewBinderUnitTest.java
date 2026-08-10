@@ -93,6 +93,7 @@ public class FuseboxViewBinderUnitTest {
     private ActivityController<TestActivity> mActivityController;
     private FuseboxViewHolder mViewHolder;
     private FuseboxPopup mPopup;
+    private FuseboxViewBinder mBinder;
 
     @Before
     public void setUp() {
@@ -132,7 +133,10 @@ public class FuseboxViewBinderUnitTest {
                 FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
                 BackgroundStyle.INTERACT_ONLY_SMALL);
 
-        PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
+        var resourceProvider =
+                new OmniboxResourceProvider(activity, BrandedColorScheme.APP_DEFAULT);
+        mBinder = new FuseboxViewBinder(resourceProvider);
+        PropertyModelChangeProcessor.create(mModel, mViewHolder, mBinder::bind);
     }
 
     @After
@@ -821,7 +825,7 @@ public class FuseboxViewBinderUnitTest {
         FuseboxViewHolder viewHolder =
                 new FuseboxViewHolder(mViewHolder.parentView, horizontalPopup);
 
-        FuseboxViewBinder.bind(mModel, viewHolder, FuseboxProperties.COLOR_SCHEME);
+        mBinder.bind(mModel, viewHolder, FuseboxProperties.COLOR_SCHEME);
 
         View currentTabButton = horizontalPopup.mAddCurrentTab;
         View iconBackground = currentTabButton.findViewById(R.id.start_icon_background);

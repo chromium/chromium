@@ -145,6 +145,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final Supplier<String> mUrlBarTextSupplier;
     private final boolean mIsForcedPhoneStyleOmnibox;
     private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
+    private final OmniboxResourceProvider mResourceProvider;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -152,6 +153,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param context The context to create views and retrieve resources.
      * @param windowAndroid The window to attach views to.
      * @param parent The parent view to attach the fusebox to.
+     * @param resourceProvider The resource provider for retrieving resources.
      * @param tabModelSelectorSupplier The supplier of the tab model selector.
      * @param templateUrlServiceSupplier The supplier of the template URL service.
      * @param snackbarManager The snackbar manager to show messages.
@@ -167,6 +169,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             Context context,
             WindowAndroid windowAndroid,
             ConstraintLayout parent,
+            OmniboxResourceProvider resourceProvider,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SnackbarManager snackbarManager,
@@ -180,6 +183,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
         mWindowAndroid = windowAndroid;
         mParent = parent;
+        mResourceProvider = resourceProvider;
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         // TODO(crbug.com/509962912): Consider using RootUiCoordinator's ScrimManager.
         mScrimManager = new ScrimManager(context, contentView, ScrimClient.FUSEBOX_POPUP);
@@ -259,8 +263,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 new AnchoredPopupWindow.Builder(
                                 mActivity,
                                 mParent.getRootView(),
-                                OmniboxResourceProvider.getPopupBackgroundDrawable(
-                                        mActivity, BrandedColorScheme.APP_DEFAULT),
+                                mResourceProvider.getPopupBackgroundDrawable(),
                                 () -> popupView,
                                 dynamicRectProvider)
                         .addOnDismissListener(this::onContextPopupDismissed)
@@ -294,7 +297,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                     if (mDestroyed || mModel == null || mViewHolder == null) return;
 
                     PropertyModelChangeProcessor.create(
-                            mModel, mViewHolder, FuseboxViewBinder::bind);
+                            mModel, mViewHolder, new FuseboxViewBinder(mResourceProvider)::bind);
                 });
     }
 
@@ -308,6 +311,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mWindowAndroid,
                         assumeNonNull(mModel),
                         assumeNonNull(mViewHolder),
+                        mResourceProvider,
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mPopupStateSupplier,

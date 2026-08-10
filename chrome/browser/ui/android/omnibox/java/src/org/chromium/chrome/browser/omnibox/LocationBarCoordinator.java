@@ -323,6 +323,7 @@ public class LocationBarCoordinator
                         context,
                         windowAndroid,
                         mLocationBarLayout,
+                        mResourceProvider,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
                         snackbarManager,

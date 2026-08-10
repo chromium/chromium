@@ -272,7 +272,6 @@ class AutocompleteMediator
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(
                         mSuggestionModels, mContext, mRoundSidesSupplier, mResourceProvider);
-        OmniboxResourceProvider.invalidateDrawableCache();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         Activity activity = windowAndroid.getActivity().get();

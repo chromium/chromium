@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -35,8 +36,9 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
         int ATTACHMENT_IMAGE_NO_THUMBNAIL = 4;
     }
 
-    FuseboxAttachmentRecyclerViewAdapter(ModelList data) {
+    FuseboxAttachmentRecyclerViewAdapter(ModelList data, OmniboxResourceProvider resourceProvider) {
         super(data);
+        var binder = new FuseboxAttachmentViewBinder(resourceProvider);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_FILE,
                 (parent) -> {
@@ -44,7 +46,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                             .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                FuseboxAttachmentViewBinder::bind);
+                binder::bind);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_IMAGE,
                 (parent) -> {
@@ -52,7 +54,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                             .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_image_attachment_layout, parent, false);
                 },
-                FuseboxAttachmentViewBinder::bind);
+                binder::bind);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
                 (parent) -> {
@@ -60,7 +62,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                             .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                FuseboxAttachmentViewBinder::bind);
+                binder::bind);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_PDF,
                 (parent) -> {
@@ -68,7 +70,7 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                             .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                FuseboxAttachmentViewBinder::bind);
+                binder::bind);
         registerType(
                 FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
                 (parent) -> {
@@ -76,6 +78,6 @@ class FuseboxAttachmentRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
                             .getSystemService(LayoutInflater.class)
                             .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
-                FuseboxAttachmentViewBinder::bind);
+                binder::bind);
     }
 }
