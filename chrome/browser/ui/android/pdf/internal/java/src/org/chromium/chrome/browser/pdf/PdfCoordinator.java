@@ -1088,6 +1088,10 @@ public class PdfCoordinator
         args.putBoolean(ChromePdfViewerFragment.KEY_RESTORE_POSITION_PENDING, pending);
         mChromePdfViewerFragment.setArguments(args);
 
+        if (mView.getParent() == null) {
+            return;
+        }
+
         // Add new fragment and load document again.
         loadPdfInternal();
     }
