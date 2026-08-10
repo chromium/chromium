@@ -1782,6 +1782,7 @@ coverage_builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "asan",
             "use_clang_coverage",
             "static",
             "mojo_fuzzer",
