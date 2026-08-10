@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
+#include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
@@ -162,6 +163,10 @@ void AwBrowserProcess::OnLoseForeground() {
 }
 
 void AwBrowserProcess::OnAppStateChanged(State state) {
+  if (!base::android::PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim()) {
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(
           features::kWebViewPurgeMemoryInBackground)) {
     return;
