@@ -9,6 +9,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/task/thread_pool.h"
+#import "components/download/public/background_service/download_params.h"
 #import "components/optimization_guide/core/delivery/model_info.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
@@ -34,6 +35,24 @@ PassageEmbedderModelLoader::PassageEmbedderModelLoader(
       on_files_opened_callback_(std::move(on_files_opened_callback)),
       on_model_unloaded_callback_(std::move(on_model_unloaded_callback)) {
   DCHECK(model_provider_);
+  // Matches Android's download scheduling configuration in
+  // `PassageEmbedderModelObserver`
+  // (components/passage_embeddings/core/passage_embedder_model_observer.cc).
+  // iOS cannot reuse `PassageEmbedderModelObserver` directly because on
+  // Desktop/Android it forwards models to an out-of-process Mojo service
+  // (`PassageEmbeddingsServiceController`), whereas iOS must load and execute
+  // the passage embedder model in-process via `PassageEmbedderModelLoader` and
+  // `InProcessPassageEmbedderWrapper`.
+  download::SchedulingParams scheduling_params;
+  scheduling_params.priority = download::SchedulingParams::Priority::HIGH;
+  scheduling_params.network_requirements =
+      download::SchedulingParams::NetworkRequirements::UNMETERED;
+  scheduling_params.battery_requirements =
+      download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE;
+  model_provider_->SetModelDownloadSchedulingParams(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+      scheduling_params);
+
   model_provider_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
       /*model_metadata=*/std::nullopt,

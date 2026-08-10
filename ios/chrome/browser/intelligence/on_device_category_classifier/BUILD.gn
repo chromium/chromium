@@ -17,6 +17,7 @@ source_set("on_device_category_classifier") {
   ]
   deps = [
     "//base",
+    "//components/download/public/background_service:public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/optimization_guide/core:features",
@@ -48,6 +49,7 @@ source_set("unit_tests") {
     ":on_device_category_classifier",
     "//base",
     "//base/test:test_support",
+    "//components/download/public/background_service:public",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",

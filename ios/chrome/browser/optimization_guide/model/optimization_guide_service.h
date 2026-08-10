@@ -119,6 +119,9 @@ class OptimizationGuideService
   void RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
+  void SetModelDownloadSchedulingParams(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const download::SchedulingParams& params) override;
 
   // These functions are not private but are for optimization_guide component
   // internal use only.

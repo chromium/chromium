@@ -13,6 +13,7 @@
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
+#import "components/download/public/background_service/download_params.h"
 #import "components/optimization_guide/core/delivery/model_info.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/common_types.pb.h"
@@ -38,6 +39,20 @@ class TestEmbedderMetadataObserver
 
   bool metadata_updated_called_ = false;
   std::optional<passage_embeddings::EmbedderMetadata> last_metadata_;
+};
+
+class FakeModelProviderWithSchedulingParams
+    : public optimization_guide::TestOptimizationGuideModelProvider {
+ public:
+  void SetModelDownloadSchedulingParams(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const download::SchedulingParams& params) override {
+    last_target_ = optimization_target;
+    last_params_ = params;
+  }
+
+  std::optional<optimization_guide::proto::OptimizationTarget> last_target_;
+  std::optional<download::SchedulingParams> last_params_;
 };
 
 }  // namespace
@@ -207,4 +222,26 @@ TEST_F(PassageEmbedderModelLoaderTest, OnModelUpdatedValidFiles) {
   EXPECT_EQ(128u, opened_window_size);
   EXPECT_EQ(42, opened_version);
   EXPECT_EQ(256u, opened_output_size);
+}
+
+// Tests that scheduling params matching Android's PassageEmbedderModelObserver
+// are set upon creation.
+TEST_F(PassageEmbedderModelLoaderTest, SetsSchedulingParamsOnCreation) {
+  FakeModelProviderWithSchedulingParams model_provider;
+  PassageEmbedderModelLoader loader(
+      &model_provider,
+      base::BindRepeating(
+          [](base::File, base::File, uint32_t, int64_t, size_t) {}),
+      base::BindRepeating([]() {}));
+
+  ASSERT_TRUE(model_provider.last_target_.has_value());
+  EXPECT_EQ(optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+            *model_provider.last_target_);
+  ASSERT_TRUE(model_provider.last_params_.has_value());
+  EXPECT_EQ(download::SchedulingParams::Priority::HIGH,
+            model_provider.last_params_->priority);
+  EXPECT_EQ(download::SchedulingParams::NetworkRequirements::UNMETERED,
+            model_provider.last_params_->network_requirements);
+  EXPECT_EQ(download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE,
+            model_provider.last_params_->battery_requirements);
 }

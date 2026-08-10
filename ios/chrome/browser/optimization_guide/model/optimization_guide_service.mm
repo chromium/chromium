@@ -15,6 +15,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "components/component_updater/pref_names.h"
+#import "components/download/public/background_service/download_params.h"
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
 #import "components/optimization_guide/core/hints/command_line_top_host_provider.h"
 #import "components/optimization_guide/core/hints/hints_processing_util.h"
@@ -311,6 +312,15 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     GetPredictionManager()->RemoveObserverForOptimizationTargetModel(
         optimization_target, observer);
+  }
+}
+
+void OptimizationGuideService::SetModelDownloadSchedulingParams(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    const download::SchedulingParams& params) {
+  if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
+    GetPredictionManager()->SetModelDownloadSchedulingParams(
+        optimization_target, params);
   }
 }
 

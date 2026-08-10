@@ -9,6 +9,9 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/download/public/background_service/download_params.h"
+#import "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
+#import "components/optimization_guide/core/delivery/prediction_manager.h"
 #import "components/optimization_guide/core/filters/hints_component_util.h"
 #import "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/filters/test_hints_component_creator.h"
@@ -46,6 +49,15 @@ namespace {
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
 constexpr char kNoHintsURL[] = "https://nohints.com/no_hints.html";
 constexpr char kRedirectURL[] = "https://hints.com/redirect.html";
+
+class TestTargetModelObserver
+    : public optimization_guide::OptimizationTargetModelObserver {
+ public:
+  void OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override {}
+};
 
 // Wraps the NavigationContext and OptimizationGuideNavigationData together for
 // tests.
@@ -588,4 +600,38 @@ TEST_F(OptimizationGuideServiceMSBBUserTest, RemoteFetchingEnabled) {
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
   // TODO(crbug.com/40194448): Verify the optimization guide fetching synthetic
   // field trial is recorded.
+}
+
+TEST_F(OptimizationGuideServiceTest, SetModelDownloadSchedulingParams) {
+  ASSERT_NE(optimization_guide_service(), nullptr);
+  optimization_guide::PredictionManager* prediction_manager =
+      optimization_guide_service()->GetPredictionManager();
+  ASSERT_NE(prediction_manager, nullptr);
+
+  download::SchedulingParams scheduling_params;
+  scheduling_params.priority = download::SchedulingParams::Priority::HIGH;
+  scheduling_params.network_requirements =
+      download::SchedulingParams::NetworkRequirements::UNMETERED;
+  scheduling_params.battery_requirements =
+      download::SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE;
+
+  optimization_guide_service()->SetModelDownloadSchedulingParams(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+      scheduling_params);
+
+  TestTargetModelObserver observer;
+  optimization_guide_service()->AddObserverForOptimizationTargetModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+      /*model_metadata=*/std::nullopt,
+      base::SequencedTaskRunner::GetCurrentDefault(), &observer);
+
+  EXPECT_TRUE(prediction_manager->GetRegisteredOptimizationTargets().contains(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER));
+
+  optimization_guide_service()->RemoveObserverForOptimizationTargetModel(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+      &observer);
+
+  EXPECT_FALSE(prediction_manager->GetRegisteredOptimizationTargets().contains(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER));
 }
