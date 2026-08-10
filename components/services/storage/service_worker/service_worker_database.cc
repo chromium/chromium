@@ -704,8 +704,6 @@ bool WriteToBlinkCondition(
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
               Request::kSharedStorageWorkletDestination:
-            request.destination =
-                network::mojom::RequestDestination::kSharedStorageWorklet;
             break;
         }
       }
@@ -1070,11 +1068,6 @@ void WriteConditionToProtoWithHelper(
           mutable_request->set_destination(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kTextDestination);
-          break;
-        case network::mojom::RequestDestination::kSharedStorageWorklet:
-          mutable_request->set_destination(
-              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-                  Request::kSharedStorageWorkletDestination);
           break;
       }
     }

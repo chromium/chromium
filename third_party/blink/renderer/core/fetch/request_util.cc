@@ -75,8 +75,6 @@ network::mojom::RequestDestination V8RequestDestinationToMojom(
       return network::mojom::RequestDestination::kCompressionDictionary;
     case blink::V8RequestDestination::Enum::kSpeculationrules:
       return network::mojom::RequestDestination::kSpeculationRules;
-    case blink::V8RequestDestination::Enum::kSharedstorageworklet:
-      return network::mojom::RequestDestination::kSharedStorageWorklet;
     case blink::V8RequestDestination::Enum::kWebbundle:
       return network::mojom::RequestDestination::kWebBundle;
     case blink::V8RequestDestination::Enum::kServiceworker:

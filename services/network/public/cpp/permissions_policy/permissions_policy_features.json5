@@ -530,14 +530,16 @@
       depends_on: ["Serial"],
       privacy_sensitive: true,
     },
+    // Deprecated. TODO(crbug.com/462465887): Remove when no longer needed.
     {
-      name: "SharedStorage",
+      name: "Deprecated_SharedStorage",
       permissions_policy_name: "shared-storage",
       feature_default: "EnableForAll",
       depends_on: ["SharedStorageAPI"],
     },
+    // Deprecated. TODO(crbug.com/462465887): Remove when no longer needed.
     {
-      name: "SharedStorageSelectUrl",
+      name: "Deprecated_SharedStorageSelectUrl",
       permissions_policy_name: "shared-storage-select-url",
       feature_default: "EnableForAll",
       depends_on: ["SharedStorageAPI"],

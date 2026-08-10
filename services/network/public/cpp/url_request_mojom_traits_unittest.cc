@@ -167,7 +167,7 @@ TEST_F(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
              /*matches_all_origins=*/false,
              /*matches_opaque_src=*/false},
             {network::mojom::PermissionsPolicyFeature::
-                 kSharedStorage, /*allowed_origins=*/
+                 kClientHintDPR, /*allowed_origins=*/
              {*network::OriginWithPossibleWildcards::FromOrigin(
                  url::Origin::Create(original.url))},
              /*self_if_matches=*/std::nullopt,

@@ -157,7 +157,7 @@ String PermissionsPolicyFeatureToProtocol(network::mojom::PermissionsPolicyFeatu
   if (execution_context && execution_context->IsIsolatedContext()) {
     switch (feature) {
       {% for feature in permissions_policy_features %}
-      {% if feature.visibility == "IsolatedContext" %}
+      {% if feature.visibility == "IsolatedContext" and not feature.name.original.startswith("Deleted_") %}
       case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
         return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
       {% endif %}
@@ -168,7 +168,7 @@ String PermissionsPolicyFeatureToProtocol(network::mojom::PermissionsPolicyFeatu
   }
   switch (feature) {
     {% for feature in permissions_policy_features %}
-    {% if feature.visibility == "All" %}
+    {% if feature.visibility == "All" and not feature.name.original.startswith("Deleted_") %}
     case network::mojom::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endif %}

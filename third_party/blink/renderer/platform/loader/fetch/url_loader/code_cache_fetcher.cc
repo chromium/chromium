@@ -46,15 +46,12 @@ bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
     return false;
   }
 
-  // Supports script resource requests and shared storage worklet module
-  // requests.
+  // Supports script resource requests.
   // TODO(crbug.com/964467): Currently Chrome doesn't support code cache for
   // dedicated worker, shared worker, audio worklet and paint worklet. For
   // the service worker scripts, Blink receives the code cache via
   // URLLoaderClient::OnReceiveResponse() IPC.
-  if (request.destination == network::mojom::RequestDestination::kScript ||
-      request.destination ==
-          network::mojom::RequestDestination::kSharedStorageWorklet) {
+  if (request.destination == network::mojom::RequestDestination::kScript) {
     return true;
   }
 

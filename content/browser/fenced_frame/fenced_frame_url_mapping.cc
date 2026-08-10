@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "url/gurl.h"
@@ -88,10 +87,6 @@ std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   config.allows_information_inflow_ = false;
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
-  config.effective_enabled_permissions_.insert(
-      config.effective_enabled_permissions_.end(),
-      std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
-      std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures));
   return urn;
 }
 
@@ -197,9 +192,6 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
                                mapping_result.budget_metadata,
                                std::move(mapping_result.fenced_frame_reporter));
     config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-    config->effective_enabled_permissions_ = {
-        std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
-        std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures)};
     config->allows_information_inflow_ = true;
 
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);

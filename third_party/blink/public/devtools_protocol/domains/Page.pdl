@@ -158,7 +158,9 @@ domain Page
       run-ad-auction
       screen-wake-lock
       serial
+      # Deprecated.
       shared-storage
+      # Deprecated.
       shared-storage-select-url
       smart-card
       speaker-selection

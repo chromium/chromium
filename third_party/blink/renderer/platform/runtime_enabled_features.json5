@@ -5704,12 +5704,10 @@
       name: "SharedStorageAPI",
       base_feature: "none",
       public: true,
-      status: "stable",
     },
     {
       name: "SharedStorageWebLocks",
       depends_on: ["SharedStorageAPI"],
-      status: "stable",
     },
     {
       name: "SharedWorker",

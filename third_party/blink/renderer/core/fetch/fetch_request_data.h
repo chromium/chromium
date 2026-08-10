@@ -145,11 +145,6 @@ class CORE_EXPORT FetchRequestData final
   void SetKeepalive(bool b) { keepalive_ = b; }
 
 
-  bool SharedStorageWritable() const { return shared_storage_writable_; }
-  void SetSharedStorageWritable(bool shared_storage_writable) {
-    shared_storage_writable_ = shared_storage_writable;
-  }
-
   bool IsHistoryNavigation() const { return is_history_navigation_; }
   void SetIsHistoryNavigation(bool b) { is_history_navigation_ = b; }
 
@@ -242,7 +237,6 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::RequestDestination original_destination_ =
       network::mojom::RequestDestination::kEmpty;
   bool keepalive_ = false;
-  bool shared_storage_writable_ = false;
   bool is_history_navigation_ = false;
   bool is_reload_navigation_ = false;
   std::optional<network::FetchRetryOptions> retry_options_;

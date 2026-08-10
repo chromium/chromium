@@ -262,7 +262,6 @@ source_set("common") {
     "service_worker/service_worker_status_code.cc",
     "service_worker/service_worker_type_converters.cc",
     "shared_storage/module_script_downloader.cc",
-    "shared_storage/shared_storage_utils.cc",
     "storage_key/storage_key.cc",
     "storage_key/storage_key_mojom_traits.cc",
     "switches.cc",

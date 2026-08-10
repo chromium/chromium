@@ -55,8 +55,6 @@ source_set("browser") {
     "observers/same_origin_page_load_metrics_observer.h",
     "observers/service_worker_page_load_metrics_observer.cc",
     "observers/service_worker_page_load_metrics_observer.h",
-    "observers/shared_storage_page_load_metrics_observer.cc",
-    "observers/shared_storage_page_load_metrics_observer.h",
     "observers/soft_navigation_page_load_metrics_observer.cc",
     "observers/soft_navigation_page_load_metrics_observer.h",
     "observers/third_party_metrics_observer.cc",

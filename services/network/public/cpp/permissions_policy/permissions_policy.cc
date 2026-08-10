@@ -23,12 +23,11 @@
 
 namespace {
 
-const std::array<network::mojom::PermissionsPolicyFeature, 5>
+const std::array<network::mojom::PermissionsPolicyFeature, 4>
     kDefinedOptInFeatures = {
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
         network::mojom::PermissionsPolicyFeature::
             kBrowsingTopicsBackwardCompatible,
-        network::mojom::PermissionsPolicyFeature::kSharedStorage,
         network::mojom::PermissionsPolicyFeature::kRunAdAuction,
         network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup};
 

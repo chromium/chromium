@@ -106,9 +106,11 @@ class PermissionsPolicyTest : public testing::Test {
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::kSharedStorage,
+             {network::mojom::PermissionsPolicyFeature::
+                  kDeprecated_SharedStorage,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
-             {network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+             {network::mojom::PermissionsPolicyFeature::
+                  kDeprecated_SharedStorageSelectUrl,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
@@ -2390,7 +2392,7 @@ TEST_F(PermissionsPolicyTest, TestUndefinedFeaturesInFramePolicy) {
 // a subframe for the origin with allow=feature would be allowed.
 TEST_F(PermissionsPolicyTest, ProposedTestIsFeatureEnabledForOriginDefaultAll) {
   const mojom::PermissionsPolicyFeature kJoinFeature =
-      network::mojom::PermissionsPolicyFeature::kSharedStorage;
+      network::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup;
 
   {
     // In these tests, we have a  x-origin js method, `joinAdInterestGroup` that
@@ -2952,44 +2954,13 @@ TEST_F(PermissionsPolicyTest, CreateFlexibleForFencedFrame) {
       policy1.get(), /*header_policy=*/{}, origin_a_);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl));
+  EXPECT_FALSE(policy->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kDeprecated_SharedStorage));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
+                                   kDeprecated_SharedStorageSelectUrl));
   EXPECT_TRUE(policy->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kPrivateAggregation));
-}
-
-TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
-  std::vector<network::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
-  effective_enabled_permissions.insert(
-      effective_enabled_permissions.end(),
-      std::begin(network::kFencedFrameFledgeDefaultRequiredFeatures),
-      std::end(network::kFencedFrameFledgeDefaultRequiredFeatures));
-
-  std::unique_ptr<PermissionsPolicy> policy = CreateFixedForFencedFrame(
-      origin_a_, /*header_policy=*/{}, effective_enabled_permissions);
-  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
-  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage));
-}
-
-TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
-  std::vector<network::mojom::PermissionsPolicyFeature>
-      effective_enabled_permissions;
-  effective_enabled_permissions.insert(
-      effective_enabled_permissions.end(),
-      std::begin(network::kFencedFrameSharedStorageDefaultRequiredFeatures),
-      std::end(network::kFencedFrameSharedStorageDefaultRequiredFeatures));
-
-  std::unique_ptr<PermissionsPolicy> policy = CreateFixedForFencedFrame(
-      origin_a_, /*header_policy=*/{}, effective_enabled_permissions);
-  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
-  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_TRUE(policy->IsFeatureEnabled(
-      network::mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {

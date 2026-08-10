@@ -54,29 +54,19 @@ Permissions-backed features pose a risk for 2 reasons:
    fingerprinting vectors, circumventing existing protections we have in place
    for fenced frames.
 
-To mitigate these risks, we only allow Protected Audience fenced frames to load
-with specific features enabled. These features ***must*** be enabled for the
-fenced frame's origin. If any of the required features are disabled, the fenced
-frame will not load.
+To mitigate these risks, only a limited set of permissions policies are allowed to
+be enabled or inherited in fenced frames. All other permissions policies will be
+turned off.
 
-See: `network::kFencedFrameFledgeDefaultRequiredFeatures` in
+See: `network::kFencedFrameAllowedFeatures` in
 `services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
-## Permissions for Fenced frames created with selectURL()
+## Permissions for Fenced frames created with selectURL() (Deprecated)
 
-selectURL-created fenced frames can contain information from the embedder by
+selectURL-created fenced frames could contain information from the embedder by
 having the embedder add arbitrary data to the URLs that the frame is navigated
-to. Because of this, it is acceptable to have information flow in from the
+to. Because of this, it was acceptable to have information flow in from the
 embedder to the fenced frame via permission backed features.
-
-However, stopping data outflow from the fenced frame to the embedder is still
-part of the privacy story. Many permissions-backed APIs can be used to
-exfiltrate data out of a fenced frame, so they cannot be enabled. To be safe, we
-are currently only allowing a few permissions-backed features to be enabled that
-are required for functionality purposes.
-
-See: `network::kFencedFrameSharedStorageDefaultRequiredFeatures` in
-`services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h`.
 
 ## Permissions policy-based features audit
 

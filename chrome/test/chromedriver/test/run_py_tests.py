@@ -6143,22 +6143,6 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(fencedframe)
     self._driver.SwitchToFrame(fencedframe)
 
-  def testSharedStorageWorkletTarget(self):
-    self._http_server.SetDataForPath('/simple_module.js', bytes('''
-       class Simple {
-          async run(urls, data) {
-            return 0;
-          }
-       }
-       register('simple', Simple);
-    ''', 'utf-8'))
-
-    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
-    self._driver.ExecuteScript('''
-       window.sharedStorage.worklet.addModule(
-                               "/shared-storage/resources/simple-module.js")''')
-    window_handles = self._driver.GetWindowHandles()
-    self.assertEqual(len(window_handles), 1)
 
 class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   """Tests for ChromeDriver with the new Site Isolation Chrome feature.

@@ -92,7 +92,6 @@ RequestResourceType RequestResourceTypeFromResourceRequest(
     case network::mojom::RequestDestination::kWorker:
     case network::mojom::RequestDestination::kSharedWorker:
     case network::mojom::RequestDestination::kServiceWorker:
-    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return RequestResourceType::kScript;
     case network::mojom::RequestDestination::kReport:
       return RequestResourceType::kCspReport;

@@ -168,12 +168,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableGamepadRawInputChangeEvent,
            raw_ref(features::kGamepadRawInputChangeEvent),
            kSetOnlyIfOverridden},
-          {wf::EnableSharedStorageAPI,
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {wf::EnableSharedStorageAPI,
-           raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-
           {wf::EnableFencedFrames,
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
@@ -523,15 +517,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kFencedFrames.name << " in addition.";
     WebRuntimeFeatures::EnableFeatureFromString(
         "FencedFramesLocalUnpartitionedDataAccess", false);
-  }
-
-  if (!base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIEnabled())
-        << "SharedStorage cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << network::features::kSharedStorageAPI.name << " in addition.";
-    WebRuntimeFeatures::EnableSharedStorageAPI(false);
   }
 
   if (!base::FeatureList::IsEnabled(

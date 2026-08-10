@@ -369,38 +369,6 @@ TEST_F(HTMLIFrameElementSimTest, Adauctionheaders_InsecureContext_NotAllowed) {
       << "Unexpected error; got: " << ConsoleMessages().front();
 }
 
-TEST_F(HTMLIFrameElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
-  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  SimRequest main_resource("https://example.com", "text/html");
-  LoadURL("https://example.com");
-  main_resource.Complete(R"(
-    <iframe
-      allow="shared-storage"
-      sharedstoragewritable></iframe>
-  )");
-
-  EXPECT_TRUE(ConsoleMessages().empty());
-}
-
-TEST_F(HTMLIFrameElementSimTest,
-       Sharedstoragewritable_InsecureContext_NotAllowed) {
-  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  SimRequest main_resource("http://example.com", "text/html");
-  LoadURL("http://example.com");
-  main_resource.Complete(R"(
-    <iframe
-      allow="shared-storage"
-      sharedstoragewritable></iframe>
-  )");
-
-  EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().starts_with(
-      "sharedStorageWritable: sharedStorage operations are only available in "
-      "secure contexts."))
-      << "Expect error that Shared Storage operations are not allowed in "
-         "insecure contexts but got: "
-      << ConsoleMessages().front();
-}
 
 TEST_F(HTMLIFrameElementSimTest, SetTrackedElement) {
   ScopedAIPageContentTrackedElementsIframeForTest scoped_feature(true);

@@ -117,9 +117,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kLowLatencyUsageSupportedForCanvas);
 
-  // Disable Shared Storage on WebView.
-  aw_feature_overrides.DisableFeature(network::features::kSharedStorageAPI);
-
   // Disable scrollbar-color on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kScrollbarColor);
 

@@ -6829,12 +6829,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="100" label="LocalFonts"/>
   <int value="101" label="Bluetooth"/>
   <int value="102" label="IdentityCredentialsGet"/>
-  <int value="103" label="SharedStorage"/>
+  <int value="103" label="Deprecated_SharedStorage"/>
   <int value="104" label="Unload"/>
   <int value="105" label="ClientHintPrefersReducedMotion"/>
   <int value="106" label="ComputePressure"/>
   <int value="107" label="SmartCard"/>
-  <int value="108" label="SharedStorageSelectUrl"/>
+  <int value="108" label="Deprecated_SharedStorageSelectUrl"/>
   <int value="109" label="PrivateAggregation"/>
   <int value="110" label="PrivateStateTokenIssuance"/>
   <int value="111" label="ClientHintUAFormFactors"/>

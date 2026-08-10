@@ -189,7 +189,7 @@ TEST(URLRequestMojomTraitsPerfTest,
              /*matches_all_origins=*/false,
              /*matches_opaque_src=*/false},
             {network::mojom::PermissionsPolicyFeature::
-                 kSharedStorage, /*allowed_origins=*/
+                 kFullscreen, /*allowed_origins=*/
              {*network::OriginWithPossibleWildcards::FromOrigin(
                  url::Origin::Create(GURL(kPolicyUrlA)))},
              /*self_if_matches=*/std::nullopt,

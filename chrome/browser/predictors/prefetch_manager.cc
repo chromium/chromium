@@ -492,7 +492,6 @@ std::optional<blink::mojom::ResourceType> GetResourceTypeForPrefetch(
     case network::mojom::RequestDestination::kPaintWorklet:
     case network::mojom::RequestDestination::kReport:
     case network::mojom::RequestDestination::kServiceWorker:
-    case network::mojom::RequestDestination::kSharedStorageWorklet:
     case network::mojom::RequestDestination::kSharedWorker:
     case network::mojom::RequestDestination::kSpeculationRules:
     case network::mojom::RequestDestination::kText:

@@ -14,25 +14,7 @@ namespace network {
 // turned off.
 static inline constexpr network::mojom::PermissionsPolicyFeature
     kFencedFrameAllowedFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-        network::mojom::PermissionsPolicyFeature::kSharedStorage,
-        network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
-
-// In fenced frame trees loaded with either Shared Storage or Protected
-// Audience, these permission policies are expected to be enabled. If any
-// feature is disallowed for the fenced frame's origin, then the fenced frame
-// will not be allowed to navigate. If a fenced frame navigates, each of these
-// features will be allowed as if its policy was set to "allow: feature(*)".
-static inline constexpr network::mojom::PermissionsPolicyFeature
-    kFencedFrameFledgeDefaultRequiredFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-        network::mojom::PermissionsPolicyFeature::kSharedStorage,
-        network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
-
-static inline constexpr network::mojom::PermissionsPolicyFeature
-    kFencedFrameSharedStorageDefaultRequiredFeatures[] = {
-        network::mojom::PermissionsPolicyFeature::kSharedStorage,
-        network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
+        network::mojom::PermissionsPolicyFeature::kPrivateAggregation};
 
 }  // namespace network
 

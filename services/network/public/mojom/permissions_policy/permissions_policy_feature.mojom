@@ -193,9 +193,10 @@ enum PermissionsPolicyFeature {
   // Controls use of FedCM API.
   kIdentityCredentialsGet = 102,
 
-  // "shared-storage" permissions policy that controls the use of Shared Storage
-  // API.
-  kSharedStorage = 103,
+  // TODO(crbug.com/462465887): Remove when no longer needed.
+  // [Deprecated] "shared-storage" permissions policy that controls the use of
+  // Shared Storage API.
+  kDeprecated_SharedStorage = 103,
 
   // Controls use of unload handlers.
   kUnload = 104,
@@ -210,9 +211,10 @@ enum PermissionsPolicyFeature {
   // Web Smart Card API
   kSmartCard = 107,
 
-  // "shared-storage-select-url" permissions policy that controls the use of
-  // sharedStorage.selectURL().
-  kSharedStorageSelectUrl = 108,
+  // TODO(crbug.com/462465887): Remove when no longer needed.
+  // [Deprecated] "shared-storage-select-url" permissions policy that controls
+  // the use of sharedStorage.selectURL().
+  kDeprecated_SharedStorageSelectUrl = 108,
 
   // "private-aggregation" permissions policy that controls the use of
   // privateAggregation within the shared storage worklet.

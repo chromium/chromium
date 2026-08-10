@@ -71,8 +71,6 @@ publickey-credentials-get
 run-ad-auction
 screen-wake-lock
 serial
-shared-storage
-shared-storage-select-url
 storage-access
 summarizer
 sync-xhr

@@ -113,7 +113,6 @@ net::RequestPriority GetRequestPriority(
     case network::mojom::RequestDestination::kEmailVerification:
     case network::mojom::RequestDestination::kCompressionDictionary:
     case network::mojom::RequestDestination::kSpeculationRules:
-    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return net::LOWEST;
   }
 }

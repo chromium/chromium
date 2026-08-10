@@ -1483,29 +1483,6 @@ bool AwContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
   return true;
 }
 
-bool AwContentBrowserClient::IsSharedStorageAllowed(
-    content::BrowserContext* browser_context,
-    content::RenderFrameHost* rfh,
-    const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin,
-    std::string* out_debug_message,
-    bool* out_block_is_site_setting_specific) {
-  // TODO(https://crbug.com/401255068): We should have a more stringent check
-  // here before launching beyond DEV.
-  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
-}
-
-bool AwContentBrowserClient::IsSharedStorageSelectURLAllowed(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin,
-    std::string* out_debug_message,
-    bool* out_block_is_site_setting_specific) {
-  // TODO(https://crbug.com/401255068): We should have a more stringent check
-  // here before launching beyond DEV.
-  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
-}
-
 bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
   return false;
 }

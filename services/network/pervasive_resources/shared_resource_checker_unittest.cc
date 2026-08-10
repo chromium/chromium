@@ -172,7 +172,6 @@ constexpr mojom::RequestDestination kAllDestinations[] = {
     mojom::RequestDestination::kCompressionDictionary,
     mojom::RequestDestination::kSpeculationRules,
     mojom::RequestDestination::kJson,
-    mojom::RequestDestination::kSharedStorageWorklet,
 };
 
 // Make sure that all request destinations except for Script, Style or

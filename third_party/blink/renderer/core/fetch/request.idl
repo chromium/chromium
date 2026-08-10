@@ -20,8 +20,6 @@ enum RequestDestination {
     // https://wicg.github.io/nav-speculation/speculation-rules.html#fetch-destination
     "speculationrules",
 
-    // https://wicg.github.io/shared-storage/#request-destination-monkey-patch
-    "sharedstorageworklet",
 
     // https://github.com/whatwg/fetch/issues/1120
     "webbundle",
