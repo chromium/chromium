@@ -127,10 +127,10 @@ class WebmEncoderMuxer : public RecordingEncoder {
   // the initialization.
   void OnAudioEncoderInitialized(media::EncoderStatus status);
 
-  // Called when the video |encoder| is initialized to provide the |status| of
-  // the initialization. If initialization failed, |on_failure_callback_| will
-  // be triggered.
-  void OnVideoEncoderInitialized(media::VpxVideoEncoder* encoder,
+  // Called when the video encoder is initialized with the given `generation` to
+  // provide the |status| of the initialization. If initialization failed,
+  // |on_failure_callback_| will be triggered.
+  void OnVideoEncoderInitialized(uint32_t generation,
                                  media::EncoderStatus status);
 
   // Encodes and muxes the given audio frames in `audio_bus` captured at
@@ -213,6 +213,10 @@ class WebmEncoderMuxer : public RecordingEncoder {
   // True once audio encoder is initialized successfully.
   bool is_audio_encoder_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+
+  // Generation counter for `video_encoder_` to discard initialization callbacks
+  // from obsolete encoders during reinitialization.
+  uint32_t video_encoder_generation_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::WeakPtrFactory<WebmEncoderMuxer> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

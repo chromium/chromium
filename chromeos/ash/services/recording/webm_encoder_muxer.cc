@@ -212,9 +212,7 @@ void WebmEncoderMuxer::InitializeVideoEncoder(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&WebmEncoderMuxer::OnVideoEncoderInitialized,
                      weak_ptr_factory_.GetWeakPtr(),
-                     // TODO(crbug.com/40061562): Remove
-                     // `UnsafeDanglingUntriaged`
-                     base::UnsafeDanglingUntriaged(video_encoder_.get())));
+                     ++video_encoder_generation_));
 }
 
 void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
@@ -293,13 +291,13 @@ void WebmEncoderMuxer::OnAudioEncoderInitialized(media::EncoderStatus status) {
 }
 
 void WebmEncoderMuxer::OnVideoEncoderInitialized(
-    media::VpxVideoEncoder* encoder,
+    uint32_t generation,
     media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore initialization of encoders that were removed as part of
   // reinitialization.
-  if (video_encoder_.get() != encoder) {
+  if (video_encoder_generation_ != generation) {
     return;
   }
 
