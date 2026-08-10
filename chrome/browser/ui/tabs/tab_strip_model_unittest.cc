@@ -19,6 +19,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -1345,6 +1346,25 @@ TEST_F(TabStripModelTest, FocusMode) {
   // Unfocus the group.
   tabstrip()->SetFocusedGroup(std::nullopt);
   EXPECT_FALSE(tabstrip()->GetFocusedGroup().has_value());
+}
+
+// A privileged WebContents (a WebContents created with PrivilegedParams) is
+// hosted natively by its owning feature, never as a browser tab. Inserting one
+// into a tab strip is a CHECK failure.
+TEST_F(TabStripModelTest, PrivilegedWebContentsCannotBeInserted) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+
+  WebContents::CreateParams params(profile());
+  WebContents::PrivilegedParams privileged_params;
+  privileged_params.feature_id = 42;
+  params.privileged_params = privileged_params;
+  std::unique_ptr<WebContents> privileged = base::WrapUnique(
+      content::WebContentsTester::CreateTestWebContents(params));
+  ASSERT_TRUE(privileged->IsPrivileged());
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      model.AppendWebContents(std::move(privileged), true), "");
 }
 
 TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocus) {
