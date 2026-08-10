@@ -272,7 +272,7 @@ The process is:
        [Example](https://chrome-internal-review.googlesource.com/c/infradata/config/+/1561384).
        These trybots are "builderful", i.e. these GCEs can't be shared among
        different bots. This is done in order to limit the number of concurrent
-       builds on these bots (until [crbug.com/949379](crbug.com/949379) is
+       builds on these bots (until [crbug.com/949379](https://crbug.com/949379) is
        fixed) to prevent oversubscribing GPU hardware.
        `win_optional_gpu_tests_rel` is an exception, its GCEs come from
        `luci-chromium-try-win10-*-8` groups in
