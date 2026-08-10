@@ -3812,7 +3812,7 @@
   {
     "name": "enable-global-privacy-control",
     "owners": ["arichiv@chromium.org", "mcczarny@gmail.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-global-vaapi-lock",
