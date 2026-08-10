@@ -2495,6 +2495,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       IncludeDescendants include_descendants =
           IncludeDescendants(true)) const = 0;
 
+  // Returns true if this LayoutObject has been assigned a ComputedStyle.
+  bool HasStyle() const {
+    NOT_DESTROYED();
+    return static_cast<bool>(style_);
+  }
+
   const ComputedStyle* Style() const {
     NOT_DESTROYED();
     return style_.Get();

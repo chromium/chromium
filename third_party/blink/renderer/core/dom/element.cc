@@ -10357,7 +10357,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     LayoutObject* parent_layout_object =
         LayoutTreeBuilderTraversal::ParentLayoutObject(*this);
     if (parent_layout_object) {
-      layout_parent_style = parent_layout_object->Style();
+      layout_parent_style = &parent_layout_object->StyleRef();
     }
   }
 

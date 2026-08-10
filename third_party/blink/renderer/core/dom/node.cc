@@ -1948,7 +1948,7 @@ void Node::AttachLayoutTree(AttachContext& context) {
 
   LayoutObject* layout_object = GetLayoutObject();
   DCHECK(!layout_object ||
-         (layout_object->Style() &&
+         (layout_object->HasStyle() &&
           (layout_object->Parent() || IsA<LayoutView>(layout_object))));
 
   ClearNeedsReattachLayoutTree();
