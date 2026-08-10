@@ -24,6 +24,7 @@
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace content {
 
@@ -76,6 +77,10 @@ class MockContentClient : public TestContentClient {
         return u"Appears to contain adult content. No description available.";
       case IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION:
         return u"No description available.";
+      case IDS_AX_TOGGLE_BUTTON_ON:
+        return u"On";
+      case IDS_AX_TOGGLE_BUTTON_OFF:
+        return u"Off";
       default:
         return std::u16string();
     }
@@ -2260,6 +2265,42 @@ TEST_F(BrowserAccessibilityAndroidTest, TestIsNodeLikelyKnownFilter) {
   // Test name changed event on unknown node
   manager_android->FireGeneratedEvent(ui::AXEventGenerator::Event::NAME_CHANGED,
                                       b_unknown_node->node());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TestSwitchStateDescription) {
+  ui::AXNodeData switch_a;
+  switch_a.id = 2;
+  switch_a.role = ax::mojom::Role::kSwitch;
+  switch_a.SetCheckedState(ax::mojom::CheckedState::kFalse);
+
+  ui::AXNodeData switch_b;
+  switch_b.id = 3;
+  switch_b.role = ax::mojom::Role::kSwitch;
+  switch_b.SetCheckedState(ax::mojom::CheckedState::kTrue);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {switch_a.id, switch_b.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, switch_a, switch_b),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  // Ensure that switches without explicit name, text, or contentDescriptions
+  // still get their on/off states appended to stateDescription.
+  // TODO(crbug.com/536089300): Consider removing on/off state from
+  // stateDescription once Android has announcement parity for all web switches.
+  auto* node_a = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(switch_a.id));
+  ASSERT_NE(nullptr, node_a);
+  EXPECT_EQ(u"Off", node_a->GetAndroidStateDescription());
+
+  auto* node_b = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(switch_b.id));
+  ASSERT_NE(nullptr, node_b);
+  EXPECT_EQ(u"On", node_b->GetAndroidStateDescription());
 }
 
 }  // namespace content

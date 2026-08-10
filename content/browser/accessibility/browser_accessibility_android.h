@@ -202,7 +202,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetComboboxExpandedTextFallback() const;
 
   std::u16string GetMultiselectableStateDescription() const;
-  std::u16string GetToggleStateDescription() const;
+  std::u16string GetSwitchStateDescription() const;
   std::u16string GetCheckboxStateDescription() const;
   std::u16string GetAriaCurrentStateDescription() const;
   std::u16string GetRadioButtonStateDescription() const;

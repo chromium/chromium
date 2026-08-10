@@ -25,4 +25,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++MenuItem contentDescription:"Readonly menuitemcheckbox" checkable clickable disabled CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="menuItemCheckBox", roleDescription="checkbox"]
 ++MenuItem contentDescription:"Readonly menuitemradio" checkable clickable disabled CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="menuItemRadio", roleDescription="radio button"]
 ++EditText supplementalDescription:"Readonly searchbox" clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="searchBox", roleDescription="search text field"]
-++Switch contentDescription:"Readonly switch" checkable clickable disabled actions:[CLICK, AX_FOCUS] bundle:[chromeRole="switch"]
+++Switch contentDescription:"Readonly switch" stateDescription:"Off" checkable clickable disabled actions:[CLICK, AX_FOCUS] bundle:[chromeRole="switch"]
