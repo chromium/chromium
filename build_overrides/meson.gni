@@ -5,3 +5,4 @@
 meson_src_dir = "//third_party/dawn/third_party/meson"
 meson_llvm_config_bin =
     "//third_party/dawn/third_party/llvm-dev/bin/llvm-config"
+meson_zstd_dir = "//third_party/dawn/third_party/zstd"
