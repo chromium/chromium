@@ -488,6 +488,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mBrandedColorScheme = brandedColorScheme;
         Context context = getContext();
         if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            @ColorInt
             int popoverColor =
                     OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
                             context, mBrandedColorScheme);
@@ -579,6 +580,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         // SUGGESTIONS_POPOVER (it depends only on flags set at build time and startup) and thus
         // don't handle that case.
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            @ColorInt
             int popoverColor =
                     OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
                             getContext(), mBrandedColorScheme);

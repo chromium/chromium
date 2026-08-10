@@ -175,7 +175,7 @@ class UrlBarViewBinder {
         final Drawable textSelectHandleLeft = assumeNonNull(view.getTextSelectHandleLeft());
         final Drawable textSelectHandleRight = assumeNonNull(view.getTextSelectHandleRight());
 
-        final int color =
+        final @ColorInt int color =
                 useIncognitoColors
                         ? view.getContext().getColor(R.color.default_control_color_active_dark)
                         : MaterialColors.getColor(view, R.attr.colorPrimary);

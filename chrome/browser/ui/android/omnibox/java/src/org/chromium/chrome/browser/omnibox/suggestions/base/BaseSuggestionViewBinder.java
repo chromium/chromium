@@ -22,6 +22,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -300,6 +301,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         Drawable background;
 
         if (sFocusableDrawableState == null) {
+            @ColorInt
             int suggestionBgColor =
                     resourceProvider.getSuggestionBackgroundColor(
                             model.get(SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE),

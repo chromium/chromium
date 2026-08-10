@@ -30,6 +30,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -2093,7 +2094,7 @@ class LocationBarMediator
     }
 
     /** Returns the primary color based on the url focus, and incognito state. */
-    private int getPrimaryBackgroundColor() {
+    private @ColorInt int getPrimaryBackgroundColor() {
         // If the url bar is focused, the toolbar background color is the default color regardless
         // of whether it is branded or not.
         if (isUrlBarFocused()) {
