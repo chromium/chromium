@@ -60,13 +60,10 @@ public abstract class LaunchCauseMetrics
 
     private static void doStaticInit() {
         sAppActivityListener =
-                new ActivityStateListener() {
-                    @Override
-                    public void onActivityStateChange(Activity activity, int newState) {
-                        if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
-                        if (newState == ActivityState.DESTROYED) {
-                            if (activity == sLastResumedActivity) sLastResumedActivity = null;
-                        }
+                (Activity activity, int newState) -> {
+                    if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
+                    if (newState == ActivityState.DESTROYED) {
+                        if (activity == sLastResumedActivity) sLastResumedActivity = null;
                     }
                 };
         ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
@@ -196,11 +193,9 @@ public abstract class LaunchCauseMetrics
     protected abstract @LaunchCause int computeIntentLaunchCause();
 
     /**
-     * Computes and returns the cause of an Intentional transition between Chrome Activity
-     * types, or other if the transition wasn't Intentional.
-     *
-     * Intentional here means that the user knew they were transitioning between Chrome Activities,
-     * and made an explicit choice to do so.
+     * Computes and returns the cause of an Intentional transition between Chrome Activity types, or
+     * other if the transition wasn't Intentional. Intentional here means that the user knew they
+     * were transitioning between Chrome Activities, and made an explicit choice to do so.
      */
     protected @LaunchCause int getIntentionalTransitionCauseOrOther() {
         return LaunchCause.OTHER;

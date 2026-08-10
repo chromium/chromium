@@ -275,36 +275,6 @@ public class AppMenuItemUtils {
      * @param context The Context used to resolve resources.
      * @param theme The AppMenuItemTheme handling theming aspects.
      * @param id The id of the menu item.
-     * @param titleId The resource id of the title to be displayed.
-     * @param icon The icon to be displayed (or null for no icon).
-     * @param submenuItemProvider The provider of {@code ListItem}s in the submenu.
-     * @param isMenuIconAtStart Whether the menu icon should be placed at the start.
-     * @return The property model for this item.
-     */
-    public static PropertyModel buildModelForMenuItemWithSubmenu(
-            Context context,
-            AppMenuItemTheme theme,
-            @IdRes int id,
-            @StringRes int titleId,
-            @Nullable Drawable icon,
-            Supplier<List<ListItem>> submenuItemProvider,
-            boolean isMenuIconAtStart) {
-        return buildModelForMenuItemWithSubmenu(
-                context,
-                theme,
-                id,
-                context.getString(titleId),
-                icon,
-                submenuItemProvider,
-                isMenuIconAtStart);
-    }
-
-    /**
-     * Build a property model for a menu item with submenu.
-     *
-     * @param context The Context used to resolve resources.
-     * @param theme The AppMenuItemTheme handling theming aspects.
-     * @param id The id of the menu item.
      * @param title The title to be displayed.
      * @param icon The icon to be displayed (or null for no icon).
      * @param submenuItemProvider The provider of {@code ListItem}s in the submenu.
@@ -557,18 +527,17 @@ public class AppMenuItemUtils {
                 }
 
                 FaviconHelper.FaviconImageCallback faviconCallback =
-                        (image, iconUrl) -> {
-                            set(
-                                    createInsetFaviconDrawable(
-                                            context,
-                                            FaviconUtils.getIconDrawableWithFilter(
-                                                    image,
-                                                    faviconUrl,
-                                                    roundedIconGenerator,
-                                                    defaultFaviconHelper,
-                                                    context,
-                                                    faviconDisplaySize)));
-                        };
+                        (image, _) ->
+                                set(
+                                        createInsetFaviconDrawable(
+                                                context,
+                                                FaviconUtils.getIconDrawableWithFilter(
+                                                        image,
+                                                        faviconUrl,
+                                                        roundedIconGenerator,
+                                                        defaultFaviconHelper,
+                                                        context,
+                                                        faviconDisplaySize)));
 
                 if (tabGroupId != null && !isOffTheRecord) {
                     faviconHelper.getForeignFaviconImageForURL(

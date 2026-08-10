@@ -55,10 +55,9 @@ public class TabWindowManagerSingleton {
         ThreadUtils.assertOnUiThread();
         sInstance = manager;
         ResettersForTesting.register(
-                () -> {
-                    ThreadUtils.runOnUiThreadBlocking(
-                            TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting);
-                });
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                TabWindowManagerSingleton::resetTabModelSelectorFactoryForTesting));
     }
 
     public static void resetTabModelSelectorFactoryForTesting() {

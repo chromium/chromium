@@ -164,31 +164,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         int TABLET_EMPTY_MODE_MENU = 2;
     }
 
-    // Please treat this list as append only and keep it in sync with
-    // AppMenuHighlightItem in enums.xml.
-    @IntDef({
-        AppMenuHighlightItem.UNKNOWN,
-        AppMenuHighlightItem.DOWNLOADS,
-        AppMenuHighlightItem.BOOKMARKS,
-        AppMenuHighlightItem.TRANSLATE,
-        AppMenuHighlightItem.ADD_TO_HOMESCREEN,
-        AppMenuHighlightItem.DOWNLOAD_THIS_PAGE,
-        AppMenuHighlightItem.BOOKMARK_THIS_PAGE,
-        AppMenuHighlightItem.DATA_REDUCTION_FOOTER
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface AppMenuHighlightItem {
-        int UNKNOWN = 0;
-        int DOWNLOADS = 1;
-        int BOOKMARKS = 2;
-        int TRANSLATE = 3;
-        int ADD_TO_HOMESCREEN = 4;
-        int DOWNLOAD_THIS_PAGE = 5;
-        int BOOKMARK_THIS_PAGE = 6;
-        int DATA_REDUCTION_FOOTER = 7;
-        int NUM_ENTRIES = 8;
-    }
-
     @IntDef({CustomMenuItemType.ZOOM_ITEM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomMenuItemType {
@@ -240,9 +215,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         if (layoutStateProvidersSupplier != null) {
             layoutStateProvidersSupplier.onAvailable(
                     mCallbackController.makeCancelable(
-                            layoutStateProvider -> {
-                                mLayoutStateProvider = layoutStateProvider;
-                            }));
+                            (LayoutStateProvider layoutStateProvider) ->
+                                    mLayoutStateProvider = layoutStateProvider));
         }
 
         mBookmarkModelSupplier = bookmarkModelSupplier;

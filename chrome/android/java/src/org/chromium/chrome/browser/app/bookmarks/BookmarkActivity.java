@@ -95,7 +95,7 @@ public class BookmarkActivity extends SnackbarActivity {
                         getWindow(),
                         getWindowAndroid().getKeyboardDelegate(),
                         () -> sheetContainer,
-                        () -> getEdgeToEdgeInset(),
+                        this::getEdgeToEdgeInset,
                         /* desktopWindowStateManager= */ null,
                         getWindowAndroid().getInsetObserver(),
                         /* enableLargeFormFactorUi= */ ChromeFeatureList

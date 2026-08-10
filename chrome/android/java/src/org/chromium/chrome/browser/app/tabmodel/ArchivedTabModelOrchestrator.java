@@ -15,9 +15,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
@@ -97,12 +95,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     // TODO(crbug.com/333572160): Rely on PKM destroy infra when it's working.
     @VisibleForTesting
     static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
-            new ApplicationStateListener() {
-                @Override
-                public void onApplicationStateChange(@ApplicationState int newState) {
-                    if (ApplicationStatus.isEveryActivityDestroyed()) {
-                        destroyProfileKeyedMap();
-                    }
+            _ -> {
+                if (ApplicationStatus.isEveryActivityDestroyed()) {
+                    destroyProfileKeyedMap();
                 }
             };
 
@@ -185,12 +180,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
             sProfileMap =
                     new ProfileKeyedMap<>(
                             ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
-                            (orchestrator) -> orchestrator.destroy());
+                            ArchivedTabModelOrchestrator::destroy);
             ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
         }
 
-        return sProfileMap.getForProfile(
-                profile, (originalProfile) -> new ArchivedTabModelOrchestrator(originalProfile));
+        return sProfileMap.getForProfile(profile, ArchivedTabModelOrchestrator::new);
     }
 
     /** Destroys the singleton profile keyed map. */
@@ -210,13 +204,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     ArchivedTabModelOrchestrator(Profile profile) {
         mProfile = profile;
         mArchivedTabCreatorManager =
-                new TabCreatorManager() {
-                    @Override
-                    public TabCreator getTabCreator(boolean incognito) {
-                        assert !incognito : "Archived tab model does not support incognito.";
-                        assert mArchivedTabCreator != null;
-                        return mArchivedTabCreator;
-                    }
+                (boolean incognito) -> {
+                    assert !incognito : "Archived tab model does not support incognito.";
+                    assert mArchivedTabCreator != null;
+                    return mArchivedTabCreator;
                 };
         mRecordingTabCreatorManager = new RecordingTabCreatorManager(mArchivedTabCreatorManager);
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();

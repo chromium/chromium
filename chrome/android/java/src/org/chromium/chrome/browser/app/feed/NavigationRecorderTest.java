@@ -65,7 +65,7 @@ public class NavigationRecorderTest {
         mReportCompleteCallback = new CallbackHelper();
 
         doAnswer(
-                        invocation -> {
+                        _ -> {
                             mReportCompleteCallback.notifyCalled();
                             return null;
                         })
@@ -103,11 +103,8 @@ public class NavigationRecorderTest {
     public void testRecordVisitInCurrentTabEndsWithBack() throws Exception {
         loadUrlAndRecordVisit(mNavUrl, mProfile, mSurfaceId);
 
-        ChromeTabUtils.waitForTabPageLoaded(mInitialTab, (String) null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mInitialTab.goBack();
-                });
+        ChromeTabUtils.waitForTabPageLoaded(mInitialTab, null);
+        ThreadUtils.runOnUiThreadBlocking(() -> mInitialTab.goBack());
         mReportCompleteCallback.waitForCallback(0);
     }
 

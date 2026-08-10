@@ -678,7 +678,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @SuppressLint("NewApi")
     @Override
     public void performPostInflationStartup() {
-        try (TraceEvent te = TraceEvent.scoped("ChromeActivity.performPostInflationStartup")) {
+        try (TraceEvent _ = TraceEvent.scoped("ChromeActivity.performPostInflationStartup")) {
             super.performPostInflationStartup();
 
             Intent intent = getIntent();
@@ -750,7 +750,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             getBrowserControlsManager()
                     .initialize(
-                            (ControlContainer) findViewById(R.id.control_container),
+                            findViewById(R.id.control_container),
                             mActivityTabProvider,
                             getTabModelSelector(),
                             mRootUiCoordinator.getControlContainerHeightResource());
@@ -840,7 +840,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     protected final void triggerLayoutInflation() {
         mInflateInitialLayoutBeginMs = SystemClock.elapsedRealtime();
-        try (TraceEvent te = TraceEvent.scoped("ChromeActivity.triggerLayoutInflation")) {
+        try (TraceEvent _ = TraceEvent.scoped("ChromeActivity.triggerLayoutInflation")) {
             SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
             SelectionPopupController.setAllowSurfaceControlMagnifier();
 
@@ -869,7 +869,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // TODO(crbug.com/40229021): Remove the @SuppressLint.
     @SuppressLint("MissingInflatedId")
     protected void doLayoutInflation() {
-        try (TraceEvent te = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
+        try (TraceEvent _ = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
             // Allow disk access for the content view and toolbar container setup.
             // On certain android devices this setup sequence results in disk writes outside
             // of our control, so we have to disable StrictMode to work. See
@@ -892,8 +892,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             // It cannot be assumed that the result of toolbarContainerStub.inflate() will
             // be the control container since it may be wrapped in another view.
-            ControlContainer controlContainer =
-                    (ControlContainer) findViewById(R.id.control_container);
+            ControlContainer controlContainer = findViewById(R.id.control_container);
 
             // Inflate the correct toolbar layout for the device.
             int toolbarLayoutId = getToolbarLayoutId();
@@ -1118,7 +1117,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             TabModelSelector tabModelSelector,
             @SupportedProfileType int supportedProfileType,
             @Nullable MultiInstanceManager multiInstanceManager) {
-        try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
+        try (TraceEvent _ = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
             var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
 
             // 1. Obtain ChromeAndroidTask dependencies.
@@ -1463,24 +1462,24 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @VisibleForTesting
-    public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
+    public void maybeCreateActorPipController() {
         if (getProfileProviderSupplier().get() == null
                 || !GlicEnabling.isProfileEligible(
                         getProfileProviderSupplier().get().getOriginalProfile())
                 || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
                 || ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
-            return null;
+            return;
         }
 
         if (mActorPipController != null) {
-            return mActorPipController;
+            return;
         }
 
         try {
             mActorPipController =
                     new ActorPictureInPictureController(
                             this,
-                            () -> mTabModelProfileSupplier.get(),
+                            mTabModelProfileSupplier,
                             () -> findViewById(android.R.id.content),
                             getTabModelSelectorSupplier(),
                             this::exitOverviewModeOnActorPiPExpand,
@@ -1489,9 +1488,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             this::onActorPictureInPictureChanged);
         } catch (RuntimeException e) {
             Log.w(TAG, "Activity does not support Picture-in-Picture", e);
-            return null;
         }
-        return mActorPipController;
     }
 
     // Gets the last normal size of the activity before entering Actor Picture-in-Picture mode. This
@@ -1748,10 +1745,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         });
 
         DeferredStartupHandler.getInstance()
-                .addDeferredTask(
-                        () -> {
-                            MemoryPurgeManager.getInstance().start();
-                        });
+                .addDeferredTask(() -> MemoryPurgeManager.getInstance().start());
     }
 
     /**
@@ -2177,11 +2171,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         getFullscreenManager(),
                         /* menuOrKeyboardActionController= */ this,
                         /* context= */ this);
-        if (Boolean.TRUE.equals(dispatchResult)) {
-            return true;
-        }
-
-        return false;
+        return Boolean.TRUE.equals(dispatchResult);
     }
 
     @Override
@@ -2218,13 +2208,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     protected ModalDialogManager createModalDialogManager() {
-        var dialogManager =
-                new ModalDialogManager(
-                        new AppModalPresenter(this),
-                        ModalDialogManager.ModalDialogType.APP,
-                        getEdgeToEdgeStateProvider().getSupplier(),
-                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
-        return dialogManager;
+        return new ModalDialogManager(
+                new AppModalPresenter(this),
+                ModalDialogManager.ModalDialogType.APP,
+                getEdgeToEdgeStateProvider().getSupplier(),
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
     }
 
     /**
@@ -2432,11 +2420,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         @ActivityState int state = ApplicationStatus.getStateForActivity(this);
         boolean inMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(this);
-        if (state != ActivityState.RESUMED && (!inMultiWindow || state != ActivityState.PAUSED)) {
-            return false;
-        }
-
-        return true;
+        return state == ActivityState.RESUMED || (inMultiWindow && state == ActivityState.PAUSED);
     }
 
     /**
@@ -3379,8 +3363,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public boolean onActivityResultWithNative(
             int requestCode, int resultCode, @Nullable Intent intent) {
-        if (super.onActivityResultWithNative(requestCode, resultCode, intent)) return true;
-        return false;
+        return super.onActivityResultWithNative(requestCode, resultCode, intent);
     }
 
     /**
@@ -3408,7 +3391,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             Log.e(TAG, "crbug.com/40783191", e);
             assert false
                     : "View "
-                            + v.toString()
+                            + v
                             + " inflated from layout ID #"
                             + v.getSourceLayoutResId()
                             + " was not a ControlContainer. "
@@ -3575,7 +3558,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public boolean shouldAllocateChildConnection() {
-        if (!(getProfileProviderSupplier().get() != null)) return true;
+        if (getProfileProviderSupplier().get() == null) return true;
 
         // If a spare Tab exists, a child connection has already been allocated that will be
         // used by the next created tab.

@@ -127,10 +127,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
         scrollView
                 .getViewTreeObserver()
                 .addOnScrollChangedListener(
-                        () -> {
-                            shadow.setVisibility(
-                                    scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
-                        });
+                        () ->
+                                shadow.setVisibility(
+                                        scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE));
 
         boolean isFolder = item.isFolder();
         TextView folderTitle = findViewById(R.id.folder_title);
