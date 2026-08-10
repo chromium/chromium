@@ -59,13 +59,6 @@
 #   provides the infrastructure to easily make more functionality in a dedicated file.
 # - Reduces header includes and build size.
 # - Minimizes the build graph if users only need one piece of functionality.
-#
-# For cases where the message uses the full google::protobuf::Message type,
-# the protobuf_full_support option can be used to ensure the generated code
-# with the full protobuf library. Due to android build complications, this also
-# requires the `use_fuzzing_engine_with_lpm` build flag to be set.
-# This option is relevant for base::Value serialization and equality.
-#
 # Example:
 #   proto_extras("foo_extras") {
 #     sources = [
@@ -80,7 +73,6 @@
 #     ]
 #     omit_to_value_serialization = true   # default is false
 #     omit_stream_operators = true         # default is false
-#     protobuf_full_support = true         # default is false
 #     # Note: This target fails as there is no functionality being generated!
 #   }
 #
@@ -91,7 +83,6 @@
 # - base::DictValue is the preferred type to base::DictValue, as it is
 #   forward-declarable, allowing for less header includes.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 template("proto_extras") {
@@ -107,11 +98,6 @@ template("proto_extras") {
   _generate_equality = true
   if (defined(invoker.omit_equality) && invoker.omit_equality) {
     _generate_equality = false
-  }
-  _protobuf_full_support = false
-  if (defined(invoker.protobuf_full_support) && invoker.protobuf_full_support &&
-      use_fuzzing_engine_with_lpm) {
-    _protobuf_full_support = true
   }
   _proto_in_dir = "//"
   if (defined(invoker.proto_in_dir)) {
@@ -152,9 +138,6 @@ template("proto_extras") {
                              ])
       link_deps = [ "//components/proto_extras:proto_extras_lib" ] +
                   _custom_serialization_deps
-      if (_protobuf_full_support) {
-        link_deps += [ "//components/proto_extras:protobuf_full_support" ]
-      }
 
       # Link the *_to_value targets for all extras_deps.
       _extras_deps_to_value = []
@@ -168,11 +151,7 @@ template("proto_extras") {
       generate_cc = false
       generate_python = false
       link_public_deps = [ "//base" ]
-      _to_value_options_list = [ "generate_to_value_serialization" ]
-      if (_protobuf_full_support) {
-        _to_value_options_list += [ "protobuf_full_support" ]
-      }
-      generator_plugin_options = string_join(",", _to_value_options_list)
+      generator_plugin_options = "generate_to_value_serialization"
     }
   }
 
@@ -223,17 +202,12 @@ template("proto_extras") {
         _extras_deps_equality += [ "${_dep}_equal" ]
       }
       link_deps = _extras_deps_equality
-      _equality_options_list = [ "generate_equality" ]
-      if (_protobuf_full_support) {
-        _equality_options_list += [ "protobuf_full_support" ]
-        link_deps += [ "//components/proto_extras:protobuf_full_support" ]
-      }
 
       generator_plugin_label = "//components/proto_extras:proto_extras_plugin"
       generator_plugin_suffix = ".equal"
       generate_cc = false
       generate_python = false
-      generator_plugin_options = string_join(",", _equality_options_list)
+      generator_plugin_options = "generate_equality"
     }
   }
 

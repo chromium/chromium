@@ -226,15 +226,6 @@ message, which allows gtest to pretty-print the message on test failures.
 The matcher handles all field types, including repeated fields, maps, and
 oneofs.
 
-## Forcing full protobuf library support
-
-For cases where the message uses the full `google::protobuf::Message` type,
-the `protobuf_full_support` option can be used in the `proto_extras` GN target
-to ensure the generated code with the full protobuf library. Due to android
-build complications, this also requires the `use_fuzzing_engine_with_lpm` build
-flag to be set. This option is relevant for `base::Value` serialization and
-equality.
-
 ## AI Agent Guide
 
 This section contains information for AI agents that are tasked with working on
@@ -259,12 +250,6 @@ The generated code relies on a support library for common functionality:
   the generated code, such as `ToNumericTypeForValue` for converting between
   numeric types and `SerializeUnknownFields` for serializing unknown fields in
   `MessageLite` protos.
-- **`protobuf_full_support.h/.cc`**: These files provide an alternative
-  implementation of some of the helper functions in `proto_extras_lib.h` for
-  messages that use the full `google::protobuf::Message` type. This is
-  necessary for fuzzing targets and other cases where the full protobuf library
-  is used. It also provides `MessageDifferencerEquals` to compare two full
-  protobuf messages.
 - **`proto_matchers.h`**: This file contains helper `gmock` matchers that are
   used by the generated test code.
 
@@ -278,7 +263,7 @@ understand which file is responsible for the desired functionality.
 - For changes to the `gmock` matchers, the relevant files are
   `proto_test_extras_plugin.cc` and `proto_matchers.h`.
 - For changes to the helper functions used by the generated code, the relevant
-  file is `proto_extras_lib.h` or `protobuf_full_support.h`/`.cc`.
+  file is `proto_extras_lib.h`.
 
 When adding new functionality, it is recommended to follow the existing pattern
 of creating a new generation function in the appropriate plugin file and adding
