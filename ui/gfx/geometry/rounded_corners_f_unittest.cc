@@ -69,6 +69,35 @@ TEST(RoundedCornersFTest, Equality) {
   EXPECT_TRUE(rc != kCorners);
 }
 
+TEST(RoundedCornersFTest, Compare) {
+  constexpr RoundedCornersF kCorners(1.0f, 2.0f, 3.0f, 4.0f);
+  EXPECT_FALSE(RoundedCornersF::Compare(kCorners, kCorners));
+
+  // Test upper_left.
+  EXPECT_TRUE(RoundedCornersF::Compare(RoundedCornersF(0.0f, 2.0f, 3.0f, 4.0f),
+                                       kCorners));
+  EXPECT_FALSE(RoundedCornersF::Compare(RoundedCornersF(2.0f, 2.0f, 3.0f, 4.0f),
+                                        kCorners));
+
+  // Test upper_right.
+  EXPECT_TRUE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 1.0f, 3.0f, 4.0f),
+                                       kCorners));
+  EXPECT_FALSE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 3.0f, 3.0f, 4.0f),
+                                        kCorners));
+
+  // Test lower_right.
+  EXPECT_TRUE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 2.0f, 2.0f, 4.0f),
+                                       kCorners));
+  EXPECT_FALSE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 2.0f, 4.0f, 4.0f),
+                                        kCorners));
+
+  // Test lower_left.
+  EXPECT_TRUE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 2.0f, 3.0f, 3.0f),
+                                       kCorners));
+  EXPECT_FALSE(RoundedCornersF::Compare(RoundedCornersF(1.0f, 2.0f, 3.0f, 5.0f),
+                                        kCorners));
+}
+
 TEST(RoundedCornersFTest, Set) {
   RoundedCornersF rc(1.0f, 2.0f, 3.0f, 4.0f);
   rc.Set(4.0f, 3.0f, 2.0f, 1.0f);
