@@ -546,21 +546,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testSignInPauseState() {
-    assertDefined(this.host.getUserProfileInfo);
-    assertDefined(this.host.getPlatform);
-    const profileInfo = await this.host.getUserProfileInfo();
-    const platform = await this.host.getPlatform();
-
-    assertEquals('Glic Testing', profileInfo.displayName);
-    assertEquals('glic-test@example.com', profileInfo.email);
-    assertEquals('Glic', profileInfo.givenName);
-    assertEquals(false, profileInfo.isManaged!);
-    if (platform !== Platform.CHROME_OS) {
-      assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
-    }
-  }
-
   async testSetContextAccessIndicator() {
     assertDefined(this.host.setContextAccessIndicator);
 

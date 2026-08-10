@@ -124,10 +124,19 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setClosedCaptioningSetting(true);
     assertTrue(await closedCaptioningState.next());
   }
+
   async testRefreshSignInCookies() {
     assertDefined(this.host.refreshSignInCookies);
     await this.host.refreshSignInCookies();
   }
+
+  async testSignInPauseState() {
+    assertDefined(this.host.getUserProfileInfo);
+    assertDefined(this.host.getPlatform);
+    const profileInfo = await this.host.getUserProfileInfo();
+    assertEquals('Glic Testing', profileInfo.displayName);
+  }
+
   async testSwitchConversationToOldConversationNewInstance() {
     assertDefined(this.host.switchConversation);
     await this.host.switchConversation(

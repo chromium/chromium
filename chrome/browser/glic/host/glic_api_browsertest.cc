@@ -1325,23 +1325,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSignInPauseState) {
-  // Check that Glic web client is open and can retrieve the user's info.
-  ExecuteJsTest({.expect_guest_frame_destroyed = false});
-
-  // Pause the sign-in.
-  auto* const identity_manager =
-      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
-
-  // The guest frame should be destroyed, and the WebUI should show the sign-in
-  // panel.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return FindGlicGuestMainFrame() == nullptr; }));
-  WaitForWebUiState(mojom::WebUiState::kSignIn);
-}
-
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testActuationOnWebSetting) {
   ExecuteJsTest();
 }

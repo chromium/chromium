@@ -150,6 +150,37 @@ template <typename T>
 }
 
 template <typename T>
+[[nodiscard]] TestResult<> RunUntilNotEqual(
+    base::FunctionRef<std::type_identity_t<T>()> get_value,
+    const T& unexpected_value,
+    std::string_view message = std::string_view()) {
+  return RunUntilComparisonPasses<T>(get_value, unexpected_value,
+                                     std::not_equal_to<T>(), "!=", message);
+}
+
+template <typename Callable>
+[[nodiscard]] TestResult<> RunUntilNull(
+    Callable&& get_value,
+    std::string_view message = std::string_view()) {
+  using ReturnType = std::invoke_result_t<Callable>;
+  static_assert(std::is_pointer_v<ReturnType>, "ReturnType must be a pointer");
+  return RunUntilComparisonPasses<ReturnType>(
+      std::forward<Callable>(get_value), nullptr, std::equal_to<ReturnType>(),
+      "==", message);
+}
+
+template <typename Callable>
+[[nodiscard]] TestResult<> RunUntilNotNull(
+    Callable&& get_value,
+    std::string_view message = std::string_view()) {
+  using ReturnType = std::invoke_result_t<Callable>;
+  static_assert(std::is_pointer_v<ReturnType>, "ReturnType must be a pointer");
+  return RunUntilComparisonPasses<ReturnType>(
+      std::forward<Callable>(get_value), nullptr,
+      std::not_equal_to<ReturnType>(), "!=", message);
+}
+
+template <typename T>
 [[nodiscard]] TestResult<> RunUntilGreaterThan(
     base::FunctionRef<std::type_identity_t<T>()> get_value,
     const T& threshold,
