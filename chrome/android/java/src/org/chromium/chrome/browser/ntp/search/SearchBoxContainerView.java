@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.GlifStrokeDrawable;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /** Provides the additional capabilities needed for the SearchBox container layout. */
 @NullMarked
@@ -44,7 +44,7 @@ public class SearchBoxContainerView extends LinearLayout {
     ImageView mVoiceSearchButton;
     ImageView mLensButton;
     ImageView mPlusButton;
-    ButtonCompat mAiChip;
+    ChipView mAiChip;
     GlifStrokeDrawable mGlifStrokeDrawable;
     boolean mIsNtpAuroraEnabled;
 
@@ -69,6 +69,9 @@ public class SearchBoxContainerView extends LinearLayout {
         mLensButton = findViewById(R.id.lens_camera_button);
         mPlusButton = findViewById(R.id.search_box_plus_button);
         mAiChip = findViewById(R.id.search_box_ai_chip);
+        // TODO(crbug.com/544731730): Remove this once ChipView#updateLayoutDirection is cleaned up
+        // and its render tests are updated to set layout direction on their test containers.
+        mAiChip.setLayoutDirection(LAYOUT_DIRECTION_INHERIT);
         mPlusButton.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     updateTouchDelegate();
@@ -222,8 +225,6 @@ public class SearchBoxContainerView extends LinearLayout {
         bounds.inset(-widthDelta, -heightDelta);
 
         if (bounds.equals(mLastTouchDelegateRect)) return;
-        mLastTouchDelegateRect = bounds;
-
         mLastTouchDelegateRect = bounds;
         mTouchDelegate = new TouchDelegate(bounds, mPlusButton);
         setTouchDelegate(mTouchDelegate);

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -21,7 +22,7 @@ class FuseboxViewHolder {
     public final FuseboxPopup popup;
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
-    public final ButtonCompat activationChip;
+    public final ChipView activationChip;
 
     FuseboxViewHolder(ConstraintLayout parent, FuseboxPopup popup) {
         parentView = parent;

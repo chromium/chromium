@@ -116,21 +116,28 @@ found in the LICENSE file.
     </style>
 
     <!-- AI Mode styles -->
-    <style name="AiModeChip" parent="TextButton">
+    <style name="TextAppearance.AiModeChipText" parent="TextAppearance.ChipText">
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
+
+    <style name="AiModeChip" parent="Chip">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/min_touch_target_size</item>
-        <item name="android:drawableStart">@drawable/search_spark_black_24dp</item>
-        <item name="android:drawableTint">@color/default_text_color_dark</item>
+        <item name="icon">@drawable/search_spark_black_24dp</item>
+        <item name="iconTint">@color/default_text_color_dark</item>
+        <item name="iconWidth">24dp</item>
+        <item name="iconHeight">24dp</item>
         <!-- 8dp visual start padding + 5dp horizontalInset. -->
-        <item name="android:paddingStart">13dp</item>
+        <item name="chipStartPadding">13dp</item>
         <!-- 12dp visual end padding + 5dp horizontalInset. -->
-        <item name="android:paddingEnd">17dp</item>
-        <item name="android:drawablePadding">2dp</item>
-        <item name="android:singleLine">true</item>
+        <item name="chipEndPadding">17dp</item>
+        <item name="primaryTextStartPadding">2dp</item>
+        <item name="allowMultipleLines">false</item>
         <item name="android:text">@string/ai_mode_entrypoint_label</item>
-        <item name="android:textAlignment">viewStart</item>
-        <item name="rippleCornerRadius">@dimen/ai_chip_corner_radius</item>
-        <item name="buttonColor">@color/gm3_baseline_surface_container_high_light</item>
-        <item name="buttonTextColor">@color/default_text_color_dark</item>
+        <item name="textAlignStart">true</item>
+        <item name="cornerRadius">@dimen/ai_chip_corner_radius</item>
+        <item name="chipColor">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.AiModeChipText</item>
+        <item name="chipStrokeColor">@android:color/transparent</item>
     </style>
 </resources>

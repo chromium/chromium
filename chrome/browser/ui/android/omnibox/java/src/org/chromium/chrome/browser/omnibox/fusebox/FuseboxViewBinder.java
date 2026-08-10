@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButton
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -644,12 +645,12 @@ class FuseboxViewBinder {
                         context, brandedColorScheme);
         int[] backgroundColors = new int[] {buttonColorHovered, buttonColor};
 
-        ButtonCompat button = viewHolder.activationChip;
-        button.setButtonColor(new ColorStateList(HOVER_STATES, backgroundColors));
+        ChipView button = viewHolder.activationChip;
+        button.setBackgroundTintList(new ColorStateList(HOVER_STATES, backgroundColors));
 
         @ColorInt
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
-        button.setCompoundDrawableTintList(ColorStateList.valueOf(colorOnSurface));
+        button.setIconTint(ColorStateList.valueOf(colorOnSurface));
         @ColorInt
         int focusRingColor = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
         button.setForegroundTintList(ColorStateList.valueOf(focusRingColor));

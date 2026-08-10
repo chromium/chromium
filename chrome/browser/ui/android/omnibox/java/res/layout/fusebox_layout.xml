@@ -83,7 +83,7 @@ found in the LICENSE file.
         app:layout_constraintEnd_toStartOf="@id/margin_spacer"
         app:layout_constraintTop_toBottomOf="@id/url_bar"/>
 
-    <org.chromium.ui.widget.ButtonCompat
+    <org.chromium.components.browser_ui.widget.chips.ChipView
         style="@style/AiModeChip"
         android:id="@+id/fusebox_activation_chip"
         android:visibility="gone"
