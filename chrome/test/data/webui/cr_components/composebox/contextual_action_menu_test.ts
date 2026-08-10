@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
-import {DEFAULT_FLYOUT_WIDTH_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX, DEFAULT_MAX_MENU_HEIGHT_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import {DEFAULT_FLYOUT_WIDTH_PX, DEFAULT_MAX_MENU_HEIGHT_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -1564,7 +1564,50 @@ suite('ContextualActionMenu', () => {
 
     assertEquals('left', flyout.getAttribute('data-position'));
 
-    // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
+    // When blocked on both sides in a narrow panel, the flyout positions at the
+    // bottom.
+    trigger.getBoundingClientRect = () => ({
+      left: 10,
+      right: 250,
+      top: 100,
+      bottom: 132,
+      width: 240,
+      height: 32,
+    } as DOMRect);
+    Object.defineProperty(
+        window, 'innerWidth', {value: 300, configurable: true});
+
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await actionMenu.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('bottom', flyout.getAttribute('data-position'));
+  });
+
+  test('Share tabs flyout bottom indent', async () => {
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.contextManagementInComposeboxEnabled = true;
+    actionMenu.tabSuggestions = [
+      createTabSuggestion({tabId: 1, title: 'Tab 1'}),
+    ];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!trigger);
+    assertTrue(!!flyout);
+
+    Object.defineProperty(
+        flyout, 'offsetWidth', {value: 320, configurable: true});
+
     trigger.getBoundingClientRect = () => ({
       left: 16,
       right: 256,
@@ -1573,13 +1616,16 @@ suite('ContextualActionMenu', () => {
       width: 240,
       height: 32,
     } as DOMRect);
-    Object.defineProperty(window, 'innerWidth', {value: 380, configurable: true});
+    Object.defineProperty(
+        window, 'innerWidth', {value: 500, configurable: true});
 
     trigger.dispatchEvent(new PointerEvent('pointerenter'));
     await actionMenu.updateComplete;
     await microtasksFinished();
 
     assertEquals('bottom', flyout.getAttribute('data-position'));
+    assertEquals(
+        '114px', flyout.style.getPropertyValue('--share-tabs-flyout-indent'));
   });
 
   test('Favicon group rendered in action menu', async () => {

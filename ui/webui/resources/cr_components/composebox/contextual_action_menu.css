@@ -54,7 +54,8 @@
 
 :host(:not([unbounded-menu-enabled]))
     .share-tabs-flyout[data-position='bottom'] {
-  inset-inline-start: anchor(start);
+  inset-inline-start:
+      calc(anchor(start) + var(--share-tabs-flyout-indent, 0px));
   top: anchor(bottom);
 }
 

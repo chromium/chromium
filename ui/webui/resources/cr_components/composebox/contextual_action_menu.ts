@@ -39,6 +39,7 @@ export const DEFAULT_FLYOUT_WIDTH_PX = 320;
 export const VIEWPORT_BUFFER_PX = 16;
 export const MIN_MENU_HEIGHT_PX = 100;
 export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
+export const SHARE_TABS_FLYOUT_INDENT_PX = 114;
 // From the CSS file (default max-height and min-height):
 export const DEFAULT_MAX_MENU_HEIGHT_PX = 540;
 export const DEFAULT_MIN_MENU_HEIGHT_PX = 144;
@@ -1118,6 +1119,23 @@ export class ContextualActionMenuElement extends
         }
       }
 
+      let flyoutIndent = 0;
+      if (this.shareTabsFlyoutPosition_ === 'bottom') {
+        const rtl = getComputedStyle(this).direction === 'rtl';
+        if (rtl) {
+          const maxRight = triggerRect.right - flyoutWidth - VIEWPORT_BUFFER_PX;
+          flyoutIndent =
+              Math.max(0, Math.min(SHARE_TABS_FLYOUT_INDENT_PX, maxRight));
+        } else {
+          const maxLeft = viewportWidth - triggerRect.left - flyoutWidth -
+              VIEWPORT_BUFFER_PX;
+          flyoutIndent =
+              Math.max(0, Math.min(SHARE_TABS_FLYOUT_INDENT_PX, maxLeft));
+        }
+      }
+      flyout.style.setProperty(
+          '--share-tabs-flyout-indent', `${flyoutIndent}px`);
+
       let flyoutTop = triggerRect.top;
       if (this.shareTabsFlyoutPosition_ === 'bottom') {
         flyoutTop = triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX;
@@ -1162,6 +1180,7 @@ export class ContextualActionMenuElement extends
         this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
     if (flyout) {
       flyout.style.maxHeight = '';
+      flyout.style.removeProperty('--share-tabs-flyout-indent');
     }
   }
 
