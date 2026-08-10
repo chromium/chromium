@@ -149,6 +149,20 @@ config("compiler") {
 
   ldflags = []
 
+  if (use_clang_modules) {
+    # Work around LLVM builtin math lowerings under Clang modules emitting
+    # calls to `hypotf` on Windows, whereas UCRT only provides `_hypotf`.
+    # See http://b/525295309 and https://github.com/llvm/llvm-project/issues/209989.
+    if (current_cpu == "x86") {
+      # On x86 (32-bit cdecl), C symbols have a leading underscore:
+      # `hypotf` becomes `_hypotf`, and `_hypotf` becomes `__hypotf`.
+      ldflags += [ "/alternatename:_hypotf=__hypotf" ]
+    } else {
+      # On x64 and arm64, symbols are undecorated.
+      ldflags += [ "/alternatename:hypotf=_hypotf" ]
+    }
+  }
+
   if (use_lld) {
     # lld defaults to writing the current time in the pe/coff header.
     # For build reproducibility, pass an explicit timestamp. See
