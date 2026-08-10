@@ -2103,8 +2103,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // Check to see if this child should be placed within this fragmentainer.
       // We base this calculation on the grid-area rather than the offset.
       // The row can either be:
-      //  - Above, we've handled it already in a previous fragment.
       //  - Below, we'll handle it within a subsequent fragment.
+      //  - Above, we've handled it already in a previous fragment.
       //
       // NOTE: Basing this calculation of the row position has the effect that
       // a child with a negative margin will be placed in the fragmentainer
@@ -2124,9 +2124,19 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         }
         has_subsequent_children = true;
         continue;
-      }
-      if (grid_area.offset.block_offset < LayoutUnit() && !break_token)
+      } else if (grid_area.offset.block_offset < LayoutUnit() && !break_token &&
+                 IsBreakInside(GetBreakToken())) {
+        // We know this child was handled in a previous fragment because the
+        // row falls above this fragmentainer (so we would have tried to start
+        // it in a previous fragment), the child has no incoming break token (so
+        // is not being continued into this fragment), and the grid is currently
+        // *mid*-fragmentation (so we know there actually *is* a previous
+        // fragment).
+        //
+        // TODO: What if the item has a break_token but hasn't broken inside
+        // yet? (e.g. break before).
         continue;
+      }
 
       auto* result = grid_item.node.Layout(space, break_token);
       DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
