@@ -52,6 +52,7 @@ public class TopControlsStackerUnitTest {
         private static final int LAYER_HEIGHT_BOOKMARK_BAR = 120;
         private static final int LAYER_HEIGHT_HAIRLINE = 1;
         private static final int LAYER_HEIGHT_PROGRESS_BAR = 5;
+        private static final int LAYER_HEIGHT_TAB_SHARING_TOOLBAR = 48;
 
         private final String mName;
         private final @TopControlType int mType;
@@ -214,6 +215,26 @@ public class TopControlsStackerUnitTest {
                     ScrollBehavior.DEFAULT_SCROLLABLE,
                     /* contributesToTotalHeight= */ false,
                     LAYER_HEIGHT_PROGRESS_BAR);
+        }
+
+        /**
+         * Returns a mock layer for {@link TopControlType#TAB_SHARING_TOOLBAR}.
+         *
+         * <p>Note: Because the tab sharing toolbar sits beneath scrollable controls like {@link
+         * TopControlType#TOOLBAR} in {@code STACK_ORDER}, it MUST be configured as {@link
+         * ScrollBehavior#DEFAULT_SCROLLABLE}. Placing a non-scrollable (fixed minHeight) banner
+         * beneath a scrollable toolbar violates {@link TopControlsStacker} geometrical rules, as
+         * scrolling would cause upper toolbars to collapse into or telescope over the lower fixed
+         * banner.
+         */
+        static TestLayer tabSharingToolbarLayer() {
+            return new TestLayer(
+                    "TAB_SHARING_TOOLBAR",
+                    TopControlType.TAB_SHARING_TOOLBAR,
+                    TopControlVisibility.VISIBLE,
+                    ScrollBehavior.DEFAULT_SCROLLABLE,
+                    /* contributesToTotalHeight= */ true,
+                    LAYER_HEIGHT_TAB_SHARING_TOOLBAR);
         }
     }
 
@@ -1445,5 +1466,51 @@ public class TopControlsStackerUnitTest {
                     /* requestNewFrame= */ mRequestNewFrame,
                     /* isVisibilityForced= */ false);
         }
+    }
+
+    /**
+     * Verifies that when {@link TopControlType#TAB_SHARING_TOOLBAR} is added to the stacker, it
+     * properly contributes its height to the browser's total top controls height (shifting web
+     * content downwards without clipping) and settles at its proper vertical offset beneath the
+     * primary URL toolbar according to {@code STACK_ORDER}.
+     */
+    @Test
+    public void testTabSharingToolbar_StackingAndGeometry() {
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer tabSharingToolbar = TestLayer.tabSharingToolbarLayer();
+        TestLayer progressBar = TestLayer.progressBarLayer();
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.addControl(tabSharingToolbar);
+        mTopControlsStacker.addControl(progressBar);
+
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        // TabStrip (50) + Toolbar (100) + TabSharingToolbar (48) = 198 total height.
+        assertControlsHeight(198, 0);
+
+        assertEquals(0, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP));
+        // Toolbar sits directly beneath TabStrip (height 50).
+        assertEquals(50, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TOOLBAR));
+        // TabSharingToolbar sits beneath both TabStrip (50) and Toolbar (100) = 150 total offset.
+        assertEquals(
+                150,
+                mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TAB_SHARING_TOOLBAR));
+    }
+
+    @Test
+    public void testIsLayerAtTop() {
+        Assert.assertFalse(mTopControlsStacker.isLayerAtTop(TopControlType.TAB_SHARING_TOOLBAR));
+        mTopControlsStacker.addControl(TestLayer.toolbarLayer());
+        Assert.assertTrue(mTopControlsStacker.isLayerAtTop(TopControlType.TOOLBAR));
+    }
+
+    @Test
+    public void testLifecycleAndOffsetTagsInfo() {
+        mTopControlsStacker.addControl(TestLayer.toolbarLayer());
+        mTopControlsStacker.onTopControlsHeightChanged(100, 50);
+        mTopControlsStacker.destroy();
     }
 }
