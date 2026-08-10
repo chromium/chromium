@@ -29,7 +29,7 @@
   </div>
   "></iframe>
 <script>
-promise_test(async function() {
+promise_test(async t => {
   await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
 
   const iframe = document.querySelector("iframe");
@@ -99,17 +99,13 @@ promise_test(async function() {
   assert_equals(timeOnScrollEventOnAnotherScroller, null,
     "The new scroll event is not dispatched right after the transitionrun event");
 
-  // Await a requestAnimationFrame callback.
-  await new Promise(resolve => requestAnimationFrame(resolve));
-
-  assert_equals(timeOnScrollEventOnAnotherScroller, null,
-    "The new scroll event is not dispatched one frame after the transitionrun event");
-
-  // Await one more requestAnimationFrame callback.
-  await new Promise(resolve => requestAnimationFrame(resolve));
+  // Wait for the next iteration of the event loop (the timeout guarantees that
+  // the requestAnimationFrame callback is not served in the current iteration).
+  await new Promise(resolve =>
+        t.step_timeout(() => requestAnimationFrame(resolve), 0));
 
   assert_not_equals(timeOnScrollEventOnAnotherScroller, null,
-    "The new scroll event is dispatched two frames after the transitionrun event");
+    "The new scroll event is dispatched in next iteration after the transitionrun event");
   assert_less_than(timeOnTransitionRun, timeOnScrollEventOnAnotherScroller,
     "The new scroll event is dispatched after the transitionrun event");
 });
