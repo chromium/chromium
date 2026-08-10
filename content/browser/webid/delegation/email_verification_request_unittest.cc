@@ -7,8 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/escape.h"
-#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -401,76 +399,52 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   EXPECT_CALL(*mock_network_manager,
               SendTokenRequest(kIssuanceEndpoint, _, _, _))
-      .WillOnce(
-          [&](const GURL& url, const std::string& url_encoded_post_data,
-              const net::HttpRequestHeaders& extra_headers,
-              EmailVerifierNetworkRequestManager::TokenRequestCallback
-                  callback) {
-            base::StringPairs params;
-            EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
-                url_encoded_post_data, '=', '&', &params));
-            EXPECT_EQ(params.size(), 2u);
-            EXPECT_EQ(params[0].first, "request_token");
-            EXPECT_FALSE(params[0].second.empty());
-            EXPECT_EQ(params[1].first, "email");
-            EXPECT_EQ(params[1].second,
-                      base::EscapeUrlEncodedData(kEmail, /*use_plus=*/true));
+      .WillOnce([&](const GURL& url, const std::string& post_data,
+                    const net::HttpRequestHeaders& extra_headers,
+                    EmailVerifierNetworkRequestManager::TokenRequestCallback
+                        callback) {
+        auto post_dict = base::JSONReader::ReadDict(
+            post_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        ASSERT_TRUE(post_dict);
+        EXPECT_FALSE(post_dict->FindString("request_token"));
+        const std::string* email = post_dict->FindString("email");
+        ASSERT_TRUE(email);
+        EXPECT_EQ(*email, kEmail);
 
-            auto jwt_json = sdjwt::Jwt::Parse(params[0].second);
-            EXPECT_TRUE(jwt_json);
+        sdjwt::Jwk verified_public_key;
+        ASSERT_NO_FATAL_FAILURE(
+            VerifyMessageSignature(extra_headers, "issuer.example.com",
+                                   "/token", post_data, &verified_public_key));
 
-            auto jwt = sdjwt::Jwt::From(*jwt_json);
-            EXPECT_TRUE(jwt);
+        sdjwt::SdJwt token;
+        sdjwt::Header h;
+        h.typ = "evt+jwt";
+        h.kid = "test_kid";
+        h.alg = "EdDSA";
+        sdjwt::Payload p;
+        p.iss = url::Origin::Create(kIssuerUrl).Serialize();
+        p.email = kEmail;
+        p.email_verified = true;
+        p.iat = base::Time::Now();
+        sdjwt::ConfirmationKey cnf;
+        cnf.jwk = verified_public_key;
+        p.cnf = cnf;
 
-            auto header = sdjwt::Header::From(*base::JSONReader::ReadDict(
-                jwt->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-            EXPECT_TRUE(header);
-            EXPECT_EQ(header->typ, "JWT");
-            EXPECT_EQ(header->alg, "EdDSA");
-            // Asserts that the JWK is present in the header.
-            EXPECT_TRUE(header->jwk);
+        auto key = crypto::keypair::PrivateKey::GenerateEd25519();
+        auto signer = sdjwt::CreateJwtSigner(issuer_key);
 
-            sdjwt::Jwk verified_public_key;
-            ASSERT_NO_FATAL_FAILURE(VerifyMessageSignature(
-                extra_headers, "issuer.example.com", "/token",
-                url_encoded_post_data, &verified_public_key));
+        sdjwt::Jwt issued_jwt;
+        issued_jwt.header = *(h.ToJson());
+        issued_jwt.payload = *(p.ToJson());
+        EXPECT_TRUE(issued_jwt.Sign(std::move(signer)));
 
-            auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
-                jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-            EXPECT_TRUE(payload);
-            EXPECT_EQ(payload->aud,
-                      url::Origin::Create(kIssuerUrl).Serialize());
-            EXPECT_EQ(payload->email, kEmail);
+        token.jwt = issued_jwt;
 
-            sdjwt::SdJwt token;
-            sdjwt::Header h;
-            h.typ = "evt+jwt";
-            h.kid = "test_kid";
-            h.alg = "EdDSA";
-            sdjwt::Payload p;
-            p.iss = url::Origin::Create(kIssuerUrl).Serialize();
-            p.email = kEmail;
-            p.email_verified = true;
-            p.iat = base::Time::Now();
-            sdjwt::ConfirmationKey cnf;
-            cnf.jwk = verified_public_key;
-            p.cnf = cnf;
-
-            auto key = crypto::keypair::PrivateKey::GenerateEd25519();
-            auto signer = sdjwt::CreateJwtSigner(issuer_key);
-
-            sdjwt::Jwt issued_jwt;
-            issued_jwt.header = *(h.ToJson());
-            issued_jwt.payload = *(p.ToJson());
-            EXPECT_TRUE(issued_jwt.Sign(std::move(signer)));
-
-            token.jwt = issued_jwt;
-
-            EmailVerifierNetworkRequestManager::TokenResult result;
-            result.token = base::Value(token.Serialize());
-            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
-                                    std::move(result));
-          });
+        EmailVerifierNetworkRequestManager::TokenResult result;
+        result.token = base::Value(token.Serialize());
+        std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                std::move(result));
+      });
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> is_verifiable;
   std::string nonce = kNonce;
@@ -619,73 +593,50 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
 
   EXPECT_CALL(*mock_network_manager,
               SendTokenRequest(kIssuanceEndpoint, _, _, _))
-      .WillOnce(WithArgs<1, 2, 3>(
-          [&](const std::string& url_encoded_post_data,
-              const net::HttpRequestHeaders& extra_headers,
-              EmailVerifierNetworkRequestManager::TokenRequestCallback
-                  callback) {
-            base::StringPairs params;
-            EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
-                url_encoded_post_data, '=', '&', &params));
-            EXPECT_EQ(params.size(), 2u);
-            EXPECT_EQ(params[0].first, "request_token");
-            EXPECT_FALSE(params[0].second.empty());
-            EXPECT_EQ(params[1].first, "email");
-            EXPECT_EQ(params[1].second,
-                      base::EscapeUrlEncodedData(kEmail, /*use_plus=*/true));
+      .WillOnce([&](const GURL& url, const std::string& post_data,
+                    const net::HttpRequestHeaders& extra_headers,
+                    EmailVerifierNetworkRequestManager::TokenRequestCallback
+                        callback) {
+        auto post_dict = base::JSONReader::ReadDict(
+            post_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        ASSERT_TRUE(post_dict);
+        EXPECT_FALSE(post_dict->FindString("request_token"));
+        const std::string* email = post_dict->FindString("email");
+        ASSERT_TRUE(email);
+        EXPECT_EQ(*email, kEmail);
 
-            auto jwt_json = sdjwt::Jwt::Parse(params[0].second);
-            EXPECT_TRUE(jwt_json);
+        sdjwt::Jwk verified_public_key;
+        ASSERT_NO_FATAL_FAILURE(
+            VerifyMessageSignature(extra_headers, "issuer.example.com",
+                                   "/token", post_data, &verified_public_key));
 
-            auto jwt = sdjwt::Jwt::From(*jwt_json);
-            EXPECT_TRUE(jwt);
+        sdjwt::SdJwt token;
+        sdjwt::Header h;
+        h.typ = "evt+jwt";
+        h.alg = "RS256";
+        sdjwt::Payload p;
+        p.iss = url::Origin::Create(kIssuerUrl).Serialize();
+        p.email = kEmail;
+        p.iat = base::Time::Now();
+        p.email_verified = true;
+        sdjwt::ConfirmationKey cnf;
+        cnf.jwk = verified_public_key;
+        p.cnf = cnf;
 
-            auto header = sdjwt::Header::From(*base::JSONReader::ReadDict(
-                jwt->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-            EXPECT_TRUE(header);
-            EXPECT_EQ(header->typ, "JWT");
-            EXPECT_EQ(header->alg, "RS256");
-            EXPECT_TRUE(header->jwk);
+        auto signer = sdjwt::CreateJwtSigner(issuer_key);
 
-            sdjwt::Jwk verified_public_key;
-            ASSERT_NO_FATAL_FAILURE(VerifyMessageSignature(
-                extra_headers, "issuer.example.com", "/token",
-                url_encoded_post_data, &verified_public_key));
+        sdjwt::Jwt issued_jwt;
+        issued_jwt.header = *(h.ToJson());
+        issued_jwt.payload = *(p.ToJson());
+        EXPECT_TRUE(issued_jwt.Sign(std::move(signer)));
 
-            auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
-                jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-            EXPECT_TRUE(payload);
-            EXPECT_EQ(payload->aud,
-                      url::Origin::Create(kIssuerUrl).Serialize());
-            EXPECT_EQ(payload->email, kEmail);
+        token.jwt = issued_jwt;
 
-            sdjwt::SdJwt token;
-            sdjwt::Header h;
-            h.typ = "evt+jwt";
-            h.alg = "RS256";
-            sdjwt::Payload p;
-            p.iss = url::Origin::Create(kIssuerUrl).Serialize();
-            p.email = kEmail;
-            p.iat = base::Time::Now();
-            p.email_verified = true;
-            sdjwt::ConfirmationKey cnf;
-            cnf.jwk = verified_public_key;
-            p.cnf = cnf;
-
-            auto signer = sdjwt::CreateJwtSigner(issuer_key);
-
-            sdjwt::Jwt issued_jwt;
-            issued_jwt.header = *(h.ToJson());
-            issued_jwt.payload = *(p.ToJson());
-            EXPECT_TRUE(issued_jwt.Sign(std::move(signer)));
-
-            token.jwt = issued_jwt;
-
-            EmailVerifierNetworkRequestManager::TokenResult result;
-            result.token = base::Value(token.Serialize());
-            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
-                                    std::move(result));
-          }));
+        EmailVerifierNetworkRequestManager::TokenResult result;
+        result.token = base::Value(token.Serialize());
+        std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                std::move(result));
+      });
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
   email_verification_request_.CheckIfVerifiable(kEmail, future.GetCallback());

@@ -8,9 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -285,35 +283,6 @@ void EmailVerificationRequest::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
-    const std::string& email,
-    const sdjwt::Jwk& public_key,
-    const url::Origin& issuer) {
-  sdjwt::Header header;
-  header.alg = public_key.alg;
-  header.typ = "JWT";
-  header.jwk = public_key;
-  CHECK(header.jwk);
-
-  base::Time now = base::Time::Now();
-  // TODO(crbug.com/380367784): figure out what's the right
-  // expiration time for the request token.
-  base::TimeDelta ttl = base::Minutes(5);
-  base::Time expiration = now + ttl;
-
-  sdjwt::Payload payload;
-  payload.email = email;
-  payload.aud = issuer.Serialize();
-  payload.exp = expiration;
-  payload.iat = now;
-
-  sdjwt::Jwt jwt;
-  jwt.header = *header.ToJson();
-  jwt.payload = *payload.ToJson();
-
-  return jwt;
-}
-
 // The email verification process starts once the user
 // goes through Step 1 and 2 described here:
 //
@@ -573,7 +542,7 @@ void EmailVerificationRequest::Verify(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  // Both conditions are met! Proceed to create token and send request.
+  // Both conditions are met! Proceed to generate keypair and send request.
 
   // TODO(crbug.com/380367784): understand and document why RSA was
   // preferred over ECDSA here.
@@ -603,23 +572,9 @@ void EmailVerificationRequest::Verify(
     return;
   }
 
-  std::optional<sdjwt::Jwk> public_key = sdjwt::ExportPublicKey(*private_key);
-  CHECK(public_key);
-
-  sdjwt::Jwt jwt = CreateRequestToken(
-      result.email, *public_key, url::Origin::Create(result.issuance_endpoint));
-
-  sdjwt::Signer signer = sdjwt::CreateJwtSigner(*private_key);
-  CHECK(jwt.Sign(std::move(signer)));
-
-  sdjwt::JSONString request_token = jwt.Serialize();
-  CHECK(!request_token->empty());
-
-  // We pass the request_token for backwards compatibility, and the email
-  // address for spec compliance.
-  std::string post_data =
-      "request_token=" + request_token.value() +
-      "&email=" + base::EscapeUrlEncodedData(result.email, /*use_plus=*/true);
+  base::DictValue post_dict;
+  post_dict.Set("email", result.email);
+  std::string post_data = *base::WriteJson(post_dict);
 
   // Create shared objects to hold the results
   scoped_refptr<TokenResultOrError> token =

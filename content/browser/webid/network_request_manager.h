@@ -97,17 +97,20 @@ class CONTENT_EXPORT NetworkRequestManager {
   // when the download result has been parsed.
   void DownloadJsonAndParse(
       std::unique_ptr<network::ResourceRequest> resource_request,
-      std::optional<std::string> url_encoded_post_data,
+      std::optional<std::string> post_data,
       ParseJsonCallback parse_json_callback,
-      bool allow_http_error_results = false);
+      bool allow_http_error_results = false,
+      const std::string& content_type = "application/x-www-form-urlencoded");
 
   // Starts download result using `url_loader`. Calls `download_callback` when
   // the download completes.
-  void DownloadUrl(std::unique_ptr<network::ResourceRequest> resource_request,
-                   std::optional<std::string> url_encoded_post_data,
-                   DownloadCallback download_callback,
-                   size_t max_download_size,
-                   bool allow_http_error_results = false);
+  void DownloadUrl(
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      std::optional<std::string> post_data,
+      DownloadCallback download_callback,
+      size_t max_download_size,
+      bool allow_http_error_results = false,
+      const std::string& content_type = "application/x-www-form-urlencoded");
 
   // Called when download initiated by DownloadUrl() completes.
   void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,
