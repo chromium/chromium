@@ -44,6 +44,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -52,6 +54,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -82,6 +85,7 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -111,6 +115,7 @@ public class BottomBarCoordinatorUnitTest {
     public void setUp() {
         BottomBarActionEligibility.setCountrySupplier(() -> "us");
         TrackerFactory.setTrackerForTests(mTracker);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
         when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
@@ -147,6 +152,7 @@ public class BottomBarCoordinatorUnitTest {
     @After
     public void tearDown() {
         BottomBarActionEligibility.setCountrySupplier(null);
+        GlicKeyedServiceFactory.setForTesting(null);
     }
 
     @Test
@@ -176,6 +182,88 @@ public class BottomBarCoordinatorUnitTest {
         actionModel.set(ActionProperties.ON_PRESS_CALLBACK, onPressCallback);
         newTabButton.performClick();
         assertTrue(clicked.get());
+    }
+
+    @Test
+    public void testActionBinding_setsTooltipText() {
+        PropertyModel actionModel = new PropertyModel.Builder(ActionProperties.BASE_KEYS).build();
+        mActionSupplier.set(actionModel);
+
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+        assertNull(newTabButton.getTooltipText());
+
+        actionModel.set(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "New Tab Tooltip");
+        assertEquals("New Tab Tooltip", newTabButton.getTooltipText());
+    }
+
+    @Test
+    public void testActionBinding_setsLongClickListener() {
+        AtomicBoolean longClicked = new AtomicBoolean(false);
+        Callback<View> onLongPressCallback = (v) -> longClicked.set(true);
+        PropertyModel actionModel = new PropertyModel.Builder(ActionProperties.BASE_KEYS).build();
+
+        mActionSupplier.set(actionModel);
+
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+
+        // No callback is assigned, long clicking does not trigger callback.
+        newTabButton.performLongClick();
+        assertFalse(longClicked.get());
+
+        // Assign the callback and test again.
+        actionModel.set(ActionProperties.ON_LONG_PRESS_CALLBACK, onLongPressCallback);
+        newTabButton.performLongClick();
+        assertTrue(longClicked.get());
+    }
+
+    @Test
+    public void testExtraButton_bindsEligibleActionTooltipAndLongPress_withoutClobbering() {
+        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
+        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
+        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        AtomicBoolean glicLongClicked = new AtomicBoolean(false);
+        AtomicBoolean aiModeLongClicked = new AtomicBoolean(false);
+
+        PropertyModel glicModel =
+                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask Gemini Tooltip")
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> glicLongClicked.set(true))
+                        .build();
+
+        PropertyModel aiModeModel =
+                new PropertyModel.Builder(ActionProperties.BASE_KEYS)
+                        .with(
+                                ActionProperties.TOOLTIP_TEXT_RESOLVER,
+                                context -> "Ask AI Mode Tooltip")
+                        .with(
+                                ActionProperties.ON_LONG_PRESS_CALLBACK,
+                                (v) -> aiModeLongClicked.set(true))
+                        .build();
+
+        // Supply both models (simulating ActionUtils registration).
+        mGlicActionSupplier.set(glicModel);
+        mAiModeActionSupplier.set(aiModeModel);
+
+        // Trigger profile update so mediator resolves GLIC as eligible candidate.
+        mProfileSupplier.set(null);
+        mProfileSupplier.set(mProfile);
+
+        View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
+        assertNotNull(extraButton);
+
+        assertEquals("Ask Gemini Tooltip", extraButton.getTooltipText());
+
+        extraButton.performLongClick();
+        assertTrue(glicLongClicked.get());
+        assertFalse(aiModeLongClicked.get());
     }
 
     @Test
