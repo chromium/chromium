@@ -124,6 +124,7 @@ using ::testing::IsTrue;
 using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointwise;
 using ::testing::Return;
@@ -1778,6 +1779,59 @@ TEST_F(PdfViewWebPluginTest, SelectAll) {
   EXPECT_TRUE(plugin_->ExecuteEditCommand(
       /*name=*/blink::WebString::FromAscii("SelectAll"),
       /*value=*/blink::WebString()));
+}
+
+TEST_F(PdfViewWebPluginTest, MakeTextWritingDirection) {
+  // When text editing is allowed, the command should succeed and call the
+  // engine.
+  EXPECT_CALL(*engine_ptr_, CanEditText()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_,
+              SetFocusedFormTextDirection(base::i18n::LEFT_TO_RIGHT))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii(
+          "MakeTextWritingDirectionLeftToRight"),
+      /*value=*/blink::WebString()));
+
+  EXPECT_CALL(*engine_ptr_,
+              SetFocusedFormTextDirection(base::i18n::RIGHT_TO_LEFT))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii(
+          "MakeTextWritingDirectionRightToLeft"),
+      /*value=*/blink::WebString()));
+
+  EXPECT_CALL(*engine_ptr_,
+              SetFocusedFormTextDirection(base::i18n::UNKNOWN_DIRECTION))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii("MakeTextWritingDirectionNatural"),
+      /*value=*/blink::WebString()));
+}
+
+TEST_F(PdfViewWebPluginTest, MakeTextWritingDirectionDenied) {
+  // When text editing is not allowed, the command should fail and not call the
+  // engine.
+  EXPECT_CALL(*engine_ptr_, CanEditText()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, SetFocusedFormTextDirection(_)).Times(0);
+  EXPECT_FALSE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii(
+          "MakeTextWritingDirectionLeftToRight"),
+      /*value=*/blink::WebString()));
+  EXPECT_FALSE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii(
+          "MakeTextWritingDirectionRightToLeft"),
+      /*value=*/blink::WebString()));
+  EXPECT_FALSE(plugin_->ExecuteEditCommand(
+      /*name=*/blink::WebString::FromAscii("MakeTextWritingDirectionNatural"),
+      /*value=*/blink::WebString()));
+}
+
+TEST_F(PdfViewWebPluginTest, GetFocusedFormTextDirection) {
+  EXPECT_CALL(*engine_ptr_, GetFocusedFormTextDirection())
+      .WillOnce(Return(base::i18n::RIGHT_TO_LEFT));
+  EXPECT_THAT(plugin_->GetFocusedFormTextDirection(),
+              Optional(base::i18n::RIGHT_TO_LEFT));
 }
 
 TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {

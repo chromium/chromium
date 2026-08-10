@@ -277,12 +277,15 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Sets the text direction for the currently focused form field. Returns false
   // if there is no focused form field, or if the focused form field is of a
   // type that does not support text direction (e.g. buttons).
-  bool SetFocusedFormTextDirection(base::i18n::TextDirection direction);
+  // Virtual to support testing.
+  virtual bool SetFocusedFormTextDirection(base::i18n::TextDirection direction);
 
   // Gets the text direction for the currently focused form field. Returns
   // std::nullopt if there is no focused form field, or if the focused form
   // field is of a type that does not support text direction.
-  std::optional<base::i18n::TextDirection> GetFocusedFormTextDirection() const;
+  // Virtual to support testing.
+  virtual std::optional<base::i18n::TextDirection> GetFocusedFormTextDirection()
+      const;
 
   // Handles actions invoked by Accessibility clients.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);

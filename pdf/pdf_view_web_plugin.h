@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -315,6 +316,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   bool CanUndo() const override;
   bool CanRedo() const override;
   bool CanCopy() const override;
+  std::optional<base::i18n::TextDirection> GetFocusedFormTextDirection()
+      const override;
   bool ExecuteEditCommand(const blink::WebString& name,
                           const blink::WebString& value) override;
   blink::WebURL LinkAtPosition(const gfx::Point& /*position*/) const override;
@@ -728,6 +731,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   bool Paste(const blink::WebString& value);
   bool Undo();
   bool Redo();
+
+  bool SetFocusedFormTextDirection(base::i18n::TextDirection direction);
 
   bool HandleWebInputEvent(const blink::WebInputEvent& event);
 

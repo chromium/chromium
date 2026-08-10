@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -71,6 +72,15 @@ class TestPDFiumEngine : public PDFiumEngine {
               (override));
 
   MOCK_METHOD(bool, CanEditText, (), (const override));
+
+  MOCK_METHOD(bool,
+              SetFocusedFormTextDirection,
+              (base::i18n::TextDirection),
+              (override));
+  MOCK_METHOD(std::optional<base::i18n::TextDirection>,
+              GetFocusedFormTextDirection,
+              (),
+              (const, override));
 
   MOCK_METHOD(bool, HasPermission, (DocumentPermission), (const override));
 
