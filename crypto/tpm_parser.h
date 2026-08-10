@@ -180,6 +180,11 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(
 CRYPTO_EXPORT TpmParseErrorOr<SignResponse> ParseSignResponse(
     base::span<const uint8_t> response_blob);
 
+// Parses a serialized `TPMT_SIGNATURE` and returns the normalized signature
+// (DER-encoded for ECDSA, raw bytes for RSA).
+CRYPTO_EXPORT std::optional<std::vector<uint8_t>> ParseTpmSignature(
+    base::span<const uint8_t> signature_blob);
+
 // Parses a serialized `TPMT_SIGNATURE` and returns the signature and hash
 // algorithms used, solely for telemetry.
 CRYPTO_EXPORT SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(

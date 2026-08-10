@@ -209,6 +209,25 @@ TpmParseErrorOr<SignResponse> ParseSignResponse(
       });
 }
 
+std::optional<std::vector<uint8_t>> ParseTpmSignature(
+    base::span<const uint8_t> signature_blob) {
+  RawSignatureComponents raw_sig =
+      parse_tpm_signature(base::SpanToRustSlice(signature_blob));
+
+  if (raw_sig.status != SignatureParseResult::Ok) {
+    return std::nullopt;
+  }
+
+  switch (raw_sig.sig_alg) {
+    case TpmAlg::TPM_ALG_RSASSA:
+      return base::ToVector(raw_sig.rsa_sig);
+    case TpmAlg::TPM_ALG_ECDSA:
+      return ConvertEcdsaRawComponentsToDer(raw_sig.ecdsa_r, raw_sig.ecdsa_s);
+    default:
+      return std::nullopt;
+  }
+}
+
 SignatureErrorOr<SignatureAlgorithms> GetSignatureAlgorithms(
     base::span<const uint8_t> signature_blob) {
   RawSignatureComponents raw_sig =
