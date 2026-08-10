@@ -91,6 +91,7 @@ public class SelectionUtils {
         i.putExtra(SearchManager.QUERY, query);
         i.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         i.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        i.setPackage(context.getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             context.startActivity(i);

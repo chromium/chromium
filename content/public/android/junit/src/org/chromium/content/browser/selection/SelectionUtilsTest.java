@@ -53,6 +53,7 @@ public class SelectionUtilsTest {
         Intent intent = Shadows.shadowOf((Application) context).getNextStartedActivity();
         assertNotNull(intent);
         assertEquals(Intent.ACTION_WEB_SEARCH, intent.getAction());
+        assertEquals(context.getPackageName(), intent.getPackage());
         assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
     }
