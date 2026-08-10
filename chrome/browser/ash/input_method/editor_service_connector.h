@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class ApplicationLocaleStorage;
 
 namespace ash::input_method {
 
@@ -17,7 +20,10 @@ class EditorContext;
 
 class EditorServiceConnector {
  public:
-  explicit EditorServiceConnector(EditorContext* context);
+  // `application_locale_storage` must not be null and must outlive `this`.
+  EditorServiceConnector(
+      const ApplicationLocaleStorage* application_locale_storage,
+      EditorContext* context);
   ~EditorServiceConnector();
 
   void BindEditor(
@@ -33,6 +39,8 @@ class EditorServiceConnector {
   bool IsBound();
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   // Not owned by this class
   raw_ptr<EditorContext> context_;
 

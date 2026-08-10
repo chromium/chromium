@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -74,9 +75,11 @@ magic_boost::TransitionAction ConvertToMagicBoostTransitionAction(
 }  // namespace
 
 EditorMediator::EditorMediator(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider)
-    : profile_(profile),
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(profile),
       panel_manager_(this),
       editor_geolocation_provider_(std::move(editor_geolocation_provider)),
       editor_context_(this, this, editor_geolocation_provider_.get()),
@@ -149,8 +152,8 @@ void EditorMediator::OnFocus(int context_id) {
   }
 
   if (IsAllowedForUse() && !editor_service_connector_) {
-    editor_service_connector_ =
-        std::make_unique<EditorServiceConnector>(&editor_context_);
+    editor_service_connector_ = std::make_unique<EditorServiceConnector>(
+        &application_locale_storage_.get(), &editor_context_);
     ResetEditorConnections();
   }
 

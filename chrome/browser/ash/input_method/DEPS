@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/feedback",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/manta",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",

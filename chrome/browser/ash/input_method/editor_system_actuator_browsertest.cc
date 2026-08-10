@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -85,6 +87,7 @@ INSTANTIATE_TEST_SUITE_P(ManifestV3,
 IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
                        AnnounceFeedbackSubmitted) {
   EditorMediator editor_mediator(
+      g_browser_process->GetFeatures()->application_locale_storage(),
       ash::AccessibilityManager::Get()->profile(),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(
@@ -102,6 +105,7 @@ IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
 IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
                        AnnounceTextInsertion) {
   EditorMediator editor_mediator(
+      g_browser_process->GetFeatures()->application_locale_storage(),
       ash::AccessibilityManager::Get()->profile(),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(

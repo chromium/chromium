@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ash/input_method/editor_config_factory.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
 namespace ash::input_method {
 namespace {
 
-orca::mojom::EditorConfigPtr EnglishConfig() {
+orca::mojom::EditorConfigPtr EnglishConfig(std::string locale) {
   std::vector<orca::mojom::PresetTextQueryType> allowed;
   if (base::FeatureList::IsEnabled(features::kOrcaElaborate)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
@@ -35,10 +36,10 @@ orca::mojom::EditorConfigPtr EnglishConfig() {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/GetSystemLocale());
+      /*language_code=*/std::move(locale));
 }
 
-orca::mojom::EditorConfigPtr InternationalizedConfig() {
+orca::mojom::EditorConfigPtr InternationalizedConfig(std::string locale) {
   std::vector<orca::mojom::PresetTextQueryType> allowed;
   if (base::FeatureList::IsEnabled(features::kOrcaInternationalizeElaborate)) {
     allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
@@ -60,12 +61,13 @@ orca::mojom::EditorConfigPtr InternationalizedConfig() {
   }
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
-      /*language_code=*/GetSystemLocale());
+      /*language_code=*/std::move(locale));
 }
 
 }  // namespace
 
-orca::mojom::EditorConfigPtr BuildConfigFor(const LanguageCategory& language) {
+orca::mojom::EditorConfigPtr BuildConfigFor(LanguageCategory language,
+                                            std::string locale) {
   switch (language) {
     case LanguageCategory::kDanish:
     case LanguageCategory::kDutch:
@@ -78,10 +80,10 @@ orca::mojom::EditorConfigPtr BuildConfigFor(const LanguageCategory& language) {
     case LanguageCategory::kPortugese:
     case LanguageCategory::kSpanish:
     case LanguageCategory::kSwedish:
-      return InternationalizedConfig();
+      return InternationalizedConfig(std::move(locale));
     case LanguageCategory::kEnglish:
     default:
-      return EnglishConfig();
+      return EnglishConfig(std::move(locale));
   }
 }
 
