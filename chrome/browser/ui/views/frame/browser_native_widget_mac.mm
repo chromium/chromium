@@ -275,7 +275,14 @@ void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
   }
   touch_bar_delegate_ = nullptr;
-  background_view_ = nil;
+  if (background_view_) {
+    [background_view_ removeFromSuperview];
+    background_view_ = nil;
+  }
+  if (tint_view_) {
+    [tint_view_ removeFromSuperview];
+    tint_view_ = nil;
+  }
   browser_view_ = nullptr;
   last_preferred_color_scheme_.reset();
   last_theme_color_.reset();
@@ -824,11 +831,10 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
     return;
   }
 
-  [ns_window setOpaque:!is_eligible];
-
   if (!is_eligible) {
+    [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
+    [ns_window setOpaque:YES];
     if (background_view_) {
-      [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
       [background_view_ removeFromSuperview];
       background_view_ = nil;
     }
@@ -840,6 +846,8 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
     last_theme_color_.reset();
     return;
   }
+
+  [ns_window setOpaque:NO];
 
   const ui::NativeTheme::PreferredColorScheme color_scheme =
       browser_view_->GetNativeTheme()->preferred_color_scheme();

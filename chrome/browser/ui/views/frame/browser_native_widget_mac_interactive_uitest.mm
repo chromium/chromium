@@ -162,3 +162,41 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest, ActiveInactiveTintOpacit
       get_color_from_views(tint_view_deactivated, glass_view_deactivated);
   EXPECT_EQ(SkColorSetA(deactivated_color, 255), SkColorSetA(inactive_color, 255));
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
+                       IneligibleBrowserWindowIsOpaque) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame is not supported on this macOS version.";
+  }
+
+  BrowserView* first_view = BrowserView::GetBrowserViewForBrowser(browser());
+  NSWindow* first_window =
+      first_view->GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  NSView* first_content_view = [first_window contentView];
+  EXPECT_EQ(0.001, [[first_window backgroundColor] alphaComponent]);
+  auto [glass1, tint1] = GetGlassViews(first_content_view);
+  EXPECT_NE(glass1, nil);
+
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  GlassFrameService::GetInstance()->OnBrowserActivated(second_browser);
+  EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
+  auto [glass1_ineligible, tint1_ineligible] = GetGlassViews(first_content_view);
+  EXPECT_EQ(glass1_ineligible, nil);
+
+  Browser* third_browser = CreateBrowser(browser()->GetProfile());
+  GlassFrameService::GetInstance()->OnBrowserActivated(third_browser);
+  NSWindow* second_window =
+      BrowserView::GetBrowserViewForBrowser(second_browser)
+          ->GetWidget()
+          ->GetNativeWindow()
+          .GetNativeNSWindow();
+  NSView* second_content_view = [second_window contentView];
+
+  EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
+  EXPECT_EQ(1.0, [[second_window backgroundColor] alphaComponent]);
+  auto [glass2_ineligible, tint2_ineligible] = GetGlassViews(second_content_view);
+  EXPECT_EQ(glass2_ineligible, nil);
+
+  CloseBrowserSynchronously(third_browser);
+  CloseBrowserSynchronously(second_browser);
+}
