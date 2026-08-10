@@ -7474,6 +7474,12 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
   std::vector<std::wstring> properties;
   BoolAttributeToUIAAriaProperty(
       properties, ax::mojom::BoolAttribute::kLiveAtomic, "atomic");
+  StringAttributeToUIAAriaProperty(
+      properties, ax::mojom::StringAttribute::kAriaBrailleLabel,
+      "braillelabel");
+  StringAttributeToUIAAriaProperty(
+      properties, ax::mojom::StringAttribute::kAriaBrailleRoleDescription,
+      "brailleroledescription");
   BoolAttributeToUIAAriaProperty(properties, ax::mojom::BoolAttribute::kBusy,
                                  "busy");
 

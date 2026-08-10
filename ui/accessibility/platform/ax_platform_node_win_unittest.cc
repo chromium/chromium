@@ -4160,6 +4160,25 @@ TEST_F(AXPlatformNodeWinTest, UIAAriaPropertiesForCellIndexText) {
       L"multiline=false;multiselectable=false;required=false;hasactions=false");
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAAriaPropertiesForBrailleAttributes) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kList;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kAriaBrailleLabel,
+                          "Label");
+  root.AddStringAttribute(
+      ax::mojom::StringAttribute::kAriaBrailleRoleDescription, "Role");
+  Init(root);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"braillelabel=Label;brailleroledescription=Role;readonly=true;"
+      L"expanded=false;multiline=false;multiselectable=false;required=false;"
+      L"hasactions=false");
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
   AXNodeData root;
   root.id = 1;
