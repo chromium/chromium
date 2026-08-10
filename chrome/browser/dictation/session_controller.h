@@ -85,6 +85,7 @@ class SessionController : public SessionUiDelegate,
   void MoveToState(SessionState new_state);
   void EndSessionAsynchronously();
   void PurgeToDeleteStreamProviders();
+  content::BrowserContext* GetBrowserContext() const;
 
   const base::raw_ref<SessionControllerDelegate> delegate_;
 

@@ -823,6 +823,7 @@ Called by update_extension_histograms.py.-->
   <int value="575" label="DICTATION_PRIVATE_ON_START_STREAM"/>
   <int value="576" label="DICTATION_PRIVATE_ON_END_STREAM"/>
   <int value="577" label="DICTATION_PRIVATE_ON_CONTEXT_UPDATE"/>
+  <int value="578" label="DICTATION_PRIVATE_ON_BROWSER_LOG_EVENT"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->

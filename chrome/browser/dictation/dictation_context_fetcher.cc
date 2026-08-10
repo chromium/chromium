@@ -133,7 +133,8 @@ void DictationContextFetcher::Fetch(const Target& target,
   // the page is known ineligible just bail now.
   if (GetPageContextEligibility(web_contents) ==
       optimization_guide::PageContextEligibilityStatus::kNotEligible) {
-    VT_LOG() << "Page not eligible for context";
+    VT_LOG(web_contents->GetBrowserContext())
+        << "Page not eligible for context";
     DictationContext context;
     std::move(callback).Run(std::move(context));
     return;
@@ -164,7 +165,8 @@ void DictationContextFetcher::OnPageContextFetched(
   if (!web_contents ||
       GetPageContextEligibility(web_contents.get()) !=
           optimization_guide::PageContextEligibilityStatus::kEligible) {
-    VT_LOG() << "Page not eligible for context";
+    VT_LOG(web_contents->GetBrowserContext())
+        << "Page not eligible for context";
     std::move(callback).Run(std::move(context));
     return;
   }

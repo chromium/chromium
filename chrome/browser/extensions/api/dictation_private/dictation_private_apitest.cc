@@ -15,6 +15,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -180,6 +181,9 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, Basic) {
   ExtensionApiTestStreamProvider test_stream_provider(
       profile(), extension->id(), test_stream_id);
   multiplexer.RegisterStreamProvider(test_stream_id, &test_stream_provider);
+  VT_LOG(profile()) << "Test browser log message";
+  // Flush the buffered log immediately so the test does not wait for the timer.
+  service->log_buffer().Flush();
 
   auto target = std::make_unique<dictation::Target>(dictation::TargetDetails(
       content::GlobalDOMNodeId{content::WeakDocumentPtr()}));
