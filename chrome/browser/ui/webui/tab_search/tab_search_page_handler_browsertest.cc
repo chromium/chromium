@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -329,9 +330,11 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(web_contents);
+    content::TitleWatcher title_watcher(web_contents, base::UTF8ToUTF16(title));
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         base::StringPrintf("document.title = '%s';", title.c_str())));
+    ASSERT_EQ(base::UTF8ToUTF16(title), title_watcher.WaitAndGetTitle());
   }
 
   TabSearchUI* webui_controller() { return webui_controller_.get(); }
