@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -36,6 +37,22 @@ BrowserElementsViews* BrowserElementsViews::From(
     BrowserWindowInterface* browser) {
   auto* const base = BrowserElements::From(browser);
   return base ? base->AsA<BrowserElementsViews>() : nullptr;
+}
+
+// static
+BrowserElementsViews* BrowserElementsViews::From(views::View* view) {
+  const auto context = views::ElementTrackerViews::GetContextForView(view);
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (auto* elements = BrowserElements::From(browser)) {
+          if (elements->GetContext() == context) {
+            result = browser;
+          }
+        }
+        return !result;
+      });
+  return result ? From(result) : nullptr;
 }
 
 views::View* BrowserElementsViews::GetView(ui::ElementIdentifier id,

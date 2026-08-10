@@ -1235,6 +1235,11 @@ class BrowserView : public BrowserWindow,
   // anchor outside the content area of the window.
   std::unique_ptr<views::ViewSubregionAnchor> dialog_anchor_;
 
+  // Anchor point for popup dialogs that must be able to appear in content-
+  // fullscreen and can anchor inside the content area of the window if
+  // necessary (such as the translate bubble).
+  std::unique_ptr<views::ViewSubregionAnchor> fallback_popup_anchor_;
+
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
 

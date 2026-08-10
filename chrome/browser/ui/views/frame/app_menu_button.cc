@@ -20,10 +20,12 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_manager.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
@@ -47,7 +49,17 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
 AppMenuButton::~AppMenuButton() = default;
 
 views::BubbleAnchor AppMenuButton::GetAnchor() {
-  return views::BubbleAnchor(this);
+  if (IsDrawn()) {
+    return views::BubbleAnchor(this);
+  }
+  // The app menu button is always present but might be non-visible or offscreen
+  // in certain cases (e.g. content-fullscreen). In this case, use the fallback
+  // anchor instead.
+  auto* const elements = BrowserElementsViews::From(this);
+  CHECK(elements);
+  auto* const element = elements->GetElement(kFallbackPopupAnchorElementId);
+  CHECK(element);
+  return views::BubbleAnchor(element);
 }
 
 bool AppMenuButton::IsDrawn() const {

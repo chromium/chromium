@@ -4836,7 +4836,7 @@ void BrowserView::Layout(PassKey) {
 
   // Update dialog and bubble anchors.
 
-  if (dialog_anchor_) {
+  if (dialog_anchor_ || fallback_popup_anchor_) {
     // This needs to be enough that any bubble is visually overlapping the
     // toolbar, to keep it from rendering entirely in the contents area.
     constexpr int kAdditionalDialogToolbarOverlap = 3;
@@ -4846,14 +4846,21 @@ void BrowserView::Layout(PassKey) {
                    gfx::Size());
     // Move up and make its size nonzero.
     rect.Outset(gfx::Outsets::TLBR(1, 1, 0, 1));
-    rect.Offset(0, -kAdditionalDialogToolbarOverlap);
-    // When the dialog anchor is still within the bounds of the contents
-    // container, it is hidden. This handles immersive fullscreen cases,
-    // including "always show toolbar" mode on Mac, where it is not possible to
-    // position the dialog safely.
-    dialog_anchor_->SetHidden(
-        multi_contents_view_->bounds().Contains(rect.bottom_center()));
-    dialog_anchor_->MaybeUpdateAnchor(rect);
+
+    if (fallback_popup_anchor_) {
+      fallback_popup_anchor_->MaybeUpdateAnchor(rect);
+    }
+
+    if (dialog_anchor_) {
+      rect.Offset(0, -kAdditionalDialogToolbarOverlap);
+      // When the dialog anchor is still within the bounds of the contents
+      // container, it is hidden. This handles immersive fullscreen cases,
+      // including "always show toolbar" mode on Mac, where it is not possible
+      // to position the dialog safely.
+      dialog_anchor_->SetHidden(
+          multi_contents_view_->bounds().Contains(rect.bottom_center()));
+      dialog_anchor_->MaybeUpdateAnchor(rect);
+    }
   }
 
   if (auto* const user_education =
@@ -5081,6 +5088,8 @@ void BrowserView::AddedToWidget() {
 
   dialog_anchor_ = std::make_unique<views::ViewSubregionAnchor>(
       kBrowserDialogAnchorElementId, *this);
+  fallback_popup_anchor_ = std::make_unique<views::ViewSubregionAnchor>(
+      kFallbackPopupAnchorElementId, *this);
 
   initialized_ = true;
 }

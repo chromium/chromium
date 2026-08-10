@@ -37,6 +37,12 @@ class BrowserElementsViews : public BrowserElements {
   // Desktop Chrome and Webium builds.
   static BrowserElementsViews* From(BrowserWindowInterface* browser);
 
+  // Retrieves the `BrowserElementsViews` associated with the window containing
+  // `view`, or null if none. This is somewhat less efficient than using
+  // `From(BrowserWindowInterface*)` and should only be used if the current
+  // browser is not known.
+  static BrowserElementsViews* From(views::View* view);
+
   // These provide convenience access to ElementTrackerViews without having to
   // specify context:
 
