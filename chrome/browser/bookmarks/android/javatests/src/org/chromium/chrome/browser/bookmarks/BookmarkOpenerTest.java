@@ -54,7 +54,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
@@ -129,7 +129,8 @@ public class BookmarkOpenerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
                     mBookmarkOpener = mBookmarkManagerCoordinator.getBookmarkOpenerForTesting();
                 });
     }

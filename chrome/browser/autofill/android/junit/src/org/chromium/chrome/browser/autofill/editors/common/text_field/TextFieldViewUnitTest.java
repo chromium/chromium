@@ -48,7 +48,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -77,7 +77,7 @@ public final class TextFieldViewUnitTest {
 
     @After
     public void tearDown() {
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
     }
 
     private PropertyModel buildDefaultPropertyModel() {
@@ -385,7 +385,7 @@ public final class TextFieldViewUnitTest {
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOff() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
         TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
 
         // Hint should contain '*' when screen reader is off.
@@ -404,7 +404,7 @@ public final class TextFieldViewUnitTest {
     public void testRequiredFieldHasCorrectLabelAndAccessibilityScreenReaderOn() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
         TextInputLayout inputLayout = attachTextFieldView(model).getInputLayoutForTesting();
 
         // Hint should contain "required" text.

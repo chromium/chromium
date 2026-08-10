@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +34,7 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -54,6 +55,12 @@ public class TabbedPaintPreviewAccessibilityTest {
     public void setUp() {
         mPage = mActivityTestRule.startOnTestServerUrl(TEST_URL);
         PaintPreviewTabService.setAccessibilityEnabledForTesting(true);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AccessibilityStateTestHelper.uninitializeForTesting());
     }
 
     /** Asserts that the player has a non-null {@link WebContentsAccessibility}. */
@@ -115,7 +122,8 @@ public class TabbedPaintPreviewAccessibilityTest {
                             tabbedPaintPreview
                                     .getPlayerManagerForTesting()
                                     .getWebContentsAccessibilityForTesting();
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
                     long time = SystemClock.uptimeMillis();
                     MotionEvent e =
                             MotionEvent.obtain(

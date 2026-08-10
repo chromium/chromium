@@ -45,7 +45,7 @@ import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -139,7 +139,8 @@ public class MessageTest {
         WebContentsAccessibilityImpl wcax =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                            AccessibilityStateTestHelper
+                                    .setIsAnyAccessibilityServiceEnabledForTesting(true);
                             WebContents webContents = mActivity.getActivityTab().getWebContents();
                             return (WebContentsAccessibilityImpl)
                                     WebContentsAccessibility.fromWebContents(webContents);

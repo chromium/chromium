@@ -513,67 +513,6 @@ public class AccessibilityState {
         void recordAccessibilityServiceInfoHistograms();
     }
 
-    // ForTesting methods.
-
-    public static void setIsComplexUserInteractionServiceEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting()
-                .setIsComplexUserInteractionServiceEnabledForTesting(enabled);
-    }
-
-    public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsTouchExplorationEnabledForTesting(enabled);
-    }
-
-    public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsPerformGesturesEnabledForTesting(enabled);
-    }
-
-    public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsAnyAccessibilityServiceEnabledForTesting(enabled);
-    }
-
-    public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsAccessibilityToolPresentForTesting(enabled);
-    }
-
-    public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsTextShowPasswordEnabledForTesting(enabled);
-    }
-
-    public static void setIsOnlyAutofillRunningForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsOnlyAutofillRunningForTesting(enabled);
-    }
-
-    public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsOnlyPasswordManagersEnabledForTesting(enabled);
-    }
-
-    public static void setIsKnownScreenReaderEnabledForTesting(boolean enabled) {
-        getOrCreateDelegateForTesting().setIsKnownScreenReaderEnabledForTesting(enabled);
-    }
-
-    public static void setEventMaskForTesting(int eventMask) {
-        getOrCreateDelegateForTesting().setEventMaskForTesting(eventMask);
-    }
-
-    public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
-        getOrCreateDelegateForTesting().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
-    }
-
-    private static FakeAccessibilityStateDelegate getOrCreateDelegateForTesting() {
-        if (!(getDelegate() instanceof FakeAccessibilityStateDelegate)) {
-            setDelegateForTesting(new FakeAccessibilityStateDelegate(() -> sListeners));
-        }
-        return (FakeAccessibilityStateDelegate) getDelegate();
-    }
-
-    public static void uninitializeForTesting() {
-        if (sDelegate != null) {
-            sDelegate.uninitializeForTesting();
-        }
-        sDelegate = null;
-    }
-
     public static void setDelegateForTesting(@Nullable AccessibilityStateDelegateImpl delegate) {
         if (sDelegate != null) {
             sDelegate.uninitializeForTesting();

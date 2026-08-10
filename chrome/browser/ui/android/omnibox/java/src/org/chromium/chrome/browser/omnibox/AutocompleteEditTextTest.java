@@ -44,7 +44,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -283,8 +283,8 @@ public class AutocompleteEditTextTest {
                                 mContext.getSystemService(Context.ACCESSIBILITY_SERVICE));
         manager.setEnabled(true);
         manager.setTouchExplorationEnabled(true);
-        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
 
         mInOrder = inOrder(mVerifier);
         assertTrue(mAutocomplete.requestFocus());

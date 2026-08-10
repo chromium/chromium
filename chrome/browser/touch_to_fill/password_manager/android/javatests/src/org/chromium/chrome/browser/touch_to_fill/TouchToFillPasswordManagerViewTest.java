@@ -85,7 +85,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -198,7 +198,7 @@ public class TouchToFillPasswordManagerViewTest {
     public void tearDown() {
         ThreadUtils.runOnUiThread(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
                 });
     }
 
@@ -853,7 +853,7 @@ public class TouchToFillPasswordManagerViewTest {
         // Enabling the accessibility settings.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(

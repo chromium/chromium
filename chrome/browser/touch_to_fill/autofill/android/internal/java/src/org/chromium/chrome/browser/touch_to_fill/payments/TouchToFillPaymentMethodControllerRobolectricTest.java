@@ -220,7 +220,7 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -1097,7 +1097,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     public void testDoesNotRecordBnplSuggestionVisibilityHistograms() {
         // BNPL suggestion visibility metrics should not be logged when touch exploration is
         // enabled.
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
 
         for (int visibility = 0;
                 visibility <= TouchToFillBnplSuggestionVisibility.MAX_VALUE;
@@ -1123,7 +1123,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         TOUCH_TO_FILL_BNPL_SUGGESTION_STARTED_FULLY_VISIBLE_HISTOGRAM));
 
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
     }
 
     @Test

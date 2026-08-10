@@ -168,7 +168,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.net.ConnectionType;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -471,7 +471,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @After
     public void tearDown() {
-        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(false);
         BookmarkUtils.setReadingListSupportedForTesting(null);
         WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
         ChromeSharedPreferences.getInstance()
@@ -2137,7 +2137,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         // Test specific setup
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
-        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
 
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
@@ -2229,7 +2229,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         // Test specific setup
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
-        AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
 
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 

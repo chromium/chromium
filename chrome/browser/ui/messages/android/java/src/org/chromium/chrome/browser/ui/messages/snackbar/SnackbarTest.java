@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOv
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeUnit;
@@ -152,7 +152,7 @@ public class SnackbarTest {
                             .addSyncObserverAndPostIfNonNull(
                                     (showing) -> mShowingHelper.notifyCalled());
                     mManager.dismissAllSnackbars();
-                    AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(false);
 
                     mKeyboardDelegate = new MockKeyboardVisibilityDelegate();
                     mKeyboardDelegate.setKeyboardHeight(SAMPLE_KEYBOARD_HEIGHT);
@@ -165,6 +165,7 @@ public class SnackbarTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.destroy();
+                    AccessibilityStateTestHelper.uninitializeForTesting();
                 });
     }
 
@@ -413,7 +414,7 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
                     snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
                     Assert.assertEquals(
                             "Snackbar should use default a11y duration when set duration is less"
@@ -425,7 +426,7 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsPerformGesturesEnabledForTesting(true);
                     snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() * 3);
                     Assert.assertTrue(
                             "Snackbar should use the recommended duration if it is more than "

@@ -178,7 +178,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -648,7 +648,7 @@ public class TouchToFillPaymentMethodViewTest {
         // Enabling the accessibility settings.
         runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
                 });
 
         runOnUiThreadBlocking(
@@ -670,7 +670,7 @@ public class TouchToFillPaymentMethodViewTest {
         // Disabling the accessibility settings.
         runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
                 });
     }
 
@@ -794,7 +794,7 @@ public class TouchToFillPaymentMethodViewTest {
     public void testSheetAtFullHeightShowsFiveItems() {
         runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
                 });
 
         runOnUiThreadBlocking(
@@ -838,7 +838,7 @@ public class TouchToFillPaymentMethodViewTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(false);
                 });
     }
 

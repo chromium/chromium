@@ -147,7 +147,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -777,8 +777,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -814,8 +815,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(true);
                 });
 
         var histogramWatcher =
@@ -852,8 +854,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and screen reader state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -892,9 +895,10 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -934,9 +938,10 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(true);
                 });
 
         var histogramWatcher =
@@ -973,9 +978,10 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and screen reader state, set event type masks to empty.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setEventMaskForTesting(EVENT_TYPE_MASK_NONE);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -1098,12 +1104,15 @@ public class WebContentsAccessibilityTest {
                         .build();
 
         // The test suite always initializes native, so mock a call to disable accessibility. We
-        // must update AccessibilityState to ensure the AXMode is propagated through to C++.
+        // must update AccessibilityStateTestHelper to ensure the AXMode is propagated through to
+        // C++.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
                 });
 
         // Assert that we record initial enabled time and that disabled was called once.
@@ -1124,8 +1133,10 @@ public class WebContentsAccessibilityTest {
         // To re-enable native accessibility, we need to make a request from the framework.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
                     mActivityTestRule.mWcax.getAccessibilityNodeProvider();
                 });
 
@@ -1147,8 +1158,10 @@ public class WebContentsAccessibilityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(false);
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            false);
                 });
         histogramWatcher.assertExpected();
 
@@ -1166,8 +1179,10 @@ public class WebContentsAccessibilityTest {
                         .build();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
                     mActivityTestRule.mWcax.getAccessibilityNodeProvider();
                 });
         histogramWatcher.assertExpected();
@@ -1190,8 +1205,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -1228,8 +1244,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsComplexUserInteractionServiceEnabledForTesting(true);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper
+                            .setIsComplexUserInteractionServiceEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
                 });
 
         var histogramWatcher =
@@ -1269,9 +1286,9 @@ public class WebContentsAccessibilityTest {
         // Set the relevant features and accessibility state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
-                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-                    AccessibilityState.setServiceIdsForTesting(
+                    AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsOnlyPasswordManagersEnabledForTesting(false);
+                    AccessibilityStateTestHelper.setServiceIdsForTesting(
                             KNOWN_SCREEN_READER_SERVICE_IDS, true);
                 });
 
@@ -1385,7 +1402,7 @@ public class WebContentsAccessibilityTest {
         // Changing the accessibility state will refresh the native state.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AccessibilityState.setIsTextShowPasswordEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsTextShowPasswordEnabledForTesting(true);
                 });
 
         Assert.assertFalse(mActivityTestRule.mWcax.hasAnyPendingTimersForTesting());

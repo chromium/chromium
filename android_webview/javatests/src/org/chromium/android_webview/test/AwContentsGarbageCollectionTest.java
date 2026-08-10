@@ -42,7 +42,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
@@ -182,8 +182,8 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 // Enable a11y for testing.
-                                AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(
-                                        true);
+                                AccessibilityStateTestHelper
+                                        .setIsAnyAccessibilityServiceEnabledForTesting(true);
                                 // Initialize native object.
                                 containerView.getAccessibilityNodeProvider();
                                 WebContentsAccessibility webContentsA11y =

@@ -300,5 +300,6 @@ android_library("javatests") {
     "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/ui/side_ui/public:java",
     "//chrome/browser/user_education:java",
+    "//ui/accessibility:ui_accessibility_test_support_java",
   ]
 }

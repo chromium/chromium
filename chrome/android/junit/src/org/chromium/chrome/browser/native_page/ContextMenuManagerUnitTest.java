@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit test for {@link ContextMenuManager} */
@@ -103,18 +103,18 @@ public class ContextMenuManagerUnitTest {
     @Test
     public void testShouldShowItem_MoveUp() {
         doReturn(true).when(mDelegate).isItemSupported(ContextMenuItemId.MOVE_UP);
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(true);
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_UP, mDelegate));
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(false);
         assertFalse(mManager.shouldShowItem(ContextMenuItemId.MOVE_UP, mDelegate));
     }
 
     @Test
     public void testShouldShowItem_MoveDown() {
         doReturn(true).when(mDelegate).isItemSupported(ContextMenuItemId.MOVE_DOWN);
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(true);
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(false);
         assertFalse(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
     }
 

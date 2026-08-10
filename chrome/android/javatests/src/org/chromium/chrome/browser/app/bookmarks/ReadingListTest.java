@@ -86,7 +86,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
@@ -178,7 +178,9 @@ public class ReadingListTest {
         }
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
+                () ->
+                        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                                false));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 

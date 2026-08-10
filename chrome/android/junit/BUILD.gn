@@ -410,7 +410,7 @@ if (is_android) {
       "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
       "//ui/accessibility:ax_base_java",
-      "//ui/accessibility:ui_accessibility_junit_test_support",
+      "//ui/accessibility:ui_accessibility_test_support_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_junit_test_support",
@@ -1289,6 +1289,7 @@ if (is_android) {
       "//components/browser_ui/accessibility/android:page_zoom_utils_java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
       "//extensions/buildflags:buildflags_java",
+      "//ui/accessibility:ui_accessibility_test_support_java",
       "//ui/android:ui_java",
     ]
   }
@@ -1699,6 +1700,7 @@ if (is_android) {
       "//components/dom_distiller/core/android:dom_distiller_core_java",
       "//components/dom_distiller/core/mojom:mojom_java",
       "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
+      "//ui/accessibility:ui_accessibility_test_support_java",
       "//ui/android:ui_android_features_java",
     ]
   }

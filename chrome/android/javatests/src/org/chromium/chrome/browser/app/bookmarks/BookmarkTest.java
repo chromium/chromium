@@ -144,7 +144,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -2050,7 +2050,9 @@ public class BookmarkTest {
         mToolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
 
         runOnUiThreadBlocking(
-                () -> AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false));
+                () ->
+                        AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                                false));
     }
 
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {
