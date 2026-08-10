@@ -168,9 +168,14 @@ public class BookmarkBarButtonTest {
 
     @Test
     @SmallTest
-    public void testOnLongClick_FiresCallbackWithSecondaryButton() {
-        mButton.performLongClick();
-        verify(mClickCallback).onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
+    public void testOnLongClick_FiresLongClickListener() {
+        View.OnLongClickListener longClickListener = Mockito.mock(View.OnLongClickListener.class);
+        when(longClickListener.onLongClick(mButton)).thenReturn(true);
+        mButton.setOnLongClickListener(longClickListener);
+
+        assertTrue(mButton.performLongClick());
+        verify(longClickListener).onLongClick(mButton);
+        verify(mClickCallback, never()).onClickWithMeta(anyInt(), anyInt());
     }
 
     @Test

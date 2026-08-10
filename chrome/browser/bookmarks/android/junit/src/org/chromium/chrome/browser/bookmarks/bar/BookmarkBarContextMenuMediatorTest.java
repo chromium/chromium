@@ -29,9 +29,12 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuAction;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuEntrypoint;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -93,7 +96,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         assertMenuStructure(
                 list,
@@ -123,7 +130,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         assertMenuStructure(
                 list,
@@ -153,7 +164,11 @@ public class BookmarkBarContextMenuMediatorTest {
         BookmarkId folderId =
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -183,7 +198,11 @@ public class BookmarkBarContextMenuMediatorTest {
         BookmarkId folderId =
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -215,7 +234,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -246,7 +269,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -279,7 +306,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark 1", JUnitTestGURLs.URL_1);
         mBookmarkModel.addBookmark(folderId, 1, "Child Bookmark 2", JUnitTestGURLs.URL_2);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -311,7 +342,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark 1", JUnitTestGURLs.URL_1);
         mBookmarkModel.addBookmark(folderId, 1, "Child Bookmark 2", JUnitTestGURLs.URL_2);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -341,7 +376,11 @@ public class BookmarkBarContextMenuMediatorTest {
 
         BookmarkItem desktopItem =
                 mBookmarkModel.getBookmarkById(mBookmarkModel.getDesktopFolderId());
-        ModelList list = mMediator.buildContextMenuModelList(desktopItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        desktopItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -370,7 +409,11 @@ public class BookmarkBarContextMenuMediatorTest {
 
         BookmarkItem desktopItem =
                 mBookmarkModel.getBookmarkById(mBookmarkModel.getDesktopFolderId());
-        ModelList list = mMediator.buildContextMenuModelList(desktopItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        desktopItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         assertMenuStructure(
                 list,
@@ -447,7 +490,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.contextmenu_open_in_new_tab);
         verify(mContextMenuDelegate).openInNewTab(eq(bookmarkId));
@@ -461,7 +508,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.contextmenu_open_in_new_window);
         verify(mContextMenuDelegate).openInNewWindow(eq(bookmarkId));
@@ -475,7 +526,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.contextmenu_open_in_incognito_window);
         verify(mContextMenuDelegate).openInIncognitoWindow(eq(bookmarkId));
@@ -491,7 +546,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
 
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_plural, 1);
         verify(mContextMenuDelegate).openAll(anyList());
@@ -507,7 +566,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
 
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_new_window_plural, 1);
         verify(mContextMenuDelegate).openAllInNewWindow(anyList());
@@ -523,7 +586,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
 
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_incognito_window_plural, 1);
         verify(mContextMenuDelegate).openAllInIncognitoWindow(anyList());
@@ -539,7 +606,11 @@ public class BookmarkBarContextMenuMediatorTest {
         mBookmarkModel.addBookmark(folderId, 0, "Child Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
 
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         clickPlural(list, R.plurals.contextmenu_open_all_in_new_tab_group_plural, 1);
         verify(mContextMenuDelegate).openAllInNewTabGroup(anyList(), eq("My Special Folder"));
@@ -553,7 +624,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.contextmenu_edit_bookmark_ellipsis);
         verify(mContextMenuDelegate).editBookmark(eq(bookmarkId));
@@ -567,7 +642,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.bookmark_item_move);
         verify(mContextMenuDelegate).moveBookmark(eq(bookmarkId));
@@ -581,7 +660,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addBookmark(
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-        ModelList list = mMediator.buildContextMenuModelList(bookmarkItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
 
         click(list, R.string.bookmark_item_delete);
         verify(mContextMenuDelegate).deleteBookmark(eq(bookmarkId));
@@ -596,7 +679,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addFolder(
                         mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         click(list, R.string.contextmenu_add_page);
         verify(mContextMenuDelegate).addPage(eq(folderId));
@@ -610,7 +697,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addFolder(
                         mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         click(list, R.string.contextmenu_add_folder);
         verify(mContextMenuDelegate).addFolder(eq(folderId));
@@ -624,7 +715,11 @@ public class BookmarkBarContextMenuMediatorTest {
                 mBookmarkModel.addFolder(
                         mBookmarkModel.getDesktopFolderId(), 0, "My Special Folder");
         BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
-        ModelList list = mMediator.buildContextMenuModelList(folderItem, mBookmarkModel);
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        folderItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER);
 
         click(list, R.string.contextmenu_open_bookmarks_manager);
         verify(mContextMenuDelegate).openBookmarksManager(eq(folderId));
@@ -762,5 +857,48 @@ public class BookmarkBarContextMenuMediatorTest {
                         actual.model.get(ListMenuItemProperties.ENABLED));
             }
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordMetrics_EmptySpace() {
+        doReturn(JUnitTestGURLs.URL_1).when(mCurrentTab).getUrl();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.BookmarkBar.ContextMenu.EmptySpace.Action",
+                                BookmarkBarContextMenuAction.ADD_PAGE)
+                        .build();
+
+        ModelList list = mMediator.buildBookmarksBarEmptySpaceContextMenuModelList(mBookmarkModel);
+        click(list, R.string.contextmenu_add_page);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordActionMetric() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
+        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Bookmarks.BookmarkBar.ContextMenu.BookmarkBarItem.Action",
+                                BookmarkBarContextMenuAction.OPEN_IN_NEW_TAB)
+                        .build();
+
+        ModelList list =
+                mMediator.buildContextMenuModelList(
+                        bookmarkItem,
+                        mBookmarkModel,
+                        BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM);
+        click(list, R.string.contextmenu_open_in_new_tab);
+
+        histogramWatcher.assertExpected();
     }
 }

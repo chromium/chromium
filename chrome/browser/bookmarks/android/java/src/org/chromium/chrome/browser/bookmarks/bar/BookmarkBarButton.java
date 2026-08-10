@@ -164,12 +164,26 @@ class BookmarkBarButton extends LinearLayout {
         mClickCallback = callback;
         if (callback == null) {
             setOnClickListener(null);
-            setOnLongClickListener(null);
             return;
         }
 
         setOnClickListener(this::onClick);
-        setOnLongClickListener(this::onLongClick);
+    }
+
+    @Override
+    public void setOnLongClickListener(@Nullable OnLongClickListener listener) {
+        if (listener == null) {
+            super.setOnLongClickListener(null);
+            return;
+        }
+
+        super.setOnLongClickListener(
+                view -> {
+                    if (mPointCallback != null) {
+                        mPointCallback.onResult(new Point((int) mLastEventX, (int) mLastEventY));
+                    }
+                    return listener.onLongClick(view);
+                });
     }
 
     private void onClick(View view) {
@@ -179,16 +193,6 @@ class BookmarkBarButton extends LinearLayout {
         if (mClickCallback != null) {
             mClickCallback.onClickWithMeta(mLastEventMetaState, mLastEventButtonState);
         }
-    }
-
-    private boolean onLongClick(View view) {
-        if (mPointCallback != null) {
-            mPointCallback.onResult(new Point((int) mLastEventX, (int) mLastEventY));
-        }
-        if (mClickCallback != null) {
-            mClickCallback.onClickWithMeta(mLastEventMetaState, MotionEvent.BUTTON_SECONDARY);
-        }
-        return true;
     }
 
     /**

@@ -22,6 +22,31 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(BookmarkBarContextMenuEntrypoint) -->
+
+<variants name="BookmarkBarContextMenuEntrypoint">
+  <variant name="BookmarkBarFolder"
+      summary="A folder button on the bookmarks bar"/>
+  <variant name="BookmarkBarItem"
+      summary="A bookmark item button on the bookmarks bar"/>
+  <variant name="EmptySpace" summary="Empty space of the bookmarks bar"/>
+  <variant name="PopupFolder"
+      summary="A folder inside a bookmark drop-down popup menu"/>
+  <variant name="PopupItem"
+      summary="A bookmark item inside a bookmark drop-down popup menu"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarContextMenuMetrics.java:BookmarkBarContextMenuEntrypoint) -->
+
+<!-- LINT.IfChange(BookmarkBarContextMenuGesture) -->
+
+<variants name="BookmarkBarContextMenuGesture">
+  <variant name="LongPress" summary="Menu triggered via touch long-press"/>
+  <variant name="RightClick" summary="Menu triggered via mouse right-click"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarContextMenuMetrics.java:BookmarkBarContextMenuGesture) -->
+
 <!-- LINT.IfChange(BookmarksFileType) -->
 
 <variants name="BookmarksFileType">
@@ -221,6 +246,26 @@ chromium-metrics-reviews@google.com.
     anchored pop-up menu. Emits an enum corresponding to the type of click that
     a user can make (folder vs. url, overflow, all bookmarks).
   </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.ContextMenu.{Entrypoint}.Action"
+    enum="BookmarkBarContextMenuAction" expires_after="2027-01-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>Recorded when an action is executed from the context menu.</summary>
+  <token key="Entrypoint" variants="BookmarkBarContextMenuEntrypoint"/>
+</histogram>
+
+<histogram
+    name="Bookmarks.BookmarkBar.ContextMenu.{Entrypoint}.{Gesture}.Opened"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>Recorded when the bookmarks bar context menu is opened.</summary>
+  <token key="Entrypoint" variants="BookmarkBarContextMenuEntrypoint"/>
+  <token key="Gesture" variants="BookmarkBarContextMenuGesture"/>
 </histogram>
 
 <histogram

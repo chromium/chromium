@@ -17,6 +17,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuAction;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuEntrypoint;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,6 +44,8 @@ class BookmarkBarContextMenuMediator {
     private final BookmarkBarContextMenuDelegate mContextMenuDelegate;
     private final Runnable mDismissRunnable;
 
+    private @BookmarkBarContextMenuEntrypoint int mCurrentEntrypoint;
+
     /**
      * Constructs the bookmark bar context menu mediator.
      *
@@ -64,7 +68,11 @@ class BookmarkBarContextMenuMediator {
         mDismissRunnable = dismissRunnable;
     }
 
-    ModelList buildContextMenuModelList(BookmarkItem item, BookmarkModel bookmarkModel) {
+    ModelList buildContextMenuModelList(
+            BookmarkItem item,
+            BookmarkModel bookmarkModel,
+            @BookmarkBarContextMenuEntrypoint int entrypoint) {
+        mCurrentEntrypoint = entrypoint;
         final Profile profile = mProfileSupplier.get();
         if (profile == null) return new ModelList();
 
@@ -100,6 +108,7 @@ class BookmarkBarContextMenuMediator {
     }
 
     ModelList buildBookmarksBarEmptySpaceContextMenuModelList(BookmarkModel bookmarkModel) {
+        mCurrentEntrypoint = BookmarkBarContextMenuEntrypoint.EMPTY_SPACE;
         final Profile profile = mProfileSupplier.get();
         if (profile == null) return new ModelList();
 
@@ -335,71 +344,86 @@ class BookmarkBarContextMenuMediator {
     }
 
     private void openInNewTab(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_NEW_TAB);
         mContextMenuDelegate.openInNewTab(id);
         mDismissRunnable.run();
     }
 
     private void openInNewWindow(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_NEW_WINDOW);
         mContextMenuDelegate.openInNewWindow(id);
         mDismissRunnable.run();
     }
 
     private void openInIncognitoWindow(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_INCOGNITO_WINDOW);
         mContextMenuDelegate.openInIncognitoWindow(id);
         mDismissRunnable.run();
     }
 
     private void editBookmark(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.EDIT);
         mContextMenuDelegate.editBookmark(id);
         mDismissRunnable.run();
     }
 
     private void moveBookmark(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.MOVE);
         mContextMenuDelegate.moveBookmark(id);
         mDismissRunnable.run();
     }
 
     private void deleteBookmark(BookmarkId id) {
+        recordAction(BookmarkBarContextMenuAction.DELETE);
         mContextMenuDelegate.deleteBookmark(id);
         mDismissRunnable.run();
     }
 
     private void openAll(List<BookmarkId> ids) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_NEW_TAB);
         mContextMenuDelegate.openAll(ids);
         mDismissRunnable.run();
     }
 
     private void openAllInNewWindow(List<BookmarkId> ids) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_NEW_WINDOW);
         mContextMenuDelegate.openAllInNewWindow(ids);
         mDismissRunnable.run();
     }
 
     private void openAllInIncognitoWindow(List<BookmarkId> ids) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_INCOGNITO_WINDOW);
         mContextMenuDelegate.openAllInIncognitoWindow(ids);
         mDismissRunnable.run();
     }
 
     private void openAllInNewTabGroup(List<BookmarkId> ids, @Nullable String title) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_IN_NEW_TAB_GROUP);
         mContextMenuDelegate.openAllInNewTabGroup(ids, title);
         mDismissRunnable.run();
     }
 
     private void addPage(BookmarkId parentId) {
+        recordAction(BookmarkBarContextMenuAction.ADD_PAGE);
         mContextMenuDelegate.addPage(parentId);
         mDismissRunnable.run();
     }
 
     private void addFolder(BookmarkId parentId) {
+        recordAction(BookmarkBarContextMenuAction.ADD_FOLDER);
         mContextMenuDelegate.addFolder(parentId);
         mDismissRunnable.run();
     }
 
     private void openBookmarksManager(BookmarkId folderId) {
+        recordAction(BookmarkBarContextMenuAction.OPEN_BOOKMARKS_MANAGER);
         mContextMenuDelegate.openBookmarksManager(folderId);
         mDismissRunnable.run();
     }
 
     private void toggleBookmarksBar() {
+        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
+        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
         mContextMenuDelegate.toggleBookmarksBar();
         mDismissRunnable.run();
     }
@@ -427,5 +451,9 @@ class BookmarkBarContextMenuMediator {
                     R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
         }
         return new ListItem(ListItemType.MENU_ITEM, builder.build());
+    }
+
+    private void recordAction(@BookmarkBarContextMenuAction int action) {
+        BookmarkBarContextMenuMetrics.recordAction(mCurrentEntrypoint, action);
     }
 }

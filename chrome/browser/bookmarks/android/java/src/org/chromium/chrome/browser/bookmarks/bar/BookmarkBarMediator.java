@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUndoController;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuEntrypoint;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.BookmarkBarContextMenuGesture;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarClickType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -197,7 +199,8 @@ class BookmarkBarMediator
         mBookmarkBarView = bookmarkBarView;
         mBookmarkBarView.setContentDescription(
                 mActivity.getString(R.string.bookmark_bar_content_description));
-        mBookmarkBarView.setRightClickCallback(this::onBookmarksBarEmptySpaceRightClicked);
+        mBookmarkBarView.setEmptySpaceContextMenuCallback(
+                this::onBookmarksBarEmptySpaceContextMenuTriggered);
 
         mPopupCoordinator = popupCoordinator;
         mContextMenuMediator =
@@ -211,7 +214,7 @@ class BookmarkBarMediator
 
     /** Destroys the bookmark bar mediator. */
     public void destroy() {
-        mBookmarkBarView.setRightClickCallback(null);
+        mBookmarkBarView.setEmptySpaceContextMenuCallback(null);
         mPopupCoordinator.dismiss();
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
         mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
@@ -322,12 +325,15 @@ class BookmarkBarMediator
     }
 
     private void showContextMenuForListItem(
-            BookmarkItem item, @Nullable View anchorView, Point offset) {
+            BookmarkItem item,
+            @BookmarkBarContextMenuEntrypoint int entrypoint,
+            @Nullable View anchorView,
+            Point offset) {
         if (anchorView == null) return;
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profile, model) -> {
                     ModelList menuModel =
-                            mContextMenuMediator.buildContextMenuModelList(item, model);
+                            mContextMenuMediator.buildContextMenuModelList(item, model, entrypoint);
                     showContextMenu(menuModel, anchorView, offset, profile.isOffTheRecord());
                 });
     }
@@ -353,9 +359,15 @@ class BookmarkBarMediator
                 });
     }
 
-    private void onBookmarksBarEmptySpaceRightClicked(float x, float y) {
+    private void onBookmarksBarEmptySpaceContextMenuTriggered(
+            float x, float y, @BookmarkBarContextMenuGesture int gesture) {
+        if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+            return;
+        }
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profile, model) -> {
+                    BookmarkBarContextMenuMetrics.recordOpened(
+                            BookmarkBarContextMenuEntrypoint.EMPTY_SPACE, gesture);
                     ModelList menuModel =
                             mContextMenuMediator.buildBookmarksBarEmptySpaceContextMenuModelList(
                                     model);
@@ -370,10 +382,7 @@ class BookmarkBarMediator
     private void onBookmarkItemClick(BookmarkItem item, int metaState, int buttonState) {
         final boolean isRightClick = (buttonState & MotionEvent.BUTTON_SECONDARY) != 0;
         if (isRightClick) {
-            View anchorView = getAnchorViewForBookmark(item);
-            if (anchorView == null) return;
-            Point offset = new Point(mLastTouchPoint);
-            showContextMenuForListItem(item, anchorView, offset);
+            showContextMenuForBookmarkItem(item, BookmarkBarContextMenuGesture.RIGHT_CLICK);
             return;
         }
 
@@ -408,6 +417,26 @@ class BookmarkBarMediator
         }
 
         mBookmarkOpener.openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
+    }
+
+    private void onBookmarkItemLongClick(BookmarkItem item) {
+        showContextMenuForBookmarkItem(item, BookmarkBarContextMenuGesture.LONG_PRESS);
+    }
+
+    private void showContextMenuForBookmarkItem(
+            BookmarkItem item, @BookmarkBarContextMenuGesture int gesture) {
+        if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+            return;
+        }
+        View anchorView = getAnchorViewForBookmark(item);
+        if (anchorView == null) return;
+        Point offset = new Point(mLastTouchPoint);
+        int entrypoint =
+                item.isFolder()
+                        ? BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_FOLDER
+                        : BookmarkBarContextMenuEntrypoint.BOOKMARK_BAR_ITEM;
+        BookmarkBarContextMenuMetrics.recordOpened(entrypoint, gesture);
+        showContextMenuForListItem(item, entrypoint, anchorView, offset);
     }
 
     private void onItemsOverflowChange(boolean itemsOverflow) {
@@ -723,7 +752,17 @@ class BookmarkBarMediator
                 .with(
                         ListMenuItemProperties.LONG_CLICK_LISTENER,
                         (v) -> {
-                            showContextMenuForListItem(bookmarkItem, v, new Point(mLastTouchPoint));
+                            if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+                                return false;
+                            }
+                            int entrypoint =
+                                    bookmarkItem.isFolder()
+                                            ? BookmarkBarContextMenuEntrypoint.POPUP_FOLDER
+                                            : BookmarkBarContextMenuEntrypoint.POPUP_ITEM;
+                            BookmarkBarContextMenuMetrics.recordOpened(
+                                    entrypoint, BookmarkBarContextMenuGesture.LONG_PRESS);
+                            showContextMenuForListItem(
+                                    bookmarkItem, entrypoint, v, new Point(mLastTouchPoint));
                             return true;
                         })
                 .with(
@@ -843,7 +882,13 @@ class BookmarkBarMediator
             mIsActiveGestureSecondary =
                     isSecondary && ChromeFeatureList.sBookmarksBarContextMenu.isEnabled();
             if (mIsActiveGestureSecondary) {
-                showContextMenuForListItem(bookmarkItem, v, new Point(mLastTouchPoint));
+                int entrypoint =
+                        bookmarkItem.isFolder()
+                                ? BookmarkBarContextMenuEntrypoint.POPUP_FOLDER
+                                : BookmarkBarContextMenuEntrypoint.POPUP_ITEM;
+                BookmarkBarContextMenuMetrics.recordOpened(
+                        entrypoint, BookmarkBarContextMenuGesture.RIGHT_CLICK);
+                showContextMenuForListItem(bookmarkItem, entrypoint, v, new Point(mLastTouchPoint));
                 return true;
             }
 
@@ -1086,6 +1131,15 @@ class BookmarkBarMediator
                                 (metaState, buttonState) ->
                                         clickCallback.onClick(item, metaState, buttonState))
                         .with(
+                                BookmarkBarButtonProperties.LONG_CLICK_LISTENER,
+                                v -> {
+                                    if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+                                        return false;
+                                    }
+                                    onBookmarkItemLongClick(item);
+                                    return true;
+                                })
+                        .with(
                                 BookmarkBarButtonProperties.POINT_CALLBACK,
                                 point -> mLastTouchPoint.set(point.x, point.y))
                         .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
@@ -1179,12 +1233,9 @@ class BookmarkBarMediator
             model.set(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID, mCurrentBackgroundId);
 
             BookmarkItem item = model.get(BookmarkBarButtonProperties.BOOKMARK_ITEM);
-            if (item.isFolder()) {
-                // Only update the folder icon. The bookmark favicon is not theme-dependent.
-                model.set(BookmarkBarButtonProperties.ICON_TINT_LIST_ID, mCurrentIconTintRes);
-            } else {
-                model.set(BookmarkBarButtonProperties.ICON_TINT_LIST_ID, Resources.ID_NULL);
-            }
+            // Only update the folder icon. The bookmark favicon is not theme-dependent.
+            int iconTintRes = item.isFolder() ? mCurrentIconTintRes : Resources.ID_NULL;
+            model.set(BookmarkBarButtonProperties.ICON_TINT_LIST_ID, iconTintRes);
         }
     }
 
