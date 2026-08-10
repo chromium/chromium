@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/omnibox/test_location_bar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -259,75 +260,6 @@ void TestingOmniboxView::ApplyStyle(gfx::TextStyle style,
   range_styles_.emplace_back(style, value, range);
   OmniboxViewViews::ApplyStyle(style, value, range);
 }
-
-// TestLocationBar -------------------------------------------------------------
-
-class TestLocationBar : public LocationBar {
- public:
-  TestLocationBar(CommandUpdater* command_updater,
-                  LocationBarModel* location_bar_model)
-      : LocationBar(command_updater), location_bar_model_(location_bar_model) {}
-  TestLocationBar(const TestLocationBar&) = delete;
-  TestLocationBar& operator=(const TestLocationBar&) = delete;
-  ~TestLocationBar() override = default;
-
-  void set_omnibox_view(OmniboxViewViews* view) { omnibox_view_ = view; }
-  void set_profile(Profile* profile) { profile_ = profile; }
-
-  // LocationBar:
-  void FocusLocation(bool select_all, bool clear_focus_if_failed) override {}
-  void FocusSearch() override {}
-  void UpdateFocusBehavior(bool toolbar_visible) override {}
-  void UpdateContentSettingsIcons() override {}
-  void SaveStateToContents(content::WebContents* contents) override {}
-  void Revert() override {}
-  OmniboxView* GetOmniboxView() override { return nullptr; }
-  OmniboxPopupView* GetOmniboxPopupView() override { return nullptr; }
-  OmniboxController* GetOmniboxController() override { return nullptr; }
-  bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override { return false; }
-  ChipController* GetChipController() override { return nullptr; }
-  LocationBarTesting* GetLocationBarForTesting() override { return nullptr; }
-  LocationBarModel* GetLocationBarModel() override {
-    return location_bar_model_;
-  }
-  content::WebContents* GetWebContents() override { return nullptr; }
-  std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
-      override {
-    return {};
-  }
-  void OnChanged() override {}
-  void UpdateWithoutTabRestore() override {
-    // This is a minimal amount of what LocationBarView does. Not all tests
-    // set |omnibox_view_|.
-    if (omnibox_view_) {
-      omnibox_view_->Update();
-    }
-  }
-
-  ui::TrackedElement* GetAnchorOrNull() override { return nullptr; }
-  BrowserWindowInterface* GetBrowser() override { return nullptr; }
-  Profile* GetProfile() override { return profile_; }
-  bool IsInitialized() const override { return true; }
-  bool IsVisible() const override { return true; }
-  bool IsDrawn() const override { return true; }
-  bool IsFullscreen() const override { return false; }
-  bool IsEditingOrEmpty() const override { return false; }
-  bool IsMouseHovered() const override { return false; }
-  bool IsFocusWithin() const override { return false; }
-  void InvalidateLayout() override {}
-  gfx::Rect Bounds() const override { return gfx::Rect(); }
-  gfx::Rect BoundsInScreen() const override { return gfx::Rect(); }
-  gfx::Size MinimumSize() const override { return gfx::Size(); }
-  gfx::Size PreferredSize() const override { return gfx::Size(); }
-  void Update(content::WebContents* contents) override {}
-  void ResetTabState(content::WebContents* contents) override {}
-  bool HasSecurityStateChanged() override { return false; }
-  void AnnounceAlert(const std::u16string& announcement) override {}
-
-  raw_ptr<LocationBarModel> location_bar_model_;
-  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
-  raw_ptr<Profile> profile_ = nullptr;
-};
 
 // OmniboxViewViewsTest -------------------------------------------------------
 

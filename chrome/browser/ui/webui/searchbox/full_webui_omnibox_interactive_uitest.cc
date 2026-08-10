@@ -11,12 +11,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -31,6 +33,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -39,6 +45,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -640,6 +647,72 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       // restoration.
       WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
                            "(el) => el && !el.dropdownIsVisible"));
+}
+
+// Verifies that clicking a bookmark button in the bookmarks bar situated
+// directly below the Omnibox while the Full WebUI Omnibox popup is open
+// and focused dismisses the popup and navigates to the bookmarked URL.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       ClickBookmarksBarWhenOmniboxFocused) {
+  // Disable slide animations and ensure the bookmarks bar is always visible.
+  BookmarkBarView::DisableAnimationsForTesting(true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowBookmarkBar, true);
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+  // Populate the bookmark model with a test URL.
+  auto* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  const GURL bookmark_url("chrome://version/");
+  const std::u16string bookmark_title = u"TestBookmark";
+  model->AddNewURL(model->bookmark_bar_node(), 0, bookmark_title, bookmark_url);
+  // Track the dynamic bookmark button and preserve the browser window context
+  // (since focusing the omnibox switches Kombucha's active context to the
+  // popup).
+  constexpr char kBookmarkButtonName[] = "BookmarkButton";
+  const ui::ElementContext browser_context =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetElementContext();
+
+  RunTestSequence(
+      // Open initial tab and verify Full WebUI Omnibox is open and focused.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("about:blank")),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckWebUIInputFocus(true),
+      // Ensure bookmarks bar is visible and name the target bookmark button.
+      InContext(browser_context, WaitForShow(kBookmarkBarElementId)),
+      InContext(
+          browser_context,
+          NameViewRelative(
+              kBookmarkBarElementId, kBookmarkButtonName,
+              base::BindLambdaForTesting(
+                  [bookmark_title](views::View* view) -> views::View* {
+                    auto* const bookmark_bar =
+                        views::AsViewClass<BookmarkBarView>(view);
+                    if (!bookmark_bar) {
+                      return nullptr;
+                    }
+                    for (views::View* child : bookmark_bar->children()) {
+                      if (auto* button =
+                              views::AsViewClass<views::LabelButton>(child)) {
+                        if (button->GetText() == bookmark_title) {
+                          return button;
+                        }
+                      }
+                    }
+                    return nullptr;
+                  }))),
+      // Click the bookmark button situated directly beneath the Omnibox.
+      InContext(browser_context, MoveMouseTo(kBookmarkButtonName)),
+      InContext(browser_context, ClickMouse()),
+      // Verify the popup closes, navigation occurs, and Omnibox loses focus.
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InContext(browser_context,
+                WaitForWebContentsNavigation(kTab1, bookmark_url)),
+      WaitForOmniboxFocus(false));
+  // Reset the process-wide animation state for subsequent tests.
+  BookmarkBarView::DisableAnimationsForTesting(false);
 }
 
 // Verifies that pasting text into the full WebUI Omnibox records the

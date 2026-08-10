@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/insets.h"
 
 class LocationBar;
 namespace views {
@@ -38,6 +39,9 @@ class FullWebUIOmniboxFrame : public RoundedOmniboxResultsFrame {
 
  private:
   gfx::Insets GetEventForwardingInsets();
+#if defined(USE_AURA)
+  void UpdateWindowTargeter();
+#endif  // USE_AURA
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_FULL_WEBUI_OMNIBOX_FRAME_H_

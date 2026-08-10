@@ -294,6 +294,8 @@ if (enable_webui_ntp && !is_android) {
       "//chrome/browser/ui/webui/test_support",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/test",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",
       "//components/keyed_service/content",

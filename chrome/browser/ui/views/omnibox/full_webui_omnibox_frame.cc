@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,8 +19,14 @@
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
-#endif
+#else
+#include "ui/views/view_targeter.h"
+#include "ui/views/view_targeter_delegate.h"
+#endif  // USE_AURA
 
+namespace {
+
+#if !defined(USE_AURA)
 class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
  public:
   explicit ResultsViewTargeterDelegate(RoundedOmniboxResultsFrame* frame)
@@ -46,6 +54,9 @@ class ResultsViewTargeterDelegate : public views::ViewTargeterDelegate {
  private:
   raw_ptr<RoundedOmniboxResultsFrame> frame_;
 };
+#endif  // !USE_AURA
+
+}  // namespace
 
 FullWebUIOmniboxFrame::FullWebUIOmniboxFrame(views::View* contents,
                                              LocationBar* location_bar,
@@ -58,6 +69,9 @@ FullWebUIOmniboxFrame::~FullWebUIOmniboxFrame() = default;
 void FullWebUIOmniboxFrame::SetElevation(int elevation) {
   if (elevation == 0) {
     SetBorder(views::CreateEmptyBorder(GetShadowInsets()));
+#if defined(USE_AURA)
+    UpdateWindowTargeter();
+#endif  // USE_AURA
     return;
   }
 
@@ -69,37 +83,21 @@ void FullWebUIOmniboxFrame::SetElevation(int elevation) {
   border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
   border->set_md_shadow_elevation(elevation);
   SetBorder(std::move(border));
+#if defined(USE_AURA)
+  UpdateWindowTargeter();
+#endif  // USE_AURA
 }
 
 void FullWebUIOmniboxFrame::SetForwardMouseEvents(bool forward) {
   set_forward_mouse_events(forward);
 #if defined(USE_AURA)
-  if (GetWidget() && GetWidget()->GetNativeWindow()) {
-    if (forward_mouse_events()) {
-      // Use a ui::EventTargeter that allows mouse and touch events in the top
-      // portion of the Widget to pass through to the omnibox beneath it.
-      auto results_targeter = std::make_unique<aura::WindowTargeter>();
-      results_targeter->SetInsets(GetEventForwardingInsets());
-      GetWidget()->GetNativeWindow()->SetEventTargeter(
-          std::move(results_targeter));
-    } else {
-      GetWidget()->GetNativeWindow()->SetEventTargeter(nullptr);
-    }
-  }
-#endif
+  UpdateWindowTargeter();
+#endif  // USE_AURA
 }
 
 void FullWebUIOmniboxFrame::AddedToWidget() {
 #if defined(USE_AURA)
-  if (!forward_mouse_events()) {
-    return;
-  }
-  // Use a ui::EventTargeter that allows mouse and touch events in the top
-  // portion of the Widget to pass through to the omnibox beneath it.
-  auto results_targeter = std::make_unique<aura::WindowTargeter>();
-  gfx::Insets insets = GetEventForwardingInsets();
-  results_targeter->SetInsets(insets);
-  GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
+  UpdateWindowTargeter();
 #else
   SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<ResultsViewTargeterDelegate>(this)));
@@ -125,9 +123,27 @@ void FullWebUIOmniboxFrame::OnMouseEvent(ui::MouseEvent* event) {
 gfx::Insets FullWebUIOmniboxFrame::GetEventForwardingInsets() {
   int top_inset = GetInsets().top() + GetLocationBarAlignmentInsets().top() +
                   GetLayoutConstant(LayoutConstant::kLocationBarHeight);
-  gfx::Insets insets = gfx::Insets::TLBR(top_inset, 0, 0, 0);
-  return insets;
+  return gfx::Insets::TLBR(top_inset, GetInsets().left(), GetInsets().bottom(),
+                           GetInsets().right());
 }
+
+#if defined(USE_AURA)
+void FullWebUIOmniboxFrame::UpdateWindowTargeter() {
+  if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
+    return;
+  }
+  auto* window = GetWidget()->GetNativeWindow();
+  const gfx::Insets insets =
+      forward_mouse_events() ? GetEventForwardingInsets() : GetInsets();
+  if (window->targeter()) {
+    window->targeter()->SetInsets(insets);
+  } else {
+    auto targeter = std::make_unique<aura::WindowTargeter>();
+    targeter->SetInsets(insets);
+    window->SetEventTargeter(std::move(targeter));
+  }
+}
+#endif  // USE_AURA
 
 BEGIN_METADATA(FullWebUIOmniboxFrame)
 END_METADATA
