@@ -33,4 +33,8 @@ void GeolocationObservation::OnSystemPermissionUpdated(
   callback_.Run(permissions::PermissionUtil::GetGeolocationType(), is_blocked);
 }
 
+void GeolocationObservation::OnPermissionManagerShuttingDown() {
+  observation_.Reset();
+}
+
 }  // namespace system_permission_settings

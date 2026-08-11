@@ -58,8 +58,9 @@ GeolocationSystemPermissionManager::GeolocationSystemPermissionManager(
           weak_factory_.GetWeakPtr()));
 }
 
-GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() =
-    default;
+GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() {
+  Shutdown();
+}
 
 void GeolocationSystemPermissionManager::AddObserver(
     PermissionObserver* observer) {

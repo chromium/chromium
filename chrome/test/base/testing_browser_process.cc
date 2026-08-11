@@ -206,6 +206,12 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   extensions::AppWindowClient::Set(nullptr);
 #endif
 
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+    device::GeolocationSystemPermissionManager::SetInstance(nullptr);
+  }
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+
   if (test_network_connection_tracker_) {
     content::SetNetworkConnectionTrackerForTesting(nullptr);
   }
