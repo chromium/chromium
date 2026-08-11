@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 
 extern const char kDevicePolicyStatusDescription[];
 extern const char kUserPolicyStatusDescription[];
@@ -17,6 +18,7 @@ extern const char kUserPolicyStatusDescription[];
 // Looks for "username" key in `dict` and sets "domain" key with the
 // domain extracted from username.
 void SetDomainExtractedFromUsername(base::DictValue& dict);
+void SetDomainExtractedFromUsername(policy::mojom::StatusPtr& status);
 
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.

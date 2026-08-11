@@ -34,6 +34,7 @@ class DeviceLocalAccountPolicyStatusProvider
 
   // PolicyStatusProvider implementation.
   base::DictValue GetStatus() override;
+  policy::mojom::StatusPtr GetStatusMojo() override;
 
   // policy::DeviceLocalAccountPolicyService::Observer implementation.
   void OnPolicyUpdated(const std::string& user_id) override;

@@ -907,6 +907,7 @@ source_set("unit_tests") {
       "networking/network_configuration_updater_ash_unittest.cc",
       "networking/network_configuration_updater_unittest.cc",
       "status_provider/device_cloud_policy_status_provider_chromeos_unittest.cc",
+      "status_provider/device_local_account_policy_status_provider_unittest.cc",
       "system_features_disable_list_policy_handler_unittest.cc",
     ]
     deps += [
