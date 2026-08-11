@@ -3575,6 +3575,17 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testNotifyPanelWillOpenIsCalledOnce) {
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient());
+  PreventDeletionOnClose();
+  ExecuteJsTest();
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  ASSERT_EQ(instance1, instance2);
+  ContinueJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

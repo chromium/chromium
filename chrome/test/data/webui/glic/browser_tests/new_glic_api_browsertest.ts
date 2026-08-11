@@ -2173,6 +2173,31 @@ class ScreenshotTests extends ApiTestFixtureBase {
   }
 }
 
+class WebClientThatOpensOnce extends WebClient {
+  notifyPanelWillOpenCallCount = 0;
+  override async notifyPanelWillOpen(panelOpeningData: PanelOpeningData):
+      Promise<OpenPanelInfo> {
+    this.notifyPanelWillOpenCallCount += 1;
+    return super.notifyPanelWillOpen(panelOpeningData);
+  }
+}
+
+class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new WebClientThatOpensOnce();
+  }
+
+  async testNotifyPanelWillOpenIsCalledOnce() {
+    const client = this.client as WebClientThatOpensOnce;
+    await runUntil(() => client.notifyPanelWillOpenCallCount > 0);
+    assertEquals(client.notifyPanelWillOpenCallCount, 1);
+    client.notifyPanelWillOpenCallCount = 0;
+    await this.advanceToNextStep();
+    await runUntil(() => client.notifyPanelWillOpenCallCount > 0);
+    assertEquals(client.notifyPanelWillOpenCallCount, 1);
+  }
+}
+
 const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTests,
   AdditionalContextQueuedTest,
@@ -2182,6 +2207,7 @@ const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTestFailsToInitialize,
   TriggeringUpdatesTest,
   ScreenshotTests,
+  NotifyPanelWillOpenTest,
 ];
 
 

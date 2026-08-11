@@ -1347,13 +1347,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testNotifyPanelWillOpenIsCalledOnce) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        testPanelWillOpenHasRecentlyActiveConversations) {
   // Open 3 tabs and register a conversation in each.
