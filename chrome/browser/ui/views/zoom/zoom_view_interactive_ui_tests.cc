@@ -131,14 +131,17 @@ IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest, ZoomStateUpdates) {
 
 IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
                        ShowAndHideZoomBubbleByClickWithMouse) {
-  RunTestSequence(WaitForZoomBubbleHide(), DoZoomIn(),
-                  WaitForShow(kActionItemZoomElementId),
-                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
-                  WaitForZoomBubbleShow(),
-                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
-                  WaitForZoomBubbleHide(),
-                  MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
-                  WaitForZoomBubbleShow());
+  RunTestSequence(
+      WaitForZoomBubbleHide(), DoZoomIn(),
+      WaitForShow(kActionItemZoomElementId),
+      MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+      WaitForZoomBubbleShow(), MoveMouseTo(kActionItemZoomElementId),
+      ClickMouse(), WaitForZoomBubbleHide(),
+      CheckResult(
+          [&]() { return ZoomBubbleCoordinator::From(browser())->IsShowing(); },
+          false),
+      MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
+      WaitForZoomBubbleShow());
 }
 
 IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,

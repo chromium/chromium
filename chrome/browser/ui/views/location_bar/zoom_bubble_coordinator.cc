@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -80,13 +82,36 @@ ZoomBubbleCoordinator* ZoomBubbleCoordinator::From(
 void ZoomBubbleCoordinator::OnWidgetVisibilityChanged(views::Widget* widget,
                                                       bool visible) {
   CHECK(widget_observation_.IsObservingSource(widget));
-  UpdateZoomBubbleStateAndIconVisibility(
-      /*is_bubble_visible=*/visible);
+  if (visible) {
+    UpdateZoomBubbleStateAndIconVisibility(
+        /*is_bubble_visible=*/true);
+  } else {
+    // The visibility state should be updated asynchronously because a
+    // light-dismiss click on the anchor view triggers widget hiding during
+    // mouse press. Deferring the update keeps IsBubbleShowing() true long
+    // enough for IconLabelBubbleView to suppress the mouse release and toggle
+    // the bubble.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<ZoomBubbleCoordinator> coordinator,
+                          base::WeakPtr<views::Widget> widget) {
+                         if (coordinator && widget &&
+                             coordinator->widget_observation_.IsObservingSource(
+                                 widget.get()) &&
+                             !widget->IsVisible()) {
+                           coordinator->UpdateZoomBubbleStateAndIconVisibility(
+                               /*is_bubble_visible=*/false);
+                         }
+                       },
+                       weak_ptr_factory_.GetWeakPtr(), widget->GetWeakPtr()));
+  }
 }
 
 void ZoomBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
   CHECK(widget_observation_.IsObservingSource(widget));
   widget_observation_.Reset();
+  UpdateZoomBubbleStateAndIconVisibility(
+      /*is_bubble_visible=*/false);
 }
 
 void ZoomBubbleCoordinator::Show(
@@ -218,6 +243,9 @@ void ZoomBubbleCoordinator::UpdateZoomBubbleStateAndIconVisibility(
 
   auto* tab_feature = tab_interface->GetTabFeatures();
   CHECK(tab_feature);
+  tab_feature->zoom_view_controller()->UpdateBubbleVisibility(
+      /*prefer_to_show_bubble=*/is_bubble_visible,
+      /*from_user_gesture=*/false);
   tab_feature->zoom_view_controller()->UpdatePageActionIconVisibility(
       is_bubble_visible);
 }

@@ -112,6 +112,14 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
       zoom::ZoomController::FromWebContents(GetWebContents());
   CHECK(zoom_controller);
 
+  auto* action_item = actions::ActionManager::Get().FindAction(
+      kActionShowZoomBubble,
+      BrowserActions::From(tab_interface_->GetBrowserWindowInterface())
+          ->root_action_item());
+  if (action_item) {
+    action_item->SetIsShowingBubble(prefer_to_show_bubble);
+  }
+
   const bool is_at_default_zoom = zoom_controller->IsAtDefaultZoom();
   const bool can_bubble_be_visible =
       CanBubbleBeVisible(prefer_to_show_bubble, is_at_default_zoom);

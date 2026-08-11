@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -60,7 +61,8 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
   // Returns true if a zoom bubble is currently being shown.
   [[nodiscard]] bool IsShowing() const {
     return widget_observation_.IsObserving() &&
-           !widget_observation_.GetSource()->IsClosed();
+           !widget_observation_.GetSource()->IsClosed() &&
+           widget_observation_.GetSource()->IsVisible();
   }
 
   // Returns a pointer to the currently showing bubble, or nullptr if none.
@@ -94,6 +96,8 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
   base::ScopedObservation<ImmersiveModeController,
                           ImmersiveModeController::Observer>
       immersive_mode_observation_{this};
+
+  base::WeakPtrFactory<ZoomBubbleCoordinator> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_COORDINATOR_H_
