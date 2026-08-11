@@ -44,12 +44,14 @@ export function getHtml(this: ActionChipsElement) {
                     ${chip.suggestTemplateInfo.primaryText.text}
                   </span>` :
                   ''}
-              ${this.getChipSubtitle_(chip) ? html`
+              ${!this.smallChipsEnabled_ && this.getChipSubtitle_(chip) ?
+                  html`
                 <span
                   title="${this.getChipTitle_(chip)}"
                   class="chip-body">
                   ${this.getChipSubtitle_(chip)}
-                </span>` : ''}
+                </span>` :
+                  ''}
             </div>
             ${this.showDismissalUI_ ? html`
               <cr-icon-button

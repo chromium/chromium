@@ -91,7 +91,11 @@
   width: 240px;
 }
 
-:host([small-chips-enabled]) .action-chip:not(:has(.chip-body)) {
+:host([small-chips-enabled]) .action-chips-container {
+  row-gap: 8px;
+}
+
+:host([small-chips-enabled]) .action-chip {
   box-sizing: border-box;
   gap: 6px;
   height: 40px;
@@ -102,30 +106,20 @@
   max-width: 208px;
 }
 
-:host([small-chips-enabled])
-    .action-chip:not(:has(.chip-body))
-    .action-chip-icon-container,
-:host([small-chips-enabled])
-    .action-chip:not(:has(.chip-body))
-    .action-chip-text-container {
+:host([small-chips-enabled]) .action-chip .action-chip-icon-container,
+:host([small-chips-enabled]) .action-chip .action-chip-text-container {
   align-self: center;
 }
 
-:host([small-chips-enabled])
-    .action-chip:not(:has(.chip-body))
-    .action-chip-icon-container {
+:host([small-chips-enabled]) .action-chip .action-chip-icon-container {
   margin-top: 0;
 }
 
-:host([small-chips-enabled])
-    .action-chip:not(:has(.chip-body))
-    .action-chip-text-container {
+:host([small-chips-enabled]) .action-chip .action-chip-text-container {
   padding: 0;
 }
 
-:host([small-chips-enabled])
-    .action-chip:not(:has(.chip-body))
-    .chip-title {
+:host([small-chips-enabled]) .action-chip .chip-title {
   font-weight: 400;
   max-width: 150px;
 }
@@ -284,10 +278,24 @@
 }
 
 
+/* Responsive container widths and reserved min-heights:
+ * - Standard chips: height 56px, gap 14px, margin-bottom 40px.
+ *   - >=900px (1 row):  56px + 40px = 96px.
+ *   - >=672px (2 rows): (56px * 2) + 14px + 40px = 166px.
+ *   - >=560px (3 rows): (56px * 3) + (14px * 2) + 40px = 236px.
+ * - Small chips: height 40px, row-gap 8px, margin-bottom 40px.
+ *   - >=900px (1 row):  40px + 40px = 80px.
+ *   - >=672px (2 rows): (40px * 2) + 8px + 40px = 128px.
+ *   - >=560px (3 rows): (40px * 3) + (8px * 2) + 40px = 176px.
+ */
 @media (min-width: 560px) {
   :host {
     --ntp-chips-container-width: 449px;
     min-height: 236px;
+  }
+
+  :host([small-chips-enabled]) {
+    min-height: 176px;
   }
 }
 
@@ -296,6 +304,10 @@
     --ntp-chips-container-width: 561px;
     min-height: 166px;
   }
+
+  :host([small-chips-enabled]) {
+    min-height: 128px;
+  }
 }
 
 @media (min-width: 900px) {
@@ -303,6 +315,17 @@
     --ntp-chips-container-width: 746px;
     min-height: 96px;
   }
+
+  :host([small-chips-enabled]) {
+    min-height: 80px;
+  }
+}
+
+/* Unset reserved min-height once small chips are rendered so the container
+ * adapts naturally to 1, 2, or 3 rows without hardcoded geometry
+ * calculations. */
+:host([small-chips-enabled][has-chips]) {
+  min-height: unset;
 }
 
 cr-button>span {
