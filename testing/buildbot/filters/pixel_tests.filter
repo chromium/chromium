@@ -52,6 +52,8 @@ DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
 DesktopBnplUiDelegateBrowserTest.*
 DesktopMediaPickerViewsBrowserTest.*
 DesktopPaymentsWindowManagerInteractiveUiTest*
+*DeviceSignalsDisclaimerModalPixelTest.*
+*DeviceSignalsDisclaimerProfilePickerPixelTest.*
 DocumentPictureInPicturePixelTest.*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
 *EmbeddedPermissionPromptUiTest.InvokeUi_*

@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -45,6 +49,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -108,17 +113,41 @@ namespace {
   return result;
 }
 
+void WaitForWebContentsLoaded(content::WebContents* web_contents) {
+  CHECK(web_contents);
+  content::WaitForLoadStop(web_contents);
+  content::WaitForCopyableViewInWebContents(web_contents);
+
+  std::string script = R"(
+    new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const app = document.querySelector('managed-user-profile-notice-app');
+        if (app && app.shadowRoot) {
+          const disclaimer = app.shadowRoot.querySelector('signals-disclaimer');
+          if (disclaimer && disclaimer.shadowRoot) {
+            clearInterval(interval);
+            Promise.all([
+              app.updateComplete,
+              disclaimer.updateComplete
+            ]).then(() => resolve(true));
+          }
+        }
+      }, 50);
+    });
+  )";
+  ASSERT_TRUE(content::EvalJs(web_contents, script).is_ok());
+}
+
 }  // namespace
 
-class ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest
+class DeviceSignalsDisclaimerModalPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<PixelTestParam> {
  public:
-  ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest()
+  DeviceSignalsDisclaimerModalPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam()) {}
 
-  ~ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest() override =
-      default;
+  ~DeviceSignalsDisclaimerModalPixelTest() override = default;
 
   void ShowUi(const std::string& name) override {
     gfx::ScopedAnimationDurationScaleMode disable_animation(
@@ -143,24 +172,25 @@ class ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest
                     /*is_modal_dialog=*/true));
 
     widget_waiter.WaitIfNeededAndGet();
+
+    content::WebContents* web_contents =
+        browser()
+            ->GetFeatures()
+            .signin_view_controller()
+            ->GetModalDialogWebContentsForTesting();
+    WaitForWebContentsLoaded(web_contents);
   }
 };
 
-IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest,
+IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerModalPixelTest,
                        InvokeUi_default) {
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See b/477426026.";
-  }
-#endif
-
+  set_baseline("8231223");
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    ManagedUserProfileNoticeDeviceSignalsDisclaimerPixelTest,
+    DeviceSignalsDisclaimerModalPixelTest,
     testing::ValuesIn(std::vector<PixelTestParam>{
         {.test_suffix = "Regular"},
         {.test_suffix = "DarkTheme", .use_dark_theme = true},
@@ -198,23 +228,37 @@ class ProfileBrowsersClosedWaiter : public BrowserCollectionObserver {
       observation_{this};
 };
 
-class DeviceSignalsDisclaimerUIWindowPixelTest
-    : public ProfilesPixelTestBaseT<UiBrowserTest>,
-      public testing::WithParamInterface<PixelTestParam>,
-      public views::ViewObserver {
+// Sole purpose of this wrapper is capturing the WebContents. The step
+// implementation controlling the disclaimer owns its own WebContents so getting
+// it via available getters is not possible.
+class TestStepTestView : public ProfileManagementStepTestView {
  public:
-  DeviceSignalsDisclaimerUIWindowPixelTest()
+  using ProfileManagementStepTestView::ProfileManagementStepTestView;
+
+  void ShowScreen(content::WebContents* contents,
+                  const GURL& url,
+                  base::OnceClosure navigation_finished_closure) override {
+    active_contents_ = contents;
+    ProfileManagementStepTestView::ShowScreen(
+        contents, url, std::move(navigation_finished_closure));
+  }
+
+  content::WebContents* active_contents() const { return active_contents_; }
+
+ private:
+  raw_ptr<content::WebContents> active_contents_ = nullptr;
+};
+
+class DeviceSignalsDisclaimerProfilePickerPixelTest
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
+      public testing::WithParamInterface<PixelTestParam> {
+ public:
+  DeviceSignalsDisclaimerProfilePickerPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
     scoped_feature_list_.InitWithFeatures(
         {policy::features::kDeviceSignalsBackfillDisclaimer,
          switches::kEnforceManagementDisclaimer},
         {});
-  }
-
-  ~DeviceSignalsDisclaimerUIWindowPixelTest() override {
-    if (profile_picker_view_) {
-      profile_picker_view_->views::View::RemoveObserver(this);
-    }
   }
 
   void ShowUi(const std::string& name) override {
@@ -224,9 +268,10 @@ class DeviceSignalsDisclaimerUIWindowPixelTest
 
     SignInWithAccount(AccountManagementStatus::kManaged);
 
-    profile_picker_view_ = new ProfileManagementStepTestView(
-        ProfilePicker::Params::ForFirstRun(browser()->GetProfile()->GetPath(),
-                                           base::DoNothing()),
+    auto* view = new TestStepTestView(
+        ProfilePicker::Params::ForTesting(
+            ProfilePicker::EntryPoint::kOnStartupNoProfile,
+            browser()->GetProfile()->GetPath()),
         ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer,
         /*step_controller_factory=*/
         base::BindRepeating(
@@ -236,56 +281,50 @@ class DeviceSignalsDisclaimerUIWindowPixelTest
                                                    base::DoNothing());
             },
             browser()->GetProfile()));
-    profile_picker_view_->views::View::AddObserver(this);
-    profile_picker_view_->ShowAndWait(GetParam().window_size);
-    if (ProfilePicker::GetWebViewForTesting()) {
-      profiles::testing::WaitForPickerUrl(
-          GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
-    }
+    profile_picker_view_tracker_.SetView(view);
+    view->ShowAndWait(GetParam().window_size);
+
+    WaitForWebContentsLoaded(view->active_contents());
   }
 
   bool VerifyUi() override {
-    views::Widget* widget = GetWidgetForScreenshot();
+    views::Widget* widget = CHECK_DEREF(profile_picker_view()).GetWidget();
 
     const testing::TestInfo* test_info =
         testing::UnitTest::GetInstance()->current_test_info();
+    const std::string baseline = "8231223";
     const std::string screenshot_name =
-        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+        base::StrCat({"_", test_info->name(), "_", baseline});
 
-    return VerifyPixelUi(widget, "DeviceSignalsDisclaimerUIWindowPixelTest",
+    return VerifyPixelUi(widget,
+                         "DeviceSignalsDisclaimerProfilePickerPixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {
-    if (!profile_picker_view_) {
-      return;
+    if (ProfileManagementStepTestView* view = profile_picker_view()) {
+      ViewDeletedWaiter(view).Wait();
     }
-    CHECK(GetWidgetForScreenshot());
-    ViewDeletedWaiter(profile_picker_view_).Wait();
-  }
-
-  views::Widget* GetWidgetForScreenshot() {
-    return profile_picker_view_ ? profile_picker_view_->GetWidget() : nullptr;
-  }
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override {
-    profile_picker_view_ = nullptr;
   }
 
  private:
-  raw_ptr<ProfileManagementStepTestView> profile_picker_view_ = nullptr;
+  ProfileManagementStepTestView* profile_picker_view() {
+    return static_cast<ProfileManagementStepTestView*>(
+        profile_picker_view_tracker_.view());
+  }
+
+  views::ViewTracker profile_picker_view_tracker_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerUIWindowPixelTest,
+IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerProfilePickerPixelTest,
                        InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    DeviceSignalsDisclaimerUIWindowPixelTest,
+    DeviceSignalsDisclaimerProfilePickerPixelTest,
     testing::ValuesIn(std::vector<PixelTestParam>{
         {.test_suffix = "Regular"},
         {.test_suffix = "DarkTheme", .use_dark_theme = true},
