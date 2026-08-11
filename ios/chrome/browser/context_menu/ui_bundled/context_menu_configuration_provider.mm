@@ -589,10 +589,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       gemini::IsGeminiAvailable(gemini::EntryPoint::ImageContextMenu,
                                 self.browser->GetProfile(), webState)
           .enabled;
-  BOOL geminiAboveSearch = IsGeminiImageRemixToolShowAboveSearchImageEnabled();
-  BOOL geminiBelowSearch = IsGeminiImageRemixToolShowBelowSearchImageEnabled();
-
-  if (canShowGeminiElement && (geminiAboveSearch || geminiBelowSearch)) {
+  if (canShowGeminiElement) {
     RecordImageRemixContextMenuEntryPointShown();
 
     ProceduralBlock geminiElementCallback = ^{
@@ -602,20 +599,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
     };
     geminiElement = [actionFactory
         actionToOpenImageInGeminiWithBlock:geminiElementCallback];
-  }
-
-  // Display the gemini element either above or below the search image
-  // element based on the flags.
-  if (geminiElement && geminiAboveSearch) {
     [imageMenuElements addObject:geminiElement];
   }
 
   [imageMenuElements addObjectsFromArray:imageSearchingElements];
-
-  // Ensure we don't show gemini twice if both flags are enabled.
-  if (geminiElement && geminiBelowSearch && !geminiAboveSearch) {
-    [imageMenuElements addObject:geminiElement];
-  }
 
   // Share Image.
   // Shares the URL of the image and not the image itself.

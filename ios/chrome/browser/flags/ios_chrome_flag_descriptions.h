@@ -875,10 +875,6 @@ inline constexpr char kGeminiFRERefactorName[] = "Gemini FRE Refactor";
 inline constexpr char kGeminiFRERefactorDescription[] =
     "Enables the refactored Gemini First Run Experience UI.";
 
-inline constexpr char kGeminiImageRemixToolName[] = "Gemini Image Remix Tool";
-inline constexpr char kGeminiImageRemixToolDescription[] =
-    "Enables the image remix tool in the Gemini floaty.";
-
 inline constexpr char kGeminiLiveDormantReasonsName[] =
     "Gemini Live Dormant Reasons";
 inline constexpr char kGeminiLiveDormantReasonsDescription[] =

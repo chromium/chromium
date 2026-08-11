@@ -381,55 +381,6 @@ bool IsGeminiUpdatedConsentEnabled() {
   return base::FeatureList::IsEnabled(kGeminiUpdatedConsent);
 }
 
-BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsGeminiImageRemixToolEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
-}
-
-const char kGeminiImageRemixToolShowFRERow[] = "ShowFRERow";
-
-bool IsGeminiImageRemixToolShowFRERowEnabled() {
-  if (!IsGeminiImageRemixToolEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiImageRemixTool, kGeminiImageRemixToolShowFRERow, true);
-}
-
-const char kGeminiImageRemixToolShowAboveSearchImage[] = "ShowAboveSearchImage";
-
-bool IsGeminiImageRemixToolShowAboveSearchImageEnabled() {
-  if (!IsGeminiImageRemixToolEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiImageRemixTool, kGeminiImageRemixToolShowAboveSearchImage, true);
-}
-
-const char kGeminiImageRemixToolShowBelowSearchImage[] = "ShowBelowSearchImage";
-
-bool IsGeminiImageRemixToolShowBelowSearchImageEnabled() {
-  if (!IsGeminiImageRemixToolEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiImageRemixTool, kGeminiImageRemixToolShowBelowSearchImage, false);
-}
-
-const char kGeminiImageRemixToolRemovePageContext[] = "RemovePageContext";
-
-bool IsGeminiImageRemixToolRemovePageContextEnabled() {
-  if (!IsGeminiImageRemixToolEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiImageRemixTool, kGeminiImageRemixToolRemovePageContext, true);
-}
-
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiEligibilityAblationEnabled() {

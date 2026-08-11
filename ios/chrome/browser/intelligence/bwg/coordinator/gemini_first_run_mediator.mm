@@ -203,8 +203,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - GeminiFirstRunMutator
 
 - (BOOL)shouldShowImageRemixRow {
-  return IsGeminiImageRemixToolShowFRERowEnabled() &&
-         gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
+  return gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
                                     _identityManager);
 }
 

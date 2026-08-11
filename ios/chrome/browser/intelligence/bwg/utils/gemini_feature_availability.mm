@@ -34,7 +34,7 @@ bool CheckModelExecutionEligibility(bool feature_flag_enabled,
 bool IsFeatureAvailable(Feature feature, const AccountInfo& account_info) {
   switch (feature) {
     case Feature::kImageRemix:
-      return CheckModelExecutionEligibility(IsGeminiImageRemixToolEnabled(),
+      return CheckModelExecutionEligibility(/*feature_flag_enabled=*/true,
                                             account_info);
     case Feature::kLive:
       return CheckModelExecutionEligibility(IsGeminiLiveEnabled(),

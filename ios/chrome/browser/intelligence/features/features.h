@@ -202,28 +202,6 @@ BASE_DECLARE_FEATURE(kGeminiUpdatedConsent);
 // Returns true if the updated Gemini consent is enabled.
 bool IsGeminiUpdatedConsentEnabled();
 
-// Feature flag for enabling the image remixing tool in the Gemini floaty.
-BASE_DECLARE_FEATURE(kGeminiImageRemixTool);
-bool IsGeminiImageRemixToolEnabled();
-
-// Returns true if the Gemini FRE should show the image remix row.
-bool IsGeminiImageRemixToolShowFRERowEnabled();
-extern const char kGeminiImageRemixToolShowFRERow[];
-
-// Returns true if the image remix tool should appear above
-// search image with Google (entry point will be in that same section).
-bool IsGeminiImageRemixToolShowAboveSearchImageEnabled();
-extern const char kGeminiImageRemixToolShowAboveSearchImage[];
-
-// Returns true if the image remix tool should appear below
-// search image with Google (entry point will be in that same section).
-bool IsGeminiImageRemixToolShowBelowSearchImageEnabled();
-extern const char kGeminiImageRemixToolShowBelowSearchImage[];
-
-// Returns true if the image remix tool should remove/disable PageContext.
-bool IsGeminiImageRemixToolRemovePageContextEnabled();
-extern const char kGeminiImageRemixToolRemovePageContext[];
-
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();

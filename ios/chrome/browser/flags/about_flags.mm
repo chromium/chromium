@@ -1152,27 +1152,6 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopWave1Variations[] = {
      kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
 
-const FeatureEntry::FeatureParam kGeminiImageRemixToolShowFRERowParam[] = {
-    {kGeminiImageRemixToolShowFRERow, "true"}};
-const FeatureEntry::FeatureParam
-    kGeminiImageRemixToolShowAboveSearchImageParam[] = {
-        {kGeminiImageRemixToolShowAboveSearchImage, "true"}};
-const FeatureEntry::FeatureParam
-    kGeminiImageRemixToolShowBelowSearchImageParam[] = {
-        {kGeminiImageRemixToolShowBelowSearchImage, "true"}};
-const FeatureEntry::FeatureParam kGeminiImageRemixToolRemovePageContextParam[] =
-    {{kGeminiImageRemixToolRemovePageContext, "true"}};
-
-const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
-    {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam, nullptr},
-    {"(Show Above Search Image)",
-     kGeminiImageRemixToolShowAboveSearchImageParam, nullptr},
-    {"(Show Below Search Image)",
-     kGeminiImageRemixToolShowBelowSearchImageParam, nullptr},
-    {"(Disable Page Context)", kGeminiImageRemixToolRemovePageContextParam,
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
     {"wallet_pass_save_url", "https://wallet1ppasses.pa.googleapis.com"}};
 
@@ -2428,11 +2407,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kChromeNextIa,
                                     kChromeNextIaVariations,
                                     "ChromeNextIa")},
-    {"gemini-image-remix-tool", flag_descriptions::kGeminiImageRemixToolName,
-     flag_descriptions::kGeminiImageRemixToolDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiImageRemixTool,
-                                    kGeminiImageRemixToolVariations,
-                                    "GeminiImageRemixTool")},
     {"composebox-aim-disabled", flag_descriptions::kComposeboxAIMDisabledName,
      flag_descriptions::kComposeboxAIMDisabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxAIMDisabled)},
