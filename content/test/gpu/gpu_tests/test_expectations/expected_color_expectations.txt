@@ -140,7 +140,7 @@ crbug.com/509789253 [ mac intel ] ExpectedColor_MediaRecorderFromVideoElement [ 
 crbug.com/535697669 [ apple-angle-metal-renderer:-apple-m2 asan macos26 no-clang-coverage ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 crbug.com/535697669 [ apple-angle-metal-renderer:-apple-m2 asan macos26 no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
-crbug.com/544806578 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ExpectedColor_maps [ RetryOnFailure ]
+crbug.com/544806578 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ExpectedColor_maps [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
