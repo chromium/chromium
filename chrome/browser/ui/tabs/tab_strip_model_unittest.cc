@@ -2759,6 +2759,33 @@ TEST_F(TabStripModelTest, RemovingPinnedTabPreservesFocusAndSelectsGroupTab) {
             tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
 }
 
+TEST_F(TabStripModelTest, ClosingTabInFocusedGroupSelectsAdjacentTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 5);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2, 3});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Activate the middle tab in the focused group (index 2).
+  tabstrip()->ActivateTabAt(2);
+  EXPECT_EQ(2, tabstrip()->active_index());
+
+  // Close the active tab (index 2). The selection should move to the adjacent
+  // tab to the right in the group (index 2, formerly index 3), rather than
+  // jumping back to the first tab in the group (index 1).
+  tabstrip()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(2, tabstrip()->active_index());
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Close the last tab in the focused group (index 2). The selection should
+  // move to the preceding tab in the group (index 1).
+  tabstrip()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(1, tabstrip()->active_index());
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {
