@@ -1,77 +1,56 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
+#include "ui/base/l10n/l10n_util.h"
 
-class ExtensionsToolbarButtonUnitTest : public ExtensionsToolbarUnitTest {
+class ExtensionsToolbarButtonBrowserTest : public ExtensionsToolbarBrowserTest {
  public:
-  ExtensionsToolbarButtonUnitTest();
-  ~ExtensionsToolbarButtonUnitTest() override = default;
-  ExtensionsToolbarButtonUnitTest(const ExtensionsToolbarButtonUnitTest&) =
-      delete;
-  ExtensionsToolbarButtonUnitTest& operator=(
-      const ExtensionsToolbarButtonUnitTest&) = delete;
+  ExtensionsToolbarButtonBrowserTest();
+  ~ExtensionsToolbarButtonBrowserTest() override = default;
+  ExtensionsToolbarButtonBrowserTest(
+      const ExtensionsToolbarButtonBrowserTest&) = delete;
+  ExtensionsToolbarButtonBrowserTest& operator=(
+      const ExtensionsToolbarButtonBrowserTest&) = delete;
 
-  content::WebContentsTester* web_contents_tester();
   ExtensionsMenuCoordinator* extensions_coordinator();
 
   void ClickExtensionsButton();
 
-  // ExtensionsToolbarUnitTest:
-  void SetUp() override;
-  void TearDown() override;
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester> web_contents_tester_;
-  std::unique_ptr<ExtensionsMenuCoordinator> test_extensions_coordinator_;
 };
 
-ExtensionsToolbarButtonUnitTest::ExtensionsToolbarButtonUnitTest() {
+ExtensionsToolbarButtonBrowserTest::ExtensionsToolbarButtonBrowserTest() {
   scoped_feature_list_.InitAndEnableFeature(
       extensions_features::kExtensionsMenuAccessControl);
 }
 
-content::WebContentsTester*
-ExtensionsToolbarButtonUnitTest::web_contents_tester() {
-  return web_contents_tester_;
-}
-
 ExtensionsMenuCoordinator*
-ExtensionsToolbarButtonUnitTest::extensions_coordinator() {
+ExtensionsToolbarButtonBrowserTest::extensions_coordinator() {
   return extensions_container()->GetExtensionsMenuCoordinatorForTesting();
 }
 
-void ExtensionsToolbarButtonUnitTest::ClickExtensionsButton() {
+void ExtensionsToolbarButtonBrowserTest::ClickExtensionsButton() {
   ExtensionsToolbarButton* extensions_button =
       extensions_container()->GetExtensionsButton();
   ClickButton(extensions_button);
   LayoutContainerIfNecessary();
 }
 
-void ExtensionsToolbarButtonUnitTest::SetUp() {
-  ExtensionsToolbarUnitTest::SetUp();
-  // Menu needs web contents at construction, so we need to add them to every
-  // test.
-  web_contents_tester_ = AddWebContentsAndGetTester();
-}
-
-void ExtensionsToolbarButtonUnitTest::TearDown() {
-  web_contents_tester_ = nullptr;
-  ExtensionsToolbarUnitTest::TearDown();
-}
-
-TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarButtonBrowserTest, ButtonOpensMenu) {
   InstallExtension("Extension");
 
   const GURL url("http://www.example.com");
-  web_contents_tester()->NavigateAndCommit(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForAnimation();
   EXPECT_FALSE(extensions_coordinator()->IsShowing());
 
@@ -84,7 +63,7 @@ TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
 
 // Tests that updating the button state properly modifies the tooltip and
 // accessible name.
-TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarButtonBrowserTest, UpdateState) {
   InstallExtension("Extension");
 
   extensions_button()->UpdateState(

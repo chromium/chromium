@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,24 @@
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 
-class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
+class ExtensionsMenuEntryViewBrowserTest : public ExtensionsToolbarBrowserTest {
  public:
-  ExtensionsMenuEntryViewTest()
+  ExtensionsMenuEntryViewBrowserTest()
       : initial_extension_name_(u"Initial Extension Name"),
         initial_tooltip_(u"Initial tooltip") {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionsMenuAccessControl);
   }
-  ExtensionsMenuEntryViewTest(const ExtensionsMenuEntryViewTest&) = delete;
-  ExtensionsMenuEntryViewTest& operator=(const ExtensionsMenuEntryViewTest&) =
-      delete;
-  ~ExtensionsMenuEntryViewTest() override = default;
+  ExtensionsMenuEntryViewBrowserTest(
+      const ExtensionsMenuEntryViewBrowserTest&) = delete;
+  ExtensionsMenuEntryViewBrowserTest& operator=(
+      const ExtensionsMenuEntryViewBrowserTest&) = delete;
+  ~ExtensionsMenuEntryViewBrowserTest() override = default;
 
  protected:
   // Helper to generate menu entry state with customizable action button
@@ -39,41 +41,34 @@ class ExtensionsMenuEntryViewTest : public ExtensionsToolbarUnitTest {
     return menu_entry_->context_menu_button_for_testing();
   }
 
-  // ExtensionsToolbarUnitTest:
-  void SetUp() override;
-  void TearDown() override;
+  // ExtensionsToolbarBrowserTest:
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
   const std::u16string initial_extension_name_;
   const std::u16string initial_tooltip_;
+  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<ExtensionsMenuEntryView> menu_entry_ = nullptr;
-  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
   int action_callback_count_ = 0;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-void ExtensionsMenuEntryViewTest::SetUp() {
-  ExtensionsToolbarUnitTest::SetUp();
+void ExtensionsMenuEntryViewBrowserTest::SetUpOnMainThread() {
+  ExtensionsToolbarBrowserTest::SetUpOnMainThread();
 
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams init_params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
-  // This was copied from BookmarkBarViewTest:
-  // On Chrome OS, this always creates a NativeWidgetAura, but it should
-  // create a DesktopNativeWidgetAura for Mash. We can get by without manually
-  // creating it because AshTestViewsDelegate and MusClient will do the right
-  // thing automatically.
   init_params.native_widget = CreateNativeWidget(
       NativeWidgetType::kDesktopNativeWidgetAura, &init_params, widget_.get());
 #endif
   widget_->Init(std::move(init_params));
 
-  // The view still needs a valid pointer to a model during construction,
-  // even if we update it later via MenuEntryState.
   action_model_holder_ = std::make_unique<TestToolbarActionViewModel>("hello");
 
   std::unique_ptr<ExtensionsMenuEntryView> menu_entry =
@@ -81,51 +76,48 @@ void ExtensionsMenuEntryViewTest::SetUp() {
           browser(), /*is_enterprise=*/false, action_model_holder_.get(),
           /*action_toggle_callback=*/
           base::BindRepeating(
-              [](ExtensionsMenuEntryViewTest* test) {
+              [](ExtensionsMenuEntryViewBrowserTest* test) {
                 test->action_callback_count_++;
               },
               base::Unretained(this)),
-          /*site_access_toggle_callback*/ base::DoNothing(),
+          /*site_access_toggle_callback=*/base::DoNothing(),
           /*site_permissions_button_callback=*/base::RepeatingClosure());
 
-  // Initialize entry with initial state
   menu_entry->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                    /*is_enabled=*/true));
 
   menu_entry_ = menu_entry.get();
-
   widget_->SetContentsView(std::move(menu_entry));
 }
 
-void ExtensionsMenuEntryViewTest::TearDown() {
+void ExtensionsMenuEntryViewBrowserTest::TearDownOnMainThread() {
   menu_entry_ = nullptr;
-  // All windows need to be closed before tear down.
   widget_.reset();
+  action_model_holder_.reset();
 
-  ExtensionsToolbarUnitTest::TearDown();
+  ExtensionsToolbarBrowserTest::TearDownOnMainThread();
 }
 
 ExtensionsMenuViewModel::MenuEntryState
-ExtensionsMenuEntryViewTest::GenerateState(std::u16string name,
-                                           std::u16string tooltip,
-                                           bool is_enabled) {
+ExtensionsMenuEntryViewBrowserTest::GenerateState(std::u16string name,
+                                                  std::u16string tooltip,
+                                                  bool is_enabled) {
   ExtensionsMenuViewModel::MenuEntryState state;
 
-  // Set Action Button State
   state.action_button.text = name;
   state.action_button.tooltip_text = tooltip;
   state.action_button.status =
       is_enabled ? ExtensionsMenuViewModel::ControlState::Status::kEnabled
                  : ExtensionsMenuViewModel::ControlState::Status::kDisabled;
 
-  // Set defaults for other controls so the view doesn't crash/DCHECK.
   state.context_menu_button.status =
       ExtensionsMenuViewModel::ControlState::Status::kEnabled;
 
   return state;
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionText) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuEntryViewBrowserTest,
+                       UpdatesToDisplayCorrectActionText) {
   EXPECT_EQ(action_button()->GetText(), initial_extension_name_);
 
   std::u16string new_extension_name = u"Extension Name";
@@ -137,44 +129,34 @@ TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionText) {
   EXPECT_EQ(action_button()->GetRenderedTooltipText(gfx::Point()), new_tooltip);
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, AccessibilityStateForDisabledExtension) {
-  // When the extension is disabled, the action button should remain enabled
-  // in the view system so that it can be focused by screen readers. However, it
-  // should report as disabled in the accessibility tree.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuEntryViewBrowserTest,
+                       AccessibilityStateForDisabledExtension) {
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/false));
   EXPECT_TRUE(action_button()->GetEnabled());
   EXPECT_FALSE(action_button()->GetViewAccessibility().GetIsEnabled());
 
-  // When the extension is enabled, it should be enabled in both the view system
-  // and the accessibility tree.
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/true));
   EXPECT_TRUE(action_button()->GetEnabled());
   EXPECT_TRUE(action_button()->GetViewAccessibility().GetIsEnabled());
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, ButtonStateMatchesEnabledStateOfExtension) {
-  // Initially enabled.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuEntryViewBrowserTest,
+                       ButtonStateMatchesEnabledStateOfExtension) {
   EXPECT_EQ(action_button()->GetState(), views::Button::STATE_NORMAL);
 
-  // Disable the extension.
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/false));
   EXPECT_EQ(action_button()->GetState(), views::Button::STATE_DISABLED);
 
-  // Re-enable the extension.
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/true));
   EXPECT_EQ(action_button()->GetState(), views::Button::STATE_NORMAL);
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {
-  base::UserActionTester user_action_tester;
-  // We don't check the UserActionTester for "ExtensionActivatedFromMenu" here
-  // because that metric is recorded by the ExtensionsMenuViewModel
-  // when handling the callback, not by the View or the ActionViewModel (as
-  // previously done).
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuEntryViewBrowserTest,
+                       NotifyClickExecutesAction) {
   EXPECT_EQ(0, action_callback_count_);
 
   action_button()->SetBounds(0, 0, 100, 100);
@@ -183,7 +165,8 @@ TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {
   EXPECT_EQ(1, action_callback_count_);
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, ContextMenuButtonUserAction) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuEntryViewBrowserTest,
+                       ContextMenuButtonUserAction) {
   base::UserActionTester user_action_tester;
   constexpr char kContextMenuButtonUserAction[] =
       "Extensions.Toolbar.MoreActionsButtonPressedFromMenu";
