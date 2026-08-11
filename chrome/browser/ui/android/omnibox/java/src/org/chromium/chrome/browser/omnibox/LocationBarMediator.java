@@ -3246,6 +3246,8 @@ class LocationBarMediator
         // subsequent tap will hide the suggestions dropdown shown for the typed text, while keeping
         // the scrim on the web contents, which is not desirable.
         if (mCurrentInput == null
+                || mCurrentInput.getFocusReason()
+                        != OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD
                 || mCurrentInput.getAutocompleteState() != AutocompleteState.STANDBY) {
             return;
         }

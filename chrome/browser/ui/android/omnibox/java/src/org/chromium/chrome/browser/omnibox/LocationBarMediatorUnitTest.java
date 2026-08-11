@@ -2503,6 +2503,73 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnTouchAfterFocus_withHardwareKeyboard_triggersSuggestions() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        // Start session with hardware keyboard focus (goes to STANDBY)
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+        assertTrue(mSessionState.isSessionActive());
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        assertEquals(
+                OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD,
+                mSessionState.getAutocompleteInput().getFocusReason());
+
+        // Verify autocomplete hasn't started suggestions yet (we are in STANDBY)
+        // Wait, beginInput was called once during showUrlBarCursorWithoutFocusAnimations.
+        // It should have called mAutocompleteCoordinator.beginInput.
+        verify(mAutocompleteCoordinator, times(1)).beginInput(any());
+
+        // Now touch it. This should trigger suggestions (transition to ENABLED and call
+        // beginOrResumeInput)
+        mMediator.onTouchAfterFocus();
+
+        // It should have transitioned to ENABLED
+        assertEquals(
+                AutocompleteState.ENABLED,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+        // Focus reason should be updated
+        assertEquals(
+                OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD,
+                mSessionState.getAutocompleteInput().getFocusReason());
+
+        // beginOrResumeInput(false) should have been called, which calls
+        // mAutocompleteCoordinator.beginInput again.
+        verify(mAutocompleteCoordinator, times(2)).beginInput(any());
+    }
+
+    @Test
+    public void testOnTouchAfterFocus_withoutHardwareKeyboard_doesNotTriggerSuggestions() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        // Start a regular session (focus reason will be OMNIBOX_TAP by default, but we need it to
+        // be in STANDBY to not return early on that check)
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.beginInput(input);
+
+        verify(mAutocompleteCoordinator, times(1)).beginInput(any());
+
+        // Touch it. It should return early because focus reason is not
+        // DEFAULT_WITH_HARDWARE_KEYBOARD.
+        mMediator.onTouchAfterFocus();
+
+        // AutocompleteState should remain STANDBY
+        assertEquals(
+                AutocompleteState.STANDBY,
+                mSessionState.getAutocompleteInput().getAutocompleteState());
+
+        // mAutocompleteCoordinator.beginInput should NOT have been called again.
+        verify(mAutocompleteCoordinator, times(1)).beginInput(any());
+    }
+
+    @Test
     @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     public void testFusedLocationProvider() {
         mProfileSupplier.set(mProfile);
