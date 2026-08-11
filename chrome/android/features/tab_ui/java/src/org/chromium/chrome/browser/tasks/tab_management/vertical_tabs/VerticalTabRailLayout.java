@@ -154,6 +154,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         updateHeaderLayoutForWidth(getWidth());
     }
 
+    /** Returns whether the rail is currently in the collapsed state. */
+    public boolean isCollapsed() {
+        return mCollapseState == RailCollapseState.COLLAPSED;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);

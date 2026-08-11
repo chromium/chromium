@@ -619,7 +619,9 @@ class TabVerticalViewBinder {
      */
     private static void updateRegularColors(PropertyModel model, ViewGroup view) {
         updateSelectionAndBackground(model, view, ColorStateList.valueOf(Color.TRANSPARENT));
-        updateBackgroundInsets(view);
+        boolean isRailCollapsed =
+                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
+        updateBackgroundInsets(view, isRailCollapsed);
 
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         boolean isIncognito = isIncognito(model);
@@ -673,8 +675,10 @@ class TabVerticalViewBinder {
     private static void updateGroupHeaderColors(PropertyModel model, ViewGroup view) {
         @Nullable Integer colorId = model.get(TabProperties.TAB_GROUP_CARD_COLOR);
         boolean isIncognito = isIncognito(model);
+        boolean isRailCollapsed =
+                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
         Context context = view.getContext();
-        updateBackgroundInsets(view);
+        updateBackgroundInsets(view, isRailCollapsed);
 
         @Nullable Drawable bg = view.getBackground();
         if (bg == null || (colorId == null && !isIncognito)) {
@@ -844,10 +848,10 @@ class TabVerticalViewBinder {
                 model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
         Context context = view.getContext();
         Resources resources = context.getResources();
+        updateBackgroundInsets(view, isRailCollapsed);
         if (isRailCollapsed) {
             view.setPadding(0, 0, 0, 0);
         } else {
-            updateBackgroundInsets(view);
             int paddingHorizontal =
                     resources.getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal);
             int paddingVertical =
@@ -858,11 +862,14 @@ class TabVerticalViewBinder {
         }
     }
 
-    private static void updateBackgroundInsets(View view) {
+    private static void updateBackgroundInsets(View view, boolean isRailCollapsed) {
         Context context = view.getContext();
         int targetInset =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_item_touch_target_inset);
+                isRailCollapsed
+                        ? 0
+                        : context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.vertical_tab_item_touch_target_inset);
         Drawable currentBg = view.getBackground();
         if (currentBg == null) return;
 

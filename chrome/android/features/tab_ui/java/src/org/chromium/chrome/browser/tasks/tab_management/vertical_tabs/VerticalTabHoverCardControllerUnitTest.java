@@ -47,7 +47,7 @@ public class VerticalTabHoverCardControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mContainerView;
+    @Mock private VerticalTabRailLayout mContainerView;
     @Mock private View mRootView;
     @Mock private View mTabView1;
     @Mock private View mTabView2;
@@ -190,15 +190,98 @@ public class VerticalTabHoverCardControllerUnitTest {
 
     @Test
     @SmallTest
-    public void testGetHoverCardPosition() {
+    public void testScrubbing_EnterBeforeExit_DoesNotHideTab2() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        when(mTabHoverCardView.isShown()).thenReturn(true);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+
+        // Tab 1 is currently hovered and showing.
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
+
+        // Scrubbing: Tab 2 enters BEFORE Tab 1 exits (due to ViewGroup dispatch order).
+        listener.onTabHoverCardStateChanged(TAB_ID_2, mTabView2, /* isHovered= */ true);
+        verify(mTabHoverCardView).show(eq(mTab2), anyFloat(), anyFloat());
+
+        // Tab 1 exits subsequently.
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
+
+        // Tab 2 should still be showing and hide() should NOT be called.
+        verify(mTabHoverCardView, never()).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHoverCardPosition_RegularTab_Expanded() {
         when(mTabView1.getWidth()).thenReturn(200);
 
         float[] position =
                 VerticalTabHoverCardController.getHoverCardPosition(
-                        mTabView1, mContainerView, mTabHoverCardView);
+                        mTabView1,
+                        mContainerView,
+                        mTabHoverCardView,
+                        /* isPinnedTab= */ false,
+                        /* isRailCollapsed= */ false);
 
         assertEquals(2, position.length);
         assertEquals(200f, position[0], 0.01f);
+        assertEquals(0f, position[1], 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHoverCardPosition_RegularTab_Collapsed() {
+        when(mTabView1.getWidth()).thenReturn(36);
+
+        float[] position =
+                VerticalTabHoverCardController.getHoverCardPosition(
+                        mTabView1,
+                        mContainerView,
+                        mTabHoverCardView,
+                        /* isPinnedTab= */ false,
+                        /* isRailCollapsed= */ true);
+
+        assertEquals(2, position.length);
+        assertEquals(36f, position[0], 0.01f);
+        assertEquals(0f, position[1], 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHoverCardPosition_PinnedTab_Expanded() {
+        when(mTabView1.getHeight()).thenReturn(40);
+
+        float[] position =
+                VerticalTabHoverCardController.getHoverCardPosition(
+                        mTabView1,
+                        mContainerView,
+                        mTabHoverCardView,
+                        /* isPinnedTab= */ true,
+                        /* isRailCollapsed= */ false);
+
+        assertEquals(2, position.length);
+        assertEquals(0f, position[0], 0.01f);
+        assertEquals(40f, position[1], 0.01f);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetHoverCardPosition_PinnedTab_Collapsed() {
+        when(mTabView1.getWidth()).thenReturn(36);
+
+        float[] position =
+                VerticalTabHoverCardController.getHoverCardPosition(
+                        mTabView1,
+                        mContainerView,
+                        mTabHoverCardView,
+                        /* isPinnedTab= */ true,
+                        /* isRailCollapsed= */ true);
+
+        assertEquals(2, position.length);
+        assertEquals(36f, position[0], 0.01f);
+        assertEquals(0f, position[1], 0.01f);
     }
 
     @Test

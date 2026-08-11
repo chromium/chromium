@@ -1818,6 +1818,21 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testParentPadding_Tablet_Collapsed() {
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+        assertTrue(mItemView.getBackground() instanceof InsetDrawable);
+
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+        assertEquals(0, mItemView.getPaddingLeft());
+        assertEquals(0, mItemView.getPaddingTop());
+        assertEquals(0, mItemView.getPaddingBottom());
+        assertFalse(mItemView.getBackground() instanceof InsetDrawable);
+    }
+
+    @Test
+    @SmallTest
     public void testRowBottomMargin_Tablet() {
         mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
