@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "enable_enterprise_companion": true,
     "is_asan": true,
     "is_component_build": false,
     "is_debug": true,

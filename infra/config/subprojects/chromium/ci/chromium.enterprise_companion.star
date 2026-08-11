@@ -60,7 +60,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "debug_static_builder",
             "remoteexec",
             "linux",
@@ -95,7 +94,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "release_builder",
             "remoteexec",
             "linux",
@@ -200,7 +198,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "debug_static_builder",
             "remoteexec",
             "mac",
@@ -242,7 +239,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "release_builder",
             "remoteexec",
             "mac",
@@ -286,7 +282,6 @@ ci.builder(
         configs = [
             "mac",
             "arm64",
-            "enterprise_companion",
             "debug_static_builder",
             "remoteexec",
         ],
@@ -328,7 +323,6 @@ ci.builder(
         configs = [
             "mac",
             "arm64",
-            "enterprise_companion",
             "release_builder",
             "remoteexec",
         ],
@@ -368,7 +362,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "asan",
             "debug_static_builder",
             "remoteexec",
@@ -547,7 +540,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "debug_static_builder",
             "remoteexec",
             "win",
@@ -588,7 +580,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "debug_static_builder",
             "remoteexec",
             "win",
@@ -632,7 +623,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -674,7 +664,6 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "enterprise_companion",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
