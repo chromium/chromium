@@ -10,7 +10,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -47,11 +46,12 @@ using bubble_anchor_util::AnchorConfiguration;
 
 namespace {
 
-AnchorConfiguration GetChooserAnchorConfiguration(Browser* browser) {
+AnchorConfiguration GetChooserAnchorConfiguration(
+    BrowserWindowInterface* browser) {
   return bubble_anchor_util::GetPageInfoAnchorConfiguration(browser);
 }
 
-gfx::Rect GetChooserAnchorRect(Browser* browser) {
+gfx::Rect GetChooserAnchorRect(BrowserWindowInterface* browser) {
   return bubble_anchor_util::GetPageInfoAnchorRect(browser);
 }
 
@@ -65,7 +65,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
 
  public:
   ChooserBubbleUiViewDelegate(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       content::WebContents* contents,
       std::unique_ptr<permissions::ChooserController> chooser_controller,
       base::ScopedClosureRunner fullscreen_blocker);
@@ -91,7 +91,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
 
   // Updates the anchor's arrow and view. Also repositions the bubble so it's
   // displayed in the correct location.
-  void UpdateAnchor(Browser* browser);
+  void UpdateAnchor(BrowserWindowInterface* browser);
 
   void UpdateTableView() const;
 
@@ -109,7 +109,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
 };
 
 ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* contents,
     std::unique_ptr<permissions::ChooserController> chooser_controller,
     base::ScopedClosureRunner fullscreen_blocker)
@@ -178,7 +178,8 @@ void ChooserBubbleUiViewDelegate::OnSelectionChanged() {
   DialogModelChanged();
 }
 
-void ChooserBubbleUiViewDelegate::UpdateAnchor(Browser* browser) {
+void ChooserBubbleUiViewDelegate::UpdateAnchor(
+    BrowserWindowInterface* browser) {
   AnchorConfiguration configuration = GetChooserAnchorConfiguration(browser);
   SetAnchor(configuration.anchor);
   // In fullscreen, `anchor` may be nullptr therefore anchor to the browser
@@ -256,7 +257,7 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
   }
 
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
+      browser, contents, std::move(controller),
       std::move(fullscreen_blocker).value());
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
   extensions_toolbar->ShowWidgetForExtension(
@@ -314,10 +315,10 @@ base::OnceClosure ShowDeviceChooserDialog(
   }
 
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
+      browser, contents, std::move(controller),
       std::move(fullscreen_blocker).value());
 
-  bubble->UpdateAnchor(browser->GetBrowserForMigrationOnly());
+  bubble->UpdateAnchor(browser);
 
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
   views::Widget* widget =
