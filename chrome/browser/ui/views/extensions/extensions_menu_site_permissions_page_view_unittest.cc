@@ -23,6 +23,7 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/test/views_test_utils.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -57,8 +58,8 @@ class ExtensionsSitePermissionsPageViewUnitTest
   // toolbar.
   std::vector<extensions::ExtensionId> GetExtensionsShowingRequests();
 
-  // Navigates to `string_url`.
-  void NavigateAndCommit(const std::string& string_url);
+  // Navigates to `url`.
+  void NavigateAndCommit(const GURL& url);
 
   // Since this is a unittest, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
@@ -109,8 +110,7 @@ ExtensionsSitePermissionsPageViewUnitTest::GetExtensionsShowingRequests() {
 }
 
 void ExtensionsSitePermissionsPageViewUnitTest::NavigateAndCommit(
-    const std::string& string_url) {
-  const GURL url(string_url);
+    const GURL& url) {
   web_contents_tester_->NavigateAndCommit(url);
   WaitForAnimation();
 }
@@ -154,7 +154,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extensionA =
       InstallExtensionWithHostPermissions("A Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extensionA->id());
 
   // Verify site permissions page is open for extension A.
@@ -189,7 +189,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
@@ -206,7 +206,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, LongExtensionNameIsElided) {
   auto extension =
       InstallExtensionWithHostPermissions(long_name, {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
@@ -225,7 +225,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, DisableAndEnableExtension) {
   // only extension is disabled.
   InstallExtensionWithHostPermissions("Other Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
@@ -259,7 +259,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ReloadExtension) {
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(extension_directory.UnpackedPath());
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
@@ -284,7 +284,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
   WithholdHostPermissions(extensionA.get());
   WithholdHostPermissions(extensionB.get());
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extensionA->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extensionA->id()));
 
@@ -329,7 +329,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
@@ -359,7 +359,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, SiteAccessUpdated) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
@@ -400,7 +400,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -430,7 +430,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -468,7 +468,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
       .SetWithholdHostPermissions(true);
   waiter.WaitForExtensionPermissionsUpdate();
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -498,7 +498,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.non-restricted.com");
+  NavigateAndCommit(GURL("http://www.non-restricted.com"));
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_FALSE(IsMainPageOpened());
@@ -506,7 +506,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
   // While the menu is open, navigate to an url where extension should not have
   // a site permissions page.
-  NavigateAndCommit("chrome://extensions");
+  NavigateAndCommit(GURL("chrome://extensions"));
 
   // Menu should navigate back to main page since site permissions page should
   // not be visible for the new url.
@@ -522,7 +522,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   const GURL url_A(kUrlA);
   auto extension = InstallExtension("Extension", {"activeTab"}, {url_A.spec()});
 
-  NavigateAndCommit(kUrlA);
+  NavigateAndCommit(url_A);
   ShowSitePermissionsPage(extension->id());
 
   // Menu should be open in site permissions page because the extension has site
@@ -547,7 +547,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 
   // While the menu is open, navigate to an url where the extension should
   // also have a site permissions page.
-  NavigateAndCommit("http://www.b.com");
+  NavigateAndCommit(GURL("http://www.b.com"));
 
   // Menu should navigate back to main page.
   EXPECT_TRUE(IsMainPageOpened());
@@ -561,7 +561,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
-  NavigateAndCommit("http://www.url.com");
+  NavigateAndCommit(GURL("http://www.url.com"));
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
