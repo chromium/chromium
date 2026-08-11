@@ -113,7 +113,7 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
   switch (source) {
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
-      if (ui_manager_->IsActive() && ui_manager_->profile() == profile) {
+      if (ui_manager_->IsVisible() && ui_manager_->profile() == profile) {
         Close();
       } else {
         ui_manager_->ShowForProfile(profile, context);
