@@ -1111,14 +1111,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(clientId);
   }
 
-  async testGetModelQualityClientIdFeatureDisabled() {
-    assertDefined(this.host.getHostCapabilities);
-    const capabilities: Set<HostCapability> =
-        await this.host.getHostCapabilities();
-    assertFalse(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
-
-    assertUndefined(this.host.getModelQualityClientId);
-  }
 
   async testAdditionalContext() {
     const additionalContextPromise = new Promise<void>(resolve => {

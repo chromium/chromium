@@ -184,7 +184,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
       "GlicApiTestWithMqlsIdGetterEnabled",
-      "GlicApiTestWithMqlsIdGetterDisabled",
       "GlicApiTestRuntimeFeatureOff",
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
@@ -378,19 +377,6 @@ class GlicApiTestWithMqlsIdGetterEnabled : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class GlicApiTestWithMqlsIdGetterDisabled : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithMqlsIdGetterDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {},
-        /*disabled_features=*/
-        {mojom::features::kGlicAppendModelQualityClientId});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 // Test fixture that preloads the web client before starting the test.
 // TODO(b/489122337): This test was never written to work for multi-instance.
@@ -863,17 +849,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
   ContinueJsTest();
 }
 
-
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
                        testGetModelQualityClientIdFeatureEnabled) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
-                       testGetModelQualityClientIdFeatureDisabled) {
-  ExecuteJsTest();
-}
 
 class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
  public:
@@ -2395,10 +2375,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithMqlsIdGetterEnabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithMqlsIdGetterDisabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

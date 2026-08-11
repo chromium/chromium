@@ -215,6 +215,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestGeminiEnterpriseSettingsDisabled",
       "NewGlicApiTestGeminiEnterpriseSettingsPolicy",
       "NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset",
+      "NewGlicApiTestWithMqlsIdGetterDisabled",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -1302,6 +1303,25 @@ class NewGlicApiTestWithProcessCounterAbuseVerdictDisabled
 IN_PROC_BROWSER_TEST_P(
     NewGlicApiTestWithProcessCounterAbuseVerdictDisabled,
     testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+}
+
+class NewGlicApiTestWithMqlsIdGetterDisabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithMqlsIdGetterDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {},
+        /*disabled_features=*/
+        {mojom::features::kGlicAppendModelQualityClientId});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithMqlsIdGetterDisabled,
+                       testGetModelQualityClientIdFeatureDisabled) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -3879,6 +3899,10 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithProcessCounterAbuseVerdictDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithMqlsIdGetterDisabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

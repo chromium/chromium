@@ -51,6 +51,15 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(url.searchParams.get('foobar'), '1');
   }
 
+  async testGetModelQualityClientIdFeatureDisabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertFalse(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
+
+    assertUndefined(this.host.getModelQualityClientId);
+  }
+
   async testGetUserProfileInfo() {
     assertDefined(this.host.getUserProfileInfo);
     assertDefined(this.host.getPlatform);
