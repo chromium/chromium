@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
@@ -2386,6 +2387,106 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   }
   EXPECT_TRUE(hide_animation_completed);
   EXPECT_EQ(manager->TopControlsShownRatio(), 1.0f);
+}
+
+TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
+       HasExistingAnimationHistogram) {
+  constexpr std::string_view kHistogramName =
+      "Android.BrowserControlsAnimationUpdate.HasExistingAnimation";
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.0f);
+  ASSERT_FALSE(manager->HasAnimation());
+
+  // 1. ResetAnimations() when no animation is running records false.
+  {
+    base::HistogramTester histogram_tester;
+    manager->ResetAnimations();
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/false, 1);
+  }
+
+  // 2. Start a snap hide animation via scroll when no animation is running.
+  {
+    base::HistogramTester histogram_tester;
+    client_.SetViewportScrollOffset(
+        0.0f, MaximumTopCanHideRegionHeight() + 2 * LargeScrollDelta());
+    // ScrollBegin() calls ResetAnimations() internally when idle (false).
+    manager->ScrollBegin();
+    // ScrollBy triggers SetupAnimation(kHidingControls) with no existing
+    // animation (false).
+    ScrollBy(LargeScrollDelta());
+    ASSERT_TRUE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/false, 2);
+  }
+
+  // 3. ResetAnimations() while snap animation is running records true.
+  {
+    base::HistogramTester histogram_tester;
+    manager->ResetAnimations();
+    ASSERT_FALSE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/true, 1);
+  }
+
+  // 4. Trigger height change animation when no animation is running records
+  // false.
+  {
+    base::HistogramTester histogram_tester;
+    BrowserControlsParams params;
+    params.top_controls_height = 150.0f;
+    params.animate_browser_controls_height_changes = true;
+    client_.SetBrowserControlsParams(params);
+    ASSERT_TRUE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/false, 1);
+  }
+
+  // 5. ResetAnimations() while height change animation is running records true.
+  {
+    base::HistogramTester histogram_tester;
+    manager->ResetAnimations();
+    ASSERT_FALSE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/true, 1);
+  }
+
+  // 6. Trigger a height change animation while another height change animation
+  // is already in progress.
+  // Position controls at min-height (ratio 0.0f) with min-height = 0.
+  BrowserControlsParams params;
+  params.top_controls_height = kControlsHeight;
+  params.top_controls_min_height = 0.0f;
+  params.animate_browser_controls_height_changes = false;
+  client_.SetBrowserControlsParams(params);
+  client_.SetCurrentBrowserControlsShownRatio(0.0f, 0.0f);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 0.0f);
+  ASSERT_FALSE(manager->HasAnimation());
+
+  // Start min-height animation from 0 to 50 when no animation is running
+  // (records false).
+  {
+    base::HistogramTester histogram_tester;
+    params.top_controls_min_height = 50.0f;
+    params.animate_browser_controls_height_changes = true;
+    client_.SetBrowserControlsParams(params);
+    ASSERT_TRUE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/false, 1);
+  }
+
+  // Update min-height from 50 to 10 while the previous min-height animation is
+  // still active (records true).
+  {
+    base::HistogramTester histogram_tester;
+    params.top_controls_min_height = 10.0f;
+    client_.SetBrowserControlsParams(params);
+    ASSERT_TRUE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/true, 1);
+  }
+
+  // ResetAnimations() while min-height animation is active records true.
+  {
+    base::HistogramTester histogram_tester;
+    manager->ResetAnimations();
+    ASSERT_FALSE(manager->HasAnimation());
+    histogram_tester.ExpectUniqueSample(kHistogramName, /*sample=*/true, 1);
+  }
 }
 
 class BrowserControlsOffsetManagerScrollSpeedTest

@@ -689,7 +689,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   browser_controls_offset_manager_ = BrowserControlsOffsetManager::Create(
       this, settings.top_controls_show_threshold,
-      settings.top_controls_hide_threshold);
+      settings.top_controls_hide_threshold,
+      settings.trees_in_viz_in_viz_process);
 
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetFrameSorter(&frame_sorter_);

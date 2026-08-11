@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/base/features.h"
@@ -66,15 +67,18 @@ float NormalizeShownRatio(float value, float min_shown_ratio) {
 std::unique_ptr<BrowserControlsOffsetManager>
 BrowserControlsOffsetManager::Create(BrowserControlsOffsetManagerClient* client,
                                      float controls_show_threshold,
-                                     float controls_hide_threshold) {
+                                     float controls_hide_threshold,
+                                     bool in_viz_process) {
   return base::WrapUnique(new BrowserControlsOffsetManager(
-      client, controls_show_threshold, controls_hide_threshold));
+      client, controls_show_threshold, controls_hide_threshold,
+      in_viz_process));
 }
 
 BrowserControlsOffsetManager::BrowserControlsOffsetManager(
     BrowserControlsOffsetManagerClient* client,
     float controls_show_threshold,
-    float controls_hide_threshold)
+    float controls_hide_threshold,
+    bool in_viz_process)
     : client_(client),
       permitted_state_(BrowserControlsState::kBoth),
       accumulated_scroll_delta_(0.0f),
@@ -91,6 +95,7 @@ BrowserControlsOffsetManager::BrowserControlsOffsetManager(
       bottom_controls_min_height_offset_(0.0f),
       use_snap_animation_(base::FeatureList::IsEnabled(
           features::kBrowserControlsScrollSnapAnimation)),
+      in_viz_process_(in_viz_process),
       scroll_velocity_tracker_(base::Milliseconds(kShowHideMaxDurationMs)) {
   CHECK(client_);
   UpdateOldBrowserControlsParams();
@@ -507,6 +512,10 @@ void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
     bottom_target_ratio = BottomControlsMinShownRatio();
   } else {
     bottom_controls_need_animation = false;
+  }
+
+  if (top_controls_need_animation || bottom_controls_need_animation) {
+    MaybeRecordHasExistingAnimationHistogram();
   }
 
   if (top_controls_need_animation) {
@@ -1108,7 +1117,17 @@ bool BrowserControlsOffsetManager::HasAnimation() {
          unapplied_scroll_delta_ != 0.0f;
 }
 
+void BrowserControlsOffsetManager::MaybeRecordHasExistingAnimationHistogram() {
+  if (!in_viz_process_ && use_snap_animation_) {
+    base::UmaHistogramBoolean(
+        "Android.BrowserControlsAnimationUpdate.HasExistingAnimation",
+        HasAnimation());
+  }
+}
+
 void BrowserControlsOffsetManager::ResetAnimations() {
+  MaybeRecordHasExistingAnimationHistogram();
+
   // If the animation doesn't need to jump to the end, Animation::Reset() will
   // return |std::nullopt|.
   std::optional<float> top_ratio = top_controls_animation_.Reset();
@@ -1149,6 +1168,8 @@ void BrowserControlsOffsetManager::SetupAnimation(AnimationDirection direction,
       bottom_controls_animation_.Direction() == direction) {
     return;
   }
+
+  MaybeRecordHasExistingAnimationHistogram();
 
   if (!TopControlsHeight() && !BottomControlsHeight()) {
     float ratio =

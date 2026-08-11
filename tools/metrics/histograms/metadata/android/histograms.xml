@@ -1422,6 +1422,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BrowserControlsAnimationUpdate.HasExistingAnimation"
+    enum="Boolean" expires_after="2026-09-13">
+  <owner>peilinwang@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Only recorded when BrowserControlsScrollSnapAnimation is enabled, and when
+    the layer tree instance isn't in viz. Records whether an existing animation
+    was running when either a new browser controls snap/height animation was
+    initiated, or when we attempt to reset an animation.
+  </summary>
+</histogram>
+
 <histogram name="Android.BrowsingDataModel.ModelDestructionTime" units="ms"
     expires_after="2026-06-21">
   <owner>alimariam@google.com</owner>
