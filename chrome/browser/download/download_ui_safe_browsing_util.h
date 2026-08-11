@@ -63,7 +63,8 @@ void SendSafeBrowsingDownloadReport(
 // Whether Safe Browsing Android Download Protection warnings should be shown
 // in the UI (for malicious APK downloads). This checks the feature state only;
 // Safe Browsing state is checked elsewhere.
-bool ShouldShowSafeBrowsingAndroidDownloadWarnings();
+bool ShouldShowSafeBrowsingAndroidDownloadWarnings(
+    bool enable_for_telemetry = false);
 
 // Whether the download item ".apk" as a file extension.
 bool IsApkFile(download::DownloadItem* item);
