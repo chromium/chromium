@@ -1688,6 +1688,28 @@ TEST_F(WidgetAXManagerTest, CacheTracksChildAddRemoveAfterEnable) {
   EXPECT_EQ(api.cache()->Get(child_id), nullptr);
 }
 
+TEST_F(WidgetAXManagerTest, ChildUpdatesUseImmediateIgnoredParent) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  View* root = widget()->GetRootView();
+  auto* parent = root->AddChildView(std::make_unique<View>());
+  parent->GetViewAccessibility().SetIsIgnored(true);
+  api.WaitForNextSerialization();
+
+  auto* child = parent->AddChildView(std::make_unique<View>());
+  const auto child_id = child->GetViewAccessibility().GetUniqueId();
+  EXPECT_EQ(api.cache()->Get(child_id), &child->GetViewAccessibility());
+  EXPECT_TRUE(api.pending_data_updates().contains(
+      parent->GetViewAccessibility().GetUniqueId()));
+
+  api.WaitForNextSerialization();
+  parent->RemoveChildViewT(child);
+  EXPECT_EQ(api.cache()->Get(child_id), nullptr);
+  EXPECT_TRUE(api.pending_data_updates().contains(
+      parent->GetViewAccessibility().GetUniqueId()));
+}
+
 TEST_F(WidgetAXManagerTest, ObserverReceivesNotificationWhenEnabled) {
   WidgetAXManagerObserver observer;
   manager()->AddObserver(&observer);

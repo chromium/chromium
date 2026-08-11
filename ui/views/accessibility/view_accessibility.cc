@@ -1084,7 +1084,7 @@ void ViewAccessibility::OnTooltipTextChanged(
 }
 
 void ViewAccessibility::OnViewAddedToWidget() {
-  if (ViewAccessibility* parent = GetUnignoredParent()) {
+  if (ViewAccessibility* parent = GetViewAccessibilityParent()) {
     AXUpdateNotifier::Get()->NotifyChildAdded(this, parent);
   }
 
@@ -1120,7 +1120,7 @@ void ViewAccessibility::OnViewRemovedFromWidget() {
   // Unregister virtual children before this view itself.
   OnVirtualViewRemovedFromWidget();
 
-  if (ViewAccessibility* parent = GetUnignoredParent()) {
+  if (ViewAccessibility* parent = GetViewAccessibilityParent()) {
     AXUpdateNotifier::Get()->NotifyChildRemoved(this, parent);
   }
 }

@@ -140,7 +140,7 @@ ViewAccessibility* ViewAccessibilityAXTreeSource::GetParent(
   if (!node || node->GetUniqueId() == root_id_) {
     return nullptr;
   }
-  return node->GetUnignoredParent();
+  return node->GetViewAccessibilityParent();
 }
 
 bool ViewAccessibilityAXTreeSource::IsIgnored(ViewAccessibility* node) const {

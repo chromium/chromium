@@ -181,13 +181,13 @@ TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_ImmediateUnignoredParent) {
             &parent->GetViewAccessibility());
 }
 
-TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_SkipIgnoredParent) {
+TEST_F(ViewAccessibilityAXTreeSourceTest, GetParent_ImmediateIgnoredParent) {
   auto grand = std::make_unique<View>();
   auto* parent = grand->AddChildView(std::make_unique<View>());
   auto* child = parent->AddChildView(std::make_unique<View>());
   parent->GetViewAccessibility().SetIsIgnored(true);
   EXPECT_EQ(source()->GetParent(&child->GetViewAccessibility()),
-            &grand->GetViewAccessibility());
+            &parent->GetViewAccessibility());
 }
 
 TEST_F(ViewAccessibilityAXTreeSourceTest, HandleAccessibleAction_OnKnownView) {
