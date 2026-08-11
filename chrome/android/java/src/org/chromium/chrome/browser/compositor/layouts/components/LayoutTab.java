@@ -439,13 +439,8 @@ public class LayoutTab extends PropertyModel {
         return get(DECORATION_ALPHA);
     }
 
-    @Override
-    public String toString() {
-        return Integer.toString(getId());
-    }
-
     /**
-     * @param originalContentWidth  The maximum content width for the given orientation in px.
+     * @param originalContentWidth The maximum content width for the given orientation in px.
      * @param originalContentHeight The maximum content height for the given orientation in px.
      */
     public void setContentSize(int originalContentWidth, int originalContentHeight) {

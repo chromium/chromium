@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -1812,7 +1813,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertNotNull("Move left item should be present", moveLeftItem);
         moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+        verify(mReorderFunction, times(1))
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID))), eq(true));
     }
 
     @Test
@@ -1850,7 +1852,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertNotNull("Move right item should be present", moveRightItem);
         moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
+        verify(mReorderFunction, times(1))
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID))), eq(false));
     }
 
     @Test
@@ -1888,7 +1891,8 @@ public class TabContextMenuCoordinatorUnitTest {
         ListItem moveRightItem = findItemByTitle(modelList, moveRightTitle);
         assertNotNull("Move right item should be present", moveRightItem);
         moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
+        verify(mReorderFunction, times(1))
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID))), eq(false));
     }
 
     @Test
@@ -1930,7 +1934,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertNotNull("Move left item should be present", moveLeftItem);
         moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+        verify(mReorderFunction, times(1))
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID))), eq(true));
     }
 
     @Test
@@ -2015,7 +2020,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertNotNull("Move left item should be present", moveLeftItem);
         moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+        verify(mReorderFunction, times(1))
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID))), eq(true));
     }
 
     @Test
@@ -2037,7 +2043,7 @@ public class TabContextMenuCoordinatorUnitTest {
         moveLeftItem.model.get(CLICK_LISTENER).onClick(mView);
 
         verify(mReorderFunction, times(1))
-                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), true);
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2))), eq(true));
     }
 
     @Test
@@ -2059,7 +2065,7 @@ public class TabContextMenuCoordinatorUnitTest {
         moveRightItem.model.get(CLICK_LISTENER).onClick(mView);
 
         verify(mReorderFunction, times(1))
-                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), false);
+                .accept(refEq(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2))), eq(false));
     }
 
     @Test

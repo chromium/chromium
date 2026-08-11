@@ -132,23 +132,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         public List<Integer> getAllTabIds() {
             return mAllTabIds;
         }
-
-        @Override
-        public boolean equals(Object otherObject) {
-            if (!(otherObject instanceof AnchorInfo)) return false;
-            AnchorInfo other = (AnchorInfo) otherObject;
-            return other.mAnchorTabId == mAnchorTabId && other.mAllTabIds.equals(mAllTabIds);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(List.of(mAnchorTabId, mAllTabIds));
-        }
-
-        @Override
-        public String toString() {
-            return List.of(mAnchorTabId, mAllTabIds).toString();
-        }
     }
 
     /** Layout types for the tab strip. */
