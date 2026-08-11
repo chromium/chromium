@@ -8350,10 +8350,10 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
     if (parent_required &&
         !network::ConnectionAllowlistSubsumes(
             *parent_required, *required_connection_allowlist_)) {
-      // TODO(crbug.com/538219521): Surface this "the embedder's
-      // `connectionallowlist` attribute is less strict than an ancestor's
-      // requirement and was discarded" diagnostic as a DevTools issue rather
-      // than a console message.
+      devtools_instrumentation::OnConnectionAllowlistEmbeddedEnforcementIssue(
+          *this, devtools_instrumentation::
+                     ConnectionAllowlistEmbeddedEnforcementIssue::
+                         kIFrameAttributeLoosensEmbeddingRequirement);
       required_connection_allowlist_ = parent_required;
     }
   }
@@ -8393,9 +8393,13 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
     return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
-  // TODO(crbug.com/538219521): Surface an invalid
-  // 'Allow-Connection-Allowlist-From' response header value as a DevTools
-  // issue rather than a console message.
+  if (allow_connection_allowlist_from &&
+      allow_connection_allowlist_from->is_error_message()) {
+    devtools_instrumentation::OnConnectionAllowlistEmbeddedEnforcementIssue(
+        *this,
+        devtools_instrumentation::ConnectionAllowlistEmbeddedEnforcementIssue::
+            kInvalidAllowConnectionAllowlistFrom);
+  }
 
   // The framed document may instead satisfy the requirement by delivering its
   // own Connection-Allowlist that is at least as strict (subsumes the required
@@ -8407,10 +8411,10 @@ NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
     return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
-  // TODO(crbug.com/538219521): Surface this "refused to display: the frame
-  // neither accepts the requirement via Allow-Connection-Allowlist-From nor
-  // delivers a Connection-Allowlist at least as strict" diagnostic as a
-  // DevTools issue rather than a console message.
+  devtools_instrumentation::OnConnectionAllowlistEmbeddedEnforcementIssue(
+      *this,
+      devtools_instrumentation::ConnectionAllowlistEmbeddedEnforcementIssue::
+          kEmbeddingRequirementNotSatisfied);
   return ConnectionAllowlistEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
 

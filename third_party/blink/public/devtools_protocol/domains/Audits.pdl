@@ -341,6 +341,9 @@ experimental domain Audits
       InvalidAllowlistItemType
       ReportingEndpointNotToken
       InvalidUrlPattern
+      IFrameAttributeLoosensEmbeddingRequirement
+      InvalidAllowConnectionAllowlistFrom
+      EmbeddingRequirementNotSatisfied
 
 # Details for issues about documents in Quirks Mode
 # or Limited Quirks Mode that affects page layouting.

@@ -1188,6 +1188,59 @@ void OnNavigationRequestFailed(
                    protocol::Network::ResourceTypeEnum::Document, status);
 }
 
+namespace {
+
+protocol::String ConnectionAllowlistIssueToProtocolError(
+    ConnectionAllowlistEmbeddedEnforcementIssue issue) {
+  namespace ConnectionAllowlistErrorEnum =
+      protocol::Audits::ConnectionAllowlistErrorEnum;
+  switch (issue) {
+    case ConnectionAllowlistEmbeddedEnforcementIssue::
+        kIFrameAttributeLoosensEmbeddingRequirement:
+      return ConnectionAllowlistErrorEnum::
+          IFrameAttributeLoosensEmbeddingRequirement;
+    case ConnectionAllowlistEmbeddedEnforcementIssue::
+        kInvalidAllowConnectionAllowlistFrom:
+      return ConnectionAllowlistErrorEnum::InvalidAllowConnectionAllowlistFrom;
+    case ConnectionAllowlistEmbeddedEnforcementIssue::
+        kEmbeddingRequirementNotSatisfied:
+      return ConnectionAllowlistErrorEnum::EmbeddingRequirementNotSatisfied;
+  }
+}
+
+}  // namespace
+
+void OnConnectionAllowlistEmbeddedEnforcementIssue(
+    const NavigationRequest& nav_request,
+    ConnectionAllowlistEmbeddedEnforcementIssue issue) {
+  auto request =
+      protocol::Audits::AffectedRequest::Create()
+          .SetRequestId(nav_request.devtools_navigation_token().ToString())
+          .SetUrl(nav_request.common_params().url.spec())
+          .Build();
+
+  auto connection_allowlist_details =
+      protocol::Audits::ConnectionAllowlistIssueDetails::Create()
+          .SetError(ConnectionAllowlistIssueToProtocolError(issue))
+          .SetRequest(std::move(request))
+          .Build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetConnectionAllowlistIssueDetails(
+                         std::move(connection_allowlist_details))
+                     .Build();
+
+  auto inspector_issue = protocol::Audits::InspectorIssue::Create()
+                             .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                          ConnectionAllowlistIssue)
+                             .SetDetails(std::move(details))
+                             .Build();
+
+  ReportBrowserInitiatedIssue(
+      nav_request.frame_tree_node()->current_frame_host(),
+      std::move(inspector_issue));
+}
+
 void OnNavigationEntryMarkedSkippable(const GURL& url,
                                       RenderFrameHostImpl* rfh) {
   DCHECK(rfh);
