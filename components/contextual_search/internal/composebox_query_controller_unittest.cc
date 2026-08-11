@@ -26,6 +26,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -624,9 +625,9 @@ class ComposeboxQueryControllerTest
                                   ContextUploadStatus,
                                   std::optional<ContextUploadErrorType>>
       context_upload_status_future_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
@@ -4561,11 +4562,12 @@ TEST_F(ComposeboxQueryControllerTest, SuggestInputsForOnlyAttachment) {
   }
 
   {
-    // Check that multiple attachments result in no suggest inputs.
+    // Check that multiple attachments result in encoded_contextual_inputs.
     auto inputs = controller().CreateSuggestInputs({pdf_token, tab_token});
 
     EXPECT_FALSE(inputs->has_encoded_request_id());
-    EXPECT_FALSE(inputs->has_search_session_id());
+    EXPECT_TRUE(inputs->has_encoded_contextual_inputs());
+    EXPECT_TRUE(inputs->has_search_session_id());
   }
 }
 
@@ -5099,6 +5101,80 @@ TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithParsedUrl) {
 
   // Assert: Visual input type is set for the suggest request.
   EXPECT_EQ(suggest_inputs->contextual_visual_input_type(), "wp");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSuggestInputsMultifileWithFeatureEnabled) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/true);
+  StartSession();
+
+  auto pdf_token_1 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  auto pdf_token_2 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+
+  auto suggest_inputs =
+      controller().CreateSuggestInputs({pdf_token_1, pdf_token_2});
+
+  EXPECT_TRUE(suggest_inputs->has_encoded_contextual_inputs());
+  EXPECT_FALSE(suggest_inputs->has_encoded_request_id());
+  EXPECT_FALSE(suggest_inputs->has_contextual_visual_input_type());
+
+  std::string decoded_contextual_inputs;
+  EXPECT_TRUE(base::Base64UrlDecode(
+      suggest_inputs->encoded_contextual_inputs(),
+      base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+      &decoded_contextual_inputs));
+
+  lens::LensOverlayContextualInputs contextual_inputs;
+  EXPECT_TRUE(contextual_inputs.ParseFromString(decoded_contextual_inputs));
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSuggestInputsMultifileWithFeatureDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      omnibox::kSuggestRequestSendsMultifileCgiParam);
+
+  StartSession();
+
+  auto pdf_token_1 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  auto pdf_token_2 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+
+  auto suggest_inputs =
+      controller().CreateSuggestInputs({pdf_token_1, pdf_token_2});
+
+  EXPECT_FALSE(suggest_inputs->has_encoded_contextual_inputs());
+  EXPECT_FALSE(suggest_inputs->has_encoded_request_id());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSuggestInputsMultifileWithPrioritizeFirstDocument) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/true,
+      /*attach_page_title_and_url_to_suggest_requests=*/true);
+  StartSession();
+
+  auto pdf_token_1 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  auto pdf_token_2 = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+
+  auto suggest_inputs =
+      controller().CreateSuggestInputs({pdf_token_1, pdf_token_2});
+
+  EXPECT_FALSE(suggest_inputs->has_encoded_contextual_inputs());
+  EXPECT_TRUE(suggest_inputs->has_encoded_request_id());
+  EXPECT_TRUE(suggest_inputs->has_contextual_visual_input_type());
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithInvocationSource) {

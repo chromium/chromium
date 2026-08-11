@@ -281,6 +281,13 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
           lens_overlay_suggest_inputs->search_session_id());
     }
   }
+
+  if (lens_overlay_suggest_inputs->has_encoded_contextual_inputs()) {
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "cinpts",
+        lens_overlay_suggest_inputs->encoded_contextual_inputs());
+  }
+
   return modified_url;
 }
 

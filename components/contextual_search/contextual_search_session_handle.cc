@@ -120,7 +120,8 @@ ContextualSearchSessionHandle::GetSuggestInputs() const {
 
   const auto& suggest_inputs =
       controller->CreateSuggestInputs(uploaded_context_tokens_);
-  if (suggest_inputs->has_encoded_request_id()) {
+  if (suggest_inputs->has_encoded_request_id() ||
+      suggest_inputs->has_encoded_contextual_inputs()) {
     return *suggest_inputs.get();
   }
 
