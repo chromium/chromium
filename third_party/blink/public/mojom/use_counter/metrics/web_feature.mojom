@@ -5289,6 +5289,9 @@ enum WebFeature {
   kV8Navigator_GlobalPrivacyControl_AttributeGetter = 5972,
   kXmlCAPAlert = 5973,
   kXmlCAPAlertWithXSLT = 5974,
+  kV8HTMLImageElement_ReplacedByUserAgent_AttributeGetter = 5978,
+  kUAReplaceStartAddListener = 5979,
+  kUAReplaceEndAddListener = 5980,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
