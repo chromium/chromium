@@ -29,7 +29,6 @@ class TabStripComboButton;
 class TabStrip;
 class TabStripScrollContainer;
 class TabStripControlButton;
-class TabScrollButtonContainer;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -166,21 +165,12 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
       const BrowserRootView::DropIndex& drop_index,
       DropArrow::Direction* direction) override;
 
-  TabScrollButtonContainer* scroll_button_container_for_testing() {
-    return scroll_button_container_;
-  }
-
  private:
   void OnTabStripViewSet() override;
-  void OnTabStripViewWillClear() override;
-  // Computes if the unpinned container would be scrollable
-  // if we did not show the scroll buttons. To be used only in Layout().
-  bool ComputeIsUnpinnedTabsScrollable(views::ManualLayoutUtil& layout_util);
 
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
-  raw_ptr<TabScrollButtonContainer> scroll_button_container_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };
