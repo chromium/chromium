@@ -462,7 +462,7 @@ std::optional<Value> Reader::ReadStringContent(
   }
 
   if (std::string_view cbor_string_view = base::as_string_view(*bytes);
-      base::IsStringUTF8(cbor_string_view)) {
+      base::IsStringUTF8AllowingNoncharacters(cbor_string_view)) {
     return Value(cbor_string_view);
   }
 

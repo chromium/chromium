@@ -73,7 +73,7 @@ Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
     case Type::STRING:
       new (&string_value_) std::string();
       string_value_ = std::move(in_string);
-      DCHECK(base::IsStringUTF8(string_value_));
+      DCHECK(base::IsStringUTF8AllowingNoncharacters(string_value_));
       break;
     case Type::BYTE_STRING:
       new (&bytestring_value_) BinaryValue();
@@ -89,7 +89,7 @@ Value::Value(std::string_view in_string, Type type) : type_(type) {
     case Type::STRING:
       new (&string_value_) std::string();
       string_value_ = std::string(in_string);
-      DCHECK(base::IsStringUTF8(string_value_));
+      DCHECK(base::IsStringUTF8AllowingNoncharacters(string_value_));
       break;
     case Type::BYTE_STRING:
       new (&bytestring_value_) BinaryValue();
