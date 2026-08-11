@@ -142,6 +142,14 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
+            public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                if (!mIsObserving || tabs.isEmpty()) return;
+                LogUtils.log(TAG, "willCloseTabs, tabs# " + tabs.size());
+
+                mRemoteTabGroupMutationHelper.handleWillCloseTabs(tabs);
+            }
+
+            @Override
             public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                 if (!mIsObserving || tabs.isEmpty()) return;
                 LogUtils.log(TAG, "onFinishingMultipleTabClosure, tabs# " + tabs.size());
