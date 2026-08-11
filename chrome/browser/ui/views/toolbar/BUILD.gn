@@ -350,17 +350,13 @@ if (!is_android) {
       "pinned_toolbar_actions_container_browsertest.cc",
     ]
 
-    data = [ "//tools/metrics/actions/actions.xml" ]
-
     deps = [
       ":test_support",
       ":toolbar",
       "//base",
-      "//base/test:test_support",
       "//chrome/browser:flags",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/actions",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/profiles",
@@ -368,7 +364,6 @@ if (!is_android) {
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/toolbar/chrome_labs",
-      "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
       "//chrome/browser/ui/views/page_info",
@@ -380,17 +375,10 @@ if (!is_android) {
       "//components/prefs",
       "//components/translate/content/browser:test_support",
       "//components/user_education/views",
-      "//components/vector_icons",
       "//components/version_info",
       "//components/webui/flags",
-      "//content/test:test_support",
       "//testing/gtest",
-      "//ui/accessibility",
-      "//ui/actions",
       "//ui/base",
-      "//ui/base/dragdrop:types",
-      "//ui/base/mojom",
-      "//ui/compositor",
       "//ui/views",
     ]
 
