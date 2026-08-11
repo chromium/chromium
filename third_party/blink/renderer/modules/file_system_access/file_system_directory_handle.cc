@@ -42,7 +42,7 @@ class FileSystemDirectoryHandle::IterationSource final
         ExecutionContextClient(execution_context),
         directory_(directory),
         receiver_(this, execution_context),
-        keep_alive_(this) {
+        keep_alive_({}, this) {
     directory_->MojoHandle()->GetEntries(receiver_.BindNewPipeAndPassRemote(
         execution_context->GetTaskRunner(TaskType::kStorage)));
   }

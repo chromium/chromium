@@ -930,7 +930,7 @@ RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       data_channel_(data_channel),
       message_(message),
-      keep_alive_(this) {}
+      keep_alive_({}, this) {}
 
 RTCDataChannel::BlobReader::~BlobReader() = default;
 

@@ -1670,6 +1670,8 @@ int ThingWithDestructor::live_things_with_destructor_;
 // "keep alive" persistent reference that is set & cleared across
 // ref-counting operations.
 //
+}  // namespace
+
 class RefCountedAndGarbageCollected final
     : public GarbageCollected<RefCountedAndGarbageCollected> {
  public:
@@ -1695,9 +1697,11 @@ class RefCountedAndGarbageCollected final
 
  private:
   int ref_count_ = 0;
-  SelfKeepAlive<RefCountedAndGarbageCollected> keep_alive_;
+  SelfKeepAlive<RefCountedAndGarbageCollected> keep_alive_{{}};
 };
 int RefCountedAndGarbageCollected::destructor_calls_ = 0;
+
+namespace {
 
 static void HeapMapDestructorHelper(bool clear_maps) {
   ThingWithDestructor::live_things_with_destructor_ = 0;

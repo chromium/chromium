@@ -88,7 +88,7 @@ class MODULES_EXPORT MIDIAccessInitializer
   Member<const MIDIOptions> options_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-  SelfKeepAlive<MIDIAccessInitializer> self_keep_alive_;
+  SelfKeepAlive<MIDIAccessInitializer> self_keep_alive_{{}};
 };
 
 }  // namespace blink

@@ -88,7 +88,7 @@ class AIContextObserver : public ContextLifecycleObserver {
   Member<ScriptPromiseResolver<V8SessionObjectType>> resolver_;
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
-  SelfKeepAlive<AIContextObserver> keep_alive_{this};
+  SelfKeepAlive<AIContextObserver> keep_alive_{{}, this};
 };
 
 }  // namespace blink

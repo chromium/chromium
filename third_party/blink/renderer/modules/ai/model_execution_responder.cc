@@ -63,6 +63,8 @@ void RecordCompletionMetrics(
   }
 }
 
+}  // namespace
+
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
 // result through a promise.
@@ -225,7 +227,7 @@ class Responder final : public GarbageCollected<Responder>,
   int response_callback_count_ = 0;
   HeapMojoReceiver<blink::mojom::blink::ModelStreamingResponder, Responder>
       receiver_;
-  SelfKeepAlive<Responder> keep_alive_{this};
+  SelfKeepAlive<Responder> keep_alive_{{}, this};
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   const AIMetrics::AISessionType session_type_;
@@ -455,8 +457,6 @@ class StreamingResponder final
   base::RepeatingClosure overflow_callback_;
   base::TimeTicks start_time_;
 };
-
-}  // namespace
 
 mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(

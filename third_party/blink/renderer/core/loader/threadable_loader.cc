@@ -63,8 +63,6 @@
 
 namespace blink {
 
-namespace {
-
 // DetachedClient is a ThreadableLoaderClient for a "detached"
 // ThreadableLoader. It's for fetch requests with keepalive set, so
 // it keeps itself alive during loading.
@@ -101,13 +99,11 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
                                   duration_after_detached);
   }
 
-  SelfKeepAlive<DetachedClient> self_keep_alive_{this};
+  SelfKeepAlive<DetachedClient> self_keep_alive_{{}, this};
   // Keep it alive.
   const Member<ThreadableLoader> loader_;
   base::TimeTicks detached_time_;
 };
-
-}  // namespace
 
 ThreadableLoader::ThreadableLoader(
     ExecutionContext& execution_context,

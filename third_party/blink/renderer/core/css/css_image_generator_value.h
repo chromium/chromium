@@ -130,7 +130,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   // CSSImageGenerator value using a member we don't need to have this hack
   // where we keep a persistent to the instance as long as there are clients in
   // the ClientSizeCountMap.
-  SelfKeepAlive<CSSImageGeneratorValue> keep_alive_;
+  SelfKeepAlive<CSSImageGeneratorValue> keep_alive_{{}};
 };
 
 template <>

@@ -191,6 +191,8 @@ base::DictValue ConvertToolErrorToDictValue(
   return dict;
 }
 
+}  // namespace
+
 // Helper class for converting types and managing async processing.
 class LanguageModelPromptBuilder
     : public GarbageCollected<LanguageModelPromptBuilder>,
@@ -257,7 +259,7 @@ class LanguageModelPromptBuilder
                       ScriptState* script_state,
                       ImageBitmap* bitmap);
 
-  SelfKeepAlive<LanguageModelPromptBuilder> keep_alive_{this};
+  SelfKeepAlive<LanguageModelPromptBuilder> keep_alive_{{}, this};
   Vector<mojom::blink::AILanguageModelPromptPtr> processed_prompts_;
 
   int processed_remaining_ = 0;
@@ -898,8 +900,6 @@ void LanguageModelPromptBuilder::OnBitmapLoaded(PendingEntry* entry,
           skia_bitmap.value()),
       entry);
 }
-
-}  // namespace
 
 void ConvertPromptInputsToMojo(
     ScriptState* script_state,

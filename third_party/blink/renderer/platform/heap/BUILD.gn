@@ -61,6 +61,7 @@ blink_platform_sources("heap") {
     "process_heap.cc",
     "process_heap.h",
     "self_keep_alive.h",
+    "self_keep_alive_creation_key.h",
     "thread_local.h",
     "thread_state.cc",
     "thread_state.h",

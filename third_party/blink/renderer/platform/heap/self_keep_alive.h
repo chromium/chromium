@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive_creation_key.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
@@ -14,7 +15,13 @@ namespace blink {
 
 // SelfKeepAlive<Object> is the idiom to use for objects that have to keep
 // themselves temporarily alive and cannot rely on there being some
-// external reference in that interval:
+// external reference in that interval. Alternatively, it is generally less
+// error prone though to attach the object to the regular Blink heap. Wrong
+// usage of SelfKeepAlive can result in performance or security bugs. When
+// alternatives are infeasible, an object using the SelfKeepAlive reference
+// should be allow-listed in SelfKeepAliveCreationKey as a friend.
+//
+// Usage:
 //
 //  class Opener : public GarbageCollected<Opener> {
 //   public:
@@ -44,11 +51,12 @@ class SelfKeepAlive final {
 
  public:
   explicit SelfKeepAlive(
+      SelfKeepAliveCreationKey,
       const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
       : keep_alive_(loc) {}
-  explicit SelfKeepAlive(
-      Self* self,
-      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
+  SelfKeepAlive(SelfKeepAliveCreationKey,
+                Self* self,
+                const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
       : keep_alive_(self, loc) {}
 
   SelfKeepAlive& operator=(Self* self) {

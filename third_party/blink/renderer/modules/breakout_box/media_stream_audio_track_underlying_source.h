@@ -100,7 +100,8 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
 
   // This prevents collection of this object while it is still connected to a
   // platform MediaStreamTrack.
-  SelfKeepAlive<MediaStreamAudioTrackUnderlyingSource> is_connected_to_track_;
+  SelfKeepAlive<MediaStreamAudioTrackUnderlyingSource> is_connected_to_track_{
+      {}};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

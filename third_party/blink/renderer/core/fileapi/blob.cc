@@ -92,7 +92,7 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
                                                        std::move(task_runner))),
         resolver_(resolver),
         read_type_(read_type),
-        keep_alive_(this) {
+        keep_alive_({}, this) {
     loader_->Start(std::move(blob_data_handle));
   }
 

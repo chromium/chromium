@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -227,6 +228,8 @@ String NetErrorToProtocolEnum(int net_error) {
   }
 }
 
+}  // namespace
+
 class InspectorFileReaderLoaderClient final
     : public GarbageCollected<InspectorFileReaderLoaderClient>,
       public FileReaderClient {
@@ -239,7 +242,7 @@ class InspectorFileReaderLoaderClient final
         callback_(std::move(callback)),
         loader_(MakeGarbageCollected<FileReaderLoader>(this,
                                                        std::move(task_runner))),
-        keep_alive_(this) {}
+        keep_alive_({}, this) {}
 
   InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =
       delete;
@@ -285,6 +288,8 @@ class InspectorFileReaderLoaderClient final
   SegmentedBuffer raw_data_;
   SelfKeepAlive<InspectorFileReaderLoaderClient> keep_alive_;
 };
+
+namespace {
 
 static void ResponseBodyFileReaderLoaderDone(
     const String& mime_type,

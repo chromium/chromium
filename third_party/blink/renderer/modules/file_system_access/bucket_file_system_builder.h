@@ -77,7 +77,7 @@ class MODULES_EXPORT BucketFileSystemBuilder final
   HeapMojoReceiver<mojom::blink::FileSystemAccessDirectoryEntriesListener,
                    BucketFileSystemBuilder>
       receiver_;
-  SelfKeepAlive<BucketFileSystemBuilder> self_keep_alive_{this};
+  SelfKeepAlive<BucketFileSystemBuilder> self_keep_alive_{{}, this};
 };
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_BUCKET_FILE_SYSTEM_BUILDER_H_

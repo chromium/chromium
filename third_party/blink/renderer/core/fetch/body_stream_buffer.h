@@ -180,7 +180,7 @@ class CORE_EXPORT BodyStreamBuffer final
   bool stream_broken_ = false;
 
   // Used to remain alive when there's a loader_.
-  SelfKeepAlive<BodyStreamBuffer> keep_alive_;
+  SelfKeepAlive<BodyStreamBuffer> keep_alive_{{}};
 };
 
 }  // namespace blink

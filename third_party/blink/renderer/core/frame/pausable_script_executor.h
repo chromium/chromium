@@ -95,7 +95,7 @@ class CORE_EXPORT PausableScriptExecutor final
   Member<Executor> executor_;
 
   // A keepalive used when waiting on promises to settle.
-  SelfKeepAlive<PausableScriptExecutor> keep_alive_;
+  SelfKeepAlive<PausableScriptExecutor> keep_alive_{{}};
 };
 
 }  // namespace blink

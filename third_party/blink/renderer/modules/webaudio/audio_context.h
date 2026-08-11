@@ -526,7 +526,7 @@ class MODULES_EXPORT AudioContext final
   // all that's needed.
   size_t total_audible_renders_ = 0;
 
-  SelfKeepAlive<AudioContext> keep_alive_{this};
+  SelfKeepAlive<AudioContext> keep_alive_{{}, this};
 
   // Initially, we assume that the microphone permission is denied. But this
   // will be corrected after the actual construction.
