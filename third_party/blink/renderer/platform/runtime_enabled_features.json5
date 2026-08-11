@@ -3832,8 +3832,9 @@
       // instead of pointerdown and pointerup in order to fix light dismiss
       // bugs for touch inputs.
       // https://issues.chromium.org/issues/408010435
+      // Enabled in M153, can be removed in M157.
       name: "LightDismissFromClick",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "LineBreakAfterSpaceBeforeOpenTag",
