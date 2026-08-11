@@ -13,9 +13,11 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -100,6 +102,10 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentCache,
+        {{"page_content_cache_use_user_engagement", "false"}});
+
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
     page_content_extraction_service_.emplace(os_crypt_async_.get(),
                                              GetBrowserContext()->GetPath(),
@@ -155,12 +161,22 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
     return *page_embeddings_service_;
   }
 
+  void SimulateOnRestoredPageContentFetched(
+      base::WeakPtr<content::WebContents> web_contents,
+      std::optional<optimization_guide::proto::PageContext> page_context) {
+    page_embeddings_service().OnRestoredPageContentFetched(
+        web_contents,
+        web_contents ? web_contents->GetPrimaryPage().GetWeakPtr() : nullptr,
+        std::move(page_context));
+  }
+
   EmbedderMock& embedder_mock() { return embedder_mock_; }
 
  protected:
   testing::NiceMock<EmbedderMock> embedder_mock_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<PageContentExtractionService> page_content_extraction_service_;
   std::optional<PageEmbeddingsService> page_embeddings_service_;
@@ -1307,6 +1323,114 @@ TEST_F(PageEmbeddingsServiceTest, RecordsHistograms) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageEmbeddings.Job.TotalDuration.OnDemand.Default", 1);
+}
+
+TEST_F(PageEmbeddingsServiceTest,
+       WarmupEmbeddingsForRestoredTabComputesImmediatelyIfHidden) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  int64_t tab_id = 123;
+  optimization_guide::proto::PageContext context;
+  context.set_title("restored tab title");
+  context.set_url("https://restored-example.com/");
+  auto* apc = context.mutable_annotated_page_content();
+  apc->mutable_main_frame_data()->set_title("restored tab title");
+
+  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault(
+          [&](passage_embeddings::PassagePriority priority,
+              std::vector<std::string> passages,
+              passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                  callback) {
+            compute_passages_embeddings_callback = std::move(callback);
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
+          });
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
+
+  ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(observer, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(1);
+
+  page_embeddings_service().AddObserver(&observer);
+
+  page_embeddings_service().WarmupEmbeddingsForRestoredTab(web_contents.get(),
+                                                           tab_id);
+  // Simulating the disk cache returning page context for a hidden tab computes
+  // embeddings immediately.
+  SimulateOnRestoredPageContentFetched(web_contents->GetWeakPtr(), context);
+  ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"restored tab title"}, {passage_embeddings::Embedding({1.0f})}, 1,
+           passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  EXPECT_EQ(1u, page_embeddings_service()
+                    .GetEmbeddings(web_contents->GetPrimaryPage())
+                    .size());
+
+  page_embeddings_service().RemoveObserver(&observer);
+}
+
+TEST_F(PageEmbeddingsServiceTest,
+       WarmupEmbeddingsForRestoredTabComputesImmediatelyIfVisible) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::VISIBLE);
+
+  int64_t tab_id = 456;
+  optimization_guide::proto::PageContext context;
+  context.set_title("restored visible tab");
+  context.set_url("https://restored-visible.com/");
+  auto* apc = context.mutable_annotated_page_content();
+  apc->mutable_main_frame_data()->set_title("restored visible tab");
+
+  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault(
+          [&](passage_embeddings::PassagePriority priority,
+              std::vector<std::string> passages,
+              passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                  callback) {
+            compute_passages_embeddings_callback = std::move(callback);
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
+          });
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(1);
+
+  ObserverMock observer;
+  EXPECT_CALL(observer, GetDefaultPriority)
+      .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
+  EXPECT_CALL(observer, GetUsageMode)
+      .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(1);
+
+  page_embeddings_service().AddObserver(&observer);
+
+  page_embeddings_service().WarmupEmbeddingsForRestoredTab(web_contents.get(),
+                                                           tab_id);
+  SimulateOnRestoredPageContentFetched(web_contents->GetWeakPtr(), context);
+  ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"restored visible tab"}, {passage_embeddings::Embedding({1.0f})}, 1,
+           passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  EXPECT_EQ(1u, page_embeddings_service()
+                    .GetEmbeddings(web_contents->GetPrimaryPage())
+                    .size());
+
+  page_embeddings_service().RemoveObserver(&observer);
 }
 
 }  // namespace page_content_annotations

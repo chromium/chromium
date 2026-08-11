@@ -142,6 +142,7 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -298,8 +299,12 @@ std::optional<int64_t> GetPageContentAnnotationsTabId(
   if (TabAndroid* tab = TabAndroid::FromWebContents(web_contents)) {
     return tab->GetAndroidId();
   }
+#else
+  SessionID id = sessions::SessionTabHelper::IdForTab(web_contents);
+  if (id.is_valid()) {
+    return id.id();
+  }
 #endif
-  // TODO(crbug.com/440643544): Implement a usable tab ID for other platforms.
   return std::nullopt;
 }
 

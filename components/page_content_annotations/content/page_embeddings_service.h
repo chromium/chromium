@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -128,6 +129,18 @@ class PageEmbeddingsService : public KeyedService,
   // kContinuous observers. Virtual for testing.
   virtual void ProcessEmbeddingsOnDemand();
 
+  // Asynchronously fetches cached page content from disk for `web_contents` and
+  // computes embeddings immediately once fetched, even when operating in
+  // `kOnDemand` mode. If embeddings are already loaded, restoring, or pending in
+  // memory, this is a no-op.
+  //
+  // Because disk I/O and embedding computation are heavyweight operations, this
+  // is intended for targeted warm-up rather than automatic use across all tabs
+  // at session restore.
+  virtual void WarmupEmbeddingsForRestoredTab(
+      content::WebContents* web_contents,
+      int64_t tab_id);
+
   // Retrieves the embeddings for page. Returns the empty vector if
   // embeddings have not yet been computed.
   // Virtual for testing.
@@ -142,8 +155,10 @@ class PageEmbeddingsService : public KeyedService,
                               PageContent page_content) override;
 
  private:
+  friend class PageEmbeddingsServiceTest;
   class WebContentsEventsObserver;
 
+  struct Restoring;
   struct Pending;
   struct Computing;
   struct Available;
@@ -164,6 +179,11 @@ class PageEmbeddingsService : public KeyedService,
       std::vector<passage_embeddings::Embedding> embeddings,
       uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
+
+  void OnRestoredPageContentFetched(
+      base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<content::Page> page,
+      std::optional<optimization_guide::proto::PageContext> page_context);
 
   static Priority GetActivePriority(
       const base::ObserverList<Observer>& observers,
