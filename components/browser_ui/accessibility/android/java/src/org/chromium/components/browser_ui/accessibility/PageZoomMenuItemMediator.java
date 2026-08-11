@@ -10,6 +10,7 @@ import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -79,15 +80,17 @@ class PageZoomMenuItemMediator {
     }
 
     private void updateButtonStates(double newZoomFactor) {
+        double roundedZoomFactor = MathUtils.roundTwoDecimalPlaces(newZoomFactor);
+
         // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
         mModel.set(
                 PageZoomProperties.DECREASE_ZOOM_ENABLED,
-                newZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
+                roundedZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
 
         // If the new zoom factor is less than the maximum zoom factor, enable increase button.
         mModel.set(
                 PageZoomProperties.INCREASE_ZOOM_ENABLED,
-                newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
+                roundedZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
     }
 
     private void updateZoomPercentageText(double newZoomFactor) {
