@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -68,7 +67,7 @@ class TabVerticalViewBinder {
     private static final float ROTATION_EXPANDED = 180f;
     private static final float ACTUATION_SPINNER_ROTATION_DEGREES = 360f;
     private static final long ACTUATION_SPINNER_DURATION_MS = 2000L;
-    @VisibleForTesting static final long CHEVRON_ANIMATION_DURATION_MS = 200L;
+    static final long CHEVRON_ANIMATION_DURATION_MS = 200L;
 
     // Public Entry-Point Binders
 
@@ -79,7 +78,7 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the standard tab row item.
      * @param propertyKey the specific property key to bind, or null to bind all properties.
      */
-    public static void bindTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+    static void bindTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
 
         bindCommonProperties(model, view, propertyKey);
 
@@ -101,14 +100,6 @@ class TabVerticalViewBinder {
             updateIcons(model, view);
         } else if (TabProperties.TAB_GROUP_ID == propertyKey) {
             updateChildRowPadding(model, view);
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
-            @Nullable View actionButton = view.findViewById(R.id.action_button);
-            if (actionButton != null) {
-                TabListViewBinderUtils.updateActionButtonContentDescription(model, actionButton);
-            }
-        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
-            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
-            updateGlicIndicatorBar(isGlicActive, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTabItemSize(
                     model,
@@ -131,7 +122,7 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the pinned tab row item.
      * @param propertyKey the specific property key to bind, or null to bind all properties.
      */
-    public static void bindPinnedTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+    static void bindPinnedTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         if (view.getId() == R.id.hidden_pinned_tab) {
             return;
         }
@@ -159,9 +150,6 @@ class TabVerticalViewBinder {
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTabItemSize(model, view, expandedWidth, pinnedHeight);
             updateChildRowPadding(model, view);
-        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
-            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
-            updateGlicIndicatorBar(isGlicActive, view);
         }
     }
 
@@ -172,8 +160,7 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the tab group header row item.
      * @param propertyKey the specific property key to bind.
      */
-    public static void bindTabGroupHeader(
-            PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+    static void bindTabGroupHeader(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         bindCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey) {
@@ -205,11 +192,6 @@ class TabVerticalViewBinder {
             if (menuButton != null) {
                 TabListViewBinderUtils.bindActionButton(
                         model, menuButton, model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
-            }
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
-            View menuButton = view.findViewById(R.id.menu_button);
-            if (menuButton != null) {
-                TabListViewBinderUtils.updateActionButtonContentDescription(model, menuButton);
             }
         }
     }
@@ -247,6 +229,15 @@ class TabVerticalViewBinder {
             TabListViewBinderUtils.updateContentDescription(model, view);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
+        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
+            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
+            updateGlicIndicatorBar(isGlicActive, view);
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            View button = view.findViewById(R.id.action_button);
+            if (button == null) button = view.findViewById(R.id.menu_button);
+            if (button != null) {
+                TabListViewBinderUtils.updateActionButtonContentDescription(model, button);
+            }
         }
     }
 
@@ -884,7 +875,6 @@ class TabVerticalViewBinder {
      * explicitly computed as: (rail_collapsed_width - tab_item_collapsed_size) / 2 -
      * rail_horizontal_margin.
      */
-    @VisibleForTesting
     static int getCollapsedChildMarginStart(Context context) {
         Resources resources = context.getResources();
         int railWidth =
@@ -1023,6 +1013,94 @@ class TabVerticalViewBinder {
     // Gesture & Interaction Layout Helpers
 
     /**
+     * Helper to orchestrate hover enter and exit between a parent view and an optional child
+     * button. Prevents the parent from firing a visual "exit" when the mouse moves over the child
+     * button.
+     */
+    private static void setupHoverOrchestration(
+            ViewGroup parentView,
+            @Nullable View childButton,
+            Runnable onHoverEnter,
+            Runnable onHoverExit) {
+        parentView.setOnHoverListener(
+                (v, motionEvent) -> {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_HOVER_ENTER:
+                            onHoverEnter.run();
+                            return true;
+                        case MotionEvent.ACTION_HOVER_EXIT:
+                            float x = motionEvent.getX();
+                            float y = motionEvent.getY();
+                            if (x < 0
+                                    || x >= parentView.getWidth()
+                                    || y < 0
+                                    || y >= parentView.getHeight()) {
+                                onHoverExit.run();
+                            }
+                            return true;
+                    }
+                    return false;
+                });
+
+        if (childButton != null) {
+            childButton.setOnHoverListener(
+                    (v, motionEvent) -> {
+                        int action = motionEvent.getAction();
+                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
+                            v.setHovered(true);
+                            onHoverEnter.run();
+                            return true;
+                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+                            v.setHovered(false);
+                            float xInView = v.getLeft() + motionEvent.getX();
+                            float yInView = v.getTop() + motionEvent.getY();
+                            if (xInView < 0
+                                    || xInView >= parentView.getWidth()
+                                    || yInView < 0
+                                    || yInView >= parentView.getHeight()) {
+                                onHoverExit.run();
+                            }
+                            return true;
+                        }
+                        return false;
+                    });
+        }
+    }
+
+    private static void applyHoverBackgroundState(
+            PropertyModel model,
+            ViewGroup view,
+            boolean isHovered,
+            @Nullable ColorStateList defaultBackgroundColor) {
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
+
+        if (isHovered) {
+            // TODO(crbug.com/533531896): Handle clearing all backgrounds before
+            // showing tab background.
+            // TODO(crbug.com/527641177): Maybe show a darker background color for
+            // action button when it's being hovered?
+            if (!isSelected && !isMultiSelected) {
+                ViewCompat.setBackgroundTintList(
+                        view,
+                        ColorStateList.valueOf(
+                                TabUiThemeUtil.getHoveredTabContainerColor(
+                                        view.getContext(), isIncognito(model))));
+            } else if (isMultiSelected && !isSelected) {
+                ViewCompat.setBackgroundTintList(
+                        view,
+                        ColorStateList.valueOf(
+                                TabUiThemeUtil.getTabStripMultiSelectedHoveredTabColor(
+                                        view.getContext(), isIncognito(model))));
+            }
+        } else {
+            if (!isSelected) {
+                ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
+            }
+        }
+    }
+
+    /**
      * Configures mouse hover listeners for the tab row view and optional action button.
      *
      * <p>When hovered while unselected, applies {@link TabUiThemeUtil#getHoveredTabContainerColor}
@@ -1037,140 +1115,31 @@ class TabVerticalViewBinder {
             PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBackgroundColor) {
         @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
 
-        view.setOnHoverListener(
-                (v, motionEvent) -> {
-                    boolean isSelected = model.get(TabProperties.IS_SELECTED);
-                    boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
-                    boolean isIncognito = isIncognito(model);
-                    switch (motionEvent.getAction()) {
-                        case MotionEvent.ACTION_HOVER_ENTER:
-                            // TODO(crbug.com/533531896): Handle clearing all backgrounds before
-                            // showing tab background.
-                            // TODO(crbug.com/527641177): Maybe show a darker background color for
-                            // action button when it's being hovered?
-                            if (!isSelected && !isMultiSelected) {
-                                ViewCompat.setBackgroundTintList(
-                                        view,
-                                        ColorStateList.valueOf(
-                                                TabUiThemeUtil.getHoveredTabContainerColor(
-                                                        view.getContext(), isIncognito)));
-                            } else if (isMultiSelected && !isSelected) {
-                                ViewCompat.setBackgroundTintList(
-                                        view,
-                                        ColorStateList.valueOf(
-                                                TabUiThemeUtil
-                                                        .getTabStripMultiSelectedHoveredTabColor(
-                                                                view.getContext(), isIncognito)));
-                            }
-                            updateIcons(model, view, /* isHovered= */ true);
-                            notifyHoverChange(model, view, /* isHovered= */ true);
-                            return true;
-                        case MotionEvent.ACTION_HOVER_EXIT:
-                            float x = motionEvent.getX();
-                            float y = motionEvent.getY();
-                            if (x < 0 || x >= view.getWidth() || y < 0 || y >= view.getHeight()) {
-                                if (!isSelected) {
-                                    ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
-                                }
-                                updateIcons(model, view, /* isHovered= */ false);
-                                notifyHoverChange(model, view, /* isHovered= */ false);
-                            }
-                            return true;
-                    }
-                    return false;
-                });
+        Runnable onHoverEnter =
+                () -> {
+                    applyHoverBackgroundState(
+                            model, view, /* isHovered= */ true, defaultBackgroundColor);
+                    updateIcons(model, view, /* isHovered= */ true);
+                    notifyHoverChange(model, view, /* isHovered= */ true);
+                };
 
-        if (actionButton != null) {
-            actionButton.setOnHoverListener(
-                    (v, motionEvent) -> {
-                        int action = motionEvent.getAction();
-                        boolean isIncognito = isIncognito(model);
-                        boolean isSelected = model.get(TabProperties.IS_SELECTED);
-                        boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
+        Runnable onHoverExit =
+                () -> {
+                    applyHoverBackgroundState(model, view, false, defaultBackgroundColor);
+                    updateIcons(model, view, /* isHovered= */ false);
+                    notifyHoverChange(model, view, /* isHovered= */ false);
+                };
 
-                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
-                            v.setHovered(true);
-                            if (!isSelected && !isMultiSelected) {
-                                ViewCompat.setBackgroundTintList(
-                                        view,
-                                        ColorStateList.valueOf(
-                                                TabUiThemeUtil.getHoveredTabContainerColor(
-                                                        view.getContext(), isIncognito)));
-                            } else if (isMultiSelected && !isSelected) {
-                                ViewCompat.setBackgroundTintList(
-                                        view,
-                                        ColorStateList.valueOf(
-                                                TabUiThemeUtil
-                                                        .getTabStripMultiSelectedHoveredTabColor(
-                                                                view.getContext(), isIncognito)));
-                            }
-                            updateIcons(model, view, /* isHovered= */ true);
-                            notifyHoverChange(model, view, /* isHovered= */ true);
-                            return true;
-                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
-                            v.setHovered(false);
-                            float xInView = v.getLeft() + motionEvent.getX();
-                            float yInView = v.getTop() + motionEvent.getY();
-                            if (xInView < 0
-                                    || xInView >= view.getWidth()
-                                    || yInView < 0
-                                    || yInView >= view.getHeight()) {
-                                if (!isSelected) {
-                                    ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
-                                }
-                                updateIcons(model, view, /* isHovered= */ false);
-                                notifyHoverChange(model, view, /* isHovered= */ false);
-                            }
-                            return true;
-                        }
-                        return false;
-                    });
-        }
+        setupHoverOrchestration(view, actionButton, onHoverEnter, onHoverExit);
     }
 
     private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable View menuButton = view.findViewById(R.id.menu_button);
 
-        view.setOnHoverListener(
-                (v, motionEvent) -> {
-                    switch (motionEvent.getAction()) {
-                        case MotionEvent.ACTION_HOVER_ENTER:
-                            updateGroupHeaderIcons(model, view, /* isHovered= */ true);
-                            return true;
-                        case MotionEvent.ACTION_HOVER_EXIT:
-                            float x = motionEvent.getX();
-                            float y = motionEvent.getY();
-                            if (x < 0 || x >= view.getWidth() || y < 0 || y >= view.getHeight()) {
-                                updateGroupHeaderIcons(model, view, /* isHovered= */ false);
-                            }
-                            return true;
-                    }
-                    return false;
-                });
+        Runnable onHoverEnter = () -> updateGroupHeaderIcons(model, view, /* isHovered= */ true);
+        Runnable onHoverExit = () -> updateGroupHeaderIcons(model, view, /* isHovered= */ false);
 
-        if (menuButton != null) {
-            menuButton.setOnHoverListener(
-                    (v, motionEvent) -> {
-                        int action = motionEvent.getAction();
-                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
-                            v.setHovered(true);
-                            updateGroupHeaderIcons(model, view, /* isHovered= */ true);
-                            return true;
-                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
-                            v.setHovered(false);
-                            float xInView = v.getLeft() + motionEvent.getX();
-                            float yInView = v.getTop() + motionEvent.getY();
-                            if (xInView < 0
-                                    || xInView >= view.getWidth()
-                                    || yInView < 0
-                                    || yInView >= view.getHeight()) {
-                                updateGroupHeaderIcons(model, view, /* isHovered= */ false);
-                            }
-                            return true;
-                        }
-                        return false;
-                    });
-        }
+        setupHoverOrchestration(view, menuButton, onHoverEnter, onHoverExit);
     }
 
     private static void updateGroupHeaderIcons(
