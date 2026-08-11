@@ -80,11 +80,6 @@ source_set("web_applications") {
   }
 }
 
-# TODO(crbug.com/438226511): web_app_launch_utils.h includes browser.h, and
-# makes use of Browser::CreateParams inner struct, which can not be easily
-# worked around. For this reason, it causes a circular dependency against
-# //c/b/ui:ui from a header. This target confines it, in order to unblock the
-# componentization of the rest of the directory.
 source_set("launch_utils") {
   sources = []
   public_deps = []
@@ -101,7 +96,6 @@ source_set("launch_utils") {
       "//ui/gfx/geometry",
     ]
   }
-  public_deps += [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("impl") {

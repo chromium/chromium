@@ -209,7 +209,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
 
   // If the browser does not have a `restore_id`, then we restore the session.
   return BrowserInitState::From(browser)->create_params().restore_id ==
-         Browser::kDefaultRestoreId;
+         BrowserWindowCreateParams::kDefaultRestoreId;
 #else
   if (!has_open_trackable_browsers_ &&
       !StartupBrowserCreator::InSynchronousProfileLaunch() &&

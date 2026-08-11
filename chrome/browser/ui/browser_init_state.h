@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -35,8 +34,6 @@ class BrowserInitState {
   DECLARE_USER_DATA(BrowserInitState);
 
   BrowserInitState(BrowserWindowCreateParams params,
-                   ui::UnownedUserDataHost& host);
-  BrowserInitState(const Browser::CreateParams& params,
                    ui::UnownedUserDataHost& host);
   BrowserInitState(const BrowserInitState&) = delete;
   BrowserInitState& operator=(const BrowserInitState&) = delete;

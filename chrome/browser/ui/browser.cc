@@ -228,105 +228,29 @@ BrowserWindowInterface* BrowserWindowInterface::FromSessionID(
   return found;
 }
 
-Browser::CreateParams::CreateParams(Profile* profile, bool user_gesture)
-    : CreateParams(TYPE_NORMAL, profile, user_gesture) {}
-
-Browser::CreateParams::CreateParams(Type type,
-                                    Profile* profile,
-                                    bool user_gesture)
-    : type(type), profile(profile), user_gesture(user_gesture) {}
-
-Browser::CreateParams::CreateParams(const CreateParams& other) = default;
-
-Browser::CreateParams& Browser::CreateParams::operator=(
-    const CreateParams& other) = default;
-
-Browser::CreateParams::~CreateParams() = default;
-
-// static
-Browser::CreateParams Browser::CreateParams::CreateForAppBase(
-    bool is_popup,
-    const std::string& app_name,
-    bool trusted_source,
-    const gfx::Rect& window_bounds,
-    Profile* profile,
-    bool user_gesture) {
-  DCHECK(!app_name.empty());
-
-  CreateParams params(is_popup ? Type::TYPE_APP_POPUP : Type::TYPE_APP, profile,
-                      user_gesture);
-  params.app_name = app_name;
-  params.trusted_source = trusted_source;
-  params.initial_bounds = window_bounds;
-
-  return params;
-}
-
-// static
-Browser::CreateParams Browser::CreateParams::CreateForApp(
-    const std::string& app_name,
-    bool trusted_source,
-    const gfx::Rect& window_bounds,
-    Profile* profile,
-    bool user_gesture) {
-  return CreateForAppBase(false, app_name, trusted_source, window_bounds,
-                          profile, user_gesture);
-}
-
-// static
-Browser::CreateParams Browser::CreateParams::CreateForAppPopup(
-    const std::string& app_name,
-    bool trusted_source,
-    const gfx::Rect& window_bounds,
-    Profile* profile,
-    bool user_gesture) {
-  return CreateForAppBase(true, app_name, trusted_source, window_bounds,
-                          profile, user_gesture);
-}
-
-// static
-Browser::CreateParams Browser::CreateParams::CreateForPictureInPicture(
-    const std::string& app_name,
-    bool trusted_source,
-    Profile* profile,
-    bool user_gesture) {
-  Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
-                                       profile, user_gesture);
-  browser_params.app_name = app_name;
-  browser_params.trusted_source = trusted_source;
-  return browser_params;
-}
-
-// static
-Browser::CreateParams Browser::CreateParams::CreateForDevTools(
-    Profile* profile) {
-  CreateParams params(TYPE_DEVTOOLS, profile, true);
-  params.app_name = DevToolsWindow::kDevToolsApp;
-  params.trusted_source = true;
-  return params;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Constructors, Creation, Showing:
 
 // static
-Browser* Browser::Create(const CreateParams& params) {
+Browser* Browser::Create(BrowserWindowCreateParams params) {
   // If this is failing, a caller is trying to create a browser when creation is
   // not possible, e.g. using the wrong profile or during shutdown. The caller
   // should handle this; see e.g. crbug.com/40154317 and crbug.com/40798999.
   CHECK_EQ(CreationStatus::kOk,
            GetBrowserWindowCreationStatusForProfile(*params.profile));
 
-  std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
+  Profile* const profile_ptr = &*params.profile;
+  std::unique_ptr<Browser> browser =
+      base::WrapUnique(new Browser(std::move(params)));
   Browser* const browser_ptr = browser.get();
-  BrowserManagerServiceFactory::GetForProfile(params.profile)
+  BrowserManagerServiceFactory::GetForProfile(profile_ptr)
       ->AddBrowser(std::move(browser));
   return browser_ptr;
 }
 
 // static
 std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
-    const CreateParams& params) {
+    BrowserWindowCreateParams params) {
   CHECK_IS_TEST();
   // If this is failing, a caller is trying to create a browser when creation is
   // not possible, e.g. using the wrong profile or during shutdown. The caller
@@ -334,21 +258,23 @@ std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
   CHECK_EQ(CreationStatus::kOk,
            GetBrowserWindowCreationStatusForProfile(*params.profile));
 
-  std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
-  BrowserManagerServiceFactory::GetForProfile(params.profile)
+  Profile* const profile_ptr = &*params.profile;
+  std::unique_ptr<Browser> browser =
+      base::WrapUnique(new Browser(std::move(params)));
+  BrowserManagerServiceFactory::GetForProfile(profile_ptr)
       ->AddBrowserForTesting(browser.get());
   return browser;
 }
 
-Browser::Browser(const CreateParams& params)
+Browser::Browser(BrowserWindowCreateParams params)
     : type_(params.type),
-      profile_(params.profile),
+      profile_(&*params.profile),
       window_(nullptr),
       tab_strip_model_delegate_(
           std::make_unique<chrome::BrowserTabStripModelDelegate>(this)),
       tab_strip_model_(std::make_unique<TabStripModel>(
           tab_strip_model_delegate_.get(),
-          params.profile,
+          profile_,
           // Tab groups are disabled for app browsers.
           (type_ == TYPE_APP || type_ == TYPE_APP_POPUP)
               ? nullptr
@@ -357,16 +283,19 @@ Browser::Browser(const CreateParams& params)
       keep_alive_(
           std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::BROWSER,
                                             KeepAliveRestartOption::DISABLED)) {
+  const bool user_gesture = params.from_user_gesture;
+  const bool in_tab_dragging = params.in_tab_dragging;
+  BrowserWindow* const custom_window = params.window;
+
   // Constructed first so that downstream features and window setup (e.g.
   // BrowserWindowFeatures and the window sizer) can query the creation and
   // initial parameters of this window.
-  init_state_ =
-      std::make_unique<BrowserInitState>(params, unowned_user_data_host_);
+  init_state_ = std::make_unique<BrowserInitState>(std::move(params),
+                                                   unowned_user_data_host_);
 
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        params.profile->GetOriginalProfile(),
-        ProfileKeepAliveOrigin::kBrowserWindow);
+        profile_->GetOriginalProfile(), ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   tab_strip_model_->AddObserver(this);
@@ -385,14 +314,14 @@ Browser::Browser(const CreateParams& params)
   features_ = std::make_unique<BrowserWindowFeatures>();
   features_->Init(this);
 
-  if (params.window) {
-    CHECK_IS_TEST() << "Browser::CreateParams::window is a test-only param";
+  if (custom_window) {
+    CHECK_IS_TEST() << "BrowserWindowCreateParams::window is a test-only param";
   }
   window_ =
-      params.window
-          ? std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(params.window)
-          : BrowserWindow::CreateBrowserWindow(this, params.user_gesture,
-                                               params.in_tab_dragging);
+      custom_window
+          ? std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(custom_window)
+          : BrowserWindow::CreateBrowserWindow(this, user_gesture,
+                                               in_tab_dragging);
 
   if (auto* const app_browser_controller =
           web_app::AppBrowserController::From(this)) {

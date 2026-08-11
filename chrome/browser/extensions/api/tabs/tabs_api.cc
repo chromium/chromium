@@ -80,6 +80,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/unload_controller.h"

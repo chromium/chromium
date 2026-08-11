@@ -220,7 +220,7 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
   // Exit early if we can't create browser windows (e.g. when browser is
   // shutting down, or a wrong profile is given).
   if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     return nullptr;
   }
 

@@ -144,7 +144,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 
 content::WebContents* WebAppLaunchProcess::Run() {
   if (GetBrowserWindowCreationStatusForProfile(profile_.get()) !=
-          Browser::CreationStatus::kOk ||
+          BrowserWindowInterface::CreationStatus::kOk ||
       !registrar_->AppMatches(params_->app_id,
                               WebAppFilter::IsAppSurfaceableToUser())) {
     return nullptr;

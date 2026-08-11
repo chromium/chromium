@@ -62,6 +62,7 @@
 class BackgroundContents;
 class BrowserInitState;
 class BrowserWindow;
+struct BrowserWindowCreateParams;
 class BrowserWindowFeatures;
 class FindBarController;
 class Profile;
@@ -109,176 +110,6 @@ class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public BrowserWindowInterface {
  public:
-  // Represents the source of a browser creation request.
-  enum class CreationSource {
-    kUnknown,
-    kSessionRestore,
-    kStartupCreator,
-    kLastAndUrlsStartupPref,
-    kDeskTemplate,
-  };
-
-  // Represents whether a value was known to be explicitly specified.
-  enum class ValueSpecified { kUnknown, kSpecified, kUnspecified };
-
-  // The default value for a browser's `restore_id` param.
-  static constexpr int kDefaultRestoreId = 0;
-
-  struct CreateParams {
-    explicit CreateParams(Profile* profile, bool user_gesture);
-    CreateParams(Type type, Profile* profile, bool user_gesture);
-    CreateParams(const CreateParams& other);
-    CreateParams& operator=(const CreateParams& other);
-    ~CreateParams();
-
-    static CreateParams CreateForApp(const std::string& app_name,
-                                     bool trusted_source,
-                                     const gfx::Rect& window_bounds,
-                                     Profile* profile,
-                                     bool user_gesture);
-
-    static CreateParams CreateForAppPopup(const std::string& app_name,
-                                          bool trusted_source,
-                                          const gfx::Rect& window_bounds,
-                                          Profile* profile,
-                                          bool user_gesture);
-
-    static CreateParams CreateForPictureInPicture(const std::string& app_name,
-                                                  bool trusted_source,
-                                                  Profile* profile,
-                                                  bool user_gesture);
-
-    static CreateParams CreateForDevTools(Profile* profile);
-
-    // The browser type.
-    Type type;
-
-    // The associated profile.
-    raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile;
-
-    // Specifies the WindowFeatureController `is_trusted_source_` value.
-    bool trusted_source = false;
-
-    // Specifies the browser `omit_from_session_restore_` value, whether the new
-    // Browser should be omitted from being saved/restored by session restore.
-    bool omit_from_session_restore = false;
-
-    // Specifies the browser `should_trigger_session_restore` value. If true, a
-    // new window opening should be treated like the start of a session (with
-    // potential session restore, startup URLs, etc.). Otherwise, don't restore
-    // the session.
-    bool should_trigger_session_restore = true;
-
-    // The bounds of the window to open.
-    gfx::Rect initial_bounds;
-    // Whether `initial_bounds.origin()` was explicitly specified, if known.
-    // Used to disambiguate coordinate (0,0) from an unspecified location when
-    // parameters originate from the JS Window.open() window features string,
-    // e.g. window.open(... 'left=0,top=0,...') vs window.open(... 'popup,...').
-    ValueSpecified initial_origin_specified = ValueSpecified::kUnknown;
-
-    // The workspace the window should open in, if the platform supports it.
-    std::string initial_workspace;
-
-    // Whether the window is visible on all workspaces initially, if the
-    // platform supports it.
-    bool initial_visible_on_all_workspaces_state = false;
-
-    ui::mojom::WindowShowState initial_show_state =
-        ui::mojom::WindowShowState::kDefault;
-
-    CreationSource creation_source = CreationSource::kUnknown;
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // If set, the browser should be created on the display given by
-    // `display_id`.
-    std::optional<int64_t> display_id;
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-    // When the browser window is shown, the desktop environment is notified
-    // using this ID.  In response, the desktop will stop playing the "waiting
-    // for startup" animation (if any).
-    std::string startup_id;
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-    // Some platforms support session management assisted by the windowing
-    // system, such as:
-    // -ChromeOS, where this id is retrieved from the session backing
-    // storage and used by Ash to restore the browser window state.
-    // - Ozone/Wayland, with xdg-session-management protocol extension, in
-    // which case, this id is sent to the Wayland compositor, so it can also
-    // restore the window state when the window is initialized. Se
-    // ui/ozone/public/platfrom_session_manager.h for more details.
-    int32_t restore_id = kDefaultRestoreId;
-#endif
-
-    // Whether this browser was created by a user gesture. We track this
-    // specifically for the multi-user case in chromeos where we can place
-    // windows generated by user gestures differently from ones
-    // programmatically created.
-    bool user_gesture;
-
-    // Whether this browser was created specifically for dragged tab(s).
-    bool in_tab_dragging = false;
-
-    // Supply a custom BrowserWindow implementation, to be used instead of the
-    // default. Intended for testing. The resulting Browser takes ownership
-    // of `window`.
-    // TODO(crbug.com/413168662): CreateParams should be updated to be move-only
-    // and this should become a unique_ptr (or removed completely once
-    // deprecated Browser unit tests are eliminated).
-    raw_ptr<BrowserWindow, DanglingUntriaged> window = nullptr;
-
-    // User-set title of this browser window, if there is one.
-    std::string user_title;
-
-    // Only applied when not in forced app mode. True if the browser is
-    // resizeable.
-    bool can_resize = true;
-
-    // Only applied when not in forced app mode. True if the browser can be
-    // maximizable.
-    bool can_maximize = true;
-
-    // Only applied when not in forced app mode. True if the browser can enter
-    // fullscreen.
-    bool can_fullscreen = true;
-
-    // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
-    std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
-
-    // Specifies the collapsed state for the Vertical Tab Strip. True if the
-    // browser is collapsed.
-    std::optional<bool> vertical_tab_strip_collapsed;
-    // Specifies the width for the uncollapsed Vertical Tab Strip.
-    std::optional<int> vertical_tab_strip_uncollapsed_width;
-
-    // The application name that is also the name of the window to the shell.
-    // Do not set this value directly, use CreateForApp/CreateForAppPopup.
-    // This name will be set for:
-    // 1) v1 applications launched via an application shortcut or extension API.
-    // 2) undocked devtool windows.
-    // 3) popup windows spawned from v1 applications.
-    std::string app_name;
-
-    // Specifies the focused tab group ID, if the window should be created in a
-    // focused state.
-    std::optional<tab_groups::TabGroupId> focused_tab_group_id;
-
-   private:
-    friend class Browser;
-    friend class WindowSizerChromeOSTest;
-
-    static CreateParams CreateForAppBase(bool is_popup,
-                                         const std::string& app_name,
-                                         bool trusted_source,
-                                         const gfx::Rect& window_bounds,
-                                         Profile* profile,
-                                         bool user_gesture);
-  };
-
   // Constructors, Creation, Showing //////////////////////////////////////////
 
   Browser(const Browser&) = delete;
@@ -408,16 +239,16 @@ class Browser : public TabStripModelObserver,
   //
   // If |params.window| is set, the caller is expected to take the ownership
   // of the created Browser instance.
-  static Browser* Create(const CreateParams& params);
+  static Browser* Create(BrowserWindowCreateParams params);
 
   // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
   // browser unittests.
   // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
   // has been eliminated.
   static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
-      const CreateParams& params);
+      BrowserWindowCreateParams params);
 
-  explicit Browser(const CreateParams& params);
+  explicit Browser(BrowserWindowCreateParams params);
 
   // Command and state updating ///////////////////////////////////////////////
 

@@ -14,8 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
 #include "base/time/time.h"
-#include "base/values.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
@@ -24,6 +22,7 @@
 
 class Profile;
 class Browser;
+struct BrowserWindowCreateParams;
 class BrowserWindowInterface;
 class GURL;
 enum class WindowOpenDisposition;

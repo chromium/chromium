@@ -381,7 +381,7 @@ NavigationCapturingProcess::MaybeHandleAppNavigation(
 
   if (!AreWebAppsUserInstallable(profile) ||
       GetBrowserWindowCreationStatusForProfile(*profile) !=
-          Browser::CreationStatus::kOk ||
+          BrowserWindowInterface::CreationStatus::kOk ||
       !params.url.is_valid()) {
     RecordInitialNavigationCapturingResult(
         NavigationCapturingInitialResult::kNotHandled);

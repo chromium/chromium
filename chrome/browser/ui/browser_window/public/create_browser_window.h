@@ -189,9 +189,12 @@ struct BrowserWindowCreateParams {
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+  // The default value for a browser's `restore_id` param.
+  static constexpr int kDefaultRestoreId = 0;
+
   // Some platforms support session management assisted by the windowing
   // system.
-  int32_t restore_id = 0;
+  int32_t restore_id = kDefaultRestoreId;
 #endif
 #endif  // !BUILDFLAG(IS_ANDROID)
 

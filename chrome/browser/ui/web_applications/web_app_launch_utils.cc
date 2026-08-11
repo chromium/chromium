@@ -881,7 +881,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
   content::WebContents* web_contents = nullptr;
   // Do not launch anything if the profile is being deleted.
   if (GetBrowserWindowCreationStatusForProfile(profile) ==
-      Browser::CreationStatus::kOk) {
+      BrowserWindowInterface::CreationStatus::kOk) {
     // TODO(crbug.com/379136842): This is likely too 'permissive' of a check,
     // and different more restrictive filter should likely be used instead.
     if (lock.registrar().AppMatches(params.app_id,

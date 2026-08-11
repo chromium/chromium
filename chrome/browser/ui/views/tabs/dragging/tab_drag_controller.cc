@@ -2736,7 +2736,7 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   // Do not copy attached window's restore id as this will cause Full Restore to
   // restore the newly created browser using the original browser's stored data.
   // See crbug.com/40181917 and crbug.com/40227947 for details.
-  create_params.restore_id = Browser::kDefaultRestoreId;
+  create_params.restore_id = BrowserWindowCreateParams::kDefaultRestoreId;
 
   // Open the window in the same display.
   display::Display display = display::Screen::Get()->GetDisplayNearestWindow(

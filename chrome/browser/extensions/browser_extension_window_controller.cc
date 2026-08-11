@@ -73,7 +73,7 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
       return api::tabs::WindowType::kApp;
     // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
     // chrome.windows.create({type: 'popup'}) uses
-    // Browser::CreateParams::CreateForAppPopup().
+    // BrowserWindowCreateParams::CreateForAppPopup().
     case BrowserWindowInterface::TYPE_APP_POPUP:
     case BrowserWindowInterface::TYPE_POPUP:
       return api::tabs::WindowType::kPopup;

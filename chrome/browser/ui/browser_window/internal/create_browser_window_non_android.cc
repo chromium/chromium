@@ -112,45 +112,6 @@ BrowserWindowCreateParams BrowserWindowCreateParams::CreateForDevTools(
 
 namespace {
 
-void CopyDesktopParamsToBrowserParams(
-    const BrowserWindowCreateParams& create_params,
-    Browser::CreateParams& browser_params) {
-  browser_params.app_name = create_params.app_name;
-  browser_params.omit_from_session_restore =
-      create_params.omit_from_session_restore;
-  browser_params.should_trigger_session_restore =
-      create_params.should_trigger_session_restore;
-  browser_params.initial_origin_specified =
-      static_cast<Browser::ValueSpecified>(
-          create_params.initial_origin_specified);
-  browser_params.initial_workspace = create_params.initial_workspace;
-  browser_params.initial_visible_on_all_workspaces_state =
-      create_params.initial_visible_on_all_workspaces_state;
-  browser_params.creation_source =
-      static_cast<Browser::CreationSource>(create_params.creation_source);
-  browser_params.in_tab_dragging = create_params.in_tab_dragging;
-  browser_params.window = create_params.window;
-  browser_params.user_title = create_params.user_title;
-  browser_params.focused_tab_group_id = create_params.focused_tab_group_id;
-  browser_params.can_resize = create_params.can_resize;
-  browser_params.can_maximize = create_params.can_maximize;
-  browser_params.can_fullscreen = create_params.can_fullscreen;
-  browser_params.pip_options = create_params.pip_options;
-  browser_params.vertical_tab_strip_collapsed =
-      create_params.vertical_tab_strip_collapsed;
-  browser_params.vertical_tab_strip_uncollapsed_width =
-      create_params.vertical_tab_strip_uncollapsed_width;
-#if BUILDFLAG(IS_CHROMEOS)
-  browser_params.display_id = create_params.display_id;
-#endif
-#if BUILDFLAG(IS_LINUX)
-  browser_params.startup_id = create_params.startup_id;
-#endif
-#if BUILDFLAG(IS_OZONE)
-  browser_params.restore_id = create_params.restore_id;
-#endif
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsOnKioskSplashScreen() {
   session_manager::SessionManager* session_manager =
@@ -174,31 +135,6 @@ bool IsOnKioskSplashScreen() {
 }
 #endif
 
-Browser::CreateParams ConvertToBrowserCreateParams(
-    BrowserWindowCreateParams create_params) {
-  Browser::CreateParams browser_params =
-      (!create_params.app_name.empty() &&
-       (create_params.type == BrowserWindowInterface::TYPE_APP ||
-        create_params.type == BrowserWindowInterface::TYPE_APP_POPUP))
-          ? (create_params.type == BrowserWindowInterface::TYPE_APP
-                 ? Browser::CreateParams::CreateForApp(
-                       create_params.app_name, create_params.is_trusted_source,
-                       create_params.initial_bounds, &*create_params.profile,
-                       create_params.from_user_gesture)
-                 : Browser::CreateParams::CreateForAppPopup(
-                       create_params.app_name, create_params.is_trusted_source,
-                       create_params.initial_bounds, &*create_params.profile,
-                       create_params.from_user_gesture))
-          : Browser::CreateParams(create_params.type, &*create_params.profile,
-                                  create_params.from_user_gesture);
-
-  browser_params.trusted_source = create_params.is_trusted_source;
-  browser_params.initial_bounds = std::move(create_params.initial_bounds);
-  browser_params.initial_show_state = create_params.initial_show_state;
-  CopyDesktopParamsToBrowserParams(create_params, browser_params);
-  return browser_params;
-}
-
 }  // namespace
 
 BrowserWindowInterface* CreateBrowserWindow(
@@ -206,18 +142,13 @@ BrowserWindowInterface* CreateBrowserWindow(
   CHECK_EQ(BrowserWindowInterface::CreationStatus::kOk,
            GetBrowserWindowCreationStatusForProfile(*create_params.profile));
 
-  Browser::CreateParams browser_params =
-      ConvertToBrowserCreateParams(std::move(create_params));
-
-  return Browser::Create(browser_params);
+  return Browser::Create(std::move(create_params));
 }
 
 std::unique_ptr<Browser> DeprecatedCreateOwnedBrowserWindowForTesting(
     BrowserWindowCreateParams create_params) {
-  Browser::CreateParams browser_params =
-      ConvertToBrowserCreateParams(std::move(create_params));
-
-  return Browser::DeprecatedCreateOwnedForTesting(browser_params);
+  return Browser::DeprecatedCreateOwnedForTesting(
+      std::move(create_params));  // IN-TEST
 }
 
 void CreateBrowserWindow(

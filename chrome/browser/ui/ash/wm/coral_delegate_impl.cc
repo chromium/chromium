@@ -86,7 +86,7 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
             ->mutable_app_id_to_launch_list()[app_constants::kChromeAppId];
     // All tabs go into the same window.
     auto& app_restore_data =
-        launch_list[/*window_id=*/Browser::kDefaultRestoreId];
+        launch_list[/*window_id=*/BrowserWindowCreateParams::kDefaultRestoreId];
     app_restore_data = std::make_unique<app_restore::AppRestoreData>();
     app_restore_data->browser_extra_info.urls = std::move(tab_urls);
   }
@@ -261,7 +261,7 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
 }
 
 int CoralDelegateImpl::GetChromeDefaultRestoreId() {
-  return Browser::kDefaultRestoreId;
+  return BrowserWindowCreateParams::kDefaultRestoreId;
 }
 
 void CoralDelegateImpl::OpenFeedbackDialog(
