@@ -21,6 +21,17 @@ source_set("sdk_manager") {
 }
 
 if (is_chromeos) {
+  source_set("obfuscation_rename_handler") {
+    public = [ "obfuscation_rename_handler.h" ]
+
+    sources = [ "obfuscation_rename_handler.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/ash/file_manager",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
+    ]
+  }
   source_set("test_support") {
     testonly = true
 
@@ -100,12 +111,15 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [
       "file_transfer_analysis_delegate_unittest.cc",
+      "obfuscation_rename_handler_unittest.cc",
       "source_destination_matcher_ash_unittest.cc",
     ]
     deps += [
+      ":obfuscation_rename_handler",
       ":test_support",
       "//chrome/browser/enterprise/connectors/reporting",
       "//chrome/browser/policy:test_support",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//storage/browser:test_support",
     ]
   }

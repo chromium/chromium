@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -25,6 +26,7 @@ struct COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscationData
   static const char kUserDataKey[];
 
   bool is_obfuscated = false;
+  base::FilePath original_target_path;
 };
 
 // DownloadObfuscator handles obfuscation or deobfuscation of download data.
