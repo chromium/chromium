@@ -87,6 +87,68 @@ class BadExtensionsTest(unittest.TestCase):
         self.assertEqual(0, len(results))
 
 
+class CheckBuildConfigMacrosWithoutIncludeTest(unittest.TestCase):
+
+    def testGoodFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            # The build-config macros are allowed to be used in build_config.h
+            # without including itself.
+            MockFile('build/build_config.h',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('other/path/foo.cc', [
+                '#include "build/build_config.h"',
+                '#if defined(COMPILER_GCC)',
+            ]),
+            MockFile('other/path/foo.h', [
+                '#include "build/build_config.h"',
+                '#if defined(COMPILER_GCC)',
+            ]),
+            # Primary header includes build_config.h.
+            MockFile('other/path/bar.h', ['#include "build/build_config.h"']),
+            MockFile('other/path/bar.cc',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            # Third-party libraries (except Blink) are excluded.
+            MockFile('third_party/foo/foo.h',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('third_party/foo/foo.cc',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('ios/third_party/foo/foo.h',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('ios/third_party/foo/foo.cc',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            # Non-C++ files are not checked.
+            MockFile('other/path/not_checked.txt',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+        ]
+        results = PRESUBMIT.CheckBuildConfigMacrosWithoutInclude(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testBadFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('other/path/foo.h',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('other/path/foo.cc',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            # Blink is not excluded, despite being in third-party.
+            MockFile('third_party/blink/foo.h',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+            MockFile('third_party/blink/foo.cc',
+                     ['// comment', '#if defined(COMPILER_GCC)']),
+        ]
+        results = PRESUBMIT.CheckBuildConfigMacrosWithoutInclude(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertIn('other/path/foo.h:1 COMPILER_GCC', results[0].message)
+        self.assertIn('other/path/foo.cc:1 COMPILER_GCC', results[0].message)
+        self.assertIn('third_party/blink/foo.h:1 COMPILER_GCC',
+                      results[0].message)
+        self.assertIn('third_party/blink/foo.cc:1 COMPILER_GCC',
+                      results[0].message)
+
+
 class CheckForSuperfluousStlIncludesInHeadersTest(unittest.TestCase):
 
     def testGoodFiles(self):
@@ -102,6 +164,11 @@ class CheckForSuperfluousStlIncludesInHeadersTest(unittest.TestCase):
                      ['#include "base/stl_util.h"', 'foobar']),
             MockFile('other/path/baz.h',
                      ['#include "set/vector.h"', 'bazzab']),
+            # Third-party libraries (except Blink) are excluded.
+            MockFile('third_party/foo/foo.h',
+                     ['#include <vector>', 'no_std_namespace']),
+            MockFile('ios/third_party/foo/foo.h',
+                     ['#include <vector>', 'no_std_namespace']),
             # The check is only for header files.
             MockFile('other/path/not_checked.cc',
                      ['#include <vector>', 'bazbaz']),
@@ -117,12 +184,17 @@ class CheckForSuperfluousStlIncludesInHeadersTest(unittest.TestCase):
             MockFile(
                 'other/path/bar.h',
                 ['#include <limits>', '#include <set>', 'no_std_namespace']),
+            # Blink is not excluded, despite being in third-party.
+            MockFile('third_party/blink/foo.h',
+                     ['#include <vector>', 'no_std_namespace']),
         ]
         results = PRESUBMIT.CheckForSuperfluousStlIncludesInHeaders(
             mock_input_api, MockOutputApi())
         self.assertEqual(1, len(results))
         self.assertIn('foo.h: Includes STL', results[0].message)
         self.assertIn('bar.h: Includes STL', results[0].message)
+        self.assertIn('third_party/blink/foo.h: Includes STL',
+                      results[0].message)
 
 
 class CheckSingletonInHeadersTest(unittest.TestCase):

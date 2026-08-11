@@ -6470,11 +6470,15 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
                                       input_api.re.MULTILINE)
     extension_re = input_api.re.compile(r'\.[a-z]+$')
     errors = []
-    config_h_file = input_api.os_path.join('build', 'build_config.h')
-    for f in input_api.AffectedFiles(include_deletes=False):
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f,
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP +
+        (_THIRD_PARTY_EXCEPT_BLINK, ))
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=file_filter):
         # The build-config macros are allowed to be used in build_config.h
         # without including itself.
-        if f.LocalPath() == config_h_file:
+        if f.UnixLocalPath() == 'build/build_config.h':
             continue
         if not f.LocalPath().endswith(
             ('.h', '.c', '.cc', '.cpp', '.m', '.mm')):
@@ -6533,7 +6537,11 @@ def CheckForSuperfluousStlIncludesInHeaders(input_api, output_api):
                                           r'vector)>')
     std_namespace_re = input_api.re.compile(r'std::')
     errors = []
-    for f in input_api.AffectedFiles():
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f,
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP +
+        (_THIRD_PARTY_EXCEPT_BLINK, ))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
         if not _IsCPlusPlusHeaderFile(input_api, f.LocalPath()):
             continue
 
