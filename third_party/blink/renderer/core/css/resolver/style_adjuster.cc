@@ -199,7 +199,6 @@ void StyleAdjuster::AdjustStyleForSvgElement(
       builder.SetTextDecorationStyle(
           ETextDecorationStyle::kSolid);  // crbug.com/1246719
     }
-    builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
     builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
     builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
     builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);

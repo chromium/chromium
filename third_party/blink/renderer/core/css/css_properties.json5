@@ -6367,6 +6367,7 @@
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "text-indent",

@@ -1,13 +1,5 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property text-decoration-thickness value '4px' no zoom
-  assert_equals: expected "4px" but got "auto"
-[FAIL] Property text-decoration-thickness value 'inherit' no zoom
-  assert_equals: expected "2px" but got "auto"
-[FAIL] Property text-decoration-thickness value '4px' zoom: 2
-  assert_equals: expected "4px" but got "auto"
-[FAIL] Property text-decoration-thickness value 'inherit' zoom: 2
-  assert_equals: expected "2px" but got "auto"
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property text-underline-offset value '4px' no zoom
   assert_equals: expected "4px" but got "auto"
 [FAIL] Property text-underline-offset value 'inherit' no zoom
