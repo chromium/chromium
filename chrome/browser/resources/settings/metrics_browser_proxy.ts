@@ -771,6 +771,8 @@ export interface MetricsBrowserProxy {
       void;
 }
 
+export const SAFETY_HUB_SUGGESTIONS_MAX_VALUE = 98;
+
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordAction(action: string) {
     chrome.send('metricsHandler:recordAction', [action]);
@@ -834,8 +836,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       suggestions: number) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyHub.NotificationPermissionsModule.ListCount',
-      suggestions,
-      99 /*max value for Notification Permissions suggestions*/,
+      Math.min(suggestions, SAFETY_HUB_SUGGESTIONS_MAX_VALUE),
+      SAFETY_HUB_SUGGESTIONS_MAX_VALUE + 1,
     ]);
   }
 
@@ -861,8 +863,8 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       suggestions: number) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.SafetyHub.UnusedSitePermissionsModule.ListCount',
-      suggestions,
-      99 /*max value for Unused Site Permissions suggestions*/,
+      Math.min(suggestions, SAFETY_HUB_SUGGESTIONS_MAX_VALUE),
+      SAFETY_HUB_SUGGESTIONS_MAX_VALUE + 1,
     ]);
   }
 

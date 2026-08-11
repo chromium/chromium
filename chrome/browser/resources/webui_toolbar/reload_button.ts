@@ -135,8 +135,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     const recordedInputType = isKeyboard ? ReloadButtonInputType.KEY_PRESS :
                                            ReloadButtonInputType.MOUSE_RELEASE;
     this.browserProxy_.recordInHistogram(
-        INPUT_COUNT_HISTOGRAM, recordedInputType,
-        ReloadButtonInputType.KEY_PRESS);
+        INPUT_COUNT_HISTOGRAM, recordedInputType, ReloadButtonInputType.COUNT);
 
     if (this.state.isNavigationLoading) {
       this.browserProxy_.browserControlsHandler.stopLoad();

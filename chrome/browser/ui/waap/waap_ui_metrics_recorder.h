@@ -33,7 +33,10 @@ class WaapUIMetricsRecorder {
     kKeyPress = 1,
     kMaxValue = kKeyPress
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:ReloadButtonInputType)
+  // LINT.ThenChange(
+  //   //tools/metrics/histograms/metadata/ui/enums.xml:ReloadButtonInputType,
+  //   //chrome/browser/resources/webui_toolbar/metrics_recorder.ts:ReloadButtonInputType
+  // )
 
   // Mode of the ReloadButton for use in this recorder.
   enum class ReloadButtonMode { kReload = 0, kStop = 1, kMaxValue = kStop };

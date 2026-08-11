@@ -579,26 +579,26 @@ export class HistoryAppElement extends HistoryAppElementBase {
         HistoryResultType.END);
 
     // MetricsHandler uses a 100 bucket limit, so the max index is 99.
-    const maxIndex = 99;
+    const boundary = 100;
     const clampedIndex = Math.min(e.detail.index, 99);
     browserProxy.recordHistogram(
-        'History.SearchResultClicked.Index', clampedIndex, maxIndex);
+        'History.SearchResultClicked.Index', clampedIndex, boundary);
 
     switch (e.detail.resultType) {
       case HistoryResultType.TRADITIONAL:
         browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Traditional', clampedIndex,
-            maxIndex);
+            boundary);
         break;
       case HistoryResultType.GROUPED:
         browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Grouped', clampedIndex,
-            maxIndex);
+            boundary);
         break;
       case HistoryResultType.EMBEDDINGS:
         browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Embeddings', clampedIndex,
-            maxIndex);
+            boundary);
         break;
       case HistoryResultType.END:
         break;
