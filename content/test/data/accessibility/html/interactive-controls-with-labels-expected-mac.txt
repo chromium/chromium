@@ -1,17 +1,17 @@
 AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='Test label'
-++AXGroup AXDescription='aria label'
+++AXGroup AXDescription='aria label' AXTitle='aria label'
 ++++AXStaticText AXValue='Generic container'
-++AXGroup AXDescription='Test label'
+++AXGroup AXDescription='Test label' AXTitle='Test label'
 ++++AXStaticText AXValue='Generic container with aria-labelledby'
-++AXTextField AXDescription='aria label' AXValue='Textbox'
+++AXTextField AXDescription='aria label' AXTitle='aria label' AXValue='Textbox'
 ++++AXStaticText AXValue='Textbox'
 ++AXTextField AXTitle='Test label' AXValue='Textbox with aria-labelledby'
 ++++AXStaticText AXValue='Textbox with aria-labelledby'
-++AXButton AXDescription='aria label'
+++AXButton AXDescription='aria label' AXTitle='aria label'
 ++AXButton AXTitle='Test label'
-++AXComboBox AXDescription='aria label'
+++AXComboBox AXDescription='aria label' AXTitle='aria label'
 ++AXList
 ++++AXStaticText AXValue='Option 1'
 ++++AXStaticText AXValue='Option 2'
@@ -19,7 +19,7 @@ AXWebArea
 ++AXList
 ++++AXStaticText AXValue='Option 3'
 ++++AXStaticText AXValue='Option 4'
-++AXComboBox AXDescription='aria label' AXValue='Combobox'
+++AXComboBox AXDescription='aria label' AXTitle='aria label' AXValue='Combobox'
 ++++AXStaticText AXValue='Combobox'
 ++AXList
 ++++AXStaticText AXValue='Option 5'
@@ -29,23 +29,23 @@ AXWebArea
 ++AXList
 ++++AXStaticText AXValue='Option 7'
 ++++AXStaticText AXValue='Option 8'
-++AXTimeField AXDescription='aria label' AXValue='12:05'
+++AXTimeField AXDescription='aria label' AXTitle='aria label' AXValue='12:05'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXIncrementor AXDescription='Hours aria label' AXValue=12
+++++++++AXIncrementor AXDescription='Hours aria label' AXTitle='Hours aria label' AXValue=12
 ++++++++AXStaticText AXValue=':'
-++++++++AXIncrementor AXDescription='Minutes aria label' AXValue=5
+++++++++AXIncrementor AXDescription='Minutes aria label' AXTitle='Minutes aria label' AXValue=5
 ++++++++AXStaticText AXValue=' '
-++++++++AXIncrementor AXDescription='AM/PM aria label' AXValue=2
-++++AXPopUpButton AXDescription='Show time picker aria label'
+++++++++AXIncrementor AXDescription='AM/PM aria label' AXTitle='AM/PM aria label' AXValue=2
+++++AXPopUpButton AXDescription='Show time picker aria label' AXTitle='Show time picker aria label'
 ++AXTimeField AXTitle='Test label' AXValue='12:05'
 ++++AXGroup
 ++++++AXGroup
-++++++++AXIncrementor AXDescription='Hours Test label' AXValue=12
+++++++++AXIncrementor AXDescription='Hours Test label' AXTitle='Hours Test label' AXValue=12
 ++++++++AXStaticText AXValue=':'
-++++++++AXIncrementor AXDescription='Minutes Test label' AXValue=5
+++++++++AXIncrementor AXDescription='Minutes Test label' AXTitle='Minutes Test label' AXValue=5
 ++++++++AXStaticText AXValue=' '
-++++++++AXIncrementor AXDescription='AM/PM Test label' AXValue=2
-++++AXPopUpButton AXDescription='Show time picker Test label'
-++AXColorWell AXDescription='aria label' AXValue='rgb 0.89412 0.89412 0.89412 1'
+++++++++AXIncrementor AXDescription='AM/PM Test label' AXTitle='AM/PM Test label' AXValue=2
+++++AXPopUpButton AXDescription='Show time picker Test label' AXTitle='Show time picker Test label'
+++AXColorWell AXDescription='aria label' AXTitle='aria label' AXValue='rgb 0.89412 0.89412 0.89412 1'
 ++AXColorWell AXTitle='Test label' AXValue='rgb 0.89412 0.89412 0.89412 1'

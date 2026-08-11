@@ -1,10 +1,10 @@
 AXWebArea
 ++AXGroup
-++++AXImage AXDescription='pipe' AXRoleDescription='image'
+++++AXImage AXDescription='pipe' AXRoleDescription='image' AXTitle='pipe'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue=' '
-++++AXImage AXDescription='  . To get missing image descriptions, open the context menu.'
+++++AXImage AXDescription='  . To get missing image descriptions, open the context menu.' AXTitle='  . To get missing image descriptions, open the context menu.'
 ++++AXStaticText AXValue=' '
-++++AXImage AXDescription='SVG face' AXRoleDescription='image'
+++++AXImage AXDescription='SVG face' AXRoleDescription='image' AXTitle='SVG face'
 ++++AXStaticText AXValue=' '
-++++AXImage AXDescription='clickable_image' AXRoleDescription='image'
+++++AXImage AXDescription='clickable_image' AXRoleDescription='image' AXTitle='clickable_image'

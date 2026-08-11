@@ -1,7 +1,7 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='Before.'
-++AXSplitter AXDescription='Dividing line' AXRoleDescription='splitter'
+++AXSplitter AXDescription='Dividing line' AXRoleDescription='splitter' AXTitle='Dividing line'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='Middle.'
 ++AXSplitter AXRoleDescription='splitter'

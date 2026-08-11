@@ -1,1 +1,1 @@
-AXValueChanged on AXTextField AXDescription='Test Textfield' AXValue='Hello World'
+AXValueChanged on AXTextField AXDescription='Test Textfield' AXTitle='Test Textfield' AXValue='Hello World'

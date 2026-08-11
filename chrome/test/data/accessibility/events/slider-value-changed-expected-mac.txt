@@ -1,1 +1,1 @@
-AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=0
+AXValueChanged on AXSlider AXDescription='Test Slider' AXTitle='Test Slider' AXValue=0

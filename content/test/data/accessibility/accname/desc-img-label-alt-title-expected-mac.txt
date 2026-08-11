@@ -1,1 +1,1 @@
-AXImage AXDescription='label'
+AXImage AXDescription='label' AXTitle='label'

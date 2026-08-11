@@ -1,1 +1,1 @@
-AXValueChanged on AXButton AXDescription='Test Button'
+AXValueChanged on AXButton AXDescription='Test Button' AXTitle='Test Button'

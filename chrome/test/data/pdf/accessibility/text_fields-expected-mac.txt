@@ -1,5 +1,5 @@
-AXGroup AXDescription='PDF document containing 1 page'
-++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
+AXGroup AXDescription='PDF document containing 1 page' AXTitle='PDF document containing 1 page'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1' AXTitle='Page 1'
 ++++AXGroup
 ++++++AXStaticText AXValue='Test Form<newline>'
 ++++AXGroup
@@ -10,7 +10,7 @@ AXGroup AXDescription='PDF document containing 1 page'
 ++++++AXStaticText AXValue='*required field<newline>'
 ++++AXGroup
 ++++++AXStaticText AXValue='Password:'
-++++++AXTextField AXDescription='Text Box' AXValue='Text'
-++++++AXTextField AXDescription='ReadOnly' AXValue='Elephant'
-++++++AXTextField AXDescription='Required' AXValue='Required Field'
-++++++AXTextField AXSubrole=AXSecureTextField AXDescription='Password'
+++++++AXTextField AXDescription='Text Box' AXTitle='Text Box' AXValue='Text'
+++++++AXTextField AXDescription='ReadOnly' AXTitle='ReadOnly' AXValue='Elephant'
+++++++AXTextField AXDescription='Required' AXTitle='Required' AXValue='Required Field'
+++++++AXTextField AXSubrole=AXSecureTextField AXDescription='Password' AXTitle='Password'

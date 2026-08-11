@@ -1,6 +1,6 @@
-AXGroup AXDescription='PDF document containing 1 page'
-++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
+AXGroup AXDescription='PDF document containing 1 page' AXTitle='PDF document containing 1 page'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1' AXTitle='Page 1'
 ++++AXGroup
-++++++AXImage AXDescription='Image 1'
-++++++AXImage AXDescription='Image 2'
-++++++AXImage AXDescription='Image 3'
+++++++AXImage AXDescription='Image 1' AXTitle='Image 1'
+++++++AXImage AXDescription='Image 2' AXTitle='Image 2'
+++++++AXImage AXDescription='Image 3' AXTitle='Image 3'

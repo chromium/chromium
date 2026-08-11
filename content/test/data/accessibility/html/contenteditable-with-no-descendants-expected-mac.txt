@@ -1,6 +1,6 @@
 AXWebArea
-++AXTextArea AXDescription='label'
+++AXTextArea AXDescription='label' AXTitle='label'
 ++AXTextArea AXCustomContent=[{label: 'description', value: 'description'}]
-++AXTextArea AXDescription='title'
+++AXTextArea AXDescription='title' AXTitle='title'
 ++AXGroup
 ++++AXStaticText AXValue='description'

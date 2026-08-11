@@ -2,7 +2,7 @@ AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='Before frame'
 ++AXGroup
-++++AXGroup AXDescription='Cross-process iframe'
+++++AXGroup AXDescription='Cross-process iframe' AXTitle='Cross-process iframe'
 ++++++AXWebArea
 ++++++++AXGroup
 ++++++++++AXStaticText AXValue='Text in iframe'

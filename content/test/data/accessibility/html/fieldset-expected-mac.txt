@@ -1,9 +1,9 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXSubrole=AXFieldset AXDescription='Browser Engines:'
+++++AXGroup AXSubrole=AXFieldset AXDescription='Browser Engines:' AXTitle='Browser Engines:'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Browser Engines:'
-++AXGroup AXSubrole=AXFieldset AXDescription='Which cake do you prefer?'
+++AXGroup AXSubrole=AXFieldset AXDescription='Which cake do you prefer?' AXTitle='Which cake do you prefer?'
 ++++AXGroup
 ++++++AXHeading AXTitle='Which cake do you prefer?' AXValue=2
 ++++++++AXStaticText AXValue='Which cake do you prefer?'

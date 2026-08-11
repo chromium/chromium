@@ -6,5 +6,5 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXRadioButton AXSubrole=AXTabButton AXRoleDescription='tab' AXTitle='Prices' AXValue=0
 ++++++AXHeading AXRoleDescription='heading' AXTitle='Prices' AXValue=3
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Prices'
-++AXGroup AXSubrole=AXTabPanel AXDescription='Item' AXRoleDescription='tab panel'
+++AXGroup AXSubrole=AXTabPanel AXDescription='Item' AXRoleDescription='tab panel' AXTitle='Item'
 ++++AXStaticText AXRoleDescription='text' AXValue='Item tab content'

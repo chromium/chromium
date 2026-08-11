@@ -1,1 +1,1 @@
-AXRowExpanded on AXRow AXSubrole=AXOutlineRow AXDescription='Child 1'
+AXRowExpanded on AXRow AXSubrole=AXOutlineRow AXDescription='Child 1' AXTitle='Child 1'

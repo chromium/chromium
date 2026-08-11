@@ -3,5 +3,5 @@ AXWebArea
 ++++AXGroup
 ++++++AXWebArea
 ++++++++AXGroup
-++++++++++AXLink AXDescription='done'
+++++++++++AXLink AXDescription='done' AXTitle='done'
 ++++++++++++AXStaticText AXValue='done'

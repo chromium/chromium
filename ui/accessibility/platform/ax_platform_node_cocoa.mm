@@ -2941,9 +2941,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return @"";
   }
 
-  if ([self isNameFromLabel])
-    return @"";
-
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
 
   // The accessible name, which is exposed via accessibilityTitle, should not

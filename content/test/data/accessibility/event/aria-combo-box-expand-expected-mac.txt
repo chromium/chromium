@@ -1,9 +1,9 @@
-AXFocusedUIElementChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector'
-AXSelectedTextChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+AXFocusedUIElementChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector' AXTitle='Fruit Selector'
+AXSelectedTextChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector' AXTitle='Fruit Selector' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 AXSelectedTextChanged on AXWebArea AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 === Start Continuation ===
-AXExpandedChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector'
+AXExpandedChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector' AXTitle='Fruit Selector'
 === Start Continuation ===
 AXFocusedUIElementChanged on AXStaticText AXValue='Apple'
-AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector'
+AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list' AXDescription='Fruit Selector' AXTitle='Fruit Selector'
 AXSelectedChildrenChanged on AXList

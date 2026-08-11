@@ -1,6 +1,6 @@
 === Accessibility tree before go() pass 1 ===
 AXWebArea AXTitle='Material Web Dialog Events'
-++AXGroup AXSubrole=AXEmptyGroup AXDescription='Ready'
+++AXGroup AXSubrole=AXEmptyGroup AXDescription='Ready' AXTitle='Ready'
 ++++AXGroup AXSubrole=AXEmptyGroup
 === End accessibility tree ===
 AXFocusedUIElementChanged on AXButton AXTitle='OK'

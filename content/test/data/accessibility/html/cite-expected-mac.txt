@@ -1,5 +1,5 @@
 AXWebArea
-++AXImage AXDescription='Pipe'
+++AXImage AXDescription='Pipe' AXTitle='Pipe'
 ++AXGroup
 ++++AXStaticText AXValue='The pipe'
 ++++AXStaticText AXValue=' clicked by SomeOne.'

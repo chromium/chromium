@@ -10,4 +10,4 @@ AXWebArea
 ++++AXStaticText AXValue=' has details'
 ++AXGroup AXSubrole=AXApplicationGroup
 ++++AXStaticText AXValue='Text details'
-++AXImage AXDescription='Image details'
+++AXImage AXDescription='Image details' AXTitle='Image details'

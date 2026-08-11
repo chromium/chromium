@@ -1,1 +1,1 @@
-AXImage AXDescription='To get missing image descriptions, open the context menu.'
+AXImage AXDescription='To get missing image descriptions, open the context menu.' AXTitle='To get missing image descriptions, open the context menu.'

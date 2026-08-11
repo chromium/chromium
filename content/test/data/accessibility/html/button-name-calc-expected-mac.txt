@@ -1,7 +1,7 @@
 AXWebArea
 ++AXButton AXTitle='InnerText0'
 ++AXButton AXHelp='Title1' AXTitle='InnerText1'
-++AXButton AXDescription='AriaLabel2' AXHelp='Title2'
+++AXButton AXDescription='AriaLabel2' AXHelp='Title2' AXTitle='AriaLabel2'
 ++AXButton AXHelp='Title3' AXTitle='LabelledBy3'
 ++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy4'}] AXTitle='LabelledBy4'
 ++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy5'}] AXTitle='InnerText5'
@@ -11,7 +11,7 @@ AXWebArea
 ++++++AXStaticText
 ++AXButton AXTitle='Outer inner1'
 ++++AXStaticText
-++++AXGroup AXDescription='inner1'
+++++AXGroup AXDescription='inner1' AXTitle='inner1'
 ++++++AXStaticText
 ++AXButton AXTitle='Outer grandchild'
 ++++AXStaticText
