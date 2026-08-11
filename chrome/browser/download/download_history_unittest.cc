@@ -940,7 +940,7 @@ TEST_F(DownloadHistoryTest, CreateLargeDataURLCompletedItem) {
 
   history::DownloadRow row;
   std::string data_url = "data:text/html,";
-  data_url.append(std::string(2048, 'a'));
+  data_url.append(std::string(10000, 'a'));
   InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"), data_url.c_str(),
                 "http://example.com/referrer.html",
                 download::DownloadItem::IN_PROGRESS, &row);
@@ -954,7 +954,7 @@ TEST_F(DownloadHistoryTest, CreateLargeDataURLCompletedItem) {
   EXPECT_CALL(item(0), GetState())
       .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
   row.state = history::DownloadState::COMPLETE;
-  data_url.resize(1024);
+  data_url.resize(8192);
   row.url_chain.back() = GURL(data_url);
   item(0).NotifyObserversDownloadUpdated();
   ExpectDownloadCreated(row);

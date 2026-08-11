@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, DataURLDownloadIsTruncat
 
   // Needs to be an octet-stream to trigger download
   std::string data_url_string = "data:application/octet-stream;base64,";
-  data_url_string.append(3000, 'A');
+  data_url_string.append(10000, 'A');
   GURL url(data_url_string);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -716,17 +716,19 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, DataURLDownloadIsTruncat
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
-  // The truncate limit is 1024 characters, but may be less to ensure a valid
+  // The truncate limit is 8192 characters, but may be less to ensure a valid
   // base64 encoding.
-  EXPECT_LE(last_request().request_data().url().size(), 1024u);
+  EXPECT_LE(last_request().request_data().url().size(), 8192u);
   EXPECT_GT(last_request().request_data().referrer_chain_size(), 0);
-  EXPECT_LE(last_request().request_data().referrer_chain(0).url().size(), 1024u);
+  EXPECT_LE(last_request().request_data().referrer_chain(0).url().size(),
+            8192u);
 
   ASSERT_TRUE(last_request().request_data().has_csd());
   ASSERT_GT(last_request().request_data().csd().referrer_chain_size(), 0);
   ASSERT_GT(last_request().request_data().csd().resources_size(), 0);
-  EXPECT_LE(last_request().request_data().csd().resources(0).url().size(), 1024u);
-  EXPECT_LE(last_request().request_data().csd().url().size(), 1024u);
+  EXPECT_LE(last_request().request_data().csd().resources(0).url().size(),
+            8192u);
+  EXPECT_LE(last_request().request_data().csd().url().size(), 8192u);
 
   WaitForDownloadToFinish();
 

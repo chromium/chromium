@@ -68,7 +68,7 @@ const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 const int kDefaultDownloadFileBufferSize = 524288;
 
 // Maximum size of a data URL. URLs larger than this will be truncated.
-const size_t kMaxDataURLSize = 1024u;
+const size_t kMaxDataURLSize = 8192u;
 
 #if BUILDFLAG(IS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
