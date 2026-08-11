@@ -499,12 +499,17 @@ void XMLDocumentParserRs::StartElementNs(
       reactions.emplace(isolate);
     }
   }
-
-  Element* new_element = current_node_->GetDocument().CreateElement(
-      q_name,
+  CreateElementFlags flags =
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
-                        : CreateElementFlags::ByParser(document_),
-      is, registry);
+                        : CreateElementFlags::ByParser(document_);
+  if (RuntimeEnabledFeatures::DOMParserXmlScriptAlreadyStartedEnabled() &&
+      document_->IsDOMParserDocument() &&
+      (q_name == html_names::kScriptTag || q_name == svg_names::kScriptTag)) {
+    flags.SetAlreadyStarted(true);
+  }
+
+  Element* new_element =
+      current_node_->GetDocument().CreateElement(q_name, flags, is, registry);
 
   if (!new_element) {
     StopParsing();

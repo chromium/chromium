@@ -2538,6 +2538,13 @@
       status: "stable",
     },
     {
+      // Kill switch for marking scripts parsed by DOMParser in XML documents as
+      // "already started" so they stay inert when cloned or imported.
+      // https://crbug.com/542115030
+      name: "DOMParserXmlScriptAlreadyStarted",
+      status: "stable",
+    },
+    {
       // When enabled, retarget the relatedTarget attribute of drag events.
       // This landed partly in M146 and more in M150 and can be removed in M152.
       name: "DontLeakShadowTreesInDragEvents",
