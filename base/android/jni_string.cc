@@ -7,10 +7,14 @@
 #include <array>
 #include <cstdint>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 // Size of buffer to allocate on the stack for string conversion.
@@ -88,6 +92,26 @@ ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
   if (str.empty()) {
     return jni_zero::g_empty_string.AsLocalRef(env);
   }
+
+  // This is a similar optimization to the one in ConvertJavaStringToUTF8()
+  // above. However, this is only safe if the string is ASCII as all ASCII
+  // characters are the same in UTF8 and UTF16. This also bypasses any
+  // "modified" UTF8 concerns with JNI's NewStringUTF(). The heap vector version
+  // of this is already handled in UTF8ToUTF16().
+  const size_t length = str.length();
+  if (length <= BUFFER_SIZE && base::IsStringASCII(str)) {
+    std::array<uint16_t, BUFFER_SIZE> chars;
+    base::span<uint16_t> chars_span =
+        base::span<uint16_t>(chars).first(length);
+    for (size_t i = 0; i < length; ++i) {
+      chars_span[i] = static_cast<uint16_t>(str[i]);
+    }
+    jstring result =
+        env->NewString(chars_span.data(), base::checked_cast<jsize>(length));
+    CheckException(env);
+    return jni_zero::AdoptRef(env, result);
+  }
+
   // JNI's NewStringUTF expects "modified" UTF8 so instead create the string
   // via our own UTF16 conversion utility.
   // Further, Dalvik requires the string passed into NewStringUTF() to come from
