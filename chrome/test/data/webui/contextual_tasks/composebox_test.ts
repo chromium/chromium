@@ -1599,6 +1599,14 @@ suite('ContextualTasksComposeboxTest', () => {
               queryAutocompleteClearMatchesArg,
               'should pass clearMatches = true');
         });
+
+        test('clear-smart-compose event clears the inline hint', () => {
+          const {innerComposebox} = parts;
+          innerComposebox.smartComposeInlineHint = 'test hint';
+          innerComposebox.getInputElement().dispatchEvent(
+              new CustomEvent('clear-smart-compose'));
+          assertEquals('', innerComposebox.smartComposeInlineHint);
+        });
       });
 });
 

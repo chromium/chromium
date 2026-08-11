@@ -89,7 +89,8 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
-            @cancel-click="${this.onCancelClick}">
+            @cancel-click="${this.onCancelClick}"
+            @clear-smart-compose="${this.onClearSmartCompose}">
         </cr-composebox-input>
         <cr-composebox-file-inputs id="fileInputs"
             @file-change="${this.onFileChange}"

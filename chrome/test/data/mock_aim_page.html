@@ -29,8 +29,9 @@
     });
 
     // Simulate the AIM page notifying the WebUI of a thread-link click via an
-    // AIMToClientMessage{notify_link_clicked}, which drives OnThreadLinkClicked
-    // and the tab->side-panel transfer. A plain navigation would not do this.
+    // AimToClientMessage{open_link_in_side_panel_mode}, which drives
+    // OnThreadLinkClicked and the tab->side-panel transfer. A plain navigation
+    // would not do this.
     document.getElementById('threadLink').addEventListener('click', (event) => {
       event.preventDefault();
       if (!webuiSource) {
@@ -38,9 +39,10 @@
       }
       const urlBytes =
           new TextEncoder().encode('https://www.google.com/search?q=thread');
-      // NotifyLinkClicked{url=1, link_behavior=2=COBROWSE} inside
-      // AimToClientMessage{notify_link_clicked=14}. Single-byte length varints.
-      const inner = [0x0a, urlBytes.length, ...urlBytes, 0x10, 0x01];
+      // OpenLinkInSidePanelMode{url=1} inside
+      // AimToClientMessage{open_link_in_side_panel_mode=14}. Single-byte
+      // length varints.
+      const inner = [0x0a, urlBytes.length, ...urlBytes];
       const payload = new Uint8Array([0x72, inner.length, ...inner]);
       webuiSource.postMessage(payload.buffer, webuiOrigin);
     });

@@ -355,7 +355,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
             std::string query = base::UnescapeURLComponent(
                 q_param, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
             std::string response_json = base::StringPrintf(
-                R"()]}'\n["%s", ["suggestion-1", "suggestion-2"]])",
+                ")]}'\n" R"(["%s", ["suggestion-1", "suggestion-2"]])",
                 query.c_str());
             content::URLLoaderInterceptor::WriteResponse(
                 "HTTP/1.1 200 OK\nContent-Type: application/json\n\n",
@@ -962,10 +962,6 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                            "'voice-search-final-result', "
                            "{ detail: $1, bubbles: true, composed: true}))",
                            transcript));
-  }
-
-  auto InputText(const std::string& query_text) {
-    return InputText(kPrimaryTab, query_text);
   }
 
  protected:
