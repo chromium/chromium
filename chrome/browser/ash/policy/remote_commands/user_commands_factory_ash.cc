@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/remote_commands/user_command_arc_job.h"
+#include "chrome/browser/enterprise/remote_commands/extension_update_check_job.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -24,6 +25,9 @@ std::unique_ptr<RemoteCommandJob> UserCommandsFactoryAsh::BuildJobForType(
   switch (type) {
     case em::RemoteCommand_Type_USER_ARC_COMMAND:
       return std::make_unique<UserCommandArcJob>(profile_);
+    case em::RemoteCommand_Type_BROWSER_EXTENSION_UPDATE_CHECK:
+      return std::make_unique<enterprise_commands::ExtensionUpdateCheckJob>(
+          profile_);
     default:
       // Other types of commands should be sent to DeviceCommandsFactoryAsh
       // instead of here.

@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/policy/remote_commands/screenshot_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/remote_commands/extension_update_check_job.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -104,11 +105,14 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
           &local_state_.get(), policy_manager.core()->store());
     }
 
+    case RemoteCommand::BROWSER_EXTENSION_UPDATE_CHECK:
+      return std::make_unique<enterprise_commands::ExtensionUpdateCheckJob>(
+          g_browser_process->profile_manager());
+
     case RemoteCommand::COMMAND_ECHO_TEST:
     case RemoteCommand::USER_ARC_COMMAND:
     case RemoteCommand::BROWSER_CLEAR_BROWSING_DATA:
     case RemoteCommand::BROWSER_ROTATE_ATTESTATION_CREDENTIAL:
-    case RemoteCommand::BROWSER_EXTENSION_UPDATE_CHECK:
       // These types of commands should be sent to `UserCommandsFactoryAsh`
       // instead of here.
       NOTREACHED();

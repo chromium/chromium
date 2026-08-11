@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "device_command_set_volume_job_unittest.cc",
     "device_command_wipe_users_job_unittest.cc",
     "user_command_arc_job_unittest.cc",
+    "user_commands_factory_ash_unittest.cc",
   ]
 
   deps = [

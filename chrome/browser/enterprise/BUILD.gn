@@ -445,6 +445,7 @@ source_set("impl") {
     "net/enterprise_proxy_error_service_factory.cc",
     "net/enterprise_proxy_service_factory.cc",
     "profile_management/saml_response_parser.cc",
+    "remote_commands/job_profile_picker.cc",
     "reporting/cloud_profile_reporting_service.cc",
     "reporting/cloud_profile_reporting_service_factory.cc",
     "reporting/legacy_tech/legacy_tech_report_generator.cc",
@@ -624,7 +625,6 @@ source_set("impl") {
     sources += [
       "groups/enterprise_groups_handler_factory.cc",
       "remote_commands/clear_browsing_data_job.cc",
-      "remote_commands/job_profile_picker.cc",
       "remote_commands/user_remote_commands_factory.cc",
       "remote_commands/user_remote_commands_service.cc",
       "remote_commands/user_remote_commands_service_factory.cc",
@@ -817,7 +817,6 @@ source_set("impl") {
       "profile_management/oidc_auth_response_capture_navigation_throttle.cc",
       "profile_management/profile_management_features.cc",
       "profile_management/profile_management_navigation_throttle.cc",
-      "remote_commands/extension_update_check_job.cc",
       "remote_commands/rotate_attestation_credential_job.cc",
       "reporting/browser_launch/browser_launch_event_uploader_desktop.cc",
       "signals/system_signals_service_host_factory.cc",
@@ -860,6 +859,7 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     sources += [
+      "remote_commands/extension_update_check_job.cc",
       "reporting/extension_info.cc",
       "reporting/extension_request/extension_request_notification.cc",
       "reporting/extension_request/extension_request_observer.cc",
