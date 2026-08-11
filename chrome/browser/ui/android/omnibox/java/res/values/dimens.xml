@@ -181,6 +181,11 @@ found in the LICENSE file.
     <dimen name="fusebox_popover_pill_button_bg_width">48dp</dimen>
     <dimen name="fusebox_popover_pill_button_bg_height">36dp</dimen>
     <dimen name="fusebox_popover_pill_button_bg_corner_radius">18dp</dimen>
+    <item name="fusebox_popover_plus_button_hovered_alpha" format="float" type="dimen">0.16</item>
+    <item name="fusebox_popover_plus_button_pressed_alpha" format="float" type="dimen">0.20</item>
+    <item name="fusebox_popover_navigate_button_hovered_alpha" format="float" type="dimen">0.20</item>
+    <item name="fusebox_popover_navigate_button_focused_alpha" format="float" type="dimen">0.24</item>
+    <item name="fusebox_popover_navigate_button_pressed_alpha" format="float" type="dimen">0.32</item>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
     <dimen name="fusebox_attachment_bg_vertical_inset">4dp</dimen>
     <dimen name="fusebox_attachment_image_width">64dp</dimen>

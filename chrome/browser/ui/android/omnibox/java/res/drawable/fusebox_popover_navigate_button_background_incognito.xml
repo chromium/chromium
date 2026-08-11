@@ -6,14 +6,14 @@ found in the LICENSE file.
 -->
 <ripple
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/fusebox_popover_navigate_button_ripple_color">
+    android:color="@color/fusebox_popover_navigate_button_ripple_color_incognito">
   <item
       android:id="@android:id/content"
       android:width="@dimen/fusebox_popover_pill_button_bg_width"
       android:height="@dimen/fusebox_popover_pill_button_bg_height"
       android:gravity="center">
     <shape android:shape="rectangle">
-      <solid android:color="?attr/colorPrimary" />
+      <solid android:color="@color/baseline_primary_80" />
       <corners android:radius="@dimen/fusebox_popover_pill_button_bg_corner_radius" />
     </shape>
   </item>

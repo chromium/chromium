@@ -691,6 +691,18 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getSearchBoxIconBackground(mContext, getBrandedColorScheme());
     }
 
+    /** Get popover navigate button background. */
+    public Drawable getPopoverNavigateButtonBackground() {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(getBrandedColorScheme());
+        @DrawableRes
+        int resId =
+                isIncognito
+                        ? R.drawable.fusebox_popover_navigate_button_background_incognito
+                        : R.drawable.fusebox_popover_navigate_button_background;
+        return getDrawable(resId);
+    }
+
     /** Get popover plus button background. */
     public Drawable getPopoverPlusButtonBackground() {
         boolean isIncognito =

@@ -579,7 +579,7 @@ class FuseboxViewBinder {
         }
     }
 
-    private static void updateNavigateButton(PropertyModel model, FuseboxViewHolder view) {
+    private void updateNavigateButton(PropertyModel model, FuseboxViewHolder view) {
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();
         view.navigateButton
@@ -587,6 +587,7 @@ class FuseboxViewBinder {
                 .setTint(
                         OmniboxResourceProvider.getSendIconContrastColor(
                                 context, brandedColorScheme));
+        view.navigateButton.setBackground(mResourceProvider.getPopoverNavigateButtonBackground());
         @ColorInt
         int colorPrimary = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
         view.navigateButton.getBackground().setTint(colorPrimary);

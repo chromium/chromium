@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:alpha="@dimen/fusebox_popover_navigate_button_pressed_alpha"
+        android:color="?attr/colorOnPrimary"
+        android:state_pressed="true" />
+    <item
+        android:alpha="@dimen/fusebox_popover_navigate_button_focused_alpha"
+        android:color="?attr/colorOnPrimary"
+        android:state_focused="true" />
+    <item
+        android:alpha="@dimen/fusebox_popover_navigate_button_hovered_alpha"
+        android:color="?attr/colorOnPrimary"
+        android:state_hovered="true" />
+    <item android:color="@android:color/transparent" />
+</selector>

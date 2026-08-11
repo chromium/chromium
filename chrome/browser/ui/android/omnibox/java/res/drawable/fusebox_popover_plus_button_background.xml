@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 <ripple
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?android:attr/colorControlHighlight">
+    android:color="@color/fusebox_popover_plus_button_ripple_color">
   <item
       android:id="@android:id/content"
       android:width="@dimen/fusebox_popover_pill_button_bg_width"
