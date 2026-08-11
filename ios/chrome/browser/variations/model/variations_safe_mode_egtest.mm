@@ -39,7 +39,7 @@
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
+                            "--force-fieldtrials=SeedFileTrial/Control_V12"};
   return config;
 }
 
@@ -53,7 +53,7 @@
   config.relaunch_policy = ForceRelaunchByKilling;
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
+                            "--force-fieldtrials=SeedFileTrial/Control_V12"};
   return config;
 }
 

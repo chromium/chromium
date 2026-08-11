@@ -43,7 +43,7 @@
   // in the study.
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V12",
                             "--fake-variations-channel=dev"};
   return config;
 }
@@ -61,7 +61,7 @@
   // in the study.
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V12",
                             "--fake-variations-channel=dev"};
   return config;
 }
@@ -75,7 +75,7 @@
   // SeedFileTrial study. Using any channel other than UNKNOWN will participate
   // in the study.
   config.additional_args = {"--disable-variations-seed-fetch",
-                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
+                            "--force-fieldtrials=SeedFileTrial/SeedFiles_V12",
                             "--fake-variations-channel=stable"};
   return config;
 }
