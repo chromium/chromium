@@ -100,7 +100,7 @@ BASE_FEATURE(kGeminiAntiscamProtectionMqlsLogging,
 
 BASE_FEATURE(kFindsMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAtMemoryMqlsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAtMemoryMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
