@@ -4,7 +4,6 @@
 
 package org.chromium.components.embedder_support.util;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PasswordEchoSettingDelegate;
 import org.chromium.base.ResettersForTesting;
@@ -70,10 +69,11 @@ public class PasswordEchoSettingState {
             return sPasswordEchoSettingDelegateForTesting;
         }
 
-        AconfigFlaggedApiDelegate aconfigDelegate = AconfigFlaggedApiDelegate.getInstance();
-        PasswordEchoSettingDelegate delegate =
-                aconfigDelegate != null ? aconfigDelegate.getPasswordEchoSettingDelegate() : null;
-        return delegate != null ? delegate : new LegacyPasswordEchoSettingDelegateImpl();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.CINNAMON_BUN) {
+            return new PasswordEchoSettingDelegateImpl();
+        }
+
+        return new LegacyPasswordEchoSettingDelegateImpl();
     }
 
     private PasswordEchoSettingState() {
