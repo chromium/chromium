@@ -260,7 +260,6 @@ extern const char kRelauncherProcessDMGDevice[];
 extern const char kMakeChromeDefault[];
 extern const char kCodeSignCloneCleanupProcess[];
 extern const char kUniqueTempDirSuffix[];
-extern const char kNoOpForTestingProcess[];
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

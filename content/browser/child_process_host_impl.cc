@@ -10,7 +10,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/child_process_host_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel.h"
@@ -77,47 +75,29 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
 #if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
 
-  if (base::apple::AmIBundled()) {
-    std::string child_suffix;
-    if (base::FeatureList::IsEnabled(features::kAperitifHelpers)) {
-      if (flags == CHILD_NORMAL) {
-        child_suffix = " (Aperitif)";
-      } else if (flags == CHILD_RENDERER) {
-        child_suffix = " (Aperitif Renderer)";
-      } else if (flags == CHILD_GPU) {
-        child_suffix = " (Aperitif GPU)";
-      } else if (flags > CHILD_EMBEDDER_FIRST) {
-        child_suffix =
-            GetContentClient()->browser()->GetChildProcessSuffix(flags);
-      } else {
-        NOTREACHED();
-      }
+  if (flags != CHILD_NORMAL && base::apple::AmIBundled()) {
+    // This is a specialized helper, with the |child_path| at
+    // ../Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/
+    // MacOS/Chromium Helper. Go back up to the "Helpers" directory to select
+    // a different variant.
+    child_path = child_path.DirName().DirName().DirName().DirName();
+
+    if (flags == CHILD_RENDERER) {
+      child_base_name += kMacHelperSuffix_renderer;
+    } else if (flags == CHILD_GPU) {
+      child_base_name += kMacHelperSuffix_gpu;
+    } else if (flags > CHILD_EMBEDDER_FIRST) {
+      child_base_name +=
+          GetContentClient()->browser()->GetChildProcessSuffix(flags);
     } else {
-      if (flags == CHILD_RENDERER) {
-        child_suffix = kMacHelperSuffix_renderer;
-      } else if (flags == CHILD_GPU) {
-        child_suffix = kMacHelperSuffix_gpu;
-      } else if (flags > CHILD_EMBEDDER_FIRST) {
-        child_suffix =
-            GetContentClient()->browser()->GetChildProcessSuffix(flags);
-      } else if (flags != CHILD_NORMAL) {
-        NOTREACHED();
-      }
+      NOTREACHED();
     }
 
-    if (!child_suffix.empty()) {
-      child_base_name += child_suffix;
-      child_path = child_path.DirName()
-                       .DirName()
-                       .DirName()
-                       .DirName()
-                       .Append(child_base_name + ".app")
-                       .Append("Contents")
-                       .Append("MacOS")
-                       .Append(child_base_name);
-    }
+    child_path = child_path.Append(child_base_name + ".app")
+                     .Append("Contents")
+                     .Append("MacOS")
+                     .Append(child_base_name);
   }
-
 #endif  // BUILDFLAG(IS_MAC)
 
   return child_path;
