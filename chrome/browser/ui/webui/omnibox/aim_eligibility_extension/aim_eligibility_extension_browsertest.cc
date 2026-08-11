@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -179,14 +180,13 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, UiParity) {
   EXPECT_CALL(*mock_service, IsAimEligible())
       .WillRepeatedly(testing::ReturnPointee(&aim_eligible_));
 
-  // Intercept the registration of eligibility changed callbacks to invoke it
+  // Intercept the registration of eligibility changed callbacks to invoke them
   // manually.
-  base::RepeatingClosure eligibility_changed_callback;
+  base::RepeatingClosureList eligibility_changed_callbacks;
   EXPECT_CALL(*mock_service, RegisterEligibilityChangedCallback(testing::_))
       .WillRepeatedly(
-          [&eligibility_changed_callback](base::RepeatingClosure callback) {
-            eligibility_changed_callback = callback;
-            return base::CallbackListSubscription();
+          [&eligibility_changed_callbacks](base::RepeatingClosure callback) {
+            return eligibility_changed_callbacks.Add(std::move(callback));
           });
 
   // Verify the component extension is loaded.
@@ -224,8 +224,7 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest, UiParity) {
 
   // Change state to Ineligible.
   aim_eligible_ = false;
-  ASSERT_TRUE(eligibility_changed_callback);
-  eligibility_changed_callback.Run();
+  eligibility_changed_callbacks.Notify();
 
   // Wait for the UI checklist to update.
   ASSERT_TRUE(base::test::RunUntil([&]() {
