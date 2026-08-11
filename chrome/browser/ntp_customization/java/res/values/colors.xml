@@ -22,4 +22,7 @@ found in the LICENSE file.
 
     <!-- Ntp customization preview dialog theme color. -->
     <color name="ntp_upload_image_preview_dialog_color_list">@color/default_text_color_on_accent1_list</color>
+
+    <!-- Ntp customization sync history recyclerview color. -->
+    <color name="ntp_customization_theme_sync_badge_stroke_color">?attr/colorOnPrimary</color>
 </resources>

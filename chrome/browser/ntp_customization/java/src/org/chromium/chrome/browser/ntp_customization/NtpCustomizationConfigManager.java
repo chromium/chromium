@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -541,13 +540,6 @@ public class NtpCustomizationConfigManager {
                 colorInfo instanceof NtpThemeColorFromHexInfo
                         ? NtpBackgroundType.COLOR_FROM_HEX
                         : NtpBackgroundType.CHROME_COLOR;
-
-        // Applies the primary theme color to the activity before calculating the background color
-        // which is a themed color depending on the activity's theme.
-        if (context instanceof Activity activity) {
-            NtpCustomizationUtils.applyDynamicColorToActivity(
-                    activity, NtpThemeColorUtils.getPrimaryColorFromColorInfo(context, colorInfo));
-        }
 
         @NtpBackgroundType int oldType = mBackgroundType;
         mBackgroundType = backgroundType;
