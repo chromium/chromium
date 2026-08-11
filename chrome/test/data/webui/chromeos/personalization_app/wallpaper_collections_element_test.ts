@@ -32,7 +32,7 @@ suite('WallpaperCollectionsElementTest', function() {
     // Access a private field for testing because iron-list hides elements
     // that are out of the viewport. Pick just id and type fields for
     // simpler testing.
-    return (wallpaperCollectionsElement as any)
+    return (wallpaperCollectionsElement as unknown as {tiles_: Tile[]})
         .tiles_.map(({id, type}: Tile) => ({id, type}));
   }
 

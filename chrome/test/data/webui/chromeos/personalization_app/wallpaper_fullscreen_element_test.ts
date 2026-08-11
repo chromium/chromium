@@ -9,7 +9,7 @@ import 'chrome://personalization/strings.m.js';
 import type {CurrentWallpaper, DisplayableImage, GooglePhotosPhoto, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {DailyRefreshType, FullscreenPreviewState, OnlineImageType, setFullscreenStateAction, setShouldWaitForFullscreenOpacityTransitionsForTesting, WallpaperActionName, WallpaperFullscreenElement, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -20,6 +20,10 @@ suite('WallpaperFullscreenElementTest', function() {
   let wallpaperFullscreenElement: WallpaperFullscreenElement|null = null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
+
+  interface WallpaperFullscreenElementInternal {
+    selectedLayout_: WallpaperLayout|null;
+  }
 
   const currentSelectedCustomImage: CurrentWallpaper = {
     descriptionContent: '',
@@ -119,8 +123,10 @@ suite('WallpaperFullscreenElementTest', function() {
     mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertEquals(
-        null, wallpaperFullscreenElement['selectedLayout_'],
+    assertNull(
+        (wallpaperFullscreenElement as unknown as
+         WallpaperFullscreenElementInternal)
+            .selectedLayout_,
         'wallpaper layout starts null');
 
     personalizationStore.data.wallpaper.fullscreen =
@@ -131,15 +137,19 @@ suite('WallpaperFullscreenElementTest', function() {
 
     assertEquals(
         WallpaperLayout.kCenterCropped,
-        wallpaperFullscreenElement['selectedLayout_'],
+        (wallpaperFullscreenElement as unknown as
+         WallpaperFullscreenElementInternal)
+            .selectedLayout_,
         'wallpaper layout set to center cropped');
 
     personalizationStore.data.wallpaper.fullscreen = FullscreenPreviewState.OFF;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertEquals(
-        null, wallpaperFullscreenElement['selectedLayout_'],
+    assertNull(
+        (wallpaperFullscreenElement as unknown as
+         WallpaperFullscreenElementInternal)
+            .selectedLayout_,
         'wallpaper layout set back to null');
   });
 
@@ -383,7 +393,9 @@ suite('WallpaperFullscreenElementTest', function() {
     assertEquals('false', center!.getAttribute('aria-pressed'));
     assertEquals('true', fill!.getAttribute('aria-pressed'));
 
-    wallpaperFullscreenElement['selectedLayout_'] = WallpaperLayout.kCenter;
+    (wallpaperFullscreenElement as unknown as
+     WallpaperFullscreenElementInternal)
+        .selectedLayout_ = WallpaperLayout.kCenter;
     await waitAfterNextRender(wallpaperFullscreenElement);
 
     assertEquals('true', center!.getAttribute('aria-pressed'));
