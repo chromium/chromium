@@ -1694,10 +1694,6 @@ inline constexpr char kPageContextPdfName[] = "Page Context PDF";
 inline constexpr char kPageContextPdfDescription[] =
     "Enables PDF support for Page Context in Gemini.";
 
-inline constexpr char kPageStabilityMetricsName[] = "Page Stability Metrics";
-inline constexpr char kPageStabilityMetricsDescription[] =
-    "Enables metrics to track DOM mutation frequency after user interactions.";
-
 inline constexpr char kPageToolsFeatureUnavailabilityName[] =
     "PageToolsFeatureUnavailability";
 inline constexpr char kPageToolsFeatureUnavailabilityDescription[] =
