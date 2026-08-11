@@ -21,6 +21,7 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -322,6 +323,9 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.BAKLAVA,
+            message = "Flaky on android-16 bots, crbug.com/543240915")
     public void testRenderGrid_PinnedTabs_Scrolled() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         RegularNewTabPageStation pageStation =
