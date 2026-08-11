@@ -59,6 +59,19 @@ enum class PaymentRequestOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:PaymentRequestOutcome)
 
+// Outcomes when a payment handler's respondWith() promise resolution was paused
+// due to missing user gesture.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PaymentHandlerPausedResolutionOutcome)
+enum class PaymentHandlerPausedResolutionOutcome {
+  kUserInteracted = 0,
+  kWindowClosed = 1,
+  kMaxValue = kWindowClosed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:PaymentHandlerPausedResolutionOutcome)
+
 // Records metrics for the 'payments.can_make_payment_enabled' user pref.
 void RecordCanMakePaymentPrefMetrics(const PrefService& pref_service,
                                      const std::string& suffix);

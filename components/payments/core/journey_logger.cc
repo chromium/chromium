@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -424,6 +425,14 @@ void JourneyLogger::RecordRespondWithRejectedStatus() {
       "PaymentRequest.MandatoryPaymentAppUi."
       "RespondWithRejectedBeforeUserGesture",
       !was_payment_app_user_interaction_captured_);
+}
+
+void JourneyLogger::RecordPaymentHandlerPausedResolutionOutcome(
+    PaymentHandlerPausedResolutionOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      outcome);
 }
 
 void JourneyLogger::SetWindowSizeCheckRejectionReason(

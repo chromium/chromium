@@ -215,6 +215,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.MandatoryPaymentAppUi.PaymentHandlerPausedResolutionOutcome"
+    enum="PaymentHandlerPausedResolutionOutcome" expires_after="2027-09-01">
+  <owner>xuehuichen@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the outcome when a payment handler's respondWith() promise
+    resolution was paused due to missing user gesture. Recorded when the paused
+    state resolves, either because the user interacted with the payment handler
+    window (provided a gesture) or because the user closed the window (by
+    clicking 'x' or pressing ESC).
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.MandatoryPaymentAppUi.RespondWithRejectedBeforeOpenWindow"
     enum="Boolean" expires_after="2027-09-01">
   <owner>xuehuichen@google.com</owner>

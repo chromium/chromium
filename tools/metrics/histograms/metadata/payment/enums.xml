@@ -53,6 +53,15 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="11" label="Unavailable - IsReadyToPay task returned false"/>
 </enum>
 
+<!-- LINT.IfChange(PaymentHandlerPausedResolutionOutcome) -->
+
+<enum name="PaymentHandlerPausedResolutionOutcome">
+  <int value="0" label="User Interacted"/>
+  <int value="1" label="Window Closed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/core/payment_request_metrics.h:PaymentHandlerPausedResolutionOutcome) -->
+
 <enum name="PaymentRequestAddressEditorMode">
   <int value="0" label="Add new address"/>
   <int value="1" label="Edit existing address"/>

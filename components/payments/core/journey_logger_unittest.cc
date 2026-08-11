@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -955,6 +956,34 @@ TEST(JourneyLoggerTest,
       "PaymentRequest.MandatoryPaymentAppUi."
       "RespondWithRejectedBeforeUserGesture",
       false, 1);
+}
+
+TEST(JourneyLoggerTest,
+     RecordPaymentHandlerPausedResolutionOutcome_UserInteracted) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.RecordPaymentHandlerPausedResolutionOutcome(
+      PaymentHandlerPausedResolutionOutcome::kUserInteracted);
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      PaymentHandlerPausedResolutionOutcome::kUserInteracted, 1);
+}
+
+TEST(JourneyLoggerTest,
+     RecordPaymentHandlerPausedResolutionOutcome_WindowClosed) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.RecordPaymentHandlerPausedResolutionOutcome(
+      PaymentHandlerPausedResolutionOutcome::kWindowClosed);
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      PaymentHandlerPausedResolutionOutcome::kWindowClosed, 1);
 }
 
 }  // namespace payments

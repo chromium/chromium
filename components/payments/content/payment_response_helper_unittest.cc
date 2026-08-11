@@ -24,6 +24,7 @@
 #include "components/payments/content/test_payment_app.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/journey_logger.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "components/payments/core/test_payment_request_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -301,6 +302,98 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   // NOT be stashed/deferred (response is not null).
   EXPECT_FALSE(response().is_null());
   EXPECT_EQ("method-name", response()->method_name);
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       PausedResolutionOutcome_UserInteracted) {
+  base::HistogramTester histogram_tester;
+  was_payment_handler_window_interacted_with_ = false;
+  RecreateSpecWithOptions(mojom::PaymentOptions::New());
+  auto helper = std::make_unique<PaymentResponseHelper>(
+      "en-US", spec(), test_app(), test_payment_request_delegate(),
+      test_address(), test_address(), journey_logger(), GetWeakPtr());
+
+  EXPECT_TRUE(helper->is_waiting_for_user_gesture_for_testing());
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      0);
+
+  helper->OnUserInteractionCaptured();
+
+  EXPECT_FALSE(helper->is_waiting_for_user_gesture_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      PaymentHandlerPausedResolutionOutcome::kUserInteracted, 1);
+
+  // Simulates window closed, which resets/destroys the response helper.
+  helper.reset();
+
+  // Destruction after interaction should not record duplicate metric.
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      1);
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       PausedResolutionOutcome_WindowClosed) {
+  base::HistogramTester histogram_tester;
+  was_payment_handler_window_interacted_with_ = false;
+  RecreateSpecWithOptions(mojom::PaymentOptions::New());
+  auto helper = std::make_unique<PaymentResponseHelper>(
+      "en-US", spec(), test_app(), test_payment_request_delegate(),
+      test_address(), test_address(), journey_logger(), GetWeakPtr());
+  EXPECT_TRUE(helper->is_waiting_for_user_gesture_for_testing());
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      0);
+
+  // Simulates window closed, which resets/destroys the response helper.
+  helper.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      PaymentHandlerPausedResolutionOutcome::kWindowClosed, 1);
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       PausedResolutionOutcome_AlreadyInteracted) {
+  base::HistogramTester histogram_tester;
+  was_payment_handler_window_interacted_with_ = true;
+  RecreateSpecWithOptions(mojom::PaymentOptions::New());
+  auto helper = std::make_unique<PaymentResponseHelper>(
+      "en-US", spec(), test_app(), test_payment_request_delegate(),
+      test_address(), test_address(), journey_logger(), GetWeakPtr());
+
+  EXPECT_FALSE(helper->is_waiting_for_user_gesture_for_testing());
+
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      0);
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       PausedResolutionOutcome_NonServiceWorkerApp) {
+  base::HistogramTester histogram_tester;
+  was_payment_handler_window_interacted_with_ = false;
+  ResetTestApp(std::make_unique<TestPaymentApp>("method-name",
+                                                PaymentApp::Type::INTERNAL));
+  RecreateSpecWithOptions(mojom::PaymentOptions::New());
+  auto helper = std::make_unique<PaymentResponseHelper>(
+      "en-US", spec(), test_app(), test_payment_request_delegate(),
+      test_address(), test_address(), journey_logger(), GetWeakPtr());
+
+  EXPECT_FALSE(helper->is_waiting_for_user_gesture_for_testing());
+
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.MandatoryPaymentAppUi."
+      "PaymentHandlerPausedResolutionOutcome",
+      0);
 }
 
 TEST_F(PaymentResponseHelperTest, RespondWithResolvedMetrics_ServiceWorkerApp) {

@@ -16,6 +16,8 @@
 
 namespace payments {
 
+enum class PaymentHandlerPausedResolutionOutcome;
+
 // A class to keep track of different stats during a Payment Request journey. It
 // collects different metrics during the course of the checkout flow, like the
 // number of credit cards that the user added or edited. The metrics will be
@@ -270,6 +272,11 @@ class JourneyLogger {
   // Records whether the service worker payment app rejected its respondWith()
   // promise before opening a window or capturing user interaction.
   void RecordRespondWithRejectedStatus();
+
+  // Records the outcome of a paused respondWith() promise resolution (either
+  // user gesture provided or window closed).
+  void RecordPaymentHandlerPausedResolutionOutcome(
+      PaymentHandlerPausedResolutionOutcome outcome);
 
   // Sets the reason why the browser window size check failed. The reason
   // will eventually be logged when the PaymentRequest is completed or aborted.

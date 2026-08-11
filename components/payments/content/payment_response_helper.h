@@ -67,6 +67,10 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
   mojom::PayerDetailPtr GeneratePayerDetail(
       const autofill::AutofillProfile* selected_contact_profile) const;
 
+  bool is_waiting_for_user_gesture_for_testing() const {
+    return is_waiting_for_user_gesture_;
+  }
+
  private:
   // Generates the Payment Response and sends it to the delegate.
   void GeneratePaymentResponse();

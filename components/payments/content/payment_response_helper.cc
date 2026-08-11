@@ -23,6 +23,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payment_request_delegate.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "content/public/common/content_features.h"
 
 namespace payments {
@@ -71,7 +72,12 @@ PaymentResponseHelper::PaymentResponseHelper(
   selected_app_->InvokePaymentApp(weak_ptr_factory_.GetWeakPtr());
 }
 
-PaymentResponseHelper::~PaymentResponseHelper() = default;
+PaymentResponseHelper::~PaymentResponseHelper() {
+  if (is_waiting_for_user_gesture_ && journey_logger_) {
+    journey_logger_->RecordPaymentHandlerPausedResolutionOutcome(
+        PaymentHandlerPausedResolutionOutcome::kWindowClosed);
+  }
+}
 
 void PaymentResponseHelper::OnInstrumentDetailsReady(
     const std::string& method_name,
@@ -112,6 +118,11 @@ void PaymentResponseHelper::OnUserInteractionCaptured() {
   }
 
   is_waiting_for_user_gesture_ = false;
+
+  if (journey_logger_) {
+    journey_logger_->RecordPaymentHandlerPausedResolutionOutcome(
+        PaymentHandlerPausedResolutionOutcome::kUserInteracted);
+  }
 
   if (!is_waiting_for_shipping_address_normalization_) {
     GeneratePaymentResponse();
