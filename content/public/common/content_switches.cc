@@ -539,10 +539,6 @@ const char kOverrideLanguageDetection[] = "override-language-detection";
 // Renderer process that runs the non-PPAPI PDF plugin.
 const char kPdfRenderer[] = "pdf-renderer";
 
-// Causes the Private Aggregation API to run without reporting delays.
-const char kPrivateAggregationDeveloperMode[] =
-    "private-aggregation-developer-mode";
-
 // Enable the "Process Per Site" process model for all domains. This mode
 // consolidates same-site pages so that they share a single process.
 //
