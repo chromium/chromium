@@ -161,3 +161,24 @@ source_set("save_iban_bubble_view") {
     "//ui/base",
   ]
 }
+
+source_set("manage_saved_iban_bubble_view") {
+  public = [ "manage_saved_iban_bubble_view.h" ]
+  sources = [ "manage_saved_iban_bubble_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//chrome/browser/ui/views/autofill/payments:payments_view_util",
+    "//ui/views",
+  ]
+  deps = [
+    ":dialog_view_ids",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
