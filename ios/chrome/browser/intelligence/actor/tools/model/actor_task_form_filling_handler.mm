@@ -84,18 +84,56 @@ void ActorTaskFormFillingHandler::PromptToSelectCredential(
                   completionHandler:^(ActorFormSuggestion* selected_credential,
                                       BOOL always_allow) {
                     if (weak_this) {
-                      weak_this->OnActorFormSuggestionSelectedByUser(
-                          selected_credential, always_allow);
+                      weak_this->OnCredentialSelectedByUser(selected_credential,
+                                                            always_allow);
                     }
                   }];
 }
 
-void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
-    const autofill::ActorFormFillingRequest& request,
+void ActorTaskFormFillingHandler::RegisterAutofillSuggestionsAndCallback(
+    const std::vector<autofill::ActorFormFillingRequest>& requests,
     AutofillSuggestionSelectedCallback callback) {
   CHECK(!credential_selected_callback_);
   CHECK(!autofill_suggestion_selected_callback_);
-  CHECK(!request.suggestions.empty());
+  CHECK(!requests.empty());
+
+  // Retrieve all suggestions in `requests`.
+  NSMutableArray<NSArray<ActorFormSuggestion*>*>* all_suggestions =
+      [NSMutableArray array];
+  for (const auto& request : requests) {
+    CHECK(!request.suggestions.empty());
+    autofill::ActorFormFillingRequestedData requested_data =
+        request.requested_data;
+    if (requested_data == autofill::ActorFormFillingRequestedData::kUnknown) {
+      ToolExecutionResult error_result(
+          mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+          /*requires_page_stabilization=*/false, "Data type unknown.");
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), 0,
+                                    base::unexpected(error_result)));
+      return;
+    }
+    NSMutableArray<ActorFormSuggestion*>* suggestions = [NSMutableArray array];
+    for (const auto& suggestion : request.suggestions) {
+      [suggestions addObject:[[ActorFormSuggestion alloc]
+                                 initWithActorSuggestion:suggestion
+                                                dataType:requested_data]];
+    }
+    [all_suggestions addObject:suggestions];
+  }
+
+  autofill_suggestions_ = all_suggestions;
+  autofill_suggestion_selected_callback_ = std::move(callback);
+}
+
+void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
+    size_t index) {
+  CHECK(autofill_suggestions_);
+  CHECK_LT(index, autofill_suggestions_.count);
+
+  if (!autofill_suggestion_selected_callback_) {
+    return;
+  }
 
   // TODO(crbug.com/496195979): This will be converted into a CHECK when the UI
   // stabilizes.
@@ -109,71 +147,57 @@ void ActorTaskFormFillingHandler::PromptToSelectAutofillSuggestion(
         "ActorTaskInterventionDelegate unset.");
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), base::unexpected(error_result)));
+        base::BindOnce(std::move(autofill_suggestion_selected_callback_), index,
+                       base::unexpected(error_result)));
     return;
   }
 
-  autofill::ActorFormFillingRequestedData requested_data =
-      request.requested_data;
-  if (requested_data == autofill::ActorFormFillingRequestedData::kUnknown) {
-    ToolExecutionResult error_result(
-        mojom::ActionResultCode::kFormFillingUnknownAutofillError,
-        /*requires_page_stabilization=*/false, "Data type unknown.");
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::unexpected(error_result)));
-    return;
-  }
-
-  autofill_suggestion_selected_callback_ = std::move(callback);
+  NSArray<ActorFormSuggestion*>* suggestions = autofill_suggestions_[index];
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
-
-  NSMutableArray<ActorFormSuggestion*>* suggestions = [NSMutableArray array];
-  for (const auto& suggestion : request.suggestions) {
-    [suggestions addObject:[[ActorFormSuggestion alloc]
-                               initWithActorSuggestion:suggestion
-                                              dataType:requested_data]];
-  }
 
   [intervention_delegate_ actorTask:task_id_
               selectFromSuggestions:suggestions
                   completionHandler:^(ActorFormSuggestion* selected_suggestion,
                                       BOOL always_allow) {
                     if (weak_this) {
-                      weak_this->OnActorFormSuggestionSelectedByUser(
-                          selected_suggestion);
+                      weak_this->OnAutofillSuggestionSelectedByUser(
+                          selected_suggestion, index);
                     }
                   }];
 }
 
-void ActorTaskFormFillingHandler::OnActorFormSuggestionSelectedByUser(
+void ActorTaskFormFillingHandler::OnCredentialSelectedByUser(
     ActorFormSuggestion* selected_suggestion,
     bool always_allow) {
-  CHECK(credential_selected_callback_ ||
-        autofill_suggestion_selected_callback_);
+  CHECK(credential_selected_callback_);
   if (!selected_suggestion.formSuggestion) {
-    if (credential_selected_callback_) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(credential_selected_callback_),
-                                    std::nullopt));
-    } else if (autofill_suggestion_selected_callback_) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(autofill_suggestion_selected_callback_),
-                         std::nullopt));
-    } else {
-      NOTREACHED(base::NotFatalUntil::M160);
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(credential_selected_callback_), std::nullopt));
     return;
   }
-  // TODO(crbug.com/472287741): Handle credit card and address filling.
-  switch (selected_suggestion.type) {
-    case autofill::SuggestionType::kPasswordEntry:
-      SetUserSelectedCredential(selected_suggestion.credential, always_allow);
-      break;
-    default:
-      NOTREACHED();
+  CHECK(selected_suggestion.type == autofill::SuggestionType::kPasswordEntry);
+  SetUserSelectedCredential(selected_suggestion.credential, always_allow);
+}
+
+void ActorTaskFormFillingHandler::OnAutofillSuggestionSelectedByUser(
+    ActorFormSuggestion* selected_suggestion,
+    size_t form_index) {
+  CHECK(autofill_suggestion_selected_callback_);
+  if (!selected_suggestion.formSuggestion) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(autofill_suggestion_selected_callback_,
+                                  form_index, std::nullopt));
+    return;
   }
+  CHECK(selected_suggestion.type == autofill::SuggestionType::kAddressEntry ||
+        selected_suggestion.type == autofill::SuggestionType::kCreditCardEntry);
+  CHECK(selected_suggestion.autofillSuggestion.has_value());
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(autofill_suggestion_selected_callback_, form_index,
+                     *selected_suggestion.autofillSuggestion));
 }
 
 std::optional<CredentialWithPermission>

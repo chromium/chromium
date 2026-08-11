@@ -100,15 +100,22 @@ class ActorTaskFormFillingHandler {
       const std::vector<actor_login::Credential>& credentials,
       CredentialSelectedCallback callback);
 
-  // Prompts the user to select from the list of autofill suggestions.
-  // The callback is called with the selected suggestion, or with std::nullopt
-  // if the user closed the prompt without making a selection.
-  using AutofillSuggestionSelectedCallback = base::OnceCallback<void(
+  // Registers the callback and parses the list of autofill suggestions to cache
+  // them. Does not display the prompt.
+  using AutofillSuggestionSelectedCallback = base::RepeatingCallback<void(
+      size_t form_index,
       base::expected<std::optional<autofill::ActorSuggestion>,
                      ToolExecutionResult>)>;
-  void PromptToSelectAutofillSuggestion(
-      const autofill::ActorFormFillingRequest& request,
+  void RegisterAutofillSuggestionsAndCallback(
+      const std::vector<autofill::ActorFormFillingRequest>& requests,
       AutofillSuggestionSelectedCallback callback);
+
+  // Prompts the user to select from the registered suggestions for the form at
+  // `index`. The callback registered in
+  // `RegisterAutofillSuggestionsAndCallback` will be called with the selected
+  // suggestion and `index`, or with std::nullopt if the user closed the prompt
+  // without making a selection.
+  void PromptToSelectAutofillSuggestion(size_t index);
 
   // Retrieves the credential that the user has chosen to allow the
   // actor to use. The selected credential can be used for multi-step login
@@ -129,10 +136,14 @@ class ActorTaskFormFillingHandler {
       std::optional<actor_login::Credential> credential,
       bool should_store_permission);
 
-  // Handles the user selection of an ActorFormSuggestion.
-  void OnActorFormSuggestionSelectedByUser(
+  // Handles the user selection of a credential suggestion.
+  void OnCredentialSelectedByUser(ActorFormSuggestion* selected_suggestion,
+                                  bool always_allow);
+
+  // Handles the user selection of an autofill suggestion.
+  void OnAutofillSuggestionSelectedByUser(
       ActorFormSuggestion* selected_suggestion,
-      bool always_allow = false);
+      size_t form_index);
 
   ActorTaskId task_id_;
   std::unique_ptr<actor_login::ActorLoginService> login_service_;
@@ -143,6 +154,10 @@ class ActorTaskFormFillingHandler {
   // permission for this credential to always be used.
   base::flat_map<url::Origin, CredentialWithPermission>
       user_selected_credentials_;
+
+  // Double-array storing the parsed suggestions for each form request from
+  // `RegisterAutofillSuggestionsAndCallback`.
+  NSArray<NSArray<ActorFormSuggestion*>*>* autofill_suggestions_ = nil;
 
   // The intervention delegate that handles UI interactions, e.g. showing a
   // picker.
