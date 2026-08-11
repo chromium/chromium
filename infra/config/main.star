@@ -347,6 +347,7 @@ chromium_luci.configure_targets(
             "gpu-swarming-pool": targets.IGNORE_UNUSED,
             "limited_capacity_bot": targets.IGNORE_UNUSED,
             "linux-jammy": targets.IGNORE_UNUSED,
+            "linux-ubuntu": targets.IGNORE_UNUSED,
             "no_gpu": targets.IGNORE_UNUSED,
             "no_tombstones": targets.IGNORE_UNUSED,
             "swarming_containment_auto": targets.IGNORE_UNUSED,

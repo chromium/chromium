@@ -467,6 +467,14 @@
       },
     },
   },
+  'linux-ubuntu': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu',
+      },
+    },
+  },
   'linux_amd_780m_experimental': {
     'fail_if_unused': False,
     'swarming': {

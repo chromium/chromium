@@ -82,7 +82,7 @@ ci.builder(
         mixins = [
             "arm64",
             "docker",
-            "linux-jammy",
+            "linux-ubuntu",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.remove(

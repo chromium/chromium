@@ -1183,6 +1183,15 @@ targets.mixin(
     ),
 )
 
+targets.mixin(
+    name = "linux-ubuntu",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu",
+        },
+    ),
+)
+
 # Restricts Linux GPU High Tier AI WPT tasks to NVIDIA, AMD, or modern Intel GPUs
 # (Intel UHD 770 / Iris Xe) to avoid execution stalls on low-end Intel UHD 630
 # integrated graphics (lin-90-g582 and lin-91-g582).
