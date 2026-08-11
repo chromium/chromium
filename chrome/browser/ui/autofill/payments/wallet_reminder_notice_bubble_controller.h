@@ -38,6 +38,9 @@ class WalletReminderNoticeBubbleController
   static WalletReminderNoticeBubbleController* From(
       tabs::TabInterface& tab_interface);
 
+  // Re-opens the bubble when the user clicks the page action icon (e.g. after
+  // the bubble was dismissed by clicking outside the bubble).
+  void ReshowBubble();
   AutofillBubbleBase* GetBubbleView() const;
   base::WeakPtr<WalletReminderNoticeBubbleController> GetWeakPtr();
 
@@ -58,8 +61,6 @@ class WalletReminderNoticeBubbleController
   // Whether the bubble is shown as a re-show. When false, the bubble is shown
   // as an alert without stealing input focus from the webpage. Clicking the
   // bubble or its icon again sets this to true, which focuses the bubble.
-  // TODO(crbug.com/542731356): Once we handle re-showing the bubble on page
-  // action click, update this state.
   bool is_reshow_ = false;
 
   base::WeakPtrFactory<WalletReminderNoticeBubbleController> weak_ptr_factory_{

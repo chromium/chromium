@@ -31,6 +31,15 @@ WalletReminderNoticeBubbleController::From(tabs::TabInterface& tab_interface) {
   return Get(tab_interface.GetUnownedUserDataHost());
 }
 
+void WalletReminderNoticeBubbleController::ReshowBubble() {
+  // Don't show the bubble if it's already visible.
+  if (GetBubbleView()) {
+    return;
+  }
+  is_reshow_ = true;
+  QueueOrShowBubble(/*force_show=*/true);
+}
+
 AutofillBubbleBase* WalletReminderNoticeBubbleController::GetBubbleView()
     const {
   return bubble_view();

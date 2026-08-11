@@ -89,6 +89,7 @@
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
@@ -4498,8 +4499,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  // TODO(crbug.com/542731356): Show Wallet Reminder Notice
-                  // bubble.
+                  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+                  CHECK(tab);
+
+                  if (auto* controller =
+                          autofill::WalletReminderNoticeBubbleController::From(
+                              *tab)) {
+                    controller->ReshowBubble();
+                  }
                 },
                 bwi))
             .SetActionId(kActionWalletReminderNotice)

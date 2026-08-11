@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +19,30 @@
 namespace autofill {
 
 namespace {
+
+class MockAutofillBubbleHandler : public TestAutofillBubbleHandler {
+ public:
+  MOCK_METHOD(AutofillBubbleBase*,
+              ShowWalletReminderNoticeBubble,
+              (content::WebContents*,
+               WalletReminderNoticeBubbleController*,
+               bool),
+              (override));
+};
+
+class TestBrowserWindowWithMockBubbleHandler : public TestBrowserWindow {
+ public:
+  AutofillBubbleHandler* GetAutofillBubbleHandler() override {
+    return &mock_autofill_bubble_handler_;
+  }
+
+  MockAutofillBubbleHandler& mock_autofill_bubble_handler() {
+    return mock_autofill_bubble_handler_;
+  }
+
+ private:
+  MockAutofillBubbleHandler mock_autofill_bubble_handler_;
+};
 
 class WalletReminderNoticeBubbleControllerTest
     : public ChromeRenderViewHostTestHarness {
@@ -28,6 +56,12 @@ class WalletReminderNoticeBubbleControllerTest
 
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(tab_unowned_user_data_host_));
+    ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&mock_browser_window_interface_));
+    ON_CALL(mock_browser_window_interface_, GetWindow())
+        .WillByDefault(testing::Return(&test_browser_window_));
+    ON_CALL(testing::Const(mock_browser_window_interface_), GetWindow())
+        .WillByDefault(testing::Return(&test_browser_window_));
 
     controller_ = std::make_unique<WalletReminderNoticeBubbleController>(
         mock_tab_interface_, web_contents());
@@ -40,6 +74,9 @@ class WalletReminderNoticeBubbleControllerTest
 
  protected:
   tabs::MockTabInterface mock_tab_interface_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
+  TestBrowserWindowWithMockBubbleHandler test_browser_window_;
+  TestAutofillBubble test_bubble_;
   ui::UnownedUserDataHost tab_unowned_user_data_host_;
   std::unique_ptr<WalletReminderNoticeBubbleController> controller_;
 };
@@ -47,6 +84,17 @@ class WalletReminderNoticeBubbleControllerTest
 TEST_F(WalletReminderNoticeBubbleControllerTest, From) {
   EXPECT_EQ(WalletReminderNoticeBubbleController::From(mock_tab_interface_),
             controller_.get());
+}
+
+TEST_F(WalletReminderNoticeBubbleControllerTest, ReshowBubble_ShowsBubble) {
+  EXPECT_CALL(test_browser_window_.mock_autofill_bubble_handler(),
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/true))
+      .WillOnce(testing::Return(&test_bubble_));
+
+  EXPECT_EQ(controller_->GetBubbleView(), nullptr);
+  controller_->ReshowBubble();
+  EXPECT_EQ(controller_->GetBubbleView(), &test_bubble_);
 }
 
 TEST_F(WalletReminderNoticeBubbleControllerTest, GetBubbleType) {
