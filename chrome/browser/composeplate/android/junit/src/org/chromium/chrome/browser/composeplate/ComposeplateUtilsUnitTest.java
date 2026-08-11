@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.composeplate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
@@ -17,9 +16,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -35,6 +36,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -48,7 +53,7 @@ public class ComposeplateUtilsUnitTest {
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
     @Mock private Profile mProfile;
     @Mock private View mView;
-    @Captor private ArgumentCaptor<GradientDrawable> mBackgroundDrawableCaptor;
+    @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
 
     private Context mContext;
 
@@ -118,15 +123,13 @@ public class ComposeplateUtilsUnitTest {
     public void testApplyWhiteBackgroundAndShadow() {
         // Verifies the apply case.
         ComposeplateUtils.applyWhiteBackground(mContext, mView, /* apply= */ true);
-        verify(mView).setBackground(mBackgroundDrawableCaptor.capture());
-        assertEquals(
-                Color.WHITE, mBackgroundDrawableCaptor.getValue().getColor().getDefaultColor());
+        verifyPureWhiteBackgroundApplied();
 
         clearInvocations(mView);
 
         // Verifies the reset case.
         ComposeplateUtils.applyWhiteBackground(mContext, mView, /* apply= */ false);
-        verify(mView).setBackground(any(Drawable.class));
+        verifyDrawableApplied(R.drawable.home_surface_search_box_background);
     }
 
     @Test
@@ -157,5 +160,128 @@ public class ComposeplateUtilsUnitTest {
                 ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT),
                 ComposeplateUtils.getSearchBoxIconColorTint(
                         mContext, /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplySearchBoxBackground_auroraDisabled() {
+        // When Aurora is disabled on customized image theme, apply pure white.
+        ComposeplateUtils.applySearchBoxBackground(
+                mContext, mView, /* applyWhiteBackground= */ true);
+        verifyPureWhiteBackgroundApplied();
+
+        clearInvocations(mView);
+
+        // When Aurora is disabled on default theme, reset to default background.
+        ComposeplateUtils.applySearchBoxBackground(
+                mContext, mView, /* applyWhiteBackground= */ false);
+        verifyDrawableApplied(R.drawable.home_surface_search_box_background);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplySearchBoxBackground_auroraEnabled() {
+        // When Aurora is enabled on customized image theme, apply white mixed with 2% primary.
+        ComposeplateUtils.applySearchBoxBackground(
+                mContext, mView, /* applyWhiteBackground= */ true);
+        verifyDrawableApplied(R.drawable.fake_search_box_white_with_primary_color_alpha_2);
+
+        clearInvocations(mView);
+
+        // When Aurora is enabled on default theme, apply theme base mixed with 2% primary.
+        ComposeplateUtils.applySearchBoxBackground(
+                mContext, mView, /* applyWhiteBackground= */ false);
+        verifyDrawableApplied(R.drawable.fake_search_box_background);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplyComposeplateBackground_buttonColorDisabled_auroraDisabled() {
+        // When Aurora is disabled on customized image theme, apply pure white.
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ true);
+        verifyPureWhiteBackgroundApplied();
+
+        clearInvocations(mView);
+
+        // When Aurora is disabled on default theme, reset to default background.
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ false);
+        verifyDrawableApplied(R.drawable.home_surface_search_box_background);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void testApplyComposeplateBackground_buttonColorDisabled_auroraEnabled() {
+        // When Aurora is enabled but button color is disabled on customized image theme, apply pure
+        // white.
+        assertFalse(NewTabPageUtils.isNtpAuroraButtonColorEnabled());
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ true);
+        verifyPureWhiteBackgroundApplied();
+
+        clearInvocations(mView);
+
+        // When Aurora is enabled but button color is disabled on default theme, reset to default
+        // background.
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ false);
+        verifyDrawableApplied(R.drawable.home_surface_search_box_background);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA + ":change_button_color/true"
+    })
+    public void testApplyComposeplateBackground_buttonColorEnabled() {
+        // When Aurora button color is enabled on customized image theme, apply white mixed with 2%
+        // primary.
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ true);
+        verifyDrawableApplied(R.drawable.fake_search_box_white_with_primary_color_alpha_2);
+
+        clearInvocations(mView);
+
+        // When Aurora button color is enabled on default theme, apply 8% primary background.
+        ComposeplateUtils.applyComposeplateBackground(
+                mContext, mView, /* applyWhiteBackground= */ false);
+        verifyDrawableApplied(R.drawable.composeplate_button_background);
+    }
+
+    private void verifyDrawableApplied(@DrawableRes int expectedDrawableRes) {
+        verify(mView).setBackground(mDrawableCaptor.capture());
+        Drawable captured = mDrawableCaptor.getValue();
+        Drawable expected = mContext.getDrawable(expectedDrawableRes);
+
+        if (expected instanceof LayerDrawable) {
+            assertTrue(captured instanceof LayerDrawable);
+            LayerDrawable expectedLayer = (LayerDrawable) expected;
+            LayerDrawable capturedLayer = (LayerDrawable) captured;
+            assertEquals(expectedLayer.getNumberOfLayers(), capturedLayer.getNumberOfLayers());
+            for (int i = 0; i < expectedLayer.getNumberOfLayers(); i++) {
+                assertTrue(capturedLayer.getDrawable(i) instanceof GradientDrawable);
+                assertEquals(
+                        ((GradientDrawable) expectedLayer.getDrawable(i))
+                                .getColor()
+                                .getDefaultColor(),
+                        ((GradientDrawable) capturedLayer.getDrawable(i))
+                                .getColor()
+                                .getDefaultColor());
+            }
+        } else if (expected instanceof GradientDrawable) {
+            assertTrue(captured instanceof GradientDrawable);
+            assertEquals(
+                    ((GradientDrawable) expected).getColor().getDefaultColor(),
+                    ((GradientDrawable) captured).getColor().getDefaultColor());
+        }
+    }
+
+    private void verifyPureWhiteBackgroundApplied() {
+        verify(mView).setBackground(mDrawableCaptor.capture());
+        assertTrue(mDrawableCaptor.getValue() instanceof GradientDrawable);
+        assertEquals(
+                Color.WHITE,
+                ((GradientDrawable) mDrawableCaptor.getValue()).getColor().getDefaultColor());
     }
 }

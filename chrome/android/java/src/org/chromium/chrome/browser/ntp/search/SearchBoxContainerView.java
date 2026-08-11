@@ -138,7 +138,7 @@ public class SearchBoxContainerView extends LinearLayout {
         View searchBoxShadowContainerView = findViewById(R.id.search_box_shadow_container);
         if (searchBoxShadowContainerView == null) return;
 
-        ComposeplateUtils.applyWhiteBackground(
+        ComposeplateUtils.applySearchBoxBackground(
                 getContext(), searchBoxShadowContainerView, applyWhiteBackground);
         applyShadow(searchBoxShadowContainerView);
         updateSearchBoxPaddingAndMarginForShadow(mIsNtpAuroraEnabled);

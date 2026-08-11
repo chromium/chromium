@@ -105,7 +105,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -1130,15 +1129,6 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
                         NtpBackgroundType.THEME_COLLECTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NTP_AURORA)
-    public void testShouldApplyWhiteBackgroundOnSearchBox_NtpAuroraEnabled() {
-        assumeFalse(OmniboxCapabilities.isDesktopPlatform());
-
-        // When NTP Aurora is enabled and not on desktop, should always return true.
-        assertTrue(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
     }
 
     @Test

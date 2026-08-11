@@ -21,6 +21,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -61,6 +62,72 @@ public class ComposeplateUtils {
     }
 
     /**
+     * Applies the appropriate background drawable for the Search Box.
+     *
+     * @param context Used to get resources.
+     * @param view The search box view instance to update.
+     * @param applyWhiteBackground Whether to apply a white background.
+     */
+    public static void applySearchBoxBackground(
+            Context context, View view, boolean applyWhiteBackground) {
+        if (applyWhiteBackground) {
+            if (NewTabPageUtils.isNtpAuroraEnabled()) {
+                // When Aurora is enabled on customized image theme, use white mixed with 2% primary
+                // tint.
+                view.setBackground(
+                        context.getDrawable(
+                                R.drawable.fake_search_box_white_with_primary_color_alpha_2));
+                return;
+            }
+            // When Aurora is disabled on customized image theme, use pure white.
+            applyWhiteBackground(context, view, /* apply= */ true);
+            return;
+        }
+
+        // Default theme without customized image theme:
+        if (NewTabPageUtils.isNtpAuroraEnabled()) {
+            view.setBackground(context.getDrawable(R.drawable.fake_search_box_background));
+            return;
+        }
+
+        // Default theme with Aurora disabled:
+        applyWhiteBackground(context, view, /* apply= */ false);
+    }
+
+    /**
+     * Applies the appropriate background drawable for Composeplate buttons.
+     *
+     * @param context Used to get resources.
+     * @param view The composeplate button view instance to update.
+     * @param applyWhiteBackground Whether to apply a white background.
+     */
+    public static void applyComposeplateBackground(
+            Context context, View view, boolean applyWhiteBackground) {
+        if (applyWhiteBackground) {
+            if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+                // When Aurora button color is enabled on customized image theme, use tinted
+                // background.
+                view.setBackground(
+                        context.getDrawable(
+                                R.drawable.fake_search_box_white_with_primary_color_alpha_2));
+                return;
+            }
+            // When Aurora button color is disabled on customized image theme, use pure white.
+            applyWhiteBackground(context, view, /* apply= */ true);
+            return;
+        }
+
+        // Default theme without customized image theme:
+        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+            view.setBackground(context.getDrawable(R.drawable.composeplate_button_background));
+            return;
+        }
+
+        // Default theme with Aurora button color disabled:
+        applyWhiteBackground(context, view, /* apply= */ false);
+    }
+
+    /**
      * Applies a white color to the default background drawable and set it as the new background of
      * the view if apply equals to true; otherwise resets to the default background.
      *
@@ -80,7 +147,7 @@ public class ComposeplateUtils {
             return;
         }
 
-        // Rests to the default background drawable.
+        // Resets to the default background drawable.
         view.setBackground(background);
     }
 

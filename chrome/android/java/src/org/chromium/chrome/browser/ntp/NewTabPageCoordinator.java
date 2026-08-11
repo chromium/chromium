@@ -1562,10 +1562,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private boolean shouldUpdateBackground(boolean desiredState, @Nullable Boolean currentState) {
-        // If shouldn't apply a white background and the background hasn't been updated before,
-        // returns false.
+        // On initial creation, update the background if a customized image is selected or if
+        // NTP Aurora is enabled to configure the dynamic background and shadow on startup.
         if (currentState == null) {
-            return desiredState;
+            // When NTP Aurora is launched, remove `|| NewTabPageUtils.isNtpAuroraEnabled()` here
+            // and change the default background in the layout XML directly.
+            return desiredState || NewTabPageUtils.isNtpAuroraEnabled();
         }
         // If the background has been updated before and it should remain the same, returns false.
         return desiredState != currentState;

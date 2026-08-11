@@ -47,13 +47,16 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/composeplate_button_background.xml",
     "java/res/drawable/composeplate_button_foreground.xml",
     "java/res/layout/composeplate_view_layout.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
   ]
   deps = [
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
 }
@@ -75,6 +78,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/profiles/android:java",

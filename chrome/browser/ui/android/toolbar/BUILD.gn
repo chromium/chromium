@@ -397,6 +397,8 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/badge_update_dark.png",
     "java/res/drawable-xxxhdpi/badge_update_light.png",
     "java/res/drawable-xxxhdpi/incognito_small.png",
+    "java/res/drawable/fake_search_box_background.xml",
+    "java/res/drawable/fake_search_box_white_with_primary_color_alpha_2.xml",
     "java/res/drawable/home_surface_search_box_background.xml",
     "java/res/drawable/ic_close_all_tabs.xml",
     "java/res/drawable/ic_widgets.xml",

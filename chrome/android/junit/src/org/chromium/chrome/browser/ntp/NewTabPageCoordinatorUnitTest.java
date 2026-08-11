@@ -892,11 +892,12 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_searchBox_alreadyAppliedAndShouldApply_doesNotReapplyBackground() {
         setupMockSubCoordinators();
         mCoordinator.setIsComposeplateEnabledForTesting(true);
+        setupDiskImageBackground();
 
         // If white background is enabled and was already set to true,verify applyWhiteBackground is
         // not called again on the search box.
@@ -955,11 +956,12 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_searchBox_previouslyFalseAndShouldApply_appliesWhiteBackground() {
         setupMockSubCoordinators();
         mCoordinator.setIsComposeplateEnabledForTesting(true);
+        setupDiskImageBackground();
 
         // Applies the white background if previously null.
         assertTrue(mCoordinator.shouldApplyWhiteBackgroundOnSearchBox());
@@ -976,6 +978,28 @@ public class NewTabPageCoordinatorUnitTest {
         mCoordinator.onCustomizedBackgroundChanged();
 
         verify(mMockSearchBox).applyWhiteBackground(true);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.NTP_AURORA)
+    public void
+            testOnCustomizedBackgroundChanged_searchBox_auroraEnabled_initialLaunchAppliesBackground() {
+        setupMockSubCoordinators();
+        mCoordinator.setIsComposeplateEnabledForTesting(true);
+
+        // On initial launch with default theme (desiredState = false), currentState is null.
+        assertFalse(mCoordinator.shouldApplyWhiteBackgroundOnSearchBox());
+        mCoordinator.setIsWhiteBackgroundOnSearchBoxApplied(null);
+
+        mCoordinator.onCustomizedBackgroundChanged();
+
+        // Aurora forces the initial update on launch.
+        verify(mMockSearchBox).applyWhiteBackground(false);
+
+        // If called again with false, it should not re-trigger since currentState is now false.
+        clearInvocations(mMockSearchBox);
+        mCoordinator.onCustomizedBackgroundChanged();
+        verify(mMockSearchBox, never()).applyWhiteBackground(anyBoolean());
     }
 
     @Test
