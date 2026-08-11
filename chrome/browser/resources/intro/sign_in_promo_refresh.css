@@ -314,7 +314,7 @@ h2 {
 
 #security {
   <if expr="not _google_chrome">
-  --cr-icon-image: url(images/security.svg);
+  --cr-icon-image: url(images/security_old.svg);
   </if>
   <if expr="_google_chrome">
   --cr-icon-image: url(images/gshield.svg);
@@ -322,11 +322,11 @@ h2 {
 }
 
 #devices {
-  --cr-icon-image: url(images/devices.svg);
+  --cr-icon-image: url(images/devices_old.svg);
 }
 
 #cloud-upload {
-  --cr-icon-image: url(images/cloud_upload.svg);
+  --cr-icon-image: url(images/cloud_upload_old.svg);
 }
 
 .cr-icon {
@@ -382,4 +382,20 @@ h2 {
   color: var(--cr-secondary-text-color);
   font-size: var(--card-description-font-size);
   margin-bottom: 1rem;
+}
+
+:host-context([webui-rounded-icons]) {
+  #devices {
+    --cr-icon-image: url(images/devices.svg);
+  }
+
+  #cloud-upload {
+    --cr-icon-image: url(images/cloud_upload.svg);
+  }
+
+  <if expr="not _google_chrome">
+  #security {
+    --cr-icon-image: url(images/security.svg);
+  }
+  </if>
 }

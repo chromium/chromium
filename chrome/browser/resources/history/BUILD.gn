@@ -17,6 +17,7 @@ build_webui("build") {
     "images/history_embeddings_promo.svg",
     "images/history_embeddings_promo_dark.svg",
     "images/list.svg",
+    "images/list_old.svg",
     "images/sign_in_promo.svg",
     "images/sign_in_promo_dark.svg",
     "images/sync_history_promo.svg",

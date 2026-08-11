@@ -31,7 +31,9 @@ build_webui("build_overlay") {
 
   static_files = [
     "arrow_right.svg",
+    "arrow_right_old.svg",
     "feedback.svg",
+    "feedback_old.svg",
     "icon_clear.svg",
     "learn_more.svg",
     "lens_overlay.html",

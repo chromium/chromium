@@ -230,7 +230,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor showTabs_: boolean = false;
   protected accessor showHistoryClusters_: boolean = false;
   protected accessor tabsIcons_: string[] = [
-    'images/list.svg',
+    (document.documentElement.hasAttribute('webui-rounded-icons') ?
+         'images/list.svg' :
+         'images/list_old.svg'),
     (document.documentElement.hasAttribute('webui-rounded-icons') ?
          'chrome://resources/images/icon_journeys.svg' :
          'chrome://resources/images/icon_journeys_old.svg'),

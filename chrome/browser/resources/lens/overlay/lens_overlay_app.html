@@ -279,7 +279,7 @@
   }
 
   .feedback {
-    mask-image: url("feedback.svg");
+    mask-image: url("feedback_old.svg");
   }
 
   .activity {
@@ -542,6 +542,10 @@
       /* Set the icon color to hcm (high contrast mode) value. */
       background-color: ButtonText;
     }
+  }
+
+  :host-context([webui-rounded-icons]) .feedback {
+    mask-image: url("feedback.svg");
   }
 </style>
 <div class="app-container"

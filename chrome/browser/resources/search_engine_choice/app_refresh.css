@@ -177,7 +177,7 @@ cr-checkbox {
 
 .cr-icon {
   --cr-icon-color: currentColor;
-  --cr-icon-image: url(images/arrow_downward.svg);
+  --cr-icon-image: url(images/arrow_downward_old.svg);
   --cr-icon-ripple-size: 18px;
   --cr-icon-size: 18px;
   margin: 0;
@@ -402,4 +402,8 @@ control the pointer location causes some flakiness. */
   cr-checkbox {
     --cr-checkbox-label-color: var(--google-grey-500);
   }
+}
+
+:host-context([webui-rounded-icons]) .cr-icon {
+  --cr-icon-image: url(images/arrow_downward.svg);
 }

@@ -196,7 +196,7 @@
   height: 20px;
   mask-position: center;
   mask-repeat: no-repeat;
-  mask-image: url('/lens/shared/info.svg');
+  mask-image: url('/lens/shared/info_old.svg');
   mask-size: 20px;
   background-color: var(--color-searchbox-results-icon);
 }
@@ -212,6 +212,10 @@
     background-color: ButtonText;
   }
 }
+
+  :host-context([webui-rounded-icons]) #errorIcon {
+    mask-image: url('/lens/shared/info.svg');
+  }
 </style>
 <!-- LINT.IfChange(GhostLoaderText) -->
 <div id="content">

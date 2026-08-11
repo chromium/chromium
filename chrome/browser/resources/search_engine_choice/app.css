@@ -207,7 +207,7 @@ cr-dialog p {
 
 .cr-icon {
   --cr-icon-color: currentColor;
-  --cr-icon-image: url(images/arrow_downward.svg);
+  --cr-icon-image: url(images/arrow_downward_old.svg);
   --cr-icon-ripple-size: 18px;
   --cr-icon-size: 18px;
   margin: 0;
@@ -297,4 +297,8 @@ cr-dialog p {
   :host {
     --content-container-width: 452px;
   }
+}
+
+:host-context([webui-rounded-icons]) .cr-icon {
+  --cr-icon-image: url(images/arrow_downward.svg);
 }

@@ -51,11 +51,16 @@ build_webui("build") {
   if (enable_dice_support) {
     static_files += [
       "images/cloud_upload.svg",
+      "images/cloud_upload_old.svg",
       "images/devices.svg",
+      "images/devices_old.svg",
     ]
 
     if (!is_chrome_branded) {
-      static_files += [ "images/security.svg" ]
+      static_files += [
+        "images/security.svg",
+        "images/security_old.svg",
+      ]
     }
 
     ts_files += [

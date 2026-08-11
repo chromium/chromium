@@ -37,7 +37,7 @@
   "setTranslationHeightToAlignLogoAndAnimation" */
   --safe-zone-animation-translation-height: 0;
   <if expr="not _google_chrome">
-  --security-icon-path: url(images/security.svg);
+  --security-icon-path: url(images/security_old.svg);
   </if>
   <if expr="_google_chrome">
   --security-icon-path: url(images/gshield.svg);
@@ -283,11 +283,11 @@ h2 {
 }
 
 #devices {
-  --cr-icon-image: url(images/devices.svg);
+  --cr-icon-image: url(images/devices_old.svg);
 }
 
 #cloud-upload {
-  --cr-icon-image: url(images/cloud_upload.svg);
+  --cr-icon-image: url(images/cloud_upload_old.svg);
 }
 
 .cr-icon {
@@ -299,4 +299,20 @@ h2 {
 /* Prevent the icons from being flipped in RTL mode. */
 :host-context([dir=rtl]) .cr-icon {
   transform: scaleX(1);
+}
+
+<if expr="not _google_chrome">
+:host-context([webui-rounded-icons]):host {
+  --security-icon-path: url(images/security.svg);
+}
+</if>
+
+:host-context([webui-rounded-icons]) {
+  #devices {
+    --cr-icon-image: url(images/devices.svg);
+  }
+
+  #cloud-upload {
+    --cr-icon-image: url(images/cloud_upload.svg);
+  }
 }

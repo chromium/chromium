@@ -5,7 +5,7 @@
     height: 20px;
     flex-shrink: 0;
     margin-block: auto;
-    mask-image: url('arrow_right.svg');
+    mask-image: url('arrow_right_old.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
@@ -515,6 +515,10 @@
   :host([source-language-menu-visible]) #sourceLanguagePickerMenu {
     display: flex;
     flex-direction: column;
+  }
+
+  :host-context([webui-rounded-icons]) #arrowRightIcon {
+    mask-image: url('arrow_right.svg');
   }
 </style>
 <div id="translateContainer">

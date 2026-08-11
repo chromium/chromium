@@ -9,6 +9,7 @@ build_webui("build") {
 
   static_files = [
     "images/arrow_downward.svg",
+    "images/arrow_downward_old.svg",
     "images/info_dialog_illustration.svg",
     "images/info_dialog_illustration_dark.svg",
     "images/refresh_bg_bottom_dark.svg",
