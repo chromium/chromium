@@ -1835,7 +1835,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterIntegerPref(prefs::kVoiceTypingSettings, 0);
   registry->RegisterBooleanPref(prefs::kPrefDictationOnboardingCompleted,
                                 false);
-  registry->RegisterStringPref(prefs::kVoiceTypingHotkey, "");
+#if BUILDFLAG(IS_LINUX)
+  registry->RegisterStringPref(prefs::kVoiceTypingHotkey, "Ctrl+Space");
+#else
+  registry->RegisterStringPref(prefs::kVoiceTypingHotkey, "Alt+Space");
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   indigo::prefs::RegisterProfilePrefs(registry);
