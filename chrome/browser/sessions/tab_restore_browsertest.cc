@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -939,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, KeepTabWhenUnloadHandlerRejected) {
     // UnloadController::BeforeUnloadFired.
     tab_group->SetGroupIsClosing(false);
 
-    browser()->GetUnloadControllerForTesting()->BeforeUnloadFired(
+    UnloadController::From(browser())->BeforeUnloadFired(
         contents_with_unload_handler, /*proceed=*/false);
 
     // The group should be left in tact.
@@ -958,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, KeepTabWhenUnloadHandlerRejected) {
     // UnloadController::BeforeUnloadFired.
     tab_group->SetGroupIsClosing(true);
 
-    browser()->GetUnloadControllerForTesting()->BeforeUnloadFired(
+    UnloadController::From(browser())->BeforeUnloadFired(
         contents_with_unload_handler, /*proceed=*/false);
 
     // The group should be removed but tabs left in tact.

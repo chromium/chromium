@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -135,9 +134,6 @@ class Browser : public TabStripModelObserver,
       std::optional<tab_groups::TabGroupId> old_focused_group) override;
 
   std::vector<StatusBubble*> GetStatusBubblesForTesting();
-  UnloadController* GetUnloadControllerForTesting() {
-    return UnloadController::From(this);
-  }
 
   // BrowserWindowInterface overrides:
   Profile* GetProfile() override;
