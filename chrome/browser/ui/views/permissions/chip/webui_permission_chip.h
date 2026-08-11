@@ -53,7 +53,8 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void AnnounceText(const std::u16string& text) override;
   void AnnounceAlert(const std::u16string& text) override;
   bool IsMouseHovered() const override;
-  void SetPressedCallback(base::RepeatingClosure callback) override;
+  void SetPressedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
   views::BubbleAnchor GetAnchor() override;
   void SetBubbleOwner(BubbleOwnerDelegate* owner) override;
 
@@ -61,7 +62,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void OnExpandAnimationEnded();
   void OnCollapseAnimationEnded();
   void OnMousePressed();
-  void OnClicked();
+  void OnClicked(bool is_pointer_interaction);
   void OnMouseEntered();
   void OnMouseExited();
 
@@ -98,7 +99,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
 
   raw_ptr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
 
-  base::RepeatingClosure pressed_callback_;
+  base::RepeatingCallback<void(bool)> pressed_callback_;
 
   // Matching the behavior of native Views PermissionChipView.
   // Allow reentrancy in observer list to prevent crash when the second

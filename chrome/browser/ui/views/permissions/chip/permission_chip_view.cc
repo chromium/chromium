@@ -140,6 +140,16 @@ bool PermissionChipView::OnMousePressed(const ui::MouseEvent& event) {
   return MdTextButton::OnMousePressed(event);
 }
 
+void PermissionChipView::OnGestureEvent(ui::GestureEvent* event) {
+  // Map touch-device tap-down events to OnMousePressed(). This keeps the
+  // WebUIBubbleReopenSuppressor correctly primed for touchscreen
+  // interactions without needing to duplicate gesture-handling APIs.
+  if (event->type() == ui::EventType::kGestureTapDown) {
+    observers_.Notify(&PermissionChipInterface::Observer::OnMousePressed);
+  }
+  MdTextButton::OnGestureEvent(event);
+}
+
 void PermissionChipView::OnThemeChanged() {
   MdTextButton::OnThemeChanged();
   UpdateIconAndColors();
@@ -465,13 +475,15 @@ bool PermissionChipView::IsMouseHovered() const {
   return views::View::IsMouseHovered();
 }
 
-void PermissionChipView::SetPressedCallback(base::RepeatingClosure callback) {
+void PermissionChipView::SetPressedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
   if (callback.is_null()) {
     views::Button::SetCallback(views::Button::PressedCallback());
   } else {
-    views::Button::SetCallback(base::BindRepeating(
-        [](base::RepeatingClosure cb, const ui::Event&) { cb.Run(); },
-        std::move(callback)));
+    views::Button::SetCallback(
+        base::BindRepeating([](base::RepeatingCallback<void(bool)> cb,
+                               const ui::Event& e) { cb.Run(!e.IsKeyEvent()); },
+                            std::move(callback)));
   }
 }
 

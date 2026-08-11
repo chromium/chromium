@@ -351,7 +351,12 @@ void ChipController::ShowPermissionUi(
 
   chip_->SetBubbleOwner(this);
   chip_->SetPressedCallback(base::BindRepeating(
-      &ChipController::OnRequestChipButtonPressed, weak_factory_.GetWeakPtr()));
+      // base::Unretained() is safe here because the ChipController and the
+      // chip object are both owned by the LocationBarView (or similar UI
+      // container) which shares their lifecycles, and no ui events are
+      // fired during teardown.
+      [](ChipController* self, bool) { self->OnRequestChipButtonPressed(); },
+      base::Unretained(this)));
   chip_->ResetAnimation(PermissionChipInterface::AnimationState::kCollapsed);
   ObservePromptBubble();
 
@@ -399,7 +404,7 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
   }
 
   // Reset button click callback
-  chip_->SetPressedCallback(base::RepeatingClosure());
+  chip_->SetPressedCallback(base::RepeatingCallback<void(bool)>());
 
   ResetTimers();
 }
@@ -539,7 +544,12 @@ void ChipController::HandleConfirmation(
     }
 
     chip_->SetPressedCallback(base::BindRepeating(
-        &ChipController::ShowPageInfoDialog, weak_factory_.GetWeakPtr()));
+        // base::Unretained() is safe here because the ChipController and the
+        // chip object are both owned by the LocationBarView (or similar UI
+        // container) which shares their lifecycles, and no ui events are
+        // fired during teardown.
+        [](ChipController* self, bool) { self->ShowPageInfoDialog(); },
+        base::Unretained(this)));
     AnnouncePermissionRequestForAccessibility(
         permission_prompt_model_->GetAccessibilityChipText());
 

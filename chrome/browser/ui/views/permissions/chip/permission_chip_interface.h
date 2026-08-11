@@ -91,7 +91,8 @@ class PermissionChipInterface {
   virtual bool IsMouseHovered() const = 0;
 
   // Set the callback invoked when the chip is pressed.
-  virtual void SetPressedCallback(base::RepeatingClosure callback) = 0;
+  virtual void SetPressedCallback(
+      base::RepeatingCallback<void(bool)> callback) = 0;
 
   virtual views::BubbleAnchor GetAnchor() = 0;
 

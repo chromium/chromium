@@ -48,6 +48,7 @@ class PermissionChipView : public views::MdTextButton,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 
@@ -94,7 +95,8 @@ class PermissionChipView : public views::MdTextButton,
   void AnnounceText(const std::u16string& text) override;
   void AnnounceAlert(const std::u16string& text) override;
   bool IsMouseHovered() const override;
-  void SetPressedCallback(base::RepeatingClosure callback) override;
+  void SetPressedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
   views::BubbleAnchor GetAnchor() override;
   void SetBubbleOwner(
       PermissionChipInterface::BubbleOwnerDelegate* owner) override;

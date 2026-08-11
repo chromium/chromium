@@ -85,7 +85,6 @@ class WebUIPerformanceInterventionControl
   // Helper to prevent mouse clicks from immediately reopening a bubble that was
   // just closed.
   WebUIBubbleReopenSuppressor reopen_suppressor_;
-  bool suppress_button_clicked_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PERFORMANCE_INTERVENTION_CONTROL_H_

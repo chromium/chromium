@@ -74,7 +74,8 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
                      ->GetContentsView()
                : nullptr;
   }
-  void ShowPageInfoDialogForTesting() { ShowPageInfoDialog(); }
+
+  void ShowPageInfoDialogForTesting() { ShowPageInfoDialog(true); }
 
   void DoNotCollapseForTesting();
 
@@ -90,9 +91,9 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
   void Collapse(bool hide);
   void HideIndicators();
   void ShowBubble();
-  void ShowPageInfoDialog();
+  void ShowPageInfoDialog(bool is_pointer_interaction);
   // Actions executed when the user closes the page info dialog.
-  void OnIndicatorsChipButtonPressed();
+  void OnIndicatorsChipButtonPressed(bool is_pointer_interaction);
   std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
   std::u16string GetSensorsIndicatorTitle(ContentSettingImageModel* model);
   std::u16string GetMediaStreamIndicatorTitle(ContentSettingImageModel* model);
@@ -119,7 +120,6 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
   bool is_verbose_ = false;
   bool blocked_on_system_level_ = false;
   content::GlobalRenderFrameHostId main_frame_id_;
-  bool should_suppress_reopening_page_info_ = false;
   WebUIBubbleReopenSuppressor page_info_bubble_suppressor_;
 
   base::ScopedObservation<PermissionChipInterface,

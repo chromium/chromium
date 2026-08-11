@@ -35,7 +35,8 @@ void WebUIBubbleReopenSuppressor::Close(views::Widget::ClosedReason reason) {
 
 void WebUIBubbleReopenSuppressor::OnMousePressed(
     bool extra_suppress_condition) {
-  suppress_next_bubble_show_ = extra_suppress_condition || ShouldSuppress();
+  suppress_next_bubble_show_ =
+      extra_suppress_condition || IsTimeWithinSuppressionWindow();
 }
 
 bool WebUIBubbleReopenSuppressor::ShouldSuppressBubbleShow(
@@ -51,6 +52,10 @@ bool WebUIBubbleReopenSuppressor::ShouldSuppressBubbleShow(
 }
 
 bool WebUIBubbleReopenSuppressor::ShouldSuppress() const {
+  return IsTimeWithinSuppressionWindow();
+}
+
+bool WebUIBubbleReopenSuppressor::IsTimeWithinSuppressionWindow() const {
   if (IsShowing()) {
     return true;
   }

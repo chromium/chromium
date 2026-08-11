@@ -240,7 +240,8 @@ bool WebUIPermissionChip::IsMouseHovered() const {
   return is_mouse_hovered_;
 }
 
-void WebUIPermissionChip::SetPressedCallback(base::RepeatingClosure callback) {
+void WebUIPermissionChip::SetPressedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
   pressed_callback_ = std::move(callback);
 }
 
@@ -303,9 +304,9 @@ void WebUIPermissionChip::OnMousePressed() {
   observers_.Notify(&Observer::OnMousePressed);
 }
 
-void WebUIPermissionChip::OnClicked() {
+void WebUIPermissionChip::OnClicked(bool is_pointer_interaction) {
   if (pressed_callback_) {
-    pressed_callback_.Run();
+    pressed_callback_.Run(is_pointer_interaction);
   }
 }
 

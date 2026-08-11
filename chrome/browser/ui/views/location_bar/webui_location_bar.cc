@@ -622,21 +622,7 @@ LocationBarTesting* WebUILocationBar::GetLocationBarForTesting() {
 void WebUILocationBar::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
   if (identifier == toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
-    // Determine if the Page Info bubble was dismissed by this exact mouse
-    // press.
-    // 1. If the bubble is STILL open when this IPC arrives, it's about to
-    // close.
-    // 2. If the bubble was already closed by the native OS due to focus loss
-    //    milliseconds before this IPC arrived, we check the close time.
-    // We use the native kMinimumTimeBetweenButtonClicks (100ms) to safely
-    // bridge the asynchronous WebUI IPC gap without inventing magic numbers.
-    //
-    // Note: If the user mouses down and drags out without releasing, this
-    // flag remains true. This is safe because it will be unconditionally
-    // overwritten by the next OnLhsChipMousePressed IPC when they click again.
-    suppress_lhs_chip_clicked_ = (PageInfoBubbleView::GetShownBubbleType() !=
-                                  PageInfoBubbleView::BUBBLE_NONE) ||
-                                 page_info_reopen_suppressor_.ShouldSuppress();
+    page_info_reopen_suppressor_.OnMousePressed();
   } else if (identifier ==
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
     permission_dashboard_->request_chip()->OnMousePressed();
@@ -651,24 +637,18 @@ void WebUILocationBar::OnLhsChipClicked(
     bool is_mouse_interaction) {
   if (identifier == toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon) {
     // Prevent reopening the bubble if it was just closed by this exact click.
-    // We only suppress mouse interactions because keyboard activations (e.g.
-    // pressing Enter) do not cause native focus loss and therefore don't suffer
-    // from this race condition. This matches the native Views implementation in
-    // IconLabelBubbleView::IsTriggerableEvent.
-    if (is_mouse_interaction) {
-      if (suppress_lhs_chip_clicked_) {
-        suppress_lhs_chip_clicked_ = false;
-        return;
-      }
+    if (page_info_reopen_suppressor_.ShouldSuppressBubbleShow(
+            is_mouse_interaction)) {
+      return;
     }
 
     ShowPageInfoBubble();
   } else if (identifier ==
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator) {
-    permission_dashboard_->indicator_chip()->OnClicked();
+    permission_dashboard_->indicator_chip()->OnClicked(is_mouse_interaction);
   } else if (identifier ==
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
-    permission_dashboard_->request_chip()->OnClicked();
+    permission_dashboard_->request_chip()->OnClicked(is_mouse_interaction);
   } else {
     NOTREACHED();
   }

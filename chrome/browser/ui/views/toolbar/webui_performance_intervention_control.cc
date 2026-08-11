@@ -61,7 +61,6 @@ void WebUIPerformanceInterventionControl::Show() {
 void WebUIPerformanceInterventionControl::Hide() {
   should_be_shown_ = false;
   is_active_ = false;
-  suppress_button_clicked_ = false;
   UpdateState();
   delegate_->OnPreferredSizeChanged();
   button_shown_subscription_ = {};
@@ -98,8 +97,7 @@ void WebUIPerformanceInterventionControl::OnClicked(bool is_mouse_interaction) {
   UpdateState();
 
   const bool suppress =
-      suppress_button_clicked_ || reopen_suppressor_.ShouldSuppress();
-  suppress_button_clicked_ = false;
+      reopen_suppressor_.ShouldSuppressBubbleShow(is_mouse_interaction);
 
   if (IsBubbleShowing()) {
     PerformanceInterventionBubble::CloseBubble(bubble_dialog_model_host_);
@@ -117,8 +115,7 @@ void WebUIPerformanceInterventionControl::OnClicked(bool is_mouse_interaction) {
 }
 
 void WebUIPerformanceInterventionControl::OnMousePressed() {
-  suppress_button_clicked_ =
-      reopen_suppressor_.ShouldSuppress() || is_active_ || IsBubbleShowing();
+  reopen_suppressor_.OnMousePressed();
 }
 
 void WebUIPerformanceInterventionControl::UpdateState() {
