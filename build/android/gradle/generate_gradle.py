@@ -548,6 +548,24 @@ def _ParseVersionFromFile(file_path, version_regex_string, default_version):
     return default_version
 
 
+def _EnsureAndroidStudioSdk(src_sdk_root, dst_sdk_root):
+    """Ensures the Android Studio SDK has all required platforms and build tools."""
+    if not os.path.exists(dst_sdk_root):
+        shutil.copytree(src_sdk_root, dst_sdk_root)
+        return
+
+    # Incrementally sync missing platforms and build-tools when the SDK updates.
+    for subdir in ('platforms', 'build-tools'):
+        src_subdir = os.path.join(src_sdk_root, subdir)
+        dst_subdir = os.path.join(dst_sdk_root, subdir)
+        if os.path.exists(src_subdir):
+            os.makedirs(dst_subdir, exist_ok=True)
+            for item in os.listdir(src_subdir):
+                dst_item = os.path.join(dst_subdir, item)
+                if not os.path.exists(dst_item):
+                    shutil.copytree(os.path.join(src_subdir, item), dst_item)
+
+
 def _GenerateLocalProperties(sdk_dir):
     """Returns the data for local.properties as a string."""
     return '\n'.join(
@@ -1050,12 +1068,9 @@ def main():
     )
 
     # Ensure the Android Studio sdk is correctly initialized.
-    if not os.path.exists(args.sdk_path):
-        # Help first-time users avoid Android Studio forcibly changing back to
-        # the previous default due to not finding a valid sdk under this dir.
-        shutil.copytree(
-            _RebasePath(build_vars['android_sdk_root']), args.sdk_path
-        )
+    _EnsureAndroidStudioSdk(
+        _RebasePath(build_vars['android_sdk_root']), args.sdk_path
+    )
     _WriteFile(
         os.path.join(generator.project_dir, 'local.properties'),
         _GenerateLocalProperties(args.sdk_path),
