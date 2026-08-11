@@ -1844,7 +1844,8 @@ void ContextualSearchboxHandler::QueryAutocomplete(
     const std::string& keyword,
     searchbox::mojom::InputMethod input_method) {
   if (contextual_tasks_context_service_) {
-    contextual_tasks_context_service_->OnTypedQuery();
+    contextual_tasks_context_service_->OnTypedQuery(
+        webui::GetBrowserWindowInterface(web_contents_)->GetWeakPtr());
   }
 
   SearchboxHandler::QueryAutocomplete(

@@ -136,7 +136,8 @@ class ContextualTasksContextService
   // Called when the user starts typing a query.
   //
   // This will pre-flight any pending embeddings required.
-  void OnTypedQuery();
+  void OnTypedQuery(
+      base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
   void SetClockForTesting(const base::TickClock* tick_clock);
 
@@ -234,6 +235,9 @@ class ContextualTasksContextService
   // This function will scope the eligible tabs to what's in
   // `browser_window_interface` if it is not null.
   std::vector<base::WeakPtr<content::WebContents>> GetAllEligibleTabs(
+      base::WeakPtr<BrowserWindowInterface> browser_window_interface);
+
+  void WarmupAllEligibleTabs(
       base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
   // Returns the tab that should be used to contextualize the query.

@@ -58,6 +58,7 @@
 #include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -478,7 +479,8 @@ void ContextualTasksContextService::GetRelevantTabsForConversationThread(
                           std::move(callback));
 }
 
-void ContextualTasksContextService::OnTypedQuery() {
+void ContextualTasksContextService::OnTypedQuery(
+    base::WeakPtr<BrowserWindowInterface> browser_window_interface) {
   if (!embedder_model_version_) {
     // Do not queue if embedder is not available.
     return;
@@ -486,6 +488,7 @@ void ContextualTasksContextService::OnTypedQuery() {
 
   // Process embeddings for all tabs as the user has intent to call
   // `GetRelevantTabsForQuery` soon.
+  WarmupAllEligibleTabs(browser_window_interface);
   page_embeddings_service_->ProcessEmbeddingsOnDemand();
 }
 
@@ -719,6 +722,45 @@ ContextualTasksContextService::GetAllEligibleTabs(
       });
   site_exclusion_detail.RecordAllTabsMetrics();
   return all_tabs;
+}
+
+void ContextualTasksContextService::WarmupAllEligibleTabs(
+    base::WeakPtr<BrowserWindowInterface> browser_window_interface) {
+  if (!page_embeddings_service_) {
+    return;
+  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, browser_window_interface](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
+        if (browser_window_interface &&
+            browser != browser_window_interface.get()) {
+          return true;
+        }
+        TabListInterface* tab_list = TabListInterface::From(browser);
+        CHECK(tab_list);
+        for (int i = 0; i < tab_list->GetTabCount(); i++) {
+          tabs::TabInterface* tab = tab_list->GetTab(i);
+          content::WebContents* web_contents =
+              tab ? tab->GetContents() : nullptr;
+          if (!web_contents) {
+            continue;
+          }
+          GURL url = web_contents->GetLastCommittedURL();
+          SiteExclusionDetail site_exclusion_detail;
+          if (!IsValidUrlForSuggestedTab(url, profile_,
+                                         site_exclusion_detail)) {
+            continue;
+          }
+          if (auto* session_helper =
+                  sessions::SessionTabHelper::FromWebContents(web_contents)) {
+            page_embeddings_service_->WarmupEmbeddingsForRestoredTab(
+                web_contents, session_helper->session_id().id());
+          }
+        }
+        return !browser_window_interface;
+      });
 }
 
 content::WebContents* ContextualTasksContextService::GetQueryContextualizingTab(
