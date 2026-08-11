@@ -35,11 +35,13 @@ found in the LICENSE file.
     <macro name="overlay_panel_bar_background_color">@macro/default_bg_color</macro>
 
     <!-- Find in Page colors -->
-    <color name="find_in_page_query_white_color">@android:color/white</color>
-    <color name="find_in_page_query_incognito_hint_color">@color/white_alpha_70</color>
+    <!-- go/keep-sorted start -->
+    <color name="find_in_page_background_color">@color/default_bg_color_baseline</color>
     <color name="find_in_page_failed_results_status_color">@color/default_red</color>
     <color name="find_in_page_query_default_hint_color">@color/default_text_color_secondary_list</color>
-    <color name="find_in_page_background_color">@color/default_bg_color_baseline</color>
+    <color name="find_in_page_query_incognito_hint_color">@color/white_alpha_70</color>
+    <color name="find_in_page_query_white_color">@android:color/white</color>
+    <!-- go/keep-sorted end -->
 
     <!-- App Background Colors -->
     <color name="window_background_color">@color/default_bg_color_baseline</color>
