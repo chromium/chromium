@@ -48,7 +48,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep(result);
   }
 
-  async testDoNothing() {}
 
   async testDefaultInvocationSource() {
     const panelOpenData =

@@ -689,10 +689,6 @@ class GlicApiTestGeminiEnterpriseSettingsPolicyUnset
 // TODO(harringtond): Many of these tests are minimal, and could be improved
 // with additional cases and additional assertions.
 
-// Just verify the test harness works.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
-  ExecuteJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDefaultInvocationSource) {
   RunTestSequence(CloseGlic(), WaitForGlicClose(),
