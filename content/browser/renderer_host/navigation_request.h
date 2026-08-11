@@ -2258,7 +2258,12 @@ class CONTENT_EXPORT NavigationRequest
 
   // Helper method to sanitize URLs for redirects before the commit IPC is sent
   // to the renderer process. Must be called right before sending the IPC.
+  // `common_params` is needed for determining if it's an error page that
+  // requires sanitizing the final URL.
+  // TODO(crbug.com/40134629): Remove `common_params` once Subframe Error
+  // Pages are isolated.
   void SanitizeRedirectsForCommit(
+      blink::mojom::CommonNavigationParamsPtr& common_params,
       blink::mojom::CommitNavigationParamsPtr& commit_params);
 
   // The disconnect handler for the NavigationClient Mojo interface; used as a

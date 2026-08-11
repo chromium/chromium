@@ -225,6 +225,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSandboxedProcessServiceLimitOnAndroid);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kScrollAfterOSKViewportShrinkFix);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeLocationHeadersDuringNavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeFailedSubframeNavigationUrls);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeOriginalUrlDuringNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

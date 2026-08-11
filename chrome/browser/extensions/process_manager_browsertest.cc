@@ -1673,9 +1673,12 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
         << "The initial navigation should be allowed, but not the server "
            "redirect to extension2's manifest";
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
-    EXPECT_EQ(extension2_manifest, nav_observer.last_navigation_url());
-    EXPECT_EQ(extension2_manifest,
-              ChildFrameAt(main_frame, 1)->GetLastCommittedURL());
+    // We expect the URL to be sanitized, per https://crbug.com/517156678.
+    // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error
+    // Page Isolation ships.
+    GURL expected_url = extension2_manifest.DeprecatedGetOriginAsURL();
+    EXPECT_EQ(expected_url, nav_observer.last_navigation_url());
+    EXPECT_EQ(expected_url, ChildFrameAt(main_frame, 1)->GetLastCommittedURL());
     EXPECT_EQ(1u, pm->GetAllFrames().size());
     EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension1->id()).size());
     EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());

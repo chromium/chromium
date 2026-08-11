@@ -383,7 +383,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
   ASSERT_TRUE(frame);
-  EXPECT_EQ(disallowed_subdocument_url, frame->GetLastCommittedURL());
+  // We expect the URL to be sanitized, per https://crbug.com/517156678.
+  // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error Page
+  // Isolation ships.
+  EXPECT_EQ(disallowed_subdocument_url.DeprecatedGetOriginAsURL(),
+            frame->GetLastCommittedURL());
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 }
 

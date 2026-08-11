@@ -273,7 +273,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 
   EXPECT_FALSE(WasParsedScriptElementLoaded(subframe));
   EXPECT_TRUE(subframe->IsErrorDocument());
-  EXPECT_EQ(kUrlWithIncludedScript, subframe->GetLastCommittedURL());
+  // We expect the URL to be sanitized, per https://crbug.com/517156678.
+  // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error Page
+  // Isolation ships.
+  GURL expected_url = url::Origin::Create(kUrlWithIncludedScript).GetURL();
+  EXPECT_EQ(expected_url, subframe->GetLastCommittedURL());
 }
 
 }  // namespace subresource_filter

@@ -709,6 +709,12 @@ BASE_FEATURE(kScrollAfterOSKViewportShrinkFix,
 BASE_FEATURE(kSanitizeLocationHeadersDuringNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the final URL of a failed subframe navigation is sanitized
+// when committing an error page in the initiator's process.
+// See https://crbug.com/517156678.
+BASE_FEATURE(kSanitizeFailedSubframeNavigationUrls,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the `original_url` contains the full URL or just the
 // sanitized origin when sent to the renderer on commit.
 // See https://crbug.com/495463654.
