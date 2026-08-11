@@ -564,6 +564,9 @@ crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-mipm
 crbug.com/1073613 [ angle-d3d11 win nvidia ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 crbug.com/521861816 [ angle-d3d11 win nvidia-0x2184 ] conformance2/buffers/get-buffer-sub-data-validity.html [ Failure ]
 
+# Win11/GTX 1660 experimental failures when going to 610.74
+crbug.com/543984226 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
+
 ## Win / AMD ##
 
 

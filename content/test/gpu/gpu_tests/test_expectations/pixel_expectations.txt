@@ -494,6 +494,10 @@ crbug.com/515133241 [ win11 amd-0x7550 ] Pixel_DirectComposition_Video_VP9_BGRA 
 # crbug.com/402171652 [ win11 amd-0x150e ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
 # crbug.com/402429382 [ win11 amd-0x150e ] Pixel_ReflectedDiv [ Failure ]
 
+# Win11/GTX 1660 experimental flaky failures when going to 610.74
+crbug.com/402429382 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] Pixel_ReflectedDiv [ RetryOnFailure ]
+crbug.com/543955581 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] Pixel_Video_Context_Loss_MP4 [ RetryOnFailure ]
+
 # Win/Qualcomm Snapdragon X Elite
 crbug.com/402429382 [ win11 qualcomm-0x36334330 ] Pixel_ReflectedDiv [ Failure ]
 
