@@ -118,6 +118,12 @@ source_set("performance_manager") {
     public += [ "extension_watcher.h" ]
     public_deps += [ "//extensions/browser" ]
   }
+
+  if (enable_extensions_core && !is_android) {
+    public += [
+      "execution_context_priority/extension_service_worker_priority_voter.h",
+    ]
+  }
 }
 
 source_set("impl") {
@@ -280,6 +286,12 @@ source_set("impl") {
       "//extensions/common:common_constants",
     ]
   }
+
+  if (enable_extensions_core && !is_android) {
+    sources += [
+      "execution_context_priority/extension_service_worker_priority_voter.cc",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -366,6 +378,15 @@ source_set("unit_tests") {
 
   if ((is_linux || is_chromeos) && use_dbus) {
     deps += [ "//dbus:test_support" ]
+  }
+
+  if (enable_extensions_core && !is_android) {
+    sources += [ "execution_context_priority/extension_service_worker_priority_voter_unittest.cc" ]
+    deps += [
+      "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+    ]
   }
 
   if (!is_android) {

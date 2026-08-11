@@ -1161,6 +1161,9 @@ extern const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay;
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kServiceWorkerForegroundOnExtensionStartup);
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kExtensionServiceWorkerPriorityVoter);
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSitePerProcess);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kProcessPerSiteSkipDevtoolsUsers);

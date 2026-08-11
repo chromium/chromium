@@ -74,6 +74,10 @@
 #include "chrome/browser/performance_manager/extension_watcher.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/performance_manager/execution_context_priority/extension_service_worker_priority_voter.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_page_with_crashed_subframe_policy.h"
@@ -285,6 +289,17 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     voting_system
         ->AddPriorityVoter<performance_manager::execution_context_priority::
                                SidePanelLoadingVoter>();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    // Keeps the renderer of a navigation-blocking extension service worker out
+    // of EcoQoS. See crbug.com/484218883.
+    if (base::FeatureList::IsEnabled(
+            features::kExtensionServiceWorkerPriorityVoter)) {
+      voting_system
+          ->AddPriorityVoter<performance_manager::execution_context_priority::
+                                 ExtensionServiceWorkerPriorityVoter>();
+    }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

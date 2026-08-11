@@ -1640,6 +1640,18 @@ const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay{
 BASE_FEATURE(kServiceWorkerForegroundOnExtensionStartup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, a performance manager voter keeps the renderer process of an
+// extension service worker at foreground priority for as long as the worker
+// lives, but only when the extension holds the `webRequestBlocking` permission.
+// Those workers synchronously gate navigations and network requests, so letting
+// their process drop to background priority (EcoQoS on Windows) stalls the
+// browsing session (crbug.com/484218883). This is the narrowly scoped
+// counterpart to performance_manager::features::kExtensionServiceWorkerVoter,
+// which boosts every extension service worker and regressed performance metrics
+// (crbug.com/493556675).
+BASE_FEATURE(kExtensionServiceWorkerPriorityVoter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Alternative to switches::kSitePerProcess, for turning on full site isolation.
 // Launch bug: https://crbug.com/810843.  This is a //chrome-layer feature to
 // avoid turning on site-per-process by default for *all* //content embedders
