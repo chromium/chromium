@@ -13,7 +13,6 @@ import android.text.format.Formatter;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ import androidx.annotation.ColorInt;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,7 +44,44 @@ import java.util.function.Supplier;
 public class TabHoverCardView extends FrameLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     public static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
+    public static final int MAX_HOVER_CARD_DELAY_MS = 800;
+    public static final int MIN_HOVER_CARD_DELAY_MS = 300;
     static final int INVALID_TAB_ID = -1;
+
+    /**
+     * Delay is calculated as a logarithmic scale and bounded by a minimum width based on the width
+     * of a pinned tab (or collapsed rail) and a maximum of standard width.
+     *
+     * <pre>
+     *  delay (ms)
+     *           |
+     * max delay-|                                    *
+     *           |                          *
+     *           |                    *
+     *           |                *
+     *           |            *
+     *           |         *
+     *           |       *
+     *           |     *
+     *           |    *
+     * min delay-|****
+     *           |___________________________________________ width
+     *               |                                |
+     *           min width                        max width
+     * </pre>
+     *
+     * @param widthDp The width of the hovered item or rail in dp.
+     * @param minWidthDp The minimum width bound in dp.
+     * @param maxWidthDp The maximum width bound in dp.
+     * @return Calculated delay in milliseconds.
+     */
+    public static int getHoverCardDelay(float widthDp, float minWidthDp, float maxWidthDp) {
+        widthDp = MathUtils.clamp(widthDp, minWidthDp, maxWidthDp);
+        double logarithmicFraction =
+                Math.log(widthDp - minWidthDp + 1.f) / Math.log(maxWidthDp - minWidthDp + 1.f);
+        int scalingFactor = MAX_HOVER_CARD_DELAY_MS - MIN_HOVER_CARD_DELAY_MS;
+        return (int) (logarithmicFraction * scalingFactor) + MIN_HOVER_CARD_DELAY_MS;
+    }
 
     private ViewGroup mContentView;
     private TextView mTitleView;

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -29,7 +30,6 @@ import java.util.function.Supplier;
 /** Controller for tab hover card operations in vertical tabs. */
 @NullMarked
 public class VerticalTabHoverCardController {
-    private static final int DEFAULT_HOVER_CARD_DELAY_MS = 300;
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER_MS = 300;
     private static final long INVALID_TIME = -1L;
 
@@ -131,7 +131,7 @@ public class VerticalTabHoverCardController {
                 showHoverCard(tabId, view);
             } else {
                 mPendingHoverCardRunnable = () -> showHoverCard(tabId, view);
-                mHandler.postDelayed(mPendingHoverCardRunnable, DEFAULT_HOVER_CARD_DELAY_MS);
+                mHandler.postDelayed(mPendingHoverCardRunnable, getHoverCardDelay());
             }
         } else if (mCurrentHoveredTabId == tabId) {
             // Only hide if the exit event belongs to the currently hovered tab. When scrubbing,
@@ -140,6 +140,16 @@ public class VerticalTabHoverCardController {
             mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
             hideHoverCard();
         }
+    }
+
+    @VisibleForTesting
+    int getHoverCardDelay() {
+        Context context = mContainerView.getContext();
+        float density = context.getResources().getDisplayMetrics().density;
+        float railWidthDp = mContainerView.getWidth() / density;
+        float minWidthDp = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
+        float maxWidthDp = VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP;
+        return TabHoverCardView.getHoverCardDelay(railWidthDp, minWidthDp, maxWidthDp);
     }
 
     private boolean shouldShowHoverCardImmediately() {

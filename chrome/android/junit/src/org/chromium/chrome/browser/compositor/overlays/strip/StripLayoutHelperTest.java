@@ -6415,11 +6415,11 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "Hover card delay for min tab is incorrect.",
-                StripLayoutHelper.MIN_HOVER_CARD_DELAY_MS,
+                TabHoverCardView.MIN_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL));
         assertEquals(
                 "Hover card delay for width < min tab is incorrect.",
-                StripLayoutHelper.MIN_HOVER_CARD_DELAY_MS,
+                TabHoverCardView.MIN_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL - 1.f));
         assertEquals(
                 "Hover card delay for medium tab is incorrect.",
@@ -6427,7 +6427,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_MEDIUM));
         assertEquals(
                 "Hover card delay for max tab is incorrect.",
-                StripLayoutHelper.MAX_HOVER_CARD_DELAY_MS,
+                TabHoverCardView.MAX_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(MAX_TAB_WIDTH_DP));
     }
 
