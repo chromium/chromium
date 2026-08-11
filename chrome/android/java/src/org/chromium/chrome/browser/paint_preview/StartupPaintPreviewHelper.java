@@ -10,6 +10,7 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -34,6 +35,8 @@ import java.util.function.Supplier;
 /** Glue code for the Paint Preview show-on-startup feature. */
 @NullMarked
 public class StartupPaintPreviewHelper implements Destroyable {
+    private static final String TAG = "StartupPaintPreview";
+
     /**
      * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt to
      * display a paint preview on the first tab restoration that happens on Chrome startup when
@@ -129,13 +132,21 @@ public class StartupPaintPreviewHelper implements Destroyable {
     /** Attempts to display the Paint Preview representation for the given Tab. */
     public static void showPaintPreviewOnRestore(Tab tab) {
         WindowAndroid windowAndroid = tab.getWindowAndroid();
-        assumeNonNull(windowAndroid);
+        if (windowAndroid == null) {
+            Log.e(TAG, "showPaintPreviewOnRestore: windowAndroid is unexpectedly null");
+            return;
+        }
         MonotonicObservableSupplier<StartupPaintPreviewHelper> paintPreviewSupplier =
                 StartupPaintPreviewHelperSupplier.from(windowAndroid);
-        if (paintPreviewSupplier == null) return;
+        if (paintPreviewSupplier == null) {
+            Log.e(TAG, "showPaintPreviewOnRestore: paintPreviewSupplier is unexpectedly null");
+            return;
+        }
 
         StartupPaintPreviewHelper paintPreviewHelper = paintPreviewSupplier.get();
         if (paintPreviewHelper == null || !sShouldShowOnRestore) {
+            // This case is expected as often we either do not have a paint preview or we no longer
+            // need to show paint preview in this session.
             return;
         }
 

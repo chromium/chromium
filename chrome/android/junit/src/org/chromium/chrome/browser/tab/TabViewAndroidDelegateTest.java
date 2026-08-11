@@ -75,7 +75,7 @@ public class TabViewAndroidDelegateTest {
 
         when(mWindowAndroid.getApplicationBottomInsetTracker())
                 .thenReturn(mApplicationInsetSupplier);
-        when(mTab.getWindowAndroidChecked()).thenReturn(mWindowAndroid);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mContentView);
@@ -121,6 +121,7 @@ public class TabViewAndroidDelegateTest {
                 mViewAndroidDelegate.getViewportInsetBottom());
 
         WindowAndroid window = mock(WindowAndroid.class);
+        when(window.getApplicationBottomInsetTracker()).thenReturn(mApplicationInsetSupplier);
         mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab, window);
         assertEquals(
                 "The bottom inset for the tab should be non-zero.",

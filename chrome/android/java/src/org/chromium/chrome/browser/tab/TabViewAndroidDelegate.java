@@ -60,9 +60,11 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
-        mCurrentInsetSupplier =
-                tab.getWindowAndroidChecked().getApplicationBottomInsetTracker().getSupplier();
-        mCurrentInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
+        WindowAndroid window = tab.getWindowAndroid();
+        if (window != null) {
+            mCurrentInsetSupplier = window.getApplicationBottomInsetTracker().getSupplier();
+            mCurrentInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
+        }
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -75,9 +77,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                         }
                         if (window != null) {
                             mCurrentInsetSupplier =
-                                    tab.getWindowAndroidChecked()
-                                            .getApplicationBottomInsetTracker()
-                                            .getSupplier();
+                                    window.getApplicationBottomInsetTracker().getSupplier();
                             mCurrentInsetSupplier.addSyncObserverAndPostIfNonNull(mInsetObserver);
                         }
                         updateVisualViewportBottomInset();

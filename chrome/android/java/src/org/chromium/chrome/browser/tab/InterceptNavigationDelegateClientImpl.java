@@ -92,7 +92,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public @Nullable ExternalNavigationHandler createExternalNavigationHandler() {
         TabDelegateFactory delegateFactory = mTab.getDelegateFactory();
-        if (delegateFactory == null) return null;
+        if (delegateFactory == null || mTab.getWindowAndroid() == null) return null;
         return delegateFactory.createExternalNavigationHandler(mTab);
     }
 

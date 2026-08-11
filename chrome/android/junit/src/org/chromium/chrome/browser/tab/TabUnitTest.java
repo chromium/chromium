@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -693,6 +695,74 @@ public class TabUnitTest {
         handleDidFinishNavigation(tab, settingsUrl);
 
         verify(mockSettingsNavigation, never()).startSettings(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testShow_unfreezesFrozenNativePageWhenAlreadyShown() {
+        TabImplJni.setInstanceForTesting(mNativeMock);
+        doReturn(mActivity).when(mWeakReferenceContext).get();
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+
+        NativePage frozenNativePage = mock(NativePage.class);
+        when(frozenNativePage.isFrozen()).thenReturn(true);
+        when(frozenNativePage.getUrl()).thenReturn("chrome://history");
+
+        mTab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    private NativePage mCurrentNativePage = frozenNativePage;
+
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isHidden() {
+                        return false;
+                    }
+
+                    @Override
+                    public NativePage getNativePage() {
+                        return mCurrentNativePage;
+                    }
+
+                    @Override
+                    void showNativePage(NativePage nativePage) {
+                        mCurrentNativePage = nativePage;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+                };
+        mTab.setNativePtrForTesting(1);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+
+        NativePage liveNativePage = mock(NativePage.class);
+        when(mDelegateFactory.createNativePage(
+                        eq("chrome://history"),
+                        /* candidatePage= */ isNull(),
+                        eq(mTab),
+                        /* pdfInfo= */ isNull()))
+                .thenReturn(liveNativePage);
+
+        assertFalse(mTab.isHidden());
+        assertTrue(mTab.getNativePage().isFrozen());
+
+        // Calling show() on an already-shown tab should unfreeze the frozen native page.
+        mTab.show(TabSelectionType.FROM_USER);
+
+        verify(mDelegateFactory)
+                .createNativePage(
+                        eq("chrome://history"),
+                        /* candidatePage= */ isNull(),
+                        eq(mTab),
+                        /* pdfInfo= */ isNull());
+        assertEquals(liveNativePage, mTab.getNativePage());
+        assertFalse(mTab.getNativePage().isFrozen());
     }
 
     private void handleDidFinishNavigation(TabImpl tab, GURL url) {

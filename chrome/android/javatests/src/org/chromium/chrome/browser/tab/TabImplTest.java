@@ -27,12 +27,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.TestViewStructure;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.ui.base.WindowAndroid;
@@ -334,7 +336,6 @@ public class TabImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> testWindow.destroy());
     }
-
     @Test
     @SmallTest
     @Feature({"Tab"})
@@ -358,5 +359,170 @@ public class TabImplTest {
                     tab.stopOffscreenRendering();
                 });
         assertEquals(Visibility.HIDDEN, tab.getWebContents().getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testLoadIfNeeded_unattachedWebTabSucceeds() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    TabDelegateFactory delegateFactory =
+                            ((TabImpl) mActivityTestRule.getActivityTab()).getDelegateFactory();
+                    TabState state = TabStateExtractor.from(mActivityTestRule.getActivityTab());
+                    TabImpl tab =
+                            (TabImpl)
+                                    new TabBuilder(profile)
+                                            .setTabState(state)
+                                            .setLaunchType(TabLaunchType.FROM_RESTORE)
+                                            .setDelegateFactory(delegateFactory)
+                                            .build();
+                    assertNull(tab.getWindowAndroid());
+                    assertTrue(tab.isFrozen());
+                    assertTrue(tab.loadIfNeeded(/* forceBackingSize= */ false));
+                    assertNotNull(tab.getWebContents());
+                    assertFalse(tab.isFrozen());
+                    tab.destroy();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testLoadIfNeeded_unattachedNativePageFails() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    TabDelegateFactory delegateFactory =
+                            ((TabImpl) mActivityTestRule.getActivityTab()).getDelegateFactory();
+                    TabImpl tab =
+                            (TabImpl)
+                                    new TabBuilder(profile)
+                                            .setLaunchType(TabLaunchType.FROM_CHROME_UI)
+                                            .setDelegateFactory(delegateFactory)
+                                            .build();
+                    tab.discardAndAppendPendingNavigation(
+                            new LoadUrlParams(UrlConstants.RECENT_TABS_URL), "Recent Tabs");
+                    assertNull(tab.getWindowAndroid());
+                    assertFalse(tab.loadIfNeeded(/* forceBackingSize= */ false));
+                    tab.destroy();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testLoadIfNeeded_archivedOrDestroyedTabFails() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
+                    TabDelegateFactory delegateFactory =
+                            ((TabImpl) mActivityTestRule.getActivityTab()).getDelegateFactory();
+                    TabImpl standaloneTab =
+                            (TabImpl)
+                                    new TabBuilder(profile)
+                                            .setWindow(window)
+                                            .setLaunchType(TabLaunchType.FROM_RESTORE)
+                                            .setDelegateFactory(delegateFactory)
+                                            .build();
+                    standaloneTab.destroy();
+                    assertTrue(standaloneTab.isDestroyed());
+                    assertFalse(standaloneTab.loadIfNeeded(/* forceBackingSize= */ false));
+
+                    TabImpl archivedTab =
+                            (TabImpl)
+                                    new TabBuilder(profile)
+                                            .setWindow(window)
+                                            .setArchived(true)
+                                            .setLaunchType(TabLaunchType.FROM_RESTORE)
+                                            .setDelegateFactory(delegateFactory)
+                                            .build();
+                    assertTrue(archivedTab.isArchivedForTesting());
+                    assertFalse(archivedTab.loadIfNeeded(/* forceBackingSize= */ false));
+                    archivedTab.destroy();
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testShow_forcesLoadIfAlreadyShownAndNeedsReload() {
+        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.show(TabSelectionType.FROM_USER);
+                    assertFalse(tab.isHidden());
+                    assertNotNull(tab.getWebContents());
+
+                    // Mark as needing reload.
+                    tab.setNeedsReload();
+                    assertTrue(tab.needsReload());
+
+                    // Calling show() when already not hidden should force loadIfNeeded().
+                    tab.show(TabSelectionType.FROM_USER);
+                    assertFalse(tab.isHidden());
+                    assertNotNull(tab.getWebContents());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testShow_forcesLoadIfAlreadyShownAndFrozen() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getProfileProviderSupplier()
+                                    .get()
+                                    .getOriginalProfile();
+                    TabDelegateFactory delegateFactory =
+                            ((TabImpl) mActivityTestRule.getActivityTab()).getDelegateFactory();
+                    TabState state = TabStateExtractor.from(mActivityTestRule.getActivityTab());
+                    TabImpl tab =
+                            (TabImpl)
+                                    new TabBuilder(profile)
+                                            .setTabState(state)
+                                            .setLaunchType(TabLaunchType.FROM_RESTORE)
+                                            .setDelegateFactory(delegateFactory)
+                                            .build();
+                    tab.updateAttachment(
+                            mActivityTestRule.getActivity().getWindowAndroid(),
+                            tab.getDelegateFactory());
+                    assertTrue(tab.isFrozen());
+                    assertNull(tab.getWebContents());
+
+                    // First show() marks it unhidden and restores contents.
+                    tab.show(TabSelectionType.FROM_USER);
+                    assertFalse(tab.isHidden());
+                    assertNotNull(tab.getWebContents());
+                    assertFalse(tab.isFrozen());
+
+                    // Calling show() when already not hidden should remain unhidden and loaded.
+                    tab.show(TabSelectionType.FROM_USER);
+                    assertFalse(tab.isHidden());
+                    assertNotNull(tab.getWebContents());
+                    assertFalse(tab.isFrozen());
+                    tab.destroy();
+                });
     }
 }

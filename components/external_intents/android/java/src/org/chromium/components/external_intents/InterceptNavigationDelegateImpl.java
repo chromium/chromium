@@ -196,8 +196,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         cancelPendingShouldIgnoreCheck();
 
         if (mWebContents != null) {
-            assumeNonNull(mWebContentsObserver).observe(null);
-            mWebContentsObserver = null;
+            if (mWebContentsObserver != null) {
+                mWebContentsObserver.observe(null);
+                mWebContentsObserver = null;
+            }
             InterceptNavigationDelegateImplJni.get().clearWebContentsAssociation(mWebContents);
         }
         mWebContents = webContents;
@@ -206,7 +208,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // Lazily initialize the external navigation handler.
         if (mExternalNavHandler == null) {
             setExternalNavigationHandler(mClient.createExternalNavigationHandler());
-            if (mExternalNavHandler == null) return;
         }
 
         InterceptNavigationDelegateImplJni.get().associateWithWebContents(this, mWebContents);
@@ -215,14 +216,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 new WebContentsObserver(mWebContents) {
                     @Override
                     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                        assumeNonNull(mExternalNavHandler);
-                        mExternalNavHandler.onNavigationStarted(navigation.getNavigationId());
+                        if (mExternalNavHandler != null) {
+                            mExternalNavHandler.onNavigationStarted(navigation.getNavigationId());
+                        }
                     }
 
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                        assumeNonNull(mExternalNavHandler);
-                        mExternalNavHandler.onNavigationFinished(navigation.getNavigationId());
+                        if (mExternalNavHandler != null) {
+                            mExternalNavHandler.onNavigationFinished(navigation.getNavigationId());
+                        }
                     }
                 };
     }
