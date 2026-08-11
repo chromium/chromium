@@ -600,11 +600,8 @@ public class LocationBarLayout extends ConstraintLayout {
         mLocationBarStatusView.setVisibility(visibility);
     }
 
-    /**
-     * Informs the location bar whether the autocomplete system is in "standby" i.e. accepting input
-     * but not showing suggestions until input is received.
-     */
-    void setShowStandbyRing(boolean showStandbyRing) {}
+    /** Informs the location bar whether the focus ring should be shown. */
+    void setShowFocusRing(boolean showFocusRing) {}
 
     View getUrlBar() {
         return mUrlBar;

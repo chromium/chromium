@@ -297,7 +297,7 @@ class LocationBarMediator
     private float mUrlFocusChangeFraction;
     private @Deprecated boolean mUrlHasFocus; // Please check mCurrentInput instead.
     private final NonNullObservableSupplier<Boolean> mWindowHasFocusSupplier;
-    private final Callback<Boolean> mOnWindowFocusChanged = (hasFocus) -> updateShowStandbyRing();
+    private final Callback<Boolean> mOnWindowFocusChanged = (hasFocus) -> updateShowFocusRing();
 
     private @Nullable Boolean mPreviousDeleteButtonVisible;
     private @Nullable Boolean mPreviousInstallButtonVisible;
@@ -2553,7 +2553,7 @@ class LocationBarMediator
         } else {
             mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.SATURATING);
         }
-        updateShowStandbyRing();
+        updateShowFocusRing();
         updateReparentingState();
     }
 
@@ -2779,22 +2779,22 @@ class LocationBarMediator
             }
         }
 
-        updateShowStandbyRing();
+        updateShowFocusRing();
         return true;
     }
 
     @Override
     public void onWindowFocusChanged(boolean windowHasFocus) {
-        updateShowStandbyRing();
+        updateShowFocusRing();
     }
 
-    private void updateShowStandbyRing() {
-        boolean showStandbyRing =
+    private void updateShowFocusRing() {
+        boolean showFocusRing =
                 mCurrentInput != null
                         && mCurrentInput.getDisplayState() == DisplayState.DRAFTING
                         && mSelectionController.getSelectedView() == mUrlBarSelectableView
                         && mWindowHasFocusSupplier.get();
-        mLocationBarLayout.setShowStandbyRing(showStandbyRing);
+        mLocationBarLayout.setShowFocusRing(showFocusRing);
     }
 
     @Override
@@ -3043,7 +3043,7 @@ class LocationBarMediator
         }
         mHintTextUpdater.endInput();
         setAttachmentModelList(null);
-        updateShowStandbyRing();
+        updateShowFocusRing();
     }
 
     /**

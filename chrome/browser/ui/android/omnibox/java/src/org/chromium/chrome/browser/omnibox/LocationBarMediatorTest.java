@@ -3775,15 +3775,15 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         mMediator.beginInput(input);
-        verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
-        verify(mLocationBarLayout, never()).setShowStandbyRing(false);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
+        verify(mLocationBarLayout, never()).setShowFocusRing(false);
         clearInvocations(mLocationBarLayout);
 
         input.setDisplayState(DisplayState.SUGGESTIONS);
         input.setRequestType(AutocompleteRequestType.AI_MODE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mLocationBarLayout).setShowStandbyRing(false);
+        verify(mLocationBarLayout).setShowFocusRing(false);
     }
 
     @Test
@@ -3791,7 +3791,7 @@ public class LocationBarMediatorTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mMediator.onUrlFocusChange(new UrlBarFocusChangeInfo(true, View.FOCUS_FORWARD));
 
-        verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
         verify(mUrlCoordinator, never()).startReparenting();
     }
 
@@ -3799,7 +3799,7 @@ public class LocationBarMediatorTest {
     public void onUrlFocusChange_programmaticFocus_keepsExistingPath() {
         mMediator.onUrlFocusChange(new UrlBarFocusChangeInfo(true, View.FOCUS_DOWN));
 
-        verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
+        verify(mLocationBarLayout, atLeastOnce()).setShowFocusRing(true);
     }
 
     @Test
@@ -4529,7 +4529,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnWindowFocusChanged_updatesStandbyRing() {
+    public void testOnWindowFocusChanged_updatesFocusRing() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
@@ -4539,15 +4539,15 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
 
         // By default, window is focused (mocked in setUp) and we are in STANDBY.
-        // So standby ring should be shown.
-        verify(mLocationBarLayout).setShowStandbyRing(true);
+        // So focus ring should be shown.
+        verify(mLocationBarLayout).setShowFocusRing(true);
 
-        // Lose window focus -> standby ring should be hidden.
+        // Lose window focus -> focus ring should be hidden.
         mWindowHasFocusSupplier.set(false);
-        verify(mLocationBarLayout).setShowStandbyRing(false);
+        verify(mLocationBarLayout).setShowFocusRing(false);
 
-        // Regain window focus -> standby ring should be shown again.
+        // Regain window focus -> focus ring should be shown again.
         mWindowHasFocusSupplier.set(true);
-        verify(mLocationBarLayout, times(2)).setShowStandbyRing(true);
+        verify(mLocationBarLayout, times(2)).setShowFocusRing(true);
     }
 }

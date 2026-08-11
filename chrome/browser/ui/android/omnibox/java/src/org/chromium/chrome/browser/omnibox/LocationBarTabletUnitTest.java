@@ -651,7 +651,7 @@ public class LocationBarTabletUnitTest {
                 (LocationBarBackgroundDrawable) mLocationBarTablet.getBackground();
         GradientDrawable unfocusedRect = background.getBackgroundGradient();
 
-        mLocationBarTablet.setShowStandbyRing(true);
+        mLocationBarTablet.setShowFocusRing(true);
 
         // Verify the background hairline is in standby mode.
         assertEquals(HairlineBehavior.SOLID, background.getHairlineBehaviorForTesting());
@@ -663,10 +663,10 @@ public class LocationBarTabletUnitTest {
                         mActivity, BrandedColorScheme.APP_DEFAULT);
         assertEquals(expectedStandbyColor, unfocusedRect.getColor().getDefaultColor());
 
-        mLocationBarTablet.setShowStandbyRing(false);
+        mLocationBarTablet.setShowFocusRing(false);
         assertEquals(HairlineBehavior.NONE, background.getHairlineBehaviorForTesting());
         mLocationBarTablet.updateVisualsForState(BrandedColorScheme.INCOGNITO);
-        mLocationBarTablet.setShowStandbyRing(true);
+        mLocationBarTablet.setShowFocusRing(true);
         assertEquals(HairlineBehavior.SOLID, background.getHairlineBehaviorForTesting());
         @ColorInt
         int expectedIncognitoStandbyColor =
@@ -686,7 +686,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
         assertEquals(0, statusView.getTranslationY(), MathUtils.EPSILON);
 
-        mLocationBarTablet.setShowStandbyRing(false);
+        mLocationBarTablet.setShowFocusRing(false);
         assertNull(mLocationBarTablet.getForeground());
         @ColorInt
         int expectedNormalColor =
