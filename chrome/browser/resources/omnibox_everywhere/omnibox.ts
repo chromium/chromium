@@ -11,7 +11,7 @@ import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import './profile_icon.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
+import {ContextType, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -107,10 +107,6 @@ export class OmniboxEverywhereOmniboxElement extends
       isFuseboxEnabled: {type: Boolean, reflect: true},
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
-      contextMenuGlifAnimationState: {
-        type: String,
-        reflect: true,
-      },
       inputState_: {type: Object},
       tabSuggestions_: {type: Array},
       searchboxLayoutMode: {type: String},
@@ -161,8 +157,6 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor hasUserInput_: boolean = false;
   protected accessor ntpRealboxDynamicAiModeButtonEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxDynamicAiModeButton');
-  accessor contextMenuGlifAnimationState: GlifAnimationState =
-      GlifAnimationState.STARTED;
   protected accessor inputState_: InputState|null = null;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor searchboxLayoutMode: string =

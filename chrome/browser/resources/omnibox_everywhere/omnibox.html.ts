@@ -68,7 +68,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   exportparts="context-menu-entrypoint-icon"
                   class="upload-button"
                   disable-auto-reposition
-                  .glifAnimationState="${this.contextMenuGlifAnimationState}"
                   .inputState="${this.inputState_}"
                   .searchboxLayoutMode="${this.searchboxLayoutMode}"
                   .tabSuggestions="${this.tabSuggestions_}"

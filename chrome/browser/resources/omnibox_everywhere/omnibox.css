@@ -231,14 +231,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-icon-button-size: 36px;
 }
 
-:host([is-fusebox-enabled]:not(
-    [context-menu-glif-animation-state='ineligible']))
-    cr-composebox-contextual-entrypoint-and-menu::part(
-        context-menu-entrypoint-icon) {
-  /* Account for the margin of the glow container */
-  --cr-icon-button-margin-start: 0px;
-}
-
 .contextualEntrypointContainer,
 .context-menu-container,
 cr-composebox-contextual-entrypoint-and-menu {
@@ -256,12 +248,6 @@ cr-composebox-contextual-entrypoint-and-menu {
   padding-inline-start: 8px;
   position: relative;
   z-index: var(--cr-composebox-context-menu-z-index, 1001);
-}
-
-:host-context(
-    [is-fusebox-enabled][context-menu-glif-animation-state='ineligible'])
-    cr-composebox-contextual-entrypoint-and-menu {
-  padding-inline-end: 14px;
 }
 
 #inputContainer {
