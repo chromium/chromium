@@ -80,6 +80,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
 </enum>
 
+<!-- LINT.IfChange(DeleteBrowsingDataAction) -->
+
 <enum name="DeleteBrowsingDataAction">
   <int value="0" label="CBD dialog"/>
   <int value="1" label="Clear on exit"/>
@@ -91,6 +93,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Page info permission reset"/>
   <int value="8" label="RWS delete all data"/>
 </enum>
+
+<!-- LINT.ThenChange(
+  //chrome/browser/resources/settings/metrics_browser_proxy.ts:DeleteBrowsingDataAction,
+  //components/browsing_data/core/browsing_data_utils.h:DeleteBrowsingDataAction
+) -->
 
 <!--LINT.IfChange(DeleteBrowsingDataDialogAction) -->
 

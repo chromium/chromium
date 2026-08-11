@@ -16,6 +16,7 @@ namespace privacy_guide_metrics {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
+// LINT.IfChange(PrivacyGuideSettingsStates)
 enum class PrivacyGuideSettingsStates {
   kMSBBOnToOn = 0,
   kMSBBOnToOff = 1,
@@ -43,6 +44,10 @@ enum class PrivacyGuideSettingsStates {
   // kAdTopicsOffToOff = 23, // Obsolete
   kMaxValue = kSearchSuggestionsOffToOff,
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyGuideSettingsStates,
+//   //tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacyGuideSettingsStates
+// )
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -53,6 +58,7 @@ enum class PrivacyGuideSettingsStates {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
+// LINT.IfChange(PrivacyGuideInteractions)
 enum class PrivacyGuideInteractions {
   kWelcomeNextButton = 0,
   kMSBBNextButton = 1,
@@ -70,6 +76,10 @@ enum class PrivacyGuideInteractions {
   kAiSettingsCompletionLink = 13,
   kMaxValue = kAiSettingsCompletionLink,
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyGuideInteractions,
+//   //tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacyGuideInteractions
+// )
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -80,6 +90,7 @@ enum class PrivacyGuideInteractions {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
+// LINT.IfChange(PrivacyGuideStepsEligibleAndReached)
 enum class PrivacyGuideStepsEligibleAndReached {
   kMSBBEligible = 0,
   kMSBBReached = 1,
@@ -96,6 +107,10 @@ enum class PrivacyGuideStepsEligibleAndReached {
   // kAdTopicsEligible = 12, // Obsolete
   // kAdTopicsReached = 13, // Obsolete
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyGuideStepsEligibleAndReached,
+//   //tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacyGuideStepsEligibleAndReached
+// )
 
 }  // namespace privacy_guide_metrics
 

@@ -189,7 +189,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordYourSavedInfoCategoryClick(category: YourSavedInfoDataCategory) {
     this.methodCalled('recordYourSavedInfoCategoryClick', [category]);
-    if (category !== YourSavedInfoDataCategory.MAX_VALUE) {
+    if (category !== YourSavedInfoDataCategory.COUNT) {
       this.recordAction(`Settings.YourSavedInfo.CategoryClick.${
           YourSavedInfoDataCategory[category]}`);
     }
@@ -197,7 +197,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordYourSavedInfoDataChipClick(chip: YourSavedInfoDataChip) {
     this.methodCalled('recordYourSavedInfoDataChipClick', [chip]);
-    if (chip !== YourSavedInfoDataChip.MAX_VALUE) {
+    if (chip !== YourSavedInfoDataChip.COUNT) {
       this.recordAction(
           `Settings.YourSavedInfo.ChipClick.${YourSavedInfoDataChip[chip]}`);
     }
@@ -205,7 +205,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordYourSavedInfoRelatedServiceClick(service: YourSavedInfoRelatedService) {
     this.methodCalled('recordYourSavedInfoRelatedServiceClick', [service]);
-    if (service !== YourSavedInfoRelatedService.MAX_VALUE) {
+    if (service !== YourSavedInfoRelatedService.COUNT) {
       this.recordAction(`Settings.YourSavedInfo.RelatedServiceClick.${
           YourSavedInfoRelatedService[service]}`);
     }
@@ -214,7 +214,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   recordSuggestionsFromGeminiEntryPointClick(
       entryPoint: SuggestionsFromGeminiEntryPoint) {
     this.methodCalled('recordSuggestionsFromGeminiEntryPointClick', entryPoint);
-    if (entryPoint !== SuggestionsFromGeminiEntryPoint.MAX_VALUE) {
+    if (entryPoint !== SuggestionsFromGeminiEntryPoint.COUNT) {
       const actionMap = {
         [SuggestionsFromGeminiEntryPoint.YOUR_SAVED_INFO]:
             'PersonalContext.Settings.EntryPoint.AutofillAndPasswordsSettings',
@@ -231,7 +231,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSuggestionsFromGeminiAction(action: SuggestionsFromGeminiAction) {
     this.methodCalled('recordSuggestionsFromGeminiAction', action);
-    if (action !== SuggestionsFromGeminiAction.MAX_VALUE) {
+    if (action !== SuggestionsFromGeminiAction.COUNT) {
       const actionMap = {
         [SuggestionsFromGeminiAction.MANAGE_CONNECTED_APPS_CLICK]:
             'PersonalContext.Settings.ManageConnectedAppsClick',

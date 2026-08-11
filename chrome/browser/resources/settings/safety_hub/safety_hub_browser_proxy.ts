@@ -68,15 +68,18 @@ export interface CardInfo {
 /**
  * A Safety Hub card has 4 different states as represented below. Depending on
  * the card state, the card will be updated.
- * Should be kept in sync with the corresponding enum in
- * chrome/browser/ui/safety_hub/safety_hub_constants.h.
  */
+// LINT.IfChange(CardState)
 export enum CardState {
   WARNING,
   WEAK,
   INFO,
   SAFE,
 }
+// LINT.ThenChange(
+//   //chrome/browser/ui/safety_hub/safety_hub_constants.h:SafetyHubCardState,
+//   //chrome/browser/resources/settings/metrics_browser_proxy.ts:SafetyHubCardState
+// )
 
 // The information for the entry point of the Safety Hub on Privacy and Security
 // page.

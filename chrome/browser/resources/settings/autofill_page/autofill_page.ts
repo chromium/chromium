@@ -576,7 +576,7 @@ export class SettingsAutofillPageElement extends
       case YourSavedInfoDataCategory.SHOPPING:
         Router.getInstance().navigateTo(routes.SHOPPING);
         break;
-      case YourSavedInfoDataCategory.MAX_VALUE:
+      case YourSavedInfoDataCategory.COUNT:
         assertNotReached();
       default:
         assertNotReachedCase(categoryId);
