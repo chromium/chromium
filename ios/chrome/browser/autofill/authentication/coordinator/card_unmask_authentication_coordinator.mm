@@ -133,7 +133,7 @@
   // Explicitly reset the coverer to reveal the web content immediately.
   _webContentCoverer.reset();
 
-  [_browserCoordinatorCommands dismissCardUnmaskAuthentication];
+  [_browserCoordinatorCommands legacyDismissCardUnmaskAuthentication];
 }
 
 #pragma mark - Private

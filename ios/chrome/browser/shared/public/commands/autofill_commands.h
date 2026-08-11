@@ -24,6 +24,9 @@ class WebState;
 // Shows the card unmask authentication flow.
 - (void)showCardUnmaskAuthentication;
 
+// Dismisses the card unmask authentication flow.
+- (void)dismissCardUnmaskAuthentication;
+
 // Continue the card unmask authentication flow with OTP auth.
 - (void)continueCardUnmaskWithOtpAuth;
 
@@ -39,6 +42,11 @@ class WebState;
 // Shows the scan card save and fill suggestion bottom sheet view controller.
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params;
+
+// Dismisses the sheets shown through `showPaymentsBottomSheet` and
+// `showScanCardSaveAndFillBottomSheet`.
+- (void)dismissPaymentAndScanCardSheets;
+
 // Commands to manage save card bottomsheet.
 - (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState;
 - (void)dismissSaveCardBottomSheet;
@@ -53,6 +61,9 @@ class WebState;
             (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
                               originWebState:(web::WebState*)originWebState;
 
+// Dismisses the VCN enrollment.
+- (void)dismissVirtualCardEnrollmentBottomSheet;
+
 // Sends a command to show the bottom sheet to edit an address.
 - (void)showEditAddressBottomSheet;
 
@@ -61,7 +72,8 @@ class WebState;
 - (void)dismissEditAddressBottomSheet;
 
 // Command to reset the autofill suggestions loading states.
-- (void)resetAutofillSuggestionsLoadingStates;
+// Deprecated: use BrowserCoordinatorCommands instead.
+- (void)legacyResetAutofillSuggestionsLoadingStates;
 
 // Commands to manage the Autofill error dialog.
 - (void)showAutofillErrorDialog:

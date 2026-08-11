@@ -285,27 +285,6 @@ TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
   [browser_coordinator stop];
 }
 
-// Tests showDownloadsFolder shows download list UI when feature is enabled.
-TEST_F(BrowserCoordinatorTest, ShowDownloadList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDownloadList);
-
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id<BrowserCoordinatorCommands> handler =
-      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-
-  // When the download list feature is enabled, showDownloadsFolder should
-  // present the download list UI instead of opening Files.app.
-  [handler showDownloadsFolder];
-
-  // Verify that the download list coordinator was created.
-  EXPECT_NE(browser_coordinator.downloadListCoordinator, nil);
-
-  [browser_coordinator stop];
-}
 
 // Tests that BrowserCoordinator properly implements
 // the NewTabPageTabHelperDelegate protocol.

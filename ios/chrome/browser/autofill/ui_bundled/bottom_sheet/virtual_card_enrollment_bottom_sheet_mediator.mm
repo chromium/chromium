@@ -137,7 +137,7 @@ class UiModelObserverBridge
   _callbacks.reset();
   [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
                             VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED];
-  [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
+  [_browserCoordinatorHandler legacyDismissVirtualCardEnrollmentBottomSheet];
 }
 
 #pragma mark - VirtualCardEnrollUiModel Observer
@@ -158,7 +158,8 @@ class UiModelObserverBridge
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed:
       // Dismiss the virtual card enrollment bottom sheet. Failure messages are
       // expected to be initiated by the IOSChromePaymentsAutofillClient.
-      [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
+      [_browserCoordinatorHandler
+          legacyDismissVirtualCardEnrollmentBottomSheet];
       break;
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to
@@ -178,7 +179,7 @@ class UiModelObserverBridge
 
 // Handles dismissal after confirmation was shown with a delay.
 - (void)onFinishedConfirmationDelay {
-  [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
+  [_browserCoordinatorHandler legacyDismissVirtualCardEnrollmentBottomSheet];
 }
 
 @end

@@ -80,7 +80,7 @@
 #pragma mark - CardUnmaskAuthenticationSelectionMediatorDelegate
 
 - (void)dismissAuthenticationSelection {
-  [_browserCoordinatorCommands dismissCardUnmaskAuthentication];
+  [_browserCoordinatorCommands legacyDismissCardUnmaskAuthentication];
 }
 
 @end

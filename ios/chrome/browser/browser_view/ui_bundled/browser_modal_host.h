@@ -17,6 +17,7 @@ class Browser;
 @interface BrowserModalHost : NSObject
 
 // The password controller delegate.
+// TODO(crbug.com/40806286): This should not be public.
 @property(nonatomic, weak) id<PasswordControllerDelegate>
     passwordControllerDelegate;
 
@@ -37,10 +38,6 @@ class Browser;
 // This object stops being the handler for the different command protocols it is
 // hosting for.
 - (void)stopHostingCommandProtocols;
-
-// Temporary plumbing during refactoring.
-- (void)temporaryShowCredentialBottomSheet:
-    (const autofill::FormActivityParams&)params;
 
 @end
 

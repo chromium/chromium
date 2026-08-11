@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
@@ -15,8 +18,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -187,5 +192,28 @@ TEST_F(BrowserModalHostTest, ShowShareSheetForChromeApp) {
   EXPECT_EQ(1.0, controller->GetProgress());
 
   // Check that -start has been called.
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-showDownloadList` starts the DownloadListCoordinator.
+TEST_F(BrowserModalHostTest, ShowDownloadList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDownloadList);
+
+  id classMock = OCMClassMock([DownloadListCoordinator class]);
+  DownloadListCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()])
+      .andReturn(mockCoordinator);
+  OCMExpect([mockCoordinator start]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<DownloadListCommands> handler =
+      HandlerForProtocol(dispatcher, DownloadListCommands);
+
+  [handler showDownloadList];
+
   EXPECT_OCMOCK_VERIFY(classMock);
 }

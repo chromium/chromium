@@ -269,7 +269,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
       MakeMediator(MakeModel());
 
   OCMExpect([mock_browser_coordinator_handler_
-      dismissVirtualCardEnrollmentBottomSheet]);
+      legacyDismissVirtualCardEnrollmentBottomSheet]);
 
   [mediator didCancel];
 
@@ -316,7 +316,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
   // Do not dismiss before the delay.
   OCMReject([mock_browser_coordinator_handler_
-      dismissVirtualCardEnrollmentBottomSheet]);
+      legacyDismissVirtualCardEnrollmentBottomSheet]);
   task_env_.FastForwardBy(kExpectedConfirmationDismissDelay -
                           base::Milliseconds(1));
 
@@ -333,7 +333,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
   // Dismiss after the delay.
   OCMExpect([mock_browser_coordinator_handler_
-      dismissVirtualCardEnrollmentBottomSheet]);
+      legacyDismissVirtualCardEnrollmentBottomSheet]);
   task_env_.FastForwardBy(kExpectedConfirmationDismissDelay);
 
   EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
@@ -346,7 +346,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
       MakeMediator(MakeModel());
 
   OCMExpect([mock_browser_coordinator_handler_
-      dismissVirtualCardEnrollmentBottomSheet]);
+      legacyDismissVirtualCardEnrollmentBottomSheet]);
 
   model_->SetEnrollmentProgress(
       autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);

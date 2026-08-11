@@ -510,7 +510,7 @@ void ChromeAutofillClientIOS::HideSuggestions(
   active_suggestion_delegate_.reset();
   [bridge_ hideAutofillPopup];
   if (reason == SuggestionHidingReason::kAcceptSuggestion) {
-    [commands_handler_ resetAutofillSuggestionsLoadingStates];
+    [commands_handler_ legacyResetAutofillSuggestionsLoadingStates];
   }
 }
 

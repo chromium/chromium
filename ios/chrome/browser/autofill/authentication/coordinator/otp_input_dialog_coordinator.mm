@@ -86,7 +86,7 @@
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
-  [browserCoordinatorCommandsHandler dismissCardUnmaskAuthentication];
+  [browserCoordinatorCommandsHandler legacyDismissCardUnmaskAuthentication];
 }
 
 #pragma mark - Private

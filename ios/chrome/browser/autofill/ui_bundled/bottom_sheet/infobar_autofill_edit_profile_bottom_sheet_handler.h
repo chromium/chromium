@@ -13,6 +13,8 @@ class WebState;
 
 // Handler that provides the AutofillEditProfileCoordinator with the
 // logic that is specific to an infobar-triggerred address edit.
+// TODO(crbug.com/544600810): Remove "handler" from the name of the
+// class/protocol.
 @interface InfobarAutofillEditProfileBottomSheetHandler
     : NSObject <AutofillEditProfileHandler>
 

@@ -122,10 +122,15 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)dismissPaymentSuggestions;
 
 // Dismiss the card unmask authentication prompt.
-- (void)dismissCardUnmaskAuthentication;
+// Deprecated: use AutofillCommands instead.
+- (void)legacyDismissCardUnmaskAuthentication;
 
 // Dismiss the virtual card enrollment bottom sheet.
-- (void)dismissVirtualCardEnrollmentBottomSheet;
+// Deprecated: use AutofillCommands instead.
+- (void)legacyDismissVirtualCardEnrollmentBottomSheet;
+
+// Command to reset the autofill suggestions loading states.
+- (void)resetAutofillSuggestionsLoadingStates;
 
 // Shows the omnibox position choice screen.
 - (void)showOmniboxPositionChoice;

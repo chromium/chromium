@@ -79,6 +79,8 @@
 
 - (void)showCardUnmaskAuthentication {
 }
+- (void)dismissCardUnmaskAuthentication {
+}
 - (void)continueCardUnmaskWithOtpAuth {
 }
 - (void)continueCardUnmaskWithCvcAuth {
@@ -90,7 +92,8 @@
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params {
 }
-
+- (void)dismissPaymentAndScanCardSheets {
+}
 - (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState {
   _showSaveCardBottomSheet = YES;
 }
@@ -108,6 +111,8 @@
                               originWebState:(web::WebState*)originWebState {
   _virtualCardEnrollUiModel = std::move(model);
 }
+- (void)dismissVirtualCardEnrollmentBottomSheet {
+}
 
 - (void)showEditAddressBottomSheet {
 }
@@ -115,7 +120,7 @@
 - (void)dismissEditAddressBottomSheet {
 }
 
-- (void)resetAutofillSuggestionsLoadingStates {
+- (void)legacyResetAutofillSuggestionsLoadingStates {
 }
 
 - (void)showAutofillErrorDialog:

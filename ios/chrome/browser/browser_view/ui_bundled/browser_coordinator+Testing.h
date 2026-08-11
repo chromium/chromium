@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 
-@class DownloadListCoordinator;
 @class NewTabPageCoordinator;
 
 // Coordinator for BrowserViewController. Testing category to expose properties
@@ -19,10 +18,6 @@
 
 // The coordinator used for the New Tab Page.
 @property(nonatomic, strong, readonly) NewTabPageCoordinator* NTPCoordinator;
-
-// Coordinator for displaying the Download List UI.
-@property(nonatomic, strong, readonly)
-    DownloadListCoordinator* downloadListCoordinator;
 
 @end
 

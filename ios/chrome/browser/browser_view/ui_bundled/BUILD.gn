@@ -455,6 +455,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/download/coordinator",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui",
     "//ios/chrome/browser/favicon/model",
