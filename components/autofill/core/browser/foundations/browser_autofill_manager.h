@@ -66,7 +66,6 @@ class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
 class AutofillAiAccessManager;
-class AtMemoryManager;
 
 class FormData;
 class FormFieldData;
@@ -233,10 +232,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   CreditCardAccessManager* GetCreditCardAccessManager() override;
   const CreditCardAccessManager* GetCreditCardAccessManager() const override;
-
-  // Gets the `AtMemoryManager` owned by `this`. This will be used to handle
-  // queries to the `AccessibilityQueryService`.
-  AtMemoryManager& GetAtMemoryManager();
 
   // Gets the Autofill AI access manager owned by `this`.
   virtual AutofillAiAccessManager& GetAutofillAiAccessManager();
@@ -707,10 +702,6 @@ class BrowserAutofillManager : public AutofillManager {
       std::make_unique<FormFiller>(*this);
 
   std::unique_ptr<OtpManager> otp_manager_;
-
-  // The `AtMemoryManager`, used to handle queries to the
-  // `AccessibilityQueryService` and manage session-based metrics.
-  std::unique_ptr<AtMemoryManager> at_memory_manager_;
 
   std::unique_ptr<AccountNameEmailStrikeManager>
       account_name_email_strike_manager_;

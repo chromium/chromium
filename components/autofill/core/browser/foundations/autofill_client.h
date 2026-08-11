@@ -118,6 +118,7 @@ namespace autofill {
 class ActorKeyMetricsRecorder;
 class AutofillManager;
 class AddressNormalizer;
+class AtMemoryManager;
 class AtMemoryQueryService;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
@@ -498,6 +499,10 @@ class AutofillClient {
   // Returns the `AtMemoryQueryService` associated with the profile of
   // the window of this tab.
   virtual AtMemoryQueryService* GetAtMemoryQueryService();
+
+  // Returns the `AtMemoryManager`.
+  virtual AtMemoryManager* GetAtMemoryManager();
+  const AtMemoryManager* GetAtMemoryManager() const;
 
   // Returns the enablement state of the Accessibility Annotator.
   // TODO(crbug.com/524193567) Delete this method once all the invocations are

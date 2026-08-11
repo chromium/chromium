@@ -25,6 +25,7 @@
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -245,6 +246,14 @@ class TestAutofillClientTemplate : public T {
 
   AtMemoryQueryService* GetAtMemoryQueryService() override {
     return at_memory_query_service_.get();
+  }
+
+  AtMemoryManager* GetAtMemoryManager() override {
+    if (!at_memory_manager_ &&
+        base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+      at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
+    }
+    return at_memory_manager_.get();
   }
 
   personal_context::PersonalContextEligibilityState
@@ -799,6 +808,11 @@ class TestAutofillClientTemplate : public T {
     at_memory_query_service_ = std::move(at_memory_query_service);
   }
 
+  void set_at_memory_manager(
+      std::unique_ptr<AtMemoryManager> at_memory_manager) {
+    at_memory_manager_ = std::move(at_memory_manager);
+  }
+
   void set_identity_credential_delegate(
       std::unique_ptr<IdentityCredentialDelegate>
           identity_credential_delegate) {
@@ -879,6 +893,7 @@ class TestAutofillClientTemplate : public T {
 #endif
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AtMemoryQueryService> at_memory_query_service_;
+  std::unique_ptr<AtMemoryManager> at_memory_manager_;
   personal_context::PersonalContextEligibilityState
       personal_context_eligibility_state_ =
           personal_context::PersonalContextEligibilityState::kEligible;

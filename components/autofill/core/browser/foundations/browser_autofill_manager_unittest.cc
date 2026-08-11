@@ -5436,6 +5436,8 @@ TEST_F(BrowserAutofillManagerTest,
 // Tests that if the context is insecure, the suggestions are filtered out
 // to not contain SPII.
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAtMemory};
   // Ensure that the client context is insecure.
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("http://example.com"));
@@ -5474,7 +5476,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
   EXPECT_CALL(*mock_query_service_ptr,
               Query(std::u16string_view(u"query"), _, _, _))
       .WillOnce(testing::SaveArg<3>(&search_callback));
-  autofill_manager().GetAtMemoryManager().OnSearchSubmitted(u"query");
+  autofill_client().GetAtMemoryManager()->OnSearchSubmitted(u"query");
   ASSERT_FALSE(search_callback.is_null());
 
   // Prepare search results containing a SPII entry.

@@ -8,11 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -34,18 +36,19 @@
 namespace autofill {
 
 struct MemorySearchResults;
+class AutofillClient;
 class BrowserAutofillManager;
 
 // Manager for the AtMemory feature. It handles queries to the
 // `AtMemoryQueryService` and manages session-based metrics. Owned by
-// `BrowserAutofillManager`, its lifetime is tied to it.
+// `AutofillClient`, its lifetime is tied to it.
 class AtMemoryManager : public CreditCardAccessManager::Observer {
  public:
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
-  explicit AtMemoryManager(BrowserAutofillManager* manager);
+  explicit AtMemoryManager(AutofillClient* client);
 
   AtMemoryManager(const AtMemoryManager&) = delete;
   AtMemoryManager& operator=(const AtMemoryManager&) = delete;
@@ -244,6 +247,10 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       bool reauth_attempted,
       bool did_fetch_from_server);
 
+  BrowserAutofillManager* GetBrowserAutofillManager(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id);
+
   // Encapsulates active session state for an AtMemory UI interaction.
   struct SessionState {
     AutofillSuggestionTriggerSource trigger_source =
@@ -256,7 +263,7 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
     bool is_searching = false;
   };
 
-  const raw_ptr<BrowserAutofillManager> owner_;
+  const raw_ref<AutofillClient> client_;
 
   std::optional<SessionState> session_state_;
 

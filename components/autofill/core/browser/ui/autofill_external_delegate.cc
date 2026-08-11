@@ -649,20 +649,31 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  manager_->GetAtMemoryManager().OnPopupHidden();
+  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
+    am->OnPopupHidden();
+  }
   manager_->OnSuggestionsHidden(reason);
 }
 
 bool AutofillExternalDelegate::OnFilterChanged(const std::u16string& filter) {
-  return manager_->GetAtMemoryManager().OnFilterChanged(filter);
+  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
+    return am->OnFilterChanged(filter);
+  }
+  return false;
 }
 
 bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
-  return manager_->GetAtMemoryManager().OnSearchSubmitted(filter);
+  if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
+    return am->OnSearchSubmitted(filter);
+  }
+  return false;
 }
 
 bool AutofillExternalDelegate::IsSearching() const {
-  return manager_->GetAtMemoryManager().IsSearching();
+  if (const AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
+    return am->IsSearching();
+  }
+  return false;
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
@@ -751,7 +762,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
+      manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
           mojom::ActionPersistence::kPreview, last_query_.form_id,
           last_query_.field_id, suggestion);
       break;
@@ -1068,7 +1079,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kAtMemorySearchResult: {
       const IsAsync is_async =
-          manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
+          manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
               mojom::ActionPersistence::kFill, last_query_.form_id,
               last_query_.field_id, suggestion, metadata);
       if (is_async) {
@@ -1100,8 +1111,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                                 last_query_.field_id);
       break;
     case SuggestionType::kAtMemorySearchAffordance:
-      manager_->GetAtMemoryManager().OnSearchSubmitted(
-          suggestion.main_text.value);
+      if (AtMemoryManager* am = manager_->client().GetAtMemoryManager()) {
+        am->OnSearchSubmitted(suggestion.main_text.value);
+      }
       // The popup remains open to show search results once the query completes.
       return;
     case SuggestionType::kPersonalContextNotice:

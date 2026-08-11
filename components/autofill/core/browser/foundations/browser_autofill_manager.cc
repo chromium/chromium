@@ -833,7 +833,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
           std::make_unique<AutofillAiAccessManager>(this)),
       otp_manager_(
           new OtpManagerImpl(*this, client().GetOneTimeTokenService())),
-      at_memory_manager_(std::make_unique<AtMemoryManager>(this)),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
       address_on_typing_manager_(client()) {}
@@ -862,10 +861,6 @@ const CreditCardAccessManager*
 BrowserAutofillManager::GetCreditCardAccessManager() const {
   return const_cast<BrowserAutofillManager*>(this)
       ->GetCreditCardAccessManager();
-}
-
-AtMemoryManager& BrowserAutofillManager::GetAtMemoryManager() {
-  return *at_memory_manager_;
 }
 
 AutofillAiAccessManager& BrowserAutofillManager::GetAutofillAiAccessManager() {
@@ -1244,10 +1239,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
-  if (IsAtMemoryTriggerSource(trigger_source)) {
-    GetAtMemoryManager().set_target_field_origin(field.origin());
+  if (AtMemoryManager* am = client().GetAtMemoryManager();
+      am && IsAtMemoryTriggerSource(trigger_source)) {
+    am->set_target_field_origin(field.origin());
     std::vector<Suggestion> suggestions;
-    GetAtMemoryManager().MaybeAppendPersonalContextNotice(suggestions);
+    am->MaybeAppendPersonalContextNotice(suggestions);
 
     // Show suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(field, suggestions);
@@ -2253,10 +2249,12 @@ void BrowserAutofillManager::DidShowSuggestions(
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, field_id);
 
-  GetAtMemoryManager().OnPopupShown(
-      form_id, field_id, trigger_source, parent_suggestion_metadata,
-      client().IsContextSecure(), update_suggestions_callback,
-      driver().GetPageUkmSourceId());
+  if (AtMemoryManager* am = client().GetAtMemoryManager()) {
+    am->OnPopupShown(form_id, field_id, trigger_source,
+                     parent_suggestion_metadata, client().IsContextSecure(),
+                     update_suggestions_callback,
+                     driver().GetPageUkmSourceId());
+  }
   if (parent_suggestion_metadata.has_value()) {
     // The shown suggestions were in a sub-popup and the code below is not
     // relevant for those.
@@ -2784,7 +2782,6 @@ void BrowserAutofillManager::Reset() {
   // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
       *this, client().GetOneTimeTokenService());
-  at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();

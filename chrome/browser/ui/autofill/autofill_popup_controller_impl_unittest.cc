@@ -69,6 +69,13 @@ class AutofillPopupControllerImplTest
     : public AutofillSuggestionControllerTestBase<
           TestAutofillPopupControllerAutofillClient<>> {
  public:
+  AutofillPopupControllerImplTest() {
+    feature_list_.InitWithFeatures(
+        {features::kAutofillAtMemory,
+         features::debug::kAtMemorySkipEnablementChecks},
+        {});
+  }
+
   // Encapsulates the setup required to get the controller and its associated
   // AtMemoryController into a search-ready state for @memory tests.
   void ShowAtMemoryPopup() {
@@ -141,6 +148,9 @@ class AutofillPopupControllerImplTest
                  client().suggestion_controller(manager())))
         .SetSuggestions(std::move(suggestions));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
