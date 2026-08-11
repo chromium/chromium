@@ -87,24 +87,15 @@ class WebAppSystemMediaControlsBrowserTest
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   void StartPlaybackAndWait(Shell* shell, const std::string& id) {
+    MediaStartStopObserver observer(shell->web_contents(),
+                                    MediaStartStopObserver::Type::kStart);
     shell->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(
             JsReplace("document.getElementById($1).play();", id)),
         base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
-    WaitForStart(shell);
-  }
-
-  void WaitForStart(Shell* shell) {
-    MediaStartStopObserver observer(shell->web_contents(),
-                                    MediaStartStopObserver::Type::kStart);
     observer.Wait();
   }
 
-  void WaitForStop(Shell* shell) {
-    MediaStartStopObserver observer(shell->web_contents(),
-                                    MediaStartStopObserver::Type::kStop);
-    observer.Wait();
-  }
 
   bool IsPlaying(Shell* shell, const std::string& id) {
     return EvalJs(shell->web_contents(),
@@ -261,10 +252,12 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   // Check video is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
-  media_keys_listener_manager_impl->OnPause(GetBrowserSystemMediaControls());
-
-  // Check video is paused.
-  WaitForStop(shell());
+  {
+    MediaStartStopObserver observer(shell()->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(GetBrowserSystemMediaControls());
+    observer.Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
@@ -293,18 +286,13 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
   bool is_for_pwa = WaitForStartWatchingMediaKey();
   EXPECT_FALSE(is_for_pwa);
 
-  // Hit pause via simulating SMTC pause.
-  MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
-      BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-  media_keys_listener_manager_impl->OnPause(GetBrowserSystemMediaControls());
-
-  // crbug.com/361543620 tracks a disablement of this test on Win11 arm64 debug
-  // due to a timeout in `WaitForStop`. I have been unable to repro this locally
-  // so add a sanity check to ensure the audio is still playing before we wait
-  // for it to stop, and reenable for now.
-  if (IsPlaying(browser3, "long-video-loop")) {
-    // Check audio is paused for browser3.
-    WaitForStop(browser3);
+  {
+    MediaStartStopObserver observer(browser3->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
+        BrowserMainLoop::GetInstance()->media_keys_listener_manager();
+    media_keys_listener_manager_impl->OnPause(GetBrowserSystemMediaControls());
+    observer.Wait();
   }
 
   // The other stuff should be continuing to loop.
@@ -358,17 +346,24 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
 
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
-  media_keys_listener_manager_impl->OnPause(system_media_controls);
 
-  // The "web app" should be paused.
-  WaitForStop(web_app);
+  {
+    MediaStartStopObserver observer(web_app->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(system_media_controls);
+    observer.Wait();
+  }
 
   // The browser is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
 
   // Now start the webapp again.
-  media_keys_listener_manager_impl->OnPlay(system_media_controls);
-  WaitForStart(web_app);
+  {
+    MediaStartStopObserver observer(web_app->web_contents(),
+                                    MediaStartStopObserver::Type::kStart);
+    media_keys_listener_manager_impl->OnPlay(system_media_controls);
+    observer.Wait();
+  }
 
   // The browser is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
@@ -438,22 +433,34 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeWebAppTest) {
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
 
-  media_keys_listener_manager_impl->OnPause(web_app2_system_media_controls);
-  WaitForStop(web_app2);
+  {
+    MediaStartStopObserver observer(web_app2->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(web_app2_system_media_controls);
+    observer.Wait();
+  }
 
   // The other stuff should be continuing to loop.
   EXPECT_TRUE(IsPlaying(web_app1, "long-video-loop"));
   EXPECT_TRUE(IsPlaying(web_app3, "long-video-loop"));
 
   // Pause 3, only 1 remains.
-  media_keys_listener_manager_impl->OnPause(web_app3_system_media_controls);
-  WaitForStop(web_app3);
+  {
+    MediaStartStopObserver observer(web_app3->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(web_app3_system_media_controls);
+    observer.Wait();
+  }
 
   EXPECT_TRUE(IsPlaying(web_app1, "long-video-loop"));
 
   // Pause 1, only 1 remains.
-  media_keys_listener_manager_impl->OnPause(web_app1_system_media_controls);
-  WaitForStop(web_app1);
+  {
+    MediaStartStopObserver observer(web_app1->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(web_app1_system_media_controls);
+    observer.Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
@@ -491,14 +498,30 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TelemetryTest) {
 
   // Simulate a bunch of actions from SystemMediaTransportControls center.
   {
-    media_keys_listener_manager->OnPause(web_app1_system_media_controls);
-    WaitForStop(web_app1);
-    media_keys_listener_manager->OnPlay(web_app1_system_media_controls);
-    WaitForStart(web_app1);
-    media_keys_listener_manager->OnPause(web_app2_system_media_controls);
-    WaitForStop(web_app2);
-    media_keys_listener_manager->OnPlay(web_app2_system_media_controls);
-    WaitForStart(web_app2);
+    {
+      MediaStartStopObserver observer(web_app1->web_contents(),
+                                      MediaStartStopObserver::Type::kStop);
+      media_keys_listener_manager->OnPause(web_app1_system_media_controls);
+      observer.Wait();
+    }
+    {
+      MediaStartStopObserver observer(web_app1->web_contents(),
+                                      MediaStartStopObserver::Type::kStart);
+      media_keys_listener_manager->OnPlay(web_app1_system_media_controls);
+      observer.Wait();
+    }
+    {
+      MediaStartStopObserver observer(web_app2->web_contents(),
+                                      MediaStartStopObserver::Type::kStop);
+      media_keys_listener_manager->OnPause(web_app2_system_media_controls);
+      observer.Wait();
+    }
+    {
+      MediaStartStopObserver observer(web_app2->web_contents(),
+                                      MediaStartStopObserver::Type::kStart);
+      media_keys_listener_manager->OnPlay(web_app2_system_media_controls);
+      observer.Wait();
+    }
 
     FetchHistogramsFromChildProcesses();
 
@@ -581,10 +604,12 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TwoBrowserTest) {
   MediaKeysListenerManagerImpl* media_keys_listener_manager_impl =
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
 
-  media_keys_listener_manager_impl->OnPause(system_media_controls);
-
-  // The browser2 should be paused.
-  WaitForStop(browser2);
+  {
+    MediaStartStopObserver observer(browser2->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(system_media_controls);
+    observer.Wait();
+  }
 
   // The shell is still playing.
   EXPECT_TRUE(IsPlaying(shell(), "long-video-loop"));
@@ -597,8 +622,12 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, TwoBrowserTest) {
   WaitForStartWatchingMediaKey();
 
   // Now hit pause again, it should pause shell().
-  media_keys_listener_manager_impl->OnPause(system_media_controls);
-  WaitForStop(shell());
+  {
+    MediaStartStopObserver observer(shell()->web_contents(),
+                                    MediaStartStopObserver::Type::kStop);
+    media_keys_listener_manager_impl->OnPause(system_media_controls);
+    observer.Wait();
+  }
 
   // The browser is still playing.
   EXPECT_FALSE(IsPlaying(shell(), "long-video-loop"));
@@ -636,13 +665,16 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   SetAlwaysAssumeWebAppForTesting();
   SetAlwaysIgnoreMediaSessionForTesting(web_app->web_contents());
 
+  MediaStartStopObserver observer(web_app->web_contents(),
+                                  MediaStartStopObserver::Type::kStop);
+
   // Start the media session and wait for the controls to become visible.
   StartPlaybackAndWait(web_app, "short-video");
   base::UnguessableToken request_id = WaitForWebAppAdded();
   EXPECT_TRUE(WaitForVisibility(request_id, /*desired_visibility=*/true));
 
   // Wait for the audio track to end on its own.
-  WaitForStop(web_app);
+  observer.Wait();
   EXPECT_FALSE(IsPlaying(web_app, "short-video"));
 
   // The controls should hide now.
