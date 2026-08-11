@@ -16,4 +16,11 @@ public class BookmarkBarConstants {
      */
     public static final String BOOKMARK_BAR_SHOW_BOOKMARK_BAR =
             "Chrome.BookmarkBar.ShowBookmarkBar";
+
+    /**
+     * Bookmark Bar tri-state preference, tracks whether or not the user wants to show the bookmark
+     * bar on the current device, whether it's always show, only show on NTP, or always hide.
+     */
+    public static final String BOOKMARK_BAR_BOOKMARK_BAR_VISIBILITY_STATE =
+            "Chrome.BookmarkBar.BookmarkBarVisibilityState";
 }

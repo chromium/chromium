@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.annotation.NonNull;
+import static org.chromium.base.test.util.HistogramWatcher.newBuilder;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -23,35 +23,22 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link BookmarkBarUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BookmarkBarUtilsTest {
-
-    private static final String PHONE_QUALIFIER =
-            "sw" + (DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1) + "dp";
-    private static final String TABLET_QUALIFIER =
-            "sw" + DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + "dp";
 
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -65,65 +52,14 @@ public class BookmarkBarUtilsTest {
 
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
-    @Mock private ProfileProvider mProfileProvider;
     @Mock private UserPrefsJni mUserPrefsJni;
-
-    private final AtomicBoolean mSetting = new AtomicBoolean();
-
-    private NonNullObservableSupplier<ProfileProvider> mProfileProviderSupplier;
-
-    /** Helper class to mock different policy configurations for the bookmark bar. */
-    private class BookmarkBarPolicyBuilder {
-        private boolean mIsManaged;
-        private boolean mManagedValue;
-        private boolean mHasRecommendation;
-        private boolean mIsFromRecommendation;
-
-        BookmarkBarPolicyBuilder setManaged(boolean isManaged, boolean value) {
-            mIsManaged = isManaged;
-            mManagedValue = value;
-            return this;
-        }
-
-        BookmarkBarPolicyBuilder setRecommended(
-                boolean hasRecommendation, boolean isFromRecommendation) {
-            mHasRecommendation = hasRecommendation;
-            mIsFromRecommendation = isFromRecommendation;
-            return this;
-        }
-
-        void build() {
-            // Reset the mock for getBoolean to its default stateful behavior defined in setUp().
-            // mSetting simulates the real PrefService by acting as the memory or external storage
-            // for our mock object.
-            when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenAnswer(i -> mSetting.get());
-
-            when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(mIsManaged);
-            if (mIsManaged) {
-                when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenReturn(mManagedValue);
-            }
-
-            when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR))
-                    .thenReturn(mHasRecommendation);
-            when(mPrefService.isFollowingRecommendation(Pref.SHOW_BOOKMARK_BAR))
-                    .thenReturn(mIsFromRecommendation);
-        }
-    }
 
     @Before
     public void setUp() {
-        doAnswer(runCallbackWithValueAtIndex(mSetting::set, 1))
-                .when(mPrefService)
-                .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
-
-        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)).thenAnswer(i -> mSetting.get());
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
-
-        mProfileProviderSupplier = ObservableSuppliers.createNonNull(mProfileProvider);
     }
 
     @After
@@ -132,22 +68,438 @@ public class BookmarkBarUtilsTest {
         mOverrideContextRule.setIsDesktop(false);
     }
 
+    private void setBooleanPref(
+            boolean isManaged,
+            boolean managedPolicyValue,
+            boolean hasRecommendation,
+            boolean isFollowing,
+            boolean currentUserPref) {
+        when(mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR))
+                .thenReturn(isManaged ? managedPolicyValue : currentUserPref);
+        when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(isManaged);
+        when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(hasRecommendation);
+        when(mPrefService.isFollowingRecommendation(Pref.SHOW_BOOKMARK_BAR))
+                .thenReturn(isFollowing);
+    }
+
+    private void setIntegerPref(
+            boolean isManaged,
+            int managedPolicyValue,
+            boolean hasRecommendation,
+            boolean isFollowing,
+            int currentUserPref) {
+        when(mPrefService.getInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+                .thenReturn(isManaged ? managedPolicyValue : currentUserPref);
+        when(mPrefService.isManagedPreference(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+                .thenReturn(isManaged);
+        when(mPrefService.hasRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+                .thenReturn(hasRecommendation);
+        when(mPrefService.isFollowingRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+                .thenReturn(isFollowing);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Group 1: V1 (Boolean) - UserPrefs
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_Set() {
+        mOverrideContextRule.setIsDesktop(true);
+        BookmarkBarUtils.setUserPrefsShowBookmarksBar(mProfile, true, false);
+        verify(mPrefService).setBoolean(Pref.SHOW_BOOKMARK_BAR, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_isEnabled_Default() {
+        mOverrideContextRule.setIsDesktop(true);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_isEnabled_WithUserChoice() {
+        mOverrideContextRule.setIsDesktop(true);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ true);
+        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_isEnabled_Policy_Mandatory() {
+        mOverrideContextRule.setIsDesktop(true);
+        setBooleanPref(
+                /* isManaged= */ true,
+                /* managedPolicyValue= */ true,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_isEnabled_Policy_Recommended() {
+        mOverrideContextRule.setIsDesktop(true);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ true,
+                /* currentUserPref= */ true);
+        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_UserPrefs_isEnabled_Policy_Recommended_Overridden() {
+        mOverrideContextRule.setIsDesktop(true);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Group 1: V1 (Boolean) - DevicePrefs
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_DevicePrefs_isEnabled_Default() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_DevicePrefs_isEnabled_WithUserChoice() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, false);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+
+        // UserPrefs fallback isn't used when device pref is set, so should be |true|.
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_DevicePrefs_isEnabled_Policy_Mandatory() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setBooleanPref(
+                /* isManaged= */ true,
+                /* managedPolicyValue= */ true,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false);
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowBookmarkBar_DevicePrefs_isEnabled_Policy_Recommended() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ true,
+                /* currentUserPref= */ true);
+        assertTrue(
+                "Recommended defaults should pass through when device pref absent.",
+                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testShowBookmarkBar_DevicePrefs_isEnabled_Policy_Recommended_OverriddenByUserPrefs() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        // If a recommendation exists, but UserPref diverged, and device pref is absent, we deduce
+        // original policy recommendation and follow that (NOT the set UserPref).
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ false); // Policy recommendation was overridden to |false|.
+        // Although a Desktop UserPref was chosen to override the recommended policy, we still give
+        // users an option to override the policy separately on tablets, so here should be |true|.
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testShowBookmarkBar_DevicePrefs_isEnabled_Policy_Recommended_OverriddenByDevicePrefs() {
+        mOverrideContextRule.setIsDesktop(false);
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false, false);
+        setBooleanPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ false,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ true,
+                /* currentUserPref= */ true); // Policy recommendation being followed as |true|.
+        // A device pref choice overrides the policy recommendation.
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Group 2: V2 (Tri-State Integers) - UserPrefs
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_Set() {
+        mOverrideContextRule.setIsDesktop(true);
+        BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
+                mProfile, BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, false);
+        verify(mPrefService)
+                .setInteger(
+                        Pref.BOOKMARK_BAR_VISIBILITY_STATE,
+                        BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_isEnabled_Default() {
+        mOverrideContextRule.setIsDesktop(true);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_isEnabled_WithUserChoice() {
+        mOverrideContextRule.setIsDesktop(true);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_isEnabled_Policy_Mandatory() {
+        mOverrideContextRule.setIsDesktop(true);
+        setIntegerPref(
+                /* isManaged= */ true,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_SHOW,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_isEnabled_Policy_Recommended() {
+        mOverrideContextRule.setIsDesktop(true);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ true,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_UserPrefs_isEnabled_Policy_Recommended_Overridden() {
+        mOverrideContextRule.setIsDesktop(true);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getUserPrefsBookmarkBarVisibilityState(mProfile));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Group 2: V2 (Tri-State Integers) - DevicePrefs
+    // ---------------------------------------------------------------------------------------------
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Default() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_DevicePrefs_isEnabled_WithUserChoice() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP, false);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Policy_Mandatory() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setIntegerPref(
+                /* isManaged= */ true,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_SHOW,
+                /* hasRecommendation= */ false,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Policy_Recommended() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ true,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Policy_Recommended_OverriddenByUserPrefs() {
+        mOverrideContextRule.setIsDesktop(false);
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
+        // User overrides recommended policy to |ALWAYS_HIDE| in UserPrefs, but no device pref is
+        // set, so we derive original policy recommendation and use that.
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ALWAYS_HIDE);
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testBookmarkBarVisibilityState_DevicePrefs_isEnabled_Policy_Recommended_OverriddenByDevicePrefs() {
+        mOverrideContextRule.setIsDesktop(false);
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_SHOW, false);
+        setIntegerPref(
+                /* isManaged= */ false,
+                /* managedPolicyValue= */ BookmarkBarVisibilityState.ALWAYS_HIDE,
+                /* hasRecommendation= */ true,
+                /* isFollowing= */ false,
+                /* currentUserPref= */ BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
+        // The user has override the policy recommendation locally and in UserPrefs, and we will
+        // follow the local override for device prefs.
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Baseline Tests (null Profile, compatibility checks, histograms, etc
+    // ---------------------------------------------------------------------------------------------
+
     @Test
     @SmallTest
     public void testIsBookmarkBarManagedByPolicy() {
         assertFalse(
                 "Should be false for null profile.",
                 BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(null));
+        assertFalse(
+                "Should be false for null profile (v2).",
+                BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateManagedByPolicy(null));
 
         when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
-        assertTrue(
-                "Should be true when preference is managed.",
-                BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
-
+        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
         when(mPrefService.isManagedPreference(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
+        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
+
+        when(mPrefService.isManagedPreference(Pref.BOOKMARK_BAR_VISIBILITY_STATE)).thenReturn(true);
+        assertTrue(BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateManagedByPolicy(mProfile));
+        when(mPrefService.isManagedPreference(Pref.BOOKMARK_BAR_VISIBILITY_STATE))
+                .thenReturn(false);
         assertFalse(
-                "Should be false when preference is not managed.",
-                BookmarkBarUtils.isUserPrefsShowBookmarkBarManagedByPolicy(mProfile));
+                BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateManagedByPolicy(mProfile));
     }
 
     @Test
@@ -156,150 +508,19 @@ public class BookmarkBarUtilsTest {
         assertFalse(
                 "Should be false for null profile.",
                 BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(null));
+        assertFalse(
+                "Should be false for null profile (v2).",
+                BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateRecommended(null));
 
         when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(true);
-        assertTrue(
-                "Should be true when pref service has a recommendation.",
-                BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
-
+        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
         when(mPrefService.hasRecommendation(Pref.SHOW_BOOKMARK_BAR)).thenReturn(false);
-        assertFalse(
-                "Should be false when pref service has no recommendation.",
-                BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
-    }
+        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarkBarRecommended(mProfile));
 
-    @Test
-    @SmallTest
-    public void testIsDevicePrefShowBookmarksBarEnabled_PolicyScenarios() {
-        mOverrideContextRule.setIsDesktop(false);
-
-        // Case 1: Mandatory policy exists, policy set to show bookmarks bar enabled.
-        new BookmarkBarPolicyBuilder().setManaged(/* isManaged= */ true, /* value= */ true).build();
-        assertTrue(
-                "Should be true when managed by policy to be on.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 2: Mandatory policy exists, policy set to show bookmarks bar disabled.
-        new BookmarkBarPolicyBuilder()
-                .setManaged(/* isManaged= */ true, /* value= */ false)
-                .build();
-        assertFalse(
-                "Should be false when managed by policy to be off.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 3: Recommended policy exists (toggle on) and user has not set a preference.
-        mSetting.set(true); // mock mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR).
-        new BookmarkBarPolicyBuilder()
-                .setManaged(/* isManaged= */ false, /* value= */ false)
-                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ true)
-                .build();
-        assertTrue(
-                "Should be true when value is from recommendation (on).",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 4: Recommended policy exists (toggle on) but user has overridden it to off.
-
-        // Sets the shadow SharedPref (a simple hashmap in memory) to disabled and mSetting (pref
-        // service simulation) variable to false.
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                /* enabled= */ false, /* fromKeyboardShortcut= */ false);
-
-        // Simulates the policy configuration.
-        new BookmarkBarPolicyBuilder()
-                .setManaged(/* isManaged= */ false, /* value= */ false)
-                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ false)
-                .build();
-
-        // #isDevicePrefShowBookmarksBarEnabled should fallback to the user's local choice and read
-        // from the shadow SharedPreferences in the test file.
-        assertFalse(
-                "Should be false when user overrides recommendation to off.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 5: Recommended policy exists (toggle off) and user has not set a preference.
-        ContextUtils.getAppSharedPreferences().edit().clear().apply();
-        mSetting.set(false); // mock mPrefService.getBoolean(Pref.SHOW_BOOKMARK_BAR)
-        new BookmarkBarPolicyBuilder()
-                .setManaged(/* isManaged= */ false, /* value= */ false)
-                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ true)
-                .build();
-        assertFalse(
-                "Should be false when value is from recommendation (off).",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 6: Recommended policy exists (toggle off) but user has overridden it to on.
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                /* enabled= */ true, /* fromKeyboardShortcut= */ false);
-
-        new BookmarkBarPolicyBuilder()
-                .setManaged(/* isManaged= */ false, /* value= */ false)
-                .setRecommended(/* hasRecommendation= */ true, /* isFromRecommendation= */ false)
-                .build();
-
-        assertTrue(
-                "Should be true when user overrides recommendation to on.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 7: No policies, user preference is on.
-
-        // Write true to both the shadow SharedPref and mSettings (our PrefService mock).
-        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                /* enabled= */ true, /* fromKeyboardShortcut= */ false);
-
-        // Resets configurations and applies default (all false).
-        new BookmarkBarPolicyBuilder().build();
-
-        // Falls back to the user's local choice stored in our shadow SharedPref.
-        assertTrue(
-                "Should be true when user pref is on and no policies exist.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // Case 8: No policies, no user preference, default is off.
-
-        // Grabs the shadow SharedPref and wipes it clean, simulating the fresh install state where
-        // the user has no preference saved.
-        ContextUtils.getAppSharedPreferences().edit().clear().apply();
-
-        new BookmarkBarPolicyBuilder().build();
-
-        assertFalse(
-                "Should be false by default when no policies or user pref exist.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-    }
-
-    @Test
-    @SmallTest
-    public void testToggleDevicePrefShowBookmarksBar() {
-        mOverrideContextRule.setIsDesktop(false);
-        new BookmarkBarPolicyBuilder().build(); // Restet, no policies active.
-
-        // User should not have set any preference yet.
-        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
-
-        // Even though user has not set a device preference, should fall back to false because
-        // that's the default now.
-        assertFalse(
-                "Initial state should be false.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        // First toggle: false -> true.
-        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, /* fromKeyboardShortcut= */ false);
-        assertTrue(
-                "Should be true after first toggle.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-
-        assertTrue(
-                "After the first toggle, the user should now have set preference.",
-                BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
-
-        // Second toggle: true -> false.
-        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, /* fromKeyboardShortcut= */ false);
-        assertFalse(
-                "Should be false after second toggle.",
-                BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-        assertTrue(
-                "After the second toggle, the user should still have set preference.",
-                BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+        when(mPrefService.hasRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE)).thenReturn(true);
+        assertTrue(BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateRecommended(mProfile));
+        when(mPrefService.hasRecommendation(Pref.BOOKMARK_BAR_VISIBILITY_STATE)).thenReturn(false);
+        assertFalse(BookmarkBarUtils.isUserPrefsBookmarkBarVisibilityStateRecommended(mProfile));
     }
 
     @Test
@@ -339,7 +560,7 @@ public class BookmarkBarUtilsTest {
 
     @Test
     @SmallTest
-    @Config(qualifiers = PHONE_QUALIFIER)
+    @Config(qualifiers = "sw599dp")
     public void testIsDeviceBookmarkBarCompatibleOnPhone() {
         mActivityScenarioRule
                 .getScenario()
@@ -351,7 +572,7 @@ public class BookmarkBarUtilsTest {
 
     @Test
     @SmallTest
-    @Config(qualifiers = TABLET_QUALIFIER)
+    @Config(qualifiers = "sw600dp")
     public void testIsDeviceBookmarkBarCompatibleOnTablet() {
         mActivityScenarioRule
                 .getScenario()
@@ -455,32 +676,13 @@ public class BookmarkBarUtilsTest {
                         });
     }
 
-    // Test UserPrefs - only on Desktop
-
     @Test
     @SmallTest
-    public void testIsUserPrefsShowBookmarksBarEnabled() {
+    public void testMetrics_SetUserPrefsShowBookmarksBar() {
         mOverrideContextRule.setIsDesktop(true);
-
-        mSetting.set(false);
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(null));
-
-        mSetting.set(true);
-        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(null));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetUserPrefsShowBookmarksBar() {
-        mOverrideContextRule.setIsDesktop(true);
-
-        mSetting.set(false);
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
+                newBuilder()
                         .expectBooleanRecordTimes(
                                 BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT, true, 1)
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_IN_SETTINGS)
@@ -488,94 +690,49 @@ public class BookmarkBarUtilsTest {
 
         BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                 mProfile, true, /* fromKeyboardShortcut= */ true);
-        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
         histogramWatcher.assertExpected();
+        verify(mPrefService).setBoolean(Pref.SHOW_BOOKMARK_BAR, true);
 
         var histogramWatcher2 =
-                HistogramWatcher.newBuilder()
+                newBuilder()
                         .expectBooleanRecordTimes(BookmarkBarUtils.TOGGLED_IN_SETTINGS, false, 1)
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT)
                         .build();
 
         BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                 mProfile, false, /* fromKeyboardShortcut= */ false);
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
         histogramWatcher2.assertExpected();
+        verify(mPrefService).setBoolean(Pref.SHOW_BOOKMARK_BAR, false);
     }
 
     @Test
     @SmallTest
-    public void testToggleUserPrefsShowBookmarksBar() {
-        mOverrideContextRule.setIsDesktop(true);
-
-        mSetting.set(false);
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
-
-        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, true);
-        assertTrue(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
-
-        BookmarkBarUtils.toggleShowBookmarksBar(mProfile, false);
-        assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
-    }
-
-    // Test device prefs - only on Tablet
-
-    @Test
-    @SmallTest
-    public void testIsDevicePrefShowBookmarksBarEnabled() {
+    public void testMetrics_SetDevicePrefShowBookmarksBar() {
         mOverrideContextRule.setIsDesktop(false);
-
-        // User should not have set any preference yet.
-        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
-
-        // Even though user has not set a device preference, the default is false.
-        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetDevicePrefShowBookmarksBar() {
-        mOverrideContextRule.setIsDesktop(false);
-        // User should not have set any preference yet.
-        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
-
-        // Even though user has not set a device preference, the default is false.
-        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
 
         var histogramWatcher =
-                HistogramWatcher.newBuilder()
+                newBuilder()
                         .expectBooleanRecordTimes(
                                 BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT, true, 1)
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_IN_SETTINGS)
                         .build();
 
         BookmarkBarUtils.setDevicePrefShowBookmarksBar(true, /* fromKeyboardShortcut= */ true);
-        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
         histogramWatcher.assertExpected();
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
 
         var histogramWatcher2 =
-                HistogramWatcher.newBuilder()
+                newBuilder()
                         .expectBooleanRecordTimes(BookmarkBarUtils.TOGGLED_IN_SETTINGS, false, 1)
                         .expectNoRecords(BookmarkBarUtils.TOGGLED_BY_KEYBOARD_SHORTCUT)
                         .build();
 
         BookmarkBarUtils.setDevicePrefShowBookmarksBar(false, /* fromKeyboardShortcut= */ false);
-        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
 
         histogramWatcher2.assertExpected();
-    }
-
-    private @NonNull <T> Answer<Void> runCallbackWithValueAtIndex(
-            @NonNull Callback<T> callback, int index) {
-        return invocation -> {
-            final T value = invocation.getArgument(index);
-            callback.onResult(value);
-            return null;
-        };
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
     }
 }
