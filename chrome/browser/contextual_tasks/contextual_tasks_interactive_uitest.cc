@@ -2770,18 +2770,16 @@ class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
     const WebContentsInteractionTestUtil::DeepQuery kReadonlyOmniboxDeepQuery =
         {"toolbar-app", "location-bar", "readonly-omnibox"};
     if (GetParam()) {
-      return Steps(
-          FocusWebContents(kPrimaryTab),
-          SendAccelerator(kBrowserViewElementId, focus_accelerator),
-          WaitForJsResultAt(
-              kWebUIToolbarId, kTextInputDeepQuery,
-              "el => new Promise(r => setTimeout(() => r(true), 500))"),
-          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
-                      "(el) => { el.focus(); el.select(); }"),
-          WaitForJsResultAt(kWebUIToolbarId, kReadonlyOmniboxDeepQuery,
-                            "el => el.adjustedCopyResult_ !== null"),
-          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
-                      "(el) => { document.execCommand('copy'); }"));
+      return Steps(FocusWebContents(kPrimaryTab),
+                   SendAccelerator(kBrowserViewElementId, focus_accelerator),
+                   WaitForJsResultAt(kWebUIToolbarId, kTextInputDeepQuery,
+                                     "el => el.matches(':focus-visible')"),
+                   ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
+                               "(el) => { el.select(); }"),
+                   WaitForJsResultAt(kWebUIToolbarId, kReadonlyOmniboxDeepQuery,
+                                     "el => el.adjustedCopyResult_ !== null"),
+                   ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
+                               "(el) => { document.execCommand('copy'); }"));
     } else {
       return Steps(FocusWebContents(kPrimaryTab),
                    SendAccelerator(kBrowserViewElementId, focus_accelerator),
@@ -2838,13 +2836,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, MAYBE_CopyUrl) {
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-  // TODO(crbug.com/542671321): FocusAndBlur/WebUI is flaky/failing on Linux
-  // MSAN.
-  if (GetParam()) {
-    GTEST_SKIP() << "Skipping FocusAndBlur/WebUI on Linux MSAN";
-  }
-#endif
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
 
   ui::Accelerator focus_accelerator;
@@ -2861,14 +2852,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
                         is_webui]() {
     if (is_webui) {
       // WebUI
-      return Steps(
-          FocusWebContents(kPrimaryTab),
-          SendAccelerator(kBrowserViewElementId, focus_accelerator),
-          WaitForJsResultAt(
-              kWebUIToolbarId, kTextInputDeepQuery,
-              "el => new Promise(r => setTimeout(() => r(true), 500))"),
-          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
-                      "(el) => { el.focus(); }"));
+      return Steps(FocusWebContents(kPrimaryTab),
+                   SendAccelerator(kBrowserViewElementId, focus_accelerator),
+                   WaitForJsResultAt(kWebUIToolbarId, kTextInputDeepQuery,
+                                     "el => el.matches(':focus-visible')"));
     } else {
       // Views
       return Steps(FocusWebContents(kPrimaryTab),
