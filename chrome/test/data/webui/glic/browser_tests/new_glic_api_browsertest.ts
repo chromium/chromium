@@ -15,6 +15,13 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  async testDefaultInvocationSource() {
+    const panelOpenData =
+        checkDefined(this.client.panelOpenData.getCurrentValue());
+    assertEquals(
+        panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
+  }
+
   async testGetUserProfileInfo() {
     assertDefined(this.host.getUserProfileInfo);
     assertDefined(this.host.getPlatform);

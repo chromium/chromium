@@ -2370,6 +2370,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDefaultInvocationSource) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetUserProfileInfo) {
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());

@@ -690,15 +690,6 @@ class GlicApiTestGeminiEnterpriseSettingsPolicyUnset
 // with additional cases and additional assertions.
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDefaultInvocationSource) {
-  RunTestSequence(CloseGlic(), WaitForGlicClose(),
-                  ToggleGlicWindowFromSource(
-                      GlicWindowMode::kAttached, kGlicButtonElementId,
-                      mojom::InvocationSource::kTopChromeButton),
-                  WaitForGlicOpen());
-  ExecuteJsTest();
-}
-
 // Checks that all tests in api_test.ts have a corresponding test case in this
 // file.
 // TODO(crbug.com/460826483): Enable on CrOS.

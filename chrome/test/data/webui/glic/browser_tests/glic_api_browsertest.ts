@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor} from './browser_test_base.js';
@@ -48,13 +48,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep(result);
   }
 
-
-  async testDefaultInvocationSource() {
-    const panelOpenData =
-        checkDefined(this.client.panelOpenData.getCurrentValue());
-    assertEquals(
-        panelOpenData.invocationSource, InvocationSource.TOP_CHROME_BUTTON);
-  }
 
   async testErrorShownOnMojoPipeError() {}
 
