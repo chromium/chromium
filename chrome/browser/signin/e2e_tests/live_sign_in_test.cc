@@ -142,8 +142,11 @@ class LiveSignInTest : public base::test::WithFeatureOverride,
 class LiveSignInTestFullSync : public LiveSignInTestBase {
  public:
   LiveSignInTestFullSync() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
   }
 
  private:
