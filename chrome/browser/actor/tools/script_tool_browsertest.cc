@@ -480,6 +480,39 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, HasTransientUserActivation) {
   EXPECT_EQ(results[0].result->script_tool_response->result, "true");
 }
 
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {
+  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "window.name = 'already-existing-top-level';"));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    document.modelContext.registerTool({
+      execute: async () => {
+        let w = window.open('/title1.html', 'already-existing-top-level');
+        return w ? "opened" : "blocked";
+      },
+      name: 'window_open_top',
+      description: 'test',
+      inputSchema: { type: 'object', properties: {} }
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  content::TestNavigationObserver nav_observer(web_contents());
+
+  auto action = MakeScriptToolRequest(*main_frame(), "window_open_top", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  nav_observer.Wait();
+
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  auto results = result.Get();
+  EXPECT_EQ(results[0].result->script_tool_response->result, "opened");
+}
+
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, WindowOpenSucceeds) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
