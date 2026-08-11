@@ -131,6 +131,12 @@ export class PolicyConflictElement extends CrLitElement {
       copyValue(valueDisplay as HTMLElement);
     }
   }
+
+  protected getCopyIconSrc(): string {
+    return document.documentElement.hasAttribute('webui-rounded-icons') ?
+        'chrome://resources/images/icon_copy_content.svg' :
+        'chrome://resources/images/icon_copy_content_old.svg';
+  }
 }
 
 declare global {

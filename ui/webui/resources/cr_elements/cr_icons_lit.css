@@ -12,39 +12,39 @@
 }
 
 .icon-arrow-dropdown {
-  --cr-icon-image: url(//resources/images/icon_arrow_dropdown.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_dropdown_old.svg);
 }
 
 .icon-arrow-drop-down-cr23 {
-  --cr-icon-image: url(//resources/images/icon_arrow_drop_down_cr23.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_drop_down_cr23_old.svg);
 }
 
 .icon-arrow-drop-up-cr23 {
-  --cr-icon-image: url(//resources/images/icon_arrow_drop_up_cr23.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_drop_up_cr23_old.svg);
 }
 
 .icon-arrow-upward {
-  --cr-icon-image: url(//resources/images/icon_arrow_upward.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_upward_old.svg);
 }
 
 .icon-arrow-forward {
-  --cr-icon-image: url(//resources/images/icon_arrow_forward.svg);
+  --cr-icon-image: url(//resources/images/icon_arrow_forward_old.svg);
 }
 
 .icon-cancel {
-  --cr-icon-image: url(//resources/images/icon_cancel.svg);
+  --cr-icon-image: url(//resources/images/icon_cancel_old.svg);
 }
 
 .icon-clear {
-  --cr-icon-image: url(//resources/images/icon_clear.svg);
+  --cr-icon-image: url(//resources/images/icon_clear_old.svg);
 }
 
 .icon-copy-content {
-  --cr-icon-image: url(//resources/images/icon_copy_content.svg);
+  --cr-icon-image: url(//resources/images/icon_copy_content_old.svg);
 }
 
 .icon-delete-gray {
-  --cr-icon-image: url(//resources/images/icon_delete_gray.svg);
+  --cr-icon-image: url(//resources/images/icon_delete_gray_old.svg);
 }
 
 .icon-edit {
@@ -52,31 +52,31 @@
 }
 
 .icon-file {
-  --cr-icon-image: url(//resources/images/icon_filetype_generic.svg);
+  --cr-icon-image: url(//resources/images/icon_filetype_generic_old.svg);
 }
 
 .icon-folder-open {
-  --cr-icon-image: url(//resources/images/icon_folder_open.svg);
+  --cr-icon-image: url(//resources/images/icon_folder_open_old.svg);
 }
 
 .icon-picture-delete {
-  --cr-icon-image: url(//resources/images/icon_picture_delete.svg);
+  --cr-icon-image: url(//resources/images/icon_picture_delete_old.svg);
 }
 
 .icon-expand-less {
-  --cr-icon-image: url(//resources/images/icon_expand_less.svg);
+  --cr-icon-image: url(//resources/images/icon_expand_less_old.svg);
 }
 
 .icon-expand-more {
-  --cr-icon-image: url(//resources/images/icon_expand_more.svg);
+  --cr-icon-image: url(//resources/images/icon_expand_more_old.svg);
 }
 
 .icon-external {
-  --cr-icon-image: url(//resources/images/open_in_new.svg);
+  --cr-icon-image: url(//resources/images/open_in_new_old.svg);
 }
 
 .icon-more-vert {
-  --cr-icon-image: url(//resources/images/icon_more_vert.svg);
+  --cr-icon-image: url(//resources/images/icon_more_vert_old.svg);
 }
 
 .icon-refresh {
@@ -88,19 +88,19 @@
 }
 
 .icon-settings {
-  --cr-icon-image: url(//resources/images/icon_settings.svg);
+  --cr-icon-image: url(//resources/images/icon_settings_old.svg);
 }
 
 .icon-visibility {
-  --cr-icon-image: url(//resources/images/icon_visibility.svg);
+  --cr-icon-image: url(//resources/images/icon_visibility_old.svg);
 }
 
 .icon-visibility-off {
-  --cr-icon-image: url(//resources/images/icon_visibility_off.svg);
+  --cr-icon-image: url(//resources/images/icon_visibility_off_old.svg);
 }
 
 .subpage-arrow {
-  --cr-icon-image: url(//resources/images/arrow_right.svg);
+  --cr-icon-image: url(//resources/images/arrow_right_old.svg);
 }
 
 .cr-icon {
@@ -133,15 +133,95 @@
 }
 
 :host-context([webui-rounded-icons]) {
-  .icon-refresh {
-    --cr-icon-image: url(//resources/images/icon_refresh.svg);
-  }
-
   .icon-arrow-back {
     --cr-icon-image: url(//resources/images/icon_arrow_back.svg);
   }
 
+  .icon-arrow-drop-down-cr23 {
+    --cr-icon-image: url(//resources/images/icon_arrow_drop_down_cr23.svg);
+  }
+
+  .icon-arrow-drop-up-cr23 {
+    --cr-icon-image: url(//resources/images/icon_arrow_drop_up_cr23.svg);
+  }
+
+  .icon-arrow-dropdown {
+    --cr-icon-image: url(//resources/images/icon_arrow_dropdown.svg);
+  }
+
+  .icon-arrow-forward {
+    --cr-icon-image: url(//resources/images/icon_arrow_forward.svg);
+  }
+
+  .icon-arrow-upward {
+    --cr-icon-image: url(//resources/images/icon_arrow_upward.svg);
+  }
+
+  .icon-cancel {
+    --cr-icon-image: url(//resources/images/icon_cancel.svg);
+  }
+
+  .icon-clear {
+    --cr-icon-image: url(//resources/images/icon_clear.svg);
+  }
+
+  .icon-copy-content {
+    --cr-icon-image: url(//resources/images/icon_copy_content.svg);
+  }
+
+  .icon-delete-gray {
+    --cr-icon-image: url(//resources/images/icon_delete_gray.svg);
+  }
+
   .icon-edit {
     --cr-icon-image: url(//resources/images/icon_edit.svg);
+  }
+
+  .icon-expand-less {
+    --cr-icon-image: url(//resources/images/icon_expand_less.svg);
+  }
+
+  .icon-expand-more {
+    --cr-icon-image: url(//resources/images/icon_expand_more.svg);
+  }
+
+  .icon-external {
+    --cr-icon-image: url(//resources/images/open_in_new.svg);
+  }
+
+  .icon-file {
+    --cr-icon-image: url(//resources/images/icon_filetype_generic.svg);
+  }
+
+  .icon-folder-open {
+    --cr-icon-image: url(//resources/images/icon_folder_open.svg);
+  }
+
+  .icon-more-vert {
+    --cr-icon-image: url(//resources/images/icon_more_vert.svg);
+  }
+
+  .icon-picture-delete {
+    --cr-icon-image: url(//resources/images/icon_picture_delete.svg);
+  }
+
+  .icon-refresh {
+    --cr-icon-image: url(//resources/images/icon_refresh.svg);
+  }
+
+  .icon-settings {
+    --cr-icon-image: url(//resources/images/icon_settings.svg);
+  }
+
+  .icon-visibility {
+    --cr-icon-image: url(//resources/images/icon_visibility.svg);
+  }
+
+  .icon-visibility-off {
+    --cr-icon-image: url(//resources/images/icon_visibility_off.svg);
+  }
+
+  .subpage-arrow {
+    --cr-icon-image: url(//resources/images/arrow_right.svg);
   }
 }

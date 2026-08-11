@@ -64,17 +64,29 @@
   }
 
   .expand-button {
-    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more_old.svg);
     height: 2em;
     width: 2em;
     margin-right: 1em;
   }
 
   .trial-row[data-expanded='true'] .expand-button {
-    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more_old.svg);
   }
 
   .trial-row:not([data-expanded='true']) .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_less_old.svg);
+  }
+
+  :host-context([webui-rounded-icons]) .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+  }
+
+  :host-context([webui-rounded-icons]) .trial-row[data-expanded='true'] .expand-button {
+    background: var(--input-background) url(chrome://resources/images/icon_expand_more.svg);
+  }
+
+  :host-context([webui-rounded-icons]) .trial-row:not([data-expanded='true']) .expand-button {
     background: var(--input-background) url(chrome://resources/images/icon_expand_less.svg);
   }
 

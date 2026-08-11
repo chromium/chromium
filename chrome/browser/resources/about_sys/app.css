@@ -29,7 +29,7 @@ h1 {
 }
 
 #header h1::before {
-  -webkit-mask-image: url(chrome://resources/images/icon_settings.svg);
+  -webkit-mask-image: url(chrome://resources/images/icon_settings_old.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 24px;
@@ -39,6 +39,10 @@ h1 {
   height: 20px;
   vertical-align: middle;
   width: 37px;
+}
+
+:host-context([webui-rounded-icons]) #header h1::before {
+  -webkit-mask-image: url(chrome://resources/images/icon_settings.svg);
 }
 
 #header p {

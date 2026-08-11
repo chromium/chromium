@@ -19,6 +19,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -31,6 +32,8 @@ namespace {
 
 constexpr char kFolderIconUrl[] =
     "chrome://resources/images/icon_folder_open.svg";
+constexpr char kFolderOldIconUrl[] =
+    "chrome://resources/images/icon_folder_open_old.svg";
 
 // The subtitle of the dialog depends on which type of data is shown and the
 // number of different types.
@@ -147,7 +150,8 @@ GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
   }
 
   if (std::holds_alternative<syncer::LocalDataItemModel::FolderIcon>(icon)) {
-    return GURL(kFolderIconUrl);
+    return GURL(features::IsRoundedIconsEnabled() ? kFolderIconUrl
+                                                  : kFolderOldIconUrl);
   }
 
   NOTREACHED() << "Unsupported icon type, index: " << icon.index();

@@ -21,7 +21,7 @@ export function getHtml(this: PolicyConflictElement) {
         @click="${this.onCopyClick}"
         title="${this.getCopyLabel()}"
         aria-label="${this.getCopyLabel()}">
-      <img src="chrome://resources/images/icon_copy_content.svg"
+      <img src="${this.getCopyIconSrc()}"
           alt="" aria-hidden="true">
     </a>
   </div>
@@ -35,7 +35,7 @@ export function getHtml(this: PolicyConflictElement) {
           @click="${this.onCopyClick}"
           title="${this.getCopyLabel()}"
           aria-label="${this.getCopyLabel()}">
-        <img src="chrome://resources/images/icon_copy_content.svg"
+        <img src="${this.getCopyIconSrc()}"
             alt="" aria-hidden="true">
       </a>
     </div>

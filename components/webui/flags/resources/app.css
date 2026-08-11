@@ -232,12 +232,16 @@ button {
 .clear-search-icon {
   background: var(--secondary-color);
   border: 0;
-  mask-image: url(chrome://resources/images/icon_cancel.svg);
+  mask-image: url(chrome://resources/images/icon_cancel_old.svg);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: 20px;
   height: 100%;
   width: 100%;
+}
+
+:host-context([webui-rounded-icons]) .clear-search-icon {
+  mask-image: url(chrome://resources/images/icon_cancel.svg);
 }
 
 @media (forced-colors: active) {

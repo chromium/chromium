@@ -239,6 +239,18 @@ export class PolicyRowElement extends CrLitElement {
   protected onToggleExpandedClick() {
     this.expanded = !this.expanded;
   }
+
+  protected getOpenInNewIconSrc(): string {
+    return document.documentElement.hasAttribute('webui-rounded-icons') ?
+        'chrome://resources/images/open_in_new.svg' :
+        'chrome://resources/images/open_in_new_old.svg';
+  }
+
+  protected getCopyIconSrc(): string {
+    return document.documentElement.hasAttribute('webui-rounded-icons') ?
+        'chrome://resources/images/icon_copy_content.svg' :
+        'chrome://resources/images/icon_copy_content_old.svg';
+  }
 }
 
 declare global {

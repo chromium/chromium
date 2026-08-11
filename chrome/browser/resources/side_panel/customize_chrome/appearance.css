@@ -104,6 +104,10 @@ cr-theme-color-picker {
 }
 
 .link-out-button {
+  --cr-icon-image: url('chrome://resources/images/open_in_new_old.svg');
+}
+
+:host-context([webui-rounded-icons]) .link-out-button {
   --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
 }
 

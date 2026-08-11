@@ -48,15 +48,23 @@
 }
 
 .sort-up-arrow {
-  background-image: url(chrome://resources/images/icon_expand_less.svg);
+  background-image: url(chrome://resources/images/icon_expand_less_old.svg);
   background-repeat: no-repeat;
   background-size: contain;
 }
 
 .sort-down-arrow {
-  background-image: url(chrome://resources/images/icon_expand_more.svg);
+  background-image: url(chrome://resources/images/icon_expand_more_old.svg);
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+:host-context([webui-rounded-icons]) .sort-up-arrow {
+  background-image: url(chrome://resources/images/icon_expand_less.svg);
+}
+
+:host-context([webui-rounded-icons]) .sort-down-arrow {
+  background-image: url(chrome://resources/images/icon_expand_more.svg);
 }
 
 @media (pointer: coarse) {
