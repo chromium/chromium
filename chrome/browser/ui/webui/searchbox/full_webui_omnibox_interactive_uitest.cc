@@ -829,6 +829,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN,
                    ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN),
       WaitForWebContentsReady(kTab2),
+      // Verify popup remains open on Tab 1.
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
       // Switch to the newly opened background tab (index 2).
       SelectTab(kTabStripElementId, 2), WaitForPopupTransitionLockout(),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),

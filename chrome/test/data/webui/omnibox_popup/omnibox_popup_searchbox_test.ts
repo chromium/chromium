@@ -824,14 +824,25 @@ suite('OmniboxPopupSearchboxTest', function() {
    mockInput.inputElement.value = 'test';
    mockInput.inputElement.dispatchEvent(new Event('test', {bubbles: true}));
 
-   // Simulate autocomplete results to open the dropdown.
+   // Simulate autocomplete results.
+   searchbox.lastQueriedInput = 'test';
    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
      queryId: searchbox.activeQueryId,
      input: 'test',
-     matches: [createSearchMatchForTesting(), createSearchMatchForTesting()],
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         inlineAutocompletion: 'ing',
+         fillIntoEdit: 'testing',
+       }),
+       createSearchMatchForTesting(),
+     ],
    }));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
+   assertEquals('testing', searchbox.getInputElement().getInputValue());
+   assertEquals('test', searchbox.getInputElement().lastInput()?.text);
+   assertEquals('ing', searchbox.getInputElement().lastInput()?.inline);
 
    // Simulate `Enter` with Alt + Shift keys (background tab).
    searchbox.navigateToMatch(
@@ -840,6 +851,9 @@ suite('OmniboxPopupSearchboxTest', function() {
            'keydown', {key: 'Enter', altKey: true, shiftKey: true}));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
+   assertEquals('testing', searchbox.getInputElement().getInputValue());
+   assertEquals('test', searchbox.getInputElement().lastInput()?.text);
+   assertEquals('ing', searchbox.getInputElement().lastInput()?.inline);
 
    // Simulate `Enter` with Meta key and without Shift key (background tab).
    searchbox.navigateToMatch(
@@ -848,6 +862,9 @@ suite('OmniboxPopupSearchboxTest', function() {
            'keydown', {key: 'Enter', metaKey: true, shiftKey: false}));
    await microtasksFinished();
    assertTrue(searchbox.dropdownIsVisible);
+   assertEquals('testing', searchbox.getInputElement().getInputValue());
+   assertEquals('test', searchbox.getInputElement().lastInput()?.text);
+   assertEquals('ing', searchbox.getInputElement().lastInput()?.inline);
 
    // Simulate a normal Enter key (foreground tab).
    searchbox.navigateToMatch(0, new KeyboardEvent('keydown', {key: 'Enter'}));
