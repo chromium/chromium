@@ -62,13 +62,9 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
         super(new OmahaClientDelegate());
     }
 
-    OmahaService(OmahaDelegate delegate) {
-        super(delegate);
-    }
-
     /**
-     * Trigger the {@link BackgroundTaskScheduler} immediately. Must only be called by {@link
-     * OmahaBase#onForegroundSessionStart}.
+     * Trigger the {@link BackgroundTaskScheduler} immediately.
+     * Must only be called by {@link OmahaBase#onForegroundSessionStart}.
      */
     static void startServiceImmediately() {
         if (sHasPendingJob) return;
@@ -95,7 +91,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
                         callback.taskFinished(false);
                     }
                 }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-        return true;
+        return false;
     }
 
     @Override
@@ -104,7 +100,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
         // clear this flag to avoid getting stuck in state where we won't ever be scheduled again.
         sHasPendingJob = false;
         if (mJobServiceTask != null) {
-            mJobServiceTask.cancel(true);
+            mJobServiceTask.cancel(false);
             mJobServiceTask = null;
         }
         return false;
