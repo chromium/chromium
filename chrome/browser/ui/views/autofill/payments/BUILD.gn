@@ -96,3 +96,26 @@ source_set("bnpl_tos_view_desktop") {
     "//content/public/browser",
   ]
 }
+
+source_set("autofill_error_dialog_view_native_views") {
+  public = [ "autofill_error_dialog_view_native_views.h" ]
+  sources = [ "autofill_error_dialog_view_native_views.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/gfx",
+  ]
+}

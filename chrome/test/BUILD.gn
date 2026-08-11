@@ -3685,6 +3685,7 @@ if (!is_android) {
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:hung_renderer_view",
         "//chrome/browser/ui/views/autofill/autofill_ai",
+        "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",
         "//chrome/browser/ui/views/autofill/payments:bnpl_tos_view_desktop",
         "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
         "//chrome/browser/ui/views/autofill/payments:payments_view_util",
