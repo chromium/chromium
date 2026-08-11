@@ -1190,7 +1190,8 @@ const CSSValue* StyleCascade::Resolve(
   DCHECK(result);
 
   if (result->IsRevertValue()) {
-    return ResolveRevert(property, *result, tree_scope, origin, resolver);
+    return ResolveRevert(property, *result, tree_scope, priority, origin,
+                         resolver);
   }
   if (result->IsRevertLayerValue() || TreatAsRevertLayer(priority)) {
     return ResolveRevertLayer(property, tree_scope, priority, origin, resolver);
@@ -1528,6 +1529,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
                                             const CSSValue& value,
                                             const TreeScope* tree_scope,
+                                            CascadePriority priority,
                                             CascadeOrigin& origin,
                                             CascadeResolver& resolver) {
   MaybeUseCountRevert(value);
@@ -1545,16 +1547,7 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
     case CascadeOrigin::kAnimation: {
       const CascadePriority* p =
           map_.Find(property.GetCSSPropertyName(), target_origin);
-      if (!p || !p->HasOrigin()) {
-        origin = CascadeOrigin::kNone;
-        return cssvalue::CSSUnsetValue::Create();
-      }
-      origin = p->GetOrigin();
-      return Resolve(
-          property,
-          *ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex()),
-          GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin,
-          resolver);
+      return ResolveRevertTo(p, property, priority, origin, resolver);
     }
   }
 }
@@ -1566,15 +1559,7 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
                                                  CascadeResolver& resolver) {
   const CascadePriority* p = map_.FindRevertLayer(
       property.GetCSSPropertyName(), priority.ForLayerComparison());
-  if (!p || !p->HasOrigin()) {
-    origin = CascadeOrigin::kNone;
-    return cssvalue::CSSUnsetValue::Create();
-  }
-  origin = p->GetOrigin();
-  return Resolve(
-      property,
-      *ValueAt(match_result_, p->GetRuleIndex(), p->GetDeclarationIndex()),
-      GetTreeScope(*p), GetMixinParameterBindings(*p), *p, origin, resolver);
+  return ResolveRevertTo(p, property, priority, origin, resolver);
 }
 
 const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
@@ -1584,7 +1569,18 @@ const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
                                                 CascadeResolver& resolver) {
   const CascadePriority* p =
       map_.FindRevertRule(property.GetCSSPropertyName(), priority);
-  if (!p || !p->HasOrigin()) {
+  return ResolveRevertTo(p, property, priority, origin, resolver);
+}
+
+const CSSValue* StyleCascade::ResolveRevertTo(const CascadePriority* p,
+                                              const CSSProperty& property,
+                                              CascadePriority priority,
+                                              CascadeOrigin& origin,
+                                              CascadeResolver& resolver) {
+  // TODO Returning unset for (*p >= priority) is not specified and we should
+  // change it if necessary after a resolution is made here:
+  // https://github.com/w3c/csswg-drafts/issues/13916
+  if (!p || !p->HasOrigin() || (*p >= priority)) {
     origin = CascadeOrigin::kNone;
     return cssvalue::CSSUnsetValue::Create();
   }
