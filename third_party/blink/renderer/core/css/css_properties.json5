@@ -8452,6 +8452,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       keywords: ["medium", "thick", "thin"],
+      typedom_types: ["Keyword", "Length"],
     },
     {
       name: "border-inline-start-style",
@@ -8464,6 +8465,7 @@
       valid_for_page_context: true,
       keywords: ["none", "hidden", "inset", "groove", "outset", "ridge",
                 "dotted", "dashed", "solid", "double"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-inline-start-color",
@@ -8475,6 +8477,8 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      keywords: ["currentcolor"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-inline-end-width",
@@ -8487,6 +8491,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       keywords: ["medium", "thick", "thin"],
+      typedom_types: ["Keyword", "Length"],
     },
     {
       name: "border-inline-end-style",
@@ -8499,6 +8504,7 @@
       valid_for_page_context: true,
       keywords: ["none", "hidden", "inset", "groove", "outset", "ridge",
                 "dotted", "dashed", "solid", "double"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-inline-end-color",
@@ -8510,6 +8516,8 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      keywords: ["currentcolor"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-block-start-width",
@@ -8522,6 +8530,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       keywords: ["medium", "thick", "thin"],
+      typedom_types: ["Keyword", "Length"],
     },
     {
       name: "border-block-start-style",
@@ -8534,6 +8543,7 @@
       valid_for_page_context: true,
       keywords: ["none", "hidden", "inset", "groove", "outset", "ridge",
                 "dotted", "dashed", "solid", "double"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-block-start-color",
@@ -8545,6 +8555,8 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      keywords: ["currentcolor"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-block-end-width",
@@ -8557,6 +8569,7 @@
       valid_for_permission_element: true,
       valid_for_page_context: true,
       keywords: ["medium", "thick", "thin"],
+      typedom_types: ["Keyword", "Length"],
     },
     {
       name: "border-block-end-style",
@@ -8569,6 +8582,7 @@
       valid_for_page_context: true,
       keywords: ["none", "hidden", "inset", "groove", "outset", "ridge",
                 "dotted", "dashed", "solid", "double"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "border-block-end-color",
@@ -8580,6 +8594,8 @@
       valid_for_first_letter: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      keywords: ["currentcolor"],
+      typedom_types: ["Keyword"],
     },
     {
       name: "inset-inline-start",
