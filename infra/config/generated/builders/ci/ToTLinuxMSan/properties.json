@@ -30,7 +30,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "clang_tot"
+                  "clang_tot",
+                  "checkout_instrumented_libraries"
                 ],
                 "config": "chromium"
               }

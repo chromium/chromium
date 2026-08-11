@@ -537,6 +537,7 @@ linux_memory_builder(
             config = "chromium",
             apply_configs = [
                 "chromeos",
+                "checkout_instrumented_libraries",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -677,6 +678,7 @@ linux_memory_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_instrumented_libraries",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1307,6 +1309,7 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_instrumented_libraries",
             ],
         ),
         chromium_config = builder_config.chromium_config(

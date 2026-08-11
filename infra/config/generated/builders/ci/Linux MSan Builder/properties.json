@@ -25,6 +25,9 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "checkout_instrumented_libraries"
+                ],
                 "config": "chromium"
               }
             }

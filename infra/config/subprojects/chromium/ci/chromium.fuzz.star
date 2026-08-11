@@ -835,6 +835,7 @@ def browser_msan_builder(**kwargs):
     return browser_builder(
         chromium_config_name = "chromium_clang",
         chromium_extra_apply_configs = ["clobber", "msan"],
+        gclient_apply_configs = ["checkout_instrumented_libraries"],
         build_config = builder_config.build_config.RELEASE,
         target_bits = 64,
         target_platform = builder_config.target_platform.LINUX,
@@ -1171,6 +1172,7 @@ libfuzzer_linux_builder(
     clusterfuzz_archive_path = "linux-release-msan/libfuzzer-linux-release",
     clusterfuzz_archive_schema_version = 1,
     console_short_name = "linux-msan",
+    gclient_apply_configs = ["checkout_instrumented_libraries"],
     gn_extra_configs = [
         "msan",
         "disable_seed_corpus",
