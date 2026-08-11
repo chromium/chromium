@@ -758,7 +758,13 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
+// TODO(crbug.com/540863131): Flaky on Linux ARM64.
+#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+#define MAYBE_PasteWithoutTextChange DISABLED_PasteWithoutTextChange
+#else
+#define MAYBE_PasteWithoutTextChange PasteWithoutTextChange
+#endif
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_PasteWithoutTextChange) {
   constexpr char16_t kSearchA[] = u"a";
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
 
