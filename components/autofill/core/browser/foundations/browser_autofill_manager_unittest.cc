@@ -636,6 +636,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideAutofillFieldIph, (), (override));
   MOCK_METHOD(bool, IsTabInActorMode, (), (const override));
   MOCK_METHOD(AutofillAiManager*, GetAutofillAiManager, (), (override));
+  MOCK_METHOD(void, ShowAutofillAiPrivateInferenceNotice, (), (override));
 };
 
 class MockTouchToFillPaymentMethodDelegate
@@ -6247,6 +6248,49 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   EXPECT_FALSE(adm.GetProfiles().empty());
 }
 
+// Tests that Autofill suggestions are not shown if TouchToFillAutofill is
+// eligible. The private inference notice should not be shown
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       TouchToFillAutofillSuggestion_ShowsIfEligible) {
+  SeeForm(/*may_run_model=*/false);
+
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).Times(0);
+  // The private inference notice should not be shown when touch to fill bottom
+  // sheet is shown.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice).Times(0);
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(true));
+  TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
+                       /*form_element_was_clicked=*/true);
+  EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that Autofill suggestions are shown if TouchToFillAutofill is not
+// eligible.
+TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
+       TouchToFillAutofillSuggestion_DoesNotShowIfNotEligible) {
+  SeeForm(/*may_run_model=*/false);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
+  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
+
+  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
+      .WillOnce(testing::Return(false));
+  // The private inference notice should be shown when touch to fill bottom
+  // sheet is shown.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice);
+  TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
+                       /*form_element_was_clicked=*/true);
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(Field(
+                  &Suggestion::type,
+                  Eq(SuggestionType::kAutofillAiPrivateInferenceNotice))));
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 class BrowserAutofillManagerTest_MockAutofillAi_WithModel
@@ -7490,34 +7534,6 @@ TEST_F(
       AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
-}
-
-// Tests that Autofill suggestions are not shown if TouchToFillAutofill is
-// eligible.
-TEST_F(BrowserAutofillManagerTest,
-       TouchToFillAutofillSuggestion_ShowsIfEligible) {
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
-      .WillOnce(testing::Return(true));
-  TryToShowTouchToFill(form, form.fields()[0],
-                       /*form_element_was_clicked=*/true);
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Tests that Autofill suggestions are shown if TouchToFillAutofill is not
-// eligible.
-TEST_F(BrowserAutofillManagerTest,
-       TouchToFillAutofillSuggestion_DoesNotShowIfNotEligible) {
-  FormData form = CreateTestAddressFormData();
-  FormsSeen({form});
-
-  EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
-      .WillOnce(testing::Return(false));
-  TryToShowTouchToFill(form, form.fields()[0],
-                       /*form_element_was_clicked=*/true);
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
 }  // namespace

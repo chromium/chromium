@@ -1592,8 +1592,6 @@ void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
   GetAutofillMessageController()->Show(
       AutofillMessageModel::CreateForPrivateInferenceNotice(
           web_contents(), std::move(action_callback)));
-#else
-  NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

@@ -523,6 +523,12 @@ class BrowserAutofillManager : public AutofillManager {
       const std::vector<Suggestion>& suggestions,
       AutofillSuggestionTriggerSource trigger_source);
 
+  // Shows the private inference notice on Android, if the list of suggestions
+  // has a private inference notice suggestion. The notice is shows as an
+  // message on android, unlike Desktop, where it's shown as a suggestion.
+  bool MaybeShowPrivateInferenceNotice(
+      base::span<const Suggestion> autofill_ai_suggestions);
+
   // Merges suggestions with `FillingProduct::kAddress` with the other
   // suggestions whose products supports merging with address suggestions (see
   // `kSupportedMerges` in `suggestion_generator.h` for more details).
