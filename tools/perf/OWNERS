@@ -1,9 +1,14 @@
 # Overall OWNERS
+ammedina@google.com
+carlosbarrera@google.com
+davidsegovia@google.com
 faridzad@google.com
+ggj@google.com
+gmarcoesau@google.com
 jeffyoon@google.com
 johnchen@chromium.org
-maxqli@google.com
-pasthana@google.com
+jrtm@google.com
+migueloruiz@google.com
 wenbinzhang@google.com
 
 # For gtest perf tests, perf data upload, and functional tests
