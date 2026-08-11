@@ -492,9 +492,9 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
       if (pos + size < pos || pos + size > compressed_bitmap_span.size()) {
         return 0;
       }
-      // TODO(thestig): spanify arguments to remove the error.
-      base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
-      buf_span.copy_from(compressed_bitmap_span.subspan(pos, size));
+      // SAFETY: PDFium provides a valid pointer and size for `buf`.
+      UNSAFE_BUFFERS(base::span(buf, size))
+          .copy_from(compressed_bitmap_span.subspan(pos, size));
       return 1;
     };
     file_access.m_Param = &compressed_bitmap_span;

@@ -700,12 +700,17 @@ int PDFiumFormFiller::Form_Response(IPDF_JSPLATFORM* param,
 
   std::string rv = engine->client_->Prompt(question_str, default_str);
   std::u16string rv_16 = base::UTF8ToUTF16(rv);
-  int rv_bytes = rv_16.size() * sizeof(char16_t);
+  auto rv_16_span = base::as_byte_span(rv_16);
   if (response) {
-    int bytes_to_copy = rv_bytes < length ? rv_bytes : length;
-    UNSAFE_TODO(memcpy(response, rv_16.c_str(), bytes_to_copy));
+    CHECK_GE(length, 0);
+    // SAFETY: Requires PDFium to provide a valid pointer and length.
+    auto response_span = UNSAFE_BUFFERS(base::span(
+        static_cast<uint8_t*>(response), static_cast<size_t>(length)));
+    size_t bytes_to_copy = std::min(response_span.size(), rv_16_span.size());
+    response_span.first(bytes_to_copy)
+        .copy_from(rv_16_span.first(bytes_to_copy));
   }
-  return rv_bytes;
+  return rv_16_span.size();
 }
 
 // static
@@ -723,7 +728,12 @@ int PDFiumFormFiller::Form_GetFilePath(IPDF_JSPLATFORM* param,
   // Account for the trailing null.
   int necessary_length = rv.size() + 1;
   if (file_path && necessary_length <= length) {
-    UNSAFE_TODO(memcpy(file_path, rv.c_str(), necessary_length));
+    CHECK_GE(length, 0);
+    // SAFETY: Requires PDFium to provide a valid pointer and length.
+    auto file_path_span = UNSAFE_BUFFERS(
+        base::span(static_cast<char*>(file_path), static_cast<size_t>(length)));
+    file_path_span.copy_prefix_from(rv);
+    file_path_span[rv.size()] = '\0';
   }
   return necessary_length;
 }

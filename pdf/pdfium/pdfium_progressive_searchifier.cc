@@ -58,9 +58,9 @@ void PdfiumProgressiveSearchifier::AddPage(
     if (pos + size < pos || pos + size > encoded_span.size()) {
       return 0;
     }
-    // TODO(thestig): spanify arguments to remove the error.
-    base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
-    buf_span.copy_from(encoded_span.subspan(pos, size));
+    // SAFETY: PDFium provides a valid pointer and size for `buf`.
+    UNSAFE_BUFFERS(base::span(buf, size))
+        .copy_from(encoded_span.subspan(pos, size));
     return 1;
   };
   file_access.m_Param = &encoded_span;
