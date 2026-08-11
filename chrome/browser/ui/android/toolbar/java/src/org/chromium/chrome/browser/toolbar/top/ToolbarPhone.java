@@ -67,6 +67,7 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
@@ -362,9 +363,11 @@ public class ToolbarPhone extends ToolbarLayout
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
         mLocationBarBackgroundColorForNtp =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        locationBarBackgroundColorAlphaForNtp);
+                NewTabPageUtils.isNtpAuroraEnabled()
+                        ? getNtpAuroraLocationBarBackgroundColor(context)
+                        : ColorUtils.setAlphaComponentWithFloat(
+                                SemanticColorUtils.getDefaultIconColorAccent1(context),
+                                locationBarBackgroundColorAlphaForNtp);
         mDisableLocationBarRelayout = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
     }
 
@@ -555,10 +558,18 @@ public class ToolbarPhone extends ToolbarLayout
         }
     }
 
+    private static @ColorInt int getNtpAuroraLocationBarBackgroundColor(Context context) {
+        @ColorInt int baseColor = context.getColor(R.color.fake_search_box_base_color);
+        @ColorInt int tintColor = context.getColor(R.color.color_primary_with_alpha_2);
+        return ColorUtils.overlayColor(baseColor, tintColor);
+    }
+
     // Update location bar background to match NTP fakebox.
     private void updateToNtpBackground() {
         mLocationBarBackground.setBackgroundColor(
-                getContext().getColor(R.color.color_primary_with_alpha_15));
+                NewTabPageUtils.isNtpAuroraEnabled()
+                        ? getNtpAuroraLocationBarBackgroundColor(getContext())
+                        : getContext().getColor(R.color.color_primary_with_alpha_15));
         mLocationBarBackground.setCornerRadius(
                 getResources()
                         .getDimensionPixelSize(R.dimen.home_surface_search_box_background_radius));

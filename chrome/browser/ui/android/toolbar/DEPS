@@ -2,6 +2,7 @@ include_rules = [
   "+base/test/android",
   "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
   "+chrome/android/features/tab_ui/public",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java",
   "+chrome/browser/ui/android/actions",
   "+chrome/browser/ui/android/bottombar",
   "+chrome/browser/ui/messages/android/java",
