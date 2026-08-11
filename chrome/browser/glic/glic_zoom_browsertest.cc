@@ -90,20 +90,20 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeys) {
   ASSERT_GT(zoom_reset_accels.size(), 1u);
   ASSERT_TRUE(zoom_reset_accels[1].modifiers() & ui::EF_SHIFT_DOWN);
 
-  // Trigger accelerator for zoom-in with Shift
+  // Trigger accelerator for zoom-in with Shift.
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_in_accels[1]));
   ASSERT_OK(RunUntilEqual<double>(
       [&]() { return GetZoomLevel(instance); }, 1.1,
       "Zoom level did not increase to 1.1 with Shift modifier"));
 
-  // Trigger accelerator for zoom-out with Shift
+  // Trigger accelerator for zoom-out with Shift.
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_out_accels[1]));
   ASSERT_OK(RunUntilEqual<double>(
       [&]() { return GetZoomLevel(instance); }, 1.0,
       "Zoom level did not decrease to 1.0 with Shift modifier"));
 
-  // Trigger accelerator for zoom-reset with Shift
-  // (First zoom in again so we can prove that reset scales it back)
+  // Trigger accelerator for zoom-reset with Shift.
+  // (First zoom in again so we can prove that reset scales it back.)
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_in_accels[1]));
   ASSERT_OK(RunUntilEqual<double>(
       [&]() { return GetZoomLevel(instance); }, 1.1,
@@ -113,8 +113,6 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeys) {
   ASSERT_OK(RunUntilEqual<double>(
       [&]() { return GetZoomLevel(instance); }, 1.0,
       "Zoom level did not reset to 1.0 with Shift modifier"));
-
-  // --- END NEW TEST CODE ---
 }
 
 IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeysPersisted) {
