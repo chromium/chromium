@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_string_filtering_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -517,22 +518,21 @@ bool MatchesStringFilter(
           AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT) {
     return true;
   }
-  std::u16string normalized_entry =
+  std::u16string normalized_target_tokens =
       normalization::NormalizeForComparison(entry_string);
-  std::u16string normalized_filter =
+  std::u16string normalized_filter_tokens =
       normalization::NormalizeForComparison(base::UTF8ToUTF16(filter.value()));
   switch (filter.mode()) {
     case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_EXACT:
-      return normalized_entry == normalized_filter;
-    case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_FUZZY:
-      // TODO(crbug.com/542022101): The current implementation is not fuzzy
-      // mode - fuzzy mode should also handle mistyped or missed characters.
-      [[fallthrough]];
+      return normalized_target_tokens == normalized_filter_tokens;
     case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_SUBSTRING:
+      return normalized_target_tokens.contains(normalized_filter_tokens);
+    case AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_FUZZY:
     case AutofillFetchSpecification::StringFilter::
         STRING_FILTER_MODE_UNSPECIFIED:
     default:
-      return normalized_entry.contains(normalized_filter);
+      return FuzzyMatchesOrderedTokens(normalized_target_tokens,
+                                       normalized_filter_tokens);
   }
 }
 

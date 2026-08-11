@@ -1869,6 +1869,38 @@ TEST_F(AtMemoryQueryServiceTest,
               SuccessfulSearchResults(SearchResultWithValue(u"timothe")));
 }
 
+// Tests that fuzzy string filter mode matches entries with minor typos or
+// missing words.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_FiltersLocalDataUsingFetchSpecifications_StringFilterFuzzyMode) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAtMemoryTypedFetchPlan);
+
+  AtMemoryQueryResponse response = CreateQueryResponse();
+  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
+  auto* spec = plan->add_fetch_specifications();
+  spec->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  auto* filter = spec->add_filters();
+  filter->mutable_string_filter()->set_value("123 Main Stret");
+  filter->mutable_string_filter()->set_mode(
+      AutofillFetchSpecification::StringFilter::STRING_FILTER_MODE_FUZZY);
+
+  StubFetchContextResponse(std::move(response));
+
+  MemorySearchResult match_entry(MemoryDataType::kAddressFull, u"Address",
+                                 u"123 Main Street");
+  MemorySearchResult reject_entry(MemoryDataType::kAddressFull, u"Address",
+                                  u"456 Market Road");
+  auto service = CreateQueryProviderWithResults({match_entry, reject_entry});
+
+  TestFuture<MemorySearchResults> future;
+  service->Query(u"address", GURL("https://example.com"), u"Title",
+                 future.GetRepeatingCallback());
+
+  EXPECT_THAT(future.Get(), SuccessfulSearchResults(
+                                SearchResultWithValue(u"123 Main Street")));
+}
+
 // Tests that local results are filtered using typed value filters in fetch
 // specifications.
 TEST_F(AtMemoryQueryServiceTest,
