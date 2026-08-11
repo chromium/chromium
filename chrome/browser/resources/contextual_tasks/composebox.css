@@ -585,11 +585,6 @@
     visibility 0ms;
 }
 
-/* TODO(crbug.com/454388827: - Color the tab chips to spec. */
-#composebox::part(context-entrypoint) {
-  transition-delay: 0ms;
-}
-
 #composebox::part(dropdown) {
   --cr-composebox-match-height: 54px;
 
