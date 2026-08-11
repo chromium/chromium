@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -260,6 +261,10 @@ TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
       });
   [dispatcher startDispatchingToTarget:mockBrowserCoordinatorHandler
                            forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+  id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
+  [dispatcher startDispatchingToTarget:mockGeminiHandler
+                           forProtocol:@protocol(GeminiCommands)];
 
   __block bool completed = false;
   [coordinator_

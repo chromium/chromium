@@ -589,12 +589,11 @@ inline LayoutStateScenePassKey PassKey() {
 
   [self closePresentedViews:NO completion:closePresentedViewsCompletion];
 
-  [_geminiContainerCoordinator stop];
-  _geminiContainerCoordinator = nil;
-  [_geminiFirstRunCoordinator stop];
-  _geminiFirstRunCoordinator = nil;
   [_geminiEntryFlowCoordinator stop];
   _geminiEntryFlowCoordinator = nil;
+  id<GeminiCommands> geminiHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), GeminiCommands);
+  [geminiHandler dismissGeminiFlowWithCompletion:nil];
 
   // Verify that no modal views are left presented.
   ios::provider::LogIfModalViewsArePresented();
