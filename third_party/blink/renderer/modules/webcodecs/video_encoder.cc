@@ -1032,8 +1032,18 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     auto metadata_fix_lambda = [](scoped_refptr<media::VideoFrame> txt_frame,
                                   scoped_refptr<media::VideoFrame> result_frame)
         -> scoped_refptr<media::VideoFrame> {
-      if (!result_frame)
+      if (!result_frame) {
         return result_frame;
+      }
+      if (txt_frame->visible_rect() != gfx::Rect(txt_frame->coded_size()) ||
+          txt_frame->natural_size() != txt_frame->coded_size()) {
+        result_frame = media::VideoFrame::WrapVideoFrame(
+            result_frame, result_frame->format(), txt_frame->visible_rect(),
+            txt_frame->natural_size());
+        if (!result_frame) {
+          return nullptr;
+        }
+      }
       result_frame->set_timestamp(txt_frame->timestamp());
       result_frame->set_hdr_metadata(txt_frame->hdr_metadata());
       result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
