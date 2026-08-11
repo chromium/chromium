@@ -863,6 +863,8 @@ void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
     if (base::FeatureList::IsEnabled(kVariationsRuntimeMutability)) {
       SimulateAndApplyRuntimeMutableChanges(seed);
     }
+
+    NotifySeedFetched();
   }
 }
 
@@ -954,7 +956,8 @@ void VariationsService::FetchVariationsSeed() {
   DoActualFetch();
 }
 
-void VariationsService::NotifyObservers(const SeedSimulationResult& result) {
+void VariationsService::NotifyExperimentChangesDetected(
+    const SeedSimulationResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result.kill_critical_group_change_count > 0) {
@@ -965,6 +968,14 @@ void VariationsService::NotifyObservers(const SeedSimulationResult& result) {
     for (auto& observer : observer_list_) {
       observer.OnExperimentChangesDetected(Observer::BEST_EFFORT);
     }
+  }
+}
+
+void VariationsService::NotifySeedFetched() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& observer : observer_list_) {
+    observer.OnSeedFetched();
   }
 }
 
@@ -1134,7 +1145,7 @@ void VariationsService::PerformSimulationWithVersion(
       field_trial_creator_.GetClientFilterableStateForVersion(version);
   auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers_);
 
-  NotifyObservers(result);
+  NotifyExperimentChangesDetected(result);
 }
 
 ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(

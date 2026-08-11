@@ -92,6 +92,10 @@ class VariationsService
     // update UI (i.e. badging an icon).
     virtual void OnExperimentChangesDetected(Severity severity) = 0;
 
+    // Called when a new seed has been successfully fetched from the
+    // variations server.
+    virtual void OnSeedFetched() {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -381,7 +385,9 @@ class VariationsService
       const VariationsSeed& seed);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, Observer);
+  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
+                           Observer_OnExperimentChangesDetected);
+  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, Observer_OnSeedFetched);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedStoredWhenOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedNotStoredWhenNonOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, InstanceManipulations);
@@ -412,7 +418,10 @@ class VariationsService
   void FetchVariationsSeed();
 
   // Notify any observers of this service based on the simulation |result|.
-  void NotifyObservers(const SeedSimulationResult& result);
+  void NotifyExperimentChangesDetected(const SeedSimulationResult& result);
+
+  // Notify observers that a variations seed has been successfully fetched.
+  void NotifySeedFetched();
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);

@@ -293,11 +293,15 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
     }
   }
 
+  void OnSeedFetched() override { ++seed_fetched_notified_; }
+
   int best_effort_changes_notified() const {
     return best_effort_changes_notified_;
   }
 
   int crticial_changes_notified() const { return crticial_changes_notified_; }
+
+  int seed_fetched_notified() const { return seed_fetched_notified_; }
 
  private:
   // Number of notification received with BEST_EFFORT severity.
@@ -305,6 +309,9 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
 
   // Number of notification received with CRITICAL severity.
   int crticial_changes_notified_ = 0;
+
+  // Number of notifications received for seed fetch completion.
+  int seed_fetched_notified_ = 0;
 };
 
 // Constants used to create the test seed.
@@ -346,8 +353,9 @@ void AddOKResponseWithIM(
   auto head = network::mojom::URLResponseHead::New();
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
-  if (!im.empty())
+  if (!im.empty()) {
     head->headers->SetHeader("IM", im);
+  }
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = base::ByteSize(body.size());
   test_url_loader_factory->AddResponse(interception_url, std::move(head), body,
@@ -770,7 +778,7 @@ TEST_F(VariationsServiceTest, CountryHeaderNotTrustedOverHTTP) {
   EXPECT_TRUE(service.stored_geo_level().empty());
 }
 
-TEST_F(VariationsServiceTest, Observer) {
+TEST_F(VariationsServiceTest, Observer_OnExperimentChangesDetected) {
   VariationsService service(
       std::make_unique<TestVariationsServiceClient>(),
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
@@ -797,7 +805,7 @@ TEST_F(VariationsServiceTest, Observer) {
     result.normal_group_change_count = test_case.normal_count;
     result.kill_best_effort_group_change_count = test_case.best_effort_count;
     result.kill_critical_group_change_count = test_case.critical_count;
-    service.NotifyObservers(result);
+    service.NotifyExperimentChangesDetected(result);
 
     EXPECT_EQ(test_case.expected_best_effort_notifications,
               observer.best_effort_changes_notified());
@@ -806,6 +814,36 @@ TEST_F(VariationsServiceTest, Observer) {
 
     service.RemoveObserver(&observer);
   }
+}
+
+TEST_F(VariationsServiceTest, Observer_OnSeedFetched) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true);
+
+  TestVariationsServiceObserver observer;
+  service.AddObserver(&observer);
+
+  EXPECT_EQ(0, observer.seed_fetched_notified());
+
+  // Simulating a successful seed store should trigger OnSeedFetched()
+  // notification.
+  service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*store_success=*/true, VariationsSeed());
+  EXPECT_EQ(1, observer.seed_fetched_notified());
+
+  // Failed seed store should not trigger OnSeedFetched() notification.
+  service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*store_success=*/false, VariationsSeed());
+  EXPECT_EQ(1, observer.seed_fetched_notified());
+
+  // 304 response (RecordSuccessfulFetchSeedNotModified) should not trigger
+  // OnSeedFetched() notification.
+  service.RecordSuccessfulFetchSeedNotModified(base::Time::Now());
+  EXPECT_EQ(1, observer.seed_fetched_notified());
+
+  service.RemoveObserver(&observer);
 }
 
 TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
