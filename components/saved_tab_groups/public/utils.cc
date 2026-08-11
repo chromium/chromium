@@ -10,9 +10,6 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/constants.h"  // nogncheck
-#endif
 #include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_service.h"
@@ -90,11 +87,15 @@ bool IsURLValidForSavedTabGroups(const GURL& gurl) {
 }
 
 bool IsURLValidForLocalTab(const GURL& gurl) {
-  return IsURLValidForSavedTabGroups(gurl) || gurl.SchemeIsFile()
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-         || gurl.SchemeIs(extensions::kExtensionScheme)
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  // Extensions don't exist on this platform (e.g. iOS), so an extension URL
+  // can't be loaded. extensions::kExtensionScheme is unavailable here, so match
+  // the scheme literal directly.
+  if (gurl.SchemeIs("chrome-extension")) {
+    return false;
+  }
 #endif
-      ;
+  return gurl.is_valid() && gurl != GURL(kChromeSavedTabGroupUnsupportedURL);
 }
 
 std::pair<GURL, std::u16string> GetDefaultUrlAndTitle() {

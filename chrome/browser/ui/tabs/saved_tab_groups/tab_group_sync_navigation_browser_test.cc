@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -318,11 +319,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   const tab_groups::TabGroupId local_id = tabstrip->AddToNewGroup({0});
   VerifyWrittenToSync(/*write_events_since_last=*/1);
 
-  // Simulate a tab added event from sync.
-  const GURL url = GURL("chrome://history");
+  // Simulate a tab added event from sync with an unsupported URL.
+  const GURL url = GURL(kChromeSavedTabGroupUnsupportedURL);
 
   const SavedTabGroup* saved_group = model->Get(local_id);
-  SavedTabGroupTab incoming_tab(url, u"History", saved_group->saved_guid(),
+  SavedTabGroupTab incoming_tab(url, u"Unsupported", saved_group->saved_guid(),
                                 std::make_optional(1));
   model->AddTabToGroupFromSync(saved_group->saved_guid(), incoming_tab);
   Wait();
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   // There should be no write event back to sync.
   VerifyWrittenToSync(/*write_events_since_last=*/0);
 
-  // The added tab should open the NTP instead of chrome://history.
+  // The added tab should open the NTP instead of the unsupported URL.
   EXPECT_EQ(tabstrip->GetWebContentsAt(1)->GetURL(),
             GURL(chrome::kChromeUINewTabURL));
 }
