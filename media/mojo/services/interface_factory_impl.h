@@ -146,6 +146,8 @@ class InterfaceFactoryImpl final
   mojo::UniqueReceiverSet<mojom::Renderer> renderer_receivers_;
 #endif
 
+  mojo::Remote<mojom::FrameInterfaceFactory> frame_interfaces_;
+
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   std::unique_ptr<CdmFactory> cdm_factory_;
   mojo::UniqueReceiverSet<mojom::ContentDecryptionModule> cdm_receivers_;
@@ -154,8 +156,6 @@ class InterfaceFactoryImpl final
   std::map<MojoCdmService*, std::unique_ptr<MojoCdmService>>
       pending_mojo_cdm_services_;
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
-
-  mojo::Remote<mojom::FrameInterfaceFactory> frame_interfaces_;
 
   mojo::UniqueReceiverSet<mojom::Decryptor> decryptor_receivers_;
 
