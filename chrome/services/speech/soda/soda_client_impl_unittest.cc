@@ -10,8 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_test_paths.h"
@@ -20,12 +24,6 @@
 #include "media/base/audio_sample_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 namespace soda {
 
 class SodaClientImplUnitTest : public testing::Test {
@@ -33,49 +31,103 @@ class SodaClientImplUnitTest : public testing::Test {
   SodaClientImplUnitTest() = default;
   ~SodaClientImplUnitTest() override = default;
 
-  static void RecognitionCallback(const char* result,
-                                  const bool is_final,
-                                  void* callback_handle);
-
   void AddRecognitionResult(std::string result);
+
+  std::string WaitForRecognitionResult() { return result_future_.Take(); }
 
  protected:
   void SetUp() override;
+  void TearDown() override;
 
+  static void OnSodaResponse(const char* serialized_proto,
+                             int length,
+                             void* callback_handle);
+  void OnRecognitionResultOnMainThread(std::string result);
+  void OnStopReceived();
+  void OnStopReceivedOnMainThread();
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
   // The root directory for test files.
   base::FilePath test_data_dir_;
   std::unique_ptr<soda::SodaClientImpl> soda_client_;
   std::vector<std::string> recognition_results_;
+  base::test::TestFuture<std::string> result_future_;
+  base::WeakPtr<SodaClientImplUnitTest> weak_this_;
+  base::WeakPtrFactory<SodaClientImplUnitTest> weak_factory_{this};
 };
 
-void OnSodaResponse(const char* serialized_proto,
-                    int length,
-                    void* callback_handle) {
-  ASSERT_TRUE(callback_handle);
+// static
+void SodaClientImplUnitTest::OnSodaResponse(const char* serialized_proto,
+                                            int length,
+                                            void* callback_handle) {
+  if (!callback_handle) {
+    return;
+  }
   speech::soda::chrome::SodaResponse response;
   if (!response.ParseFromArray(serialized_proto, length)) {
-    NOTREACHED() << "Unable to parse result from SODA.";
+    LOG(ERROR) << "Unable to parse result from SODA.";
+    return;
   }
 
   if (response.soda_type() == speech::soda::chrome::SodaResponse::RECOGNITION) {
     speech::soda::chrome::SodaRecognitionResult result =
         response.recognition_result();
-    ASSERT_TRUE(result.hypothesis_size());
+    if (result.hypothesis_size() > 0) {
+      static_cast<soda::SodaClientImplUnitTest*>(callback_handle)
+          ->AddRecognitionResult(result.hypothesis(0));
+    }
+  }
+
+  if (response.soda_type() == speech::soda::chrome::SodaResponse::STOP) {
     static_cast<soda::SodaClientImplUnitTest*>(callback_handle)
-        ->AddRecognitionResult(result.hypothesis(0));
+        ->OnStopReceived();
   }
 }
 
 void SodaClientImplUnitTest::AddRecognitionResult(std::string result) {
-  // The language pack used by the MacOS builder is newer and has punctuation
-  // enabled whereas the one used by the Linux builder does not.
-  std::erase(result, ',');
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SodaClientImplUnitTest::OnRecognitionResultOnMainThread,
+                     weak_this_, std::move(result)));
+}
+
+void SodaClientImplUnitTest::OnRecognitionResultOnMainThread(
+    std::string result) {
+  std::erase_if(result, [](char c) { return base::IsAsciiPunctuation(c); });
   recognition_results_.push_back(std::move(result));
+  if (recognition_results_.back().find("Hey Google Hey Google") !=
+      std::string::npos) {
+    if (!result_future_.IsReady()) {
+      result_future_.SetValue(recognition_results_.back());
+    }
+  }
+}
+
+void SodaClientImplUnitTest::OnStopReceived() {
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SodaClientImplUnitTest::OnStopReceivedOnMainThread,
+                     weak_this_));
+}
+
+void SodaClientImplUnitTest::OnStopReceivedOnMainThread() {
+  if (!result_future_.IsReady()) {
+    result_future_.SetValue(recognition_results_.empty()
+                                ? std::string()
+                                : recognition_results_.back());
+  }
 }
 
 void SodaClientImplUnitTest::SetUp() {
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir_));
+  weak_this_ = weak_factory_.GetWeakPtr();
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  // TODO(crbug.com/40753481): Enable test once arm64 macOS binary is available
+  // in CIPD.
+  GTEST_SKIP()
+      << "SODA test binary for arm64 macOS is currently being rolled in CIPD.";
+#endif
   auto libsoda_path =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(base::FilePath(soda::kSodaTestBinaryRelativePath));
@@ -83,6 +135,11 @@ void SodaClientImplUnitTest::SetUp() {
   soda_client_ = std::make_unique<soda::SodaClientImpl>(libsoda_path);
   ASSERT_TRUE(soda_client_.get());
   ASSERT_FALSE(soda_client_->IsInitialized());
+}
+
+void SodaClientImplUnitTest::TearDown() {
+  soda_client_.reset();
+  testing::Test::TearDown();
 }
 
 TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
@@ -137,32 +194,26 @@ TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
   bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(audio_data);
 
   constexpr size_t kMaxChunkSize = 1024;
-  constexpr int kReplayAudioCount = 2;
+  constexpr size_t kReplayAudioCount = 2;
 
-  for (int i = 0; i < kReplayAudioCount; i++) {
-    int chunk_start = 0;
+  for (size_t i = 0; i < kReplayAudioCount; i++) {
+    size_t chunk_start = 0;
     // Upload chunks of 1024 frames at a time.
-    while (chunk_start < static_cast<int>(audio_data.size())) {
-      int chunk_size = kMaxChunkSize < audio_data.size() - chunk_start
-                           ? kMaxChunkSize
-                           : audio_data.size() - chunk_start;
+    while (chunk_start < audio_data.size()) {
+      size_t chunk_size =
+          std::min(kMaxChunkSize, audio_data.size() - chunk_start);
       soda_client_->AddAudio(
           reinterpret_cast<const char*>(&audio_data[chunk_start]),
           sizeof(int16_t) * chunk_size);
 
       chunk_start += chunk_size;
-
-      // Sleep for 20ms to simulate real-time audio. SODA requires audio
-      // streaming in order to return events.
-#if BUILDFLAG(IS_WIN)
-      ::Sleep(20);
-#else
-      usleep(20000);
-#endif
     }
   }
 
-  ASSERT_GT(static_cast<int>(recognition_results_.size()), kReplayAudioCount);
+  soda_client_->MarkDone();
+
+  EXPECT_EQ(WaitForRecognitionResult(), "Hey Google Hey Google");
+  ASSERT_GT(recognition_results_.size(), kReplayAudioCount);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
 }
 

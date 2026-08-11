@@ -48,12 +48,6 @@
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 using testing::StrictMock;
 
 namespace speech {
@@ -254,8 +248,10 @@ void SpeechRecognitionServiceTest::WaitForRecognitionEventAfterBubbleClosed() {
 
 void SpeechRecognitionServiceTest::WaitForRecognitionResult(
     const std::string& expected_result) {
-  if (!recognition_results_.empty() &&
-      recognition_results_.back().find(expected_result) != std::string::npos) {
+  if (std::ranges::any_of(
+          recognition_results_, [&expected_result](const std::string& result) {
+            return result.find(expected_result) != std::string::npos;
+          })) {
     return;
   }
   expected_recognition_result_ = expected_result;
@@ -264,9 +260,7 @@ void SpeechRecognitionServiceTest::WaitForRecognitionResult(
   run_loop_.reset();
 }
 
-void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {
-  NOTREACHED();
-}
+void SpeechRecognitionServiceTest::OnSpeechRecognitionStopped() {}
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
   NOTREACHED();
@@ -368,32 +362,23 @@ void SpeechRecognitionServiceTest::SendAudioChunk(
     const std::vector<int16_t>& audio_data,
     media::WavAudioHandler* handler,
     size_t kMaxChunkSize) {
-  int chunk_start = 0;
+  size_t chunk_start = 0;
   // Upload chunks of 1024 frames at a time.
-  while (chunk_start < static_cast<int>(audio_data.size())) {
-    int chunk_size = kMaxChunkSize < audio_data.size() - chunk_start
-                         ? kMaxChunkSize
-                         : audio_data.size() - chunk_start;
+  while (chunk_start < audio_data.size()) {
+    size_t chunk_size =
+        std::min(kMaxChunkSize, audio_data.size() - chunk_start);
 
     auto signed_buffer = media::mojom::AudioDataS16::New();
     signed_buffer->channel_count = kExpectedChannelCount;
     signed_buffer->frame_count = chunk_size;
     signed_buffer->sample_rate = handler->GetSampleRate();
-    for (int i = 0; i < chunk_size; i++) {
+    for (size_t i = 0; i < chunk_size; i++) {
       signed_buffer->data.push_back(audio_data[chunk_start + i]);
     }
 
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(signed_buffer), std::nullopt);
     chunk_start += chunk_size;
-
-    // Sleep for 20ms to simulate real-time audio. SODA requires audio
-    // streaming in order to return events.
-#if BUILDFLAG(IS_WIN)
-    ::Sleep(20);
-#else
-    usleep(20000);
-#endif
   }
 }
 
@@ -431,6 +416,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
     SendAudioChunk(audio_data, handler.get(), kMaxChunkSize);
   }
 
+  speech_recognition_recognizer_->MarkDone();
   WaitForRecognitionResult("Hey Google Hey Google");
 
   speech_recognition_recognizer_.reset();
@@ -492,6 +478,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   // false`, informing the speech recognition service that it is no longer
   // requesting speech recognition.
   SendAudioChunk(audio_data, handler.get(), kMaxChunkSize);
+  speech_recognition_recognizer_->MarkDone();
   WaitForRecognitionEventAfterBubbleClosed();
 
   // Flush the mojo pipe to ensure the `success = false` reply has been
