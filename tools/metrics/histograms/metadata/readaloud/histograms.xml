@@ -50,9 +50,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.DurationListened" units="ms"
     expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Record user's cumulative duration spent listening to a single playback.
     Emitted when playback is reset. Max value is 1 hour. Any listening durations
@@ -61,10 +60,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.DurationListened.LockedScreen" units="ms"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Record user's cumulative duration spent listening to a single playback with
     the screen locked. Emitted when playback is reset. Max value is 1 hour. Any
@@ -73,9 +71,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.DurationScrubbingBackwardsSeekbar" units="ms"
-    expires_after="2026-04-07">
+    expires_after="2027-08-09">
   <owner>sanaakbani@google.com</owner>
-  <owner>basiaz@google.com</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Records when a user scrubs backwards on the expanded player seekbar.
     Measures the duration (in milliseconds) between the user starting and
@@ -85,9 +84,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.DurationScrubbingForwardsSeekbar" units="ms"
-    expires_after="2026-04-07">
+    expires_after="2027-08-09">
   <owner>sanaakbani@google.com</owner>
-  <owner>basiaz@google.com</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Records when a user scrubs forwards on the expanded player seekbar. Measures
     the duration (in milliseconds) between the user starting and stopping a
@@ -98,9 +98,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
     enum="ReadAloudIneligibilityReason" expires_after="2026-12-06">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Histogram for recording why a user is not eligible for the
     ReadAloud feature. Emitted when the user profile is available and the user
@@ -111,9 +110,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.Eligibility.IsUserEligible" enum="BooleanEligible"
     expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Histogram for recording if a user is eligible for ReadAloud.
     Emitted when the user profile is available. Don't use data from before M123.
@@ -121,10 +119,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.EmptyURLPlayback" enum="ReadAloudEntrypoint"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records entrypoint from which a request to play an empty URL
     was executed. Recorded for each empty URL that had a playback requested.
@@ -133,9 +130,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.HasDateModified" enum="BooleanSuccess"
     expires_after="2026-10-11">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording if we were able to retrieve dateModified for the
     requested tab. False value could mean that the page either doesn't specify
@@ -144,10 +140,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HasTapToSeekFoundMatch" enum="BooleanSuccess"
-    expires_after="2026-06-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Record if Read Aloud finds a substring match between the user's requested
     word to seek to and the distilled Read Aloud text.
@@ -155,10 +150,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording if highlighting is enabled or disabled. Emitted when
     the user toggles the &quot;Highlighting enabled&quot; setting.
@@ -166,10 +160,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HighlightingEnabled.OnStartup" enum="BooleanEnabled"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording if highlighting is enabled or disabled on session
     startup.
@@ -178,9 +171,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.HighlightingSupported" enum="BooleanSupported"
     expires_after="2026-12-06">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording if highlighting is supported. Emitted when a
     playback is successfully created. Warning: This histogram was expired from
@@ -190,9 +182,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.IsPageReadabilitySuccessful" enum="BooleanSuccess"
     expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording if a page readability check is successful or fails.
     The readability check is run on each page load for Android clients who are
@@ -202,9 +193,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.IsPageReadable" enum="BooleanEligible"
     expires_after="2026-12-13">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Histogram for recording if a page is readable or not. Will be
     recorded only if ReadAloud is enabled and initialization of all
@@ -220,9 +210,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.IsTabPlaybackCreationSuccessful"
     enum="BooleanSuccess" expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Records if a tab playback creation succeeds or fails. Emitted in the tab
     playback creation callback. Does not mean playback has started.
@@ -241,9 +230,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.ReadAloudError.{Phase}" enum="ReadAloudErrorCode"
     expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Records cause of a ReadAloud-speficic exception. In case more details are
     known, ReadAloud.ReadAloudUnsuportedError.{Phase} or
@@ -254,10 +242,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ReadAloudNetError.{Phase}" enum="NetErrorCodes"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Network status codes recorded for each ReadAloudRequest that fails and has
     this information present. Recorded value is the absolute value of the
@@ -269,10 +256,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ReadAloudPlaybackWithoutReadabilityCheckError"
-    enum="ReadAloudEntrypoint" expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    enum="ReadAloudEntrypoint" expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records entrypoint from which a request to play a tab was
     executed without checking for page readability readability first. Recorded
@@ -281,10 +267,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ReadAloudUnsuportedError.{Phase}"
-    enum="RejectionReason" expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    enum="RejectionReason" expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Records a rejection reason for not being able to trigger or continue read
     aloud. Recorded during {Phase}.
@@ -293,10 +278,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ServerReadabilityResult" enum="BooleanEligible"
-    expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Histogram for recording server side responses if a page is
     readable or not. Will be recorded only if ReadAloud is enabled,
@@ -309,9 +293,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
     expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Histogram for recording what speed setting a user selects for the ReadAloud
     playback. Emitted when the ReadAloud speed pref is changed.
@@ -339,10 +322,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.TabPlaybackCreationFailure"
-    enum="ReadAloudEntrypoint" expires_after="2026-04-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    enum="ReadAloudEntrypoint" expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records when a a request to create playback from given
     entrypoint fails. Emitted in the tab playback creation callback. Does not
@@ -352,9 +334,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ReadAloud.TabPlaybackCreationSuccess"
     enum="ReadAloudEntrypoint" expires_after="2026-12-16">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records when a a request to create playback from given
     entrypoint succeeds. Emitted in the tab playback creation callback. Does not
@@ -363,10 +344,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.TabPlaybackStoppedReason"
-    enum="PlaybackStoppedReason" expires_after="2026-08-09">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+    enum="PlaybackStoppedReason" expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records reason for stopping a tab playback. Note that this
     doesn't include stopping the voice preview playbacks. Warning: This
@@ -374,10 +354,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2026-06-07">
-  <owner>andreaxg@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <owner>iwells@chromium.org</owner>
+<histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2027-08-09">
+  <owner>andresmolina@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
   <summary>
     Android only. Records processing time for a tap to seek feature. Finds a
     matching substring in the ReadAloud distilled text to seek playback to the
