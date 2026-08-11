@@ -680,6 +680,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT_ENUM(device_form_factor);
   VISIT(android_os_build_fingerprint_prefix);
   VISIT(server_determined_model_name);
+  VISIT(personal_context_fields);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DesktopToMobilePromoMessage& proto) {
@@ -727,6 +728,10 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromeVersionInfo& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::GooglePlayServicesVersionInfo& proto) {
   VISIT(apk_version_name);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PersonalContextSpecificFields& proto) {
+  VISIT_BYTES(p256dh_v2);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DictionarySpecifics& proto) {

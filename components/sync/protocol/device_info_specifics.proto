@@ -104,6 +104,9 @@ message DeviceInfoSpecifics {
 
   // A name determined by the server that can be used to personalize the device.
   optional string server_determined_model_name = 22;
+
+  // Device specific information for Personal Context feature.
+  optional PersonalContextSpecificFields personal_context_fields = 23;
 }
 
 // Feature specific information about the device that is running a sync-enabled
@@ -258,3 +261,10 @@ message ChromeVersionInfo {
 message GooglePlayServicesVersionInfo {
   optional string apk_version_name = 1;
 }
+
+// Device specific information for Personal Context feature.
+message PersonalContextSpecificFields {
+  // Public key for message encryption using Personal Context sender ID.
+  optional bytes p256dh_v2 = 1;
+}
+
