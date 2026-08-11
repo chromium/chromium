@@ -2305,12 +2305,12 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
 
+  // Navigation automatically triggers OnActiveAXTreeIDChanged and starts
+  // distillation.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  OnActiveAXTreeIDChanged();
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return handler_->dom_distiller_title().has_value(); }));
