@@ -100,8 +100,6 @@ cargo_crate("lib") {
   visibility = []
   visibility += [ "//base/i18n/*" ]
 
-  public_configs = [ ":icu_capi_cpp_headers" ]
-
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
 
@@ -131,10 +129,4 @@ cargo_crate("lib") {
   executable_configs += _configs_to_add
   proc_macro_configs -= _configs_to_remove
   proc_macro_configs += _configs_to_add
-}
-
-config("icu_capi_cpp_headers") {
-  include_dirs = [
-    "//third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp",
-  ]
 }
