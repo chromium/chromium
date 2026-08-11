@@ -168,10 +168,7 @@ UIButton* TopToolbarButton(Symbol symbol,
   // Container for the content of the ViewController.
   UIView* _container;
   // The background of the container, for animations.
-  UIView* _containerBackground;
-  // An ivar that stores the _containerBackground as TabGroupGradientView,
-  // should be removed once IsTabGroupColorOnSurfaceEnabled shipped.
-  TabGroupGradientView* _containerGradientBackground;
+  TabGroupGradientView* _containerBackground;
   // The gesture recognizer to swipe to dismiss the tab group view.
   UIPanGestureRecognizer* _swipeDownGestureRecognizer;
   // Face pile provider.
@@ -747,7 +744,6 @@ UIButton* TopToolbarButton(Symbol symbol,
                          gradientBackgroundColors:_tabGroupColorPalette
                                                       .tabGroupColorID]];
   background.translatesAutoresizingMaskIntoConstraints = NO;
-  _containerGradientBackground = background;
 
   return background;
 }
@@ -1034,7 +1030,7 @@ UIButton* TopToolbarButton(Symbol symbol,
   closeButtonConfig.background.backgroundColor = buttonColor;
   _closeButton.configuration = closeButtonConfig;
 
-  [_containerGradientBackground
+  [_containerBackground
       updateColors:[TabGroupColorPalette
                        gradientBackgroundColors:_tabGroupColorPalette
                                                     .tabGroupColorID]];
