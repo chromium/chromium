@@ -961,14 +961,17 @@ source_set("browser_tests") {
   }
 
   if (is_android) {
-    sources += [ "browser_ui/glic_nudge_controller_android_browsertest.cc" ]
-
+    sources += [
+      "android/glic_android_browsertest.cc",
+      "browser_ui/glic_nudge_controller_android_browsertest.cc",
+    ]
     deps += [
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel/android",
       "//chrome/test:test_support_ui_android",
+      "//chrome/test/data/webui/glic:generate_test_files",
       "//components/messages/android:test_support",
     ]
   }

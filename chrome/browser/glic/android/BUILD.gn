@@ -322,7 +322,7 @@ android_library("javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginPermissionsFragmentRenderTest.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicAndroidUiIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicAndroidMojoIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonRenderTest.java",
   ]
   deps = [
@@ -330,6 +330,7 @@ android_library("javatests") {
     ":java",
     ":java_resources",
     ":jni_headers_java",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_shared_preferences_java",
@@ -354,11 +355,14 @@ android_library("javatests") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
+    "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -367,16 +371,32 @@ android_library("javatests") {
     "//ui/android:ui_java_test_support",
     "//url:url_java",
   ]
+  data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
+}
+
+generate_jni("test_support_jni_headers") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicTestEnvironmentAndroid.java",
+  ]
 }
 
 android_library("test_support_java") {
   testonly = true
-  sources =
-      [ "java/src/org/chromium/chrome/test/transit/GlicTransitTestRule.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicTestEnvironmentAndroid.java",
+    "java/src/org/chromium/chrome/test/transit/GlicTransitTestRule.java",
+  ]
   deps = [
+    ":test_support_jni_headers_java",
+    "//base:tasks_java",
     "//chrome/browser/glic:public_java",
+    "//chrome/test/android:chrome_java_test_support_common",
     "//chrome/test/android:chrome_java_transit",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

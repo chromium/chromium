@@ -285,15 +285,33 @@ bool GlicTestEnvironment::SetupEmbeddedTestServers(
     net::test_server::EmbeddedTestServer* https_server) {
   CHECK(guest_url_.is_empty()) << "SetupEmbeddedTestServers called twice";
 
+  // On Desktop, tests serve test files directly from the repository source
+  // directory. However, on Android automated testing bots and devices, the
+  // host repository checkout path does not exist on the device filesystem; test
+  // files are packaged under DIR_ASSETS/chrome/test/data/webui/glic/. Both gen/
+  // and source asset paths must be served to prevent 404 errors when loading
+  // scripts and initializing Mojo connection in test environments.
   http_server->ServeFilesFromDirectory(
       base::PathService::CheckedGet(base::DIR_ASSETS)
           .AppendASCII("gen/chrome/test/data/webui/glic/"));
+#if BUILDFLAG(IS_ANDROID)
+  http_server->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .AppendASCII("chrome/test/data/webui/glic/"));
+#else
   http_server->ServeFilesFromSourceDirectory("chrome/test/data/webui/glic/");
+#endif
   if (https_server) {
     https_server->ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
+#if BUILDFLAG(IS_ANDROID)
+    https_server->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("chrome/test/data/webui/glic/"));
+#else
     https_server->ServeFilesFromSourceDirectory("chrome/test/data/webui/glic/");
+#endif
   }
 
   test_server_handle_ = http_server->StartAndReturnHandle();

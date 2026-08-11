@@ -185,10 +185,27 @@ def FilterDataDependencies(host_device_tuples, filters):
                 f"Invalid filter: '{f}'. Must start with '+' or '-'."
             )
 
+    try:
+        output_dir = constants.GetOutDirectory()
+    except EnvironmentError:
+        output_dir = None
+
     filtered_tuples = []
     for host_path, device_path in host_device_tuples:
         # Make host_path relative to source root for matching
         rel_path = os.path.relpath(host_path, constants.DIR_SOURCE_ROOT)
+        # Generated files on Android start with gen/, so match against
+        # rel_output_path and rel_gen_path.
+        if output_dir:
+            rel_output_path = os.path.relpath(host_path, output_dir)
+            rel_gen_path = (
+                rel_output_path[4:]
+                if rel_output_path.startswith('gen/')
+                else None
+            )
+        else:
+            rel_output_path = None
+            rel_gen_path = None
 
         # Default to KEEP (blocklist approach)
         keep = True
@@ -200,7 +217,14 @@ def FilterDataDependencies(host_device_tuples, filters):
             if pattern.startswith('//'):
                 pattern = pattern[2:]
 
-            if fnmatch.fnmatch(rel_path, pattern):
+            if (
+                fnmatch.fnmatch(rel_path, pattern)
+                or (
+                    rel_output_path
+                    and fnmatch.fnmatch(rel_output_path, pattern)
+                )
+                or (rel_gen_path and fnmatch.fnmatch(rel_gen_path, pattern))
+            ):
                 if op == '+':
                     keep = True
                 elif op == '-':

@@ -61,6 +61,9 @@ source_set("test_support") {
   if (enable_desktop_aura || is_mac) {
     deps += [ "//ui/views:test_support" ]
   }
+  if (is_android) {
+    sources += [ "glic_test_environment_android.cc" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/browser/actor",
@@ -70,6 +73,7 @@ source_set("test_support") {
     ]
   } else {
     deps += [
+      "//chrome/browser/glic/android:test_support_jni_headers",
       "//chrome/browser/ui/side_panel/android",
       "//components/signin/public/android:jni_headers",
       "//google_apis/gaia/android:jni_headers",

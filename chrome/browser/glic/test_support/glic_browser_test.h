@@ -85,6 +85,11 @@
 namespace glic {
 
 #if BUILDFLAG(IS_ANDROID)
+void SetActivityOrientationForTesting(content::WebContents* web_contents,
+                                      int orientation);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 #define SKIP_TEST_FOR_NON_DESKTOP_ANDROID()            \
   if (!base::android::device_info::is_desktop()) {     \
     GTEST_SKIP() << "Skipping on non-desktop Android"; \

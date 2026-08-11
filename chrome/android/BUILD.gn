@@ -2481,7 +2481,10 @@ if (_is_default_toolchain) {
       "-*",
     ]
 
-    data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
+    data_deps = [
+      "//chrome/test/data/webui/glic:generate_test_files",
+      "//testing/buildbot/filters:chrome_public_test_apk_filters",
+    ]
 
     if (enable_chrome_android_internal) {
       data_deps +=
@@ -3316,6 +3319,7 @@ if (_is_default_toolchain) {
       ":chrome_test_util",
       "//base/test:test_support",
       "//chrome/browser/android/metrics:ukm_utils_for_test",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager/android:test_support",
       "//chrome/browser/subresource_filter:android_test_support",
       "//chrome/browser/supervised_user:test_support",

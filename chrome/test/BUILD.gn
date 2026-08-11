@@ -1404,6 +1404,7 @@ if (is_android) {
       "//chrome/browser/feed",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/glic:browser_tests",
+      "//chrome/browser/glic/android:test_support_java",
       "//chrome/browser/history",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/lifetime",
