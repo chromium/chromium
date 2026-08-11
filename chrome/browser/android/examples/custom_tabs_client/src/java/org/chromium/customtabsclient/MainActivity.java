@@ -115,7 +115,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements OnClickListener, ServiceConnectionCallback {
     private static final String TAG = "CustomTabsClientExample";
-    private static final String CRASH_MENU_TITLE = "Induce CCT Crash";
     private static final String DEFAULT_URL = "https://www.google.com";
     private static final String SHARED_PREF_BACKGROUND_INTERACT = "BackgroundInteract";
     private static final String SHARED_PREF_BOTTOM_TOOLBAR = "BottomToolbar";
@@ -1563,7 +1562,6 @@ public class MainActivity extends AppCompatActivity
                         PendingIntent.FLAG_MUTABLE,
                         menuBundle);
         builder.addMenuItem("Menu entry 1", pi);
-        builder.addMenuItem(CRASH_MENU_TITLE, pi);
     }
 
     private void prepareActionButton(CustomTabsIntent.Builder builder) {

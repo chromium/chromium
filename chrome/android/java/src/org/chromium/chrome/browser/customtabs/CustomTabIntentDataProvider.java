@@ -129,9 +129,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private static final String TAG = "CustomTabIntentData";
-    // Special menu item title used to induce a Java crash for testing purposes.
-    // TODO (crbug.com/527591870): Remove before kSessionRestoreAfterCrash launches.
-    private static final String CRASH_MENU_TITLE = "Induce CCT Crash";
 
     @IntDef({LaunchSourceType.OTHER, LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY})
     @Retention(RetentionPolicy.SOURCE)
@@ -801,10 +798,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             if (TextUtils.isEmpty(title) || pendingIntent == null) {
                 continue;
             }
-            if (CRASH_MENU_TITLE.equals(title)
-                    && !ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
-                continue;
-            }
             mMenuEntries.add(new Pair<>(title, pendingIntent));
         }
     }
@@ -827,10 +820,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             // Media viewers pass in PendingIntents that contain CHOOSER Intents.  Setting the data
             // in these cases prevents the Intent from firing correctly.
             String menuTitle = mMenuEntries.get(menuIndex).first;
-            if (CRASH_MENU_TITLE.equals(menuTitle)
-                    && ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
-                throw new RuntimeException("Intentional Java Crash via CCT Menu Option");
-            }
             PendingIntent pendingIntent = mMenuEntries.get(menuIndex).second;
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
