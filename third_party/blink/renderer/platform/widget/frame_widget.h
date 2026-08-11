@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
@@ -358,6 +359,10 @@ class PLATFORM_EXPORT FrameWidget {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ConditionalTracing/explainer-for-loaf.md
   virtual void MarkConditional(const AtomicString& name,
                                base::TimeTicks start_time) = 0;
+  virtual void MeasureConditional(const AtomicString& name,
+                                  const AtomicString& start_mark,
+                                  const AtomicString& end_mark,
+                                  base::TimeTicks end_time) = 0;
 
   virtual void OnFirstContentfulPaint() = 0;
 

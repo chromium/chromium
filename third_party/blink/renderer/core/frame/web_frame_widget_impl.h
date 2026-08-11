@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
@@ -374,6 +375,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   void OnFirstContentfulPaint() override;
   void MarkConditional(const AtomicString& name,
                        base::TimeTicks start_time) override;
+  void MeasureConditional(const AtomicString& name,
+                          const AtomicString& start_mark,
+                          const AtomicString& end_mark,
+                          base::TimeTicks end_time) override;
   // TODO(https://crbug.com/515098190): Below are not FrameWidget overrides.
 
   void SetVirtualKeyboardResizeHeightForTesting(int);

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1818,6 +1819,17 @@ void WebFrameWidgetImpl::MarkConditional(const AtomicString& name,
     return;
   }
   animation_frame_timing_monitor_->MarkConditional(name, start_time);
+}
+
+void WebFrameWidgetImpl::MeasureConditional(const AtomicString& name,
+                                            const AtomicString& start_mark,
+                                            const AtomicString& end_mark,
+                                            base::TimeTicks end_time) {
+  if (!animation_frame_timing_monitor_) {
+    return;
+  }
+  animation_frame_timing_monitor_->MeasureConditional(name, start_mark,
+                                                      end_mark, end_time);
 }
 
 void WebFrameWidgetImpl::DidBeginMainFrame() {

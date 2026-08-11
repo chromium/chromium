@@ -28,5 +28,6 @@
     "visibility-state",
     "window",
     "mark-conditional",
+    "measure-conditional",
   ],
 }

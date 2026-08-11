@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANIMATION_FRAME_TIMING_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANIMATION_FRAME_TIMING_MONITOR_H_
 
+#include <optional>
 #include <variant>
 
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -13,8 +14,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
-#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -124,11 +125,17 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void WillHandleInput(LocalFrame*);
 
   void MarkConditional(const AtomicString& name, base::TimeTicks start_time);
+  void MeasureConditional(const AtomicString& name,
+                          const AtomicString& start_mark,
+                          const AtomicString& end_mark,
+                          base::TimeTicks end_time);
 
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
   Vector<ConditionalMarkInfo> conditional_marks_;
+  Vector<ConditionalMeasureInfo> conditional_measures_;
+  HashMap<AtomicString, base::TimeTicks> conditional_mark_names_to_timestamps_;
   viz::BeginFrameId current_begin_frame_id_;
   struct PendingScriptInfo {
     ScriptTimingInfo::InvokerType invoker_type;

@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark_conditional.h"
+#include "third_party/blink/renderer/core/timing/performance_measure_conditional.h"
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 #include "third_party/blink/renderer/core/timing/task_attribution_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -105,15 +107,33 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
     }
   }
 
-  if (!RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled()) {
-    DCHECK(info->ConditionalMarks().empty());
-  }
+  if (RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled()) {
+    // Build mark entries (already sorted by start_time).
+    PerformanceEntryVector mark_entries;
+    for (const ConditionalMarkInfo& conditional_mark :
+         info->ConditionalMarks()) {
+      mark_entries.push_back(MakeGarbageCollected<PerformanceMarkConditional>(
+          conditional_mark.name, conditional_mark.start_time, source,
+          navigation_id));
+    }
 
-  for (const ConditionalMarkInfo& conditional_mark : info->ConditionalMarks()) {
-    user_timing_entries_.push_back(
-        MakeGarbageCollected<PerformanceMarkConditional>(
-            conditional_mark.name, conditional_mark.start_time, source,
-            navigation_id));
+    // Build measure entries and sort them by start_time.
+    PerformanceEntryVector measure_entries;
+    for (const ConditionalMeasureInfo& conditional_measure :
+         info->ConditionalMeasures()) {
+      measure_entries.push_back(PerformanceMeasureConditional::Create(
+          conditional_measure.name, conditional_measure.start_time,
+          conditional_measure.end_time, source, navigation_id));
+    }
+    std::sort(measure_entries.begin(), measure_entries.end(),
+              PerformanceEntry::StartTimeCompareLessThan);
+
+    // Merge sorted marks and measures into user_timing_entries_.
+    user_timing_entries_ = MergePerformanceEntryVectors(
+        mark_entries, measure_entries, AtomicString());
+  } else {
+    CHECK(info->ConditionalMarks().empty());
+    CHECK(info->ConditionalMeasures().empty());
   }
 }
 

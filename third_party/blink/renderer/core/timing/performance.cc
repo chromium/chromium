@@ -585,6 +585,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     // Performance entries. They are not retrievable through Performance
     // interface.
     case PerformanceEntry::kMarkConditional:
+    case PerformanceEntry::kMeasureConditional:
       break;
 
     case PerformanceEntry::kInvalid:
@@ -1203,6 +1204,11 @@ void Performance::clearMeasures(const AtomicString& measure_name) {
 
 void Performance::markConditional(ScriptState* script_state,
                                   const AtomicString& mark_name) {}
+
+void Performance::measureConditional(ScriptState* script_state,
+                                     const AtomicString& measure_name,
+                                     const AtomicString& start_mark,
+                                     const AtomicString& end_mark) {}
 
 void Performance::RegisterPerformanceObserver(PerformanceObserver& observer) {
   observer_filter_options_ |= observer.FilterOptions();

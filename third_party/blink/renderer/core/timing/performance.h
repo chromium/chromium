@@ -32,6 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -246,6 +248,19 @@ class CORE_EXPORT Performance : public EventTarget {
   void clearMarks() { return clearMarks(AtomicString()); }
 
   virtual void markConditional(ScriptState*, const AtomicString& mark_name);
+  virtual void measureConditional(ScriptState*,
+                                  const AtomicString& measure_name,
+                                  const AtomicString& start_mark,
+                                  const AtomicString& end_mark);
+  void measureConditional(ScriptState* script_state,
+                          const AtomicString& measure_name,
+                          const AtomicString& start_mark) {
+    measureConditional(script_state, measure_name, start_mark, g_null_atom);
+  }
+  void measureConditional(ScriptState* script_state,
+                          const AtomicString& measure_name) {
+    measureConditional(script_state, measure_name, g_null_atom, g_null_atom);
+  }
 
   void AddBackForwardCacheRestoration(base::TimeTicks start_time,
                                       base::TimeTicks pageshow_start_time,

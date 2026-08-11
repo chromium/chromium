@@ -586,11 +586,24 @@ void WindowPerformance::markConditional(ScriptState* script_state,
     return;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
   base::TimeTicks start_time = base::TimeTicks::Now();
   window->GetFrame()->GetWidgetForLocalRoot()->MarkConditional(mark_name,
                                                                start_time);
+}
+
+void WindowPerformance::measureConditional(ScriptState* script_state,
+                                           const AtomicString& measure_name,
+                                           const AtomicString& start_mark,
+                                           const AtomicString& end_mark) {
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  if (!window || !window->GetFrame() ||
+      !window->GetFrame()->GetWidgetForLocalRoot()) {
+    return;
+  }
+
+  base::TimeTicks end_time = base::TimeTicks::Now();
+  window->GetFrame()->GetWidgetForLocalRoot()->MeasureConditional(
+      measure_name, start_mark, end_mark, end_time);
 }
 
 void WindowPerformance::ReportLongTask(base::TimeTicks start_time,

@@ -40,7 +40,8 @@ promise_test(async t => {
         performance.markConditional("mark3_" + i);
       }
     });
-    new ResizeObserver(() => {
+    const observer = new ResizeObserver(() => {
+      observer.disconnect();
       for (let i = 0; i < 50; i++) {
         performance.markConditional("mark4_" + i);
       }
@@ -48,7 +49,8 @@ promise_test(async t => {
       for (let i = 0; i < 50; i++) {
         performance.markConditional("mark5_" + i);
       }
-    }).observe(element);
+    });
+    observer.observe(element);
 
   }, t);
 
@@ -58,6 +60,52 @@ promise_test(async t => {
     .filter(entry => entry.entryType === "mark-conditional");
   assert_equals(conditional_mark_entries.length, kConditionalUserTimingBufferSize);
 
-}, 'conditional user timing entries are capped at ' + kConditionalUserTimingBufferSize);
+}, 'conditional mark entries are capped at ' + kConditionalUserTimingBufferSize);
+
+promise_test(async t => {
+  const loaf_entry = await expect_long_frame(async (t, busy_wait) => {
+
+    const element = document.createElement("div");
+    document.body.appendChild(element);
+    t.add_cleanup(() => element.remove());
+    for (let i = 0; i < 30; i++) {
+      performance.markConditional("mark_repeat");
+    }
+    busy_wait(segment_duration);
+    for (let i = 0; i < 30; i++) {
+      performance.markConditional("mark1_" + i);
+      performance.measureConditional("measure1_" + i, "mark_repeat", "mark1_" + i);
+    }
+    requestAnimationFrame(() => {
+      for (let i = 0; i < 30; i++) {
+        performance.markConditional("mark2_" + i);
+      }
+      busy_wait(segment_duration);
+      for (let i = 0; i < 30; i++) {
+        performance.markConditional("mark3_" + i);
+        performance.measureConditional("measure3_" + i, "mark2_" + i, "mark3_" + i);
+      }
+    });
+    const observer = new ResizeObserver(() => {
+      observer.disconnect();
+      for (let i = 0; i < 30; i++) {
+        performance.markConditional("mark4_" + i);
+      }
+      busy_wait(segment_duration);
+      for (let i = 0; i < 30; i++) {
+        performance.markConditional("mark5_" + i);
+        performance.measureConditional("measure5_" + i, "mark4_" + i, "mark5_" + i);
+      }
+    });
+    observer.observe(element);
+
+  }, t);
+
+  assert_not_equals(loaf_entry, "timeout");
+
+  const all_entries = Array.from(loaf_entry.userTimingEntries);
+  assert_equals(all_entries.length, kConditionalUserTimingBufferSize);
+
+}, 'Mixed conditional user timing entries are capped at ' + kConditionalUserTimingBufferSize);
 </script>
 </body>

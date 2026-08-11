@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MEASURE_CONDITIONAL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MEASURE_CONDITIONAL_H_
+
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+namespace blink {
+
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ConditionalTracing/explainer-for-loaf.md
+class CORE_EXPORT PerformanceMeasureConditional final
+    : public PerformanceEntry {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  static PerformanceMeasureConditional* Create(const AtomicString& name,
+                                               base::TimeTicks start_time,
+                                               base::TimeTicks end_time,
+                                               DOMWindow* source,
+                                               uint64_t navigation_id);
+
+  PerformanceMeasureConditional(const AtomicString& name,
+                                double start_time,
+                                double duration,
+                                DOMWindow* source,
+                                uint64_t navigation_id);
+
+  ~PerformanceMeasureConditional() override = default;
+
+  const AtomicString& entryType() const override;
+  PerformanceEntryType EntryTypeEnum() const override;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MEASURE_CONDITIONAL_H_

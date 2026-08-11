@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/performance_mark_conditional.h"
 #include "third_party/blink/renderer/core/timing/third_party_script_detector.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -97,9 +96,43 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
 
 void AnimationFrameTimingMonitor::MarkConditional(const AtomicString& name,
                                                   base::TimeTicks start_time) {
-  if (conditional_marks_.size() < kConditionalUserTimingBufferSize) {
-    conditional_marks_.push_back(ConditionalMarkInfo(name, start_time));
+  if (conditional_marks_.size() + conditional_measures_.size() >=
+      kConditionalUserTimingBufferSize) {
+    return;
   }
+  conditional_marks_.push_back(ConditionalMarkInfo(name, start_time));
+  conditional_mark_names_to_timestamps_.Set(name, start_time);
+}
+
+void AnimationFrameTimingMonitor::MeasureConditional(
+    const AtomicString& name,
+    const AtomicString& start_mark,
+    const AtomicString& end_mark,
+    base::TimeTicks end_time) {
+  if (conditional_marks_.size() + conditional_measures_.size() >=
+      kConditionalUserTimingBufferSize) {
+    return;
+  }
+
+  // Eagerly resolve mark names to timestamps using the map.
+  base::TimeTicks resolved_start_time;
+  if (!start_mark.IsNull()) {
+    auto it = conditional_mark_names_to_timestamps_.find(start_mark);
+    if (it != conditional_mark_names_to_timestamps_.end()) {
+      resolved_start_time = it->value;
+    }
+  }
+
+  base::TimeTicks resolved_end_time = end_time;
+  if (!end_mark.IsNull()) {
+    auto it = conditional_mark_names_to_timestamps_.find(end_mark);
+    if (it != conditional_mark_names_to_timestamps_.end()) {
+      resolved_end_time = it->value;
+    }
+  }
+
+  conditional_measures_.push_back(
+      ConditionalMeasureInfo(name, resolved_start_time, resolved_end_time));
 }
 
 void AnimationFrameTimingMonitor::BeginMainFrame(
@@ -161,6 +194,11 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
     current_frame_timing_info_->SetConditionalMarks(conditional_marks_);
   }
 
+  if (!conditional_measures_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    current_frame_timing_info_->SetConditionalMeasures(conditional_measures_);
+  }
+
   current_frame_timing_info_->SetStyleDuration(render_style_duration_);
   current_frame_timing_info_->SetLayoutDuration(render_layout_duration_);
 
@@ -201,6 +239,11 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     conditional_marks_.clear();
+    conditional_mark_names_to_timestamps_.clear();
+  }
+  if (!conditional_measures_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    conditional_measures_.clear();
   }
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
       base::TimeDelta();
@@ -435,6 +478,13 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
   if (!conditional_marks_.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     std::swap(conditional_marks, conditional_marks_);
+    conditional_mark_names_to_timestamps_.clear();
+  }
+
+  Vector<ConditionalMeasureInfo> conditional_measures;
+  if (!conditional_measures_.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    std::swap(conditional_measures, conditional_measures_);
   }
 
   longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
@@ -470,6 +520,11 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
   if (!conditional_marks.empty()) {
     CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
     timing_info->SetConditionalMarks(conditional_marks);
+  }
+
+  if (!conditional_measures.empty()) {
+    CHECK(RuntimeEnabledFeatures::ConditionalTracingLoAFEnabled());
+    timing_info->SetConditionalMeasures(conditional_measures);
   }
 
   DOMWindowPerformance::performance(*frame->DomWindow())

@@ -7229,6 +7229,7 @@ interface Performance : EventTarget
     method mark
     method markConditional
     method measure
+    method measureConditional
     method now
     method setResourceTimingBufferSize
     method toJSON
@@ -7309,6 +7310,9 @@ interface PerformanceMarkConditional : PerformanceEntry
 interface PerformanceMeasure : PerformanceEntry
     attribute @@toStringTag
     getter detail
+    method constructor
+interface PerformanceMeasureConditional : PerformanceEntry
+    attribute @@toStringTag
     method constructor
 interface PerformanceNavigation
     attribute @@toStringTag
