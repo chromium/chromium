@@ -13758,6 +13758,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingDistillerRefactorName,
      flag_descriptions::kReadAnythingDistillerRefactorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingDistillerRefactor)},
+
+    {"read-anything-read-aloud-experimental-playback-ui",
+     flag_descriptions::kReadAnythingReadAloudExperimentalPlaybackUiName,
+     flag_descriptions::kReadAnythingReadAloudExperimentalPlaybackUiDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kReadAnythingReadAloudExperimentalPlaybackUi)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -6770,6 +6770,11 @@ inline constexpr char kReadAnythingImprovedUiName[] =
 inline constexpr char kReadAnythingImprovedUiDescription[] =
     "Enables menu grouping for Reading Mode and the listen to this page entry "
     "point.";
+inline constexpr char kReadAnythingReadAloudExperimentalPlaybackUiName[] =
+    "Reading Mode Read Aloud Experimental Playback UI";
+inline constexpr char
+    kReadAnythingReadAloudExperimentalPlaybackUiDescription[] =
+        "Enables the experimental playback UI for Reading Mode Read Aloud.";
 
 inline constexpr char kRealboxVirtualFocusNavigationName[] =
     "Enable Realbox Virtual Focus Navigation";

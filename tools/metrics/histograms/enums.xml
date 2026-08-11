@@ -11553,6 +11553,8 @@ from previous Chrome versions.
   <int value="-964676765" label="enable-accelerated-mjpeg-decode"/>
   <int value="-964620377" label="CSSOMViewScrollCoordinates:enabled"/>
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
+  <int value="-962802089"
+      label="ReadAnythingReadAloudExperimentalPlaybackUi:disabled"/>
   <int value="-962574060" label="kQuickAnswersMaterialNextUI:enabled"/>
   <int value="-962233051" label="PasspointSettings:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
@@ -21042,6 +21044,8 @@ from previous Chrome versions.
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
   <int value="2017591110" label="ApproximateGeolocationPermission:enabled"/>
+  <int value="2017916099"
+      label="ReadAnythingReadAloudExperimentalPlaybackUi:enabled"/>
   <int value="2018206979" label="FilesLocalImageSearch:disabled"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>

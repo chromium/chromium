@@ -432,6 +432,13 @@ GetReadAnythingMenuShuffleExperimentGroup() {
   return kReadAnythingMenuShuffleExperimentParam.Get();
 }
 
+BASE_FEATURE(kReadAnythingReadAloudExperimentalPlaybackUi,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kReadAnythingReadAloudExperimentalPlaybackUi);
+}
+
 BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {

@@ -8505,6 +8505,15 @@
     "expiry_milestone": 156
   },
   {
+    "name": "read-anything-read-aloud-experimental-playback-ui",
+    "owners": [
+      "martinglopez@google.com",
+      "alfredohiguera@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "read-anything-read-aloud-phrase-highlighting-v2",
     "owners": [
       "lwinston@google.com",
