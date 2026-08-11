@@ -118,7 +118,11 @@ class HTMLSink : public UnderlyingSinkBase {
   ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
                                     ScriptValue reason,
                                     ExceptionState& exception_state) override {
-    return close(script_state, exception_state);
+    if (parser) {
+      parser->StopParsing();
+      parser = nullptr;
+    }
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   Member<ParserRootInsertionPoint> root_insertion_point;
