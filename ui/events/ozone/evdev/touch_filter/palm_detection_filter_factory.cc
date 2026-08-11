@@ -154,7 +154,7 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
 std::unique_ptr<PalmDetectionFilter> CreateHeatmapPalmDetectionFilter(
     const EventDeviceInfo& devinfo,
     SharedPalmDetectionFilterState* shared_palm_state) {
-  if (base::FeatureList::IsEnabled(kEnableHeatmapPalmDetection) &&
+  if (kHeatmapPalmDetection &&
       HeatmapPalmDetectionFilter::CompatibleWithHeatmapPalmDetectionFilter(
           devinfo)) {
     HeatmapPalmDetector::ModelId model_id =

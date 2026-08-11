@@ -16,6 +16,9 @@
 
 namespace ui {
 
+// Set to true to enable heatmap palm detection for local testing.
+inline constexpr bool kHeatmapPalmDetection = false;
+
 // Interface for touch screen heatmap palm detector.
 class COMPONENT_EXPORT(EVDEV) HeatmapPalmDetector {
  public:

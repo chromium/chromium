@@ -7646,12 +7646,6 @@ inline constexpr char kEnableKeyboardUsedPalmSuppressionName[] =
 inline constexpr char kEnableKeyboardUsedPalmSuppressionDescription[] =
     "Enable keyboard usage based palm suppression.";
 
-inline constexpr char kEnableHeatmapPalmDetectionName[] =
-    "Enable Heatmap Palm Detection";
-inline constexpr char kEnableHeatmapPalmDetectionDescription[] =
-    "Experimental: Enable Heatmap Palm detection. Not compatible with all "
-    "devices.";
-
 inline constexpr char kEnableNeuralStylusPalmRejectionName[] =
     "Enable Neural Palm Detection";
 inline constexpr char kEnableNeuralStylusPalmRejectionDescription[] =

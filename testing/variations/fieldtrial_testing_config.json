@@ -13738,21 +13738,6 @@
             ]
         }
     ],
-    "HeatmapPalmDetectionStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableHeatmapPalmDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosClientMigration": [
         {
             "platforms": [

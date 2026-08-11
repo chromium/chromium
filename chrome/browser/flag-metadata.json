@@ -3868,11 +3868,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-heatmap-palm-detection",
-    "owners": [ "jiwan@chromium.org", "robsc@chromium.org", "hbarnor@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-http-headers-injection",
     "owners": [ "antoli@google.com", "cbe-cep-eng@google.com" ],
     "expiry_milestone": 153

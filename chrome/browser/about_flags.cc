@@ -8220,11 +8220,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLinkCrossDeviceInternalsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLinkCrossDeviceInternals)},
 
-    {"enable-heatmap-palm-detection",
-     flag_descriptions::kEnableHeatmapPalmDetectionName,
-     flag_descriptions::kEnableHeatmapPalmDetectionDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ui::kEnableHeatmapPalmDetection)},
-
     {"enable-neural-stylus-palm-rejection",
      flag_descriptions::kEnableNeuralStylusPalmRejectionName,
      flag_descriptions::kEnableNeuralStylusPalmRejectionDescription, kOsCrOS,
