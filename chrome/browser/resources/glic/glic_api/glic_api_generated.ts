@@ -425,6 +425,8 @@ export enum InvocationSource {
   RESHOW_INACTIVE = 40,
   // From the tab context menu.
   TAB_CONTEXT_MENU = 41,
+  // From Web Continuity.
+  WEB_CONTINUITY = 42,
 }
 
 // Target for actuation.
@@ -643,6 +645,8 @@ export enum FeatureMode {
   PROMOTION_PAGE = 5,
   // Client feature mode to initiate actuation for Password Change.
   PASSWORD_CHANGE = 6,
+  // Client feature mode for Web Continuity.
+  WEB_CONTINUITY = 7,
 }
 
 // Settings for Gemini Enterprise.

@@ -1987,6 +1987,8 @@ enum InvocationSource {
   [MinVersion=26] kReshowInactive = 40,
   // From the tab context menu.
   [MinVersion=27] kTabContextMenu = 41,
+  // From Web Continuity.
+  [MinVersion=28] kWebContinuity = 42,
 };
 
 // LINT.ThenChange(

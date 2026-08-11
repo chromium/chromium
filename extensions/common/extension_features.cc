@@ -42,6 +42,10 @@ BASE_FEATURE(kApiGlicAccessFromGoogleWebpage,
 
 BASE_FEATURE(kApiGlicAccessFromPromotionPage,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kApiGlicAccessFromWebContinuity,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kProdPromptEndpointUrlParam(
     &kApiGlicAccessFromGoogleWebpage,
     /*name=*/"prod_prompt_endpoint_url",

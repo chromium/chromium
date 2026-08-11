@@ -12,6 +12,13 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #endif
@@ -927,6 +934,110 @@ IN_PROC_BROWSER_TEST_F(GlicSubframeInvokeBrowserTest,
   // Verify that the top-level frame remains example.com.
   EXPECT_EQ("example.com",
             tab->GetPrimaryMainFrame()->GetLastCommittedURL().host());
+}
+
+namespace {
+std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
+    content::BrowserContext* context) {
+  return std::make_unique<glic::MockGlicKeyedService>(
+      context,
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      g_browser_process->profile_manager(),
+      glic::GlicProfileManager::GetInstance(),
+      glic::ContextualCueingServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(context));
+}
+}  // namespace
+
+class GlicMessagingWebContinuityBrowserTest : public GlicPrivateApiTestBase {
+ public:
+  GlicMessagingWebContinuityBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks, {}},
+         {extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromWebContinuity, {}},
+         {features::kGlicActor,
+          {{"glic_actor_policy_control_exemption", "true"}}}},
+        {});
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&GlicMessagingWebContinuityBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    GlicPrivateApiTestBase::SetUpBrowserContextKeyedServices(context);
+    // Bind the SigninClient to our TestURLLoaderFactory so that
+    // SetCookieAccounts() can intercept the ListAccounts request.
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateMockGlicKeyedService));
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTestBase::SetUpOnMainThread();
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+    CoreAccountInfo primary =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(primary.IsEmpty());
+    identity_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    identity_adaptor_->identity_test_env()->SetTestURLLoaderFactory(
+        &test_url_loader_factory_);
+    identity_adaptor_->identity_test_env()->SetCookieAccounts(
+        {{primary.email, primary.gaia}});
+    identity_adaptor_->identity_test_env()->SetAutomaticIssueOfAccessTokens(
+        true);
+  }
+
+  void TearDownOnMainThread() override {
+    identity_adaptor_.reset();
+    GlicPrivateApiTestBase::TearDownOnMainThread();
+  }
+
+ protected:
+  glic::GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> identity_adaptor_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingWebContinuityBrowserTest,
+                       InvokeWebContinuity) {
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      tab, GURL("https://gemini.google.com/empty.html")));
+
+  glic::MockGlicKeyedService* mock_service = static_cast<glic::MockGlicKeyedService*>(
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                         /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  // Expect InvokeWithAutoSubmit to be called with kWebContinuity source.
+  EXPECT_CALL(
+      *mock_service,
+      InvokeWithAutoSubmit(
+          testing::_,
+          testing::Property(&glic::GlicInvokeOptions::GetInvocationSource,
+                            testing::Eq(glic::mojom::InvocationSource::kWebContinuity))))
+      .Times(1);
+
+  // We don't need a prompt ID for web-continuity.
+  content::EvalJsResult result =
+      ExecuteInvoke(tab, "", "web-continuity");
+  EXPECT_EQ("success", result);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

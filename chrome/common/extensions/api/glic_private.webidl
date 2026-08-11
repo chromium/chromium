@@ -39,7 +39,8 @@ dictionary ProfileState {
 enum InvocationSource {
   "unknown",
   "universal-cart",
-  "promotion-page"
+  "promotion-page",
+  "web-continuity"
 };
 
 dictionary GetStateParams {

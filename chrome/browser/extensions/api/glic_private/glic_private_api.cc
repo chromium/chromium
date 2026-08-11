@@ -57,6 +57,8 @@ std::string InvocationSourceToString(
       return "INVOCATION_SOURCE_UNIVERSAL_CART";
     case api::glic_private::InvocationSource::kPromotionPage:
       return "INVOCATION_SOURCE_PROMOTION_PAGE";
+    case api::glic_private::InvocationSource::kWebContinuity:
+      return "INVOCATION_SOURCE_WEB_CONTINUITY";
     case api::glic_private::InvocationSource::kUnknown:
       return "INVOCATION_SOURCE_UNKNOWN";
     case api::glic_private::InvocationSource::kNone:
@@ -217,6 +219,10 @@ api::glic_private::ProfileState CreateProfileState(
     case api::glic_private::InvocationSource::kPromotionPage:
       invocation_source_enabled = base::FeatureList::IsEnabled(
           extensions_features::kApiGlicAccessFromPromotionPage);
+      break;
+    case api::glic_private::InvocationSource::kWebContinuity:
+      invocation_source_enabled = base::FeatureList::IsEnabled(
+          extensions_features::kApiGlicAccessFromWebContinuity);
       break;
     case api::glic_private::InvocationSource::kUnknown:
     case api::glic_private::InvocationSource::kNone:
@@ -490,6 +496,10 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       source = glic::mojom::InvocationSource::kPromotionPage;
       feature_mode = glic::mojom::FeatureMode::kPromotionPage;
       break;
+    case api::glic_private::InvocationSource::kWebContinuity:
+      source = glic::mojom::InvocationSource::kWebContinuity;
+      feature_mode = glic::mojom::FeatureMode::kWebContinuity;
+      break;
     default:
       return RespondNow(GetPromptResponseValueAndLog(
           extensions::api::glic_private::ErrorCode::
@@ -504,11 +514,13 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
   bool in_new_tab = params->details.in_new_tab.value_or(false);
 
   if (!params->details.prompt_id || params->details.prompt_id->empty()) {
-    // Promotion page invocations do not require a prompt ID. We skip
-    // fetching the prompt from the server and proceed directly, passing nullopt
-    // for the prompt.
+    // Promotion page and Web Continuity invocations do not require a prompt ID.
+    // We skip fetching the prompt from the server and proceed directly, passing
+    // nullopt for the prompt.
     if (params->details.invocation_source ==
-        api::glic_private::InvocationSource::kPromotionPage) {
+            api::glic_private::InvocationSource::kPromotionPage ||
+        params->details.invocation_source ==
+            api::glic_private::InvocationSource::kWebContinuity) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved, this,

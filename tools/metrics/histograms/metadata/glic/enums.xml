@@ -636,6 +636,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="Tab restore"/>
   <int value="40" label="Reshow inactive"/>
   <int value="41" label="Tab context menu"/>
+  <int value="42" label="Web Continuity"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -1080,6 +1081,10 @@ chromium-metrics-reviews@google.com.
   <int value="166" label="Tab context menu, attached, audio mode."/>
   <int value="167" label="Tab context menu, detached, text mode."/>
   <int value="168" label="Tab context menu, detached, audio mode."/>
+  <int value="169" label="Web Continuity, attached, text mode."/>
+  <int value="170" label="Web Continuity, attached, audio mode."/>
+  <int value="171" label="Web Continuity, detached, text mode."/>
+  <int value="172" label="Web Continuity, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

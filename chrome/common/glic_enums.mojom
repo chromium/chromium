@@ -20,4 +20,6 @@ enum FeatureMode {
   [MinVersion=2] kPromotionPage = 5,
   // Client feature mode to initiate actuation for Password Change.
   [MinVersion=3] kPasswordChange = 6,
+  // Client feature mode for Web Continuity.
+  [MinVersion=4] kWebContinuity = 7,
 };

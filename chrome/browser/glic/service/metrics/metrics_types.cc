@@ -140,6 +140,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "ReshowInactive";
     case mojom::InvocationSource::kTabContextMenu:
       return "TabContextMenu";
+    case mojom::InvocationSource::kWebContinuity:
+      return "WebContinuity";
   }
 }
 

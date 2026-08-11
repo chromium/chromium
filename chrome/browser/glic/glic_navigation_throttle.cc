@@ -21,6 +21,10 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"
+#endif
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
@@ -104,9 +108,20 @@ GURL GetGlicWebContinuityOriginatingHostUrl() {
 // static
 void GlicNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  // We won't create a throttle if neither feature is enabled.
-  if (!base::FeatureList::IsEnabled(features::kGlicGeminiContinueURLRedirect) &&
-      !base::FeatureList::IsEnabled(features::kGlicWebContinuity)) {
+  // We won't create a throttle if:
+  // - kApiGlicAccessFromWebContinuity is enabled (as it uses the API instead of throttle).
+  // - Neither kGlicGeminiContinueURLRedirect nor kGlicWebContinuity is enabled.
+  // extensions_features (where kApiGlicAccessFromWebContinuity is defined) are
+  // not compiled on Android because extensions are disabled there. However,
+  // this file is still compiled on Android, so we must guard the usage.
+  bool api_access_enabled = false;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  api_access_enabled = base::FeatureList::IsEnabled(
+      extensions_features::kApiGlicAccessFromWebContinuity);
+#endif
+  if (api_access_enabled ||
+      (!base::FeatureList::IsEnabled(features::kGlicGeminiContinueURLRedirect) &&
+       !base::FeatureList::IsEnabled(features::kGlicWebContinuity))) {
     return;
   }
   content::NavigationHandle& handle = registry.GetNavigationHandle();

@@ -272,6 +272,8 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kReshowInactive";
     case glic::mojom::InvocationSource::kTabContextMenu:
       return "kTabContextMenu";
+    case glic::mojom::InvocationSource::kWebContinuity:
+      return "kWebContinuity";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);
@@ -295,6 +297,8 @@ std::string FeatureModeToString(glic::mojom::FeatureMode mode) {
       return "kPromotionPage";
     case glic::mojom::FeatureMode::kPasswordChange:
       return "kPasswordChange";
+    case glic::mojom::FeatureMode::kWebContinuity:
+      return "kWebContinuity";
   }
   LOG(ERROR) << "Unexpected value for FeatureMode: " << static_cast<int>(mode);
   return "Unknown";
