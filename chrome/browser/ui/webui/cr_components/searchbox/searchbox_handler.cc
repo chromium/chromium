@@ -1134,13 +1134,13 @@ void SearchboxHandler::QueryAutocomplete(
 
   std::u16string input_with_keyword = input;
   bool is_keyword_selected = false;
+  const TemplateURL* template_url = nullptr;
   if (!keyword.empty()) {
     TemplateURLService* service =
         client() ? client()->GetTemplateURLService() : nullptr;
     if (service) {
       std::u16string keyword16 = base::UTF8ToUTF16(keyword);
-      const TemplateURL* template_url =
-          service->GetTemplateURLForKeyword(keyword16);
+      template_url = service->GetTemplateURLForKeyword(keyword16);
       if (template_url) {
         is_keyword_selected = true;
         input_with_keyword = keyword16 + u" " + input;
@@ -1164,6 +1164,19 @@ void SearchboxHandler::QueryAutocomplete(
     // This will SetInputInProgress and consequently mark the input timer so
     // that Omnibox.TypingDuration will be logged correctly.
     edit_model()->SetUserText(input);
+    // There are various `CHECK()`s and assumptions in the `OmniboxEditModel`
+    // that verify the keyword state is set. Even though we're relying on
+    // searchbox webUI code to manage its keyword state, we need to propagate to
+    // `OmniboxEditModel`'s too to avoid crashes and bugs. This won't be
+    // necessary as we kill the `OmniboxEditModel`. `SetUserText()` above clears
+    // the `OmniboxEditModel`'s keyword state. So we only have to set it here if
+    // in keyword mode, and don't have to clear it if not in keyword mode.
+    if (is_keyword_selected && template_url) {
+      edit_model()->SetKeywordInfo(KeywordState::kKeyword,
+                                   template_url->keyword(),
+                                   /*keyword_placeholder=*/u"",
+                                   metrics::OmniboxEventProto::SPACE_AT_END);
+    }
   } else if (!is_on_focus &&
              metrics_tracker_.time_user_first_modified_omnibox().is_null()) {
     metrics_tracker_.set_time_user_first_modified_omnibox(
@@ -1716,7 +1729,6 @@ void SearchboxHandler::GetPageClassification(
   std::move(callback).Run(::metrics::OmniboxEventProto::PageClassification_Name(
       classification_enum));
 }
-
 
 void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
     OmniboxPopupSelection selection,

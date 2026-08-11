@@ -4,6 +4,7 @@
 
 module omnibox_popup.mojom;
 
+import "components/omnibox/browser/searchbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
@@ -30,6 +31,8 @@ struct OmniboxInputState {
   bool show_full_url;
   // Whether searchbox should query for ZPS.
   bool query_zps;
+  // The keyword model associated with the input, if in keyword mode.
+  searchbox.mojom.InputKeywordModel? keyword_model;
 };
 
 // Browser-side handler for the Omnibox Popup.

@@ -115,7 +115,8 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
   handler_->SetInputState(test_text, test_selection,
                           /*user_input_in_progress=*/true, full_url,
                           /*is_focused=*/true, permanent_display_text,
-                          show_full_url, query_zps);
+                          show_full_url, query_zps,
+                          /*keyword_model=*/nullptr);
   page_.FlushForTesting();
 }
 
@@ -135,7 +136,8 @@ TEST_F(OmniboxPopupHandlerTest, OnSelectionChangedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // A call with stale sequence number 0 should be discarded.
   gfx::Range selection2(2, 6);
@@ -195,7 +197,8 @@ TEST_F(OmniboxPopupHandlerTest, OnInputClearedSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
   omnibox_controller->edit_model()->SetUserText(u"some text");
   test_omnibox_view->SetWindowTextAndCaretPos(u"some text", 0, false, false);
 
@@ -224,7 +227,8 @@ TEST_F(OmniboxPopupHandlerTest, RevertSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
   omnibox_controller->edit_model()->SetUserText(u"draft text");
 
   handler_->Revert(/*sequence_number=*/0);
@@ -255,7 +259,8 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteSequenceGuard) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // A call with stale sequence number 0 should be discarded.
   handler_->OnPaste("pasted text", gfx::Range(11, 11), /*sequence_number=*/0);
@@ -283,7 +288,8 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
   handler_->SetInputState("test", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // OnPaste with valid sequence number 1 should:
   // 1. Invoke model->OnPaste() (recording Omnibox.Paste histogram).
@@ -324,7 +330,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCutOrCopySequenceGuard) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // Stale call (sequence 0) discarded.
   handler_->OnCutOrCopy(/*sequence_number=*/0, /*is_cut=*/false,
@@ -356,7 +363,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCutUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // OnCut (is_cut = true) cutting "example" (range 8-15) from
   // "https://example.com/" should pass text_differs = true, just_deleted_text =
@@ -402,7 +410,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCopyUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/false);
+                          /*show_full_url=*/false, /*query_zps=*/false,
+                          /*keyword_model=*/nullptr);
 
   // Set focus on edit model to record last_omnibox_focus timestamp.
   mock_edit_model_ptr->OnSetFocus(/*control_down=*/false);
@@ -461,7 +470,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCopyZeroSuggestUpdatesEditModel) {
   handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
                           /*user_input_in_progress=*/false, /*full_url=*/"",
                           /*is_focused=*/true, /*permanent_display_text=*/"",
-                          /*show_full_url=*/false, /*query_zps=*/true);
+                          /*show_full_url=*/false, /*query_zps=*/true,
+                          /*keyword_model=*/nullptr);
 
   // Set focus on edit model to record last_omnibox_focus timestamp.
   mock_edit_model_ptr->OnSetFocus(/*control_down=*/false);

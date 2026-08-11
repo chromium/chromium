@@ -69,7 +69,8 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      bool is_focused,
                      const std::string& permanent_display_text,
                      bool show_full_url,
-                     bool query_zps);
+                     bool query_zps,
+                     searchbox::mojom::InputKeywordModelPtr keyword_model);
   void SetFocus(bool is_focused);
   void ClearAutocompleteMatches();
   void ClearPopup(base::OnceClosure callback);

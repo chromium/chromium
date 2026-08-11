@@ -1179,6 +1179,25 @@ void OmniboxEditModel::ClearKeyword() {
   }
 }
 
+void OmniboxEditModel::SetKeywordInfo(
+    KeywordState keyword_state,
+    const std::u16string& keyword,
+    const std::u16string& keyword_placeholder,
+    metrics::OmniboxEventProto::KeywordModeEntryMethod
+        keyword_mode_entry_method) {
+  // Entry should be valid iff in keyword mode.
+  CHECK_EQ(keyword_state == KeywordState::kKeyword,
+           keyword_mode_entry_method !=
+               metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  // `keyword` should be populated iff in keyword or hint mode.
+  CHECK_EQ(keyword_state == KeywordState::kNone, keyword.empty());
+
+  keyword_state_ = keyword_state;
+  keyword_ = keyword;
+  keyword_placeholder_ = keyword_placeholder;
+  keyword_mode_entry_method_ = keyword_mode_entry_method;
+}
+
 void OmniboxEditModel::ClearAdditionalText() {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::ClearAdditionalText");
   if (view_) {
@@ -3184,25 +3203,6 @@ std::u16string OmniboxEditModel::GetText() const {
   } else {
     NOTREACHED();
   }
-}
-
-void OmniboxEditModel::SetKeywordInfo(
-    KeywordState keyword_state,
-    const std::u16string& keyword,
-    const std::u16string& keyword_placeholder,
-    metrics::OmniboxEventProto::KeywordModeEntryMethod
-        keyword_mode_entry_method) {
-  // Entry should be valid iff in keyword mode.
-  CHECK_EQ(keyword_state == KeywordState::kKeyword,
-           keyword_mode_entry_method !=
-               metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
-  // `keyword` should be populated iff in keyword or hint mode.
-  CHECK_EQ(keyword_state == KeywordState::kNone, keyword.empty());
-
-  keyword_state_ = keyword_state;
-  keyword_ = keyword;
-  keyword_placeholder_ = keyword_placeholder;
-  keyword_mode_entry_method_ = keyword_mode_entry_method;
 }
 
 void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query,

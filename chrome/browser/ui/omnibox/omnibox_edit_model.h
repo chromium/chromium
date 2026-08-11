@@ -325,6 +325,7 @@ class OmniboxEditModel {
     return keyword_placeholder_;
   }
 
+  KeywordState keyword_state() const { return keyword_state_; }
   bool is_keyword_hint() const { return is_keyword_hint(keyword_state_); }
   bool is_keyword_selected() const {
     return is_keyword_selected(keyword_state_);
@@ -360,6 +361,13 @@ class OmniboxEditModel {
 
   // Clears the current keyword.
   void ClearKeyword();
+
+  // Always use this to set keyword members instead of mutating them directly.
+  void SetKeywordInfo(KeywordState keyword_state,
+                      const std::u16string& keyword,
+                      const std::u16string& keyword_placeholder,
+                      metrics::OmniboxEventProto::KeywordModeEntryMethod
+                          keyword_mode_entry_method);
 
   // Clears additional text.
   void ClearAdditionalText();
@@ -752,13 +760,6 @@ class OmniboxEditModel {
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
-
-  // Always use this to set keyword members instead of mutating them directly.
-  void SetKeywordInfo(KeywordState keyword_state,
-                      const std::u16string& keyword,
-                      const std::u16string& keyword_placeholder,
-                      metrics::OmniboxEventProto::KeywordModeEntryMethod
-                          keyword_mode_entry_method);
 
   // Record AIM metrics. `query` is the user text when activated. `activation`
   // is how it was activated, or whether it was not activated.

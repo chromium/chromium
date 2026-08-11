@@ -648,6 +648,7 @@ export class OmniboxPopupSearchboxElement extends
     this.lastQueriedInput = state.text;
     this.permanentDisplayText_ = state.permanentDisplayText;
     this.isComposing_ = false;
+    this.inputKeywordModel = state.keywordModel;
 
     // Clear any stale results and close the dropdown on a hard state reset.
     // Clear results here since focusout event may not fire.
@@ -939,7 +940,7 @@ export class OmniboxPopupSearchboxElement extends
     this.popupPageHandler_.logEscapeAction(OmniboxEscapeAction.kBlur);
     return;
   }
-  }
+}
 
 declare global {
   interface HTMLElementTagNameMap {

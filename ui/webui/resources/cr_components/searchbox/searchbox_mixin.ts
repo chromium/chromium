@@ -382,7 +382,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
-      if (this.lastQueriedInput === '') {
+      if (this.lastQueriedInput === '' &&
+          this.inputKeywordModel?.type !== KeywordType.kInKeyword) {
         // Clear the input as well as the matches if the input was empty when
         // the matches arrived.
         this.getInputElement().setInput({text: '', inline: ''});

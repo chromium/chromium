@@ -190,7 +190,8 @@ void OmniboxPopupHandler::SetInputState(
     bool is_focused,
     const std::string& permanent_display_text,
     bool show_full_url,
-    bool query_zps) {
+    bool query_zps,
+    searchbox::mojom::InputKeywordModelPtr keyword_model) {
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
   current_sequence_number_++;
@@ -205,6 +206,7 @@ void OmniboxPopupHandler::SetInputState(
   state->permanent_display_text = permanent_display_text;
   state->show_full_url = show_full_url;
   state->query_zps = query_zps;
+  state->keyword_model = std::move(keyword_model);
   page_->SetInputState(std::move(state));
 }
 

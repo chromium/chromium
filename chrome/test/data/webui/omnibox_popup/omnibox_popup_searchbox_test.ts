@@ -36,6 +36,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     permanentDisplayText: '',
     showFullUrl: false,
     queryZps: false,
+    keywordModel: null,
     ...overrides,
   };
 }
