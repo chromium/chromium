@@ -1,0 +1,62 @@
+<!doctype html>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #grid-lanes {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    gap: 2px;
+    grid-lanes-direction: row;
+    grid-template-rows:
+        repeat(auto-fill, min-content max-content fit-content(72px) auto);
+    height: 720px;
+    width: 1200px;
+  }
+
+  .item {
+    background: lavender;
+    box-sizing: border-box;
+    font: 12px/1.2 monospace;
+    padding: 2px;
+  }
+</style>
+
+<div id="grid-lanes"></div>
+
+<script>
+  'use strict';
+
+  function startTest() {
+    const container = document.getElementById('grid-lanes');
+    const fragment = document.createDocumentFragment();
+
+    // Cycle through different spans, widths, and text lengths to vary sizes.
+    for (let i = 0; i < 720; ++i) {
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.style.gridRow = `span ${1 + i % 4}`;
+      item.style.width = `${32 + (i * 13) % 73}px`;
+      item.textContent = `item ${i} ${'x'.repeat(1 + (i * 7) % 17)}`;
+      fragment.appendChild(item);
+    }
+    container.appendChild(fragment);
+
+    PerfTestRunner.forceLayout();
+
+    let isTall = true;
+    PerfTestRunner.measureRunsPerSecond({
+      description:
+          'Measures row Grid Lanes intrinsic auto-repeat track sizing.',
+      run() {
+        container.style.height = isTall ? '900px' : '720px';
+        isTall = !isTall;
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+
+  window.addEventListener('load', startTest);
+</script>

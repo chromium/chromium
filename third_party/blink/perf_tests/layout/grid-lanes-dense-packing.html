@@ -1,0 +1,171 @@
+<!doctype html>
+<title>Grid Lanes dense packing after seed resize</title>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #grid-lanes {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    gap: 2px;
+    grid-lanes-pack: dense;
+    grid-template-columns: repeat(100, 32px);
+  }
+
+  .item {
+    background: lightsalmon;
+  }
+
+  .height-12 {
+    height: 12px;
+  }
+
+  .height-14 {
+    height: 14px;
+  }
+
+  .height-16 {
+    height: 16px;
+  }
+
+  .height-18 {
+    height: 18px;
+  }
+
+  .height-20 {
+    height: 20px;
+  }
+
+  .height-22 {
+    height: 22px;
+  }
+
+  .height-24 {
+    height: 24px;
+  }
+
+  .height-26 {
+    height: 26px;
+  }
+
+  .height-28 {
+    height: 28px;
+  }
+
+  .height-30 {
+    height: 30px;
+  }
+
+  .height-64 {
+    height: 64px;
+  }
+
+  .span-1,
+  .span-2,
+  .span-3,
+  .span-4 {
+    background: yellow;
+  }
+
+  .span-1 {
+    grid-column: span 1;
+  }
+
+  .span-2 {
+    grid-column: span 2;
+  }
+
+  .span-3 {
+    grid-column: span 3;
+  }
+
+  .span-4 {
+    grid-column: span 4;
+  }
+</style>
+
+<div id="grid-lanes"></div>
+
+<script>
+  'use strict';
+
+  const kBlockSize = 25;
+  const kItemCount = 2000;
+  // Keep these values out of order so dense packing creates and backfills
+  // differently sized openings. The first seed is also the resize target.
+  const kRegularHeights = [24, 28, 12, 16, 20];
+  const kRegularSpans = [4, 1, 2, 3];
+  const kSeedHeights = [64, 18, 22, 26, 30];
+  const kTrackCount = 100;
+
+  function appendItem(fragment, className, gridColumn = '') {
+    const item = document.createElement('div');
+    item.className = className;
+    if (gridColumn) {
+      item.style.gridColumn = gridColumn;
+    }
+    fragment.appendChild(item);
+  }
+
+  function populateContainer(container) {
+    const fragment = document.createDocumentFragment();
+    let regularItemIndex = 0;
+
+    for (let blockStart = 0; blockStart < kItemCount;
+         blockStart += kBlockSize) {
+      const blockIndex = blockStart / kBlockSize;
+      const firstSeedColumn =
+          1 + (blockIndex * 17) %
+              (kTrackCount - kSeedHeights.length + 1);
+      for (let seed = 0; seed < kSeedHeights.length; ++seed) {
+        appendItem(
+            fragment, `item height-${kSeedHeights[seed]}`,
+            `${firstSeedColumn + seed}`);
+      }
+      appendItem(fragment, 'item height-14', `1 / span ${kTrackCount}`);
+
+      let itemCountInBlock = kSeedHeights.length + 1;
+      if (blockIndex === 0) {
+        // A 64px item plus the 2px gap exactly fills each 66px opening.
+        for (let span = 1; span <= 3; ++span) {
+          appendItem(fragment, `item exact-fill height-64 span-${span}`);
+        }
+        appendItem(fragment, 'item height-20 span-4');
+        itemCountInBlock += 4;
+      }
+
+      for (; itemCountInBlock < kBlockSize; ++itemCountInBlock) {
+        const height =
+            kRegularHeights[regularItemIndex % kRegularHeights.length];
+        const span = kRegularSpans[regularItemIndex % kRegularSpans.length];
+        appendItem(fragment, `item height-${height} span-${span}`);
+        ++regularItemIndex;
+      }
+    }
+    container.appendChild(fragment);
+  }
+
+  function startTest() {
+    const container = document.getElementById('grid-lanes');
+    populateContainer(container);
+
+    PerfTestRunner.forceLayout();
+
+    const target = container.firstElementChild;
+    let isTall = true;
+    PerfTestRunner.measureRunsPerSecond({
+      description:
+          'Measures dense placement of 2,000 Grid Lanes items after resizing ' +
+          'an early seed.',
+      run() {
+        target.style.height = isTall ? '96px' : '64px';
+        isTall = !isTall;
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+
+  window.addEventListener('load', startTest);
+</script>

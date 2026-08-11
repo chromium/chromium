@@ -1,0 +1,96 @@
+<!doctype html>
+<title>Grid Lanes spanning items with implicit tracks</title>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #grid-lanes {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    gap: 2px;
+    grid-auto-columns: 24px;
+  }
+
+  .item {
+    background: lightgreen;
+  }
+
+  .height-24 {
+    height: 24px;
+  }
+
+  .height-28 {
+    height: 28px;
+  }
+
+  .height-32 {
+    height: 32px;
+  }
+
+  .height-36 {
+    height: 36px;
+  }
+
+  .height-40 {
+    height: 40px;
+  }
+
+  .height-44 {
+    height: 44px;
+  }
+
+  .height-48 {
+    height: 48px;
+  }
+
+  .height-52 {
+    height: 52px;
+  }
+</style>
+
+<div id="grid-lanes"></div>
+
+<script>
+  'use strict';
+
+  const kHeights = [24, 52, 48, 44, 40, 36, 32, 28];
+  const kItemCount = 2000;
+  const kTrackCount = 100;
+
+  function populateContainer(container) {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < kItemCount; ++i) {
+      const height = kHeights[i % kHeights.length];
+      const span = i % kTrackCount || kTrackCount;
+      const item = document.createElement('div');
+      item.className = `item height-${height}`;
+      item.style.gridColumn = `span ${span}`;
+      fragment.appendChild(item);
+    }
+    container.appendChild(fragment);
+  }
+
+  function startTest() {
+    const container = document.getElementById('grid-lanes');
+    populateContainer(container);
+
+    PerfTestRunner.forceLayout();
+
+    const target = container.firstElementChild;
+    let isTall = true;
+    PerfTestRunner.measureRunsPerSecond({
+      description:
+          'Measures placement of 2,000 Grid Lanes items spanning up to 100 ' +
+          'implicit tracks after the first full-width item is resized.',
+      run() {
+        target.style.height = isTall ? '72px' : '24px';
+        isTall = !isTall;
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+
+  window.addEventListener('load', startTest);
+</script>

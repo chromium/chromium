@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Nested regular grids subgridded to a Grid Lanes ancestor</title>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #grid-lanes-root {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    grid-template-columns: repeat(32, minmax(min-content, 1fr));
+    width: 960px;
+  }
+
+  .nested-grid {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    grid-template-rows: repeat(4, auto);
+  }
+
+  .item {
+    font: 10px monospace;
+    padding: 1px;
+    white-space: nowrap;
+  }
+</style>
+
+<div id="grid-lanes-root"></div>
+
+<script>
+  'use strict';
+
+  const kBranchingFactor = 4;
+  const kDepth = 5;
+  const kLeafContents = ['i', 'grid', 'subgrid', 'nested-subgrid'];
+  const kTrackCount = 32;
+
+  function createTreeNode(level, index) {
+    if (level === kDepth) {
+      const item = document.createElement('div');
+      const column = 1 + (index * 7) % kTrackCount;
+      item.className = 'item';
+      item.style.gridColumn = `${column} / span 1`;
+      item.style.gridRow = `${index % kBranchingFactor + 1}`;
+      item.textContent = kLeafContents[index % kLeafContents.length];
+      return item;
+    }
+
+    const subgrid = document.createElement('div');
+    subgrid.className = 'nested-grid';
+    for (let child = 0; child < kBranchingFactor; ++child) {
+      subgrid.appendChild(
+          createTreeNode(level + 1, index * kBranchingFactor + child));
+    }
+    return subgrid;
+  }
+
+  function startTest() {
+    const root = document.getElementById('grid-lanes-root');
+    for (let child = 0; child < kBranchingFactor; ++child) {
+      root.appendChild(createTreeNode(1, child));
+    }
+
+    PerfTestRunner.forceLayout();
+
+    let isWide = false;
+    PerfTestRunner.measureRunsPerSecond({
+      description: 'Measures nested regular grids subgridded to Grid Lanes.',
+      run() {
+        root.style.width = isWide ? '960px' : '992px';
+        isWide = !isWide;
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+
+  window.addEventListener('load', startTest);
+</script>

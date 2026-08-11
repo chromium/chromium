@@ -1,0 +1,26 @@
+<!doctype html>
+<script src="../resources/runner.js"></script>
+<div id="target" style="height: 200px; width: 600px;">
+  <div id="grid-lanes" style="display: inline-grid-lanes; height: 100%;
+      grid-template-rows: auto; width: min-content;">
+    <canvas height="60" width="60" style="height: 100%;"></canvas>
+  </div>
+</div>
+<script>
+  'use strict';
+
+  const target = document.getElementById('target');
+
+  PerfTestRunner.forceLayout();
+
+  PerfTestRunner.measureRunsPerSecond({
+    description:
+        'Measures Grid Lanes block-constraint-dependent sizing with a canvas.',
+    run() {
+      target.style.height = '100px';
+      PerfTestRunner.forceLayout();
+      target.style.height = '200px';
+      PerfTestRunner.forceLayout();
+    },
+  });
+</script>
