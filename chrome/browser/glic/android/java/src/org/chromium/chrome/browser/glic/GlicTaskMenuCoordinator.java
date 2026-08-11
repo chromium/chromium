@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -63,6 +64,16 @@ public class GlicTaskMenuCoordinator {
     private final @GlicInvocationSource int mInvocationSource;
     private final @ButtonSource int mButtonSource;
     private @Nullable AnchoredPopupWindow mMenuWindow;
+    private @Nullable OnDismissListener mOnDismiss;
+
+    /**
+     * Sets a listener to be called when the task menu is dismissed.
+     *
+     * @param onDismiss The listener to set.
+     */
+    public void setOnDismiss(@Nullable OnDismissListener onDismiss) {
+        mOnDismiss = onDismiss;
+    }
 
     /**
      * Constructs the task menu coordinator.
@@ -178,6 +189,9 @@ public class GlicTaskMenuCoordinator {
                         .setAnimateFromAnchor(true)
                         .setAllowNonTouchableSize(true)
                         .build();
+        if (mOnDismiss != null) {
+            mMenuWindow.addOnDismissListener(mOnDismiss);
+        }
         mMenuWindow.show();
     }
 

@@ -199,6 +199,10 @@ public class StripLayoutTrailingButtonsCoordinator {
                     if (mIsGlicUiVisible == open) return;
                     mIsGlicUiVisible = open;
                     updateGlicButtonAccessibilityDescription();
+                    if (mGlicButton != null) {
+                        mGlicButton.setHighlighted(open);
+                        mRenderHost.requestRender();
+                    }
                 }
             };
     private final GlicSplitButtonDelegateBridge mGlicSplitButtonDelegateBridge =
@@ -453,6 +457,7 @@ public class StripLayoutTrailingButtonsCoordinator {
 
             mGlicButton.setDrawY(getDimensionDp(R.dimen.tab_strip_button_y_offset));
             mGlicButton.setVisible(false);
+            mGlicButton.setHighlighted(mIsGlicUiVisible);
 
             mGlicButton.setText(
                     mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
@@ -698,9 +703,18 @@ public class StripLayoutTrailingButtonsCoordinator {
                             mGlicClickHandler,
                             GlicInvocationSource.TOP_CHROME_BUTTON,
                             GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
+            mGlicTaskMenuCoordinator.setOnDismiss(
+                    () -> {
+                        if (mGlicActorButton != null) {
+                            mGlicActorButton.setHighlighted(false);
+                            mRenderHost.requestRender();
+                        }
+                    });
         }
         mGlicTaskMenuCoordinator.show(
                 anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
+        mGlicActorButton.setHighlighted(true);
+        mRenderHost.requestRender();
     }
 
     /**

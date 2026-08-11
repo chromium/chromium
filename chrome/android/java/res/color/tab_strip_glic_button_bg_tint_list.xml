@@ -10,6 +10,8 @@ found in the LICENSE file.
         android:color="@color/tab_strip_glic_button_bg_hover_tint" />
     <item android:state_pressed="true"
         android:color="@color/tab_strip_glic_button_bg_pressed_tint" />
+    <item android:state_activated="true"
+        android:color="@color/tab_strip_glic_button_bg_pressed_tint" />
 
     <item android:color="?attr/colorSurfaceContainerLow" />
 </selector>

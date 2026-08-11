@@ -452,6 +452,61 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     }
 
     @Test
+    public void testGlicHighlightedState_GlicUiShowHide() {
+        assertNotNull("Glic button should be created.", mGlicButton);
+        assertFalse(
+                "Glic button should not be highlighted initially.", mGlicButton.isHighlighted());
+
+        // Simulate Glic UI opening event.
+        mCoordinator.getGlicSplitButtonDelegateForTesting().setGlicPanelIsOpen(true);
+
+        // Verify button is in highlighted state.
+        assertTrue(
+                "Glic button should be highlighted when UI is shown globally.",
+                mGlicButton.isHighlighted());
+
+        // Simulate Glic UI hiding event.
+        mCoordinator.getGlicSplitButtonDelegateForTesting().setGlicPanelIsOpen(false);
+
+        // Verify button returns to non-highlighted state.
+        assertFalse(
+                "Glic button should not be highlighted when UI is hidden globally.",
+                mGlicButton.isHighlighted());
+    }
+
+    @Test
+    public void testGlicActorHighlightedState_TaskMenuShowHide() {
+        showGlicActorButton();
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+        assertFalse(
+                "Glic Actor button should not be highlighted initially.",
+                mGlicActorButton.isHighlighted());
+
+        // Mock active tasks to ensure the menu actually opens
+        when(mActorTask.getTitle()).thenReturn("Test Task");
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
+
+        // Simulate clicking the actor button to open the task menu
+        float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
+        float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
+        mCoordinator.click(0L, actorX, actorY, 0, 0);
+
+        // Verify button is in highlighted state and task menu is showing
+        assertTrue(
+                "Glic Actor button should be highlighted after task menu is shown.",
+                mGlicActorButton.isHighlighted());
+        assertTrue("Glic task menu should be showing.", mCoordinator.isMenuShowing());
+
+        // Simulate dismissing the task menu
+        mCoordinator.dismissTrailingButtonsMenu();
+
+        // Verify button returns to non-highlighted state
+        assertFalse(
+                "Glic Actor button should not be highlighted after task menu is dismissed.",
+                mGlicActorButton.isHighlighted());
+    }
+
+    @Test
     public void testGlicDismissNudgeButton() {
         GlicSplitButtonDelegate delegate = mCoordinator.getGlicSplitButtonDelegateForTesting();
         assertNotNull("Glic nudge delegate should be created.", delegate);

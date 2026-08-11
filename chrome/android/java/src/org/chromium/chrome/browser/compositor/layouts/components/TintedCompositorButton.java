@@ -23,6 +23,8 @@ public class TintedCompositorButton extends CompositorButton {
     //  through the presence/absence of the handler.
     private final boolean mHasLongClickAction;
 
+    private boolean mIsHighlighted;
+
     private ColorStateList mBackgroundTint = ColorStateList.valueOf(Color.TRANSPARENT);
     private @ColorInt int mTint;
 
@@ -91,6 +93,22 @@ public class TintedCompositorButton extends CompositorButton {
     }
 
     /**
+     * Sets whether the button has an active/highlighted state independent of touch gestures.
+     *
+     * @param isHighlighted The highlight state.
+     */
+    public void setHighlighted(boolean isHighlighted) {
+        mIsHighlighted = isHighlighted;
+    }
+
+    /**
+     * Returns whether the button is in an active/highlighted state independent of touch gestures.
+     */
+    public boolean isHighlighted() {
+        return mIsHighlighted;
+    }
+
+    /**
      * @param tint The tint.
      */
     public void setTint(@ColorInt int tint) {
@@ -123,12 +141,14 @@ public class TintedCompositorButton extends CompositorButton {
         if (isHovered()) stateCount++;
         if (isPressed()) stateCount++;
         if (isPressedFromMouse()) stateCount++;
+        if (isHighlighted()) stateCount++;
 
         int[] stateSet = new int[stateCount];
         int i = 0;
         if (isHovered()) stateSet[i++] = android.R.attr.state_hovered;
         if (isPressed()) stateSet[i++] = android.R.attr.state_pressed;
         if (isPressedFromMouse()) stateSet[i++] = R.attr.state_peripheral_pressed;
+        if (isHighlighted()) stateSet[i++] = android.R.attr.state_activated;
 
         return csl.getColorForState(stateSet, csl.getDefaultColor());
     }

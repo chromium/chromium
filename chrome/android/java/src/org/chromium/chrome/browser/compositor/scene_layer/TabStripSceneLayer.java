@@ -236,7 +236,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             glicButtonVisible,
                             glicButton.getShouldApplyHoverBackground(),
                             glicButton.getTint(),
-                            /* shouldTint= */ layoutHelper.isIncognito(),
+                            glicButton.isHighlighted() || layoutHelper.isIncognito(),
                             glicButton.getBackgroundTint(),
                             glicButton.getOpacity(),
                             glicButton.isKeyboardFocused(),
