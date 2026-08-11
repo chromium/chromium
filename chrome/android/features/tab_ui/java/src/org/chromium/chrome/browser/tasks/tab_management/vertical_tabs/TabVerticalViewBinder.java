@@ -495,10 +495,17 @@ class TabVerticalViewBinder {
             }
             boolean isIncognito = isIncognito(model);
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            Context context = view.getContext();
+
+            @ColorInt
+            int defaultIconColor =
+                    getActionButtonTintList(context, isSelected, isIncognito).getDefaultColor();
+
             ImageViewCompat.setImageTintList(
                     mediaIndicator,
-                    TabCardThemeUtil.getMediaIndicatorColorStateList(
-                            mediaIndicator.getContext(), isIncognito, isSelected));
+                    ColorStateList.valueOf(
+                            TabUtils.getMediaIndicatorTintColor(
+                                    context, mediaState, defaultIconColor)));
         }
     }
 

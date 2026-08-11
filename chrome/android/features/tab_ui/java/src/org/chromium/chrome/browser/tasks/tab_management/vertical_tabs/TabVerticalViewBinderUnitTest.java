@@ -369,11 +369,30 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindMediaIndicator() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
 
         assertEquals(View.VISIBLE, mMediaIndicatorView.getVisibility());
 
+        // 1. Assert unselected baseline tint uses secondary icon color
+        ColorStateList tintList = mMediaIndicatorView.getImageTintList();
+        assertNotNull(tintList);
+        assertEquals(
+                SemanticColorUtils.getDefaultIconColorSecondary(mActivity),
+                tintList.getDefaultColor());
+
+        // 2. Select it and assert the tint brightens to primary icon color
+        mModel.set(TabProperties.IS_SELECTED, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+
+        tintList = mMediaIndicatorView.getImageTintList();
+        assertNotNull(tintList);
+        assertEquals(SemanticColorUtils.getDefaultIconColor(mActivity), tintList.getDefaultColor());
+
+        // 3. Assert hiding behavior
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
 
