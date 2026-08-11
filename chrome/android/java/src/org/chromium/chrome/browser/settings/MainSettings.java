@@ -824,11 +824,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAppearancePreference() {
-        updateNewPreferenceAndIncrementViewCount(
-                findPreference(PREF_APPEARANCE),
-                AppearanceSettingsFragment.getTitle(getContext()),
-                ChromePreferenceKeys.APPEARANCE_SETTINGS_CLICKED,
-                ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT);
+        Preference pref = findPreference(PREF_APPEARANCE);
+        pref.setTitle(AppearanceSettingsFragment.getTitle(getContext()));
     }
 
     private void updateNewPreferenceAndIncrementViewCount(

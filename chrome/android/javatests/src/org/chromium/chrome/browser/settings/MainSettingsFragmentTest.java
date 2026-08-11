@@ -82,7 +82,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
-import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
@@ -143,7 +142,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -213,10 +211,9 @@ public class MainSettingsFragmentTest {
 
         // Keep render tests consistent by suppressing "new" labels.
         final var prefs = ChromeSharedPreferences.getInstance();
-        Stream.of(
-                        ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
-                        ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT)
-                .forEach(key -> prefs.writeInt(key, MainSettings.NEW_LABEL_MAX_VIEW_COUNT));
+        prefs.writeInt(
+                ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_VIEW_COUNT,
+                MainSettings.NEW_LABEL_MAX_VIEW_COUNT);
 
         when(mSigninAndHistorySyncActivityLauncher
                         .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
@@ -885,16 +882,6 @@ public class MainSettingsFragmentTest {
                 .removeEntry(
                         MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 MainSettings.PREF_DEFAULT_BROWSER));
-    }
-
-    @Test
-    @SmallTest
-    public void testAppearanceSettingsNewLabel() {
-        testNewPreferenceLabel(
-                AppearanceSettingsFragment.class,
-                MainSettings.PREF_APPEARANCE,
-                ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT,
-                R.string.appearance_settings);
     }
 
     @Test

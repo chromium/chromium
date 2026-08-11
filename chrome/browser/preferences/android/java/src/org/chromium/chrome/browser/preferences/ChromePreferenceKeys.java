@@ -65,10 +65,6 @@ public final class ChromePreferenceKeys {
     public static final String AI_ASSISTANT_WEB_SUMMARIZATION_AVAILABILITY =
             "Chrome.AiAssistant.WebSummarizationAvailability";
 
-    public static final String APPEARANCE_SETTINGS_CLICKED = "Chrome.Appearance.SettingsClicked";
-    public static final String APPEARANCE_SETTINGS_VIEW_COUNT =
-            "Chrome.Appearance.SettingsViewCount";
-
     /** The language code to override application language with. */
     public static final String APPLICATION_OVERRIDE_LANGUAGE =
             "Chrome.Language.ApplicationOverrideLanguage";
@@ -1190,8 +1186,6 @@ public final class ChromePreferenceKeys {
                 AI_ASSISTANT_ANALYZE_ATTACHMENT_AVAILABILITY,
                 AI_ASSISTANT_AVAILABILITY_CHECK_TIMESTAMP_MS,
                 AI_ASSISTANT_WEB_SUMMARIZATION_AVAILABILITY,
-                APPEARANCE_SETTINGS_CLICKED,
-                APPEARANCE_SETTINGS_VIEW_COUNT,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
                 AUTOFILL_THIRD_PARTY_MODE_STATE,

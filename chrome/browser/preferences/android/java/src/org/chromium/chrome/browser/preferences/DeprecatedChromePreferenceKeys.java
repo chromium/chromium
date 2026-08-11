@@ -28,6 +28,8 @@ public class DeprecatedChromePreferenceKeys {
                 "BANDWIDTH_REDUCTION_PROXY_ENABLED",
                 "BANDWIDTH_REDUCTION_FIRST_ENABLED_TIME",
                 "Chrome.AccountPickerBottomSheet.ShownCount",
+                "Chrome.Appearance.SettingsClicked",
+                "Chrome.Appearance.SettingsViewCount",
                 "Chrome.Assistant.Enabled",
                 "Chrome.AssistantVoiceConsentTapsCounter.ConsentTapsCount",
                 "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled",
