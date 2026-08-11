@@ -375,8 +375,6 @@ HEADLESS_MODE_PROTOCOL_TEST(OzoneScreenSizeOverride,
                             "sanity/ozone-screen-size-override.js")
 #endif
 
-// This currently results in an unexpected screen orientation type,
-// see http://crbug.com/398150465.
 HEADLESS_MODE_PROTOCOL_TEST(MultipleScreenDetails,
                             "shared/multiple-screen-details.js")
 

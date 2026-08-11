@@ -20,6 +20,8 @@
 
   await session.navigate('https://example.com/index.html');
 
+  // ScreenDetailed.orientation is currently misreported for secondary screens,
+  // see https://crbug.com/398150465.
   const result = await session.evaluateAsync(async () => {
     const screenDetails = await getScreenDetails();
     const screenDetailed = screenDetails.screens.map(s => {
@@ -33,8 +35,6 @@
         ` isInternal=${s.isInternal}`,
         ` colorDepth=${s.colorDepth}`,
         ` devicePixelRatio=${s.devicePixelRatio}`,
-        ` orientation.type=${s.orientation.type}`,
-        ` orientation.angle=${s.orientation.angle}`,
       ];
       return lines.join('\n');
     });
