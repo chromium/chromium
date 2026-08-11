@@ -13,6 +13,26 @@ export interface ToolbarChipButtonElement {
   };
 }
 
+/**
+ * toolbar-chip-button is a pill-shaped button element. It is used for
+ * toolbar buttons and location bar chips (e.g., app menu button, avatar
+ * button, permission chips) that can have text, icons, or both.
+ *
+ * It is designed for 1:1 parity with C++ Native Views (e.g., LocationIconView):
+ * - InkDrop Parity: Uses CSS ::before and ::after for independent hover
+ *   and pressed transitions, matching C++ InkDrop behavior.
+ * - Focus-Theft Survival: Supports is-menu-open attribute to lock the
+ *   active state and prevent flicker when a native bubble steals focus.
+ * - Native Interaction: Uses a native button and CSS :active for
+ *   automatic accessibility, keyboard nav, and drag-to-cancel behavior.
+ * - Label Animation: Supports sliding label transitions via animates-label
+ *   and has-label attributes.
+ *
+ * Slots:
+ * - prefix-icon: Icon before the text.
+ * - Default slot: Text content.
+ * - suffix-icon: Icon after the text.
+ */
 export class ToolbarChipButtonElement extends CrLitElement {
   static get is() {
     return 'toolbar-chip-button';
@@ -45,12 +65,28 @@ export class ToolbarChipButtonElement extends CrLitElement {
     };
   }
 
+  /** Accessibility label for the inner button. */
   override accessor ariaLabel: string = '';
+
+  /** Accessibility description for the inner button. */
   override accessor ariaDescription: string = '';
+
+  /** Tooltip text to show on hover. */
   accessor tooltip: string = '';
+
+  /** Indicates that the button triggers a popup. */
   override accessor ariaHasPopup: string|null = null;
+
+  /** Indicates whether the popup triggered by the button is expanded. */
   override accessor ariaExpanded: string|null = null;
+
+  /** Whether the button is disabled. */
   accessor disabled: boolean = false;
+
+  /**
+   * Whether the label should animate (e.g., when the text content changes or
+   * when the chip transitions between states).
+   */
   accessor animatesLabel: boolean = false;
 
   override focus() {
