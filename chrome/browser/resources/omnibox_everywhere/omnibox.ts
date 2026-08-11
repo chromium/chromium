@@ -94,10 +94,6 @@ export class OmniboxEverywhereOmniboxElement extends
         type: Boolean,
         reflect: true,
       },
-      useWebkitSearchIcons_: {
-        type: Boolean,
-        reflect: true,
-      },
       animationState: {
         type: String,
         reflect: true,
@@ -154,7 +150,6 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
-  protected accessor useWebkitSearchIcons_: boolean = true;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   accessor inVoiceSearchMode: boolean = false;
   protected accessor composeButtonEnabled: boolean =
@@ -215,14 +210,6 @@ export class OmniboxEverywhereOmniboxElement extends
     if (this.inputStateListenerId_ !== null) {
       this.callbackRouter_.removeListener(this.inputStateListenerId_);
       this.inputStateListenerId_ = null;
-    }
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('searchboxChromeRefreshTheming')) {
-      this.useWebkitSearchIcons_ = this.searchboxChromeRefreshTheming;
     }
   }
 

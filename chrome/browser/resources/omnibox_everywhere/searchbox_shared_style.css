@@ -61,10 +61,8 @@
 }
 
 .searchbox-icon-button {
-  background-color: transparent;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 21px 21px;
+  background-color: var(--color-sys-on-surface-subtle,
+      var(--cr-fallback-color-on-surface-subtle));
   border: none;
   border-radius: 2px;
   cursor: pointer;
@@ -75,14 +73,17 @@
   position: static;
   width: 26px;
   z-index: 100;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 21px 21px;
 }
 
 #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }
 
 #lensSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
 }
 
 #profileIcon {
@@ -96,6 +97,4 @@
   z-index: 100;
 }
 
-:host-context([webui-rounded-icons]) #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
-}
+

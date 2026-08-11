@@ -166,46 +166,10 @@ cr-searchbox-input::part(searchbox-input) {
   width: var(--cr-searchbox-icon-width);
 }
 
-/* When voice/lens icons are monochrome, they are webkit mask images.
- * Webkit mask images hide borders so container rules are created to
- * show focus borders on these icons. */
-.searchbox-icon-button-container {
-  align-items: center;
-  border-radius: 50%;
-  display: flex;
-  flex-shrink: 0;
-  height: 36px;
-  justify-content: center;
-  position: relative;
-  width: 36px;
-  z-index: 100;
-}
-
 :host(:not([is-fusebox-enabled])) .searchbox-icon-button-container {
   align-self: center;
 }
 
-:host([use-webkit-search-icons_]) #voiceSearchButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
-}
-
-:host([use-webkit-search-icons_]) #lensSearchButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
-}
-
-:host([use-webkit-search-icons_]) #voiceSearchButton,
-:host([use-webkit-search-icons_]) #lensSearchButton {
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 21px 21px;
-  background-color: var(--color-searchbox-lens-voice-icon-background);
-  background-image: none;
-}
-
-:host([use-webkit-search-icons_][compose-button-enabled]) #voiceSearchButton,
-:host([use-webkit-search-icons_][compose-button-enabled]) #lensSearchButton {
-  background-color: #1F1F1F;
-}
 
 :host([compose-button-enabled][searchbox-lens-search-enabled_]) {
   --cr-searchbox-voice-icon-offset: calc(
@@ -413,10 +377,6 @@ cr-composebox-contextual-entrypoint-button,
 #profileIcon,
 #screenshotMenu {
   -webkit-app-region: no-drag;
-}
-
-:host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
 }
 
 cr-searchbox-input::part(icon) {

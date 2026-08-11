@@ -140,47 +140,6 @@ cr-composebox-submit::part(submit) {
   gap: 12px;
 }
 
-.searchbox-icon-button-container {
-  align-items: center;
-  border-radius: 50%;
-  display: flex;
-  flex-shrink: 0;
-  height: 36px;
-  justify-content: center;
-  position: relative;
-  width: 36px;
-  z-index: 100;
-}
-
-.searchbox-icon-button-container:hover {
-  background-color: var(--color-new-tab-page-realbox-next-icon-hover);
-}
-
-.searchbox-icon-button {
-  background-color: transparent;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 21px 21px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  height: 100%;
-  outline: none;
-  padding: 0;
-  pointer-events: auto;
-  position: static;
-  width: 26px;
-  z-index: 100;
-}
-
-#voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic_old.svg);
-}
-
-#lensSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
-}
-
 #profileIcon {
   position: absolute;
   right: 16px;
@@ -210,12 +169,7 @@ cr-composebox-tool-chip,
   -webkit-app-region: no-drag;
 }
 
-:host-context([webui-rounded-icons]) #voiceSearchButton {
-  background-image: url(//resources/cr_components/searchbox/icons/mic.svg);
-}
-
 cr-composebox-input::part(icon-container) {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
 }
-
