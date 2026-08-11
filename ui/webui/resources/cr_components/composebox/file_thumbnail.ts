@@ -146,6 +146,43 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     const host = link.host.replace(/^www\./, '');
     return (host + link.pathname).replace(/\/$/, '');
   }
+
+  /**
+   * Formats filenames longer than `MAX_DISPLAY_LENGTH` by inserting an ellipsis
+   * (`...`) in the middle of the base filename so that short extensions
+   * (e.g. `.pdf`, `.docx`) are preserved at the end of the string.
+   *
+   * For files without an extension or with long extensions (e.g. `.gitignore`),
+   * the original filename is returned untouched to rely on CSS truncation.
+   */
+  protected getFormattedFileName_(): string {
+    const MAX_DISPLAY_LENGTH = 18;
+    const MAX_EXTENSION_LENGTH = 5;
+    const ELLIPSIS = '...';
+
+    const name = this.file?.name || '';
+    if (name.length <= MAX_DISPLAY_LENGTH) {
+      return name;
+    }
+
+    const dotIndex = name.lastIndexOf('.');
+    if (dotIndex === -1 || dotIndex === 0) {
+      return name;
+    }
+
+    const extension = name.slice(dotIndex);
+    if (extension.length > MAX_EXTENSION_LENGTH) {
+      return name;
+    }
+
+    const baseName = name.slice(0, dotIndex);
+    const availableCharsForBase =
+        MAX_DISPLAY_LENGTH - ELLIPSIS.length - extension.length;
+    const startChars = Math.ceil(availableCharsForBase / 2);
+    const endChars = Math.floor(availableCharsForBase / 2);
+    return `${baseName.slice(0, startChars)}${ELLIPSIS}${
+        baseName.slice(-endChars)}${extension}`;
+  }
 }
 
 declare global {

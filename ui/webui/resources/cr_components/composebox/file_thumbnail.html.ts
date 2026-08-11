@@ -23,7 +23,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             `}
           </div>
           <p class="title" part="thumbnail-title" id="injectedInputTitle">
-            ${this.file.name}
+            ${this.getFormattedFileName_()}
           </p>
           <div class="overlay">
             <div class="gradient-protection"></div>
@@ -53,7 +53,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               </div>
             ` : ''}
           </div>
-          <p class="title" id="injectedInputTitle">${this.file.name}</p>
+          <p class="title" id="injectedInputTitle">${this.getFormattedFileName_()}</p>
           <div class="overlay">
             <div class="gradient-protection"></div>
             ${this.file.isDeletable ? html`<cr-icon-button
@@ -179,7 +179,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             `}
           </div>
           <p class="title"
-              part="thumbnail-title" id="documentTitle">${this.file.name}</p>
+              part="thumbnail-title" id="documentTitle">${this.getFormattedFileName_()}</p>
           <div class="overlay">
             <div class="gradient-protection"></div>
             ${this.file.isDeletable ? html`<cr-icon-button

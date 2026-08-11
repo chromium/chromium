@@ -431,4 +431,54 @@ suite('ComposeboxFileThumbnailTest', () => {
     // Only one delete-file event should have been fired.
     assertEquals(1, eventCount);
   });
+
+  interface FilenameTruncationTestCase {
+    testName: string;
+    filename: string;
+    expected: string;
+  }
+
+  const truncationTestCases: FilenameTruncationTestCase[] = [
+    {
+      testName: 'truncates long filenames preserving extension',
+      filename: 'a_very_long_filename_example_for_bug_report.pdf',
+      expected: 'a_very...eport.pdf',
+    },
+    {
+      testName: 'does not truncate long filenames with long extension',
+      filename: 'my_really_long_project_file.gitignore',
+      expected: 'my_really_long_project_file.gitignore',
+    },
+    {
+      testName: 'does not truncate long filenames without extension',
+      filename: 'my_super_long_filename_without_any_extension',
+      expected: 'my_super_long_filename_without_any_extension',
+    },
+    {
+      testName: 'does not truncate long filenames with super long extension',
+      filename: 'my_super_long_test_file.myveryverylongcustomextensionstring',
+      expected: 'my_super_long_test_file.myveryverylongcustomextensionstring',
+    },
+    {
+      testName:
+          'does not apply truncation when base is short and extension is long',
+      filename: 'a.myveryverylongcustomextensionstring',
+      expected: 'a.myveryverylongcustomextensionstring',
+    },
+  ];
+
+  truncationTestCases.forEach((testCase: FilenameTruncationTestCase) => {
+    test(testCase.testName, async () => {
+      fileThumbnailElement.file = createFile(1, {
+        name: testCase.filename,
+        type: 'text/plain',
+      });
+      await microtasksFinished();
+
+      const title =
+          fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
+      assertTrue(!!title);
+      assertEquals(testCase.expected, title.textContent.trim());
+    });
+  });
 });
