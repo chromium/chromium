@@ -1870,4 +1870,82 @@ public class TabVerticalViewBinderUnitTest {
                         ? parentView.getContentDescription().toString()
                         : null);
     }
+
+    // ============================================================================================
+    // Multi-Selection Tests
+    // ============================================================================================
+
+    @Test
+    @SmallTest
+    public void testBindSelectionColors_MultiSelected_NonActive() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.IS_MULTI_SELECTED, true);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_MULTI_SELECTED);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(
+                TabUiThemeUtil.getTabStripMultiSelectedTabColor(
+                        mActivity, /* isIncognito= */ false),
+                bgTint.getDefaultColor());
+        assertTrue(mItemView.isSelected());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindSelectionColors_MultiSelected_Incognito_NonActive() {
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(TabProperties.IS_INCOGNITO, true)
+                        .with(TabProperties.IS_SELECTED, false)
+                        .with(TabProperties.IS_MULTI_SELECTED, true)
+                        .build();
+        TabVerticalViewBinder.bindTab(model, mItemView, TabProperties.IS_MULTI_SELECTED);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(
+                TabUiThemeUtil.getTabStripMultiSelectedTabColor(mActivity, /* isIncognito= */ true),
+                bgTint.getDefaultColor());
+        assertTrue(mItemView.isSelected());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindSelectionColors_MultiSelected_Unselected() {
+        mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.IS_MULTI_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_MULTI_SELECTED);
+
+        ColorStateList bgTint = mItemView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(Color.TRANSPARENT, bgTint.getDefaultColor());
+        assertFalse(mItemView.isSelected());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_SelectionColors_MultiSelected() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+
+        // When Pinned Tab is Multi-Selected (Non-Active)
+        mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.IS_MULTI_SELECTED, true);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_MULTI_SELECTED);
+        ColorStateList multiSelectedTint = pinnedView.getBackgroundTintList();
+        assertNotNull(multiSelectedTint);
+        assertEquals(
+                TabUiThemeUtil.getTabStripMultiSelectedTabColor(
+                        mActivity, /* isIncognito= */ false),
+                multiSelectedTint.getDefaultColor());
+
+        // When Pinned Tab is Unselected
+        mModel.set(TabProperties.IS_SELECTED, false);
+        mModel.set(TabProperties.IS_MULTI_SELECTED, false);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_MULTI_SELECTED);
+        ColorStateList unselectedTint = pinnedView.getBackgroundTintList();
+        assertNull(
+                "Background tint should be null when unselected to allow XML color",
+                unselectedTint);
+    }
 }

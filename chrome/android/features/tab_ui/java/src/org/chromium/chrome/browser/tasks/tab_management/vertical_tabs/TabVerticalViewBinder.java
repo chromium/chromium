@@ -84,6 +84,7 @@ class TabVerticalViewBinder {
             updateTitle(R.id.tab_title, model, view);
             updateParentPadding(model, view, /* isHeader= */ false);
         } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateRegularColors(model, view);
             updateIcons(model, view);
@@ -148,6 +149,7 @@ class TabVerticalViewBinder {
                 view.setContentDescription(model.get(TabProperties.TITLE));
             }
         } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
@@ -570,6 +572,44 @@ class TabVerticalViewBinder {
     // Row-Specific Layout Color Binder Helpers
 
     /**
+     * Updates the selected visual/accessibility state, background color tints, website favicon, and
+     * media indicator for both standard and pinned vertical tab rows.
+     *
+     * <p>If active tab selection or multi-selection is enabled on this tab row, resolves and
+     * mutates the background drawable with the selection color matching the current incognito
+     * state. Otherwise, reverts the background color to the provided default background tint.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the tab row item.
+     * @param defaultBgColor the background tint to restore when this tab is neither active nor
+     *     multi-selected.
+     */
+    private static void updateSelectionAndBackground(
+            PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBgColor) {
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
+        boolean isIncognito = isIncognito(model);
+        Context context = view.getContext();
+        view.setSelected(isSelected || isMultiSelected);
+
+        ColorStateList tintList;
+        if (isSelected || isMultiSelected) {
+            tintList = getBackgroundTintList(context, isSelected, isMultiSelected, isIncognito);
+        } else {
+            tintList = defaultBgColor;
+        }
+
+        @Nullable Drawable bg = view.getBackground();
+        if (bg != null) {
+            bg.mutate();
+            ViewCompat.setBackgroundTintList(view, tintList);
+        }
+        updateFaviconImage(model, view);
+        updateMediaIndicator(model, view);
+        setupTabHoverListener(model, view, /* defaultBackgroundColor= */ tintList);
+    }
+
+    /**
      * Updates the selection state, background tint, text colors, and action button tints for a
      * standard vertical tab row view.
      *
@@ -582,18 +622,12 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the standard tab row item.
      */
     private static void updateRegularColors(PropertyModel model, ViewGroup view) {
+        updateSelectionAndBackground(model, view, ColorStateList.valueOf(Color.TRANSPARENT));
+        updateBackgroundInsets(view);
+
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         boolean isIncognito = isIncognito(model);
         Context context = view.getContext();
-        view.setSelected(isSelected);
-        updateBackgroundInsets(view);
-
-        @Nullable Drawable bg = view.getBackground();
-        if (bg != null) {
-            bg.mutate();
-            ViewCompat.setBackgroundTintList(
-                    view, getBackgroundTintList(context, isSelected, isIncognito));
-        }
 
         TextView titleView = view.findViewById(R.id.tab_title);
         titleView.setTextColor(getTextColor(context, isSelected, isIncognito));
@@ -603,12 +637,6 @@ class TabVerticalViewBinder {
             ImageViewCompat.setImageTintList(
                     actionButton, getActionButtonTintList(context, isSelected, isIncognito));
         }
-        updateFaviconImage(model, view);
-        updateMediaIndicator(model, view);
-        setupTabHoverListener(
-                model,
-                view,
-                /* defaultBackgroundColor= */ ColorStateList.valueOf(Color.TRANSPARENT));
     }
 
     /**
@@ -624,30 +652,14 @@ class TabVerticalViewBinder {
      * @param view the root ViewGroup representing the pinned tab row item.
      */
     private static void updatePinnedColors(PropertyModel model, ViewGroup view) {
-        boolean isSelected = model.get(TabProperties.IS_SELECTED);
         boolean isIncognito = isIncognito(model);
-        Context context = view.getContext();
-        view.setSelected(isSelected);
-
-        @Nullable Drawable bg = view.getBackground();
         @Nullable ColorStateList defaultBackgroundColor =
                 isIncognito
                         ? ColorStateList.valueOf(
-                                context.getColor(R.color.gm3_baseline_surface_container_high_dark))
+                                view.getContext()
+                                        .getColor(R.color.gm3_baseline_surface_container_high_dark))
                         : null;
-        if (bg != null) {
-            bg.mutate();
-            ColorStateList tintList;
-            if (isSelected) {
-                tintList = getBackgroundTintList(context, /* isSelected= */ true, isIncognito);
-            } else {
-                tintList = defaultBackgroundColor;
-            }
-            ViewCompat.setBackgroundTintList(view, tintList);
-        }
-        updateFaviconImage(model, view);
-        updateMediaIndicator(model, view);
-        setupTabHoverListener(model, view, defaultBackgroundColor);
+        updateSelectionAndBackground(model, view, defaultBackgroundColor);
     }
 
     /**
@@ -883,24 +895,30 @@ class TabVerticalViewBinder {
     }
 
     /**
-     * Resolves the background tint list for a vertical tab row based on selection and incognito
-     * state.
+     * Resolves the background tint list for a vertical tab row based on active selection,
+     * multi-selection, and incognito state.
      *
      * @param context the context to retrieve theme colors from.
      * @param isSelected whether the tab item is currently active/selected.
+     * @param isMultiSelected whether the tab item is currently in the multi-selection set.
      * @param isIncognito whether incognito dark mode colors should be applied.
      * @return a {@link ColorStateList} with transparent background for unselected tabs, dark
-     *     surface tint for selected incognito tabs, and surface color for selected regular tabs.
+     *     surface tint for selected incognito tabs, surface color for selected regular tabs, and
+     *     multi-selected tab container tint for multi-selected tabs.
      */
     private static ColorStateList getBackgroundTintList(
-            Context context, boolean isSelected, boolean isIncognito) {
-        if (!isSelected) {
+            Context context, boolean isSelected, boolean isMultiSelected, boolean isIncognito) {
+        if (!isSelected && !isMultiSelected) {
             return ColorStateList.valueOf(Color.TRANSPARENT);
         }
-        int color =
-                isIncognito
-                        ? context.getColor(R.color.default_bg_color_dark)
-                        : SemanticColorUtils.getColorSurface(context);
+        if (isSelected) {
+            int color =
+                    isIncognito
+                            ? context.getColor(R.color.default_bg_color_dark)
+                            : SemanticColorUtils.getColorSurface(context);
+            return ColorStateList.valueOf(color);
+        }
+        int color = TabUiThemeUtil.getTabStripMultiSelectedTabColor(context, isIncognito);
         return ColorStateList.valueOf(color);
     }
 
@@ -967,6 +985,7 @@ class TabVerticalViewBinder {
         view.setOnHoverListener(
                 (v, motionEvent) -> {
                     boolean isSelected = model.get(TabProperties.IS_SELECTED);
+                    boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
                     boolean isIncognito = isIncognito(model);
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER:
@@ -974,12 +993,19 @@ class TabVerticalViewBinder {
                             // showing tab background.
                             // TODO(crbug.com/527641177): Maybe show a darker background color for
                             // action button when it's being hovered?
-                            if (!isSelected) {
+                            if (!isSelected && !isMultiSelected) {
                                 ViewCompat.setBackgroundTintList(
                                         view,
                                         ColorStateList.valueOf(
                                                 TabUiThemeUtil.getHoveredTabContainerColor(
                                                         view.getContext(), isIncognito)));
+                            } else if (isMultiSelected && !isSelected) {
+                                ViewCompat.setBackgroundTintList(
+                                        view,
+                                        ColorStateList.valueOf(
+                                                TabUiThemeUtil
+                                                        .getTabStripMultiSelectedHoveredTabColor(
+                                                                view.getContext(), isIncognito)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
                             notifyHoverChange(model, view, /* isHovered= */ true);
@@ -1004,14 +1030,24 @@ class TabVerticalViewBinder {
                     (v, motionEvent) -> {
                         int action = motionEvent.getAction();
                         boolean isIncognito = isIncognito(model);
+                        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+                        boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
+
                         if (action == MotionEvent.ACTION_HOVER_ENTER) {
                             v.setHovered(true);
-                            if (!model.get(TabProperties.IS_SELECTED)) {
+                            if (!isSelected && !isMultiSelected) {
                                 ViewCompat.setBackgroundTintList(
                                         view,
                                         ColorStateList.valueOf(
                                                 TabUiThemeUtil.getHoveredTabContainerColor(
                                                         view.getContext(), isIncognito)));
+                            } else if (isMultiSelected && !isSelected) {
+                                ViewCompat.setBackgroundTintList(
+                                        view,
+                                        ColorStateList.valueOf(
+                                                TabUiThemeUtil
+                                                        .getTabStripMultiSelectedHoveredTabColor(
+                                                                view.getContext(), isIncognito)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
                             notifyHoverChange(model, view, /* isHovered= */ true);
@@ -1024,7 +1060,7 @@ class TabVerticalViewBinder {
                                     || xInView >= view.getWidth()
                                     || yInView < 0
                                     || yInView >= view.getHeight()) {
-                                if (!model.get(TabProperties.IS_SELECTED)) {
+                                if (!isSelected) {
                                     ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
                                 }
                                 updateIcons(model, view, /* isHovered= */ false);

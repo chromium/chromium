@@ -173,6 +173,8 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_MULTI_SELECTED =
+            new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<SelectionDelegate<TabListEditorItemSelectionId>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
@@ -249,6 +251,7 @@ public class TabProperties {
                 DRAGGING_Y,
                 IS_INCOGNITO,
                 IS_SELECTED,
+                IS_MULTI_SELECTED,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,
@@ -344,6 +347,7 @@ public class TabProperties {
                 IS_GLIC_ACTIVE,
                 IS_INCOGNITO,
                 IS_LOADING,
+                IS_MULTI_SELECTED,
                 IS_PINNED,
                 IS_SELECTED,
                 MEDIA_INDICATOR,
