@@ -520,6 +520,7 @@ if (toolkit_views) {
     testonly = true
 
     sources = [
+      "pinned_toolbar_actions_container_unittest.cc",
       "reload_button_unittest.cc",
       "toolbar_action_view_unittest.cc",
       "toolbar_button_unittest.cc",
