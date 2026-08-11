@@ -61,7 +61,7 @@ class DatePickerDialog {
 
     this.days = [];
 
-    this.focusDay = new Date();
+    this.focusDay = new Date(2025, 4, 15);
     this.selectedDay = new Date(0, 0, 1);
 
     this.lastDate = -1;
@@ -443,7 +443,7 @@ class DatePickerDialog {
       this.selectedDay = new Date(this.focusDay);
     } else {
       // If not a valid date (MM/DD/YY) initialize with todays date
-      this.focusDay = new Date();
+      this.focusDay = new Date(2025, 4, 15);
       this.selectedDay = new Date(0, 0, 1);
     }
   }

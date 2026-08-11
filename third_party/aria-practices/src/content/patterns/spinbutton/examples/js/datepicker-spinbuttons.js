@@ -102,7 +102,7 @@ DatePickerSpinButtons.prototype.init = function () {
   this.minYear = this.spinbuttonYear.getValueMin();
   this.maxYear = this.spinbuttonYear.getValueMax();
 
-  this.currentDate = new Date();
+  this.currentDate = new Date(2025, 4, 15);
 
   this.day = this.currentDate.getDate();
   this.month = this.currentDate.getMonth();

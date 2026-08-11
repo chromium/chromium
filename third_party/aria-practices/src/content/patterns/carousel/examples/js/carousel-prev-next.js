@@ -10,7 +10,7 @@
 var CarouselPreviousNext = function (node, options) {
   // merge passed options with defaults
   options = Object.assign(
-    { moreaccessible: false, paused: false, norotate: false },
+    { moreaccessible: false, paused: true, norotate: false },
     options || {}
   );
 
