@@ -442,6 +442,8 @@ public final class StatusMediatorUnitTest {
                 mContext.getColor(R.color.locationbar_status_preview_color_dark),
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
 
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, (v) -> {});
+        mMediator.setBackground();
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
 
         // When only offline is enabled, it should be shown.
@@ -614,8 +616,13 @@ public final class StatusMediatorUnitTest {
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
 
+        mMediator.setStatusClickListener(null);
         mMediator.setTooltipText(Resources.ID_NULL);
-        // Assert that the below accessibility string is always set when #setTooltipText is called.
+        // If there is no registered click listener, the tooltip text should be null.
+        assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+
+        mMediator.setStatusClickListener((v) -> {});
+        mMediator.setTooltipText(Resources.ID_NULL);
         assertEquals(
                 R.string.accessibility_menu_info,
                 mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
@@ -641,8 +648,13 @@ public final class StatusMediatorUnitTest {
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
 
+        // When no click listener is set, background is null.
         mMediator.setBackground();
-        // Assert that the non verbose drawable is always set when #setBackground is called.
+        assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
+
+        // When a click listener is set, background is set.
+        mModel.set(StatusProperties.STATUS_CLICK_LISTENER, (v) -> {});
+        mMediator.setBackground();
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }
 

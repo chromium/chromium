@@ -152,11 +152,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mLocationBarDataProvider.addObserver(this);
         mStatusView.setBrowserControlsVisibilityDelegate(browserControlsVisibilityDelegate);
 
-        if (isSearchEngineStatusIconVisible()) {
-            setTooltipText(R.string.accessibility_menu_info);
-        } else {
-            setTooltipText(Resources.ID_NULL);
-        }
         setBackground();
     }
 

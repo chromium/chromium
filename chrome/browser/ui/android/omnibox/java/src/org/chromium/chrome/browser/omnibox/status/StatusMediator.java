@@ -483,7 +483,7 @@ public class StatusMediator
         }
         mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE, newVisibility);
 
-        applyStatusIconAndTooltipProperties(newVisibility);
+        applyBackgroundAndTooltipProperties();
     }
 
     /** Update color theme for all status components. */
@@ -611,8 +611,7 @@ public class StatusMediator
                     hasIconOverride
                             ? Resources.ID_NULL
                             : R.string.accessibility_toolbar_exit_hub_search;
-            applyStatusIconAndTooltipProperties(
-                    mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+            applyBackgroundAndTooltipProperties();
             clickListener = hasIconOverride ? null : mOnStatusIconNavigateBackButtonPress;
         } else if (isAutocompleteActive && previewMatchFaviconsEnabled && mShowPreviewMatchGlobe) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
@@ -706,9 +705,11 @@ public class StatusMediator
         updateStatusViewVisibility();
     }
 
-    private void setStatusClickListener(@Nullable OnClickListener listener) {
+    @VisibleForTesting
+    void setStatusClickListener(@Nullable OnClickListener listener) {
         mModel.set(StatusProperties.STATUS_CLICK_LISTENER, listener);
         mModel.set(StatusProperties.STATUS_VIEW_HOVER_ENABLED, listener != null);
+        applyBackgroundAndTooltipProperties();
     }
 
     private void onFuseboxStateChanged(@FuseboxState int state) {
@@ -958,13 +959,11 @@ public class StatusMediator
     }
 
     void setTooltipText(@StringRes int tooltipTextResId) {
-        applyStatusIconAndTooltipProperties(
-                mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+        applyBackgroundAndTooltipProperties();
     }
 
     void setBackground() {
-        applyStatusIconAndTooltipProperties(
-                mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+        applyBackgroundAndTooltipProperties();
     }
 
     public void onUrlChanged() {
@@ -1009,33 +1008,36 @@ public class StatusMediator
         mOnStatusIconNavigateBackButtonPress = listener;
     }
 
-    private void applyStatusIconAndTooltipProperties(boolean verboseStatusTextVisible) {
-        if (!PageClassificationUtils.isHubOrTabSearch(
-                mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))) {
-            Drawable background;
-            if (isPageInfoMovedAndConnectionNotSecure()) {
-                background = null;
-            } else if (mLocationBarDataProvider.isIncognitoBranded()) {
-                background =
-                        verboseStatusTextVisible
-                                ? mVerboseStatusBackgroundIncognito
-                                : mDefaultStatusBackgroundIncognito;
-            } else {
-                background =
-                        verboseStatusTextVisible
-                                ? mVerboseStatusBackground
-                                : mDefaultStatusBackground;
-            }
-            mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, background);
-            mModel.set(
-                    StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
-                    isPageInfoMovedToAppMenu()
-                            ? Resources.ID_NULL
-                            : R.string.accessibility_menu_info);
-        } else {
+    private void applyBackgroundAndTooltipProperties() {
+        boolean isHubOrTabSearch =
+                PageClassificationUtils.isHubOrTabSearch(
+                        mLocationBarDataProvider.getPageClassification(/* prefetch= */ false));
+        boolean hasClickListener = mModel.get(StatusProperties.STATUS_CLICK_LISTENER) != null;
+
+        if (isHubOrTabSearch || !hasClickListener) {
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, Resources.ID_NULL);
             mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, null);
+            return;
         }
+
+        boolean verboseStatusTextVisible = mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE);
+        Drawable background;
+        if (isPageInfoMovedAndConnectionNotSecure()) {
+            background = null;
+        } else if (mLocationBarDataProvider.isIncognitoBranded()) {
+            background =
+                    verboseStatusTextVisible
+                            ? mVerboseStatusBackgroundIncognito
+                            : mDefaultStatusBackgroundIncognito;
+        } else {
+            background =
+                    verboseStatusTextVisible ? mVerboseStatusBackground : mDefaultStatusBackground;
+        }
+
+        mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, background);
+        mModel.set(
+                StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                isPageInfoMovedToAppMenu() ? Resources.ID_NULL : R.string.accessibility_menu_info);
     }
 
     private void initBackgroundDrawables(Context context) {
