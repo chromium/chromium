@@ -1109,6 +1109,24 @@ TEST_F(AXRangeTest, GetTextWithTextOffsets) {
                 AXEmbeddedObjectBehavior::kSuppressCharacter));
 }
 
+TEST_F(AXRangeTest, GetTextWithNoSelectionOffset) {
+  TestPositionInstance no_selection_position =
+      CreateTextPosition(button_, ax::mojom::kNoSelectionOffset,
+                         ax::mojom::TextAffinity::kDownstream);
+  TestPositionInstance valid_position = CreateTextPosition(
+      button_, 2 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_EQ(EMPTY, TestPositionRange(no_selection_position->Clone(),
+                                     valid_position->Clone())
+                       .GetText());
+  EXPECT_EQ(EMPTY, TestPositionRange(valid_position->Clone(),
+                                     no_selection_position->Clone())
+                       .GetText());
+  EXPECT_EQ(EMPTY, TestPositionRange(no_selection_position->Clone(),
+                                     no_selection_position->Clone())
+                       .GetText());
+}
+
 TEST_F(AXRangeTest, GetTextWithEmptyRanges) {
   // empty string with non-leaf tree position
   TestPositionInstance start = CreateTreePosition(root_, 0 /* child_index */);
