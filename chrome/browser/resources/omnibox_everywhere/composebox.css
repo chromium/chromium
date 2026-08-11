@@ -165,7 +165,8 @@ cr-composebox-tool-chip,
 .searchbox-icon-button,
 #voiceSearchButton,
 #lensSearchButton,
-#profileIcon {
+#profileIcon,
+#screenshotMenu {
   -webkit-app-region: no-drag;
 }
 

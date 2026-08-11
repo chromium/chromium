@@ -302,17 +302,11 @@ export class OmniboxEverywhereOmniboxElement extends
     const anchor = e.currentTarget as HTMLElement;
     const rect = anchor.getBoundingClientRect();
 
-    // Snap coordinates to whole pixels to prevent subpixel layout paint
-    // invalidator crash.
-    const snappedTop = Math.round(rect.top);
-    const snappedLeft = Math.round(rect.left);
-    const snappedHeight = Math.round(rect.height) - 2;
-
     menu.showAtPosition({
-      top: snappedTop,
-      left: snappedLeft,
-      height: snappedHeight,
-      width: Math.round(rect.width),
+      top: rect.top,
+      left: rect.left,
+      height: rect.height - 2,
+      width: rect.width,
       anchorAlignmentX: AnchorAlignment.AFTER_START,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       maxX: Number.MAX_SAFE_INTEGER,

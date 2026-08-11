@@ -97,4 +97,75 @@
   z-index: 100;
 }
 
+#screenshotMenu {
+  --cr-menu-border-radius: 16px;
+  --cr-menu-shadow: var(--cr-elevation-3);
+  --cr-menu-background-color: var(
+      --color-composebox-background,
+      var(--search-background-color));
+  --cr-primary-text-color: var(--color-composebox-file-chip-text);
+  --cr-hover-background-color: var(
+      --color-composebox-context-entrypoint-hover-background);
+}
 
+#screenshotMenu::part(dialog) {
+  border: 1px solid var(--color-searchbox-border);
+  min-width: 320px;
+}
+
+#screenshotMenu .menu-title {
+  color: var(--cr-primary-text-color);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0;
+  padding: 8px 14px 4px 14px;
+}
+
+#screenshotMenu .dropdown-item {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  font-weight: 400;
+  gap: 8px;
+  height: 36px;
+  line-height: 20px;
+  outline: none;
+  padding: 0 14px;
+  width: 100%;
+}
+
+#screenshotMenu .dropdown-item:hover,
+#screenshotMenu .dropdown-item:focus {
+  background-color: var(--cr-hover-background-color);
+}
+
+#screenshotMenu .dropdown-item[disabled] {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
+  opacity: 0.5;
+  cursor: default;
+}
+
+#screenshotMenu .icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  background-color: var(--cr-primary-text-color);
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+#screenshotMenu .icon.entire-screen {
+  -webkit-mask-image: url(
+    '//resources/cr_components/searchbox/icons/screenshot_entire_screen.svg');
+}
+
+#screenshotMenu .icon.window {
+  -webkit-mask-image: url(
+    '//resources/cr_components/searchbox/icons/screenshot_window.svg');
+}
