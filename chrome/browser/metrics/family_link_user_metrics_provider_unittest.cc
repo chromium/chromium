@@ -23,6 +23,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -572,13 +573,12 @@ TEST_F(FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest,
 // Family-Link supervision and cannot be applied to these profiles.
 class
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest
-    : public FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest,
-      public testing::WithParamInterface<ContentFiltersTestCase> {
+    : public WithFeatureOverrideAndParamInterface<ContentFiltersTestCase>,
+      public FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest {
  protected:
-  void SetUpFeatureList() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{kSupervisedUserEmitLogRecordSeparately, false}});
-  }
+  FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest()
+      : WithFeatureOverrideAndParamInterface<ContentFiltersTestCase>(
+            kSupervisedUserEmitLogRecordSeparately) {}
 
   void CreateProfiles(std::size_t count) {
     CHECK_GE(email_addresses_.size(), count) << "Not enough email addresses";
@@ -611,7 +611,7 @@ class
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     AllFiltersDisabled) {
-  CreateProfiles(GetParam().profile_count);
+  CreateProfiles(GetTestCase().profile_count);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -628,7 +628,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     SearchFilterEnabled) {
-  CreateProfiles(GetParam().profile_count);
+  CreateProfiles(GetTestCase().profile_count);
   SetSearchContentFilters(true);
 
   base::HistogramTester histogram_tester;
@@ -647,7 +647,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     ContentFiltersEnabled) {
-  CreateProfiles(GetParam().profile_count);
+  CreateProfiles(GetTestCase().profile_count);
   SetBrowserContentFilters(true);
 
   base::HistogramTester histogram_tester;
@@ -666,7 +666,7 @@ TEST_P(
 TEST_P(
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
     AllFiltersEnabled) {
-  CreateProfiles(GetParam().profile_count);
+  CreateProfiles(GetTestCase().profile_count);
   SetBrowserContentFilters(true);
   SetSearchContentFilters(true);
 
@@ -686,12 +686,19 @@ TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest,
-    testing::ValuesIn<ContentFiltersTestCase>({
-        {1, "SingleProfile"},
-        {2, "MultipleProfiles"},
-    }),
-    [](const testing::TestParamInfo<ContentFiltersTestCase>& info) {
-      return info.param.test_name;
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn<ContentFiltersTestCase>({
+                         {1, "SingleProfile"},
+                         {2, "MultipleProfiles"},
+                     })),
+    [](const testing::TestParamInfo<
+        FamilyLinkUserMetricsProviderExclusiveContentFiltersAndFamilyLinkAndroidTest::
+            ParamType>& info) {
+      bool feature_enabled = std::get<0>(info.param);
+      ContentFiltersTestCase test_case = std::get<1>(info.param);
+      return base::StrCat({feature_enabled ? "With" : "Without",
+                           kSupervisedUserEmitLogRecordSeparately.name, "_",
+                           test_case.test_name});
     });
 #endif  // BUILDFLAG(IS_ANDROID)
 

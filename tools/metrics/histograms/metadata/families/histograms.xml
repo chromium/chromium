@@ -684,7 +684,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
     enum="SupervisedUserWebFilterType" expires_after="2027-01-10">
-  <owner>fernandex@chromium.org</owner>
+  <owner>tju@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -698,6 +698,10 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     is emitted for every UMA record from the current session. In contrast,
     FamilyUser.WebFilterType is recorded less frequently; see its histogram
     description.
+
+    Reported value reflects the effective web filter type.
+
+    Android: takes into account both account and device parental controls.
   </summary>
 </histogram>
 
