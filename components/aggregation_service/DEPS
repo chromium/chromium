@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/attribution_reporting/is_origin_suitable.h",
-]

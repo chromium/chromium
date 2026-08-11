@@ -486,12 +486,6 @@ after discussions on the right group.
       <annotation id="chrome_commerce_subscriptions_get"/>
     </sender>
   </group>
-  <group name="Cookieless Ads">
-    <sender name="Aggregation Service">
-      <annotation id="aggregation_service_helper_keys"/>
-      <annotation id="aggregation_service_report"/>
-    </sender>
-  </group>
   <group name="Identity and Security">
     <sender name="Accounts, Identity, and Authentication">
       <annotation id="accounts_image_fetcher"/>

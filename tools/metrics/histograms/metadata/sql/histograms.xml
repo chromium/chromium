@@ -33,7 +33,6 @@ chromium-metrics-reviews@google.com.
   <variant name="AccessibilityAnnotator" summary="AccessibilityAnnotator"/>
   <variant name="Activity" summary="Activity"/>
   <variant name="Affiliation" summary="Affiliation"/>
-  <variant name="AggregationService" summary="AggregationService"/>
   <variant name="AnnotationStorage" summary="AnnotationStorage"/>
   <variant name="BackgroundRequestQueue" summary="BackgroundRequestQueue"/>
   <variant name="BrowsingTopics" summary="BrowsingTopics"/>

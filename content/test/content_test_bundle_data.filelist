@@ -6990,9 +6990,6 @@ data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextsele
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-selections.html
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-set-selections-expected.txt
 data/accessibility/win/ia2/iaccessibletextselectioncontainer/iaccessibletextselectioncontainer-set-selections.html
-data/aggregation_service/databases/version_1.sql
-data/aggregation_service/databases/version_2.sql
-data/aggregation_service/databases/version_3.sql
 data/allowed_frames.html
 data/animated.png
 data/back_forward_cache/allowed_path.html
