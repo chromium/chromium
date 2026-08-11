@@ -5,9 +5,12 @@
 package org.chromium.components.bookmarks;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /** Contains data about a bookmark or bookmark folder. */
 @NullMarked
@@ -131,5 +134,39 @@ public class BookmarkItem {
     // TODO(crbug.com/40655824): Remove when BookmarkModel is stubbed in tests instead.
     public void forceEditableForTesting() {
         mForceEditableForTesting = true;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        if (this == other) return true;
+        if (!(other instanceof BookmarkItem)) return false;
+        BookmarkItem that = (BookmarkItem) other;
+        return Objects.equals(mTitle, that.mTitle)
+                && Objects.equals(mUrl, that.mUrl)
+                && Objects.equals(mId, that.mId)
+                && mIsFolder == that.mIsFolder
+                && Objects.equals(mParentId, that.mParentId)
+                && mIsEditable == that.mIsEditable
+                && mIsManaged == that.mIsManaged
+                && mDateAdded == that.mDateAdded
+                && mRead == that.mRead
+                && mDateLastOpened == that.mDateLastOpened
+                && mIsAccountBookmark == that.mIsAccountBookmark;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                mTitle,
+                mUrl,
+                mId,
+                mIsFolder,
+                mParentId,
+                mIsEditable,
+                mIsManaged,
+                mDateAdded,
+                mRead,
+                mDateLastOpened,
+                mIsAccountBookmark);
     }
 }

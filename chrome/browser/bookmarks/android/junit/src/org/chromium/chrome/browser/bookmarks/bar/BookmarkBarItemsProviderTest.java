@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId.ACCOUNT;
 import static org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId.LOCAL;
 
-import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -54,12 +53,11 @@ public class BookmarkBarItemsProviderTest {
          * @param observer the observer to which events are propagated.
          * @return the created observation.
          */
-        @NonNull
         ScopedBookmarkModelObservation create(
                 @ObservationId int observationId,
-                @NonNull BookmarkId folderId,
-                @NonNull BookmarkModel model,
-                @NonNull ScopedBookmarkModelObservation.Observer observer);
+                BookmarkId folderId,
+                BookmarkModel model,
+                ScopedBookmarkModelObservation.Observer observer);
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -135,11 +133,11 @@ public class BookmarkBarItemsProviderTest {
                 new BookmarkBarItemsProvider(mModel, mObserver) {
                     @Override
                     @SuppressWarnings("DirectInvocationOnMock")
-                    protected @NonNull ScopedBookmarkModelObservation createObservation(
+                    protected ScopedBookmarkModelObservation createObservation(
                             @ObservationId int observationId,
-                            @NonNull BookmarkId folderId,
-                            @NonNull BookmarkModel model,
-                            @NonNull ScopedBookmarkModelObservation.Observer observer) {
+                            BookmarkId folderId,
+                            BookmarkModel model,
+                            ScopedBookmarkModelObservation.Observer observer) {
                         // NOTE: Use a mock factory to facilitate mocking of observations.
                         return mObservationFactory.create(observationId, folderId, model, observer);
                     }
@@ -408,6 +406,110 @@ public class BookmarkBarItemsProviderTest {
         mLocalFolderObserver.onBookmarkItemsChanged(LOCAL, mLocalFolderItems);
         verify(mObserver).onBookmarkItemsRemoved(LOCAL, startIndex, oldSize);
         verify(mObserver).onBookmarkItemsAdded(LOCAL, mLocalFolderItems, startIndex);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedWithIdenticalAccountFolderItems() {
+        mAccountFolderObserver.onBookmarkItemsChanged(ACCOUNT, mAccountFolderItems);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedWithIdenticalLocalFolderItems() {
+        mLocalFolderObserver.onBookmarkItemsChanged(LOCAL, mLocalFolderItems);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedToUpdateSingleItemInAccountFolder() {
+        BookmarkId id1 = new BookmarkId(1, 0);
+        BookmarkId id2 = new BookmarkId(2, 0);
+        when(mAccountFolderItem1.getId()).thenReturn(id1);
+        when(mAccountFolderItem2.getId()).thenReturn(id2);
+
+        BookmarkItem updatedItem2 = org.mockito.Mockito.mock(BookmarkItem.class);
+        when(updatedItem2.getId()).thenReturn(id2);
+        when(updatedItem2.getTitle()).thenReturn("New Title");
+
+        mAccountFolderObserver.onBookmarkItemsChanged(
+                ACCOUNT, List.of(mAccountFolderItem1, updatedItem2));
+        verify(mObserver).onBookmarkItemUpdated(ACCOUNT, updatedItem2, 1);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedToInsertSingleItemInAccountFolder() {
+        BookmarkId id1 = new BookmarkId(1, 0);
+        BookmarkId id2 = new BookmarkId(2, 0);
+        BookmarkId id3 = new BookmarkId(3, 0);
+        when(mAccountFolderItem1.getId()).thenReturn(id1);
+        when(mAccountFolderItem2.getId()).thenReturn(id2);
+        when(mNewItem1.getId()).thenReturn(id3);
+
+        mAccountFolderObserver.onBookmarkItemsChanged(
+                ACCOUNT, List.of(mAccountFolderItem1, mNewItem1, mAccountFolderItem2));
+        verify(mObserver).onBookmarkItemAdded(ACCOUNT, mNewItem1, 1);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedToDeleteSingleItemInAccountFolder() {
+        BookmarkId id1 = new BookmarkId(1, 0);
+        BookmarkId id2 = new BookmarkId(2, 0);
+        when(mAccountFolderItem1.getId()).thenReturn(id1);
+        when(mAccountFolderItem2.getId()).thenReturn(id2);
+
+        mAccountFolderObserver.onBookmarkItemsChanged(ACCOUNT, List.of(mAccountFolderItem1));
+        verify(mObserver).onBookmarkItemRemoved(ACCOUNT, 1);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedToReorderItemsInAccountFolder() {
+        BookmarkId id1 = new BookmarkId(1, 0);
+        BookmarkId id2 = new BookmarkId(2, 0);
+        when(mAccountFolderItem1.getId()).thenReturn(id1);
+        when(mAccountFolderItem2.getId()).thenReturn(id2);
+
+        mAccountFolderObserver.onBookmarkItemsChanged(
+                ACCOUNT, List.of(mAccountFolderItem2, mAccountFolderItem1));
+        verify(mObserver).onBookmarkItemMoved(ACCOUNT, 0, 1);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnBookmarkItemsChangedToReorderMultipleItemsInAccountFolder() {
+        BookmarkId id1 = new BookmarkId(1, 0);
+        BookmarkId id2 = new BookmarkId(2, 0);
+        BookmarkId id3 = new BookmarkId(3, 0);
+        when(mAccountFolderItem1.getId()).thenReturn(id1);
+        when(mAccountFolderItem2.getId()).thenReturn(id2);
+        when(mNewItem1.getId()).thenReturn(id3);
+
+        // Populate with 3 items first.
+        mAccountFolderObserver.onBookmarkItemsChanged(
+                ACCOUNT, List.of(mAccountFolderItem1, mAccountFolderItem2, mNewItem1));
+        verify(mObserver).onBookmarkItemAdded(ACCOUNT, mNewItem1, 2);
+
+        // Permute to [mNewItem1, mAccountFolderItem1, mAccountFolderItem2] (3rd moved to 1st).
+        mAccountFolderObserver.onBookmarkItemsChanged(
+                ACCOUNT, List.of(mNewItem1, mAccountFolderItem1, mAccountFolderItem2));
+        verify(mObserver).onBookmarkItemMoved(ACCOUNT, 0, 2);
         verifyNoMoreInteractions(mObserver);
     }
 }

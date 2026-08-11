@@ -18,8 +18,12 @@ import org.chromium.components.bookmarks.BookmarkItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A provider which observes and propagates events for the supplied bookmark model if and only if
@@ -78,8 +82,8 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
     private final Observer mObserver;
 
     private @Nullable ScopedBookmarkModelObservation mAccountFolderObservation;
-    private int mAccountFolderSize;
-    private int mLocalFolderSize;
+    private List<BookmarkItem> mAccountFolderItems = Collections.emptyList();
+    private List<BookmarkItem> mLocalFolderItems = Collections.emptyList();
 
     /**
      * Constructor.
@@ -134,12 +138,24 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
 
     @Override
     public void onBookmarkItemAdded(int observationId, BookmarkItem item, int index) {
-        incrementSize(observationId, 1);
+        List<BookmarkItem> items = new ArrayList<>(getItems(observationId));
+        if (index >= 0 && index <= items.size()) {
+            items.add(index, item);
+            setItems(observationId, items);
+        }
         mObserver.onBookmarkItemAdded(observationId, item, index + getStartIndex(observationId));
     }
 
     @Override
     public void onBookmarkItemMoved(int observationId, int index, int oldIndex) {
+        List<BookmarkItem> items = new ArrayList<>(getItems(observationId));
+        if (oldIndex >= 0 && oldIndex < items.size()) {
+            BookmarkItem item = items.remove(oldIndex);
+            if (index >= 0 && index <= items.size()) {
+                items.add(index, item);
+            }
+            setItems(observationId, items);
+        }
         final int startIndex = getStartIndex(observationId);
         index += startIndex;
         oldIndex += startIndex;
@@ -148,21 +164,85 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
 
     @Override
     public void onBookmarkItemRemoved(int observationId, int index) {
-        incrementSize(observationId, -1);
+        List<BookmarkItem> items = new ArrayList<>(getItems(observationId));
+        if (index >= 0 && index < items.size()) {
+            items.remove(index);
+            setItems(observationId, items);
+        }
         mObserver.onBookmarkItemRemoved(observationId, index + getStartIndex(observationId));
     }
 
     @Override
     public void onBookmarkItemUpdated(int observationId, BookmarkItem item, int index) {
+        List<BookmarkItem> items = new ArrayList<>(getItems(observationId));
+        if (index >= 0 && index < items.size()) {
+            items.set(index, item);
+            setItems(observationId, items);
+        }
         mObserver.onBookmarkItemUpdated(observationId, item, index + getStartIndex(observationId));
     }
 
     @Override
     public void onBookmarkItemsChanged(int observationId, List<BookmarkItem> items) {
-        final int index = getStartIndex(observationId);
-        final int oldSize = setSize(observationId, items.size());
-        if (oldSize != 0) mObserver.onBookmarkItemsRemoved(observationId, index, oldSize);
-        if (!items.isEmpty()) mObserver.onBookmarkItemsAdded(observationId, items, index);
+        final List<BookmarkItem> currentItems = getItems(observationId);
+        if (Objects.equals(currentItems, items)) {
+            return;
+        }
+
+        final int startIndex = getStartIndex(observationId);
+        final int oldSize = currentItems.size();
+        final int newSize = items.size();
+
+        // Check for item reorderings and in-place updates (same set of item IDs).
+        if (oldSize == newSize && hasSameItemIds(currentItems, items)) {
+            List<BookmarkItem> workingList = new ArrayList<>(currentItems);
+            for (int i = 0; i < newSize; i++) {
+                BookmarkId targetId = items.get(i).getId();
+                int currentIndex = -1;
+                for (int j = i; j < newSize; j++) {
+                    if (Objects.equals(workingList.get(j).getId(), targetId)) {
+                        currentIndex = j;
+                        break;
+                    }
+                }
+                if (currentIndex != i && currentIndex != -1) {
+                    BookmarkItem movedItem = workingList.remove(currentIndex);
+                    workingList.add(i, movedItem);
+                    mObserver.onBookmarkItemMoved(
+                            observationId, i + startIndex, currentIndex + startIndex);
+                }
+            }
+
+            for (int i = 0; i < newSize; i++) {
+                BookmarkItem oldItem = workingList.get(i);
+                BookmarkItem newItem = items.get(i);
+                if (!Objects.equals(oldItem, newItem)) {
+                    mObserver.onBookmarkItemUpdated(observationId, newItem, i + startIndex);
+                }
+            }
+            setItems(observationId, new ArrayList<>(items));
+            return;
+        }
+
+        // Check for a single item insertion or deletion.
+        if (Math.abs(newSize - oldSize) == 1) {
+            boolean isInsertion = newSize > oldSize;
+            int changedIndex = findSingleChangeIndex(currentItems, items, isInsertion);
+            if (changedIndex != -1) {
+                setItems(observationId, new ArrayList<>(items));
+                if (isInsertion) {
+                    mObserver.onBookmarkItemAdded(
+                            observationId, items.get(changedIndex), changedIndex + startIndex);
+                } else {
+                    mObserver.onBookmarkItemRemoved(observationId, changedIndex + startIndex);
+                }
+                return;
+            }
+        }
+
+        setItems(observationId, new ArrayList<>(items));
+        if (oldSize != 0) mObserver.onBookmarkItemsRemoved(observationId, startIndex, oldSize);
+        if (!items.isEmpty()) mObserver.onBookmarkItemsAdded(observationId, items, startIndex);
     }
 
     /**
@@ -189,27 +269,70 @@ class BookmarkBarItemsProvider extends BookmarkModelObserver
                 return 0;
             case ObservationId.LOCAL:
                 // NOTE: Local folder items are appended to account folder items.
-                return mAccountFolderSize;
+                return mAccountFolderItems.size();
         }
         throw new IllegalArgumentException("Unknown `observationId`.");
     }
 
-    private void incrementSize(@ObservationId int observationId, int delta) {
-        setSize(observationId, setSize(observationId, 0) + delta);
-    }
-
-    private int setSize(@ObservationId int observationId, int size) {
-        int oldSize;
+    private List<BookmarkItem> getItems(@ObservationId int observationId) {
         switch (observationId) {
             case ObservationId.ACCOUNT:
-                oldSize = mAccountFolderSize;
-                mAccountFolderSize = size;
-                return oldSize;
+                return mAccountFolderItems;
             case ObservationId.LOCAL:
-                oldSize = mLocalFolderSize;
-                mLocalFolderSize = size;
-                return oldSize;
+                return mLocalFolderItems;
         }
         throw new IllegalArgumentException("Unknown `observationId`.");
+    }
+
+    private void setItems(@ObservationId int observationId, List<BookmarkItem> items) {
+        switch (observationId) {
+            case ObservationId.ACCOUNT:
+                mAccountFolderItems = items;
+                return;
+            case ObservationId.LOCAL:
+                mLocalFolderItems = items;
+                return;
+        }
+        throw new IllegalArgumentException("Unknown `observationId`.");
+    }
+
+    private static boolean hasSameItemIds(List<BookmarkItem> list1, List<BookmarkItem> list2) {
+        if (list1.size() != list2.size()) return false;
+        Set<BookmarkId> ids1 = new HashSet<>();
+        for (BookmarkItem item : list1) {
+            if (item == null || item.getId() == null) return false;
+            ids1.add(item.getId());
+        }
+        for (BookmarkItem item : list2) {
+            if (item == null || item.getId() == null || !ids1.contains(item.getId())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int findSingleChangeIndex(
+            List<BookmarkItem> currentItems, List<BookmarkItem> items, boolean isInsertion) {
+        List<BookmarkItem> shorterList = isInsertion ? currentItems : items;
+        List<BookmarkItem> longerList = isInsertion ? items : currentItems;
+        int shorterSize = shorterList.size();
+        int insertIndex = -1;
+        int i = 0;
+        int j = 0;
+        while (i < shorterSize && j < longerList.size()) {
+            if (Objects.equals(shorterList.get(i), longerList.get(j))) {
+                i++;
+                j++;
+            } else if (insertIndex == -1) {
+                insertIndex = j;
+                j++;
+            } else {
+                return -1;
+            }
+        }
+        if (insertIndex == -1 && j == shorterSize) {
+            insertIndex = shorterSize;
+        }
+        return insertIndex;
     }
 }
