@@ -76,9 +76,15 @@ namespace chrome {
 // handles the lifetime of TestBrowserWindowAura.
 std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
     std::unique_ptr<aura::Window> window,
+    BrowserWindowCreateParams params);
+std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
+    std::unique_ptr<aura::Window> window,
     Browser::CreateParams* params);
 
 // Helper that creates a browser with a Widget serving as the BrowserWindow.
+std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
+    BrowserWindowCreateParams params,
+    aura::Window* parent = nullptr);
 std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
     Browser::CreateParams params,
     aura::Window* parent = nullptr);

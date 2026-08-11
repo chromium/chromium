@@ -18,7 +18,7 @@ namespace chrome {
 
 std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
     std::unique_ptr<aura::Window> window,
-    Browser::CreateParams* params) {
+    BrowserWindowCreateParams params) {
   if (!window) {
     window = std::make_unique<aura::Window>(nullptr);
     window->SetId(0);
@@ -30,15 +30,29 @@ std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
       std::make_unique<TestBrowserWindowAura>(std::move(window));
 
   // Returned Browser takes ownership of `browser_window`.
-  return browser_window.release()->CreateBrowser(params);
+  return browser_window.release()->CreateBrowser(std::move(params));
+}
+
+std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
+    std::unique_ptr<aura::Window> window,
+    Browser::CreateParams* params) {
+  return CreateBrowserWithAuraTestWindowForParams(
+      std::move(window), CreateBrowserWindowCreateParams(*params));
+}
+
+std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
+    BrowserWindowCreateParams params,
+    aura::Window* parent) {
+  auto browser_window = std::make_unique<TestBrowserWindowViews>(parent);
+  // Returned Browser takes ownership of `browser_window`.
+  return browser_window.release()->CreateBrowser(std::move(params));
 }
 
 std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
     Browser::CreateParams params,
     aura::Window* parent) {
-  auto browser_window = std::make_unique<TestBrowserWindowViews>(parent);
-  // Returned Browser takes ownership of `browser_window`.
-  return browser_window.release()->CreateBrowser(std::move(params));
+  return CreateBrowserWithViewsTestWindowForParams(
+      CreateBrowserWindowCreateParams(params), parent);
 }
 
 }  // namespace chrome
