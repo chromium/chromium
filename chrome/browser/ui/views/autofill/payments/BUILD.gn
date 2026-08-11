@@ -8,3 +8,29 @@ source_set("dialog_view_ids") {
   public = [ "dialog_view_ids.h" ]
   public_deps = [ "//components/autofill/core/browser" ]
 }
+
+source_set("payments_view_util") {
+  public = [ "payments_view_util.h" ]
+  sources = [ "payments_view_util.cc" ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/autofill/core/browser",
+    "//components/signin/public/identity_manager",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  deps = [
+    ":dialog_view_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/common",
+    "//components/resources:components_scaled_resources",
+    "//components/vector_icons",
+    "//ui/color",
+    "//ui/native_theme",
+  ]
+}
