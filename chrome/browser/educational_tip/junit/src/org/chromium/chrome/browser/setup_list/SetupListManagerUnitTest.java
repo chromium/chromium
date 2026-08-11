@@ -237,8 +237,8 @@ public class SetupListManagerUnitTest {
 
         int moduleType = ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
         assertFalse(manager.isModuleCompleted(moduleType));
-        assertTrue(
-                manager.getRankedModuleTypes().indexOf(moduleType) == 0); // Should be at the start
+        assertEquals(
+                0, manager.getRankedModuleTypes().indexOf(moduleType)); // Should be at the start
 
         manager.setModuleCompleted(moduleType, /* silent= */ true);
 
@@ -263,7 +263,7 @@ public class SetupListManagerUnitTest {
 
         int moduleType = ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
         assertFalse(manager.isModuleCompleted(moduleType));
-        assertTrue(manager.getRankedModuleTypes().indexOf(moduleType) == 0);
+        assertEquals(0, manager.getRankedModuleTypes().indexOf(moduleType));
 
         // Mark for animation
         manager.setModuleCompleted(moduleType, /* silent= */ false);

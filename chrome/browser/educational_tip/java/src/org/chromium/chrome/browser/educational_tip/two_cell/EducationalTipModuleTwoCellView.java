@@ -80,7 +80,7 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
 
     public void setItem1OnClickListener(OnClickListener listener) {
         mItem1Layout.setOnClickListener(listener);
-        mItem1Layout.setOnLongClickListener(v -> false);
+        mItem1Layout.setOnLongClickListener(_ -> false);
     }
 
     public void setItem2Title(String title) {
@@ -102,7 +102,7 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
 
     public void setItem2OnClickListener(OnClickListener listener) {
         mItem2Layout.setOnClickListener(listener);
-        mItem2Layout.setOnLongClickListener(v -> false);
+        mItem2Layout.setOnLongClickListener(_ -> false);
     }
 
     private void applyCompletedStyle(

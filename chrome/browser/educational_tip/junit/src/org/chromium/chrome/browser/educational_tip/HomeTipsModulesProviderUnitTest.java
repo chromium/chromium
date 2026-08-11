@@ -57,8 +57,7 @@ public class HomeTipsModulesProviderUnitTest {
                         List.of(
                                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                                 ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
-        when(mSetupListManager.getTwoCellContainerModuleTypes())
-                .thenReturn(List.of(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER));
+
     }
 
     @Test

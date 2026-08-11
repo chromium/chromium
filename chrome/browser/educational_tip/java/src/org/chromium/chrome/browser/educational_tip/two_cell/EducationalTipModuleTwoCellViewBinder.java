@@ -38,7 +38,7 @@ public class EducationalTipModuleTwoCellViewBinder {
             moduleView.setModuleTitle(model.get(MODULE_TITLE));
         }
         if (SEE_MORE_CLICK_HANDLER == propertyKey) {
-            moduleView.setSeeMoreOnClickListener(v -> model.get(SEE_MORE_CLICK_HANDLER).run());
+            moduleView.setSeeMoreOnClickListener(_ -> model.get(SEE_MORE_CLICK_HANDLER).run());
         } else if (ITEM_1_TITLE == propertyKey) {
             moduleView.setItem1Title(model.get(ITEM_1_TITLE));
         } else if (ITEM_1_DESCRIPTION == propertyKey) {
@@ -48,7 +48,7 @@ public class EducationalTipModuleTwoCellViewBinder {
         } else if (ITEM_1_COMPLETED_ICON == propertyKey) {
             moduleView.setItem1IconWithAnimation(model.get(ITEM_1_COMPLETED_ICON));
         } else if (ITEM_1_CLICK_HANDLER == propertyKey) {
-            moduleView.setItem1OnClickListener(v -> model.get(ITEM_1_CLICK_HANDLER).run());
+            moduleView.setItem1OnClickListener(_ -> model.get(ITEM_1_CLICK_HANDLER).run());
         } else if (ITEM_1_MARK_COMPLETED == propertyKey) {
             moduleView.setItem1Completed(model.get(ITEM_1_MARK_COMPLETED));
         } else if (ITEM_2_TITLE == propertyKey) {
@@ -60,7 +60,7 @@ public class EducationalTipModuleTwoCellViewBinder {
         } else if (ITEM_2_COMPLETED_ICON == propertyKey) {
             moduleView.setItem2IconWithAnimation(model.get(ITEM_2_COMPLETED_ICON));
         } else if (ITEM_2_CLICK_HANDLER == propertyKey) {
-            moduleView.setItem2OnClickListener(v -> model.get(ITEM_2_CLICK_HANDLER).run());
+            moduleView.setItem2OnClickListener(_ -> model.get(ITEM_2_CLICK_HANDLER).run());
         } else if (ITEM_2_MARK_COMPLETED == propertyKey) {
             moduleView.setItem2Completed(model.get(ITEM_2_MARK_COMPLETED));
         }

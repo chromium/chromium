@@ -166,9 +166,10 @@ public class SavePasswordsPromoCoordinator
         final SavePasswordsInstructionalBottomSheetContent content =
                 mSavePasswordsBottomSheetContent;
         mGotItButton.setOnClickListener(
-                (v) -> {
-                    bottomSheetController.hideContent(
-                            content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
-                });
+                _ ->
+                        bottomSheetController.hideContent(
+                                content,
+                                /* animate= */ true,
+                                StateChangeReason.INTERACTION_COMPLETE));
     }
 }

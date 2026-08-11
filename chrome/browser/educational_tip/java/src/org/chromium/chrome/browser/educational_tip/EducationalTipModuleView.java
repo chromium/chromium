@@ -50,7 +50,7 @@ public class EducationalTipModuleView extends LinearLayout {
     @VisibleForTesting
     void setContentTitleViewOnLayoutChangeListener() {
         mOnLayoutChangeListener =
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                (_, _, _, _, _, _, _, _, _) ->
                         mContentTitleView.post(this::updateContentTitleAndDescriptionMaxLines);
         mContentTitleView.addOnLayoutChangeListener(mOnLayoutChangeListener);
     }
@@ -62,7 +62,7 @@ public class EducationalTipModuleView extends LinearLayout {
      */
     @VisibleForTesting
     void updateContentTitleAndDescriptionMaxLines() {
-        try (TraceEvent e = TraceEvent.scoped(TAG + ".OnContentTitleLayoutChange()")) {
+        try (TraceEvent _ = TraceEvent.scoped(TAG + ".OnContentTitleLayoutChange()")) {
             if (mContentTitleView.getLayout() == null) {
                 return;
             }

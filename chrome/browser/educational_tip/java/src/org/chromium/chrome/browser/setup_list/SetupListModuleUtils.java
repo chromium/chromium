@@ -51,7 +51,7 @@ public class SetupListModuleUtils {
 
     /** Returns the module type list for the two-cell container. */
     public static List<Integer> getTwoCellContainerModuleTypes() {
-        return SetupListManager.getInstance().getTwoCellContainerModuleTypes();
+        return SetupListManager.getTwoCellContainerModuleTypes();
     }
 
     /** Returns the list of module types to be registered with the framework. */

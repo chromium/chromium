@@ -113,7 +113,7 @@ public class EducationalTipModuleMediator {
         }
         mModel.set(
                 EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER,
-                (v) -> {
+                _ -> {
                     if (mEducationalTipCardProvider == null) return;
                     mEducationalTipCardProvider.onCardClicked();
                 });
@@ -146,7 +146,7 @@ public class EducationalTipModuleMediator {
                 } else {
                     notifyDefaultBrowserPromoVisible();
                     mTracker.addOnInitializedCallback(
-                            (T) ->
+                            _ ->
                                     mTracker.shouldTriggerHelpUi(
                                             FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
                 }
