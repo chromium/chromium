@@ -2882,6 +2882,8 @@ class LocationBarMediator
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
             mUrlFocusedWithoutAnimations = true;
             beginInput(input);
+        } else {
+            focusCurrentTab();
         }
 
         // Set zoom indicator tooltip

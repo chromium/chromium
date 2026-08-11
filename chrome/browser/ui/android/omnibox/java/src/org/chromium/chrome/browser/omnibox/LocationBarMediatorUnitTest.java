@@ -4258,6 +4258,14 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnTabChanged_inactiveSession_focusesCurrentTab() {
+        assertFalse(mSessionState.isSessionActive());
+        mMediator.onTabChanged(null);
+
+        verify(mTabView).requestFocus();
+    }
+
+    @Test
     public void testTabSwitch_previouslyDeactivated_remainsDisabled() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);

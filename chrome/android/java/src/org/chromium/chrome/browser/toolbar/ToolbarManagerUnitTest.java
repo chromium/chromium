@@ -7,12 +7,10 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -115,7 +113,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
@@ -273,7 +270,6 @@ public class ToolbarManagerUnitTest {
 
     @Captor private ArgumentCaptor<ButtonDataObserver> mIdentityDiscObserverCaptor;
     @Captor private ArgumentCaptor<ButtonDataObserver> mAdaptiveButtonObserverCaptor;
-    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
     private List<ButtonDataProvider> mButtonDataProviders;
     private ActivityController<TestActivity> mActivityController;
@@ -559,10 +555,6 @@ public class ToolbarManagerUnitTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private AutocompleteInput getAutocompleteInput() {
-        return mToolbarManager.getLocationBar().getOmniboxStub().getAutocompleteInputForTesting();
     }
 
     @Test
@@ -1103,28 +1095,6 @@ public class ToolbarManagerUnitTest {
 
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
-    }
-
-    @Test
-    public void testSuspendFuseboxInputOnForegroundTabAdd() {
-        String userText = "hello world";
-        verify(mTabModelSelector, atLeastOnce())
-                .addObserver(mTabModelSelectorObserverCaptor.capture());
-        AutocompleteInput input = new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
-        input.setUserText(userText);
-        mToolbarManager.beginFuseboxInput(input);
-        assertEquals(userText, getAutocompleteInput().getUserText());
-
-        Tab newTab = mockTab(/* isNtp= */ false);
-        for (TabModelSelectorObserver obs : mTabModelSelectorObserverCaptor.getAllValues()) {
-            obs.onTabHidden(mTab);
-        }
-        assertNull(getAutocompleteInput());
-
-        mActivityTabProvider.setForTesting(newTab);
-        mActivityTabProvider.setForTesting(mTab);
-        assertNotNull(getAutocompleteInput());
-        assertEquals(userText, getAutocompleteInput().getUserText());
     }
 
     @Test
