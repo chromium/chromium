@@ -1738,4 +1738,57 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    @SmallTest
+    public void testFindLiveViewHolder_Tab() {
+        when(mRecyclerView.getChildCount()).thenReturn(2);
+        when(mRecyclerView.getChildAt(0)).thenReturn(mItemView);
+        when(mRecyclerView.getChildAt(1)).thenReturn(mTargetItemView);
+        when(mRecyclerView.getChildViewHolder(mItemView)).thenReturn(mViewHolder);
+        when(mRecyclerView.getChildViewHolder(mTargetItemView)).thenReturn(mTargetViewHolder);
+
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+
+        // Searching for tab ID 2 should find mTargetViewHolder
+        SimpleRecyclerViewAdapter.ViewHolder detachedHolder =
+                spy(
+                        new SimpleRecyclerViewAdapter.ViewHolder(
+                                new View(ApplicationProvider.getApplicationContext()), null));
+        PropertyModel detachedModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 2)
+                        .build();
+        detachedHolder.model = detachedModel;
+
+        RecyclerView.ViewHolder found = mCallback.findLiveViewHolder(mRecyclerView, detachedHolder);
+        assertEquals(mTargetViewHolder, found);
+    }
+
+    @Test
+    @SmallTest
+    public void testFindLiveViewHolder_GroupHeader() {
+        Token groupId = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
+
+        when(mRecyclerView.getChildCount()).thenReturn(1);
+        when(mRecyclerView.getChildAt(0)).thenReturn(mItemView);
+        when(mRecyclerView.getChildViewHolder(mItemView)).thenReturn(mViewHolder);
+
+        SimpleRecyclerViewAdapter.ViewHolder detachedHeader =
+                spy(
+                        new SimpleRecyclerViewAdapter.ViewHolder(
+                                new View(ApplicationProvider.getApplicationContext()), null));
+        PropertyModel detachedHeaderModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
+                        .build();
+        detachedHeader.model = detachedHeaderModel;
+        when(detachedHeader.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
+
+        RecyclerView.ViewHolder found = mCallback.findLiveViewHolder(mRecyclerView, detachedHeader);
+        assertEquals(mViewHolder, found);
+    }
 }

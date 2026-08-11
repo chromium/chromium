@@ -990,7 +990,8 @@ public class VerticalTabListCoordinator {
 
                         itemTouchHelper.setExternalDragItem(viewHolder);
                         dragHandler.setDragHandlerDelegate(
-                                createDragHandlerDelegate(itemTouchHelper, model));
+                                createDragHandlerDelegate(
+                                        recyclerView, itemTouchHelper, dragHandler, model));
 
                         mLastDraggedGroupId = tabGroupId;
 
@@ -1034,7 +1035,8 @@ public class VerticalTabListCoordinator {
 
                     itemTouchHelper.setExternalDragItem(viewHolder);
                     dragHandler.setDragHandlerDelegate(
-                            createDragHandlerDelegate(itemTouchHelper, model));
+                            createDragHandlerDelegate(
+                                    recyclerView, itemTouchHelper, dragHandler, model));
 
                     mLastDraggedGroupId = null;
                     View gridCardView = buildGridCardDragShadow(activity, model);
@@ -1076,8 +1078,34 @@ public class VerticalTabListCoordinator {
     }
 
     private DragHandlerDelegate createDragHandlerDelegate(
-            ItemTouchHelper2 itemTouchHelper, @Nullable PropertyModel model) {
+            RecyclerView recyclerView,
+            ItemTouchHelper2 itemTouchHelper,
+            TabSwitcherDragHandler dragHandler,
+            @Nullable PropertyModel model) {
         return new DragHandlerDelegate() {
+            private final int[] mTempViewLoc = new int[2];
+            private final int[] mTempRvLoc = new int[2];
+            private final float[] mTempCoords = new float[2];
+
+            private float[] toRvCoordinates(View view, float x, float y) {
+                if (view == recyclerView) {
+                    mTempCoords[0] = x;
+                    mTempCoords[1] = y;
+                } else {
+                    view.getLocationOnScreen(mTempViewLoc);
+                    recyclerView.getLocationOnScreen(mTempRvLoc);
+                    mTempCoords[0] = x + mTempViewLoc[0] - mTempRvLoc[0];
+                    mTempCoords[1] = y + mTempViewLoc[1] - mTempRvLoc[1];
+                }
+                return mTempCoords;
+            }
+
+            @Override
+            public boolean handleDragStart(View view, float xPx, float yPx) {
+                float[] coords = toRvCoordinates(view, xPx, yPx);
+                return handleDragStart(coords[0], coords[1]);
+            }
+
             @Override
             public boolean handleDragStart(float xPx, float yPx) {
                 mTabHoverCardController.hideHoverCard();
@@ -1097,6 +1125,12 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
+            public boolean handleDragLocation(View view, float xPx, float yPx) {
+                float[] coords = toRvCoordinates(view, xPx, yPx);
+                return handleDragLocation(coords[0], coords[1]);
+            }
+
+            @Override
             public boolean handleDragLocation(float xPx, float yPx) {
                 itemTouchHelper.onExternalDragLocation(xPx, yPx);
                 return true;
@@ -1104,6 +1138,7 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragEnter() {
+                dragHandler.showDragShadow(recyclerView, false);
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 itemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
                 return true;
@@ -1111,12 +1146,20 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragExit() {
+                dragHandler.showDragShadow(recyclerView, true);
                 moveDraggedPinnedTabToEndIfNeeded(model);
                 // Keep a minimum height during external drag so a single-item list does not
                 // collapse to 0px.
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
                 itemTouchHelper.clearExternalDragItemVisibility();
                 return true;
+            }
+
+            @Override
+            public boolean handleExternalDragEnd(
+                    View view, float xPx, float yPx, boolean isOSNewWindowDrop) {
+                float[] coords = toRvCoordinates(view, xPx, yPx);
+                return handleExternalDragEnd(coords[0], coords[1], isOSNewWindowDrop);
             }
 
             @Override
@@ -1136,6 +1179,12 @@ public class VerticalTabListCoordinator {
                     }
                 }
                 return true;
+            }
+
+            @Override
+            public boolean handleDrop(View view, float xPx, float yPx) {
+                float[] coords = toRvCoordinates(view, xPx, yPx);
+                return handleDrop(coords[0], coords[1]);
             }
 
             @Override

@@ -857,6 +857,31 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         return true;
     }
 
+    @Override
+    public RecyclerView.@Nullable ViewHolder findLiveViewHolder(
+            RecyclerView recyclerView, RecyclerView.ViewHolder current) {
+        if (current == null || !hasTabPropertiesModel(current)) return null;
+        int currentTabId = getTabId(current);
+        Token currentGroupId = getTabGroupId(current);
+        boolean isGroupHeader = current.getItemViewType() == TabProperties.UiType.TAB_GROUP;
+
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View childView = recyclerView.getChildAt(i);
+            RecyclerView.ViewHolder childViewHolder = recyclerView.getChildViewHolder(childView);
+            if (!hasTabPropertiesModel(childViewHolder)) continue;
+
+            if (isGroupHeader) {
+                if (childViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP
+                        && Objects.equals(getTabGroupId(childViewHolder), currentGroupId)) {
+                    return childViewHolder;
+                }
+            } else if (getTabId(childViewHolder) == currentTabId) {
+                return childViewHolder;
+            }
+        }
+        return null;
+    }
+
     /**
      * Determines whether a dragged child tab has escaped the visual boundaries of its tab group.
      *
