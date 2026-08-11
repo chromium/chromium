@@ -22,7 +22,7 @@ When given a Figma design URL (e.g., `https://www.figma.com/design/:fileKey/:fil
 1.  **Extract Parameters**: Extract the `fileKey` and the `nodeId` (replace hyphens with colons, e.g. `54800-5491` becomes `54800:5491`).
 2.  **Retrieve Design Context**: Call `get_design_context` with `fileKey` and `nodeId` to fetch the metadata, layout hierarchy, layer styles, and a screenshot of the node.
 3.  **Reference Existing Component Specs**: Look up component spec files for relevant components using the `project-knowledge` skill to map Figma components to Chromium WebUI components.
-4.  **Reference Token Mapping**: Read the Chrome Design System token mapping from the `project-knowledge` skill to translate Figma variables (e.g., `desktop/sys/surface-colors/surface-2`) to equivalent Chromium CSS variables (`--color-sys-surface2`).
+4.  **Reference Token & Font Mapping**: Read the Chrome Design System token mapping from the `project-knowledge` skill to translate Figma variables to equivalent Chromium CSS variables (e.g., `desktop/sys/surface-colors/surface-2` to `--color-sys-surface2`), and translate Figma typography styles to equivalent Chromium font families, sizes, weights, and line heights.
 
 ---
 
@@ -122,6 +122,7 @@ Stylesheet guidelines:
   ```bash
   python3 ui/webui/resources/tools/stylelint.py --config ui/webui/resources/tools/stylelint.config_base.mjs --in_folder <relative_folder_path> --in_files <file_name>.css --out_file /tmp/stylelint.out
   ```
+- **Typography & Font Fidelity**: Carry over all Figma font styles into the WebUI stylesheet.
 - **Use WebUI Components As-Is**: When using existing WebUI components, **DO NOT** add custom styling to existing components in order to match the Figma specifications. Use the WebUI components as-is.
 - **Clean Flex Layouts (No Hardcoded Flex-Basis)**: For elements in Figma
   - With auto-layout `fill container` (filling the remaining space in a flex row or column), use standard CSS flex shorthand (`flex: 1`) instead of computing or hardcoding static pixel `flex-basis` or fixed `width`. This ensures responsive layouts that cleanly adapt to parent padding, gap, and sibling sizes.
