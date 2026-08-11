@@ -536,41 +536,73 @@ bool MatchesStringFilter(
   }
 }
 
+// Returns true if `entry_typed_val` contains a country code matching
+// `filter_country_code` case-insensitively.
+bool MatchesCountryCodeEqual(const TypedValue& entry_typed_val,
+                             std::string_view filter_country_code) {
+  return entry_typed_val.has_country_code() &&
+         base::EqualsCaseInsensitiveASCII(entry_typed_val.country_code(),
+                                          filter_country_code);
+}
+
+// Returns true if `entry_typed_val` contains a date matching `filter_date`.
+// Non-zero fields in `filter_date` (year, month, day) must match; zero fields
+// act as wildcards.
+bool MatchesDateEqual(const TypedValue& entry_typed_val,
+                      const personal_context::proto::Date& filter_date) {
+  if (!entry_typed_val.has_date()) {
+    return false;
+  }
+
+  using ::personal_context::proto::Date;
+  const Date& entry_date = entry_typed_val.date();
+  if (filter_date.year() != 0 && entry_date.year() != filter_date.year()) {
+    return false;
+  }
+  if (filter_date.month() != 0 && entry_date.month() != filter_date.month()) {
+    return false;
+  }
+  if (filter_date.day() != 0 && entry_date.day() != filter_date.day()) {
+    return false;
+  }
+  return true;
+}
+
+// Returns true if `entry_typed_val` equals `filter_typed_val`.
+bool MatchesTypedEqual(const TypedValue& entry_typed_val,
+                       const TypedValue& filter_typed_val) {
+  switch (filter_typed_val.value_case()) {
+    case TypedValue::kCountryCode:
+      return MatchesCountryCodeEqual(entry_typed_val,
+                                     filter_typed_val.country_code());
+    case TypedValue::kDate:
+      return MatchesDateEqual(entry_typed_val, filter_typed_val.date());
+    case TypedValue::kDateTime:
+    case TypedValue::kStringList:
+    case TypedValue::VALUE_NOT_SET:
+      return false;
+  }
+  return false;
+}
+
+// Returns true if `entry_typed_val` satisfies `filter`.
 bool MatchesTypedFilter(const TypedValue& entry_typed_val,
                         const TypedValueFilter& filter) {
   if (!filter.has_typed_value()) {
     return true;
   }
-  switch (filter.typed_value().value_case()) {
-    case TypedValue::kCountryCode:
-      return entry_typed_val.has_country_code() &&
-             base::EqualsCaseInsensitiveASCII(
-                 entry_typed_val.country_code(),
-                 filter.typed_value().country_code());
-    case TypedValue::kDate: {
-      if (!entry_typed_val.has_date()) {
-        return false;
-      }
 
-      using ::personal_context::proto::Date;
-      const Date& entry_date = entry_typed_val.date();
-      const Date& filter_date = filter.typed_value().date();
-      if (filter_date.year() != 0 && entry_date.year() != filter_date.year()) {
-        return false;
-      }
-      if (filter_date.month() != 0 &&
-          entry_date.month() != filter_date.month()) {
-        return false;
-      }
-      if (filter_date.day() != 0 && entry_date.day() != filter_date.day()) {
-        return false;
-      }
-      return true;
-    }
-    case personal_context::proto::TypedValue::kDateTime:
-    case personal_context::proto::TypedValue::kStringList:
-    case personal_context::proto::TypedValue::VALUE_NOT_SET:
-      return false;
+  switch (filter.filter_operator()) {
+    case TypedValueFilter::FILTER_OPERATOR_EQUAL:
+    case TypedValueFilter::FILTER_OPERATOR_UNSPECIFIED:
+      return MatchesTypedEqual(entry_typed_val, filter.typed_value());
+    case TypedValueFilter::FILTER_OPERATOR_NOT_EQUAL:
+    case TypedValueFilter::FILTER_OPERATOR_LESS_THAN:
+    case TypedValueFilter::FILTER_OPERATOR_LESS_THAN_OR_EQUAL:
+    case TypedValueFilter::FILTER_OPERATOR_GREATER_THAN:
+    case TypedValueFilter::FILTER_OPERATOR_GREATER_THAN_OR_EQUAL:
+    default:
+      break;
   }
   return false;
 }
