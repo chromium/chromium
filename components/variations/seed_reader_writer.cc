@@ -137,10 +137,49 @@ base::expected<std::string, LoadSeedResult> Uncompress(
   return uncompressed_contents;
 }
 
+base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
+    base::FilePath file_path,
+    bool check_missing_seed_file,
+    std::string_view histogram_suffix) {
+  if (check_missing_seed_file && !base::PathExists(file_path)) {
+    return base::unexpected(LoadSeedResult::kFileNotFound);
+  }
+  std::string seed_file_data;
+  if (!base::ReadFileToString(file_path, &seed_file_data)) {
+    return base::unexpected(LoadSeedResult::kErrorReadingFile);
+  }
+  if (seed_file_data.empty()) {
+    return base::unexpected(LoadSeedResult::kEmpty);
+  }
+  auto uncompress_result = Uncompress(seed_file_data, histogram_suffix);
+  if (!uncompress_result.has_value()) {
+    return base::unexpected(uncompress_result.error());
+  }
+  StoredSeedInfo parsed_seed_info;
+  if (!parsed_seed_info.ParseFromString(uncompress_result.value())) {
+    return base::unexpected(LoadSeedResult::kSeedInfoParseToProtoError);
+  }
+  return parsed_seed_info;
+}
+
 // Serializes, compresses, and returns the compressed seed info used during
 // write to disk. Will be run asynchronously on a background thread.
 std::optional<std::string> DoSerialize(StoredSeedInfo seed_info,
+                                       base::FilePath file_path,
                                        std::string histogram_suffix) {
+  if (!seed_info.has_data()) {
+    // If the seed data was purged from memory, read it from the existing file
+    // first to preserve the seed data and signature.
+    auto read_result = ReadSeedInfoFromFile(
+        file_path, /*check_missing_seed_file=*/false, histogram_suffix);
+    if (!read_result.has_value()) {
+      // If we cannot read the existing seed file, we cannot safely write the
+      // update without destroying the seed data.
+      return std::nullopt;
+    }
+    seed_info.set_data(std::move(read_result.value().data()));
+  }
+
   std::string uncompressed_data = seed_info.SerializeAsString();
   std::string compressed_seed_info;
   const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -265,31 +304,6 @@ int64_t TimeToProtoTime(base::Time time) {
 
 bool ShouldStoreWithoutProcessing(std::string_view seed_data) {
   return seed_data.empty() || seed_data == kIdenticalToSafeSeedSentinel;
-}
-
-base::expected<StoredSeedInfo, LoadSeedResult> ReadSeedInfoFromFile(
-    base::FilePath file_path,
-    bool check_missing_seed_file,
-    std::string_view histogram_suffix) {
-  if (check_missing_seed_file && !base::PathExists(file_path)) {
-    return base::unexpected(LoadSeedResult::kFileNotFound);
-  }
-  std::string seed_file_data;
-  if (!base::ReadFileToString(file_path, &seed_file_data)) {
-    return base::unexpected(LoadSeedResult::kErrorReadingFile);
-  }
-  if (seed_file_data.empty()) {
-    return base::unexpected(LoadSeedResult::kEmpty);
-  }
-  auto uncompress_result = Uncompress(seed_file_data, histogram_suffix);
-  if (!uncompress_result.has_value()) {
-    return base::unexpected(uncompress_result.error());
-  }
-  StoredSeedInfo parsed_seed_info;
-  if (!parsed_seed_info.ParseFromString(uncompress_result.value())) {
-    return base::unexpected(LoadSeedResult::kSeedInfoParseToProtoError);
-  }
-  return parsed_seed_info;
 }
 
 bool ShouldCheckMissingSeedFile(version_info::Channel channel) {
@@ -481,6 +495,7 @@ void SeedReaderWriter::ClearSessionCountry() {
   if (ShouldUseSeedFile()) {
     stored_seed_info_.clear_session_country_code();
     stored_seed_info_.clear_session_geo_level1();
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   }
   local_state_->ClearPref(fields_prefs_->session_country_code);
   if (fields_prefs_->session_geo_level1) {
@@ -534,6 +549,7 @@ void SeedReaderWriter::SetSeedDate(base::Time server_date_fetched) {
   // state if the client is in the treatment group.
   if (ShouldUseSeedFile()) {
     stored_seed_info_.set_seed_date(TimeToProtoTime(server_date_fetched));
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   }
   local_state_->SetTime(fields_prefs_->seed_date, server_date_fetched);
 }
@@ -545,6 +561,7 @@ void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
   // state if the client is in the treatment group.
   if (ShouldUseSeedFile()) {
     stored_seed_info_.set_client_fetch_time(TimeToProtoTime(fetch_time));
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   }
   local_state_->SetTime(fields_prefs_->client_fetch_time, fetch_time);
 }
@@ -556,6 +573,7 @@ void SeedReaderWriter::ClearPermanentConsistencyCountryAndVersion() {
     // client is in the treatment group.
     stored_seed_info_.clear_permanent_country_code();
     stored_seed_info_.clear_permanent_version();
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   }
   local_state_->ClearPref(fields_prefs_->permanent_country_code_version);
 }
@@ -567,6 +585,7 @@ void SeedReaderWriter::SetPermanentConsistencyCountryAndVersion(
   if (ShouldUseSeedFile()) {
     stored_seed_info_.set_permanent_country_code(country);
     stored_seed_info_.set_permanent_version(version);
+    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   }
   SetPermanentCountryVersion(local_state_,
                              fields_prefs_->permanent_country_code_version,
@@ -727,7 +746,8 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
                                              std::move(call_clear_seed_cb));
   // TODO(crbug.com/370539202): Potentially use std::move instead of copy if we
   // are able to move seed data out of memory before the write completes.
-  return base::BindOnce(&DoSerialize, stored_seed_info_, histogram_suffix_);
+  return base::BindOnce(&DoSerialize, stored_seed_info_, seed_writer_->path(),
+                        histogram_suffix_);
 }
 
 bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
