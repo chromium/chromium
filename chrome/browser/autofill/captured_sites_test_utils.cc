@@ -2209,6 +2209,9 @@ bool TestRecipeReplayer::ExecuteJavaScriptOnElementByXpath(
     const std::string& element_xpath,
     const std::string& execute_function_body,
     const base::TimeDelta& time_to_wait_for_element) {
+  if (!frame.render_frame_host() || !frame.render_frame_host()->IsActive()) {
+    return false;
+  }
   std::string js(base::StringPrintf(
       "try {"
       "  var element = automation_helper.getElementByXpath(`%s`);"
@@ -2276,6 +2279,9 @@ bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
 bool TestRecipeReplayer::ScrollElementIntoView(
     const std::string& element_xpath,
     content::RenderFrameHost* frame) {
+  if (!frame || !frame->IsActive()) {
+    return false;
+  }
   const std::string scroll_target_js(base::StringPrintf(
       "try {"
       "  const element = automation_helper.getElementByXpath(`%s`);"
@@ -2287,13 +2293,20 @@ bool TestRecipeReplayer::ScrollElementIntoView(
       "}",
       element_xpath.c_str()));
 
-  return EvalJs(frame, scroll_target_js).ExtractBool();
+  content::EvalJsResult result = EvalJs(frame, scroll_target_js);
+  if (result.is_bool()) {
+    return result.ExtractBool();
+  }
+  return false;
 }
 
 bool TestRecipeReplayer::PlaceFocusOnElement(
     const std::string& element_xpath,
     const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame) {
+  if (!frame || !frame->IsActive()) {
+    return false;
+  }
   if (!ScrollElementIntoView(element_xpath, frame))
     return false;
 
@@ -2308,29 +2321,33 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
 
   content::EvalJsResult result =
       content::EvalJs(frame, focus_on_target_field_js);
-  if (result.is_ok() && result.is_bool() && result.ExtractBool()) {
+  if (result.is_bool() && result.ExtractBool()) {
     return true;
-  } else {
-    VLOG(1) << "Failed to focus element through script:"
-            << (result.is_ok()
-                    ? (result.is_bool() ? "Returned false" : "Not a valid bool")
-                    : result.ExtractError());
-
-    // Failing focusing on an element through script, use the less preferred
-    // method of left mouse clicking the element.
-    gfx::Rect rect;
-    if (!GetBoundingRectOfTargetElement(element_xpath, iframe_path, frame,
-                                        &rect))
-      return false;
-
-    return SimulateLeftMouseClickAt(rect.CenterPoint(), frame);
   }
+
+  VLOG(1) << "Failed to focus element through script:"
+          << (result.is_ok()
+                  ? (result.is_bool() ? "Returned false" : "Not a valid bool")
+                  : result.ExtractError());
+
+  // Failing focusing on an element through script, use the less preferred
+  // method of left mouse clicking the element.
+  gfx::Rect rect;
+  if (!GetBoundingRectOfTargetElement(element_xpath, iframe_path, frame,
+                                      &rect)) {
+    return false;
+  }
+
+  return SimulateLeftMouseClickAt(rect.CenterPoint(), frame);
 }
 
 bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::string& target_element_xpath,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
+  if (!frame || !frame->IsActive()) {
+    return false;
+  }
   const std::string get_element_bounding_rect_js(base::StringPrintf(
       "(function() {"
       "   try {"
@@ -2345,11 +2362,18 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
       "})();",
       target_element_xpath.c_str()));
 
-  std::string rect_str =
-      content::EvalJs(frame, get_element_bounding_rect_js).ExtractString();
+  content::EvalJsResult result =
+      content::EvalJs(frame, get_element_bounding_rect_js);
+  if (!result.is_string()) {
+    return false;
+  }
+
+  std::string rect_str = result.ExtractString();
 
   if (rect_str.empty()) {
-    ADD_FAILURE() << "Failed to extract target element's bounding rect!";
+    if (frame->IsActive()) {
+      ADD_FAILURE() << "Failed to extract target element's bounding rect!";
+    }
     return false;
   }
 
@@ -2399,6 +2423,9 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
+  if (!frame || !frame->IsActive()) {
+    return false;
+  }
   gfx::Vector2d offset;
   if (!GetIFrameOffsetFromIFramePath(iframe_path, frame, &offset))
     return false;
@@ -2412,9 +2439,31 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
 bool TestRecipeReplayer::SimulateLeftMouseClickAt(
     const gfx::Point& point,
     content::RenderFrameHost* render_frame_host) {
-  content::RenderWidgetHostView* view = render_frame_host->GetView();
-  if (!SimulateMouseHoverAt(render_frame_host, point))
+  if (!render_frame_host || !render_frame_host->IsActive()) {
     return false;
+  }
+
+  content::RenderFrameHostWrapper rfh_wrapper(render_frame_host);
+  if (!SimulateMouseHoverAt(render_frame_host, point)) {
+    return false;
+  }
+
+  if (rfh_wrapper.IsDestroyed() || !rfh_wrapper.get()->IsActive()) {
+    return false;
+  }
+
+  render_frame_host = rfh_wrapper.get();
+  content::RenderWidgetHostView* view = render_frame_host->GetView();
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!view || !web_contents) {
+    return false;
+  }
+
+  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
+  if (!widget) {
+    return false;
+  }
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseDown,
@@ -2425,13 +2474,10 @@ bool TestRecipeReplayer::SimulateLeftMouseClickAt(
   mouse_event.SetTimeStamp(base::TimeTicks::Now());
 
   // Mac needs positionInScreen for events to plugins.
-  gfx::Rect offset =
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetContainerBounds();
+  gfx::Rect offset = web_contents->GetContainerBounds();
   mouse_event.SetPositionInScreen(point.x() + offset.x(),
                                   point.y() + offset.y());
   mouse_event.click_count = 1;
-  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
 
   widget->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
@@ -2442,9 +2488,15 @@ bool TestRecipeReplayer::SimulateLeftMouseClickAt(
 bool TestRecipeReplayer::SimulateMouseHoverAt(
     content::RenderFrameHost* render_frame_host,
     const gfx::Point& point) {
-  gfx::Rect offset =
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetContainerBounds();
+  if (!render_frame_host || !render_frame_host->IsActive()) {
+    return false;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents) {
+    return false;
+  }
+  gfx::Rect offset = web_contents->GetContainerBounds();
   gfx::Point reset_mouse =
       gfx::Point(offset.x() + point.x(), offset.y() + point.y());
   if (!ui_test_utils::SendMouseMoveSync(reset_mouse)) {

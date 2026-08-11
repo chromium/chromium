@@ -394,7 +394,10 @@ if (!is_android) {
   source_set("captured_sites_interactive_tests") {
     testonly = true
 
-    sources = [ "autofill_captured_sites_interactive_uitest.cc" ]
+    sources = [
+      "autofill_captured_sites_interactive_uitest.cc",
+      "captured_sites_test_utils_browsertest.cc",
+    ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
