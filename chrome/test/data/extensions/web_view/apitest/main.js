@@ -277,31 +277,46 @@ function testAutosizeBeforeNavigation() {
 
 // This test verifies that a lengthy page with autosize enabled will report
 // the correct height in the sizechanged event.
-function testAutosizeHeight(expectedWidth) {
+function testAutosizeHeight(expectedWidths) {
   const webview = document.createElement('webview');
 
   webview.autosize = true;
   webview.minwidth = 200;
   webview.maxwidth = 210;
   webview.minheight = 40;
-  webview.maxheight = 200;
 
-  let step = 1;
+  const initialMaxHeight = 200;
   const finalHeight = 50;
+  webview.maxheight = initialMaxHeight;
+  let loaded = false;
+  let completed = false;
+  webview.addEventListener('loadstop', function() {
+    loaded = true;
+    webview.maxheight = finalHeight;
+  });
+
   webview.addEventListener('sizechanged', function(e) {
+    if (completed) {
+      return;
+    }
+
     embedder.test.assertTrue(e.newHeight >= webview.minheight);
-    embedder.test.assertTrue(e.newHeight <= webview.maxheight);
+    embedder.test.assertTrue(e.newHeight <= initialMaxHeight);
     embedder.test.assertTrue(e.newWidth >= webview.minwidth);
     embedder.test.assertTrue(e.newWidth <= webview.maxwidth);
-    if (step === 1) {
-      webview.maxheight = 50;
+
+    if (!loaded || e.newHeight !== finalHeight) {
+      return;
     }
 
-    // We are done once the size settles on the final width and height.
-    if (e.newHeight === finalHeight && e.newWidth === expectedWidth) {
+    completed = true;
+    if (expectedWidths.includes(e.newWidth)) {
       embedder.test.succeed();
+      return;
     }
-    ++step;
+
+    console.error('Unexpected final width: ' + e.newWidth);
+    embedder.test.fail();
   });
 
   webview.src = 'data:text/html,' +
@@ -1960,8 +1975,9 @@ embedder.test.testList = {
   'testAssignSrcAfterCrash': testAssignSrcAfterCrash,
   'testAutosizeAfterNavigation': testAutosizeAfterNavigation,
   'testAutosizeBeforeNavigation': testAutosizeBeforeNavigation,
-  'testAutosizeHeightFeatureEnabled': () => testAutosizeHeight(210),
-  'testAutosizeHeightFeatureDisabled': () => testAutosizeHeight(200),
+  // The final width depends on whether the scrollbar consumes layout space.
+  'testAutosizeHeightFeatureEnabled': () => testAutosizeHeight([200, 210]),
+  'testAutosizeHeightFeatureDisabled': () => testAutosizeHeight([200]),
   'testAutosizeRemoveAttributes': testAutosizeRemoveAttributes,
   'testAutosizeWithPartialAttributes': testAutosizeWithPartialAttributes,
   'testCanGoBack': testCanGoBack,
