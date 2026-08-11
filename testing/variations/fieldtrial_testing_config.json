@@ -4744,21 +4744,6 @@
             ]
         }
     ],
-    "BusyLoopAggressiveAfterCommittedLoad": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BusyLoopAggressiveAfterCommittedLoad"
-                    ]
-                }
-            ]
-        }
-    ],
     "BusyLoopLessWhenCompositorGesture": [
         {
             "platforms": [
@@ -4766,8 +4751,9 @@
             ],
             "experiments": [
                 {
-                    "name": "WithOptimization_20260625",
+                    "name": "WithOptimization",
                     "enable_features": [
+                        "BusyLoopAggressiveAfterCommittedLoad",
                         "BusyLoopLessWhenCompositorGesture",
                         "BusyLoopOnMainThread"
                     ]
