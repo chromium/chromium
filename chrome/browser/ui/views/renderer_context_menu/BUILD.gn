@@ -43,3 +43,24 @@ source_set("impl") {
   # allow_circular_includes_from entry on //chrome/browser/ui:ui.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "render_view_context_menu_views_browsertest.cc" ]
+
+  deps = [
+    ":renderer_context_menu",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser/renderer_context_menu",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}

@@ -3672,7 +3672,10 @@ if (!is_android) {
     }
 
     if (use_aura) {
-      deps += [ "//chrome/browser/ui/aura/accessibility" ]
+      deps += [
+        "//chrome/browser/ui/aura/accessibility",
+        "//chrome/browser/ui/views/renderer_context_menu:browser_tests",
+      ]
 
       if (use_nss_certs) {
         sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]

@@ -290,9 +290,6 @@ void RenderViewContextMenuViews::ExecuteCommand(int command_id,
                                                 int event_flags) {
   switch (command_id) {
     case kWritingDirectionDefaultId:
-      // WebKit's current behavior is for this menu item to always be disabled.
-      NOTREACHED();
-
     case IDC_WRITING_DIRECTION_RTL:
     case IDC_WRITING_DIRECTION_LTR: {
       // Note: we get the local render frame host so that the writing mode
@@ -303,10 +300,14 @@ void RenderViewContextMenuViews::ExecuteCommand(int command_id,
       // menu is open. In this case, we'll not perform the action, but still
       // record metrics.
       if (rfh) {
-        rfh->GetRenderWidgetHost()->UpdateTextDirection(
-            (command_id == IDC_WRITING_DIRECTION_RTL)
-                ? base::i18n::RIGHT_TO_LEFT
-                : base::i18n::LEFT_TO_RIGHT);
+        base::i18n::TextDirection direction =
+            base::i18n::TextDirection::UNKNOWN_DIRECTION;
+        if (command_id == IDC_WRITING_DIRECTION_RTL) {
+          direction = base::i18n::RIGHT_TO_LEFT;
+        } else if (command_id == IDC_WRITING_DIRECTION_LTR) {
+          direction = base::i18n::LEFT_TO_RIGHT;
+        }
+        rfh->GetRenderWidgetHost()->UpdateTextDirection(direction);
         rfh->GetRenderWidgetHost()->NotifyTextDirection();
       }
       RenderViewContextMenu::RecordUsedItem(command_id);

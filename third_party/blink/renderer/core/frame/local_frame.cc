@@ -1243,6 +1243,25 @@ void LocalFrame::RemoveBackForwardCacheEviction() {
 }
 
 void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {
+  if (WebPluginContainerImpl* plugin_container = GetWebPluginContainer()) {
+    std::string_view command_name;
+    switch (direction) {
+      case base::i18n::TextDirection::UNKNOWN_DIRECTION:
+        command_name = "MakeTextWritingDirectionNatural";
+        break;
+      case base::i18n::TextDirection::LEFT_TO_RIGHT:
+        command_name = "MakeTextWritingDirectionLeftToRight";
+        break;
+      case base::i18n::TextDirection::RIGHT_TO_LEFT:
+        command_name = "MakeTextWritingDirectionRightToLeft";
+        break;
+    }
+
+    plugin_container->ExecuteEditCommand(WebString::FromAscii(command_name),
+                                         WebString());
+    return;
+  }
+
   // The Editor::SetBaseWritingDirection() function checks if we can change
   // the text direction of the selected node and updates its DOM "dir"
   // attribute and its CSS "direction" property.

@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -194,14 +195,38 @@ class TestPluginWithEditableText : public FakeWebPlugin {
       paste_called_ = true;
       return true;
     }
+    if (name == "MakeTextWritingDirectionLeftToRight") {
+      writing_direction_left_to_right_called_ = true;
+      return true;
+    }
+    if (name == "MakeTextWritingDirectionRightToLeft") {
+      writing_direction_right_to_left_called_ = true;
+      return true;
+    }
+    if (name == "MakeTextWritingDirectionNatural") {
+      writing_direction_natural_called_ = true;
+      return true;
+    }
     return false;
   }
 
   bool IsCutCalled() const { return cut_called_; }
   bool IsPasteCalled() const { return paste_called_; }
+  bool IsWritingDirectionLeftToRightCalled() const {
+    return writing_direction_left_to_right_called_;
+  }
+  bool IsWritingDirectionRightToLeftCalled() const {
+    return writing_direction_right_to_left_called_;
+  }
+  bool IsWritingDirectionNaturalCalled() const {
+    return writing_direction_natural_called_;
+  }
   void ResetEditCommandState() {
     cut_called_ = false;
     paste_called_ = false;
+    writing_direction_left_to_right_called_ = false;
+    writing_direction_right_to_left_called_ = false;
+    writing_direction_natural_called_ = false;
   }
 
  private:
@@ -209,6 +234,9 @@ class TestPluginWithEditableText : public FakeWebPlugin {
 
   bool cut_called_;
   bool paste_called_;
+  bool writing_direction_left_to_right_called_ = false;
+  bool writing_direction_right_to_left_called_ = false;
+  bool writing_direction_natural_called_ = false;
 };
 
 class RenderThrottlingTestPlugin : public FakeWebPlugin {
@@ -1979,6 +2007,56 @@ TEST_F(WebPluginContainerTest, NeedsWheelEvents) {
                   ->GetFrame()
                   ->GetEventHandlerRegistry()
                   .HasEventHandlers(EventHandlerRegistry::kWheelEventBlocking));
+}
+
+TEST_F(WebPluginContainerTest, SetTextDirection) {
+  RegisterMockedURL("plugin_container.html");
+  TestPluginWebFrameClient plugin_web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+
+  plugin_web_frame_client.SetHasEditableText(true);
+
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_container.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  WebElement plugin_container_one_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(
+          WebString("translated-plugin"));
+
+  auto* test_plugin =
+      TestPluginWithEditableText::FromContainer(&plugin_container_one_element);
+  ASSERT_TRUE(test_plugin);
+
+  LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
+
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->GetDocument()
+      ->QuerySelector(AtomicString("#translated-plugin"))
+      ->Focus();
+
+  // Test LTR
+  frame->SetTextDirection(base::i18n::TextDirection::LEFT_TO_RIGHT);
+  EXPECT_TRUE(test_plugin->IsWritingDirectionLeftToRightCalled());
+  EXPECT_FALSE(test_plugin->IsWritingDirectionRightToLeftCalled());
+  EXPECT_FALSE(test_plugin->IsWritingDirectionNaturalCalled());
+
+  test_plugin->ResetEditCommandState();
+
+  // Test RTL
+  frame->SetTextDirection(base::i18n::TextDirection::RIGHT_TO_LEFT);
+  EXPECT_FALSE(test_plugin->IsWritingDirectionLeftToRightCalled());
+  EXPECT_TRUE(test_plugin->IsWritingDirectionRightToLeftCalled());
+  EXPECT_FALSE(test_plugin->IsWritingDirectionNaturalCalled());
+
+  test_plugin->ResetEditCommandState();
+
+  // Test Natural
+  frame->SetTextDirection(base::i18n::TextDirection::UNKNOWN_DIRECTION);
+  EXPECT_FALSE(test_plugin->IsWritingDirectionLeftToRightCalled());
+  EXPECT_FALSE(test_plugin->IsWritingDirectionRightToLeftCalled());
+  EXPECT_TRUE(test_plugin->IsWritingDirectionNaturalCalled());
 }
 
 }  // namespace blink

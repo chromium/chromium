@@ -1425,14 +1425,26 @@ void RenderViewContextMenu::InitMenu() {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Spell check and writing direction options are not currently supported by
-  // pepper plugins.
-  if (editable && params_.misspelled_word.empty() &&
-      !content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_MEDIA_PLUGIN)) {
+  // Spell check, language settings, and writing direction.
+  if (editable && params_.misspelled_word.empty()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    AppendLanguageSettings();
-    AppendPlatformEditableItems();
+
+    // Spell check and language settings are not supported by media plugins.
+    if (!content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_MEDIA_PLUGIN)) {
+      AppendLanguageSettings();
+    }
+
+    // Only append writing direction options if they are supported by
+    // the focused element (HTML text fields or editable plugins).
+    if ((params_.writing_direction_default &
+         blink::ContextMenuData::kCheckableMenuItemEnabled) ||
+        (params_.writing_direction_left_to_right &
+         blink::ContextMenuData::kCheckableMenuItemEnabled) ||
+        (params_.writing_direction_right_to_left &
+         blink::ContextMenuData::kCheckableMenuItemEnabled)) {
+      AppendPlatformEditableItems();
+    }
   }
 
   if (content_type_->SupportsGroup(

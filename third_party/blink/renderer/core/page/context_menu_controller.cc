@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -652,6 +653,38 @@ bool ContextMenuController::ShowContextMenu(
             data.edit_flags |= ContextMenuDataEditFlags::kCanUndo;
           if (plugin->CanRedo())
             data.edit_flags |= ContextMenuDataEditFlags::kCanRedo;
+
+          std::optional<base::i18n::TextDirection> text_direction =
+              plugin->GetFocusedFormTextDirection();
+          if (text_direction) {
+            data.writing_direction_default =
+                ContextMenuData::kCheckableMenuItemEnabled;
+            data.writing_direction_left_to_right =
+                ContextMenuData::kCheckableMenuItemEnabled;
+            data.writing_direction_right_to_left =
+                ContextMenuData::kCheckableMenuItemEnabled;
+            switch (*text_direction) {
+              case base::i18n::UNKNOWN_DIRECTION:
+                data.writing_direction_default |=
+                    ContextMenuData::kCheckableMenuItemChecked;
+                break;
+              case base::i18n::RIGHT_TO_LEFT:
+                data.writing_direction_right_to_left |=
+                    ContextMenuData::kCheckableMenuItemChecked;
+                break;
+              case base::i18n::LEFT_TO_RIGHT:
+                data.writing_direction_left_to_right |=
+                    ContextMenuData::kCheckableMenuItemChecked;
+                break;
+            }
+          } else {
+            data.writing_direction_default =
+                ContextMenuData::kCheckableMenuItemDisabled;
+            data.writing_direction_left_to_right =
+                ContextMenuData::kCheckableMenuItemDisabled;
+            data.writing_direction_right_to_left =
+                ContextMenuData::kCheckableMenuItemDisabled;
+          }
         }
         // Disable translation for plugins.
         data.edit_flags &= ~ContextMenuDataEditFlags::kCanTranslate;

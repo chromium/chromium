@@ -91,6 +91,15 @@ class ContextMenuControllerTestPlugin : public FakeWebPlugin {
 
     // The selected text in the plugin when the context menu is created.
     WebString selected_text;
+
+    // Whether the plugin has editable text.
+    bool has_editable_text = false;
+
+    // Whether the plugin can edit text.
+    bool can_edit_text = false;
+
+    // The text direction of the plugin.
+    std::optional<base::i18n::TextDirection> text_direction;
   };
 
   explicit ContextMenuControllerTestPlugin(const WebPluginParams& params)
@@ -99,15 +108,27 @@ class ContextMenuControllerTestPlugin : public FakeWebPlugin {
   // FakeWebPlugin:
   WebString SelectionAsText() const override { return selected_text_; }
   bool CanCopy() const override { return can_copy_; }
+  bool HasEditableText() const override { return has_editable_text_; }
+  bool CanEditText() const override { return can_edit_text_; }
+  std::optional<base::i18n::TextDirection> GetFocusedFormTextDirection()
+      const override {
+    return text_direction_;
+  }
 
   void SetAttributesForTesting(const PluginAttributes& attributes) {
     can_copy_ = attributes.can_copy;
     selected_text_ = attributes.selected_text;
+    has_editable_text_ = attributes.has_editable_text;
+    can_edit_text_ = attributes.can_edit_text;
+    text_direction_ = attributes.text_direction;
   }
 
  private:
   bool can_copy_ = true;
   WebString selected_text_;
+  bool has_editable_text_ = false;
+  bool can_edit_text_ = false;
+  std::optional<base::i18n::TextDirection> text_direction_;
 };
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
@@ -305,6 +326,60 @@ TEST_F(ContextMenuControllerTest, CopyFromPlugin) {
   EXPECT_EQ(context_menu_data.selected_text, "some text");
   EXPECT_FALSE(
       !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
+}
+
+TEST_F(ContextMenuControllerTest, WritingDirectionFromPlugin) {
+  ContextMenuAllowedScope context_menu_allowed_scope;
+  frame_test_helpers::LoadFrame(LocalMainFrame(), R"HTML(data:text/html,
+  <html>
+    <body>
+      <embed id="embed" type="application/x-webkit-test-webplugin"
+       src="chrome-extension://test" original-url="http://www.test.pdf">
+      </embed>
+    </body>
+  <html>
+  )HTML");
+
+  Element* embed_element = GetDocument()->getElementById(AtomicString("embed"));
+
+  auto* embedded =
+      DynamicTo<LayoutEmbeddedContent>(embed_element->GetLayoutObject());
+  WebPluginContainerImpl* embedded_plugin_view = embedded->Plugin();
+
+  auto* test_plugin = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_plugin_view->Plugin());
+
+  // Test LTR direction.
+  test_plugin->SetAttributesForTesting(
+      {/*can_copy=*/false, /*selected_text=*/"", /*has_editable_text=*/true,
+       /*can_edit_text=*/true, /*text_direction=*/base::i18n::LEFT_TO_RIGHT});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      embed_element, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.media_type,
+            mojom::blink::ContextMenuDataMediaType::kPlugin);
+  EXPECT_TRUE(context_menu_data.is_editable);
+  EXPECT_EQ(context_menu_data.writing_direction_left_to_right,
+            ContextMenuData::kCheckableMenuItemEnabled |
+                ContextMenuData::kCheckableMenuItemChecked);
+  EXPECT_EQ(context_menu_data.writing_direction_right_to_left,
+            ContextMenuData::kCheckableMenuItemEnabled);
+
+  // Test RTL direction.
+  test_plugin->SetAttributesForTesting(
+      {/*can_copy=*/false, /*selected_text=*/"", /*has_editable_text=*/true,
+       /*can_edit_text=*/true, /*text_direction=*/base::i18n::RIGHT_TO_LEFT});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      embed_element, ui::mojom::blink::MenuSourceType::kMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.is_editable);
+  EXPECT_EQ(context_menu_data.writing_direction_left_to_right,
+            ContextMenuData::kCheckableMenuItemEnabled);
+  EXPECT_EQ(context_menu_data.writing_direction_right_to_left,
+            ContextMenuData::kCheckableMenuItemEnabled |
+                ContextMenuData::kCheckableMenuItemChecked);
 }
 
 TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
