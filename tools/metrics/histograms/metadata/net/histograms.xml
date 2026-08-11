@@ -8090,7 +8090,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.RestrictedCookieManager.PartitionedCookiesInScript.Subsampled"
-    units="cookies" expires_after="2026-07-22">
+    units="cookies" expires_after="2026-10-26">
   <owner>dylancutler@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -8099,6 +8099,9 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    Warning: this histogram was expired from 2026-07-22 to 2026-08-25; data may
+    be missing.
   </summary>
 </histogram>
 

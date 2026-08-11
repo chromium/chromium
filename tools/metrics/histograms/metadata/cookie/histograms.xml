@@ -92,13 +92,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
-    expires_after="2026-07-26">
+    expires_after="2026-10-26">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
     The scheme a cookie was set by and the scheme of the request that the cookie
     was sent to. This is recorded once per cookie each time a URL request has
     its headers set.
+
+    Warning: this histogram was expired from 2026-07-29 to 2026-08-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -172,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CrossSiteRedirectType.{AccessType}.Subsampled"
-    enum="ContextRedirectTypeBug1221316" expires_after="2026-08-10">
+    enum="ContextRedirectTypeBug1221316" expires_after="2026-10-26">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -188,6 +191,9 @@ chromium-metrics-reviews@google.com.
     net/cookies/cookie_constants.h for details.
 
     Warning: this histogram was expired from 2025-08-10 to 2025-02-24; data may
+    be missing.
+
+    Warning: this histogram was expired from 2026-08-10 to 2026-08-25; data may
     be missing.
   </summary>
   <token key="AccessType">
@@ -222,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.DomainSet.Subsampled" enum="Boolean"
-    expires_after="2026-08-09">
+    expires_after="2026-10-26">
   <owner>miketaylr@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -232,6 +238,9 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    Warning: this histogram was expired from 2026-08-09 to 2026-08-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -278,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
-    enum="CookiesAllowedForUrlsUsage" expires_after="2026-07-09">
+    enum="CookiesAllowedForUrlsUsage" expires_after="2026-10-26">
   <owner>dylancutler@google.com</owner>
   <owner>sandormajor@chromium.org</owner>
   <summary>
@@ -287,6 +296,9 @@ chromium-metrics-reviews@google.com.
     only apply to the top-level site, and rules that apply to both. This
     histogram is recorded when the CookiesAllowedForUrls policy is first loaded.
     Only recorded when the policy contains at least one valid rule.
+
+    Warning: this histogram was expired from 2026-07-09 to 2026-08-25; data may
+    be missing.
   </summary>
 </histogram>
 
