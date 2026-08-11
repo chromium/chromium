@@ -18,7 +18,7 @@
 #include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/test/controller_frame_data.h"
 #include "device/vr/public/mojom/test/view_data.h"
-#include "device/vr/public/mojom/test/visibility_mask.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -77,9 +77,8 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void PopulateEvent(device_test::mojom::EventData data);
   void StopHooking();
   void SetCanCreateSession(bool can_create_session);
-  void SetVisibilityMaskForTesting(
-      uint32_t view_index,
-      std::optional<device::VisibilityMaskData> mask);
+  void SetVisibilityMaskForTesting(uint32_t view_index,
+                                   device::mojom::XRVisibilityMaskPtr mask);
   uint32_t GetFrameCount() { return frame_count_; }
   void WaitNumFrames(uint32_t num_frames);
   void WaitForTotalFrameCount(uint32_t total_count);
@@ -100,7 +99,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   base::flat_map<uint32_t, device::ControllerFrameData> controller_data_map_
       GUARDED_BY(lock_);
   std::queue<device_test::mojom::EventData> event_data_queue_ GUARDED_BY(lock_);
-  absl::flat_hash_map<uint32_t, std::optional<device::VisibilityMaskData>>
+  absl::flat_hash_map<uint32_t, device::mojom::XRVisibilityMaskPtr>
       visibility_masks_ GUARDED_BY(lock_);
 
  private:

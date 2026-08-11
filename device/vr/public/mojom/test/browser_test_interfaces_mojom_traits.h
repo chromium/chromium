@@ -11,7 +11,6 @@
 #include "device/vr/public/mojom/test/device_config.h"
 #include "device/vr/public/mojom/test/layer_data.h"
 #include "device/vr/public/mojom/test/view_data.h"
-#include "device/vr/public/mojom/test/visibility_mask.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -32,34 +31,6 @@ struct StructTraits<device_test::mojom::ColorDataView, device::Color> {
     out->b = data.b();
     out->a = data.a();
     return true;
-  }
-};
-
-template <>
-struct EnumTraits<device_test::mojom::Eye, device::XrEye> {
-  static device_test::mojom::Eye ToMojom(device::XrEye input) {
-    switch (input) {
-      case device::XrEye::kLeft:
-        return device_test::mojom::Eye::LEFT;
-      case device::XrEye::kRight:
-        return device_test::mojom::Eye::RIGHT;
-      case device::XrEye::kNone:
-        return device_test::mojom::Eye::NONE;
-    }
-    NOTREACHED();
-    return device_test::mojom::Eye::NONE;
-  }
-
-  static device::XrEye FromMojom(device_test::mojom::Eye input) {
-    switch (input) {
-      case device_test::mojom::Eye::LEFT:
-        return device::XrEye::kLeft;
-      case device_test::mojom::Eye::RIGHT:
-        return device::XrEye::kRight;
-      case device_test::mojom::Eye::NONE:
-        return device::XrEye::kNone;
-    }
-    NOTREACHED();
   }
 };
 
@@ -160,7 +131,7 @@ struct StructTraits<device_test::mojom::ViewDataDataView, device::ViewData> {
   static device::Color color(const device::ViewData& view_data) {
     return view_data.color;
   }
-  static device::XrEye eye(const device::ViewData& view_data) {
+  static device::mojom::XREye eye(const device::ViewData& view_data) {
     return view_data.eye;
   }
   static const gfx::Rect& viewport(const device::ViewData& view_data) {
@@ -329,30 +300,6 @@ struct StructTraits<device_test::mojom::ControllerFrameDataDataView,
       out->hand_data = *maybe_hand_data;
     }
     out->is_valid = data.is_valid();
-    return true;
-  }
-};
-
-template <>
-struct StructTraits<device_test::mojom::XRVisibilityMaskDataView,
-                    device::VisibilityMaskData> {
-  static const std::array<float, device::kNumVisibilityMaskVerticesForTest>&
-  vertices(const device::VisibilityMaskData& mask) {
-    return mask.vertices;
-  }
-  static const std::array<uint32_t, device::kNumVisibilityMaskIndicesForTest>&
-  indices(const device::VisibilityMaskData& mask) {
-    return mask.indices;
-  }
-
-  static bool Read(device_test::mojom::XRVisibilityMaskDataView data,
-                   device::VisibilityMaskData* out) {
-    if (!data.ReadVertices(&out->vertices)) {
-      return false;
-    }
-    if (!data.ReadIndices(&out->indices)) {
-      return false;
-    }
     return true;
   }
 };

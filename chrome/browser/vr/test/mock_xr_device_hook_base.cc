@@ -256,7 +256,7 @@ void MockXRDeviceHookBase::SetCanCreateSession(bool can_create_session) {
 
 void MockXRDeviceHookBase::SetVisibilityMaskForTesting(
     uint32_t view_index,
-    std::optional<device::VisibilityMaskData> mask) {
+    device::mojom::XRVisibilityMaskPtr mask) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
   visibility_masks_[view_index] = std::move(mask);
@@ -266,11 +266,12 @@ void MockXRDeviceHookBase::WaitGetVisibilityMask(
     uint32_t view_index,
     device_test::mojom::XRTestHook::WaitGetVisibilityMaskCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  std::optional<device::VisibilityMaskData> mask;
+  device::mojom::XRVisibilityMaskPtr mask;
   {
     base::AutoLock lock(lock_);
-    if (visibility_masks_.contains(view_index)) {
-      mask = visibility_masks_[view_index];
+    if (auto it = visibility_masks_.find(view_index);
+        it != visibility_masks_.end()) {
+      mask = it->second.Clone();
     }
   }
 

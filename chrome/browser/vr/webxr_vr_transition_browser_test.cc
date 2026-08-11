@@ -7,6 +7,7 @@
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "ui/gfx/geometry/point_f.h"
 
 // Browser test equivalent of
 // chrome/android/javatests/src/.../browser/vr/WebXrVrTransitionTest.java.
@@ -188,10 +189,15 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
                        TestVisibilityMaskChangeEventReceived) {
   MockXRDeviceHookBase mock;
-  device::VisibilityMaskData visibility_mask{
-      .vertices = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f}, .indices = {0, 1, 2}};
-  mock.SetVisibilityMaskForTesting(0, visibility_mask);
-  mock.SetVisibilityMaskForTesting(1, visibility_mask);
+  auto visibility_mask = device::mojom::XRVisibilityMask::New();
+  visibility_mask->vertices = {
+      gfx::PointF(0.0f, 0.0f),
+      gfx::PointF(1.0f, 0.0f),
+      gfx::PointF(0.0f, 1.0f),
+  };
+  visibility_mask->unvalidated_indices = {0, 1, 2};
+  mock.SetVisibilityMaskForTesting(0, visibility_mask.Clone());
+  mock.SetVisibilityMaskForTesting(1, std::move(visibility_mask));
 
   LoadFileAndAwaitInitialization("test_visibility_mask_change_event");
   EnterSessionWithUserGestureOrFail();

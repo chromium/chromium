@@ -24,17 +24,19 @@ bool PathContainsString(const std::string& path, const std::string& s) {
   return path.contains(s);
 }
 
-device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
+[[maybe_unused]] device::mojom::XREye GetEyeForIndex(uint32_t index,
+                                                     uint32_t num_views) {
   DCHECK_LE(num_views, 2u);
 
   if (num_views == 1) {
     // Per WebXR spec, the eye for the first person observer view is none.
-    return device::XrEye::kNone;
+    return device::mojom::XREye::kNone;
   }
 
   // Per OpenXR spec, the left eye is at index 0 and the right eye at index 1
   // for the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO view configuration.
-  return (index == 0) ? device::XrEye::kLeft : device::XrEye::kRight;
+  return (index == 0) ? device::mojom::XREye::kLeft
+                      : device::mojom::XREye::kRight;
 }
 
 int GetOffsetMultiplierForIndex(uint32_t index) {
@@ -1384,10 +1386,12 @@ XrResult OpenXrTestHelper::GetVisibilityMask(
       "xrGetVisibilityMaskKHR visibility_mask_type must be "
       "VISIBLE_TRIANGLE_MESH");
 
-  std::optional<device::VisibilityMaskData> mask;
+  device::mojom::XRVisibilityMaskPtr mask;
   {
     base::AutoLock auto_lock(lock_);
-    mask = test_hook_->WaitGetVisibilityMask(view_index);
+    if (test_hook_) {
+      mask = test_hook_->WaitGetVisibilityMask(view_index);
+    }
   }
 
   if (!mask) {
@@ -1396,33 +1400,35 @@ XrResult OpenXrTestHelper::GetVisibilityMask(
     return XR_SUCCESS;
   }
 
-  visibility_mask->vertexCountOutput = mask->vertices.size() / 2;
-  visibility_mask->indexCountOutput = mask->indices.size();
+  visibility_mask->vertexCountOutput = mask->vertices.size();
+  visibility_mask->indexCountOutput = mask->unvalidated_indices.size();
 
   if (visibility_mask->vertexCapacityInput > 0) {
+    RETURN_IF(visibility_mask->vertexCapacityInput <
+                  visibility_mask->vertexCountOutput,
+              XR_ERROR_SIZE_INSUFFICIENT,
+              "xrGetVisibilityMaskKHR vertex buffer too small");
     // SAFETY: Test-only implementation of a C-Style API that thus has to
     // provide arrays as a pointer and a size. The sole callers are our own
     // product/test code.
     auto vertices = UNSAFE_BUFFERS(base::span(
-        visibility_mask->vertices, visibility_mask->vertexCapacityInput));
-    RETURN_IF(vertices.size() < visibility_mask->vertexCountOutput,
-              XR_ERROR_SIZE_INSUFFICIENT,
-              "xrGetVisibilityMaskKHR vertex buffer too small");
-    for (size_t i = 0; i < visibility_mask->vertexCountOutput; i++) {
-      vertices[i] = {mask->vertices[i * 2], mask->vertices[i * 2 + 1]};
-    }
+        visibility_mask->vertices, visibility_mask->vertexCountOutput));
+    std::transform(
+        mask->vertices.begin(), mask->vertices.end(), vertices.begin(),
+        [](const gfx::PointF& pt) { return XrVector2f{pt.x(), pt.y()}; });
   }
 
   if (visibility_mask->indexCapacityInput > 0) {
+    RETURN_IF(
+        visibility_mask->indexCapacityInput < visibility_mask->indexCountOutput,
+        XR_ERROR_SIZE_INSUFFICIENT,
+        "xrGetVisibilityMaskKHR index buffer too small");
     // SAFETY: Test-only implementation of a C-Style API that thus has to
     // provide arrays as a pointer and a size. The sole callers are our own
     // product/test code.
     auto indices = UNSAFE_BUFFERS(base::span(
-        visibility_mask->indices, visibility_mask->indexCapacityInput));
-    RETURN_IF(indices.size() < visibility_mask->indexCountOutput,
-              XR_ERROR_SIZE_INSUFFICIENT,
-              "xrGetVisibilityMaskKHR index buffer too small");
-    indices.copy_from_nonoverlapping(mask->indices);
+        visibility_mask->indices, visibility_mask->indexCountOutput));
+    indices.copy_from_nonoverlapping(mask->unvalidated_indices);
   }
 
   return XR_SUCCESS;

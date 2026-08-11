@@ -180,11 +180,11 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
 
       // Validate that each frame is only seen once for each eye.
       DLOG(ERROR) << "Frame id: " << frame_id;
-      if (data.eye == device::XrEye::kLeft) {
+      if (data.eye == device::mojom::XREye::kLeft) {
         ASSERT_TRUE(seen_left.find(frame_id) == seen_left.end())
             << "Frame for left eye submitted more than once";
         seen_left.insert(frame_id);
-      } else if (data.eye == device::XrEye::kRight) {
+      } else if (data.eye == device::mojom::XREye::kRight) {
         ASSERT_TRUE(seen_right.find(frame_id) == seen_right.end())
             << "Frame for right eye submitted more than once";
         seen_right.insert(frame_id);

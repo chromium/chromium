@@ -4,6 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# TODO(https://crbug.com/544795244): Investigate making this target testonly.
 mojom("test_mojom") {
   sources = [ "browser_test_interfaces.mojom" ]
 
@@ -34,10 +35,6 @@ mojom("test_mojom") {
           cpp = "::device::ControllerFrameData"
         },
         {
-          mojom = "device_test.mojom.XRVisibilityMask"
-          cpp = "::device::VisibilityMaskData"
-        },
-        {
           mojom = "device_test.mojom.ControllerRole"
           cpp = "::device::ControllerRole"
         },
@@ -48,7 +45,6 @@ mojom("test_mojom") {
         "//device/vr/public/mojom/test/device_config.h",
         "//device/vr/public/mojom/test/layer_data.h",
         "//device/vr/public/mojom/test/view_data.h",
-        "//device/vr/public/mojom/test/visibility_mask.h",
       ]
       traits_public_deps = [
         ":vr_public_test_typemaps",
@@ -71,7 +67,6 @@ component("vr_public_test_typemaps") {
     "layer_data.cc",
     "layer_data.h",
     "view_data.h",
-    "visibility_mask.h",
   ]
 
   deps = [

@@ -5,6 +5,7 @@
 module device_test.mojom;
 
 import "device/vr/public/mojom/openxr_interaction_profile_type.mojom";
+import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
@@ -14,12 +15,6 @@ struct Color {
   uint8 g;
   uint8 b;
   uint8 a;
-};
-
-enum Eye {
-  LEFT = 1,
-  RIGHT = 2,
-  NONE = 3
 };
 
 enum LayerType {
@@ -38,7 +33,7 @@ struct LayerData {
 
 struct ViewData {
   Color color;
-  Eye eye;
+  device.mojom.XREye eye;
   gfx.mojom.Rect viewport;
 };
 
@@ -84,13 +79,6 @@ enum EventType {
 struct EventData {
   EventType type = kNoEvent;
   device.mojom.OpenXrInteractionProfileType interaction_profile = kInvalid;
-};
-
-// A simplified version of the device::mojom::XRVisibilityMask, because we only
-// need a handful of points to prove that things work.
-struct XRVisibilityMask {
-  array<float, 6> vertices;
-  array<uint32, 3> indices;
 };
 
 // Tests may implement this, and register it to control behavior of devices for
@@ -139,7 +127,7 @@ interface XRTestHook {
 
   // Called by the OpenXR test to get visibility mask data.
   [Sync] WaitGetVisibilityMask(uint32 view_index)
-      => (XRVisibilityMask? mask);
+      => (device.mojom.XRVisibilityMask? mask);
 };
 
 // Interface exposed by IsolatedXRService to allow browser tests to hook VR APIs

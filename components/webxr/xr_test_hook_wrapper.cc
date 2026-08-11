@@ -105,16 +105,16 @@ bool XRTestHookWrapper::WaitGetCanCreateSession() {
   return true;
 }
 
-std::optional<device::VisibilityMaskData>
-XRTestHookWrapper::WaitGetVisibilityMask(uint32_t view_index) {
+device::mojom::XRVisibilityMaskPtr XRTestHookWrapper::WaitGetVisibilityMask(
+    uint32_t view_index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    std::optional<device::VisibilityMaskData> mask;
+    device::mojom::XRVisibilityMaskPtr mask;
     hook_->WaitGetVisibilityMask(view_index, &mask);
     return mask;
   }
 
-  return std::nullopt;
+  return nullptr;
 }
 
 void XRTestHookWrapper::AttachCurrentThread() {

@@ -132,11 +132,11 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
   std::vector<device::ViewData> expected_views;
   expected_views.push_back(
       {.color = red,
-       .eye = device::XrEye::kLeft,
+       .eye = device::mojom::XREye::kLeft,
        .viewport = {0, 0, view_dimension, view_dimension}});
   expected_views.push_back(
       {.color = red,
-       .eye = device::XrEye::kRight,
+       .eye = device::mojom::XREye::kRight,
        .viewport = {view_dimension, 0, view_dimension, view_dimension}});
 
   std::vector<device::LayerData> expected_layers;
@@ -194,11 +194,11 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
   std::vector<device::ViewData> expected_views;
   expected_views.push_back(
       {.color = red,
-       .eye = device::XrEye::kLeft,
+       .eye = device::mojom::XREye::kLeft,
        .viewport = {0, 0, view_dimension, view_dimension}});
   expected_views.push_back(
       {.color = red,
-       .eye = device::XrEye::kRight,
+       .eye = device::mojom::XREye::kRight,
        .viewport = {view_dimension, 0, view_dimension, view_dimension}});
 
   std::vector<device::LayerData> expected_layers;

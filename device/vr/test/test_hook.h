@@ -14,7 +14,7 @@
 #include "device/vr/public/mojom/test/controller_frame_data.h"
 #include "device/vr/public/mojom/test/device_config.h"
 #include "device/vr/public/mojom/test/view_data.h"
-#include "device/vr/public/mojom/test/visibility_mask.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -38,7 +38,7 @@ class VRTestHook {
   virtual ControllerFrameData WaitGetControllerData(uint32_t index) = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
   virtual bool WaitGetCanCreateSession() = 0;
-  virtual std::optional<VisibilityMaskData> WaitGetVisibilityMask(
+  virtual device::mojom::XRVisibilityMaskPtr WaitGetVisibilityMask(
       uint32_t view_index) = 0;
 
   virtual void AttachCurrentThread() = 0;

@@ -37,7 +37,7 @@ class XRTestHookWrapper : public device::VRTestHook {
   device::ControllerFrameData WaitGetControllerData(uint32_t index) override;
   device_test::mojom::EventData WaitGetEventData() override;
   bool WaitGetCanCreateSession() override;
-  std::optional<device::VisibilityMaskData> WaitGetVisibilityMask(
+  device::mojom::XRVisibilityMaskPtr WaitGetVisibilityMask(
       uint32_t view_index) override;
 
   void AttachCurrentThread() override;
