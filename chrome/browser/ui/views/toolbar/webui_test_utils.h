@@ -73,6 +73,38 @@ void RightClickExtensionButton(content::WebContents* web_contents,
 // Returns JavaScript expression selecting an element inside toolbar-app.
 std::string GetButtonAppJS(const std::string& selector);
 
+// Waits until an element matching `selector` inside toolbar-app is visible.
+bool WaitForButtonVisible(content::WebContents* web_contents,
+                          const std::string& selector);
+
+// Pins a button preference and waits for composition in WebUI toolbar.
+void PinButton(Browser* browser, views::WebView* web_view, const char* pref);
+
+// Pins Home button and waits for it to become visible in WebUI toolbar.
+WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser);
+
+// Returns JS expression selecting the inner icon/chip button element.
+std::string GetButtonIconJS(const std::string& selector);
+
+// JavaScript snippet that computes center x and y coordinates of `target`.
+extern const char kGetCoordinatesJS[];
+
+// Adds functions to `target` to mimic pointer capture functions. Note that real
+// pointer capture is lost on pointer up, but the returned functions cannot
+// handle that, so if that is important for a test, it must manually call
+// `releasePointerCapture('*')`.
+std::string AddMockPointerCaptureFunctions(const char* target);
+
+// Dispatches an event to a WebUI toolbar button.
+// `selector`: The CSS selector for the button element.
+// `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
+// `type`: The event type string (e.g. 'click', 'contextmenu').
+// `options`: JS object string for event options (e.g. "detail: 1, button: 2").
+std::string DispatchEventScript(const std::string& selector,
+                                const std::string& event_class,
+                                const std::string& type,
+                                const std::string& options = "");
+
 class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
  public:
   explicit AvatarButtonUpdateWaiter(AvatarToolbarButtonInterface* button);

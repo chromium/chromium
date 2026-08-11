@@ -56,8 +56,7 @@ IN_PROC_BROWSER_TEST_F(HomeButtonUiTest, ShowMenu) {
     menu_model = BrowserView::GetBrowserViewForBrowser(browser())
                      ->toolbar()
                      ->GetWebUIToolbarViewForTesting()
-                     ->GetHomeControlForTesting()
-                     ->GetMenuModelForTesting();
+                     ->home_control_.GetMenuModelForTesting();
   } else {
     menu_model = BrowserView::GetBrowserViewForBrowser(browser())
                      ->toolbar()

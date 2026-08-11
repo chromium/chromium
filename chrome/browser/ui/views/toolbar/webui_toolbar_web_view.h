@@ -341,7 +341,6 @@ class WebUIToolbarWebView
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();
-  WebUIHomeControl* GetHomeControlForTesting() { return &home_control_; }
   WebUIPerformanceInterventionControl*
   GetPerformanceInterventionControlForTesting() {
     return &performance_intervention_control_;
@@ -388,6 +387,10 @@ class WebUIToolbarWebView
                            BackForwardButtonsModifierClick);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarSurfaceSyncBrowserTest,
                            SetsDeadlineOnInit);
+  FRIEND_TEST_ALL_PREFIXES(WebUIHomeControlInteractiveUiTest,
+                           LongPressHomeButton);
+  FRIEND_TEST_ALL_PREFIXES(HomeButtonUiTest, ShowMenu);
+  friend class WebUIHomeControlTestBase;
   friend class WebUIToolbarWebViewTestBase;
   friend class WebUIToolbarWebViewBrowserTest;
   friend class WebUIToolbarWebViewInteractiveUiTest;
