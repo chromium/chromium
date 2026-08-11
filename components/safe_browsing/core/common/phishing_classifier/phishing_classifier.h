@@ -20,7 +20,7 @@
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -73,7 +73,7 @@ class PhishingClassifier {
   void set_scorer(Scorer* scorer);
 #endif
 
-  // Begins the phishing classification process for the given URL and bitmap.
+  // Begins the phishing classification process for the given URL and image.
   // This method cancels any pending classifications before starting a new one.
   //
   // To avoid blocking the current sequence for too long, phishing
@@ -84,7 +84,7 @@ class PhishingClassifier {
   // It is an error to call BeginClassification if the classifier is not yet
   // ready.
   virtual void BeginClassification(const GURL& url,
-                                   const SkBitmap& bitmap,
+                                   const gfx::Image& image,
                                    DoneCallback callback);
 
   // Cancels any classification that is in progress.  It is an error to call
@@ -103,7 +103,7 @@ class PhishingClassifier {
 
   // Internal helper to begin classification without resetting state.
   void BeginClassificationInternal(const GURL& url,
-                                   const SkBitmap& bitmap,
+                                   const gfx::Image& image,
                                    DoneCallback done_callback);
 
  private:
@@ -144,7 +144,7 @@ class PhishingClassifier {
   void Clear();
 
   // State for any in-progress extraction.
-  SkBitmap bitmap_;
+  gfx::Image image_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;
 

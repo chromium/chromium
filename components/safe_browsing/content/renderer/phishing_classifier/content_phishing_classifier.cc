@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing {
 
@@ -94,7 +95,8 @@ void ContentPhishingClassifier::OnPlaybackDone(
     std::unique_ptr<SkBitmap> bitmap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bitmap) {
-    BeginClassificationInternal(classification_url, *bitmap,
+    BeginClassificationInternal(classification_url,
+                                gfx::Image::CreateFrom1xBitmap(*bitmap),
                                 std::move(callback));
   } else {
     RunFailureCallback(std::move(callback), Result::kVisualExtractionFailed);

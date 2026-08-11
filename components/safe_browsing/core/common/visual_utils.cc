@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing::visual_utils {
 
@@ -29,7 +30,7 @@ namespace {
 
 // WARNING: The following parameters are highly privacy and performance
 // sensitive. These should not be changed without thorough review.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const int kPHashDownsampleWidth = 108;
 const int kPHashDownsampleHeight = 192;
 const int kMinWidthForVisualFeatures = 258;
@@ -42,10 +43,10 @@ const int kMinHeightForVisualFeatures = 576;
 #endif
 const int kPHashBlockSize = 6;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Parameters chosen to ensure privacy is preserved by visual features.
 const float kMaxZoomForVisualFeatures = 2.0;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 int GetPHashDownsampleWidth() {
   if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
@@ -202,7 +203,7 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
   return target;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
                                                         bool is_off_the_record,
                                                         gfx::Size size) {
@@ -225,12 +226,18 @@ CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
     return CanExtractVisualFeaturesResult::kBelowMinFrame;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (zoom_level > kMaxZoomForVisualFeatures) {
     return CanExtractVisualFeaturesResult::kAboveZoomLevel;
   }
 #endif
   return CanExtractVisualFeaturesResult::kCanExtractVisualFeatures;
+}
+
+std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const gfx::Image& image) {
+  auto features = std::make_unique<VisualFeatures>();
+  GetBlurredImage(image.AsBitmap(), features->mutable_image());
+  return features;
 }
 
 std::unique_ptr<VisualFeatures> ExtractVisualFeatures(

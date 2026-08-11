@@ -7,4 +7,5 @@ include_rules = [
   "+third_party/smhasher",
   "+ui/base/page_transition_types.h",
   "+ui/gfx/geometry",
+  "+ui/gfx/image/image.h",
 ]

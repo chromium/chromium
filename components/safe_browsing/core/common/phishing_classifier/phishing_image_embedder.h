@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing {
 class Scorer;
@@ -52,7 +52,7 @@ class PhishingImageEmbedder {
   void set_scorer(Scorer* scorer);
 #endif
 
-  // Begins the image embedding process for the given bitmap.
+  // Begins the image embedding process for the given image.
   //
   // This begins the feature extraction used to ultimately produce a 1-D feature
   // vector that is to be appended to the `ImageFeatureEmbedding` message that
@@ -61,12 +61,13 @@ class PhishingImageEmbedder {
   // This method is the direct entry point for platforms where page snapshots
   // are captured natively outside of Blink (e.g. iOS) as well as unit tests.
   // In Content/Blink, `ContentPhishingImageEmbedder` handles frame capture
-  // asynchronously before passing the resulting bitmap into this embedding
-  // engine (via `BeginImageEmbeddingInternal`).
+  // asynchronously before passing the resulting image into this embedding
+  // engine (but through `BeginImageEmbeddingInternal`).
   //
   // It is an error to call `BeginImageEmbedding` if the image embedder is not
   // yet ready.
-  virtual void BeginImageEmbedding(const SkBitmap& bitmap,
+
+  virtual void BeginImageEmbedding(const gfx::Image& image,
                                    bool can_extract_visual_features,
                                    DoneCallback callback);
 
@@ -81,7 +82,7 @@ class PhishingImageEmbedder {
   // Internal helper to begin image embedding without resetting state. Called
   // directly by `ContentPhishingImageEmbedder` on Content/Blink platforms and
   // by `BeginImageEmbedding` on other platforms (i.e. iOS).
-  void BeginImageEmbeddingInternal(const SkBitmap& bitmap,
+  void BeginImageEmbeddingInternal(const gfx::Image& image,
                                    bool can_extract_visual_features,
                                    DoneCallback done_callback);
 
@@ -113,7 +114,7 @@ class PhishingImageEmbedder {
   Scorer* GetScorer() const;
 
   // State for any in-progress image embedding extraction.
-  SkBitmap bitmap_;
+  gfx::Image image_;
   DoneCallback done_callback_;
 
 #if BUILDFLAG(IS_IOS)

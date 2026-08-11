@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -65,7 +66,7 @@ void PhishingClassifier::SetClientSideDetectionType(
 }
 
 void PhishingClassifier::BeginClassification(const GURL& url,
-                                             const SkBitmap& bitmap,
+                                             const gfx::Image& image,
                                              DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_ready());
@@ -73,12 +74,12 @@ void PhishingClassifier::BeginClassification(const GURL& url,
   // Clean up any pending classification so that we can start in a known state.
   CancelPendingClassification();
 
-  BeginClassificationInternal(url, bitmap, std::move(done_callback));
+  BeginClassificationInternal(url, image, std::move(done_callback));
 }
 
 void PhishingClassifier::BeginClassificationInternal(
     const GURL& url,
-    const SkBitmap& bitmap,
+    const gfx::Image& image,
     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_ready());
@@ -89,13 +90,16 @@ void PhishingClassifier::BeginClassificationInternal(
 
   done_callback_ = std::move(done_callback);
   classification_url_ = url;
-  bitmap_ = bitmap;
+  image_ = image;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&visual_utils::ExtractVisualFeatures, bitmap_),
+      base::BindOnce(
+          static_cast<std::unique_ptr<VisualFeatures> (*)(const SkBitmap&)>(
+              &visual_utils::ExtractVisualFeatures),
+          image_.AsBitmap()),
       base::BindOnce(&PhishingClassifier::OnVisualFeaturesExtracted,
                      weak_factory_.GetWeakPtr()));
 }
@@ -135,8 +139,8 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   Scorer* scorer = GetScorer();
   DCHECK(scorer);
   scorer->ApplyVisualTfLiteModel(
-      bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
-                              weak_factory_.GetWeakPtr(), std::move(verdict)));
+      image_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
+                             weak_factory_.GetWeakPtr(), std::move(verdict)));
 }
 
 void PhishingClassifier::OnVisualTfLiteModelDone(
@@ -156,9 +160,9 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
     Scorer* scorer = GetScorer();
     DCHECK(scorer);
     scorer->ApplyVisualTfLiteModelImageEmbedding(
-        bitmap_, base::BindOnce(
-                     &PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone,
-                     weak_factory_.GetWeakPtr(), std::move(verdict)));
+        image_, base::BindOnce(
+                    &PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone,
+                    weak_factory_.GetWeakPtr(), std::move(verdict)));
     return;
   }
 
@@ -216,8 +220,8 @@ void PhishingClassifier::EndTraceEvent() {
 void PhishingClassifier::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   done_callback_.Reset();
-  bitmap_.reset();
   visual_features_.reset();
+  image_ = gfx::Image();
 }
 
 }  // namespace safe_browsing

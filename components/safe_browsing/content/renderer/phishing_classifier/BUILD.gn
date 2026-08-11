@@ -54,6 +54,7 @@ if (safe_browsing_mode != 0) {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
       "//ui/base",
+      "//ui/gfx",
       "//ui/gfx/geometry",
       "//url",
       "//v8",

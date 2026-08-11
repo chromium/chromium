@@ -111,7 +111,7 @@ TEST_F(VisualUtilsTest, BlurImageWhite) {
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const int kExpectedBlurredWidth = 18;
   const int kExpectedBlurredHeight = 32;
 #else
@@ -136,7 +136,7 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
   }
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const int kExpectedBlurredWidth = 18;
   const int kExpectedBlurredHeight = 32;
 #else
@@ -160,7 +160,7 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 500, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   ASSERT_EQ(18, blurred.width());
   ASSERT_EQ(32, blurred.height());
   ASSERT_EQ(3u * 18u * 32u, blurred.data().size());

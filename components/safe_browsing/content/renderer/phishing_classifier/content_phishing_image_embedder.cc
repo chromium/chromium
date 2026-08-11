@@ -17,6 +17,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing {
 
@@ -78,7 +79,8 @@ void ContentPhishingImageEmbedder::OnPlaybackDone(
     std::unique_ptr<SkBitmap> bitmap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bitmap) {
-    BeginImageEmbeddingInternal(*bitmap, can_extract_visual_features,
+    BeginImageEmbeddingInternal(gfx::Image::CreateFrom1xBitmap(*bitmap),
+                                can_extract_visual_features,
                                 std::move(callback));
   } else {
     RunFailureCallback(std::move(callback), Result::kVisualExtractionFailed);

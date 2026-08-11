@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/gfx/image/image.h"
 
 namespace safe_browsing {
 
@@ -46,7 +47,7 @@ PhishingImageEmbedder::~PhishingImageEmbedder() {
 }
 
 void PhishingImageEmbedder::BeginImageEmbedding(
-    const SkBitmap& bitmap,
+    const gfx::Image& image,
     bool can_extract_visual_features,
     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -55,12 +56,12 @@ void PhishingImageEmbedder::BeginImageEmbedding(
   // Clean up any pending image embedding so that we can start in a known state.
   CancelPendingImageEmbedding();
 
-  BeginImageEmbeddingInternal(bitmap, can_extract_visual_features,
+  BeginImageEmbeddingInternal(image, can_extract_visual_features,
                               std::move(done_callback));
 }
 
 void PhishingImageEmbedder::BeginImageEmbeddingInternal(
-    const SkBitmap& bitmap,
+    const gfx::Image& image,
     bool can_extract_visual_features,
     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -70,14 +71,14 @@ void PhishingImageEmbedder::BeginImageEmbeddingInternal(
                     perfetto::NamedTrack::FromPointer(
                         "safe_browsing::PhishingImageEmbedder", this));
 
-  bitmap_ = bitmap;
+  image_ = image;
   done_callback_ = std::move(done_callback);
 
   Scorer* scorer = GetScorer();
   DCHECK(scorer);
 
   scorer->ApplyVisualTfLiteModelImageEmbedding(
-      bitmap_,
+      image_,
       base::BindOnce(&PhishingImageEmbedder::OnImageEmbeddingDone,
                      weak_factory_.GetWeakPtr(), can_extract_visual_features));
 }
@@ -107,7 +108,10 @@ void PhishingImageEmbedder::OnImageEmbeddingDone(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&visual_utils::ExtractVisualFeatures, bitmap_),
+        base::BindOnce(
+            static_cast<std::unique_ptr<VisualFeatures> (*)(const SkBitmap&)>(
+                &visual_utils::ExtractVisualFeatures),
+            image_.AsBitmap()),
         base::BindOnce(&PhishingImageEmbedder::OnVisualFeaturesExtracted,
                        weak_factory_.GetWeakPtr(),
                        std::move(image_feature_embedding)));
@@ -143,7 +147,7 @@ void PhishingImageEmbedder::RunFailureCallback(Result result) {
 void PhishingImageEmbedder::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   done_callback_.Reset();
-  bitmap_.reset();
+  image_ = gfx::Image();
 }
 
 }  // namespace safe_browsing

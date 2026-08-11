@@ -33,6 +33,7 @@ source_set("phishing_classifier") {
     "//third_party/tflite:tflite_public_headers",
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",
+    "//ui/gfx",
     "//url",
   ]
 }
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
     "//url",
   ]
 }
