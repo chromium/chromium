@@ -436,6 +436,10 @@ class LensOverlayController : public OverlayBaseController,
   // on the live page.
   void ReshowOverlay() override;
 
+  // OverlayBaseController overrides allowed for testing:
+  bool IsResultsSidePanelShowing() override;
+  bool ShouldWaitForSidePanelReflow() override;
+
  private:
   // Data class for constructing overlay and storing overlay state for
   // kSuspended state.
@@ -598,7 +602,6 @@ class LensOverlayController : public OverlayBaseController,
   bool CoBrowsePanelWithLensOverlayEnabled() const;
 
   // OverlayBaseController overrides:
-  bool IsResultsSidePanelShowing() override;
   void RequestSyncClose(DismissalSource source) override;
   GURL GetInitialURL() override;
   void NotifyIsOverlayShowing(bool is_showing) override;

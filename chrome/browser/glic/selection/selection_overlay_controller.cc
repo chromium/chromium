@@ -44,6 +44,8 @@ std::ostream& operator<<(std::ostream& os, OverlayBaseController::State value) {
       return os << "kOff";
     case OverlayBaseController::State::kClosingOpenedSidePanel:
       return os << "kClosingOpenedSidePanel";
+    case OverlayBaseController::State::kWaitingForOpeningSidePanelReflow:
+      return os << "kWaitingForOpeningSidePanelReflow";
     case OverlayBaseController::State::kScreenshot:
       return os << "kScreenshot";
     case OverlayBaseController::State::kStartingWebUI:

@@ -1377,6 +1377,10 @@ bool LensOverlayController::ShouldCloseSidePanel() {
   return true;
 }
 
+bool LensOverlayController::ShouldWaitForSidePanelReflow() {
+  return CoBrowsePanelWithLensOverlayEnabled();
+}
+
 bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
   return omnibox::kAskGCoBrowseWithVisualSelection.Get() &&
          invocation_source_ ==
@@ -1506,6 +1510,9 @@ void LensOverlayController::FinishedWaitingForReflow(
   if (state_ == State::kClosingOpenedSidePanel) {
     lens::RecordTimeToCloseOpenedSidePanel(base::TimeTicks::Now() -
                                            reflow_start_time);
+  }
+  if (state_ == State::kClosingOpenedSidePanel ||
+      state_ == State::kWaitingForOpeningSidePanelReflow) {
     OverlayBaseController::FinishedWaitingForReflow(reflow_start_time);
   }
 }

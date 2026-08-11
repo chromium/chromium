@@ -101,7 +101,8 @@ bool OverlayBaseController::IsOverlayActive() const {
 
 bool OverlayBaseController::IsOverlayInitializing() {
   return state_ == State::kStartingWebUI || state_ == State::kScreenshot ||
-         state_ == State::kClosingOpenedSidePanel;
+         state_ == State::kClosingOpenedSidePanel ||
+         state_ == State::kWaitingForOpeningSidePanelReflow;
 }
 
 bool OverlayBaseController::IsOverlayClosing() {
@@ -607,13 +608,24 @@ void OverlayBaseController::ShowModalUI() {
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_ui->IsSidePanelShowing() && ShouldCloseSidePanel() &&
-      !IsResultsSidePanelShowing()) {
+  // 1. Determine the target state based on side panel conditions.
+  if (!side_panel_ui->IsSidePanelShowing()) {
+    state_ = State::kScreenshot;
+  } else if (ShouldCloseSidePanel() && !IsResultsSidePanelShowing()) {
     // Close the currently opened side panel synchronously if it's not the Lens
     // panel. Postpone the screenshot for a fixed time to allow reflow.
     state_ = State::kClosingOpenedSidePanel;
     side_panel_ui->Close(SidePanelEntryHideReason::kSidePanelClosed,
                          /*suppress_animations=*/true);
+  } else if (ShouldWaitForSidePanelReflow()) {
+    state_ = State::kWaitingForOpeningSidePanelReflow;
+  } else {
+    state_ = State::kScreenshot;
+  }
+
+  // 2. Execute the action corresponding to the state.
+  if (state_ == State::kClosingOpenedSidePanel ||
+      state_ == State::kWaitingForOpeningSidePanelReflow) {
     base::SingleThreadTaskRunner::GetCurrentDefault()
         ->PostNonNestableDelayedTask(
             FROM_HERE,
@@ -621,7 +633,6 @@ void OverlayBaseController::ShowModalUI() {
                            weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
             kReflowWaitTimeout);
   } else {
-    state_ = State::kScreenshot;
     content::RenderWidgetHostView* view = tab_->GetContents()
                                               ->GetPrimaryMainFrame()
                                               ->GetRenderViewHost()
@@ -637,12 +648,14 @@ void OverlayBaseController::ShowModalUI() {
   }
 }
 
+bool OverlayBaseController::ShouldWaitForSidePanelReflow() {
+  return false;
+}
+
 void OverlayBaseController::FinishedWaitingForReflow(
     base::TimeTicks reflow_start_time) {
-  if (state_ == State::kClosingOpenedSidePanel) {
-    // This path is invoked after the user invokes the overlay, but we needed
-    // to close the side panel before taking a screenshot. The Side panel is
-    // now closed so we can now take the screenshot of the page.
+  if (state_ == State::kClosingOpenedSidePanel ||
+      state_ == State::kWaitingForOpeningSidePanelReflow) {
     state_ = State::kScreenshot;
     StartScreenshotFlow();
   }
