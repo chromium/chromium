@@ -43,7 +43,7 @@ suite('AppearanceMenuElement', () => {
     };
     await microtasksFinished();
 
-    const selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
+    const selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
         item => item.selected);
     assertEquals(1, selectedItems.length, 'selected');
     assertEquals(yellowTheme, selectedItems[0]!.data, 'data');
@@ -75,7 +75,7 @@ suite('AppearanceMenuElement', () => {
       await microtasksFinished();
 
       assertEquals(testTheme, calledTheme);
-      const selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
+      const selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
           item => item.selected);
       assertEquals(1, selectedItems.length);
       assertEquals(testTheme, selectedItems[0]!.data);
@@ -92,7 +92,7 @@ suite('AppearanceMenuElement', () => {
   test('restores saved color option', async () => {
     const color = chrome.readingMode.yellowTheme;
     const startingSelected =
-        appearanceMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertNotEquals(color, startingSelected?.data);
 
     appearanceMenu.settingsPrefs = {
@@ -102,14 +102,14 @@ suite('AppearanceMenuElement', () => {
     await microtasksFinished();
 
     const newSelected =
-        appearanceMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertEquals(color, newSelected?.data);
     assertNotEquals(startingSelected?.data, newSelected?.data);
   });
 
   test('does nothing if saved color is the same', async () => {
     const startingSelected =
-        appearanceMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
 
     appearanceMenu.settingsPrefs = {
       ...TEST_RANDOM_VALUE_SETTINGS,
@@ -118,7 +118,7 @@ suite('AppearanceMenuElement', () => {
     await microtasksFinished();
 
     const newSelected =
-        appearanceMenu.$.menu.menuGroups[0]!.items.find(item => item.selected);
+        appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertEquals(startingSelected?.data, newSelected?.data);
   });
 
@@ -127,7 +127,7 @@ suite('AppearanceMenuElement', () => {
         chrome.readingMode.inImmersiveOverlayPresentationState;
     await microtasksFinished();
 
-    const selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
+    const selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
         item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(
@@ -160,7 +160,7 @@ suite('AppearanceMenuElement', () => {
 
     assertEquals(0, closeAllMenusCount);
     assertEquals(immersiveState, appearanceMenu.presentationState);
-    let selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
+    let selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
         item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(immersiveState, selectedItems[0]!.data);
@@ -171,7 +171,7 @@ suite('AppearanceMenuElement', () => {
 
     assertEquals(0, closeAllMenusCount);
     assertEquals(sidePanelState, appearanceMenu.presentationState);
-    selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
+    selectedItems = appearanceMenu.$.menu.menuGroups[0]!.items.filter(
         item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(sidePanelState, selectedItems[0]!.data);

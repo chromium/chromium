@@ -107,21 +107,21 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   ];
 
   protected accessor groups_: Array<MenuGroup<number>> = [
-    {
-      header: {
-        title: loadTimeData.getString('themeTitle'),
-        separator: false,
-      },
-      items: this.colorOptions_,
-      eventName: ToolbarEvent.THEME,
-    },
-    {
+     {
       header: {
         title: loadTimeData.getString('viewLabel'),
-        separator: true,
+        separator: false,
       },
       items: this.viewOptions_,
       eventName: ToolbarEvent.PRESENTATION_CHANGE,
+    },
+    {
+      header: {
+        title: loadTimeData.getString('themeTitle'),
+        separator: true,
+      },
+      items: this.colorOptions_,
+      eventName: ToolbarEvent.THEME,
     },
   ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
