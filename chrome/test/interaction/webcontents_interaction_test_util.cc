@@ -59,6 +59,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace content {
 class RenderFrameHost;
@@ -83,12 +85,13 @@ content::WebContents* GetWebContents(BrowserWindowInterface* browser,
 // Will evaluate and return `on_not_found` if 'err?.selector' is valid.
 // Will evaluate and return `on_found` if 'el' is valid.
 std::string GetExistsQuery(const char* on_not_found, const char* on_found) {
-  return base::StringPrintf(R"((el, err) => {
+  return base::StringPrintf(
+      R"((el, err) => {
         if (err?.selector) return %s;
         if (err) throw err;
         return %s;
       })",
-                            on_not_found, on_found);
+      on_not_found, on_found);
 }
 
 // Does `StateChange` validation, including inferring the actual type for
@@ -402,6 +405,44 @@ std::string CreateDeepQuery(
          return func(el, err);
        })",
       selectors.c_str(), function.c_str());
+}
+
+std::string CreateElementQuery(ui::TrackedElementWebUI* element,
+                               const std::string& function) {
+  DCHECK(!function.empty());
+  return base::StringPrintf(
+      R"(function() {
+         function fetchElement(primary, secondary) {
+           const manager = window._trackedElementManager;
+           if (!manager) {
+             throw new Error('No TrackedElementManager instance.');
+           }
+           const trackedElement = manager.getElementWithId({
+             nativeIdentifier: primary,
+             secondaryIdentifier: secondary
+           });
+           if (!trackedElement || !trackedElement.element) {
+             throw new Error(
+               'Cannot find element (' + primary + ', ' + secondary + ')');
+           }
+           return trackedElement.element;
+         }
+
+         let el, err;
+         try {
+           el = fetchElement('%s', '%s');
+         } catch (error) {
+           err = error;
+         }
+
+         const func = (%s);
+         if (err && func.length <= 1) {
+           throw err;
+         }
+         return func(el, err);
+       })",
+      element->identifier().GetName(), element->GetSecondaryIdentifier(),
+      function);
 }
 
 }  // namespace
@@ -759,22 +800,12 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
     const std::string& function,
     std::string* error_message) {
   CHECK(is_page_loaded());
-  auto result = EvalJsLocal(web_contents(), function);
-  if (!result.is_ok()) {
-    if (error_message) {
-      *error_message = result.ExtractError();
-      return base::Value();
-    } else {
-      NOTREACHED() << "Uncaught JS exception: " << result;
-    }
-  }
-
-  return std::move(result).TakeValue();
+  return Evaluate(web_contents(), function, error_message);
 }
 
 void WebContentsInteractionTestUtil::Execute(const std::string& function) {
   CHECK(is_page_loaded());
-  ExecuteJsLocal(web_contents(), function);
+  Execute(web_contents(), function);
 }
 
 void WebContentsInteractionTestUtil::SendEventOnStateChange(
@@ -809,10 +840,27 @@ base::Value WebContentsInteractionTestUtil::EvaluateAt(
   return Evaluate(full_query, error_message);
 }
 
+// static
+base::Value WebContentsInteractionTestUtil::EvaluateAt(
+    ui::TrackedElementWebUI* element,
+    const std::string& function,
+    std::string* error_message) {
+  const std::string full_query = CreateElementQuery(element, function);
+  return Evaluate(element->handler()->web_contents(), full_query,
+                  error_message);
+}
+
 void WebContentsInteractionTestUtil::ExecuteAt(const DeepQuery& where,
                                                const std::string& function) {
   const std::string full_query = CreateDeepQuery(where, function);
   Execute(full_query);
+}
+
+// static
+void WebContentsInteractionTestUtil::ExecuteAt(ui::TrackedElementWebUI* element,
+                                               const std::string& function) {
+  const std::string full_query = CreateElementQuery(element, function);
+  Execute(element->handler()->web_contents(), full_query);
 }
 
 bool WebContentsInteractionTestUtil::Exists(const std::string& selector) {
@@ -993,6 +1041,34 @@ void WebContentsInteractionTestUtil::OnPollEvent(
     ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
         current_element_.get(), event);
   }
+}
+
+// static
+base::Value WebContentsInteractionTestUtil::Evaluate(
+    content::WebContents* contents,
+    const std::string& function,
+    std::string* error_message) {
+  CHECK(contents);
+  CHECK(contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  auto result = EvalJsLocal(contents, function);
+  if (!result.is_ok()) {
+    if (error_message) {
+      *error_message = result.ExtractError();
+      return base::Value();
+    } else {
+      NOTREACHED() << "Uncaught JS exception: " << result;
+    }
+  }
+
+  return std::move(result).TakeValue();
+}
+
+// static
+void WebContentsInteractionTestUtil::Execute(content::WebContents* contents,
+                                             const std::string& function) {
+  CHECK(contents);
+  CHECK(contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  ExecuteJsLocal(contents, function);
 }
 
 class TabWebContentsInteractionTestUtil::NewTabWatcher

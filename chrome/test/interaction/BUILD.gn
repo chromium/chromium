@@ -54,6 +54,7 @@ if (!is_android) {
       "//ui/events",
       "//ui/views:test_support",
       "//ui/views/controls/webview",
+      "//ui/webui/tracked_element",
     ]
   }
 

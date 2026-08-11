@@ -26,6 +26,14 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}
+
+namespace ui {
+class TrackedElementWebUI;
+}
+
 namespace views {
 class WebView;
 }
@@ -378,6 +386,11 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
                          const std::string& function,
                          std::string* error_message = nullptr);
 
+  // As EvaluateAt() above, but uses `element` as its target.
+  static base::Value EvaluateAt(ui::TrackedElementWebUI* element,
+                                const std::string& function,
+                                std::string* error_message = nullptr);
+
   // Same as EvaluateAt except that `function` is executed, the return value is
   // discarded, and no effort is made to wait for or return the result.
   //
@@ -386,6 +399,10 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   // an error during execution it will not immediately crash the test (though it
   // should still be visible in the logs).
   void ExecuteAt(const DeepQuery& where, const std::string& function);
+
+  // As ExecuteAt() above, but uses `element` as its target.
+  static void ExecuteAt(ui::TrackedElementWebUI* element,
+                        const std::string& function);
 
   // The following are convenience methods that do not use the Shadow DOM and
   // allow only a single selector (behavior if the selected node has a shadow
@@ -438,6 +455,15 @@ class WebContentsInteractionTestUtil : protected content::WebContentsObserver {
   void MaybeSendPaintEvent();
 
   void OnPollEvent(Poller* poller, ui::CustomElementEventType event);
+
+  // As `Evaluate()` above, but using `contents`.
+  static base::Value Evaluate(content::WebContents* contents,
+                              const std::string& function,
+                              std::string* error_msg = nullptr);
+
+  // As `Execute()` above, but using `contents`.
+  static void Execute(content::WebContents* contents,
+                      const std::string& function);
 
   // Dictates the identifier that will be assigned to the new
   // TrackedElementWebContents created for the target WebContents on the next

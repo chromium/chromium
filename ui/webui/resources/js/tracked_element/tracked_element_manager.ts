@@ -234,18 +234,23 @@ function computeIsVisible(element: Element): boolean {
   return rect.height > 0 && rect.width > 0;
 }
 
-export class TrackedElementManager {
-  private static instance_: TrackedElementManager|null = null;
+declare global {
+  // This is ugly but required for test code to have access to the instance.
+  interface Window {
+    _trackedElementManager: TrackedElementManager|undefined;
+  }
+}
 
+export class TrackedElementManager {
   static getInstance(): TrackedElementManager {
-    if (TrackedElementManager.instance_ === null) {
-      TrackedElementManager.instance_ = new TrackedElementManager();
+    if (!window._trackedElementManager) {
+      window._trackedElementManager = new TrackedElementManager();
     }
-    return TrackedElementManager.instance_;
+    return window._trackedElementManager;
   }
 
-  static setInstance(instance: TrackedElementManager|null) {
-    TrackedElementManager.instance_ = instance;
+  static setInstance(instance: TrackedElementManager|undefined) {
+    window._trackedElementManager = instance;
   }
 
   private trackedElementHandler_: TrackedElementHandlerInterface;
