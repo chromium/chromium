@@ -88,8 +88,9 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAiShopping,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
      SuggestionType::kManageLoyaltyCard,
-     SuggestionType::kManageEnhancedAutofill, SuggestionType::kUndo,
-     SuggestionType::kViewPasswordDetails, SuggestionType::kPendingStateSignin,
+     SuggestionType::kManageEnhancedAutofill, SuggestionType::kRemoveAutofillAi,
+     SuggestionType::kUndo, SuggestionType::kViewPasswordDetails,
+     SuggestionType::kPendingStateSignin,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.
@@ -863,6 +864,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kPersonalContextNotice:
+    case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:

@@ -75,6 +75,13 @@ Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
       ElementsAre(ElementsAre(Field(&Suggestion::Text::value, label))));
 }
 
+auto HasLabels(auto&&... row_matchers) {
+  return Field("Suggestion::labels", &Suggestion::labels,
+               ElementsAre(ElementsAre(Field(
+                   "Suggestion::Text::value", &Suggestion::Text::value,
+                   std::forward<decltype(row_matchers)>(row_matchers)))...));
+}
+
 Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
   return ResultOf(
       "Suggestion::payload",
@@ -530,27 +537,60 @@ TEST_F(
 
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
-  ASSERT_GE(suggestions.size(), 2u);
 
-  const Suggestion::AutofillAiPayload* local_payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
-  ASSERT_TRUE(local_payload);
-  EXPECT_EQ(local_payload->guid, passport_local.guid());
-  ASSERT_EQ(suggestions[0].labels.size(), 1u);
-
-  const Suggestion::AutofillAiPayload* pc_payload =
-      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[1].payload);
-  ASSERT_TRUE(pc_payload);
-  EXPECT_EQ(pc_payload->guid, passport_personal_context.guid());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  ASSERT_EQ(suggestions[1].labels.size(), 2u);
-  ASSERT_EQ(suggestions[1].labels[1].size(), 1u);
-  EXPECT_EQ(suggestions[1].labels[1][0].value,
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
+  EXPECT_THAT(suggestions,
+              IdentityDocSuggestionsAre(
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_local.guid())),
+                        HasLabels(u"Passport · Jon Doe")),
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_personal_context.guid())),
+                        HasLabels(u"Passport · Harry Potter",
+                                  l10n_util::GetStringUTF16(
+                                      IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI)))));
 #else
-  ASSERT_EQ(suggestions[1].labels.size(), 1u);
+  EXPECT_THAT(suggestions,
+              IdentityDocSuggestionsAre(
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_local.guid())),
+                        HasLabels(u"Passport · Jon Doe")),
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_personal_context.guid())),
+                        HasLabels(u"Passport · Harry Potter"))));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_HideSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiHideSuggestion);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type = EntityInstance::RecordType::kPersonalContext,
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(AllOf(
+                  EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                   Suggestion::AutofillAiPayload(
+                                       passport_personal_context.guid())),
+                  ChildrenAre(EqualsSuggestion(
+                      SuggestionType::kRemoveAutofillAi,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+                      Suggestion::Icon::kClose,
+                      Suggestion::AutofillAiPayload(
+                          passport_personal_context.guid()))))));
+}
+#endif
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {
   EntityInstance passport_prefix_matches =

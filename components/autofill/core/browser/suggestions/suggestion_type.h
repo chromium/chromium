@@ -238,9 +238,13 @@ enum class SuggestionType {
   // Suggestion shown in the fetching state of AtMemory.
   kAtMemoryFetching = 97,
 
-  // Next ID: 98
+  // Option in the child submenu of an Autofill AI suggestion to remove this
+  // info.
+  kRemoveAutofillAi = 98,
 
-  kMaxValue = kAtMemoryFetching
+  // Next ID: 99
+
+  kMaxValue = kRemoveAutofillAi
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

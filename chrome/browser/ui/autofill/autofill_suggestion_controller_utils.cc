@@ -57,6 +57,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kManageEnhancedAutofill:
+    case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kUndo:

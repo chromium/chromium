@@ -93,6 +93,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kAccount";
     case Suggestion::Icon::kAndroidMessages:
       return "kAndroidMessages";
+    case Suggestion::Icon::kClose:
+      return "kClose";
     case Suggestion::Icon::kCode:
       return "kCode";
     case Suggestion::Icon::kDelete:

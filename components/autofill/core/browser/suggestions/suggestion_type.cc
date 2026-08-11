@@ -161,6 +161,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAtMemorySourceAttribution";
     case SuggestionType::kAtMemoryFetching:
       return "kAtMemoryFetching";
+    case SuggestionType::kRemoveAutofillAi:
+      return "kRemoveAutofillAi";
   }
   NOTREACHED();
 }

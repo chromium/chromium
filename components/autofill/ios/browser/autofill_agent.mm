@@ -679,6 +679,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kPasswordFieldByFieldFilling:
       case SuggestionType::kPendingStateSignin:
       case SuggestionType::kPersonalContextNotice:
+      case SuggestionType::kRemoveAutofillAi:
       case SuggestionType::kScanCreditCard:
       case SuggestionType::kSeePromoCodeDetails:
       case SuggestionType::kSeparator:

@@ -149,6 +149,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     // Generic icons start
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kAndroidMessages:
+    case Suggestion::Icon::kClose:
     case Suggestion::Icon::kCode:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
@@ -370,6 +371,7 @@ bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kComposeDisable:
@@ -455,6 +457,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                           ? kCreditCardIcon
                                           : kCreditCardOldIcon,
                                       kIconSize);
+    case Suggestion::Icon::kClose:
+      return ImageModelFromVectorIcon(vector_icons::kCloseIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kCode:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
                                           ? vector_icons::kCodeIcon

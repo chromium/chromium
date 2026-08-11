@@ -381,6 +381,7 @@ struct Suggestion {
     // Generic icons start
     kAccount,
     kAndroidMessages,
+    kClose,
     kCode,
     kDelete,
     kDevice,
@@ -540,6 +541,7 @@ struct Suggestion {
         return std::holds_alternative<Guid>(payload) ||
                std::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillAutofillAi:
+      case SuggestionType::kRemoveAutofillAi:
         return std::holds_alternative<AutofillAiPayload>(payload);
       case SuggestionType::kCreditCardEntry:
       case SuggestionType::kVirtualCreditCardEntry:

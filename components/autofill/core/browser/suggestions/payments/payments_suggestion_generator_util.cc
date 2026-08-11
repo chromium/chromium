@@ -1133,6 +1133,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kPersonalContextNotice:
+    case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
