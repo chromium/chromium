@@ -34,6 +34,7 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -76,6 +77,147 @@ GLSurfaceContextPair GetRealContextForVulkan() {
   if (context)
     *cached_context.get() = context->AsWeakPtr();
   return std::make_pair(std::move(surface), std::move(context));
+}
+
+scoped_refptr<gpu::SharedContextState> CreateSharedContextStateHelper(
+    AwVulkanContextProvider* vulkan_context_provider,
+    const AwGrContextOptionsProvider* gr_context_options_provider,
+    bool enable_vulkan,
+    gl::GLSurface* gl_surface,
+    GLSurfaceContextPair real_context) {
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  const bool is_angle =
+      !enable_vulkan && display->ext->b_EGL_ANGLE_external_context_and_surface;
+
+  scoped_refptr<gl::GLContext> gl_context;
+  gpu::GpuDriverBugWorkarounds workarounds(
+      GpuServiceWebView::GetInstance()
+          ->gpu_feature_info()
+          .enabled_gpu_driver_bug_workarounds);
+
+  // The SharedContextState expect to receive a GLSurface that was used to
+  // create the GLContext. In case of Vulkan, a GLContext is passed, but
+  // |gl_surface| is a AWGLSurface, which wraps the real GLSurface that was
+  // used to create a context.
+  scoped_refptr<gl::GLSurface> gl_surface_for_scs;
+  // If failed to create real context for vulkan, just fallback to using
+  // GLNonOwnedContext instead of crashing.
+  if (enable_vulkan && real_context.second) {
+    gl_context = std::move(real_context.second);
+    gl_surface_for_scs = std::move(real_context.first);
+  } else {
+    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    gl::GLContextAttribs attribs;
+    // For ANGLE EGL, we need to create ANGLE context from the current native
+    // EGL context and restore state of the native EGL context when releasing
+    // the ANGLE context.
+    attribs.angle_create_from_external_context = is_angle;
+
+    // By default client arrays are disabled as they are not supported by
+    // Chrome's IPC architecture. However, they are required for WebView's
+    // usage (in particular, for supporting complex clips).
+    attribs.allow_client_arrays = true;
+
+    // Skip validation when dcheck is off.
+#if DCHECK_IS_ON()
+    attribs.can_skip_validation = false;
+#else
+    attribs.can_skip_validation = true;
+#endif
+    gl_context =
+        gl::init::CreateGLContext(share_group.get(), gl_surface, attribs);
+    gl_context->MakeCurrent(gl_surface);
+    gl_surface_for_scs = gl_surface;
+  }
+
+  auto* share_group = gl_context->share_group();
+  // Context loss is checked and handled on RenderThread in
+  // HardwareRenderer::CrashOnContextLoss(), so no immediate OnContextLost
+  // callback handler is required here.
+  auto shared_context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, std::move(gl_surface_for_scs), std::move(gl_context),
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+      GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
+      vulkan_context_provider, /*dawn_context_provider=*/nullptr,
+      /*peak_memory_monitor=*/nullptr,
+      /*direct_rendering_display_compositor_enabled=*/false,
+      /*created_on_compositor_gpu_thread=*/false, gr_context_options_provider);
+  if (!enable_vulkan) {
+    shared_context_state->InitializeGL(
+        GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds,
+        GpuServiceWebView::GetInstance()->gpu_feature_info());
+  }
+
+  shared_context_state->InitializeSkia(
+      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds);
+
+  return shared_context_state;
+}
+
+scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
+    AwVulkanContextProvider* vulkan_context_provider,
+    const AwGrContextOptionsProvider* gr_context_options_provider,
+    bool enable_vulkan,
+    gl::GLSurface* gl_surface,
+    GLSurfaceContextPair real_context) {
+  static base::NoDestructor<base::WeakPtr<gpu::SharedContextState>>
+      cached_shared_context_state;
+
+  if (*cached_shared_context_state &&
+      !(*cached_shared_context_state)->context_lost()) {
+    auto* shared_context_state = cached_shared_context_state->get();
+    // Validate that the existing SharedContextState has the same properties
+    // we would use if creating a new one.
+    CHECK_EQ(shared_context_state->IsUsingGL(), !enable_vulkan);
+    CHECK_EQ(
+        shared_context_state->gr_context_type(),
+        GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type);
+    CHECK(!shared_context_state->use_virtualized_gl_contexts());
+    if (enable_vulkan) {
+      CHECK_EQ(shared_context_state->vk_context_provider(),
+               vulkan_context_provider);
+    } else {
+      gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+      const bool is_angle =
+          !enable_vulkan &&
+          display->ext->b_EGL_ANGLE_external_context_and_surface;
+      CHECK(shared_context_state->feature_info());
+      CHECK_EQ(shared_context_state->feature_info()->gl_version_info().is_angle,
+               is_angle);
+    }
+    return base::WrapRefCounted(shared_context_state);
+  }
+
+  // To avoid confusion of sharing the first WebView's gl_surface_ globally,
+  // we create an independent dummy surface for the SharedContextState.
+  scoped_refptr<gl::GLSurface> dummy_surface;
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  const bool is_angle =
+      !enable_vulkan && display->ext->b_EGL_ANGLE_external_context_and_surface;
+
+  if (enable_vulkan) {
+    if (real_context.first) {
+      dummy_surface =
+          base::MakeRefCounted<AwGLSurface>(display, real_context.first);
+    }
+  } else {
+    // SharedContextState only uses this as a default anchor surface, so
+    // a basic AwGLSurface is sufficient instead of AwGLSurfaceExternalStencil.
+    dummy_surface = base::MakeRefCounted<AwGLSurface>(display, is_angle);
+  }
+
+  if (dummy_surface) {
+    dummy_surface->Initialize(gl::GLSurfaceFormat());
+  }
+
+  scoped_refptr<gpu::SharedContextState> shared_context_state =
+      CreateSharedContextStateHelper(
+          vulkan_context_provider, gr_context_options_provider, enable_vulkan,
+          dummy_surface ? dummy_surface.get() : gl_surface,
+          std::move(real_context));
+
+  *cached_shared_context_state = shared_context_state->GetWeakPtr();
+  return shared_context_state;
 }
 
 }  // namespace
@@ -147,68 +289,17 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
   DCHECK(result);
 
-  scoped_refptr<gl::GLContext> gl_context;
-  gpu::GpuDriverBugWorkarounds workarounds(
-      GpuServiceWebView::GetInstance()
-          ->gpu_feature_info()
-          .enabled_gpu_driver_bug_workarounds);
-
-  // The SharedContextState expect to receive a GLSurface that was used to
-  // create the GLContext. In case of Vulkan, a GLContext is passed, but
-  // |gl_surface| is a AWGLSurface, which wraps the real GLSurface that was
-  // used to create a context.
-  scoped_refptr<gl::GLSurface> gl_surface_for_scs;
-  // If failed to create real context for vulkan, just fallback to using
-  // GLNonOwnedContext instead of crashing.
-  if (enable_vulkan_ && real_context.second) {
-    gl_context = std::move(real_context.second);
-    gl_surface_for_scs = std::move(real_context.first);
-  } else {
-    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
-    gl::GLContextAttribs attribs;
-    // For ANGLE EGL, we need to create ANGLE context from the current native
-    // EGL context and restore state of the native EGL context when releasing
-    // the ANGLE context.
-    attribs.angle_create_from_external_context = is_angle;
-
-    // By default client arrays are disabled as they are not supported by
-    // Chrome's IPC architecture. However, they are required for WebView's
-    // usage (in particular, for supporting complex clips).
-    attribs.allow_client_arrays = true;
-
-    // Skip validation when dcheck is off.
-#if DCHECK_IS_ON()
-    attribs.can_skip_validation = false;
-#else
-    attribs.can_skip_validation = true;
-#endif
-    gl_context = gl::init::CreateGLContext(share_group.get(), gl_surface_.get(),
-                                           attribs);
-    gl_context->MakeCurrent(gl_surface_.get());
-    gl_surface_for_scs = gl_surface_;
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewSingleSharedContextState)) {
+    shared_context_state_ = GetOrCreateSharedContextState(
+        vulkan_context_provider_, aw_gr_context_options_provider_.get(),
+        enable_vulkan_, gl_surface_.get(), std::move(real_context));
+    return;
   }
 
-  auto* share_group = gl_context->share_group();
-  // Context loss is checked and handled on RenderThread in
-  // HardwareRenderer::CrashOnContextLoss(), so no immediate OnContextLost
-  // callback handler is required here.
-  shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
-      share_group, std::move(gl_surface_for_scs), std::move(gl_context),
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
-      GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
-      vulkan_context_provider_, /*dawn_context_provider=*/nullptr,
-      /*peak_memory_monitor=*/nullptr,
-      /*direct_rendering_display_compositor_enabled=*/false,
-      /*created_on_compositor_gpu_thread=*/false,
-      aw_gr_context_options_provider_.get());
-  if (!enable_vulkan_) {
-    shared_context_state_->InitializeGL(
-        GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds,
-        GpuServiceWebView::GetInstance()->gpu_feature_info());
-  }
-
-  shared_context_state_->InitializeSkia(
-      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds);
+  shared_context_state_ = CreateSharedContextStateHelper(
+      vulkan_context_provider_, aw_gr_context_options_provider_.get(),
+      enable_vulkan_, gl_surface_.get(), std::move(real_context));
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>

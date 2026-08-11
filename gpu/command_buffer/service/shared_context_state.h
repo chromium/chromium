@@ -219,6 +219,9 @@ class GPU_GLES2_EXPORT SharedContextState
   std::optional<error::ContextLostReason> context_lost_reason() {
     return context_lost_reason_;
   }
+  base::WeakPtr<SharedContextState> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
   bool need_context_state_reset() const { return need_context_state_reset_; }
   void set_need_context_state_reset(bool reset) {
     need_context_state_reset_ = reset;

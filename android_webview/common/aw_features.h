@@ -91,6 +91,7 @@ extern const base::FeatureParam<base::TimeDelta>
     kWebViewRendererKeepAliveDuration;
 BASE_DECLARE_FEATURE(kWebViewSaveStateIncludeHeaders);
 BASE_DECLARE_FEATURE(kWebViewSetDownloadFaviconsEnabled);
+BASE_DECLARE_FEATURE(kWebViewSingleSharedContextState);
 BASE_DECLARE_FEATURE(kWebViewSkipInterceptsForPrefetch);
 BASE_DECLARE_FEATURE(kWebViewStaticMethodsNotTriggerStartup);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);

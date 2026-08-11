@@ -356,6 +356,11 @@ const base::FeatureParam<base::TimeDelta> kWebViewRendererKeepAliveDuration{
     &kWebViewRendererKeepAlive, "webview_renderer_keep_alive_duration",
     base::Days(1000)};
 
+// Enables using a single shared gpu::SharedContextState across all
+// OutputSurfaceProviderWebView instances.
+BASE_FEATURE(kWebViewSingleSharedContextState,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, navigation headers will be saved and restored as part
 // of saved state for WebView.
 BASE_FEATURE(kWebViewSaveStateIncludeHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
