@@ -632,6 +632,24 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
 
+    if (!isMac) {
+      sendUndoShortcutKey(viewerToolbar);
+      mockPlugin.clearMessages();
+
+      keyDownOn(viewerToolbar, 0, ['ctrl', 'shift'], 'z');
+      chrome.test.assertTrue(
+          mockPlugin.findMessage('annotationRedo') === undefined);
+      // TODO(crbug.com/544795249): Ctrl+Shift+Z should trigger redo on non-Mac
+      // platforms. The counts below should be 2. This test case should undo
+      // again and the next redo below should increment the count to 3.
+      mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+
+      keyDownOn(viewerToolbar, 0, ['ctrl', 'shift'], 'Z');
+      chrome.test.assertTrue(
+          mockPlugin.findMessage('annotationRedo') === undefined);
+      mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 1);
+    }
+
     Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
