@@ -59,6 +59,26 @@ class InteractiveBrowserTestPrivate
   static std::string DeepQueryToString(
       const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 
+  // Sets the max depth in the DOM tree to produce when dumping nodes.
+  // Pass null for no limit. Default is kDefaultMaxDomDepth. This prevents it
+  // from taking too long on error or when making an explicit
+  // `DumpWebContents()` call.
+  static constexpr int kDefaultMaxDomDepth = 25;
+  void set_max_dom_depth(std::optional<int> max_dom_depth) {
+    max_dom_depth_ = max_dom_depth;
+  }
+
+  // Sets the max number of nodes to dump from a DOM tree. Pass null for no
+  // limit. Default is kDefaultMaxDomNodes. This prevents it from taking too
+  // long on error or when making an explicit `DumpWebContents()` call.
+  static constexpr int kDefaultMaxDomNodes = 1000;
+  void set_max_dom_nodes(std::optional<int> max_dom_nodes) {
+    max_dom_nodes_ = max_dom_nodes;
+  }
+
+  // Produces the JS parameter block to use when dumping DOM nodes.
+  std::string MakeDumpParams() const;
+
  protected:
   // views::test::internal::InteractiveTestPrivateFrameworkBase:
   void DoTestTearDown() override;
@@ -79,6 +99,9 @@ class InteractiveBrowserTestPrivate
   // Stores instrumented WebContents and WebUI.
   std::vector<std::unique_ptr<WebContentsInteractionTestUtil>>
       instrumented_web_contents_;
+
+  std::optional<int> max_dom_depth_ = kDefaultMaxDomDepth;
+  std::optional<int> max_dom_nodes_ = kDefaultMaxDomNodes;
 };
 
 // This class wraps a `base::Value` in a wrapper that allows copying when

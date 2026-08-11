@@ -947,13 +947,15 @@ InteractiveBrowserWindowTestApi::DumpWebContents(
   return std::move(
       WithElement(
           web_contents,
-          [web_contents](ui::InteractionSequence* sequence,
-                         ui::TrackedElement* el) {
+          [this, web_contents](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* el) {
             std::string error_msg;
+            std::ostringstream oss;
             std::string function = base::StringPrintf(
                 "function() { %s; return dumpHtmlContent(document.body, "
-                "document.activeElement); }",
-                internal::InteractiveBrowserTestPrivate::kDumpElementsScript);
+                "document.activeElement, %s); }",
+                internal::InteractiveBrowserTestPrivate::kDumpElementsScript,
+                browser_test_impl().MakeDumpParams());
             base::Value result =
                 el->AsA<TrackedElementWebContents>()->owner()->Evaluate(
                     function, &error_msg);
@@ -976,8 +978,8 @@ InteractiveBrowserWindowTestApi::DumpWebContentsAt(
   return std::move(
       WithElement(
           web_contents,
-          [where, web_contents](ui::InteractionSequence* sequence,
-                                ui::TrackedElement* el) {
+          [this, where, web_contents](ui::InteractionSequence* sequence,
+                                      ui::TrackedElement* el) {
             std::string error_msg;
             const auto function = base::StringPrintf(
                 R"(
@@ -986,10 +988,11 @@ InteractiveBrowserWindowTestApi::DumpWebContentsAt(
                 throw err;
               }
               %s;
-              return dumpHtmlContent(el, undefined);
+              return dumpHtmlContent(el, undefined, %s);
             }
           )",
-                internal::InteractiveBrowserTestPrivate::kDumpElementsScript);
+                internal::InteractiveBrowserTestPrivate::kDumpElementsScript,
+                browser_test_impl().MakeDumpParams());
             base::Value result =
                 el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
                     where, function, &error_msg);

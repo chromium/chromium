@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -22,13 +23,14 @@
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabElementId);
 constexpr std::string_view kElementName = "MenuItemElement";
 
 class TrackedElementManagerBrowsertest : public InteractiveBrowserTest {
  public:
   TrackedElementManagerBrowsertest() = default;
   ~TrackedElementManagerBrowsertest() override = default;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabElementId);
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -47,6 +49,19 @@ class TrackedElementManagerBrowsertest : public InteractiveBrowserTest {
     window->SetBounds(bounds);
   }
 };
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TrackedElementManagerBrowsertest,
+                                      kTabElementId);
+
+IN_PROC_BROWSER_TEST_F(TrackedElementManagerBrowsertest, DumpWebContents) {
+  RunTestSequence(
+      InstrumentTab(kTabElementId),
+      NavigateWebContents(kTabElementId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
+      InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
+      DumpWebContents(kTabElementId),
+      DumpWebContentsAt(kTabElementId, {"user-education-internals", "#menu"}));
+}
 
 IN_PROC_BROWSER_TEST_F(TrackedElementManagerBrowsertest, CheckElementsExist) {
   gfx::Rect menu_bounds;

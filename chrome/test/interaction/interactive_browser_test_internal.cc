@@ -42,11 +42,14 @@ DEFINE_SAFE_CAST_TARGET(InteractiveBrowserTestPrivate)
 // static
 const std::string_view InteractiveBrowserTestPrivate::kDumpElementsScript =
     R"(
-  function gatherHtmlContent(node, active) {
+  function gatherHtmlContent(node, active, params) {
     const result = {
       text: '',
       children: [],
     };
+    if (params.count !== undefined && params.count <= 0) {
+      return null;
+    }
     let hidden = false;
     if (node instanceof ShadowRoot) {
       result.text = '(shadow root)';
@@ -76,15 +79,38 @@ const std::string_view InteractiveBrowserTestPrivate::kDumpElementsScript =
     } else {
       return null;
     }
-    if (!hidden) {
-      for (const child of node.childNodes) {
-        const childData = gatherHtmlContent(child, active);
-        if (childData) {
-          result.children.push(childData);
-        }
+
+    if (params.count !== undefined) {
+      --params.count;
+      if (params.count <= 0) {
+        result.text += ' --- node limit reached ---';
+        return result;
       }
-      if (node instanceof Element && node.shadowRoot) {
-        result.children.push(gatherHtmlContent(node.shadowRoot));
+    }
+
+    if (!hidden) {
+      if (params.depth === undefined || params.depth > 0) {
+        if (params.depth !== undefined) {
+          --params.depth;
+        }
+        for (const child of node.childNodes) {
+          const childData = gatherHtmlContent(child, active, params);
+          if (childData) {
+            result.children.push(childData);
+          }
+        }
+        if (node instanceof Element && node.shadowRoot) {
+          const childData = gatherHtmlContent(node.shadowRoot, null, params);
+          if (childData) {
+            result.children.push(childData);
+          }
+        }
+        if (params.depth !== undefined) {
+          ++params.depth;
+        }
+      } else {
+        result.children.push(
+            { text: ' --- depth limit reached --- ', children: [] });
       }
     }
     return result;
@@ -109,8 +135,10 @@ const std::string_view InteractiveBrowserTestPrivate::kDumpElementsScript =
     }
     return text;
   }
-  function dumpHtmlContent(node, active) {
-    return stringifyHtmlContent(gatherHtmlContent(node, active), '', false);
+  function dumpHtmlContent(node, active, params) {
+    return stringifyHtmlContent(
+        gatherHtmlContent(node, active, params),
+        '', false);
   }
 )";
 
@@ -209,6 +237,19 @@ std::string InteractiveBrowserTestPrivate::DeepQueryToString(
     oss << "\"" << deep_query[i] << "\"";
   }
   oss << "}";
+  return oss.str();
+}
+
+std::string InteractiveBrowserTestPrivate::MakeDumpParams() const {
+  std::ostringstream oss;
+  oss << "{";
+  if (max_dom_nodes_) {
+    oss << " count: " << *max_dom_nodes_ << ",";
+  }
+  if (max_dom_depth_) {
+    oss << " depth: " << *max_dom_depth_ << ",";
+  }
+  oss << " }";
   return oss.str();
 }
 
@@ -333,13 +374,15 @@ InteractiveBrowserTestPrivate::DebugDumpElements(
               const_cast<WebContentsInteractionTestUtil*>(contents->owner());
           util && util->is_page_loaded()) {
         std::string error_message;
-        const auto value = util->Evaluate(base::StringPrintf(
-                                              R"(function() {
+        const auto value =
+            util->Evaluate(base::StringPrintf(
+                               R"(function() {
               %s;
-              return gatherHtmlContent(document.body, document.activeElement);
+              return gatherHtmlContent(
+                  document.body, document.activeElement, %s);
             })",
-                                              kDumpElementsScript),
-                                          &error_message);
+                               kDumpElementsScript, MakeDumpParams()),
+                           &error_message);
         if (!error_message.empty()) {
           LOG(ERROR) << "Unable to retrieve contents of " << *contents << ": "
                      << error_message;
