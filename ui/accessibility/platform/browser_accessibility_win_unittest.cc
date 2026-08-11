@@ -4128,4 +4128,36 @@ TEST_F(BrowserAccessibilityWinTest, TestAriaActionStaleIdref) {
   manager.reset();
 }
 
+TEST_F(BrowserAccessibilityWinTest, NativeAdaptedWebContentsAccValue) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kGenericContainer;
+
+  AXTreeUpdate update = MakeAXTreeUpdateForTesting(root);
+  update.has_tree_data = true;
+  update.tree_data.url = "chrome://webui-toolbar.top";
+
+  // Simulate setting kNativeAdaptedWebContents mode on the delegate.
+  test_browser_accessibility_delegate_->AccessibilitySetAXMode(
+      ui::AXMode::kNativeAdaptedWebContents);
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityWin* root_accessible =
+      ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot());
+  ASSERT_NE(nullptr, root_accessible);
+
+  base::win::ScopedVariant childid_self(CHILDID_SELF);
+  base::win::ScopedBstr value;
+  HRESULT hr =
+      root_accessible->GetCOM()->get_accValue(childid_self, value.Receive());
+  EXPECT_EQ(S_OK, hr);
+
+  // For kNativeAdaptedWebContents it should return an empty value.
+  EXPECT_EQ(0u, value.Length());
+}
+
 }  // namespace ui

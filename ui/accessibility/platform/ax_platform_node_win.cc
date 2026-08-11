@@ -8379,7 +8379,7 @@ AXPlatformNodeWin::Counts AXPlatformNodeWin::ResetCountsForTesting() {
 
 // static
 BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
-  if (target->IsPlatformDocument()) {
+  if (ui::IsPlatformDocument(target->GetRole())) {
     std::wstring url =
         base::UTF8ToWide(target->GetDelegate()->GetTreeData().url);
     BSTR value = SysAllocString(url.c_str());
