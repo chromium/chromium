@@ -575,7 +575,7 @@ void LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect(
                         keyboard_rect.width() / scale_factor,
                         keyboard_rect.height() / scale_factor);
 
-  frame_->NotifyVirtualKeyboardOverlayRectObservers(scaled_rect);
+  frame_->SetVirtualKeyboardOverlayGeometry(scaled_rect);
 }
 
 void LocalFrameMojoHandler::ShowInterestInElement(int nodeID) {

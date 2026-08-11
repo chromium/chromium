@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -107,6 +108,8 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
@@ -189,6 +192,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -3639,11 +3643,63 @@ void LocalFrame::RegisterVirtualKeyboardOverlayChangedObserver(
 }
 
 void LocalFrame::NotifyVirtualKeyboardOverlayRectObservers(
-    const gfx::Rect& rect) const {
+    const gfx::Rect& rect) {
+  virtual_keyboard_overlay_rect_ = rect;
+
   HeapVector<Member<VirtualKeyboardOverlayChangedObserver>, 32> observers(
       virtual_keyboard_overlay_changed_observers_);
-  for (VirtualKeyboardOverlayChangedObserver* observer : observers)
+  for (VirtualKeyboardOverlayChangedObserver* observer : observers) {
     observer->VirtualKeyboardOverlayChanged(rect);
+  }
+}
+
+void LocalFrame::SetVirtualKeyboardOverlayGeometry(const gfx::Rect& rect) {
+  bool use_geometry_fixes = true;
+#if BUILDFLAG(IS_ANDROID)
+  use_geometry_fixes =
+      features::IsVirtualKeyboardGeometryAndInsetFixesEnabled();
+#endif
+
+  // With the geometry fixes enabled, empty geometry means that the keyboard is
+  // hidden. An empty gfx::Rect can still retain a nonzero position or size, so
+  // normalize it before exposing the geometry through boundingRect or the CSS
+  // environment variables.
+  const gfx::Rect visible_rect =
+      use_geometry_fixes && rect.IsEmpty() ? gfx::Rect() : rect;
+
+  Document* document = GetDocument();
+  if (document) {
+    int right = visible_rect.right();
+    int bottom = visible_rect.bottom();
+    if (use_geometry_fixes && !visible_rect.IsEmpty()) {
+      // Any non-empty rect represents a visible keyboard. Express its right
+      // and bottom edges as distances from the corresponding viewport edges.
+      // The hidden state is handled separately by the normalization above.
+      const gfx::Size viewport_size =
+          document->View() ? document->View()->Size() : gfx::Size();
+      const float layout_zoom = LayoutZoomFactor();
+      const int viewport_width =
+          AdjustForAbsoluteZoom::AdjustInt(viewport_size.width(), layout_zoom);
+      const int viewport_height =
+          AdjustForAbsoluteZoom::AdjustInt(viewport_size.height(), layout_zoom);
+      right = std::max(0, viewport_width - visible_rect.right());
+      bottom = std::max(0, viewport_height - visible_rect.bottom());
+    }
+
+    DocumentStyleEnvironmentVariables& variables =
+        document->GetStyleEngine().EnsureEnvironmentVariables();
+    const auto set_inset = [&variables](UADefinedVariable inset, int value) {
+      variables.SetVariable(inset, StyleEnvironmentVariables::FormatPx(value));
+    };
+    set_inset(UADefinedVariable::kKeyboardInsetTop, visible_rect.y());
+    set_inset(UADefinedVariable::kKeyboardInsetLeft, visible_rect.x());
+    set_inset(UADefinedVariable::kKeyboardInsetBottom, bottom);
+    set_inset(UADefinedVariable::kKeyboardInsetRight, right);
+    set_inset(UADefinedVariable::kKeyboardInsetWidth, visible_rect.width());
+    set_inset(UADefinedVariable::kKeyboardInsetHeight, visible_rect.height());
+  }
+
+  NotifyVirtualKeyboardOverlayRectObservers(visible_rect);
 }
 
 void LocalFrame::ShowInterestInElement(int nodeID) const {
