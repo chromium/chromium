@@ -6,12 +6,13 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/timezone.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_protection/features.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace enterprise_data_protection {
 
@@ -70,16 +71,17 @@ UrlSettings GetUrlSettings(
 std::string FormatWatermarkTimestamp(
     const base::Time& time,
     const std::optional<std::string>& timestamp_timezone) {
-  std::unique_ptr<icu::TimeZone> icu_timezone;
+  base::i18n::TimeZone timezone = base::i18n::TimeZone::Default();
   if (timestamp_timezone.has_value() &&
       *timestamp_timezone !=
           enterprise_connectors::kWatermarkStyleTimestampTimezoneDefault) {
-    icu_timezone.reset(icu::TimeZone::createTimeZone(
-        icu::UnicodeString::fromUTF8(*timestamp_timezone)));
+    timezone = base::i18n::TimeZone::FromString(*timestamp_timezone);
   }
 
-  return base::UnlocalizedTimeFormatWithPattern(
-      time, "yyyy-MM-dd'T'HH:mm:ssxxx", icu_timezone.get());
+  return base::TimeFormatAsIso8601(
+      time, timezone,
+      base::i18n::DateTimeFormatterOptions::TimePrecision::kSecond,
+      /*include_offset_suffix=*/true);
 }
 
 std::string GetWatermarkString(

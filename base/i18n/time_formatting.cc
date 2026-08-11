@@ -238,12 +238,17 @@ std::string UnlocalizedTimeFormatWithPattern(Time time,
 }
 
 std::string TimeFormatAsIso8601(Time time) {
-  return TimeFormatAsIso8601WithTimeZone(time, i18n::TimeZone::GMT());
+  return TimeFormatAsIso8601(
+      time, i18n::TimeZone::GMT(),
+      i18n::DateTimeFormatterOptions::TimePrecision::kSubsecond_3,
+      /*include_offset_suffix=*/true);
 }
 
-std::string TimeFormatAsIso8601WithTimeZone(Time time,
-                                            const i18n::TimeZone& time_zone,
-                                            bool include_offset_suffix) {
+std::string TimeFormatAsIso8601(
+    Time time,
+    const i18n::TimeZone& time_zone,
+    const i18n::DateTimeFormatterOptions::TimePrecision& precision,
+    bool include_offset_suffix) {
   base::TimeDelta raw_offset;
   base::TimeDelta dst_offset;
   time_zone.GetOffset(time, /*is_local=*/false, raw_offset, dst_offset);
@@ -267,10 +272,39 @@ std::string TimeFormatAsIso8601WithTimeZone(Time time,
     }
   }
 
-  return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d%s", exploded.year,
-                      exploded.month, exploded.day_of_month, exploded.hour,
-                      exploded.minute, exploded.second, exploded.millisecond,
-                      offset_suffix.c_str());
+  std::string formatted_time =
+      StringPrintf("%04d-%02d-%02dT%02d", exploded.year, exploded.month,
+                   exploded.day_of_month, exploded.hour);
+  using TimePrecision = i18n::DateTimeFormatterOptions::TimePrecision;
+  if (precision == TimePrecision::kHour) {
+    return formatted_time + offset_suffix;
+  }
+  formatted_time += StringPrintf(":%02d", exploded.minute);
+  if (precision == TimePrecision::kMinute) {
+    return formatted_time + offset_suffix;
+  }
+  formatted_time += StringPrintf(":%02d", exploded.second);
+  if (precision == TimePrecision::kSecond) {
+    return formatted_time + offset_suffix;
+  }
+  if (precision == TimePrecision::kSubsecond_2) {
+    formatted_time += StringPrintf(".%02d", exploded.millisecond / 10);
+    return formatted_time + offset_suffix;
+  }
+  formatted_time += StringPrintf(".%03d", exploded.millisecond);
+  if (precision == TimePrecision::kSubsecond_4) {
+    formatted_time += "0";
+  }
+
+  return formatted_time + offset_suffix;
+}
+
+std::string TimeFormatAsIso8601WithTimeZone(Time time,
+                                            const i18n::TimeZone& time_zone,
+                                            bool include_offset_suffix) {
+  using TimePrecision = i18n::DateTimeFormatterOptions::TimePrecision;
+  return TimeFormatAsIso8601(time, time_zone, TimePrecision::kSubsecond_3,
+                             include_offset_suffix);
 }
 
 std::string TimeFormatUnix(Time time) {

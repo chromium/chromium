@@ -363,6 +363,33 @@ TEST(TimeFormattingTest, TimeFormatAsIso8601WithTimeZone) {
                                             /*include_offset_suffix=*/false));
 }
 
+TEST(TimeFormattingTest, TimeFormatAsIso8601Precision) {
+  Time time;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+  using TimePrecision = i18n::DateTimeFormatterOptions::TimePrecision;
+
+  EXPECT_EQ(
+      "2011-04-30T22",
+      TimeFormatAsIso8601(time, i18n::TimeZone::GMT(), TimePrecision::kHour,
+                          /*include_offset_suffix=*/false));
+  EXPECT_EQ(
+      "2011-04-30T22:42",
+      TimeFormatAsIso8601(time, i18n::TimeZone::GMT(), TimePrecision::kMinute,
+                          /*include_offset_suffix=*/false));
+  EXPECT_EQ(
+      "2011-04-30T22:42:07",
+      TimeFormatAsIso8601(time, i18n::TimeZone::GMT(), TimePrecision::kSecond,
+                          /*include_offset_suffix=*/false));
+  EXPECT_EQ("2011-04-30T22:42:07.000",
+            TimeFormatAsIso8601(time, i18n::TimeZone::GMT(),
+                                TimePrecision::kSubsecond_3,
+                                /*include_offset_suffix=*/false));
+  EXPECT_EQ("2011-04-30T22:42:07.000Z",
+            TimeFormatAsIso8601(time, i18n::TimeZone::GMT(),
+                                TimePrecision::kSubsecond_3,
+                                /*include_offset_suffix=*/true));
+}
+
 TEST(TimeFormattingTest, TimeFormatHTTP) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
