@@ -694,11 +694,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
 }
 
-// Verifies that the TypeScript API receives and exposes the switch settings.
-IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsOverride,
-                       testGeminiEnterpriseSettings) {
-  ExecuteJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsDisabled,
                        testGeminiEnterpriseSettingsDisabled) {
@@ -2533,10 +2528,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithFailedCookieSync,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestGeminiEnterpriseSettingsOverride,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

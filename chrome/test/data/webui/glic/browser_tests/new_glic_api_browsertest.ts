@@ -1415,6 +1415,17 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setAudioDucking(true);
   }
 
+  async testGeminiEnterpriseSettings() {
+    assertDefined(this.host.getGeminiEnterpriseSettings);
+    const settingsObservable = this.host.getGeminiEnterpriseSettings();
+
+    const settings = settingsObservable.getCurrentValue();
+    assertDefined(settings);
+    assertEquals(settings.projectId, 'switch-project');
+    assertEquals(settings.appId, 'switch-engine');
+    assertEquals(settings.location, 'switch-location');
+  }
+
   async testGetDisplayMedia() {
     async function waitForFirstFrame(track: MediaStreamVideoTrack):
         Promise<boolean> {

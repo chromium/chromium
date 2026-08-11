@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -209,6 +210,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiScrollToTest",
       "NewGlicApiTestWithExperimentalTriggeringScreenshot",
       "NewGlicApiUnresponsiveTest",
+      "NewGlicApiTestGeminiEnterpriseSettingsOverride",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -632,6 +634,31 @@ class NewGlicApiTestWithDefaultTabContextEnabled : public NewGlicApiTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+class NewGlicApiTestGeminiEnterpriseSettingsOverride : public NewGlicApiTest {
+ public:
+  NewGlicApiTestGeminiEnterpriseSettingsOverride() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NewGlicApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kGlicGeminiEnterpriseSettingsOverride,
+        "{\"project_id\": \"switch-project\", \"app_id\": \"switch-engine\", "
+        "\"location\": \"switch-location\"}");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestGeminiEnterpriseSettingsOverride,
+                       testGeminiEnterpriseSettings) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextEnabled,
                        testGetDefaultTabContextPermissionState) {
@@ -3603,6 +3630,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithFastTimeout,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestGeminiEnterpriseSettingsOverride,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
