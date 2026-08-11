@@ -25,8 +25,6 @@ constexpr char kPrimary[] = "primary";
 constexpr char kAssociated[] = "associatedSites";
 constexpr char kService[] = "serviceSites";
 constexpr char kCctld[] = "ccTLDs";
-constexpr char kReplacements[] = "replacements";
-constexpr char kAdditions[] = "additions";
 
 constexpr char const* kSubdomains[3] = {
     "sub-0",
@@ -87,18 +85,7 @@ std::string ConvertProto(
   return out;
 }
 
-base::DictValue ConvertProto(
-    const related_website_sets::proto::Policy& policy) {
-  base::DictValue dict;
-  for (const related_website_sets::proto::Set& set : policy.replacements()) {
-    dict.EnsureList(kReplacements)->Append(ConvertSet(set));
-  }
-  for (const related_website_sets::proto::Set& set : policy.additions()) {
-    dict.EnsureList(kAdditions)->Append(ConvertSet(set));
-  }
 
-  return dict;
-}
 
 std::string ConvertProto(
     const related_website_sets::proto::CommandLineSwitch& command_line_switch) {
@@ -114,14 +101,12 @@ std::string ConvertProto(
 
 struct NativeInputs {
   std::string public_sets;
-  base::DictValue policy;
   std::string command_line_switch;
 };
 
 NativeInputs ConvertProto(const related_website_sets::proto::AllInputs& input) {
   return NativeInputs{
       ConvertProto(input.public_sets()),
-      ConvertProto(input.policy()),
       ConvertProto(input.command_line_switch()),
   };
 }
@@ -139,7 +124,6 @@ DEFINE_PROTO_FUZZER(
 
   if (getenv("LPM_DUMP_NATIVE_INPUT")) {
     std::cout << native_inputs.public_sets << std::endl;
-    std::cout << native_inputs.policy.DebugString() << std::endl;
     std::cout << native_inputs.command_line_switch << std::endl;
   }
 
@@ -148,17 +132,11 @@ DEFINE_PROTO_FUZZER(
       FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"),
                                                false);
 
-  auto [parsed_policy, warnings] =
-      FirstPartySetParser::ParseSetsFromEnterprisePolicy(native_inputs.policy);
-
   net::LocalSetDeclaration local_set_declaration =
       FirstPartySetParser::ParseFromCommandLine(
           native_inputs.command_line_switch);
 
   global_sets.ApplyManuallySpecifiedSet(local_set_declaration);
-  if (parsed_policy.has_value()) {
-    global_sets.ComputeConfig(parsed_policy.value().mutation());
-  }
 }
 
 }  // namespace content

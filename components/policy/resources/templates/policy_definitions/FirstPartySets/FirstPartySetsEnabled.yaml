@@ -18,10 +18,10 @@ features:
   dynamic_refresh: true
   per_profile: true
 supported_on:
-- chrome.*:113-
-- chrome_os:113-
-- android:113-
-- fuchsia:113-
+- chrome.*:113-152
+- chrome_os:113-152
+- android:113-152
+- fuchsia:113-152
 items:
 - caption: Enable First-Party Sets for all affected users
   value: true

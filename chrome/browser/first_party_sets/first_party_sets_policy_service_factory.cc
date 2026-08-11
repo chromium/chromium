@@ -7,13 +7,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace first_party_sets {
@@ -81,11 +78,6 @@ FirstPartySetsPolicyServiceFactory::BuildServiceInstanceForBrowserContext(
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
-}
-
-void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(kRelatedWebsiteSetsOverrides);
 }
 
 }  // namespace first_party_sets

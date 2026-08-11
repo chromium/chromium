@@ -52,21 +52,7 @@ constexpr char kFirstPartySetPrimaryField[] = "primary";
 constexpr char kFirstPartySetAssociatedSitesField[] = "associatedSites";
 constexpr char kFirstPartySetServiceSitesField[] = "serviceSites";
 constexpr char kCCTLDsField[] = "ccTLDs";
-constexpr char kFirstPartySetPolicyReplacementsField[] = "replacements";
-constexpr char kFirstPartySetPolicyAdditionsField[] = "additions";
-
 constexpr int kFirstPartySetsMaxAssociatedSites = 5;
-
-enum class PolicySetType { kReplacement, kAddition };
-
-const char* SetTypeToString(PolicySetType set_type) {
-  switch (set_type) {
-    case PolicySetType::kReplacement:
-      return kFirstPartySetPolicyReplacementsField;
-    case PolicySetType::kAddition:
-      return kFirstPartySetPolicyAdditionsField;
-  }
-}
 
 // Class representing the results of validating a given site.
 class ValidateSiteResult {
@@ -154,21 +140,7 @@ std::optional<std::string> RemoveTldFromSite(const net::SchemefulSite& site) {
   return serialized.substr(0, serialized.size() - tld_length);
 }
 
-struct ParsedPolicySetsInfoForField {
-  std::vector<SingleSet> sets;
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
-};
 
-struct ParsedPolicySetLists {
-  ParsedPolicySetsInfoForField replacements;
-  ParsedPolicySetsInfoForField additions;
-};
-
-struct MergedPolicySetLists {
-  std::vector<SingleSet> replacements;
-  std::vector<SingleSet> additions;
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
-};
 
 class ParseContext {
  public:
@@ -286,50 +258,7 @@ class ParseContext {
     return std::make_pair(SingleSet(set_entries), aliases);
   }
 
-  // Returns the parsed sets if successful; otherwise returns the first error.
-  base::expected<ParsedPolicySetsInfoForField, ParseError>
-  GetPolicySetsFromList(const base::ListValue* policy_sets,
-                        PolicySetType set_type) {
-    if (!policy_sets) {
-      return {};
-    }
 
-    std::vector<SingleSet> parsed_sets;
-    std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> all_aliases;
-    size_t previous_size = warnings_.size();
-    for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
-      base::expected<SetsAndAliases, ParseError> parsed =
-          ParseSet((*policy_sets)[i]);
-      for (auto it = warnings_.begin() + previous_size; it != warnings_.end();
-           it++) {
-        it->PrependPath({SetTypeToString(set_type), i});
-      }
-      if (!parsed.has_value()) {
-        if (!IsFatalError(parsed.error().type())) {
-          continue;
-        }
-        ParseError error = parsed.error();
-        error.PrependPath({SetTypeToString(set_type), i});
-        return base::unexpected(error);
-      }
-
-      SetsMap& set = parsed.value().first;
-      if (!parsed.value().second.empty()) {
-        std::vector<SetsMap::value_type> alias_entries;
-        for (const auto& alias : parsed.value().second) {
-          alias_entries.emplace_back(alias.first,
-                                     set.find(alias.second)->second);
-          all_aliases.emplace_back(alias.first, alias.second);
-        }
-        set.insert(std::make_move_iterator(alias_entries.begin()),
-                   std::make_move_iterator(alias_entries.end()));
-      }
-      AddSet(SetsAndAliases(set, {}));
-      parsed_sets.push_back(std::move(set));
-      previous_size = warnings_.size();
-    }
-    return ParsedPolicySetsInfoForField(parsed_sets, all_aliases);
-  }
 
   // Updates the context to include the given set and aliases.
   //
@@ -382,52 +311,7 @@ class ParseContext {
     });
   }
 
-  // Removes invalid site entries and fixes up any lingering singletons.
-  // Modifies the lists in-place.
-  void PostProcessSetLists(MergedPolicySetLists& lists) {
-    if (invalid_keys_.empty()) {
-      return;
-    }
 
-    // Erase invalid members/primaries.
-    const auto is_invalid_entry = [&](const auto& pair) -> bool {
-      return IsInvalidEntry(pair);
-    };
-    for (auto& set : lists.additions) {
-      base::EraseIf(set, is_invalid_entry);
-    }
-    for (auto& set : lists.replacements) {
-      base::EraseIf(set, is_invalid_entry);
-    }
-    base::EraseIf(lists.aliases,
-                  [&](const auto& pair) { return IsInvalidAlias(pair); });
-
-    net::FirstPartySetsValidator validator;
-    for (const auto& set : lists.additions) {
-      for (const auto& [site, entry] : set) {
-        validator.Update(site, entry.primary());
-      }
-    }
-    for (const auto& set : lists.replacements) {
-      for (const auto& [site, entry] : set) {
-        validator.Update(site, entry.primary());
-      }
-    }
-    // We do not need to perform updates on the aliases explicitly because they
-    // are already included in lists.replacements and lists.additions.
-
-    // Since we just removed some keys, we have to double-check that there are
-    // no invalid sets (e.g. singletons).
-    if (!validator.IsValid()) {
-      const auto is_invalid = [&](const auto& set) -> bool {
-        return std::ranges::any_of(set, [&](const auto& site_entry) {
-          return !validator.IsSiteValid(site_entry.first);
-        });
-      };
-      std::erase_if(lists.additions, is_invalid);
-      std::erase_if(lists.replacements, is_invalid);
-    }
-  }
 
   std::vector<ParseWarning>& warnings() { return warnings_; }
 
@@ -704,42 +588,6 @@ net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
   }
   return net::GlobalFirstPartySets(std::move(version),
                                    std::move(public_config).value());
-}
-
-FirstPartySetParser::PolicyParseResult
-FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-    const base::DictValue& policy) {
-  ParseContext context(/*emit_errors=*/false, /*exempt_from_limits=*/true);
-  auto set_lists = [&]() -> base::expected<MergedPolicySetLists,
-                                           FirstPartySetsHandler::ParseError> {
-    ASSIGN_OR_RETURN(ParsedPolicySetsInfoForField replacements,
-                     context.GetPolicySetsFromList(
-                         policy.FindList(kFirstPartySetPolicyReplacementsField),
-                         PolicySetType::kReplacement));
-    ASSIGN_OR_RETURN(ParsedPolicySetsInfoForField additions,
-                     context.GetPolicySetsFromList(
-                         policy.FindList(kFirstPartySetPolicyAdditionsField),
-                         PolicySetType::kAddition));
-
-    base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases =
-        std::move(replacements.aliases);
-    aliases.insert(std::make_move_iterator(additions.aliases.begin()),
-                   std::make_move_iterator(additions.aliases.end()));
-    return MergedPolicySetLists(std::move(replacements).sets,
-                                std::move(additions).sets, std::move(aliases));
-  }();
-
-  if (set_lists.has_value()) {
-    context.PostProcessSetLists(set_lists.value());
-  }
-
-  return FirstPartySetParser::PolicyParseResult(
-      std::move(set_lists).transform([](MergedPolicySetLists lists) {
-        return FirstPartySetsOverridesPolicy(net::SetsMutation(
-            std::move(lists.replacements), std::move(lists.additions),
-            std::move(lists.aliases)));
-      }),
-      context.warnings());
 }
 
 // static

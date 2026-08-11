@@ -23,7 +23,6 @@
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_settings_policy_handler.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h"
-#include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 #include "chrome/browser/glic/gemini_act_on_web_settings_policy_handler.h"
 #include "chrome/browser/glic/gemini_spark_settings_policy_handler.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -3561,13 +3560,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kAllHttpAuthSchemesAllowedForOrigins,
       prefs::kAllHttpAuthSchemesAllowedForOrigins));
 
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      /*legacy_policy_handler=*/std::make_unique<
-          first_party_sets::FirstPartySetsOverridesPolicyHandler>(
-          key::kFirstPartySetsOverrides, chrome_schema),
-      /*new_policy_handler=*/std::make_unique<
-          first_party_sets::FirstPartySetsOverridesPolicyHandler>(
-          key::kRelatedWebsiteSetsOverrides, chrome_schema)));
   handlers->AddHandler(std::make_unique<PrivacySandboxPolicyHandler>());
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -3576,16 +3568,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kDataControlsRules, data_controls::kDataControlsRulesPref,
           chrome_schema));
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-
-  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
-      /*legacy_policy_handler=*/std::make_unique<SimplePolicyHandler>(
-          key::kFirstPartySetsEnabled,
-          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-          base::Value::Type::BOOLEAN),
-      /*new_policy_handler=*/std::make_unique<SimplePolicyHandler>(
-          key::kRelatedWebsiteSetsEnabled,
-          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-          base::Value::Type::BOOLEAN)));
 
 #if !BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<BatterySaverPolicyHandler>());

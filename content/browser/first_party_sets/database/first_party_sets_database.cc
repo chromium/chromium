@@ -140,8 +140,7 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 
 bool FirstPartySetsDatabase::PersistSets(
     const std::string& browser_context_id,
-    const net::GlobalFirstPartySets& sets,
-    const net::FirstPartySetsContextConfig& config) {
+    const net::GlobalFirstPartySets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit())
     return false;
@@ -157,10 +156,6 @@ bool FirstPartySetsDatabase::PersistSets(
   }
 
   if (!InsertManualConfiguration(browser_context_id, sets)) {
-    return false;
-  }
-
-  if (!InsertPolicyConfigurations(browser_context_id, config)) {
     return false;
   }
 
@@ -285,45 +280,7 @@ bool FirstPartySetsDatabase::InsertBrowserContextCleared(
   return statement.Run();
 }
 
-bool FirstPartySetsDatabase::InsertPolicyConfigurations(
-    const std::string& browser_context_id,
-    const net::FirstPartySetsContextConfig& config) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(db_status_, InitStatus::kSuccess);
-  CHECK(db_->HasActiveTransactions());
 
-  static constexpr char kDeleteSql[] =
-      "DELETE FROM policy_configurations WHERE browser_context_id=?";
-  sql::Statement delete_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  delete_statement.BindString(0, browser_context_id);
-  if (!delete_statement.Run())
-    return false;
-
-  return config.ForEachCustomizationEntry(
-             [&](const net::SchemefulSite& site,
-                 const net::FirstPartySetEntryOverride& entry_override)
-                 -> bool {
-               DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-               CHECK(!site.opaque());
-               static constexpr char kInsertSql[] =
-                   "INSERT INTO "
-                   "policy_configurations(browser_context_id,site,primary_site)"
-                   "VALUES(?,?,?)";
-               sql::Statement insert_statement(
-                   db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-               insert_statement.BindString(0, browser_context_id);
-               insert_statement.BindString(1, site.Serialize());
-               if (!entry_override.IsDeletion()) {
-                 insert_statement.BindString(
-                     2, entry_override.GetEntry().primary().Serialize());
-               } else {
-                 insert_statement.BindNull(2);
-               }
-               return insert_statement.Run();
-             }) &&
-         !TransactionFailed();
-}
 
 bool FirstPartySetsDatabase::InsertManualConfiguration(
     const std::string& browser_context_id,
@@ -367,9 +324,7 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
   return !TransactionFailed();
 }
 
-std::optional<
-    std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
-FirstPartySetsDatabase::GetGlobalSetsAndConfig(
+std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
@@ -379,32 +334,6 @@ FirstPartySetsDatabase::GetGlobalSetsAndConfig(
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return std::nullopt;
-
-  std::optional<net::GlobalFirstPartySets> global_sets =
-      GetGlobalSets(browser_context_id);
-  if (!global_sets.has_value()) {
-    return std::nullopt;
-  }
-
-  std::optional<net::FirstPartySetsContextConfig> config =
-      FetchPolicyConfigurations(browser_context_id);
-  if (!config.has_value()) {
-    return std::nullopt;
-  }
-
-  if (!transaction.Commit())
-    return std::nullopt;
-
-  return std::make_pair(std::move(global_sets).value(),
-                        std::move(config).value());
-}
-
-std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
-    const std::string& browser_context_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(db_->HasActiveTransactions());
-  CHECK_EQ(db_status_, InitStatus::kSuccess);
-  CHECK(!browser_context_id.empty());
 
   // Query public sets entries.
   static constexpr char kVersionSql[] =
@@ -486,6 +415,10 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
     return std::nullopt;
   }
   global_sets.UnsafeSetManualConfig(std::move(manual_config).value());
+
+  if (!transaction.Commit()) {
+    return std::nullopt;
+  }
 
   return global_sets;
 }
@@ -607,58 +540,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
   return results;
 }
 
-std::optional<net::FirstPartySetsContextConfig>
-FirstPartySetsDatabase::FetchPolicyConfigurations(
-    const std::string& browser_context_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(db_->HasActiveTransactions());
-  CHECK_EQ(db_status_, InitStatus::kSuccess);
-  CHECK(!browser_context_id.empty());
 
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntryOverride>>
-      results;
-  static constexpr char kSelectSql[] =
-      // clang-format off
-      "SELECT site,primary_site FROM policy_configurations "
-      "WHERE browser_context_id=?";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, browser_context_id);
-
-  while (statement.Step()) {
-    std::optional<net::SchemefulSite> site =
-        FirstPartySetParser::CanonicalizeRegisteredDomain(
-            statement.ColumnStringView(0), /*emit_errors=*/false);
-
-    std::optional<net::SchemefulSite> maybe_primary_site;
-    if (std::string_view primary_site = statement.ColumnStringView(1);
-        !primary_site.empty()) {
-      maybe_primary_site = FirstPartySetParser::CanonicalizeRegisteredDomain(
-          primary_site, /*emit_errors=*/false);
-    }
-
-    // TODO(crbug.com/40221249): Invalid sites should be rare case but possible.
-    // Consider deleting them from DB.
-    if (site.has_value()) {
-      net::FirstPartySetEntryOverride entry_override;
-      if (maybe_primary_site.has_value()) {
-        entry_override =
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                maybe_primary_site.value(),
-                // TODO(crbug.com/40186153): May change to use the real
-                // site_type in the future, depending on the design details. Use
-                // kAssociated as default site type for now.
-                net::SiteType::kAssociated));
-      }
-      results.emplace_back(std::move(site).value(), std::move(entry_override));
-    }
-  }
-  if (!statement.Succeeded() || TransactionFailed()) {
-    return std::nullopt;
-  }
-
-  return net::FirstPartySetsContextConfig::Create(std::move(results));
-}
 
 bool FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting(
     const std::string& browser_context_id) {

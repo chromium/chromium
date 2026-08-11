@@ -18,7 +18,7 @@
 
 namespace net {
 class FirstPartySetsCacheFilter;
-class FirstPartySetsContextConfig;
+
 class GlobalFirstPartySets;
 class SchemefulSite;
 }  // namespace net
@@ -57,22 +57,19 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // were created. Made public only for testing,
   static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
       const net::GlobalFirstPartySets& old_sets,
-      const net::FirstPartySetsContextConfig& old_config,
-      const net::GlobalFirstPartySets& current_sets,
-      const net::FirstPartySetsContextConfig& current_config);
+      const net::GlobalFirstPartySets& current_sets);
 
   // Gets the list of sites to clear for the `browser_context_id`. This method
-  // wraps a few DB operations: reads the old global sets and policy
-  // customization from DB, call `ComputeSetsDiff` with required inputs to
-  // compute the list of sites to clear, stores the sites into DB, then reads
-  // the final list of sites to be cleared from DB, which can include sites
-  // stored during previous browser runs that did not have state cleared.
+  // wraps a few DB operations: reads the old global sets from DB, call
+  // `ComputeSetsDiff` with required inputs to compute the list of sites to
+  // clear, stores the sites into DB, then reads the final list of sites to be
+  // cleared from DB, which can include sites stored during previous browser
+  // runs that did not have state cleared.
   std::optional<std::pair<std::vector<net::SchemefulSite>,
                           net::FirstPartySetsCacheFilter>>
   UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
-      const net::GlobalFirstPartySets& current_sets,
-      const net::FirstPartySetsContextConfig& current_config);
+      const net::GlobalFirstPartySets& current_sets);
 
   // Wraps FirstPartySetsDatabase::InsertBrowserContextCleared.
   // Update DB whether site data clearing has been performed for the
@@ -81,12 +78,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
 
   // Wraps FirstPartySetsDatabase::PersistSets.
   void PersistSets(const std::string& browser_context_id,
-                   const net::GlobalFirstPartySets& sets,
-                   const net::FirstPartySetsContextConfig& config);
+                   const net::GlobalFirstPartySets& sets);
 
-  std::optional<
-      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
-  GetGlobalSetsAndConfigForTesting(const std::string& browser_context_id);
+  std::optional<net::GlobalFirstPartySets> GetGlobalSetsForTesting(
+      const std::string& browser_context_id);
 
   // Wraps FirstPartySetsDatabase::HasEntryInBrowserContextClearedForTesting.
   bool HasEntryInBrowserContextsClearedForTesting(

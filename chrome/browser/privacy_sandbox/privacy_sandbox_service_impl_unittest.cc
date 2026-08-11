@@ -382,63 +382,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::nullopt);
 }
 
-TEST_F(PrivacySandboxServiceTest,
-       SimulatedRwsData_RwsEnabled_WithGlobalSetsAndProfileSets) {
-  GURL primary_gurl("https://primary.test");
-  GURL associate1_gurl("https://associate1.test");
-  GURL associate2_gurl("https://associate2.test");
-  net::SchemefulSite primary_site(primary_gurl);
-  net::SchemefulSite associate1_site(associate1_gurl);
-  net::SchemefulSite associate2_site(associate2_gurl);
 
-  // Set up state for the RWS UI: block 3PC and enable the RWS pref.
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  CreateService();
-  ClearRwsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  // Simulate that the Global RWS are ready with the following set:
-  // { primary: "https://primary.test",
-  // associatedSites: ["https://associate1.test", "https://associate2.test"] }
-  mock_first_party_sets_handler().SetGlobalSets(
-      net::GlobalFirstPartySets::CreateForTesting(
-          GetRelatedWebsiteSetsVersion(),
-          {
-              {primary_site,
-               {net::FirstPartySetEntry(primary_site,
-                                        net::SiteType::kPrimary)}},
-              {associate1_site,
-               {net::FirstPartySetEntry(primary_site,
-                                        net::SiteType::kAssociated)}},
-              {associate2_site,
-               {net::FirstPartySetEntry(primary_site,
-                                        net::SiteType::kAssociated)}},
-          },
-          {}));
-
-  // Simulate that associate2 is removed from the Global RWS for
-  // this profile.
-  mock_first_party_sets_handler().SetContextConfig(
-      net::FirstPartySetsContextConfig::Create(
-          {{net::SchemefulSite(GURL("https://associate2.test")),
-            net::FirstPartySetEntryOverride()}})
-          .value());
-
-  first_party_sets_policy_service()->InitForTesting();
-
-  // Verify that primary owns associate1, but no longer owns associate2.
-  EXPECT_EQ(privacy_sandbox_service()
-                ->GetRelatedWebsiteSetOwner(associate1_gurl)
-                .value(),
-            primary_site);
-  EXPECT_EQ(
-      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate2_gurl),
-      std::nullopt);
-}
 
 TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
   // Check that the init of the RWS pref occurs correctly.
@@ -498,54 +442,4 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
       prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 }
 
-TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
-  // Set up state for the RWS UI: block 3PC and enable the RWS pref.
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  CreateService();
-  ClearRwsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
 
-  // Simulate that the Global RWS are ready with the following
-  // set:
-  // { primary: "https://youtube-primary.test",
-  // associatedSites: ["https://youtube.com"]
-  // }
-  net::SchemefulSite youtube_primary_site(GURL("https://youtube-primary.test"));
-  GURL youtube_gurl("https://youtube.com");
-  net::SchemefulSite youtube_site(youtube_gurl);
-
-  mock_first_party_sets_handler().SetGlobalSets(
-      net::GlobalFirstPartySets::CreateForTesting(
-          GetRelatedWebsiteSetsVersion(),
-          {
-              {youtube_primary_site,
-               {net::FirstPartySetEntry(youtube_primary_site,
-                                        net::SiteType::kPrimary)}},
-              {youtube_site,
-               {net::FirstPartySetEntry(youtube_primary_site,
-                                        net::SiteType::kAssociated)}},
-          },
-          {}));
-
-  // Simulate that https://google.de is moved into a new RWS for this profile.
-  mock_first_party_sets_handler().SetContextConfig(
-      net::FirstPartySetsContextConfig::Create(
-          {{net::SchemefulSite(GURL("https://google.de")),
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                net::SchemefulSite(GURL("https://new-primary.test")),
-                net::SiteType::kAssociated))}})
-          .value());
-
-  first_party_sets_policy_service()->InitForTesting();
-
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(youtube_gurl),
-            youtube_primary_site);
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
-      net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
-      net::SchemefulSite(GURL("https://google.de"))));
-}

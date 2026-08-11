@@ -24,7 +24,7 @@ class BrowserContext;
 
 namespace net {
 class FirstPartySetsCacheFilter;
-class FirstPartySetsContextConfig;
+
 class FirstPartySetEntry;
 class SchemefulSite;
 }  // namespace net
@@ -126,7 +126,7 @@ class FirstPartySetsPolicyService
   // initialized.
   bool is_ready() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return config_.has_value();
+    return cache_filter_.has_value();
   }
 
   void ResetForTesting();
@@ -179,20 +179,11 @@ class FirstPartySetsPolicyService
   // Initialize this instance by getting the config if needed.
   void Init();
 
-  // Sets the `config_` member and provides it to all delegates via NotifyReady.
-  void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config,
-                                net::FirstPartySetsCacheFilter cache_filter);
-
-  // Triggers changes that occur once the FirstPartySetsContextConfig for the
-  // profile that created this service is retrieved.
-  //
-  // Only clears site data if First-Party Sets is enabled when this service
-  // is created.
-  void OnProfileConfigReady(ServiceState initial_state,
-                            net::FirstPartySetsContextConfig config);
+  // Provides the cache filter to all delegates via NotifyReady.
+  void OnReadyToNotifyDelegates(net::FirstPartySetsCacheFilter cache_filter);
 
   // Like ComputeFirstPartySetMetadata, but passes the result into the provided
-  // callback. Must not be called before `config_` has been received.
+  // callback. Must not be called before `cache_filter_` has been received.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
@@ -219,12 +210,6 @@ class FirstPartySetsPolicyService
   // setup, rather than answered immediately in the negative.
   ServiceState service_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       ServiceState::kEnabled;
-
-  // The customizations to the browser's list of First-Party Sets to respect
-  // the changes specified by this FirstPartySetsOverrides policy for the
-  // profile that created this service.
-  std::optional<net::FirstPartySetsContextConfig> config_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The filter used to bypass cache access in the network for this profile.
   std::optional<net::FirstPartySetsCacheFilter> cache_filter_

@@ -95,10 +95,6 @@ class RelatedWebsiteSetsSourceTest : public testing::Test {
     first_party_sets_handler_.SetGlobalSets(std::move(global_sets));
   }
 
-  void SetContextConfig(net::FirstPartySetsContextConfig config) {
-    first_party_sets_handler_.SetContextConfig(std::move(config));
-  }
-
   first_party_sets::FirstPartySetsPolicyService* service() { return service_; }
 
   Profile* profile() { return profile_; }
@@ -165,21 +161,12 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
       {{primary1_site,
         {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary)}},
        {associate_site,
-        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated)}}},
+        {net::FirstPartySetEntry(primary1_site, net::SiteType::kAssociated)}},
+       {primary2_site,
+        {net::FirstPartySetEntry(primary2_site, net::SiteType::kPrimary)}},
+       {service_site,
+        {net::FirstPartySetEntry(primary2_site, net::SiteType::kService)}}},
       {{primary1_cctld, primary1_site}}));
-
-  // The context config of the profile adds a new set:
-  // { primary: "https://primary2.test",
-  // serviceSites: ["https://service.test"}
-  SetContextConfig(
-      net::FirstPartySetsContextConfig::Create(
-          {{primary2_site,
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                primary2_site, net::SiteType::kPrimary))},
-           {service_site,
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                primary2_site, net::SiteType::kService))}})
-          .value());
 
   service()->InitForTesting();
   base::ListValue expected =

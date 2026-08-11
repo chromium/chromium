@@ -18,7 +18,6 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 
 namespace base {
-class DictValue;
 class File;
 class Version;
 }  // namespace base
@@ -45,17 +44,11 @@ class ScopedMockFirstPartySetsHandler
   std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
-  void GetContextConfigForPolicy(
-      base::optional_ref<const base::DictValue> policy,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
-      override;
   void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<content::BrowserContext*()>
           browser_context_getter,
       const std::string& browser_context_id,
-      net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig,
-                              net::FirstPartySetsCacheFilter)> callback)
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback)
       override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
@@ -73,7 +66,6 @@ class ScopedMockFirstPartySetsHandler
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 
   // Helper functions for tests to set up context.
-  void SetContextConfig(net::FirstPartySetsContextConfig config);
 
   void SetCacheFilter(net::FirstPartySetsCacheFilter cache_filter);
 
@@ -90,7 +82,7 @@ class ScopedMockFirstPartySetsHandler
  private:
   raw_ptr<content::FirstPartySetsHandlerImpl> previous_;
   net::GlobalFirstPartySets global_sets_;
-  net::FirstPartySetsContextConfig config_;
+
   net::FirstPartySetsCacheFilter cache_filter_;
 
   // Whether the instance should make every query deadlock.

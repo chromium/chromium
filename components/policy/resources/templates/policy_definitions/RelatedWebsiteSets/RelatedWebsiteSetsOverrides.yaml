@@ -64,10 +64,10 @@ features:
   dynamic_refresh: false
   per_profile: true
 supported_on:
-- chrome.*:120-
-- chrome_os:120-
-- android:120-
-- fuchsia:120-
+- chrome.*:120-152
+- chrome_os:120-152
+- android:120-152
+- fuchsia:120-152
 owners:
 - sandormajor@chromium.org
 - chrome-first-party-sets@chromium.org

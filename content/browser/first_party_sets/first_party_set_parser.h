@@ -13,9 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -26,11 +24,6 @@ namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  using PolicyParseResult =
-      std::pair<base::expected<FirstPartySetsOverridesPolicy,
-                               FirstPartySetsHandler::ParseError>,
-                std::vector<FirstPartySetsHandler::ParseWarning>>;
-
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;
 
@@ -55,14 +48,6 @@ class CONTENT_EXPORT FirstPartySetParser {
   static std::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
       std::string_view origin_string,
       bool emit_errors);
-
-  // Parses two lists of First-Party Sets from `policy` using the "replacements"
-  // and "additions" list fields if present.
-  //
-  // Returns the parsed lists and a list of warnings if successful; otherwise,
-  // returns an error.
-  [[nodiscard]] static PolicyParseResult ParseSetsFromEnterprisePolicy(
-      const base::DictValue& policy);
 
   [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
       const std::string& switch_value);

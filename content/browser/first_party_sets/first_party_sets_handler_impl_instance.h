@@ -74,16 +74,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
-  void GetContextConfigForPolicy(
-      base::optional_ref<const base::DictValue> policy,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
-      override;
   void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig,
-                              net::FirstPartySetsCacheFilter)> callback)
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback)
       override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
@@ -96,9 +90,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
                              const net::FirstPartySetEntry&)> f) const override;
   void GetPersistedSetsForTesting(
       const std::string& browser_context_id,
-      base::OnceCallback<
-          void(std::optional<std::pair<net::GlobalFirstPartySets,
-                                       net::FirstPartySetsContextConfig>>)>
+      base::OnceCallback<void(std::optional<net::GlobalFirstPartySets>)>
           callback);
   void HasBrowserContextClearedForTesting(
       const std::string& browser_context_id,
@@ -139,9 +131,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   void ClearSiteDataOnChangedSetsForContextInternal(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig,
-                              net::FirstPartySetsCacheFilter)> callback);
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback);
 
   // Like ComputeFirstPartySetMetadata, but passes the result into the provided
   // callback. Must not be called before `global_sets_` has been set.
@@ -151,17 +141,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
-  // Parses the policy and computes the config that represents the changes
-  // needed to apply `policy` to `global_sets_`.
-  net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
-      const base::DictValue& policy) const;
-
   void OnGetSitesToClear(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig,
-                              net::FirstPartySetsCacheFilter)> callback,
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
       std::optional<std::pair<std::vector<net::SchemefulSite>,
                               net::FirstPartySetsCacheFilter>> sites_to_clear)
       const;
@@ -171,10 +154,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // success.
   void DidClearSiteDataOnChangedSetsForContext(
       const std::string& browser_context_id,
-      net::FirstPartySetsContextConfig context_config,
       net::FirstPartySetsCacheFilter cache_filter,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig,
-                              net::FirstPartySetsCacheFilter)> callback,
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter)> callback,
       uint64_t failed_data_types) const;
 
   // Whether Init has been called already or not.
