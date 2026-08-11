@@ -237,7 +237,7 @@ void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
 
   element.PasteText(WebString::FromUtf16(value),
                     /*replace_all=*/false,
-                    /*smart_replace=*/true);
+                    /*smart_replace=*/false);
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>
