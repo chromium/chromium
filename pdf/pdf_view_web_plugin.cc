@@ -1764,10 +1764,8 @@ void PdfViewWebPlugin::MoveRangeSelectionExtent(const gfx::PointF& extent) {
   engine_->MoveRangeSelectionExtent(FrameToPdfCoordinates(extent));
 }
 
-void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
-                                          const gfx::PointF& extent) {
-  engine_->SetSelectionBounds(FrameToPdfCoordinates(base),
-                              FrameToPdfCoordinates(extent));
+void PdfViewWebPlugin::SetSelectionBase(const gfx::PointF& base) {
+  engine_->SetSelectionBase(FrameToPdfCoordinates(base));
 }
 
 void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,

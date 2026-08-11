@@ -38,8 +38,7 @@ class FakePdfListener : public pdf::mojom::PdfListener {
 
   void SetCaretPosition(const gfx::PointF& position) override {}
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override {}
-  void SetSelectionBounds(const gfx::PointF& base,
-                          const gfx::PointF& extent) override {}
+  void SetSelectionBase(const gfx::PointF& base) override {}
   void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override {
     std::move(callback).Run(pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
                             std::vector<uint8_t>(), 0);

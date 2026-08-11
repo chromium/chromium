@@ -45,9 +45,8 @@ interface PdfListener {
   // Move the end of the range selection to |extent|.
   MoveRangeSelectionExtent(gfx.mojom.PointF extent);
 
-  // Sets the selection to be between |base| and |extent|. The |extent| will
-  // be moved if the selection is modified.
-  SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
+  // Sets the base point of the selection.
+  SetSelectionBase(gfx.mojom.PointF base);
 
   // The status of the GetPdfBytes call.
   enum GetPdfBytesStatus {

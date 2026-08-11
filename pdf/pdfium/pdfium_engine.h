@@ -377,7 +377,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   void MoveRangeSelectionExtent(const gfx::Point& extent);
 
-  void SetSelectionBounds(const gfx::Point& base, const gfx::Point& extent);
+  void SetSelectionBase(const gfx::Point& base);
 
   std::optional<Selection> GetSelection() const;
 

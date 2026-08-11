@@ -1182,13 +1182,14 @@ TEST_P(PDFiumEngineTest, MoveRangeSelectionExtentInvalidBase) {
 
   // Base is out of page bounds while extent is on "Goodbye" on page 0.
   constexpr gfx::Point kPage0GoodbyePosition(100, 125);
-  engine->SetSelectionBounds(gfx::Point(-50, -50), kPage0GoodbyePosition);
+  engine->SetSelectionBase(gfx::Point(-50, -50));
   engine->MoveRangeSelectionExtent(kPage0GoodbyePosition);
 
   // Selection between "Goodbye" on page 0 and "Goodbye" on page 1.
   constexpr gfx::Point kPage0TextPosition(85, 125);
   constexpr gfx::Point kPage1TextPosition(105, 410);
-  engine->SetSelectionBounds(kPage0TextPosition, kPage1TextPosition);
+  engine->SetSelectionBase(kPage0TextPosition);
+  engine->MoveRangeSelectionExtent(kPage1TextPosition);
 
   // Scroll shifts page 0 offscreen so its original viewport position is in the
   // margin (char_index = -1).

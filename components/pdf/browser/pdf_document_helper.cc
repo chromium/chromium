@@ -278,13 +278,15 @@ void PDFDocumentHelper::MoveRangeSelectionExtent(const gfx::PointF& extent) {
   remote_pdf_client_->MoveRangeSelectionExtent(ConvertFromRoot(extent));
 }
 
-void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
-                                                 const gfx::PointF& extent) {
+void PDFDocumentHelper::SelectBetweenCoordinates(
+    const gfx::PointF& base,
+    const gfx::PointF& /*extent*/) {
   if (!remote_pdf_client_) {
     return;
   }
-  remote_pdf_client_->SetSelectionBounds(ConvertFromRoot(base),
-                                         ConvertFromRoot(extent));
+  // The PDF text is already selected, so only `base` is needed to anchor the
+  // selection for subsequent extent movements.
+  remote_pdf_client_->SetSelectionBase(ConvertFromRoot(base));
 }
 
 void PDFDocumentHelper::GetPdfBytes(

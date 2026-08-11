@@ -140,8 +140,7 @@ class HangingPdfListener : public pdf::mojom::PdfListener {
 
   void SetCaretPosition(const gfx::PointF& position) override {}
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override {}
-  void SetSelectionBounds(const gfx::PointF& base,
-                          const gfx::PointF& extent) override {}
+  void SetSelectionBase(const gfx::PointF& base) override {}
   void GetMostVisiblePageIndex(
       GetMostVisiblePageIndexCallback callback) override {
     std::move(callback).Run(std::nullopt);

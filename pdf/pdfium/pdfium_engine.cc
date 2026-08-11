@@ -4965,9 +4965,7 @@ void PDFiumEngine::MoveRangeSelectionExtent(const gfx::Point& extent) {
   }
 }
 
-// TODO(crbug.com/539668250): Remove unused `extent` parameter.
-void PDFiumEngine::SetSelectionBounds(const gfx::Point& base,
-                                      const gfx::Point& /*extent*/) {
+void PDFiumEngine::SetSelectionBase(const gfx::Point& base) {
   auto base_point_data = GetPointData(gfx::PointF(base));
   if (!PageIndexInBounds(base_point_data.page_index) ||
       base_point_data.char_index < 0) {
