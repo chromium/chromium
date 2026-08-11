@@ -1470,7 +1470,7 @@ class LocationBarMediator
                     // will synchronously notify that there are suggestions if they're cached, while
                     // the former asserts that it should always be in a session when suggestions
                     // arrive.
-                    mUrlCoordinator.beginInput(mCurrentInput);
+                    mUrlCoordinator.beginInput(session);
                     mAutocompleteCoordinator.beginInput(session);
                     mFuseboxCoordinator.beginInput(session);
                     mStatusCoordinator.beginInput(session);

@@ -163,13 +163,13 @@ import java.util.Map;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {LocationBarMediatorTest.ObjectAnimatorShadow.class})
+@Config(shadows = {LocationBarMediatorUnitTest.ObjectAnimatorShadow.class})
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
     OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN
 })
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-public class LocationBarMediatorTest {
+public class LocationBarMediatorUnitTest {
 
     @Implements(ObjectAnimator.class)
     static class ObjectAnimatorShadow {
@@ -1815,8 +1815,7 @@ public class LocationBarMediatorTest {
                 ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mFuseboxCoordinator).beginInput(captor.capture());
         verify(mStatusCoordinator).beginInput(captor.getValue());
-        verify(mUrlCoordinator).beginInput(captor.getValue().getAutocompleteInput());
-
+        verify(mUrlCoordinator).beginInput(captor.getValue());
         assertEquals(
                 OmniboxFocusReason.NTP_AI_MODE,
                 captor.getValue().getAutocompleteInput().getFocusReason());
@@ -1836,7 +1835,7 @@ public class LocationBarMediatorTest {
         ArgumentCaptor<FuseboxSessionState> captor =
                 ArgumentCaptor.forClass(FuseboxSessionState.class);
         verify(mAutocompleteCoordinator).beginInput(captor.capture());
-        verify(mUrlCoordinator).beginInput(captor.getValue().getAutocompleteInput());
+        verify(mUrlCoordinator).beginInput(captor.getValue());
         assertEquals("pastedText", captor.getValue().getAutocompleteInput().getUserText());
     }
 

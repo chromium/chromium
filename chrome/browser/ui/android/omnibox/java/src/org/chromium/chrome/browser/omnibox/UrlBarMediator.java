@@ -100,8 +100,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     /** Signals that the Omnibox input session has begun. */
-    void beginInput(AutocompleteInput input) {
-        mCurrentInput = input;
+    void beginInput(FuseboxSessionState sessionState) {
+        mCurrentInput = sessionState.getAutocompleteInput();
         pushCurrentInputToModel();
     }
 
