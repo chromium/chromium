@@ -13,19 +13,27 @@ import type {TopToolbarElement} from './top_toolbar.js';
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
 <div id="top-row" data-element-id="kContextualTasksWebUIToolbarElementId">
-<div class="top-toolbar-logo-container">
-  ${this.isSidePanelRearchitectureEnabled_ ? html`
-    <cr-button class="top-toolbar-logo-button clickable"
-        data-element-id="kContextualTasksSuperGButtonElementId"
-        @click="${this.onLogoClick_}">
-      ${getLogoHtml()}
-    </cr-button>
-  ` : html`
-    <div class="top-toolbar-logo-button">
-      ${getLogoHtml()}
-    </div>
-  `}
-</div>
+  <if expr="not is_android">
+    ${this.isPermissionShowing_() ? html`
+      <permission-dashboard
+          .dashboardState="${this.permissionDashboardState}">
+      </permission-dashboard>
+    ` : ''}
+  </if>
+  <div class="top-toolbar-logo-container"
+      ?hidden="${this.isPermissionShowing_()}">
+    ${this.isSidePanelRearchitectureEnabled_ ? html`
+      <cr-button class="top-toolbar-logo-button clickable"
+          data-element-id="kContextualTasksSuperGButtonElementId"
+          @click="${this.onLogoClick_}">
+        ${getLogoHtml()}
+      </cr-button>
+    ` : html`
+      <div class="top-toolbar-logo-button">
+        ${getLogoHtml()}
+      </div>
+    `}
+  </div>
   <div class="top-toolbar-title">
     ${this.title}
   </div>

@@ -834,4 +834,138 @@ suite('TopToolbarTest', () => {
     assertTrue(hideUnboundedCalled);
     assertFalse(dialogEl.hasAttribute('unbounded'));
   });
+
+  // <if expr="not is_android">
+  suite('Permission Dashboard Integration', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    });
+
+    function createFakeChip(overrides = {}) {
+      return {
+        isVisible: false,
+        isFullyCollapsed: false,
+        theme: 0,
+        promptStyle: 0,
+        userDecision: 0,
+        shouldShowBlockedIcon: false,
+        iconName: '',
+        message: '',
+        tooltip: '',
+        accessibilityName: '',
+        ...overrides,
+      };
+    }
+
+    test(
+        'hides and shows permission-dashboard, and hides and shows logo' +
+            ' container based on state of request chip',
+        async () => {
+          const topRow = topToolbar.shadowRoot.querySelector('#top-row');
+          assertTrue(!!topRow);
+          const logoContainer =
+              topRow.querySelector<HTMLElement>('.top-toolbar-logo-container');
+          assertHTMLElement(logoContainer);
+
+          // Initial state: `G` logo shows.
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(logoContainer.hidden);
+
+          // Create request chip.
+          const fakeState = {
+            indicatorChip: createFakeChip(),
+            requestChip:
+                createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+            isDividerVisible: false,
+          };
+
+          // Verify `topToolbar` DOM (dashboard rendered, logo container hidden)
+          // when request chip shows.
+          topToolbar.permissionDashboardState = fakeState;
+          await microtasksFinished();
+
+          assertTrue(!!topRow.querySelector('permission-dashboard'));
+          assertTrue(logoContainer.hidden);
+
+          // Remove the visible chip, so that the permission dashboard no longer
+          // shows and the `G` logo is restored.
+          topToolbar.permissionDashboardState = {
+            indicatorChip: createFakeChip(),
+            requestChip: createFakeChip(),
+            isDividerVisible: false,
+          };
+          await microtasksFinished();
+
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(logoContainer.hidden);
+
+          // Set state to dashboard to null. It should no longer show.
+          topToolbar.permissionDashboardState = null;
+          await microtasksFinished();
+
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(logoContainer.hidden);
+        });
+
+    test(
+        'hides and shows permission-dashboard, and hides and shows logo' +
+            ' container based on state of indicator chip',
+        async () => {
+          const topRow = topToolbar.shadowRoot.querySelector('#top-row');
+          assertTrue(!!topRow);
+          const logoContainer =
+              topRow.querySelector<HTMLElement>('.top-toolbar-logo-container');
+          assertHTMLElement(logoContainer);
+
+          // Initial state: `G` logo shows.
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(logoContainer.hidden);
+
+          // Create indicator chip.
+          const fakeState = {
+            indicatorChip:
+                createFakeChip({isVisible: true, iconName: 'kCameraIcon'}),
+            requestChip: createFakeChip(),
+            isDividerVisible: false,
+          };
+
+          // Verify `topToolbar` DOM (dashboard rendered, logo container hidden)
+          // when indicator chip shows.
+          topToolbar.permissionDashboardState = fakeState;
+          await microtasksFinished();
+
+          assertTrue(!!topRow.querySelector('permission-dashboard'));
+          assertTrue(logoContainer.hidden);
+
+          // Remove the visible chip, so that the permission dashboard no longer
+          // shows and the `G` logo is restored.
+          topToolbar.permissionDashboardState = {
+            indicatorChip: createFakeChip(),
+            requestChip: createFakeChip(),
+            isDividerVisible: false,
+          };
+          await microtasksFinished();
+
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(logoContainer.hidden);
+        });
+
+    test(
+        'registers super G button help bubble anchor only when logo is shown',
+        () => {
+          const anchorStatuses = topToolbar.getSortedAnchorStatusesForTesting();
+          const gButtonStatus = anchorStatuses.find(
+              ([id]: [string, boolean]) =>
+                  id === 'kContextualTasksSuperGButtonElementId');
+          assertTrue(!!gButtonStatus);
+          assertTrue(gButtonStatus[1]);
+        });
+  });
+  // </if>
 });
