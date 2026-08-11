@@ -256,6 +256,8 @@ public class PaymentUiService
         private boolean mShowingBottomSheet;
         // Whether to show the Payment Request UI when the bottom sheet is not being shown.
         private boolean mShouldShowDialog;
+        // Whether to delay the background dimming when showing the dialog.
+        private boolean mDelayBackground;
 
         /**
          * Show the Payment Request UI dialog when the bottom sheet is hidden, i.e., if the bottom
@@ -263,7 +265,12 @@ public class PaymentUiService
          * sheet hides.
          */
         /* package */ void showPaymentRequestDialogWhenNoBottomSheet() {
+            showPaymentRequestDialogWhenNoBottomSheet(/* delayBackground= */ false);
+        }
+
+        /* package */ void showPaymentRequestDialogWhenNoBottomSheet(boolean delayBackground) {
             mShouldShowDialog = true;
+            mDelayBackground = delayBackground;
             updatePaymentRequestDialogShowState();
         }
 
@@ -293,10 +300,14 @@ public class PaymentUiService
 
         private void updatePaymentRequestDialogShowState() {
             if (mPaymentRequestUi == null) return;
-            boolean isSuccess =
-                    mPaymentRequestUi.setVisible(!mShowingBottomSheet && mShouldShowDialog);
-            if (!isSuccess) {
-                mDelegate.onUiServiceError(ErrorStrings.FAIL_TO_SHOW_PAYMENT_REQUEST_UI);
+
+            if (!mShowingBottomSheet && mShouldShowDialog) {
+                boolean isSuccess = mPaymentRequestUi.showDialog(mDelayBackground);
+                if (!isSuccess) {
+                    mDelegate.onUiServiceError(ErrorStrings.FAIL_TO_SHOW_PAYMENT_REQUEST_UI);
+                }
+            } else {
+                mPaymentRequestUi.hideDialog();
             }
         }
     }

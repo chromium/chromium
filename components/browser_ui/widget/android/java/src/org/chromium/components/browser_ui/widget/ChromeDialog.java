@@ -194,6 +194,19 @@ public class ChromeDialog extends ComponentDialog {
         }
     }
 
+    /**
+     * Set the status bar color.
+     *
+     * @param color Status bar color for the current dialog.
+     */
+    public void setStatusBarColor(int color) {
+        if (mEdgeToEdgeLayoutCoordinator != null) {
+            mEdgeToEdgeLayoutCoordinator.setStatusBarColor(color);
+        } else {
+            mWindowColorHelper.setStatusBarColor(color);
+        }
+    }
+
     private void setAutomotiveToolbarBackButtonAction() {
         Toolbar backButtonToolbarForAutomotive = findViewById(R.id.back_button_toolbar);
         if (backButtonToolbarForAutomotive != null) {

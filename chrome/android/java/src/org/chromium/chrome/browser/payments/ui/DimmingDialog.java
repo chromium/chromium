@@ -24,11 +24,16 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import org.chromium.base.CancelableRunnable;
+import org.chromium.base.SysUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
@@ -56,32 +61,42 @@ import java.util.Collection;
     /** Length of the animation to hide the bottom sheet UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
+    // If the payment app crashes immediately on launch, the background dim may "flash" (dim
+    // then un-dim quickly) if ran synchronously. The delay exists to mitigate this flash issue.
+    // A slightly longer delay is used on low-end devices to account for slower processing of
+    // such crashes. These short values were chosen to be mostly indiscernible to the user.
+    private static final int BACKGROUND_DIM_DELAY_MS_HIGH_END_DEVICE = 100;
+    private static final int BACKGROUND_DIM_DELAY_MS_LOW_END_DEVICE = 150;
+
     private final AlwaysDismissedDialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
-    private @Nullable OnDismissListener mDismissListener;
+    private @Nullable DimmingDialogObserver mObserver;
     private boolean mIsAnimatingDisappearance;
+    private @Nullable CancelableRunnable mShowScrimRunnable;
 
-    /** Listener for the dismissal of the DimmingDialog. */
-    public interface OnDismissListener {
+    /** Listener for the events of the DimmingDialog. */
+    public interface DimmingDialogObserver {
         /** Called when the UI is dismissed. */
         void onDismiss();
+
+        /** Called when the scrim is shown. */
+        void onScrimShown();
     }
 
     /**
      * Builds the dimming dialog.
      *
-     * @param activity        The activity on top of which the dialog should be displayed.
-     * @param dismissListener The listener for the dismissal of this dialog.
+     * @param activity The activity on top of which the dialog should be displayed.
+     * @param observer The listener for the events of this dialog.
      */
-    /* package */ DimmingDialog(Activity activity, OnDismissListener dismissListener) {
-        mDismissListener = dismissListener;
+    /* package */ DimmingDialog(Activity activity, DimmingDialogObserver observer) {
+        mObserver = observer;
         // To handle the specced animations, the dialog is entirely contained within a translucent
         // FrameLayout. This could eventually be converted to a real BottomSheetDialog, but that
         // requires exploration of how interactions would work when the dialog can be sent back and
         // forth between the peeking and expanded state.
         mFullContainer = new FrameLayout(activity);
-        mFullContainer.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));
         mDialog =
                 new AlwaysDismissedDialog(
                         activity,
@@ -96,7 +111,6 @@ import java.util.Collection;
         dialogWindow.setGravity(Gravity.CENTER);
         dialogWindow.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        setVisibleStatusBarIconColor(dialogWindow);
 
         mAnimatorTranslation =
                 activity.getResources().getDimensionPixelSize(R.dimen.payments_ui_translation);
@@ -127,10 +141,38 @@ import java.util.Collection;
     }
 
     /**
+     * Shows the scrim by setting the dialog's background color and the Android status bar color to
+     * a translucent dark grey.
+     */
+    private void showScrim() {
+        int scrimColor = mFullContainer.getContext().getColor(R.color.modal_dialog_scrim_color);
+        mFullContainer.setBackgroundColor(scrimColor);
+        mDialog.setStatusBarColor(scrimColor);
+        setVisibleStatusBarIconColor(assumeNonNull(mDialog.getWindow()));
+        if (mObserver != null) mObserver.onScrimShown();
+    }
+
+    /**
      * Show the dialog.
+     *
+     * @param shouldDelayScrim If true, the scrim is drawn async after a short delay. If false, the
+     *     scrim is drawn immediately.
      * @return Whether the show is successful.
      */
-    /* package */ boolean show() {
+    /* package */ boolean show(boolean shouldDelayScrim) {
+        if (shouldDelayScrim
+                && PaymentFeatureList.isEnabled(
+                        PaymentFeatureList.DELAY_NATIVE_PAYMENT_APP_SCRIM_SHOW)) {
+            mShowScrimRunnable = new CancelableRunnable(this::showScrim);
+            int delayMs =
+                    SysUtils.isLowEndDevice()
+                            ? BACKGROUND_DIM_DELAY_MS_LOW_END_DEVICE
+                            : BACKGROUND_DIM_DELAY_MS_HIGH_END_DEVICE;
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mShowScrimRunnable, delayMs);
+        } else {
+            showScrim();
+        }
+
         try {
             mDialog.show();
             return true;
@@ -142,6 +184,9 @@ import java.util.Collection;
 
     /** Hide the dialog without dismissing it. */
     /* package */ void hide() {
+        if (mShowScrimRunnable != null) {
+            mShowScrimRunnable.cancel();
+        }
         mDialog.hide();
     }
 
@@ -151,6 +196,9 @@ import java.util.Collection;
      * @param isAnimated If true, the dialog dismissal is animated.
      */
     /* package */ void dismiss(boolean isAnimated) {
+        if (mShowScrimRunnable != null) {
+            mShowScrimRunnable.cancel();
+        }
         if (isAnimated) {
             new DisappearingAnimator(true);
         } else {
@@ -160,9 +208,9 @@ import java.util.Collection;
     }
 
     private void notifyListenerDialogDismissed() {
-        if (mDismissListener == null) return;
-        mDismissListener.onDismiss();
-        mDismissListener = null;
+        if (mObserver == null) return;
+        mObserver.onDismiss();
+        mObserver = null;
     }
 
     /** @param overlay The overlay to show. This can be an error dialog, for example. */

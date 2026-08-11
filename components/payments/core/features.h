@@ -32,6 +32,9 @@ BASE_DECLARE_FEATURE(kWebPaymentsJustInTimePaymentApp);
 // Used to test icon refetch for JIT installed apps with missing icons.
 BASE_DECLARE_FEATURE(kAllowJITInstallationWhenAppIconIsMissing);
 
+// Delays the dimming dialog background when the UI is skipped.
+BASE_DECLARE_FEATURE(kDelayNativePaymentAppScrimShow);
+
 // Used to reject the apps with partial delegation.
 BASE_DECLARE_FEATURE(kEnforceFullDelegation);
 

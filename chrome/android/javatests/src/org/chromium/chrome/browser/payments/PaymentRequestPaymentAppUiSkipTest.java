@@ -15,10 +15,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppStability;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Event2;
@@ -131,6 +133,26 @@ public class PaymentRequestPaymentAppUiSkipTest {
                                 | Event2.SELECTED_OTHER
                                 | Event2.PAY_CLICKED
                                 | Event2.COMPLETED));
+        // One call for the dimBackground call, one for the showProcessingMessageAfterUiSkip call.
+        Assert.assertEquals(2, mPaymentRequestTestRule.getScrimShown().getCallCount());
+    }
+
+    /** If the payment app crashes on launch, the scrim should never be visible. */
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    @EnableFeatures({PaymentFeatureList.DELAY_NATIVE_PAYMENT_APP_SCRIM_SHOW})
+    public void testScrimNotVisibleWhenPaymentAppCrashesOnLaunch() throws TimeoutException {
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.test",
+                AppPresence.HAVE_APPS,
+                FactorySpeed.SLOW_FACTORY,
+                AppSpeed.FAST_APP,
+                AppStability.FAST_CRASH);
+        mPaymentRequestTestRule.clickNodeAndWait("buy", mPaymentRequestTestRule.getDismissed());
+        mPaymentRequestTestRule.expectResultContains(new String[] {"Payment app crashed"});
+
+        Assert.assertEquals(0, mPaymentRequestTestRule.getScrimShown().getCallCount());
     }
 
     /** Two payments apps with the same payment method name should not skip payments UI. */

@@ -96,6 +96,16 @@ import java.util.concurrent.atomic.AtomicReference;
         int SLOW_APP = 1;
     }
 
+    @IntDef({AppStability.STABLE, AppStability.FAST_CRASH})
+    @Retention(RetentionPolicy.SOURCE)
+    /* package */ @interface AppStability {
+        /** Flag for a payment app that runs stably without crashing. */
+        int STABLE = 0;
+
+        /** Flag for a payment app that crashes immediately on invocation. */
+        int FAST_CRASH = 1;
+    }
+
     @IntDef({FactorySpeed.FAST_FACTORY, FactorySpeed.SLOW_FACTORY})
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface FactorySpeed {
@@ -130,6 +140,7 @@ import java.util.concurrent.atomic.AtomicReference;
     private final PaymentsCallbackHelper<PaymentRequestUi> mReadyToPay;
     private final PaymentsCallbackHelper<PaymentRequestUi> mSelectionChecked;
     private final PaymentsCallbackHelper<PaymentRequestUi> mResultReady;
+    private final PaymentsCallbackHelper<PaymentRequestUi> mScrimShown;
     private final PaymentsCallbackHelper<CardUnmaskPrompt> mReadyForUnmaskInput;
     private final PaymentsCallbackHelper<CardUnmaskPrompt> mReadyToUnmask;
     private final PaymentsCallbackHelper<CardUnmaskPrompt> mUnmaskValidationDone;
@@ -209,6 +220,7 @@ import java.util.concurrent.atomic.AtomicReference;
         mReadyToUnmask = new PaymentsCallbackHelper<>();
         mUnmaskValidationDone = new PaymentsCallbackHelper<>();
         mSubmitRejected = new PaymentsCallbackHelper<>();
+        mScrimShown = new PaymentsCallbackHelper<>();
         mReadyToEdit = new CallbackHelper();
         mEditorValidationError = new CallbackHelper();
         mEditorTextUpdate = new CallbackHelper();
@@ -275,6 +287,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /* package */ PaymentsCallbackHelper<PaymentRequestUi> getResultReady() {
         return mResultReady;
+    }
+
+    /* package */ PaymentsCallbackHelper<PaymentRequestUi> getScrimShown() {
+        return mScrimShown;
     }
 
     /* package */ PaymentsCallbackHelper<CardUnmaskPrompt> getReadyForUnmaskInput() {
@@ -994,6 +1010,12 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     @Override
+    public void onPaymentRequestScrimShown(PaymentRequestUi ui) {
+        ThreadUtils.assertOnUiThread();
+        mScrimShown.notifyCalled(ui);
+    }
+
+    @Override
     public void onEditorReadyToEdit() {
         ThreadUtils.assertOnUiThread();
         mReadyToEdit.notifyCalled();
@@ -1190,7 +1212,28 @@ import java.util.concurrent.atomic.AtomicReference;
             int appPresence,
             @FactorySpeed int factorySpeed,
             @AppSpeed int appSpeed) {
-        TestFactory factory = new TestFactory(appMethodName, appPresence, factorySpeed, appSpeed);
+        return addPaymentAppFactory(
+                appMethodName, appPresence, factorySpeed, appSpeed, AppStability.STABLE);
+    }
+
+    /**
+     * Adds a payment app factory for testing.
+     *
+     * @param appMethodName The name of the payment method used in the payment app.
+     * @param appPresence Whether the factory has apps.
+     * @param factorySpeed How quick the factory creates apps.
+     * @param appSpeed How quick the app responds to "invoke".
+     * @param appStability Whether the app crashes on invocation.
+     * @return The test factory. Can be ignored.
+     */
+    /* package */ TestFactory addPaymentAppFactory(
+            String appMethodName,
+            int appPresence,
+            @FactorySpeed int factorySpeed,
+            @AppSpeed int appSpeed,
+            @AppStability int appStability) {
+        TestFactory factory =
+                new TestFactory(appMethodName, appPresence, factorySpeed, appSpeed, appStability);
         String factoryId = "testFactoryId_" + mFactoryCount++;
         PaymentAppService.getInstance().addUniqueFactory(factory, factoryId);
         return factory;
@@ -1202,17 +1245,20 @@ import java.util.concurrent.atomic.AtomicReference;
         private final @AppPresence int mAppPresence;
         private final @FactorySpeed int mFactorySpeed;
         private final @AppSpeed int mAppSpeed;
+        private final @AppStability int mAppStability;
         private PaymentAppFactoryDelegate mDelegate;
 
         private TestFactory(
                 String appMethodName,
                 @AppPresence int appPresence,
                 @FactorySpeed int factorySpeed,
-                @AppSpeed int appSpeed) {
+                @AppSpeed int appSpeed,
+                @AppStability int appStability) {
             mAppMethodName = appMethodName;
             mAppPresence = appPresence;
             mFactorySpeed = factorySpeed;
             mAppSpeed = appSpeed;
+            mAppStability = appStability;
         }
 
         @Override
@@ -1224,7 +1270,8 @@ import java.util.concurrent.atomic.AtomicReference;
                                 delegate.getParams().getMethodData().containsKey(mAppMethodName);
                         delegate.onCanMakePaymentCalculated(canMakePayment);
                         if (canMakePayment && mAppPresence == AppPresence.HAVE_APPS) {
-                            delegate.onPaymentAppCreated(new TestPay(mAppMethodName, mAppSpeed));
+                            delegate.onPaymentAppCreated(
+                                    new TestPay(mAppMethodName, mAppSpeed, mAppStability));
                         }
                         delegate.onDoneCreatingPaymentApps(this);
                     };
@@ -1245,8 +1292,13 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final class TestPay extends PaymentApp {
         private final String mDefaultMethodName;
         private final @AppSpeed int mAppSpeed;
+        private final @AppStability int mAppStability;
 
         TestPay(String defaultMethodName, @AppSpeed int appSpeed) {
+            this(defaultMethodName, appSpeed, AppStability.STABLE);
+        }
+
+        TestPay(String defaultMethodName, @AppSpeed int appSpeed, @AppStability int appStability) {
             super(
                     /* id= */ UUID.randomUUID().toString(),
                     /* label= */ defaultMethodName,
@@ -1254,6 +1306,7 @@ import java.util.concurrent.atomic.AtomicReference;
                     /* icon= */ null);
             mDefaultMethodName = defaultMethodName;
             mAppSpeed = appSpeed;
+            mAppStability = appStability;
         }
 
         @Override
@@ -1279,6 +1332,10 @@ import java.util.concurrent.atomic.AtomicReference;
                 InstrumentDetailsCallback detailsCallback) {
             Runnable respond =
                     () -> {
+                        if (mAppStability == AppStability.FAST_CRASH) {
+                            detailsCallback.onInstrumentDetailsError("Payment app crashed");
+                            return;
+                        }
                         detailsCallback.onInstrumentDetailsReady(
                                 mDefaultMethodName,
                                 "{\"transaction\": 1337, \"total\": \""
@@ -1287,9 +1344,11 @@ import java.util.concurrent.atomic.AtomicReference;
                                 new PayerData());
                     };
             if (mAppSpeed == AppSpeed.FAST_APP) {
-                respond.run();
+                // Run async to avoid reentrancy crash. The onInstrumentDetails callbacks
+                // are expected to run async.
+                PostTask.postTask(TaskTraits.UI_DEFAULT, respond);
             } else {
-                new Handler().postDelayed(respond, 100);
+                PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, respond, 100);
             }
         }
 

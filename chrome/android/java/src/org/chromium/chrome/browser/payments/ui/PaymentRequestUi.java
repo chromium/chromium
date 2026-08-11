@@ -71,7 +71,7 @@ import java.util.List;
 /** The PaymentRequest UI. */
 @NullMarked
 public class PaymentRequestUi
-        implements DimmingDialog.OnDismissListener,
+        implements DimmingDialog.DimmingDialogObserver,
                 View.OnClickListener,
                 PaymentRequestSection.SectionDelegate,
                 PauseResumeWithNativeObserver {
@@ -241,6 +241,9 @@ public class PaymentRequestUi
 
         /** Called when the result UI is showing. */
         void onPaymentRequestResultReady(PaymentRequestUi ui);
+
+        /** Called when the scrim is shown in the skip UI case. */
+        void onPaymentRequestScrimShown(PaymentRequestUi ui);
     }
 
     /** Helper to notify tests of an event only once. */
@@ -476,7 +479,8 @@ public class PaymentRequestUi
     public void dimBackground() {
         // Intentionally do not add the bottom sheet view to mDialog so that only the scrim part of
         // the dialog will be shown.
-        mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
+        mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet(
+                /* delayBackground= */ true);
     }
 
     /**
@@ -1253,13 +1257,20 @@ public class PaymentRequestUi
      *   <li>User closing all incognito windows with PaymentRequest UI open in an incognito window.
      * </ul>
      */
-    // DimmingDialog.OnDismissListener implementation.
+    // DimmingDialog.DimmingDialogObserver implementation.
     @Override
     public void onDismiss() {
         mIsClosing = true;
         if (mEditorDialog.isShowing()) mEditorDialog.dismiss();
         if (sEditorObserverForTest != null) sEditorObserverForTest.onEditorDismiss();
         if (!mIsClientClosing) mClient.onDismiss();
+    }
+
+    @Override
+    public void onScrimShown() {
+        if (sPaymentRequestObserverForTest != null) {
+            sPaymentRequestObserverForTest.onPaymentRequestScrimShown(this);
+        }
     }
 
     @Override
@@ -1494,20 +1505,22 @@ public class PaymentRequestUi
     }
 
     /**
-     * Set the visibility state of the dialog. Use {@link PaymentUisShowStateReconciler}'s
-     * showPaymentRequestDialogWhenNoBottomSheet() and hidePaymentRequestDialog() instead of calling
-     * this method directly.
+     * Show the dialog. Use {@link PaymentUisShowStateReconciler}'s
+     * showPaymentRequestDialogWhenNoBottomSheet() instead of calling this method directly.
      *
-     * @param visible True to show the dialog, false to hide the dialog.
-     * @return Whether setting visibility is successful.
+     * @param delayBackground True if showing the background should be delayed.
+     * @return Whether the dialog was made visible successfully.
      */
-    public boolean setVisible(boolean visible) {
-        if (visible) {
-            return mDialog.show();
-        } else {
-            mDialog.hide();
-            return true;
-        }
+    public boolean showDialog(boolean delayBackground) {
+        return mDialog.show(delayBackground);
+    }
+
+    /**
+     * Hide the dialog. Use {@link PaymentUisShowStateReconciler}'s hidePaymentRequestDialog()
+     * instead of calling this method directly.
+     */
+    public void hideDialog() {
+        mDialog.hide();
     }
 
     // Implement PauseResumeWithNativeObserver:
