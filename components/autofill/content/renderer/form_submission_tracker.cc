@@ -696,10 +696,7 @@ void FormSubmissionTracker::UpdateLastInteractedElement(
 void FormSubmissionTracker::ResetLastInteractedElements() {
   last_interacted_ = {};
   submission_triggering_events_ = {};
-  if (form_element_observer_) {
-    form_element_observer_->Disconnect();
-    form_element_observer_ = nullptr;
-  }
+  form_element_observer_.reset();
 }
 
 bool FormSubmissionTracker::IsTracking() const {

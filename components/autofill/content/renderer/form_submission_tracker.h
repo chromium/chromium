@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_SUBMISSION_TRACKER_H_
 
+#include <memory>
 #include <optional>
 #include <variant>
 
@@ -195,7 +196,7 @@ class FormSubmissionTracker : public content::RenderFrameObserver,
   } last_interacted_;
 
   // TODO(crbug.com/40281981): Remove.
-  raw_ptr<blink::WebFormElementObserver> form_element_observer_ = nullptr;
+  std::unique_ptr<blink::WebFormElementObserver> form_element_observer_;
 
   struct {
     bool tracked_element_disappeared = false;

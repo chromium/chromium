@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_WEB_FORM_ELEMENT_OBSERVER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_WEB_FORM_ELEMENT_OBSERVER_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -19,17 +21,15 @@ class WebFormElement;
 //
 class BLINK_EXPORT WebFormElementObserver {
  public:
-  // Creates a WebFormElementObserver. Delete this WebFormElementObsrver by
-  // calling WebFormElementObserver::Disconnect.
-  static WebFormElementObserver* Create(WebFormElement&, base::OnceClosure);
-  static WebFormElementObserver* Create(WebFormControlElement&,
-                                        base::OnceClosure);
+  static std::unique_ptr<WebFormElementObserver> Create(WebFormElement&,
+                                                        base::OnceClosure);
+  static std::unique_ptr<WebFormElementObserver> Create(WebFormControlElement&,
+                                                        base::OnceClosure);
 
-  virtual void Disconnect() = 0;
+  virtual ~WebFormElementObserver() = default;
 
  protected:
   WebFormElementObserver() = default;
-  virtual ~WebFormElementObserver() = default;
 };
 
 }  // namespace blink

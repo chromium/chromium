@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/exported/web_form_element_observer_impl.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
@@ -117,18 +120,18 @@ void WebFormElementObserverImpl::ObserverCallback::Trace(
   MutationObserver::Delegate::Trace(visitor);
 }
 
-WebFormElementObserver* WebFormElementObserver::Create(
+std::unique_ptr<WebFormElementObserver> WebFormElementObserver::Create(
     WebFormElement& element,
     base::OnceClosure callback) {
-  return MakeGarbageCollected<WebFormElementObserverImpl>(
+  return std::make_unique<WebFormElementObserverImpl>(
       base::PassKey<WebFormElementObserver>(),
       *element.Unwrap<HTMLFormElement>(), std::move(callback));
 }
 
-WebFormElementObserver* WebFormElementObserver::Create(
+std::unique_ptr<WebFormElementObserver> WebFormElementObserver::Create(
     WebFormControlElement& element,
     base::OnceClosure callback) {
-  return MakeGarbageCollected<WebFormElementObserverImpl>(
+  return std::make_unique<WebFormElementObserverImpl>(
       base::PassKey<WebFormElementObserver>(), *element.Unwrap<HTMLElement>(),
       std::move(callback));
 }
@@ -141,16 +144,11 @@ WebFormElementObserverImpl::WebFormElementObserverImpl(
       MakeGarbageCollected<ObserverCallback>(element, std::move(callback));
 }
 
-WebFormElementObserverImpl::~WebFormElementObserverImpl() = default;
-
-void WebFormElementObserverImpl::Disconnect() {
-  mutation_callback_->Disconnect();
-  mutation_callback_ = nullptr;
-  self_keep_alive_.Clear();
-}
-
-void WebFormElementObserverImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(mutation_callback_);
+WebFormElementObserverImpl::~WebFormElementObserverImpl() {
+  if (mutation_callback_) {
+    mutation_callback_->Disconnect();
+    mutation_callback_ = nullptr;
+  }
 }
 
 }  // namespace blink
