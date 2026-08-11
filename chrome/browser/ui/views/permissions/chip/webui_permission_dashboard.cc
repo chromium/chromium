@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 
 WebUIPermissionDashboard::WebUIPermissionDashboard(LocationBar* location_bar)
@@ -46,8 +46,7 @@ views::BubbleAnchor WebUIPermissionDashboard::GetAnchor() {
   if (ui::TrackedElement* element = location_bar_->GetAnchorOrNull()) {
     return views::BubbleAnchor(element);
   }
-  BrowserWindow* window =
-      BrowserWindow::FromBrowser(location_bar_->GetBrowser());
+  ui::BaseWindow* window = location_bar_->GetBrowser()->GetWindow();
   CHECK(window);
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
