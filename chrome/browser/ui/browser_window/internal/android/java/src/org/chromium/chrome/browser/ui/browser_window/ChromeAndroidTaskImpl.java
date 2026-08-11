@@ -32,7 +32,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
-import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -377,33 +376,16 @@ final class ChromeAndroidTaskImpl
                                         topActivityScopedObjects.mActivityWindowAndroid
                                                 .getDisplay();
 
-                                Rect newDecorViewBoundsInPx = new Rect(left, top, right, bottom);
-                                Rect oldDecorViewBoundsInPx =
-                                        new Rect(oldLeft, oldTop, oldRight, oldBottom);
-                                float newDipScale = display.getDipScale();
-                                float oldDipScale = mWindowStateManager.getCurrentDipScale();
-
-                                // Calling WindowStateManager#update too frequently can cause ANRs.
-                                // If there is no change in the decor View's bounds or the scaling
-                                // factor, the window state won't change, and we can skip
-                                // WindowStateManager#update.
-                                if (newDecorViewBoundsInPx.equals(oldDecorViewBoundsInPx)
-                                        && MathUtils.areFloatsEqual(newDipScale, oldDipScale)) {
-                                    return;
-                                }
-
-                                mWindowStateManager.update(
-                                        topActivityScopedObjects.mActivity, display);
-
-                                if (!mWindowStateManager.boundsChangedInDp()) {
+                                if (!mWindowStateManager.updateForDecorViewLayoutChange(
+                                        topActivityScopedObjects.mActivity, display)) {
                                     return;
                                 }
 
                                 for (var feature : mFeatures.values()) {
                                     feature.onTaskBoundsChanged(
                                             display.getDisplayId(),
-                                            mWindowStateManager.getCurrentBoundsInDp(),
-                                            mWindowStateManager.getCurrentBoundsInPx());
+                                            mWindowStateManager.getWindowBoundsInDp(),
+                                            mWindowStateManager.getWindowBoundsInPx());
                                 }
                             });
                 }
@@ -973,7 +955,7 @@ final class ChromeAndroidTaskImpl
                 topActivityScopedObjects -> {
                     Rect restoredBoundsInPx = mWindowStateManager.getRestoredBoundsInPx();
                     if (restoredBoundsInPx == null) {
-                        restoredBoundsInPx = mWindowStateManager.getCurrentBoundsInPx();
+                        restoredBoundsInPx = mWindowStateManager.getWindowBoundsInPx();
                     }
 
                     float dipScale =
@@ -1002,7 +984,7 @@ final class ChromeAndroidTaskImpl
         var futureBounds = mPendingActionManager.getFutureBoundsInDp();
         if (futureBounds != null) return futureBounds;
 
-        return mWindowStateManager.getCurrentBoundsInDp();
+        return mWindowStateManager.getWindowBoundsInDp();
     }
 
     @Override
@@ -1857,7 +1839,7 @@ final class ChromeAndroidTaskImpl
     private void setBoundsInDpInternal(
             TopActivityScopedObjects topActivityScopedObjects, Rect boundsInDp) {
         // Precondition 1: new bounds are not the same as the current bounds.
-        if (mWindowStateManager.getCurrentBoundsInDp().equals(boundsInDp)) return;
+        if (mWindowStateManager.getWindowBoundsInDp().equals(boundsInDp)) return;
 
         // Precondition 2: the Task (window) allows bounds change.
         if (canResizeInternal(topActivityScopedObjects) != WindowResizePrecheckResult.OK) {
@@ -1954,8 +1936,8 @@ final class ChromeAndroidTaskImpl
                     return new InitInfo(
                             nativeBrowserWindowPtr,
                             isTaskVisible,
-                            mWindowStateManager.getCurrentBoundsInPx(),
-                            mWindowStateManager.getCurrentBoundsInDp(),
+                            mWindowStateManager.getWindowBoundsInPx(),
+                            mWindowStateManager.getWindowBoundsInDp(),
                             displayId);
                 },
                 new InitInfo(

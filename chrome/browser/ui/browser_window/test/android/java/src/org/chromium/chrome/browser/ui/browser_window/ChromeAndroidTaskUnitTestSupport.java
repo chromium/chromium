@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,7 @@ import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
@@ -158,6 +160,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ActivityLifecycleDispatcher mMockActivityLifecycleDispatcher;
         public final DisplayAndroid mMockDisplayAndroid;
 
+        /** Mock decor {@link View} for {@link #mMockActivity}. */
+        public final View mMockDecorView;
+
         /** Mock {@link WindowManager} for {@link #mMockActivity}. */
         public final WindowManager mMockWindowManager;
 
@@ -169,12 +174,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 Activity mockActivity,
                 ActivityLifecycleDispatcher mockActivityLifecycleDispatcher,
                 DisplayAndroid mockDisplayAndroid,
+                View mockDecorView,
                 WindowManager mockWindowManager,
                 Window mockWindow) {
             mMockActivityWindowAndroid = mockActivityWindowAndroid;
             mMockActivity = mockActivity;
             mMockActivityLifecycleDispatcher = mockActivityLifecycleDispatcher;
             mMockDisplayAndroid = mockDisplayAndroid;
+            mMockDecorView = mockDecorView;
             mMockWindowManager = mockWindowManager;
             mMockWindow = mockWindow;
         }
@@ -419,6 +426,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         mockActivity,
                         mockActivityLifecycleDispatcher,
                         mockDisplay,
+                        mockDecorView,
                         mockWindowManager,
                         mockWindow);
         sActivityWindowAndroidMocks.put(taskId, mocks);
@@ -561,9 +569,6 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * Configures the provided {@code ActivityWindowAndroidMocks} to meet the expectations of
      * desktop windowing mode.
      *
-     * <p>Only use this in Robolectric tests. Native unit tests run on an emulator, and Mockito will
-     * fail to mock "final" framework classes like {@link WindowMetrics}.
-     *
      * @param activityWindowAndroidMocks The mocks to configure.
      * @param currentWindowBoundsInPx Bounds (in pixels) intended for {@link
      *     WindowManager#getCurrentWindowMetrics()}.
@@ -593,11 +598,52 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(WindowInsetsControllerCompat.BEHAVIOR_DEFAULT);
         when(mockWindow.getInsetsController()).thenReturn(mockWindowInsetsController);
 
+        mockDecorViewBounds(activityWindowAndroidMocks, currentWindowBoundsInPx);
         mockCurrentWindowMetrics(mockWindowManager, currentWindowBoundsInPx);
         mockMaxWindowMetrics(mockWindowManager, fullScreenWindowBoundsInPx, maxTappableInsetsInPx);
 
         // Connect mock WindowManager to mock Activity.
         when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
+    }
+
+    /**
+     * Mocks the decor {@link View} bounds for the provided {@link ActivityWindowAndroidMocks},
+     * based on the given {@code windowBoundsInPx}.
+     *
+     * @return The mock decor {@link View}.
+     */
+    static View mockDecorViewBounds(
+            ActivityWindowAndroidMocks activityWindowAndroidMocks, Rect windowBoundsInPx) {
+        View mockDecorView = activityWindowAndroidMocks.mMockDecorView;
+
+        // A View's left/top/right/bottom properties are relative to its parent, not the screen.
+        // For a decor View, its left and top properties are 0.
+        //
+        // View#get{Left|Top|Right|Bottom|Width|Height}() are final methods so we can only mock them
+        // in Robolectric tests. This class is also used by native unit tests run on emulators, and
+        // for those tests, the decor View bounds won't be correctly mocked. If your emulator tests
+        // rely on decor View bounds, please create Java integration tests or C++ browser tests.
+        if (isRobolectricTest()) {
+            when(mockDecorView.getLeft()).thenReturn(0);
+            when(mockDecorView.getTop()).thenReturn(0);
+            when(mockDecorView.getRight()).thenReturn(windowBoundsInPx.width());
+            when(mockDecorView.getBottom()).thenReturn(windowBoundsInPx.height());
+            when(mockDecorView.getWidth()).thenReturn(windowBoundsInPx.width());
+            when(mockDecorView.getHeight()).thenReturn(windowBoundsInPx.height());
+        }
+
+        // View#getLocationOnScreen() gets the coordinates relative to the screen.
+        doAnswer(
+                        invocation -> {
+                            int[] location = invocation.getArgument(0);
+                            location[0] = windowBoundsInPx.left;
+                            location[1] = windowBoundsInPx.top;
+                            return null;
+                        })
+                .when(mockDecorView)
+                .getLocationOnScreen(any(int[].class));
+
+        return mockDecorView;
     }
 
     @RequiresApi(api = VERSION_CODES.R)
@@ -625,5 +671,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         .build();
         var maxWindowMetrics = new WindowMetrics(fullScreenWindowBoundsInPx, maxWindowInsets);
         when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(maxWindowMetrics);
+    }
+
+    private static boolean isRobolectricTest() {
+        return "robolectric".equals(Build.FINGERPRINT);
     }
 }

@@ -1465,7 +1465,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
-    public void onDecorViewLayoutChange_windowBoundsChanged_invokesOnTaskBoundsChangedForFeature() {
+    public void onDecorViewLayoutChange_windowResized_invokesOnTaskBoundsChangedForFeature() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask =
@@ -1477,39 +1477,122 @@ public class ChromeAndroidTaskImplUnitTest {
                         TestChromeAndroidTaskFeature.class, /* profile= */ null);
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
-        var mockWindowManager =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
         var taskBounds0 = new Rect(0, 0, 500, 600);
         var taskBounds1 = new Rect(0, 0, 800, 600);
 
         // Act.
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds0);
+        var mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBounds0);
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBounds0.left,
-                        taskBounds0.top,
-                        taskBounds0.right,
-                        taskBounds0.bottom,
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
                         /* oldLeft= */ 0,
                         /* oldTop= */ 0,
                         /* oldRight= */ 0,
                         /* oldBottom= */ 0);
 
+        int oldLeft = mockDecorView.getLeft();
+        int oldTop = mockDecorView.getTop();
+        int oldRight = mockDecorView.getRight();
+        int oldBottom = mockDecorView.getBottom();
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds1);
+        mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBounds1);
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBounds1.left,
-                        taskBounds1.top,
-                        taskBounds1.right,
-                        taskBounds1.bottom,
-                        taskBounds0.left,
-                        taskBounds0.top,
-                        taskBounds0.right,
-                        taskBounds0.bottom);
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        oldLeft,
+                        oldTop,
+                        oldRight,
+                        oldBottom);
+
+        // Assert.
+        assertEquals(2, testFeature.mTaskBoundsChangeDpHistory.size());
+        assertEquals(taskBounds0, testFeature.mTaskBoundsChangeDpHistory.get(0));
+        assertEquals(taskBounds1, testFeature.mTaskBoundsChangeDpHistory.get(1));
+
+        assertEquals(2, testFeature.mTaskBoundsChangeDisplayIdHistory.size());
+        assertEquals(0, (int) testFeature.mTaskBoundsChangeDisplayIdHistory.get(0));
+        assertEquals(0, (int) testFeature.mTaskBoundsChangeDisplayIdHistory.get(1));
+
+        assertEquals(2, testFeature.mTaskBoundsChangePxHistory.size());
+        assertEquals(taskBounds0, testFeature.mTaskBoundsChangePxHistory.get(0));
+        assertEquals(taskBounds1, testFeature.mTaskBoundsChangePxHistory.get(1));
+    }
+
+    @Test
+    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
+    public void onDecorViewLayoutChange_windowMoved_invokesOnTaskBoundsChangedForFeature() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
+        var taskBounds0 = new Rect(0, 0, 500, 600);
+        var taskBounds1 = new Rect(taskBounds0);
+        taskBounds1.offset(10, 10);
+
+        // Act.
+        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds0);
+        var mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBounds0);
+        chromeAndroidTask
+                .getDecorViewLayoutChangeListenerForTesting()
+                .onLayoutChange(
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        /* oldLeft= */ 0,
+                        /* oldTop= */ 0,
+                        /* oldRight= */ 0,
+                        /* oldBottom= */ 0);
+
+        int oldLeft = mockDecorView.getLeft();
+        int oldTop = mockDecorView.getTop();
+        int oldRight = mockDecorView.getRight();
+        int oldBottom = mockDecorView.getBottom();
+        ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(mockWindowManager, taskBounds1);
+        mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBounds1);
+        chromeAndroidTask
+                .getDecorViewLayoutChangeListenerForTesting()
+                .onLayoutChange(
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        oldLeft,
+                        oldTop,
+                        oldRight,
+                        oldBottom);
 
         // Assert.
         assertEquals(2, testFeature.mTaskBoundsChangeDpHistory.size());
@@ -1543,24 +1626,28 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Arrange: Set up window metrics for next layout change.
         float dipScale = 2.0f;
-        var mockDisplayAndroid =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
-        when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
-        var mockWindowManager =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
         var taskBoundsInPx = new Rect(0, 0, 800, 600);
+
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockDisplayAndroid = activityWindowAndroidMocks.mMockDisplayAndroid;
+        var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
+
+        when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
                 mockWindowManager, taskBoundsInPx);
+        var mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBoundsInPx);
 
         // Act.
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBoundsInPx.left,
-                        taskBoundsInPx.top,
-                        taskBoundsInPx.right,
-                        taskBoundsInPx.bottom,
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
                         /* oldLeft= */ 0,
                         /* oldTop= */ 0,
                         /* oldRight= */ 0,
@@ -1568,15 +1655,15 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBoundsInPx.left,
-                        taskBoundsInPx.top,
-                        taskBoundsInPx.right,
-                        taskBoundsInPx.bottom,
-                        taskBoundsInPx.left,
-                        taskBoundsInPx.top,
-                        taskBoundsInPx.right,
-                        taskBoundsInPx.bottom);
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom());
 
         // Assert:
         // Only the first onLayoutChange() should trigger onTaskBoundsChanged() as the
@@ -1602,49 +1689,61 @@ public class ChromeAndroidTaskImplUnitTest {
                         TestChromeAndroidTaskFeature.class, /* profile= */ null);
         chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
-        var mockWindowManager =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockDisplayAndroid = activityWindowAndroidMocks.mMockDisplayAndroid;
+        var mockWindowManager = activityWindowAndroidMocks.mMockWindowManager;
 
         float dipScale1 = 1.0f;
         float dipScale2 = 2.0f;
-        var mockDisplayAndroid =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
 
         var taskBoundsInPx1 = new Rect(0, 0, 800, 600);
         var taskBoundsInPx2 = DisplayUtil.scaleToEnclosingRect(taskBoundsInPx1, dipScale2);
 
-        // Act.
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale1);
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
                 mockWindowManager, taskBoundsInPx1);
+        var mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBoundsInPx1);
+
+        // Act.
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBoundsInPx1.left,
-                        taskBoundsInPx1.top,
-                        taskBoundsInPx1.right,
-                        taskBoundsInPx1.bottom,
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
                         /* oldLeft= */ 0,
                         /* oldTop= */ 0,
                         /* oldRight= */ 0,
                         /* oldBottom= */ 0);
 
+        int oldLeft = mockDecorView.getLeft();
+        int oldTop = mockDecorView.getTop();
+        int oldRight = mockDecorView.getRight();
+        int oldBottom = mockDecorView.getBottom();
+
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale2);
         ChromeAndroidTaskUnitTestSupport.mockCurrentWindowMetrics(
                 mockWindowManager, taskBoundsInPx2);
+        mockDecorView =
+                ChromeAndroidTaskUnitTestSupport.mockDecorViewBounds(
+                        activityWindowAndroidMocks, taskBoundsInPx2);
+
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        taskBoundsInPx2.left,
-                        taskBoundsInPx2.top,
-                        taskBoundsInPx2.right,
-                        taskBoundsInPx2.bottom,
-                        taskBoundsInPx1.left,
-                        taskBoundsInPx1.top,
-                        taskBoundsInPx1.right,
-                        taskBoundsInPx1.bottom);
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        oldLeft,
+                        oldTop,
+                        oldRight,
+                        oldBottom);
 
         // Assert:
         // Only the first onLayoutChange() should trigger onTaskBoundsChanged() as the
@@ -1935,21 +2034,22 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange: scaling factor.
         // Note that changing the scaling factor should trigger the decor View's onLayoutChange().
         float dipScale = 2.0f;
-        var mockDisplayAndroid =
-                chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockDisplayAndroid;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        var mockDisplayAndroid = activityWindowAndroidMocks.mMockDisplayAndroid;
+        var mockDecorView = activityWindowAndroidMocks.mMockDecorView;
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
         chromeAndroidTask
                 .getDecorViewLayoutChangeListenerForTesting()
                 .onLayoutChange(
-                        /* v= */ null,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.left,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.top,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.right,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.bottom,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.left,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.top,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.right,
-                        DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX.bottom);
+                        mockDecorView,
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom(),
+                        mockDecorView.getLeft(),
+                        mockDecorView.getTop(),
+                        mockDecorView.getRight(),
+                        mockDecorView.getBottom());
 
         // Act
         Rect boundsInDp = chromeAndroidTask.getBoundsInDp();
