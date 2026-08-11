@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_category_classifier_tab_helper.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/page_content_annotations/core/page_content_annotations_common.h"
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
@@ -19,6 +22,8 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace {
 
@@ -217,5 +222,34 @@ void OnDeviceCategoryClassifierTabHelper::OnPageContextExtracted(
 void OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified(
     ukm::SourceId source_id,
     const std::vector<page_content_annotations::Category>& categories) {
-  // Stub for CL 2.
+  ukm::builders::PageContentAnnotations2 builder(source_id);
+  bool has_ukm = false;
+
+  for (const page_content_annotations::Category& category : categories) {
+    int64_t score = base::ClampRound(category.score * 100);
+    int64_t noisy_score =
+        page_content_annotations::GenerateRapporNoisedScore(category.score);
+    switch (category.category_type) {
+      case page_content_annotations::CategoryType::kEducation:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "EducationScore",
+            score);
+        builder.SetCategoryClassifier_EducationScore(noisy_score);
+        has_ukm = true;
+        break;
+      case page_content_annotations::CategoryType::kShopping:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "ShoppingScore",
+            score);
+        builder.SetCategoryClassifier_ShoppingScore(noisy_score);
+        has_ukm = true;
+        break;
+    }
+  }
+
+  if (has_ukm) {
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }

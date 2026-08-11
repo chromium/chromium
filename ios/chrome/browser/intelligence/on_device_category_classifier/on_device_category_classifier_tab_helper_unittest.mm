@@ -5,18 +5,23 @@
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_category_classifier_tab_helper.h"
 
 #import <memory>
+#import <vector>
 
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "components/passage_embeddings/core/passage_embeddings_types.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -213,15 +218,64 @@ TEST_F(OnDeviceCategoryClassifierTabHelperTest,
                              GURL("https://example.com"));
 }
 
-// Tests OnCategoriesClassified invocation.
+// Tests OnCategoriesClassified records UMA and UKM correctly.
 TEST_F(OnDeviceCategoryClassifierTabHelperTest,
-       OnCategoriesClassifiedHandling) {
+       OnCategoriesClassifiedRecordsUkmAndUma) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   web_state_->SetCurrentURL(GURL("https://example.com"));
   OnDeviceCategoryClassifierTabHelper::CreateForWebState(web_state_.get());
   auto* tab_helper =
       OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
 
-  CallOnCategoriesClassified(tab_helper, ukm::SourceId(), {});
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kEducation, 0.75f},
+      {page_content_annotations::CategoryType::kShopping, 0.20f},
+  };
+
+  CallOnCategoriesClassified(tab_helper, source_id, categories);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+      "EducationScore",
+      75, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+      "ShoppingScore",
+      20, 1);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations2::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
+    EXPECT_EQ(source_id, entry->source_id);
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry, ukm::builders::PageContentAnnotations2::
+                   kCategoryClassifier_EducationScoreName));
+    EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
+        entry, ukm::builders::PageContentAnnotations2::
+                   kCategoryClassifier_ShoppingScoreName));
+  }
+}
+
+// Tests that empty categories list does not record UKM.
+TEST_F(OnDeviceCategoryClassifierTabHelperTest,
+       OnCategoriesClassifiedEmptyDoesNotRecordUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  OnDeviceCategoryClassifierTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper =
+      OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
+
+  CallOnCategoriesClassified(tab_helper, ukm::UkmRecorder::GetNewSourceID(),
+                             {});
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations2::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 // Tests that ExtractPageContext uses cached embeddings when available.

@@ -33,6 +33,7 @@ source_set("on_device_category_classifier") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/passage_embeddings",
   ]
 }
@@ -54,11 +55,13 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
+    "//components/ukm:test_support",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
