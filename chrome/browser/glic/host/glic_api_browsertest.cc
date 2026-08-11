@@ -695,11 +695,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
 }
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsDisabled,
-                       testGeminiEnterpriseSettingsDisabled) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsPolicy,
                        testGeminiEnterpriseSettingsPolicy) {
   ExecuteJsTest();
@@ -2530,10 +2525,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithFailedCookieSync,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestGeminiEnterpriseSettingsDisabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
+
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestGeminiEnterpriseSettingsPolicy,
                          DefaultTestParamSet(),

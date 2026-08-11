@@ -1426,6 +1426,13 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(settings.location, 'switch-location');
   }
 
+  async testGeminiEnterpriseSettingsDisabled() {
+    assertDefined(this.host.getGeminiEnterpriseSettings);
+    const settingsObservable = this.host.getGeminiEnterpriseSettings();
+    const settings = settingsObservable.getCurrentValue();
+    assertUndefined(settings);
+  }
+
   async testGetDisplayMedia() {
     async function waitForFirstFrame(track: MediaStreamVideoTrack):
         Promise<boolean> {

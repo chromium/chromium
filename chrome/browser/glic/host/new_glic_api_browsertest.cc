@@ -211,6 +211,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithExperimentalTriggeringScreenshot",
       "NewGlicApiUnresponsiveTest",
       "NewGlicApiTestGeminiEnterpriseSettingsOverride",
+      "NewGlicApiTestGeminiEnterpriseSettingsDisabled",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -656,6 +657,24 @@ class NewGlicApiTestGeminiEnterpriseSettingsOverride : public NewGlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestGeminiEnterpriseSettingsOverride,
                        testGeminiEnterpriseSettings) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestGeminiEnterpriseSettingsDisabled
+    : public NewGlicApiTestGeminiEnterpriseSettingsOverride {
+ public:
+  NewGlicApiTestGeminiEnterpriseSettingsDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestGeminiEnterpriseSettingsDisabled,
+                       testGeminiEnterpriseSettingsDisabled) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -3635,6 +3654,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestGeminiEnterpriseSettingsOverride,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestGeminiEnterpriseSettingsDisabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
