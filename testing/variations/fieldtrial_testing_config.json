@@ -16101,6 +16101,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "allow-signed-out": "false"
+                    },
                     "enable_features": [
                         "ContextualTasksSidePanel",
                         "LensSidePanelUnification"
