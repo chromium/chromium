@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -42,17 +43,24 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
   if (client_->IsOffTheRecord()) {
+    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kOffTheRecord);
     return;
   }
 
   const FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
+    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kNoCachedForm);
     return;
   }
 
   if (strike_database_ && strike_database_->ShouldBlockFeature() &&
       !base::FeatureList::IsEnabled(
           features::kAutofillIgnorePaymentsChurnedUsersStrikesForTesting)) {
+    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+            kStrikeDatabaseBlocked);
     return;
   }
 
@@ -64,6 +72,9 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
       });
 
   if (!is_visible_credit_card_form) {
+    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+            kFormNotVisible);
     return;
   }
 
@@ -74,21 +85,40 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
 
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kAutofillCreditCardEnabled);
-  if (pref && pref->IsUserControlled() && !pref->GetValue()->GetBool() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableResurrectingPaymentsUsers)) {
-    if (payments::PaymentsAutofillClient* payments_client =
-            client_->GetPaymentsAutofillClient()) {
-      payments_client->ShowPaymentsChurnedUsersUI(
-          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                         weak_factory_.GetWeakPtr(),
-                         PaymentsUiClosedReason::kAccepted),
-          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                         weak_factory_.GetWeakPtr(),
-                         PaymentsUiClosedReason::kCancelled),
-          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                         weak_factory_.GetWeakPtr(),
-                         PaymentsUiClosedReason::kUnknown));
+  if (pref) {
+    // If autofill is already turned on, there is no need to display the churned
+    // users bubble.
+    if (pref->GetValue()->GetBool()) {
+      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+              kPrefAlreadyTurnedOn);
+      return;
+    }
+
+    // If autofill was not turned off by the user, there is no need to display
+    // the churned users bubble.
+    if (!pref->IsUserControlled()) {
+      autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+          autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
+              kPrefNotUserControlled);
+      return;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableResurrectingPaymentsUsers)) {
+      if (payments::PaymentsAutofillClient* payments_client =
+              client_->GetPaymentsAutofillClient()) {
+        payments_client->ShowPaymentsChurnedUsersUI(
+            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                           weak_factory_.GetWeakPtr(),
+                           PaymentsUiClosedReason::kAccepted),
+            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                           weak_factory_.GetWeakPtr(),
+                           PaymentsUiClosedReason::kCancelled),
+            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                           weak_factory_.GetWeakPtr(),
+                           PaymentsUiClosedReason::kUnknown));
+      }
     }
   }
 }

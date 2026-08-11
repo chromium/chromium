@@ -211,6 +211,8 @@ void PaymentsChurnedUsersBubbleController::DoShowBubble() {
           ->ShowPaymentsChurnedUsersBubble(web_contents(), this, is_reshow_);
   if (created_bubble) {
     SetBubbleView(*created_bubble);
+    autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
+        autofill_metrics::PaymentsChurnedUsersBubbleShowResult::kShown);
   }
 #endif
 }

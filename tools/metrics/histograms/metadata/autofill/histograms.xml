@@ -6824,7 +6824,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the result of the payments churned users bubble. Logged when the bubble
-    is closed.
+    is closed. This will only be logged once per show, regardless of the show
+    being a first show or a reshow.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.PaymentsChurnedUsersBubble.ShowResult"
+    enum="PaymentsChurnedUsersBubbleShowResult" expires_after="2027-04-30">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of attempting to show the payments churned users bubble,
+    specifically either the reason it was not shown or that it was shown
+    successfully. Logged at the point where the decision was made to not show
+    the payments churned users bubble, or when it was shown successfully. This
+    only applies to first shows.
   </summary>
 </histogram>
 

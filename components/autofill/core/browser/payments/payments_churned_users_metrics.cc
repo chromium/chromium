@@ -13,4 +13,10 @@ void LogPaymentsChurnedUsersBubbleResult(PaymentsUiClosedReason closed_reason) {
                                 closed_reason);
 }
 
+void LogPaymentsChurnedUsersBubbleShowResult(
+    PaymentsChurnedUsersBubbleShowResult result) {
+  base::UmaHistogramEnumeration(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult", result);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -31,6 +31,10 @@ class PaymentsChurnedUsersManager : public AutofillManager::Observer {
                               AutofillManager::Observer::FieldTypeSource source,
                               bool small_forms_were_parsed) override;
 
+  PaymentsChurnedUsersStrikeDatabase* GetStrikeDatabaseForTesting() {
+    return strike_database_.get();
+  }
+
  private:
   void OnUiClosed(PaymentsUiClosedReason closed_reason);
 

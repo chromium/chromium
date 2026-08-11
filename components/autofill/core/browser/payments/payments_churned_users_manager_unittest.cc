@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_churned_users_manager.h"
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -363,6 +364,117 @@ TEST_F(PaymentsChurnedUsersManagerTest, AcceptCallbackClearsStrikes) {
   std::move(accept_callback).Run();
 
   EXPECT_EQ(strike_database.GetStrikes(), 0);
+}
+
+// Tests that the NotShownReason metric is logged correctly for off the record.
+TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_OffTheRecord) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+  autofill_client().set_is_off_the_record(true);
+
+  base::HistogramTester histogram_tester;
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly for no cached form.
+TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_NoCachedForm) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  base::HistogramTester histogram_tester;
+  // Trigger OnFieldTypesDetermined with an invalid form id that doesn't exist.
+  manager_->OnFieldTypesDetermined(
+      autofill_manager(), FormGlobalId(),
+      AutofillManager::Observer::FieldTypeSource::kAutofillServer, false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly for strike database.
+TEST_F(PaymentsChurnedUsersManagerTest,
+       Metrics_NotShownReason_StrikeDatabaseBlocked) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  // Add max strikes.
+  PaymentsChurnedUsersStrikeDatabase* strike_database =
+      manager_->GetStrikeDatabaseForTesting();
+  if (strike_database) {
+    while (!strike_database->ShouldBlockFeature()) {
+      strike_database->AddStrike();
+    }
+  }
+
+  base::HistogramTester histogram_tester;
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/3, /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly for no visible form.
+TEST_F(PaymentsChurnedUsersManagerTest, Metrics_NotShownReason_FormNotVisible) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  base::HistogramTester histogram_tester;
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true,
+                                 /*is_visible=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/4, /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly when pref is turned
+// on.
+TEST_F(PaymentsChurnedUsersManagerTest,
+       Metrics_NotShownReason_PrefAlreadyTurnedOn) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           true);
+
+  base::HistogramTester histogram_tester;
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/5, /*expected_bucket_count=*/1);
+}
+
+// Tests that the NotShownReason metric is logged correctly when pref is not
+// user controlled.
+TEST_F(PaymentsChurnedUsersManagerTest,
+       Metrics_NotShownReason_PrefNotUserControlled) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableResurrectingPaymentsUsers);
+  manager_ = std::make_unique<PaymentsChurnedUsersManager>(&autofill_client());
+
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+  autofill_client().GetPrefs()->SetManagedPref(
+      prefs::kAutofillCreditCardEnabled, base::Value(false));
+
+  base::HistogramTester histogram_tester;
+  SimulateOnFieldTypesDetermined(/*is_credit_card_form=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsChurnedUsersBubble.ShowResult",
+      /*sample=*/6, /*expected_bucket_count=*/1);
 }
 
 }  // namespace
