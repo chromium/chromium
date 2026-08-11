@@ -69,6 +69,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/metrics/metrics_service.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -85,6 +86,8 @@
 #include "components/skills/public/skills_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/active_field_trials.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -3537,6 +3540,39 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testStopMicrophone) {
       microphone_stopped.GetCallback());
   EXPECT_TRUE(microphone_stopped.Wait());
   ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testSetSyntheticExperimentState) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    std::vector<variations::ActiveGroupId> trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
+    variations::ActiveGroupId expected =
+        variations::MakeActiveGroupId("TestTrial", "Enabled");
+    return std::ranges::any_of(trials, [&](const auto& trial) {
+      return trial.name == expected.name && trial.group == expected.group;
+    });
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSetSyntheticExperimentStateMultiProfile) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    std::vector<variations::ActiveGroupId> trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
+    variations::ActiveGroupId expected =
+        variations::MakeActiveGroupId("TestTrial", "MultiProfileDetected");
+    return std::ranges::any_of(trials, [&](const auto& trial) {
+      return trial.name == expected.name && trial.group == expected.group;
+    });
+  }));
 }
 
 auto DefaultTestParamSet() {

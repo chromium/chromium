@@ -1481,6 +1481,17 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
     await waitFor(stopMicrophonePromise.promise);
   }
+
+  async testSetSyntheticExperimentState() {
+    assertDefined(this.host.setSyntheticExperimentState);
+    this.host.setSyntheticExperimentState('TestTrial', 'Enabled');
+  }
+
+  async testSetSyntheticExperimentStateMultiProfile() {
+    assertDefined(this.host.setSyntheticExperimentState);
+    this.host.setSyntheticExperimentState('TestTrial', 'Group1');
+    this.host.setSyntheticExperimentState('TestTrial', 'Group2');
+  }
 }
 
 class FaviconTest extends ApiTests {

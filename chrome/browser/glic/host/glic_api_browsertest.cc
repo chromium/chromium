@@ -1348,36 +1348,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
 }
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {
-  ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([]() {
-    std::vector<variations::ActiveGroupId> trials =
-        g_browser_process->metrics_service()
-            ->GetSyntheticTrialRegistry()
-            ->GetCurrentSyntheticFieldTrialsForTest();
-    variations::ActiveGroupId expected =
-        variations::MakeActiveGroupId("TestTrial", "Enabled");
-    return std::ranges::any_of(trials, [&](const auto& trial) {
-      return trial.name == expected.name && trial.group == expected.group;
-    });
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testSetSyntheticExperimentStateMultiProfile) {
-  ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([]() {
-    std::vector<variations::ActiveGroupId> trials =
-        g_browser_process->metrics_service()
-            ->GetSyntheticTrialRegistry()
-            ->GetCurrentSyntheticFieldTrialsForTest();
-    variations::ActiveGroupId expected =
-        variations::MakeActiveGroupId("TestTrial", "MultiProfileDetected");
-    return std::ranges::any_of(trials, [&](const auto& trial) {
-      return trial.name == expected.name && trial.group == expected.group;
-    });
-  }));
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
