@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NTP_TILES_PREF_NAMES_H_
 #define COMPONENTS_NTP_TILES_PREF_NAMES_H_
 
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -38,6 +39,12 @@ inline constexpr char kPopularSitesJsonPref[] = "suggested_sites_json";
 inline constexpr char kPopularSitesVersionPref[] = "suggested_sites_version";
 
 // Prefs used to cache custom links.
+// TODO(crbug.com/525465032): Clean `IS_DESKTOP_ANDROID` up by plumbing a
+// runtime option through the backend instead of relying on build flags.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+inline constexpr char kCustomLinksList[] = "custom_links.list";
+inline constexpr char kCustomLinksInitialized[] = "custom_links.initialized";
+#else
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 inline constexpr char kCustomLinksList[] = "custom_links_mobile.list";
 inline constexpr char kCustomLinksInitialized[] =
@@ -46,6 +53,7 @@ inline constexpr char kCustomLinksInitialized[] =
 inline constexpr char kCustomLinksList[] = "custom_links.list";
 inline constexpr char kCustomLinksInitialized[] = "custom_links.initialized";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
 // Prefs used to cache enterprise shortcuts.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
