@@ -299,7 +299,6 @@ bool IsPdfInk2AnnotationsEnabled(content::BrowserContext* context) {
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 bool IsPdfSaveToDriveEnabled(content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/488428177): Write unit test for this logic.
   // On ChromeOS, only regular user session has accounts associated with the
   // browser.
 

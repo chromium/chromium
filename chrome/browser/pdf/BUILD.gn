@@ -167,20 +167,39 @@ source_set("pdf_extension_test_base") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "mime_handler_stream_manager_pdf_unittest.cc" ]
+  sources = [
+    "mime_handler_stream_manager_pdf_unittest.cc",
+    "pdf_extension_util_unittest.cc",
+  ]
 
   deps = [
     ":pdf",
     "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:stream_container",
     "//extensions/browser/mime_handler:test_helpers",
+    "//pdf:buildflags",
     "//pdf:features",
+    "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/login/users",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/policy/device_local_account",
+      "//components/account_id",
+      "//components/account_id:test_support",
+      "//components/session_manager/test:test_support",
+      "//components/user_manager",
+    ]
+  }
 }
 
 if (!is_android) {
