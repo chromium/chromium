@@ -179,6 +179,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
@@ -1137,6 +1138,16 @@ ChromeAutofillClient::GetAutofillSnackbarController() {
   }
 
   return autofill_snackbar_controller_impl_.get();
+}
+
+void ChromeAutofillClient::ShowAutofillAiLoadingDialog() {
+  GetAutofillDialogController()->ShowLoadingDialog(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_LOADING_DIALOG_LABEL),
+      base::Seconds(1));
+}
+
+void ChromeAutofillClient::DismissAutofillAiLoadingDialog() {
+  GetAutofillDialogController()->Dismiss();
 }
 
 AutofillDialogController* ChromeAutofillClient::GetAutofillDialogController() {

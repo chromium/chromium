@@ -300,6 +300,11 @@ class MockAutofillClient : public TestAutofillClient {
               (std::string),
               (const, override));
 
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, ShowAutofillAiLoadingDialog, (), (override));
+  MOCK_METHOD(void, DismissAutofillAiLoadingDialog, (), (override));
+#endif
+
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
   bool IsLastQueriedField(FieldGlobalId field_id) override {
@@ -3252,16 +3257,22 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   external_delegate().DidAcceptSuggestion(fill_suggestion,
                                           {.multi_index = {0}});
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_IOS)
 
 class AutofillExternalDelegateWithAmbientAutofillTest
     : public AutofillExternalDelegateTest {
  public:
   AutofillExternalDelegateWithAmbientAutofillTest() {
-    scoped_feature_list_.InitWithFeatures({features::kAutofillAiWithDataSchema,
-                                           features::kAutofillAmbientAutofill},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kAutofillAiWithDataSchema,
+            features::kAutofillAiReauthRequired,
+            features::kAutofillAmbientAutofill,
+            features::kAutofillAiWalletPrivatePasses,
+#if BUILDFLAG(IS_ANDROID)
+            features::kAutofillAiShowPersonalContextFillingYourInfoDialog,
+#endif  // BUILDFLAG(IS_ANDROID)
+        },
+        {});
   }
 
   void SetUp() override {
@@ -3270,6 +3281,8 @@ class AutofillExternalDelegateWithAmbientAutofillTest
         NiceMock<MockAutofillAiPersonalContextAccessManager>>();
     autofill_client().set_personal_context_access_manager(
         personal_context_manager_.get());
+    autofill_client().GetPrefs()->SetBoolean(
+        prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
   }
 
   void TearDown() override {
@@ -3316,6 +3329,14 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
+  // Authenticator is not supported by the platform.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(false));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
   EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
       .Times(0);
 
@@ -3348,9 +3369,293 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
 
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog should not be shown if the user doesn't need to
+  // authenticate.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   ASSERT_FALSE(callback.is_null());
   std::move(callback).Run(full_passport);
 }
+
+// Tests that when accepting a `kFillAutofillAi` suggestion for pcontext entity
+// that requires re-authentication, the re-authentication flow is triggered and
+// the form is filled upon success. The loading dialog is shown on Android while
+// the data is fetched from the server.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       AutofillAiReauthFlow_PersonalContextEntity_ReauthAccepted) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{masked_passport});
+
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
+  std::vector<Suggestion> all_suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field(), all_suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(all_suggestions));
+
+  // Init the authenticator.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  device_reauth::DeviceAuthenticator::AuthenticateCallback reauth_callback;
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&reauth_callback));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+
+    auto is_loading =
+        Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
+    auto is_unacceptable =
+        Field(&Suggestion::acceptability,
+              Suggestion::Acceptability::kSelectableButUnacceptable);
+    EXPECT_CALL(
+        autofill_client(),
+        UpdateAutofillSuggestions(
+            ElementsAre(AllOf(is_loading, is_unacceptable)),
+            FillingProduct::kAutofillAi, kDefaultSuggestionTriggerSource,
+            AutofillSuggestionsIgnoreFocusLoss(true)));
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                          IsQueriedFieldId(), HasFillingPayload(full_passport),
+                          DefaultTriggerSource(), _));
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAutofillAi)));
+  }
+
+  // Simulate the user accepting the suggestion.
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
+
+  // The `AutofillAiAccessManager` will fetch the personal context passport
+  // entity from the `AutofillAiPersonalContextAccessManager` after successful
+  // authentication.
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      get_unmasked_entity_callback;
+  EXPECT_CALL(personal_context_manager(),
+              GetUnmaskedSpiiEntity(masked_passport.guid(), _))
+      .WillOnce(MoveArg<1>(&get_unmasked_entity_callback));
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog is shown only on Android.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate successful authentication.
+  ASSERT_FALSE(reauth_callback.is_null());
+  std::move(reauth_callback).Run(true);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Dismiss the loading dialog after the entity is fetched.
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate the async response.
+  ASSERT_FALSE(get_unmasked_entity_callback.is_null());
+  std::move(get_unmasked_entity_callback).Run(full_passport);
+}
+
+// Tests that when accepting a `kFillAutofillAi` suggestion for pcontext entity
+// that requires re-authentication, the re-authentication flow is triggered and
+// the form is filled upon success. The entity is returned directly if it's
+// unmasked. The loading dialog is not shown on Android because there's no
+// server request for the entity.
+TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
+       AutofillAiReauthFlow_UnmaskedPersonalContextEntity_ReauthAccepted) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{full_passport});
+
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      full_passport.guid(), /*requires_server_fetch=*/true);
+  std::vector<Suggestion> all_suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field(), all_suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(all_suggestions));
+
+  // Init the authenticator.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  device_reauth::DeviceAuthenticator::AuthenticateCallback reauth_callback;
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&reauth_callback));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+
+    auto is_loading =
+        Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
+    auto is_unacceptable =
+        Field(&Suggestion::acceptability,
+              Suggestion::Acceptability::kSelectableButUnacceptable);
+    EXPECT_CALL(
+        autofill_client(),
+        UpdateAutofillSuggestions(
+            ElementsAre(AllOf(is_loading, is_unacceptable)),
+            FillingProduct::kAutofillAi, kDefaultSuggestionTriggerSource,
+            AutofillSuggestionsIgnoreFocusLoss(true)));
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                          IsQueriedFieldId(), HasFillingPayload(full_passport),
+                          DefaultTriggerSource(), _));
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAutofillAi)));
+  }
+
+  // Simulate the user accepting the suggestion.
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
+
+  // The `AutofillAiAccessManager` will return the unmaskes entity immediately,
+  // no call to the `PersonalContextAccessManager will be made.
+  EXPECT_CALL(personal_context_manager(), GetUnmaskedSpiiEntity).Times(0);
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog won't be shown because no request to the
+  // `PersonalContextAccessManager` is made.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog()).Times(0);
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog()).Times(0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate the successful authentication.
+  ASSERT_FALSE(reauth_callback.is_null());
+  std::move(reauth_callback).Run(true);
+}
+
+// Tests that when accepting a `kFillAutofillAi` suggestion for pcontext entity
+// that requires re-authentication, the re-authentication flow is triggered.
+// The loading dialog is shown on Android during the server request to fetch
+// the entity. The loading dialog is closed even if the
+// `AutofillAiAccessManager` is deleted.
+TEST_F(
+    AutofillExternalDelegateWithAmbientAutofillTest,
+    AutofillAiReauthFlow_PersonalContextEntity_AutofillAiAccessManagerIsReset) {
+  EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(
+      personal_context_manager(), std::vector<EntityInstance>{masked_passport});
+
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
+  std::vector<Suggestion> all_suggestions = {fill_suggestion};
+  OnSuggestionsReturned(queried_field(), all_suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(all_suggestions));
+
+  // Init the authenticator.
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  device_reauth::DeviceAuthenticator::AuthenticateCallback reauth_callback;
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(MoveArg<1>(&reauth_callback));
+  test_api(autofill_manager().GetAutofillAiAccessManager())
+      .SetDeviceAuthenticator(std::move(authenticator));
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+
+    auto is_loading =
+        Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
+    auto is_unacceptable =
+        Field(&Suggestion::acceptability,
+              Suggestion::Acceptability::kSelectableButUnacceptable);
+    EXPECT_CALL(
+        autofill_client(),
+        UpdateAutofillSuggestions(
+            ElementsAre(AllOf(is_loading, is_unacceptable)),
+            FillingProduct::kAutofillAi, kDefaultSuggestionTriggerSource,
+            AutofillSuggestionsIgnoreFocusLoss(true)));
+
+    EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
+        .Times(0);
+    EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+    EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
+  }
+
+  // Simulate the user accepting the suggestion.
+  external_delegate().DidAcceptSuggestion(fill_suggestion,
+                                          {.multi_index = {0}});
+
+  // The `AutofillAiAccessManager` will fetch the personal context passport
+  // entity from the `AutofillAiPersonalContextAccessManager` after successful
+  // authentication.
+  AutofillAiPersonalContextAccessManager::GetUnmaskedSpiiEntityCallback
+      get_unmasked_entity_callback;
+  EXPECT_CALL(personal_context_manager(),
+              GetUnmaskedSpiiEntity(masked_passport.guid(), _))
+      .WillOnce(MoveArg<1>(&get_unmasked_entity_callback));
+
+#if BUILDFLAG(IS_ANDROID)
+  // The loading dialog is shown only on Android.
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Simulate successful authentication.
+  ASSERT_FALSE(reauth_callback.is_null());
+  std::move(reauth_callback).Run(true);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Dismiss the loading dialog after the entity is fetched.
+  EXPECT_CALL(autofill_client(), DismissAutofillAiLoadingDialog());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Reset the access manager before the server request is complete.
+  test_api(autofill_manager()).set_autofill_ai_access_manager(nullptr);
+
+  // Simulate the async response.
+  ASSERT_FALSE(get_unmasked_entity_callback.is_null());
+  std::move(get_unmasked_entity_callback).Run(full_passport);
+}
+
+#endif
 
 TEST_F(AutofillExternalDelegateTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {

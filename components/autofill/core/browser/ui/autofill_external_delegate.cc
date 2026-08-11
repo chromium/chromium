@@ -113,14 +113,42 @@ void OnCreditCardFetched(base::WeakPtr<BrowserAutofillManager> manager,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool ShouldShowLoadingDialog(EntityInstance::RecordType record_type,
+                             bool reauth_attempted,
+                             bool will_fetch_from_server) {
+  return reauth_attempted && will_fetch_from_server &&
+         record_type == EntityInstance::RecordType::kPersonalContext &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillAiShowPersonalContextFillingYourInfoDialog);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+void OnAuthenticationComplete(base::WeakPtr<BrowserAutofillManager> manager,
+                              EntityInstance::RecordType record_type,
+                              bool reauth_attempted,
+                              bool will_fetch_from_server) {
+  if (!manager) {
+    return;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldShowLoadingDialog(record_type, reauth_attempted,
+                              will_fetch_from_server)) {
+    manager->client().ShowAutofillAiLoadingDialog();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 // Fills the queried form with the provided `EntityInstance` in `result`,
 // unless a `FailureReason` is present.
 void OnEntityInstanceFetched(
+    base::ScopedClosureRunner loading_dialog_dismiss_closure,
     base::WeakPtr<BrowserAutofillManager> manager,
     AutofillTriggerSource trigger_source,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const FieldTypeSet& ai_field_types,
+    EntityInstance::RecordType record_type,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
     bool reauth_attempted,
@@ -128,6 +156,15 @@ void OnEntityInstanceFetched(
   if (!manager) {
     return;
   }
+  base::OnceClosure dismiss_closure = loading_dialog_dismiss_closure.Release();
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldShowLoadingDialog(record_type, reauth_attempted,
+                              did_fetch_from_server)) {
+    if (dismiss_closure) {
+      std::move(dismiss_closure).Run();
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   if (reauth_attempted) {
     const bool auth_succeeded =
         result.has_value() ||
@@ -966,19 +1003,31 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           *entity, *form_structure, autofill_field->section(),
           manager_->client().GetAppLocale());
 
-      // TODO(crbug.com/c/536814322): Show loading dialog on Android after
-      // successful authentication.
+      // The loading dialog is displayed when the user successfully
+      // authenticates and the entity is fetched from server. It is closed when
+      // either the `OnAuthenticationCompleteCallback` callback is invoked or
+      // the AutofillAiAccessManager is reset.
+      base::OnceClosure dismiss_dialog_closure;
+#if BUILDFLAG(IS_ANDROID)
+      dismiss_dialog_closure =
+          base::BindOnce(&AutofillClient::DismissAutofillAiLoadingDialog,
+                         manager_->client().GetWeakPtr());
+#endif  // BUILDFLAG(IS_ANDROID)
       const bool is_async =
           manager_->GetAutofillAiAccessManager().FetchEntityInstance(
               *entity, will_fill_sensitive_info,
               GetTargetFieldOrigin(autofill_field->origin(),
                                    manager_->client()),
-              base::DoNothing(),
-              base::BindOnce(&OnEntityInstanceFetched,
+              base::BindOnce(&OnAuthenticationComplete,
                              manager_->GetBrowserAutofillManagerWeakPtr(),
-                             GetTriggerSource(), last_query_.form_id,
-                             last_query_.field_id,
-                             autofill_field->Type().GetAutofillAiTypes()));
+                             entity->record_type()),
+              base::BindOnce(
+                  &OnEntityInstanceFetched,
+                  base::ScopedClosureRunner(std::move(dismiss_dialog_closure)),
+                  manager_->GetBrowserAutofillManagerWeakPtr(),
+                  GetTriggerSource(), last_query_.form_id, last_query_.field_id,
+                  autofill_field->Type().GetAutofillAiTypes(),
+                  entity->record_type()));
 
       if (is_async &&
           (base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill) ||

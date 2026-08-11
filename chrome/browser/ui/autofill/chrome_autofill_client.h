@@ -255,6 +255,14 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // on Android.
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
 
+  // Notifies the user that their data is being fetched from the server to fill
+  // the form.
+  void ShowAutofillAiLoadingDialog() final;
+
+  // Closes the dialog that informs the user that their data is being fetched
+  // from the server to fill the form.
+  void DismissAutofillAiLoadingDialog() final;
+
   bool ShowAmbientAutoFillNotice(
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   void HideAmbientAutoFillNotice() override;

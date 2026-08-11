@@ -760,6 +760,14 @@ class AutofillClient {
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.
   virtual AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
+
+  // Notifies the user that their data is being fetched from the server to fill
+  // the form.
+  virtual void ShowAutofillAiLoadingDialog();
+
+  // Closes the dialog that informs the user that their data is being fetched
+  // from the server to fill the form.
+  virtual void DismissAutofillAiLoadingDialog();
 #endif
 
 #if BUILDFLAG(IS_IOS)

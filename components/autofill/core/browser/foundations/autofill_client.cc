@@ -281,6 +281,14 @@ AutofillSnackbarControllerImpl*
 AutofillClient::GetAutofillSnackbarController() {
   return nullptr;
 }
+
+void AutofillClient::ShowAutofillAiLoadingDialog() {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::DismissAutofillAiLoadingDialog() {
+  NOTIMPLEMENTED();
+}
 #endif
 
 void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
