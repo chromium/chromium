@@ -2388,25 +2388,25 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
   int x = 0;
   if (!base::StringToInt(rect_components[0], &x)) {
     ADD_FAILURE() << "Failed to extract target element's x coordinate from "
-                  << "the string `" << rect_str[0] << "`!";
+                  << "the string `" << rect_components[0] << "`!";
     return false;
   }
   int y = 0;
   if (!base::StringToInt(rect_components[1], &y)) {
     ADD_FAILURE() << "Failed to extract target element's y coordinate from "
-                  << "the string `" << rect_str[1] << "`!";
+                  << "the string `" << rect_components[1] << "`!";
     return false;
   }
   int width = 0;
   if (!base::StringToInt(rect_components[2], &width)) {
     ADD_FAILURE() << "Failed to extract target element's width from "
-                  << "the string `" << rect_str[2] << "`!";
+                  << "the string `" << rect_components[2] << "`!";
     return false;
   }
   int height = 0;
   if (!base::StringToInt(rect_components[3], &height)) {
     ADD_FAILURE() << "Failed to extract target element's height from "
-                  << "the string `" << rect_str[3] << "`!";
+                  << "the string `" << rect_components[3] << "`!";
     return false;
   }
 
