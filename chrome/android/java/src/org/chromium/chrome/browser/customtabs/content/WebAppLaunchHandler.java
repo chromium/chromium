@@ -30,7 +30,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,7 +50,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
@@ -125,16 +124,15 @@ public class WebAppLaunchHandler extends WebContentsObserver {
     }
 
     private boolean isValidFileHandlingData(FileHandlingData fileHandlingData) {
-        String packageName = ContextUtils.getApplicationContext().getPackageName();
         for (Uri uri : fileHandlingData.uris) {
-            if (!isValidLaunchUri(uri, packageName)) {
+            if (!isValidLaunchUri(uri)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean isValidLaunchUri(Uri uri, String packageName) {
+    private static boolean isValidLaunchUri(Uri uri) {
         if (uri == null) return false;
 
         // Only content URIs are allowed. Legitimate file launching on Android should
@@ -144,14 +142,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         }
 
         // Block Chrome's own Content URIs.
-        String authority = uri.getAuthority();
-        if (authority != null) {
-            String chromeAuthorityPrefix = packageName + ".";
-            if (authority
-                    .toLowerCase(Locale.US)
-                    .startsWith(chromeAuthorityPrefix.toLowerCase(Locale.US))) {
-                return false;
-            }
+        if (ContentUriUtils.isUriFromThisApp(uri)) {
+            return false;
         }
 
         return true;

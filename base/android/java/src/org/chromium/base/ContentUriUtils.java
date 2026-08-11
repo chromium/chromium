@@ -718,6 +718,16 @@ public abstract class ContentUriUtils {
         return isUriFromThisApp(uri, ContextUtils.getApplicationContext());
     }
 
+    @CalledByNative
+    public static boolean isUriFromThisApp(@JniType("std::string") String uriString) {
+        if (TextUtils.isEmpty(uriString)) return false;
+        try {
+            return isUriFromThisApp(Uri.parse(uriString));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      * Returns whether the content URI is served by a ContentProvider belonging to the current
      * application (i.e. running under the same UID).
