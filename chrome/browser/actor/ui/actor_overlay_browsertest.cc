@@ -784,27 +784,39 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
       GetActorOverlayWebViewWebContents(browser());
   ASSERT_NE(overlay_web_contents, nullptr);
 
-  // 1. Assert that the browser-side RenderWidgetHostView is transparent
-  // immediately upon navigation commit (before WaitForLoadStop). Without
-  // rwhv->SetBackgroundColor(SK_ColorTRANSPARENT) in PrimaryPageChanged,
-  // the newly created view defaults to opaque white.
+  // RenderWidgetHostViewMac::GetBackgroundColor() overrides SK_ColorTRANSPARENT
+  // to SK_ColorWHITE to avoid macOS AppKit compositing bugs (crbug.com/735407).
+  // On non-Mac platforms (Aura), GetBackgroundColor() returns
+  // SK_ColorTRANSPARENT.
+  const SkColor expected_rwhv_color =
+#if BUILDFLAG(IS_MAC)
+      SK_ColorWHITE;
+#else
+      SK_ColorTRANSPARENT;
+#endif
+
+  // 1. Assert that the browser-side RenderWidgetHostView has the expected
+  // background color immediately upon navigation commit (before
+  // WaitForLoadStop).
   content::RenderWidgetHostView* rwhv =
       overlay_web_contents->GetRenderWidgetHostView();
   ASSERT_NE(rwhv, nullptr);
-  EXPECT_EQ(rwhv->GetBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(rwhv->GetBackgroundColor(), expected_rwhv_color);
 
   // 2. Wait for the overlay WebUI document to finish loading.
   EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
 
-  // 3. Assert that Blink's document background color is transparent after load.
-  // Without web_contents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT) in
-  // ShowUI, Blink renders a solid white document canvas (SK_ColorWHITE).
+  // 3. Assert that Blink's document background color is transparent after load
+  // on all platforms. Without web_contents()->SetPageBaseBackgroundColor(
+  // SK_ColorTRANSPARENT) in ShowUI, Blink renders a solid white document
+  // canvas (SK_ColorWHITE).
   EXPECT_EQ(overlay_web_contents->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
-  // 4. Assert that the RenderWidgetHostView remains transparent after load.
+  // 4. Assert that the RenderWidgetHostView background color remains as
+  // expected after load.
   rwhv = overlay_web_contents->GetRenderWidgetHostView();
   ASSERT_NE(rwhv, nullptr);
-  EXPECT_EQ(rwhv->GetBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(rwhv->GetBackgroundColor(), expected_rwhv_color);
 }
 
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
