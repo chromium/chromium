@@ -27733,21 +27733,6 @@
             ]
         }
     ],
-    "WebViewSingleSharedContextState": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewSingleSharedContextState"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewSpareRendererProcessPriority": [
         {
             "platforms": [
