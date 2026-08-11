@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
@@ -57,10 +56,8 @@ bool TabStripModelSelectionState::IsTabValidInFocusedGroup(
   if (!tab || !focused_group.has_value()) {
     return false;
   }
-  if (tab->GetGroup() == focused_group.value()) {
-    return true;
-  }
-  return tab->IsPinned() && features::kTabGroupsFocusingPinnedTabs.Get();
+
+  return (tab->GetGroup() == focused_group.value()) || tab->IsPinned();
 }
 
 bool TabStripModelSelectionState::IsSelected(TabInterface* tab) const {

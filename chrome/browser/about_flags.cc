@@ -2312,14 +2312,6 @@ const FeatureEntry::FeatureVariation kNumSrpZpsRelatedSearches[] = {
     {"15 related", kSrpZps15RelatedSearches},
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabGroupsFocusingPinnedTabs[] = {
-    {"tab_groups_focusing_pinned_tabs", "true"}};
-
-const FeatureEntry::FeatureVariation kTabGroupsFocusingVariations[] = {
-    {" - show pinned tabs", kTabGroupsFocusingPinnedTabs},
-};
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration250Ms[] = {
@@ -7114,9 +7106,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-groups-focusing", flag_descriptions::kTabGroupsFocusingName,
      flag_descriptions::kTabGroupsFocusingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabGroupsFocusing,
-                                    kTabGroupsFocusingVariations,
-                                    "TabGroupsFocusing")},
+     FEATURE_VALUE_TYPE(features::kTabGroupsFocusing)},
 
     {"tab-group-ribbon", flag_descriptions::kTabGroupRibbonName,
      flag_descriptions::kTabGroupRibbonDescription, kOsDesktop,

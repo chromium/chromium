@@ -37,7 +37,7 @@ class TabStripModelSelectionState final {
   ~TabStripModelSelectionState();
 
   // Returns true if the given tab is in the given focused group or if the
-  // feature `kTabGroupsFocusingPinnedTabs` is enabled and the tab is pinned.
+  // tab is pinned.
   static bool IsTabValidInFocusedGroup(
       const TabInterface* tab,
       std::optional<tab_groups::TabGroupId> focused_group);

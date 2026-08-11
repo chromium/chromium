@@ -586,8 +586,7 @@ class TabStripControllerFocusingVisibilityBrowserTest
       override {
     auto enabled = VerticalTabsBrowserTestMixin<
         InProcessBrowserTest>::GetEnabledFeatures();
-    enabled.push_back({features::kTabGroupsFocusing,
-                       {{"tab_groups_focusing_pinned_tabs", "false"}}});
+    enabled.push_back({features::kTabGroupsFocusing, {}});
     enabled.push_back({tabs::kTabStripUnification, {}});
     return enabled;
   }
@@ -598,11 +597,11 @@ class TabStripControllerFocusingVisibilityBrowserTest
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
-// Verifies that when a tab group is focused, pinned tabs and unfocused
-// groups/tabs are correctly hidden from the layout. It also ensures that
-// exiting focus mode restores the visibility of all tabs.
+// Verifies that when a tab group is focused, pinned tabs remain visible while
+// unfocused groups/tabs are correctly hidden from the layout. It also ensures
+// that exiting focus mode restores the visibility of all tabs.
 IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
-                       FocusModeHidesUnfocusedAndPinnedTabs) {
+                       FocusModeHidesUnfocusedTabsPreservesPinnedTabs) {
   AppendTab();
   AppendTab();
 
@@ -632,8 +631,8 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   model->SetFocusedGroup(group_id);
   RunScheduledLayouts();
 
-  // Verify pinned tab and unfocused tab are hidden.
-  EXPECT_FALSE(pinned_tab_view->GetVisible());
+  // Verify pinned tab remains visible and unfocused tab is hidden.
+  EXPECT_TRUE(pinned_tab_view->GetVisible());
   EXPECT_TRUE(group_view->GetVisible());
   EXPECT_FALSE(unpinned_tab_view->GetVisible());
 

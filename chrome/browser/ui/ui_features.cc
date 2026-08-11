@@ -495,12 +495,6 @@ BASE_FEATURE_PARAM(std::string,
 
 BASE_FEATURE(kTabGroupsFocusing, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(bool,
-                   kTabGroupsFocusingPinnedTabs,
-                   &kTabGroupsFocusing,
-                   "tab_groups_focusing_pinned_tabs",
-                   false);
-
 BASE_FEATURE(kTabGroupRibbon, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupRibbonEnabled() {

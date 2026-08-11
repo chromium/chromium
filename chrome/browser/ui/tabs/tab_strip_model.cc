@@ -411,8 +411,7 @@ int TabStripModel::InsertDetachedTabAt(
   // Newly attached dragged tabs without an explicit group should join the
   // focused group if focus mode is active, unless the tab is pinned.
   const bool is_pinned = (add_types & ADD_PINNED) != 0;
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
-      !group.has_value() && !is_pinned) {
+  if (!group.has_value() && !is_pinned) {
     group = GetFocusedGroup();
   }
 
@@ -1070,8 +1069,7 @@ void TabStripModel::ActivateTab(tabs::TabInterface* tab,
   scrubbing_metrics_.IncrementPressCount(user_gesture);
 
   // If this tab was activated, eg. by an extension, but is not in the focused
-  // group, unfocus the focused group (unless it is a pinned tab and pinned
-  // tabs are allowed in focus mode).
+  // group, unfocus the focused group (unless it is a pinned tab).
   std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   if (focused_group.has_value() &&
       !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
@@ -1780,9 +1778,9 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
   }
 
   // Newly created tabs without an explicit group join the focused group if
-  // focus mode is active.
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
-      !group.has_value()) {
+  // focus mode is active, unless the tab is pinned.
+  const bool is_pinned = (add_types & ADD_PINNED) != 0;
+  if (!group.has_value() && !is_pinned) {
     group = GetFocusedGroup();
   }
 

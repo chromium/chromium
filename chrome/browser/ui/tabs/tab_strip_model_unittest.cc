@@ -1486,11 +1486,6 @@ TEST_F(TabStripModelTest, FocusModeSessionDurationHistogramOnSwitchGroup) {
 
 TEST_F(TabStripModelTest,
        FocusModePinnedTabsUsageHistogramRecordedWhenPinnedTabsPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTabGroupsFocusing,
-      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
-
   TestTabStripModelDelegate delegate;
   TabStripModel model(&delegate, profile());
   base::HistogramTester histogram_tester;
@@ -1529,11 +1524,6 @@ TEST_F(TabStripModelTest,
 
 TEST_F(TabStripModelTest,
        FocusModePinnedTabsUsageHistogramZeroActivationsWhenUntouched) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTabGroupsFocusing,
-      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
-
   TestTabStripModelDelegate delegate;
   TabStripModel model(&delegate, profile());
   base::HistogramTester histogram_tester;
@@ -1564,11 +1554,6 @@ TEST_F(TabStripModelTest,
 
 TEST_F(TabStripModelTest,
        FocusModePinnedTabsUsageHistogramRecordedWhenNoPinnedTabsPresent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTabGroupsFocusing,
-      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
-
   TestTabStripModelDelegate delegate;
   TabStripModel model(&delegate, profile());
   base::HistogramTester histogram_tester;
@@ -1597,11 +1582,6 @@ TEST_F(TabStripModelTest,
 
 TEST_F(TabStripModelTest,
        FocusModePinnedTabsUsageHistogramPinnedTabAddedDuringSession) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTabGroupsFocusing,
-      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
-
   TestTabStripModelDelegate delegate;
   TabStripModel model(&delegate, profile());
   base::HistogramTester histogram_tester;
@@ -2719,13 +2699,7 @@ TEST_F(TabStripModelTest, CommandCloseTabsToRightInFocusedGroupOnly) {
   EXPECT_EQ(group_b, tabstrip()->GetTabGroupForTab(1));
 }
 
-TEST_F(TabStripModelTest,
-       SelectingPinnedTabPreservesFocusWhenPinnedTabsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTabGroupsFocusing,
-      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
-
+TEST_F(TabStripModelTest, SelectingPinnedTabPreservesFocus) {
   PrepareTabs(tabstrip(), 4);
   tabstrip()->SetTabPinned(0, true);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
@@ -2735,7 +2709,7 @@ TEST_F(TabStripModelTest,
   // Activate the pinned tab (index 0).
   tabstrip()->ActivateTabAt(0);
 
-  // Focus should be preserved because kTabGroupsFocusingPinnedTabs is enabled.
+  // Focus should be preserved.
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
 }
 

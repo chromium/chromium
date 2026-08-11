@@ -91,8 +91,7 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
 
     bool is_collapsed = false;
     if (test_case.focused_group.has_value()) {
-      if (features::kTabGroupsFocusingPinnedTabs.Get() &&
-          tab_index < test_case.num_pinned_tabs) {
+      if (tab_index < test_case.num_pinned_tabs) {
         is_collapsed = false;
       } else {
         const auto& tab_group =
@@ -454,38 +453,8 @@ TEST(TabStripLayoutTest, NoFocusedGroupWithGroupedTabs) {
   EXPECT_EQ("0 238 476 714", TabXPositionsAsString(bounds));
 }
 
-TEST(TabStripLayoutTest, FocusedGroupDoesCollapsePinnedTabsFeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams params;
-  params["tab_groups_focusing_pinned_tabs"] = "false";
-  feature_list.InitAndEnableFeatureWithParameters(features::kTabGroupsFocusing,
-                                                  params);
-
-  const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
-  const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
-
-  TestCase test_case;
-  test_case.tabstrip_width = 1000;
-  test_case.num_tabs = 4;
-  test_case.num_pinned_tabs = 2;
-  test_case.active_index = 0;
-  test_case.tab_groups = {std::nullopt, std::nullopt, group1, group2};
-  test_case.focused_group = group1;
-
-  auto bounds = CalculateTabBounds(test_case);
-  // Pinned tabs (0, 1) should not be collapsed. Tab 2 is in the focused group
-  // and should not be collapsed. Tab 3 is not in the focused group and should
-  // be collapsed.
-  EXPECT_EQ("18 18 256 18", TabWidthsAsString(bounds));
-  EXPECT_EQ("0 0 0 238", TabXPositionsAsString(bounds));
-}
-
-TEST(TabStripLayoutTest, FocusedGroupDoesNotCollapsePinnedTabsFeatureOn) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams params;
-  params["tab_groups_focusing_pinned_tabs"] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(features::kTabGroupsFocusing,
-                                                  params);
+TEST(TabStripLayoutTest, FocusedGroupDoesNotCollapsePinnedTabs) {
+  base::test::ScopedFeatureList feature_list(features::kTabGroupsFocusing);
 
   const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
   const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();

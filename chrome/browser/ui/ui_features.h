@@ -355,7 +355,6 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kAiOverlayDialogApiKey);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAiOverlayDialogMockJsonPath);
 
 BASE_DECLARE_FEATURE(kTabGroupsFocusing);
-BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingPinnedTabs);
 
 BASE_DECLARE_FEATURE(kTabGroupRibbon);
 bool IsTabGroupRibbonEnabled();
