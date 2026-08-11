@@ -41,6 +41,7 @@ constexpr int kPageStabilityMutationCap = 2;
 constexpr int kPageStabilityWindowDurationMs = 100;
 constexpr int kPageStabilityTimeoutMs = 2000;
 constexpr int kPageStabilityMinWaitMs = 1000;
+constexpr int kPageStabilityLcpDelayMs = 3000;
 
 struct FindNodeResult {
   const optimization_guide::proto::ContentNode* node = nullptr;
@@ -162,6 +163,8 @@ FindNodeResult FindNodeWithText(
            base::StringPrintf("%dms", kPageStabilityTimeoutMs)},
           {"ActorPageStabilityMinWait",
            base::StringPrintf("%dms", kPageStabilityMinWaitMs)},
+          {"ActorPageStabilityLcpDelay",
+           base::StringPrintf("%dms", kPageStabilityLcpDelayMs)},
       });
 
   config.features_enabled_and_params.push_back(actorToolsConfig);
@@ -296,6 +299,56 @@ FindNodeResult FindNodeWithText(
 
   target->mutable_coordinate()->set_x(x);
   target->mutable_coordinate()->set_y(y);
+}
+
+// Navigates to a test page (A) which has a button that links to another test
+// page (B). Page B has a delay before the LCP, configured by `lcpDelay`.
+//
+// This returns a ClickAction which targets the button in (A), which is used to
+// ensure that the page stability code waits for the LCP.
+- (optimization_guide::proto::Action)
+    setupActionForTwoPageNavigationWithLcpDelay:(base::TimeDelta)lcpDelay {
+  std::string page_b_html = base::StringPrintf(
+      R"(
+    <html>
+    <body>
+      <div id='status'></div>
+      <script>
+        setTimeout(() => {
+          const el = document.createElement('h1');
+          el.style.fontSize = '100px';
+          el.innerText = 'This is the LCP header!';
+          document.body.appendChild(el);
+          document.getElementById('status').innerText = 'LCP Triggered';
+        }, %d);
+      </script>
+    </body>
+    </html>
+  )",
+      static_cast<int>(lcpDelay.InMilliseconds()));
+  GURL page_b_url = [self URLForHTML:page_b_html];
+
+  std::string page_a_html = base::StringPrintf(
+      R"(
+    <html>
+    <body>
+      <button onclick="window.location.href='%s'">Go to B</button>
+    </body>
+    </html>
+  )",
+      page_b_url.spec().c_str());
+  [ChromeEarlGrey loadURL:[self URLForHTML:page_a_html]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Go to B"];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* click_action = action.mutable_click();
+  click_action->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  click_action->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:click_action->mutable_target()
+                  withSelector:"button"];
+
+  return action;
 }
 
 #pragma mark - Tests
@@ -1592,4 +1645,62 @@ FindNodeResult FindNodeWithText(
       activeTabID);
 }
 
+// Tests that `PageStabilityMonitor` waits for Largest Contentful Paint (LCP)
+// before finishing tool execution.
+- (void)testPageStability_waitsForLcp {
+  // Note: This duration must be larger than `kPageStabilityMinWaitMs` (1000ms)
+  // and smaller than `kPageStabilityLcpDelayMs` (3000ms).
+  static constexpr base::TimeDelta kActualLcpDelay = base::Milliseconds(1500);
+  optimization_guide::proto::Action action =
+      [self setupActionForTwoPageNavigationWithLcpDelay:kActualLcpDelay];
+
+  // Measure execution time of the actuated click and resulting stability check.
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  [self executeAction:action];
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+
+  // Expected delay is at least `kActualLcpDelay` (Page B's LCP trigger).
+  GREYAssertTrue(
+      duration.InMilliseconds() >= kActualLcpDelay.InMilliseconds(),
+      @"Expected execution to be delayed by at least %dms but it took %dms.",
+      static_cast<int>(kActualLcpDelay.InMilliseconds()),
+      static_cast<int>(duration.InMilliseconds()));
+
+  // Verify that Page B finished loading and shows the LCP element.
+  [ChromeEarlGrey waitForWebStateContainingText:"LCP Triggered"];
+}
+
+// Tests that `PageStabilityMonitor` times out when Largest Contentful Paint
+// (LCP) takes longer than `kPageStabilityLcpDelayMs`.
+- (void)testPageStability_lcpTimesOut {
+  // Set the actual LCP delay much larger than the `kPageStabilityLcpDelayMs`
+  // timeout (3000ms) to avoid flakiness.
+  static constexpr base::TimeDelta kActualLcpDelay = base::Milliseconds(8000);
+  optimization_guide::proto::Action action =
+      [self setupActionForTwoPageNavigationWithLcpDelay:kActualLcpDelay];
+
+  // Measure execution time of the actuated click and resulting stability check.
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  [self executeAction:action];
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+
+  // Expected execution time to be at least `kPageStabilityLcpDelayMs` (3000ms),
+  // but finish before `kActualLcpDelay` (8000ms).
+  GREYAssertTrue(
+      duration.InMilliseconds() >= kPageStabilityLcpDelayMs,
+      @"Expected execution to wait for LCP timeout (%dms) but took %dms.",
+      kPageStabilityLcpDelayMs, static_cast<int>(duration.InMilliseconds()));
+  GREYAssertTrue(duration.InMilliseconds() < kActualLcpDelay.InMilliseconds(),
+                 @"Expected execution to time out before LCP trigger (%dms) "
+                 @"but took %dms.",
+                 static_cast<int>(kActualLcpDelay.InMilliseconds()),
+                 static_cast<int>(duration.InMilliseconds()));
+
+  // Verify that LCP has NOT triggered yet when `executeAction` finishes.
+  base::Value status = [ChromeEarlGrey
+      evaluateJavaScript:@"document.getElementById('status')?.innerText || ''"];
+  GREYAssertTrue(
+      status.is_string() && status.GetString().empty(),
+      @"LCP element should not be present when `executeAction` times out.");
+}
 @end

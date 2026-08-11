@@ -35,6 +35,15 @@ class PageStabilityJavaScriptFeature : public web::JavaScriptFeature {
   // Cancels a previous call to `WaitForStability` in `target_frame`.
   void CancelWaitForStability(web::WebFrame* target_frame);
 
+  // Waits for Largest Contentful Paint (LCP) in `target_frame` before running
+  // `callback`.
+  void WaitForLcp(base::WeakPtr<web::WebFrame> target_frame,
+                  base::TimeDelta timeout,
+                  base::OnceCallback<void(ToolExecutionResult)> callback);
+
+  // Cancels a previous call to `WaitForLcp` in `target_frame`.
+  void CancelWaitForLcp(base::WeakPtr<web::WebFrame> target_frame);
+
  protected:
   PageStabilityJavaScriptFeature();
   ~PageStabilityJavaScriptFeature() override;
@@ -42,9 +51,17 @@ class PageStabilityJavaScriptFeature : public web::JavaScriptFeature {
  private:
   friend class base::NoDestructor<PageStabilityJavaScriptFeature>;
 
+  // Invoked when the JavaScript `waitForStability` call finishes. Parses
+  // `result` and `error` and invokes `callback` with the `ToolExecutionResult`.
   void OnStabilityResult(base::OnceCallback<void(ToolExecutionResult)> callback,
                          const base::Value* result,
                          NSError* error);
+
+  // Invoked when the JavaScript `waitForLcp` call finishes. Parses `result` and
+  // `error` and invokes `callback` with the `ToolExecutionResult`.
+  void OnLcpResult(base::OnceCallback<void(ToolExecutionResult)> callback,
+                   const base::Value* result,
+                   NSError* error);
 };
 
 }  // namespace actor

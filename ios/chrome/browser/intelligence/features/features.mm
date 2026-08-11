@@ -528,6 +528,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kActorTools,
                    base::Milliseconds(4000));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorPageStabilityLcpDelay,
+                   &kActorTools,
+                   base::Seconds(1));
+
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
 }
@@ -562,6 +567,11 @@ int GetActorPageStabilityMutationCap() {
 base::TimeDelta GetActorPageStabilityWindowDuration() {
   CHECK(IsPageStabilityEnabled());
   return kActorPageStabilityWindowDuration.Get();
+}
+
+base::TimeDelta GetActorPageStabilityLcpDelay() {
+  CHECK(IsPageStabilityEnabled());
+  return kActorPageStabilityLcpDelay.Get();
 }
 
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {

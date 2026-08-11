@@ -228,7 +228,8 @@ TEST_F(PageStabilityJavascriptTest, WaitForLcp_Cancel_ResolvesToFalse) {
 TEST_F(PageStabilityJavascriptTest, WaitForLcp_Success_LcpAlreadyExists) {
   NSString* script = @R"(
     window.PerformanceObserver = function() {};
-    window.PerformanceObserver.supportedEntryTypes = ['largest-contentful-paint'];
+    window.PerformanceObserver.supportedEntryTypes =
+        ['largest-contentful-paint'];
 
     performance.getEntriesByType = (type) => {
       if (type === 'largest-contentful-paint') {
@@ -254,11 +255,15 @@ TEST_F(PageStabilityJavascriptTest, WaitForLcp_Success_LcpFiresLater) {
   NSString* script = @R"(
     window.PerformanceObserver = function(callback) {
       this.observe = () => {
-        callback({ getEntries: () => [{ entryType: 'largest-contentful-paint' }] });
+        callback({
+          getEntries: () =>
+          [{ entryType: 'largest-contentful-paint' }]
+        });
       };
       this.disconnect = () => {};
     };
-    window.PerformanceObserver.supportedEntryTypes = ['largest-contentful-paint'];
+    window.PerformanceObserver.supportedEntryTypes =
+        ['largest-contentful-paint'];
 
     return __gCrWeb.getRegisteredApi('page_stability')
                    .getFunction('waitForLcp')({

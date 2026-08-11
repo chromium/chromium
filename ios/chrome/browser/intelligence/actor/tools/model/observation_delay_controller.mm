@@ -16,9 +16,11 @@
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -44,21 +46,26 @@ ObservationDelayController::ObservationDelayController(
 ObservationDelayController::~ObservationDelayController() {
   web_state_observation_.Reset();
   web_state_ = nullptr;
+  if (web_frame_) {
+    PageStabilityJavaScriptFeature::GetInstance()->CancelWaitForLcp(web_frame_);
+  }
 }
 
 void ObservationDelayController::Wait(base::WeakPtr<web::WebState> web_state,
                                       base::WeakPtr<web::WebFrame> web_frame,
                                       ReadyCallback callback) {
+  CHECK(web_state);
   if (journal_) {
     journal_->Log(GURL(), task_id_, "ObservationDelay: Wait",
                   /*details=*/{});
   }
-  if (web_state) {
-    web_state_ = web_state;
-    web_state_observation_.Observe(web_state.get());
-  }
+  web_state_ = web_state;
+  web_state_observation_.Observe(web_state.get());
   if (web_frame) {
+    web_frame_ = web_frame;
     page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(web_frame);
+  } else {
+    UpdateTargetFrameIfNeeded();
   }
   ready_callback_ = std::move(callback);
   // Schedule a kDidTimeout state transition to happen later.
@@ -91,15 +98,36 @@ void ObservationDelayController::DidStopLoading(web::WebState* web_state) {
   if (state_ != State::kWaitForLoadCompletion) {
     return;
   }
-  // TODO(crbug.com/498991756) - Wait for the visual state to be settled.
-  MoveToState(State::kDone);
+  UpdateTargetFrameIfNeeded();
+  MoveToState(State::kDelayForLcp);
 }
 
 void ObservationDelayController::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_.get(), web_state);
   web_state_observation_.Reset();
   web_state_ = nullptr;
+  web_frame_ = nullptr;
   MoveToState(State::kDone);
+}
+
+void ObservationDelayController::UpdateTargetFrameIfNeeded() {
+  // Don't update `web_frame_` if it's still valid or if there isn't a
+  // `web_state_` to pull the main WebFrame from.
+  if (web_frame_ || !web_state_) {
+    return;
+  }
+  web::WebFramesManager* frames_manager =
+      web_state_->GetPageWorldWebFramesManager();
+  if (frames_manager) {
+    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
+    web_frame_ = main_frame ? main_frame->AsWeakPtr() : nullptr;
+    if (main_frame &&
+        (state_ == State::kInitial || state_ == State::kWaitForPageStability) &&
+        !page_stability_monitor_) {
+      page_stability_monitor_ =
+          std::make_unique<PageStabilityMonitor>(web_frame_);
+    }
+  }
 }
 
 void ObservationDelayController::MoveToState(State state) {
@@ -133,7 +161,11 @@ void ObservationDelayController::MoveToState(State state) {
         // The state transition will happen in DidStopLoading().
         break;
       }
-      PostMoveToStateClosure(State::kDone).Run();
+      UpdateTargetFrameIfNeeded();
+      PostMoveToStateClosure(State::kDelayForLcp).Run();
+      break;
+    case State::kDelayForLcp:
+      DelayForLcp();
       break;
     case State::kPageNavigated:
       result_ = Result::kPageNavigated;
@@ -193,6 +225,28 @@ void ObservationDelayController::WaitForPageStability() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ObservationDelayController::DelayForLcp() {
+  if (state_ != State::kDelayForLcp) {
+    return;
+  }
+  if (!web_frame_ || !ShouldDelayForLcp()) {
+    PostMoveToStateClosure(State::kDone).Run();
+    return;
+  }
+  PageStabilityJavaScriptFeature::GetInstance()->WaitForLcp(
+      web_frame_, /*timeout=*/GetActorPageStabilityLcpDelay(),
+      base::BindOnce(
+          [](base::WeakPtr<ObservationDelayController> controller,
+             ToolExecutionResult result) {
+            // Proceed to kDone even if LCP checking fails or times out, as LCP
+            // checking is best-effort.
+            if (controller) {
+              controller->MoveToState(State::kDone);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ObservationDelayController::CheckStateTransition(State old_state,
                                                       State new_state) {
   // Note: the transitions listed as "async transitions" below can occur at any
@@ -212,6 +266,11 @@ void ObservationDelayController::CheckStateTransition(State old_state,
                State::kDidTimeout,
                State::kPageNavigated}},
           {State::kWaitForLoadCompletion,
+              {State::kDelayForLcp,
+               /* async transitions */
+               State::kDidTimeout,
+               State::kPageNavigated}},
+          {State::kDelayForLcp,
               {State::kDone,
                /* async transitions */
                State::kDidTimeout,
@@ -244,6 +303,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "WaitForPageStability";
     case State::kWaitForLoadCompletion:
       return "WaitForLoadCompletion";
+    case State::kDelayForLcp:
+      return "DelayForLcp";
     case State::kPageNavigated:
       return "PageNavigated";
     case State::kDidTimeout:
@@ -259,6 +320,11 @@ size_t ObservationDelayController::NavigationCount() const {
 
 void ObservationDelayController::SetNavigationCount(size_t count) {
   navigation_count_ = count;
+}
+
+bool ObservationDelayController::ShouldDelayForLcp() const {
+  return web_frame_ && IsPageStabilityEnabled() &&
+         GetActorPageStabilityLcpDelay().is_positive();
 }
 
 }  // namespace actor

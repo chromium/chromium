@@ -266,6 +266,11 @@ base::TimeDelta GetActorPageStabilityTimeout();
 int GetActorPageStabilityMutationCap();
 // The post-interaction observation window duration for page stability checking.
 base::TimeDelta GetActorPageStabilityWindowDuration();
+// The amount of time to wait for LCP if it hasn't occurred yet.
+//
+// Based on the Desktop equivalent at
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc;l=422;drc=9c4f58fb857251ee67e9d98abcfcacef0500e51d.
+base::TimeDelta GetActorPageStabilityLcpDelay();
 
 // Returns true if the specified tool is disabled via the "DisabledTools"
 // feature parameter of the `kActorTools` feature.

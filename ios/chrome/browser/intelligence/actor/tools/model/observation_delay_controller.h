@@ -49,6 +49,7 @@ class ObservationDelayController : public web::WebStateObserver {
     kInitial,
     kWaitForPageStability,
     kWaitForLoadCompletion,
+    kDelayForLcp,
     kPageNavigated,
     kDidTimeout,
     kDone
@@ -94,6 +95,10 @@ class ObservationDelayController : public web::WebStateObserver {
   // Callers should only use this from an async context (e.g. in a callback).
   void MoveToState(State state);
 
+  // Updates `web_frame_` to the current main web frame of `web_state_` if
+  // `web_frame_` is not currently set or valid.
+  void UpdateTargetFrameIfNeeded();
+
   // A helper to post a task that calls `MoveToState`.
   //
   // Callers should use this from synchronous contexts so that all state
@@ -105,6 +110,13 @@ class ObservationDelayController : public web::WebStateObserver {
   // Uses the PageStabilityMonitor to wait for the page to be stable.
   void WaitForPageStability();
 
+  // Triggers JavaScript-based Largest Contentful Paint (LCP) observation on
+  // `web_frame_` and waits up to the configured timeout for LCP completion.
+  void DelayForLcp();
+
+  // Returns whether the controller should delay for LCP after page stability.
+  bool ShouldDelayForLcp() const;
+
   // CHECKs that the transition from `old_state` to `new_state` is valid.
   void CheckStateTransition(State old_state, State new_state);
   // These are needed to support CheckStateTransition.
@@ -114,6 +126,7 @@ class ObservationDelayController : public web::WebStateObserver {
   static std::string_view StateToString(State state);
 
   base::WeakPtr<web::WebState> web_state_;
+  base::WeakPtr<web::WebFrame> web_frame_;
   ActorTaskId task_id_;
   base::WeakPtr<AggregatedJournal> journal_;
   ReadyCallback ready_callback_;

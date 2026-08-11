@@ -6,15 +6,54 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/expected.h"
 #import "base/values.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 namespace {
+
 // The name of the TS file used for this JavaScriptFeature.
 const char kScriptName[] = "page_stability";
+
+// Helper to extract the result dictionary from a JavaScript callback response.
+// If an error occurred or result is missing/invalid, returns a
+// `ToolExecutionResult` error.
+base::expected<const base::DictValue*, actor::ToolExecutionResult>
+ExtractResultDict(const base::Value* result, NSError* error) {
+  if (error) {
+    if ([error.domain isEqualToString:WKErrorDomain] &&
+        error.code == WKErrorJavaScriptInvalidFrameTarget) {
+      return base::unexpected(actor::ToolExecutionResult(
+          actor::mojom::ActionResultCode::kFrameWentAway));
+    }
+    std::string error_msg = base::StringPrintf(
+        "JavaScript execution failed: %s (Domain: %s, Code: %ld)",
+        base::SysNSStringToUTF8(error.localizedDescription).c_str(),
+        base::SysNSStringToUTF8(error.domain).c_str(),
+        static_cast<long>(error.code));
+    return base::unexpected(actor::ToolExecutionResult(
+        actor::mojom::ActionResultCode::kArgumentsInvalid,
+        actor::InternalToolErrorCode::
+            kJavascriptFeatureFailedInJavaScriptExecution,
+        false, error_msg));
+  }
+  if (!result) {
+    // `result` is nullptr if the JavaScript function call timed out.
+    return base::unexpected(actor::ToolExecutionResult(
+        actor::mojom::ActionResultCode::kToolTimeout));
+  }
+  if (!result->is_dict()) {
+    return base::unexpected(actor::ToolExecutionResult(
+        actor::InternalToolErrorCode::kJavascriptFeatureGotInvalidResult));
+  }
+  return &result->GetDict();
+}
+
 }  // namespace
 
 namespace actor {
@@ -41,6 +80,7 @@ void PageStabilityJavaScriptFeature::WaitForStability(
   parameters.Set(
       "timeoutMs",
       static_cast<int>(GetActorPageStabilityTimeout().InMilliseconds()));
+  auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
   bool sent = CallAsyncJavaScriptFunction(
       target_frame.get(), /*name=*/"page_stability.waitForStability",
       parameters,
@@ -48,13 +88,14 @@ void PageStabilityJavaScriptFeature::WaitForStability(
       base::BindOnce(&PageStabilityJavaScriptFeature::OnStabilityResult,
                      // Safe because this is a singleton and will remain alive
                      // while this function is executing.
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), std::move(cb_for_js)));
 
   if (!sent) {
-    std::move(callback).Run(ToolExecutionResult(
-        mojom::ActionResultCode::kArgumentsInvalid,
-        InternalToolErrorCode::
-            kJavascriptFeatureFailedToCallJavaScriptFunction));
+    std::move(cb_for_error)
+        .Run(ToolExecutionResult(
+            mojom::ActionResultCode::kArgumentsInvalid,
+            InternalToolErrorCode::
+                kJavascriptFeatureFailedToCallJavaScriptFunction));
   }
 }
 
@@ -65,6 +106,40 @@ void PageStabilityJavaScriptFeature::CancelWaitForStability(
     return;
   }
   CallJavaScriptFunction(target_frame, "page_stability.cancelWaitForStability",
+                         /*parameters=*/{});
+}
+
+void PageStabilityJavaScriptFeature::WaitForLcp(
+    base::WeakPtr<web::WebFrame> target_frame,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(ToolExecutionResult)> callback) {
+  if (!target_frame || !target_frame->GetWebFrameInternal()) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
+    return;
+  }
+  base::DictValue parameters;
+  parameters.Set("timeoutMs", static_cast<int>(timeout.InMilliseconds()));
+  auto [cb_for_js, cb_for_error] = base::SplitOnceCallback(std::move(callback));
+  bool sent = CallAsyncJavaScriptFunction(
+      target_frame.get(), "page_stability.waitForLcp", parameters,
+      base::BindOnce(&PageStabilityJavaScriptFeature::OnLcpResult,
+                     base::Unretained(this), std::move(cb_for_js)));
+  if (!sent) {
+    std::move(cb_for_error)
+        .Run(ToolExecutionResult(
+            mojom::ActionResultCode::kArgumentsInvalid,
+            InternalToolErrorCode::
+                kJavascriptFeatureFailedToCallJavaScriptFunction));
+  }
+}
+
+void PageStabilityJavaScriptFeature::CancelWaitForLcp(
+    base::WeakPtr<web::WebFrame> target_frame) {
+  if (!target_frame || !target_frame->GetBrowserState()) {
+    return;
+  }
+  CallJavaScriptFunction(target_frame.get(), "page_stability.cancelWaitForLcp",
                          /*parameters=*/{});
 }
 
@@ -84,48 +159,39 @@ void PageStabilityJavaScriptFeature::OnStabilityResult(
     base::OnceCallback<void(ToolExecutionResult)> callback,
     const base::Value* result,
     NSError* error) {
-  if (error) {
-    mojom::ActionResultCode external_code =
-        mojom::ActionResultCode::kArgumentsInvalid;
-    InternalToolErrorCode internal_code =
-        InternalToolErrorCode::kJavascriptFeatureFailedInJavaScriptExecution;
-
-    if ([error.domain isEqualToString:WKErrorDomain]) {
-      if (error.code == WKErrorJavaScriptInvalidFrameTarget) {
-        std::move(callback).Run(
-            ToolExecutionResult(mojom::ActionResultCode::kFrameWentAway));
-        return;
-      }
-    }
-
-    std::string error_msg = base::StringPrintf(
-        "JavaScript execution failed: %s (Domain: %s, Code: %ld)",
-        base::SysNSStringToUTF8(error.localizedDescription).c_str(),
-        base::SysNSStringToUTF8(error.domain).c_str(),
-        static_cast<long>(error.code));
-
-    std::move(callback).Run(
-        ToolExecutionResult(external_code, internal_code, false, error_msg));
+  auto dict_or_error = ExtractResultDict(result, error);
+  if (!dict_or_error.has_value()) {
+    std::move(callback).Run(std::move(dict_or_error.error()));
     return;
   }
-  if (!result) {
-    // `result` is nullptr if the JavaScript function call timed out. See
-    // https://source.chromium.org/chromium/chromium/src/+/main:ios/web/public/js_messaging/web_frame.h;l=65-68;drc=2acee4f42bc58706d4ec89a8c5323e90b454ab3c.
-    std::move(callback).Run(
-        ToolExecutionResult(mojom::ActionResultCode::kToolTimeout));
-    return;
-  }
-  if (!result->is_dict()) {
-    std::move(callback).Run(ToolExecutionResult(
-        InternalToolErrorCode::kJavascriptFeatureGotInvalidResult));
-    return;
-  }
-  const base::DictValue& result_dict = result->GetDict();
-  std::optional<bool> settled = result_dict.FindBool("settled");
+  const base::DictValue* result_dict = dict_or_error.value();
+  std::optional<bool> settled = result_dict->FindBool("settled");
   if (!settled.has_value() || !settled.value()) {
     std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kToolTimeout));
     return;
+  }
+  std::move(callback).Run(ToolExecutionResult::Ok());
+}
+
+void PageStabilityJavaScriptFeature::OnLcpResult(
+    base::OnceCallback<void(ToolExecutionResult)> callback,
+    const base::Value* result,
+    NSError* error) {
+  auto dict_or_error = ExtractResultDict(result, error);
+  if (!dict_or_error.has_value()) {
+    std::move(callback).Run(std::move(dict_or_error.error()));
+    return;
+  }
+  const base::DictValue* result_dict = dict_or_error.value();
+  std::optional<bool> lcp_received = result_dict->FindBool("lcpReceived");
+  if (!lcp_received.has_value()) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
+  }
+  if (!lcp_received.value()) {
+    // TODO(crbug.com/498991756) - Log UMA when lcpReceived is false.
   }
   std::move(callback).Run(ToolExecutionResult::Ok());
 }
