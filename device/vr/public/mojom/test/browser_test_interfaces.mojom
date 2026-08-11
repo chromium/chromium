@@ -4,6 +4,7 @@
 
 module device_test.mojom;
 
+import "device/gamepad/public/mojom/gamepad.mojom";
 import "device/vr/public/mojom/openxr_interaction_profile_type.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
@@ -35,29 +36,12 @@ struct DeviceConfig {
   float interpupillary_distance; // Distance between the eyes.
 };
 
-struct ControllerAxisData {
-  float x;
-  float y;
-  uint8 axis_type; // Corresponds to OpenVR's EVRControllerAxisType
-};
-
-enum ControllerRole {
-  kControllerRoleInvalid, // Test hook should ignore this controller.
-  kControllerRoleLeft,
-  kControllerRoleRight,
-  kControllerRoleVoice // Simulates voice input such as saying "select" in WMR.
-};
-
 struct ControllerFrameData {
-  uint32 packet_number;
-  uint64 buttons_pressed;
-  uint64 buttons_touched;
-  uint64 supported_buttons;
-  array<ControllerAxisData, 5> axis_data;
+  device.mojom.XRHandedness handedness = NONE;
+  device.mojom.Gamepad? gamepad;
   gfx.mojom.Transform? pose_data;
-  ControllerRole role = kControllerRoleInvalid;
   device.mojom.XRHandTrackingData? hand_data;
-  bool is_valid;
+  bool is_valid = false;
 };
 
 // Event type is used by test to simulate runtime events.
@@ -102,11 +86,11 @@ interface XRTestHook {
   // magic window/non-exclusive session.
   [Sync] WaitGetMagicWindowPose() => (gfx.mojom.Transform? data);
 
-  // Called by the XR runtime to retrieve the ControllerRole of the device
+  // Called by the XR runtime to retrieve the handedness of the device
   // that the test has registered at the given index, i.e. which hand the
   // controller is mapped to.
   [Sync] WaitGetControllerRoleForTrackedDeviceIndex(uint32 index) =>
-      (ControllerRole role);
+      (device.mojom.XRHandedness role);
 
   // Called by the XR runtime anytime it updates its controller data to retrieve
   // the controller data of the device that the test has registered at the

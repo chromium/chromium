@@ -73,7 +73,8 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
                         const device::ControllerFrameData& updated_data);
   void DisconnectController(uint32_t index);
   device::ControllerFrameData CreateValidController(
-      device::ControllerRole role);
+      device::mojom::XRHandedness handedness =
+          device::mojom::XRHandedness::NONE);
   void PopulateEvent(device_test::mojom::EventData data);
   void StopHooking();
   void SetCanCreateSession(bool can_create_session);
@@ -110,12 +111,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   std::atomic_uint32_t target_frame_count_ = 0;
   uint32_t next_controller_id_ GUARDED_BY(lock_) = 0;
 
-  // Used to track both if `wait_loop_` is valid in a thread-safe manner or if
-  // it has already had quit signaled on it, since `AnyQuitCalled` won't update
-  // until the `Quit` task has posted to the main thread.
-  std::atomic_bool can_signal_wait_loop_ = false;
-
-  std::unique_ptr<base::RunLoop> wait_loop_ = nullptr;
+  base::RepeatingClosure wait_loop_quit_closure_ GUARDED_BY(lock_);
 };
 
 #endif  // CHROME_BROWSER_VR_TEST_MOCK_XR_DEVICE_HOOK_BASE_H_

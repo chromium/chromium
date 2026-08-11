@@ -9,6 +9,7 @@ mojom("test_mojom") {
   sources = [ "browser_test_interfaces.mojom" ]
 
   public_deps = [
+    "//device/gamepad/public/mojom",
     "//device/vr/public/mojom:vr_service",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
@@ -32,12 +33,12 @@ mojom("test_mojom") {
           cpp = "::device::DeviceConfig"
         },
         {
-          mojom = "device_test.mojom.ControllerFrameData"
-          cpp = "::device::ControllerFrameData"
+          mojom = "device_test.mojom.InputSourceType"
+          cpp = "::device::InputSourceType"
         },
         {
-          mojom = "device_test.mojom.ControllerRole"
-          cpp = "::device::ControllerRole"
+          mojom = "device_test.mojom.ControllerFrameData"
+          cpp = "::device::ControllerFrameData"
         },
       ]
       traits_headers = [
@@ -49,6 +50,7 @@ mojom("test_mojom") {
       ]
       traits_public_deps = [
         ":vr_public_test_typemaps",
+        "//device/gamepad/public/mojom",
         "//device/vr/public/mojom:vr_service",
       ]
     },
@@ -76,6 +78,8 @@ component("vr_public_test_typemaps") {
   ]
 
   public_deps = [
+    "//device/gamepad/public/cpp:shared_with_blink",
+    "//device/gamepad/public/mojom",
     "//device/vr/public/mojom:vr_service",
     "//skia/public/mojom",
   ]

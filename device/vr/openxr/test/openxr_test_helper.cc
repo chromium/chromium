@@ -16,6 +16,7 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "device/vr/test/webxr_test_gamepad_utils.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/transform.h"
@@ -1014,94 +1015,109 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
       "UpdateAction this action has a path that is not supported by test now");
 
   device::ControllerFrameData data = GetControllerDataFromPath(path_string);
+  const device::mojom::GamepadPtr& gamepad = data.gamepad;
 
   switch (cur_action_properties.type) {
     case XR_ACTION_TYPE_FLOAT_INPUT: {
-      if (!(PathContainsString(path_string, "/trigger") ||
-            PathContainsString(path_string, "/squeeze") ||
-            PathContainsString(path_string, "/force") ||
-            PathContainsString(path_string, "/value"))) {
+      device::XrButtonId button_id = device::XrButtonId::kMax;
+      if (PathContainsString(path_string, "/squeeze") ||
+          PathContainsString(path_string, "/grasp_ext")) {
+        button_id = device::XrButtonId::kGrip;
+      } else if (PathContainsString(path_string, "/trigger") ||
+                 PathContainsString(path_string, "/force") ||
+                 PathContainsString(path_string, "/value") ||
+                 PathContainsString(path_string, "/pinch_ext")) {
+        button_id = device::XrButtonId::kAxisTrigger;
+      } else {
         NOTREACHED() << "Found path with unsupported float action: "
                      << path_string;
       }
+
       float_action_states_[action].isActive = data.is_valid;
+      float_action_states_[action].currentState = 0.0f;
+      if (gamepad && data.is_valid) {
+        if (const auto* button =
+                device::GetGamepadButton(gamepad.get(), button_id)) {
+          float_action_states_[action].currentState =
+              static_cast<float>(button->value);
+        }
+      }
       break;
     }
     case XR_ACTION_TYPE_BOOLEAN_INPUT: {
-      device::XrButtonId button_id = device::kMax;
-      if (PathContainsString(path_string, "/trackpad/")) {
-        button_id = device::kAxisTrackpad;
+      device::XrButtonId button_id = device::XrButtonId::kMax;
+      if (PathContainsString(path_string, "/trigger/") ||
+          PathContainsString(path_string, "/select/") ||
+          PathContainsString(path_string, "/pinch_ext/")) {
+        button_id = device::XrButtonId::kAxisTrigger;
+      } else if (PathContainsString(path_string, "/squeeze/") ||
+                 PathContainsString(path_string, "/grasp_ext/")) {
+        button_id = device::XrButtonId::kGrip;
+      } else if (PathContainsString(path_string, "/trackpad/")) {
+        button_id = device::XrButtonId::kAxisTrackpad;
       } else if (PathContainsString(path_string, "/thumbstick/")) {
-        button_id = device::kAxisThumbstick;
-      } else if (PathContainsString(path_string, "/trigger/")) {
-        button_id = device::kAxisTrigger;
-      } else if (PathContainsString(path_string, "/squeeze/")) {
-        button_id = device::kGrip;
+        button_id = device::XrButtonId::kAxisThumbstick;
+      } else if (PathContainsString(path_string, "/a/") ||
+                 PathContainsString(path_string, "/x/")) {
+        button_id = device::XrButtonId::kA;
+      } else if (PathContainsString(path_string, "/b/") ||
+                 PathContainsString(path_string, "/y/")) {
+        button_id = device::XrButtonId::kB;
       } else if (PathContainsString(path_string, "/menu/")) {
-        button_id = device::kMenu;
-      } else if (PathContainsString(path_string, "/select/")) {
-        // for WMR simple controller select is mapped to test type trigger
-        button_id = device::kAxisTrigger;
-      } else if (PathContainsString(path_string, "/thumbrest/")) {
-        button_id = device::kThumbRest;
-      } else if (PathContainsString(path_string, "/a/")) {
-        button_id = device::kA;
-      } else if (PathContainsString(path_string, "/b/")) {
-        button_id = device::kB;
-      } else if (PathContainsString(path_string, "/x/")) {
-        button_id = device::kX;
-      } else if (PathContainsString(path_string, "/y/")) {
-        button_id = device::kY;
-      } else if (PathContainsString(path_string, "/shoulder/")) {
-        button_id = device::kShoulder;
-      } else if (PathContainsString(path_string, "/pinch_ext/")) {
-        button_id = device::kAxisTrigger;
-      } else if (PathContainsString(path_string, "/grasp_ext/")) {
-        button_id = device::kGrip;
+        button_id = device::XrButtonId::kMenu;
+      } else if (PathContainsString(path_string, "/thumbrest/") ||
+                 PathContainsString(path_string, "/shoulder/")) {
+        button_id = device::XrButtonId::kThumbRest;
       } else {
         NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
-      uint64_t button_mask = XrButtonMaskFromId(button_id);
 
-      // This bool pressed is needed because XrActionStateBoolean.currentState
-      // is XrBool32 which is uint32_t. And XrActionStateBoolean.currentState
-      // won't behave correctly if we try to set it using an uint64_t value like
-      // button_mask, like: boolean_action_states_[].currentState =
-      // data.buttons_pressed & button_mask
       boolean_action_states_[action].isActive = data.is_valid;
-      bool button_supported = data.supported_buttons & button_mask;
+      const auto* button = device::GetGamepadButton(gamepad.get(), button_id);
+      bool button_supported = data.is_valid && (button != nullptr);
 
       if (PathContainsString(path_string, "/value") ||
           PathContainsString(path_string, "/click")) {
-        bool pressed = data.buttons_pressed & button_mask;
         boolean_action_states_[action].currentState =
-            button_supported && pressed;
+            button_supported && button->pressed;
       } else if (PathContainsString(path_string, "/touch")) {
-        bool touched = data.buttons_touched & button_mask;
         boolean_action_states_[action].currentState =
-            button_supported && touched;
+            button_supported && button->touched;
       } else {
         NOTREACHED() << "Boolean actions only supports path string ends with "
-                        "value, click, or touch";
+                        "value, click, or touch: "
+                     << path_string;
       }
       break;
     }
     case XR_ACTION_TYPE_VECTOR2F_INPUT: {
-      device::XrButtonId button_id = device::kMax;
+      device::XrButtonId button_id;
       if (PathContainsString(path_string, "/trackpad")) {
-        button_id = device::kAxisTrackpad;
+        button_id = device::XrButtonId::kAxisTrackpad;
       } else if (PathContainsString(path_string, "/thumbstick")) {
-        button_id = device::kAxisThumbstick;
+        button_id = device::XrButtonId::kAxisThumbstick;
       } else {
-        NOTREACHED() << "Path is " << path_string
-                     << "But only Trackpad and thumbstick has 2d vector action";
+        NOTREACHED()
+            << "Path is " << path_string
+            << " But only Trackpad and thumbstick has 2d vector action";
       }
-      uint64_t axis_mask = XrAxisOffsetFromId(button_id);
-      v2f_action_states_[action].currentState.x = data.axis_data[axis_mask].x;
-      // we have to negate y because webxr has different direction for y than
-      // openxr
-      v2f_action_states_[action].currentState.y = -data.axis_data[axis_mask].y;
+
+      auto axis_start = device::GamepadAxisStartIndexFromButtonId(button_id);
+      auto required_size =
+          device::RequiredGamepadAxesSizeFromButtonId(button_id);
+      CHECK(axis_start && required_size);
+
       v2f_action_states_[action].isActive = data.is_valid;
+      v2f_action_states_[action].currentState = {0.0f, 0.0f};
+
+      if (gamepad && data.is_valid && gamepad->axes.size() >= *required_size) {
+        v2f_action_states_[action].currentState.x =
+            static_cast<float>(gamepad->axes[*axis_start]);
+        // We have to negate y because WebXR has different direction for y
+        // than OpenXR.
+        v2f_action_states_[action].currentState.y =
+            static_cast<float>(-gamepad->axes[*axis_start + 1]);
+      }
       break;
     }
     case XR_ACTION_TYPE_POSE_INPUT: {
@@ -1243,11 +1259,11 @@ bool OpenXrTestHelper::GetCanCreateSession() {
 
 device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
     std::string path_string) const {
-  device::ControllerRole role;
+  device::mojom::XRHandedness handedness;
   if (PathContainsString(path_string, "/user/hand/left/")) {
-    role = device::kControllerRoleLeft;
+    handedness = device::mojom::XRHandedness::LEFT;
   } else if (PathContainsString(path_string, "/user/hand/right/")) {
-    role = device::kControllerRoleRight;
+    handedness = device::mojom::XRHandedness::RIGHT;
   } else {
     NOTREACHED()
         << "Currently Path should belong to either left or right, received: "
@@ -1255,8 +1271,11 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
   }
   device::ControllerFrameData data;
   for (const auto& controller : controllers_) {
-    if (controller.role == role) {
+    if (controller.handedness == handedness) {
       data = controller;
+      if (controller.is_valid) {
+        break;
+      }
     }
   }
   return data;
@@ -1317,13 +1336,14 @@ void OpenXrTestHelper::LocateJoints(
       left_hand_ == hand_tracker ? "/user/hand/left/" : "/user/hand/right/";
   const auto& controller =
       GetControllerDataFromPath(std::move(controller_string));
-  if (!controller.has_hand_data) {
+  if (!controller.hand_data) {
     return;
   }
 
   // Our test/mojom interface sends the "palm" joint separate from the rest of
   // the finger joints, and thus sends one less joint than we need to populate.
-  if (std::size(controller.hand_data) + 1 > locations->jointCount) {
+  if (controller.hand_data->hand_joint_data.size() + 1 >
+      locations->jointCount) {
     return;
   }
 
@@ -1339,17 +1359,18 @@ void OpenXrTestHelper::LocateJoints(
     palm_location.pose =
         device::GfxTransformToXrPose(controller.pose_data.value());
   }
-  for (const auto& data : controller.hand_data) {
-    if (!data.mojo_from_joint) {
+  for (const auto& data : controller.hand_data->hand_joint_data) {
+    if (!data->mojo_from_joint) {
       // If we're missing the pose, don't fill in any data about this joint.
       continue;
     }
     // The OpenXR joints and mojom joints have the same base number offset by 1.
-    auto& joint_location = out_locations[static_cast<uint32_t>(data.joint) + 1];
+    auto& joint_location =
+        out_locations[static_cast<uint32_t>(data->joint) + 1];
     joint_location.locationFlags = kValidTrackedPoseFlags;
-    joint_location.radius = data.radius;
+    joint_location.radius = data->radius;
     joint_location.pose =
-        device::GfxTransformToXrPose(data.mojo_from_joint.value());
+        device::GfxTransformToXrPose(data->mojo_from_joint.value());
   }
 
   locations->isActive = true;

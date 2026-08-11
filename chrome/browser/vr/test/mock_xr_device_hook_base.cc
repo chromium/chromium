@@ -5,8 +5,10 @@
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 
 #include "content/public/test/xr_test_utils.h"
+#include "device/gamepad/public/cpp/gamepad.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/test/webxr_test_gamepad_utils.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 #if BUILDFLAG(ENABLE_OPENXR)
@@ -16,6 +18,14 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webxr/android/openxr_device_provider.h"
 #endif
+
+namespace {
+// The 'xr-standard' WebXR mapping defines up to 7 standard buttons (indices
+// 0..6): [0] Trigger, [1] Grip, [2] Trackpad, [3] Thumbstick, [4] A/X, [5] B/Y,
+// [6] ThumbRest/Shoulder
+static constexpr size_t kMaxExpectedXrStandardButtons = 7;
+static constexpr size_t kMaxExpectedButtons = kMaxExpectedXrStandardButtons + 1;
+}  // namespace
 
 MockXRDeviceHookBase::MockXRDeviceHookBase() {
   thread_ = std::make_unique<base::Thread>("MockXRDeviceHookThread");
@@ -84,7 +94,6 @@ void MockXRDeviceHookBase::WaitNumFrames(uint32_t num_frames) {
 }
 
 void MockXRDeviceHookBase::WaitForTotalFrameCount(uint32_t total_count) {
-  DCHECK(!can_signal_wait_loop_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   target_frame_count_ = total_count;
 
@@ -93,14 +102,18 @@ void MockXRDeviceHookBase::WaitForTotalFrameCount(uint32_t total_count) {
   if (frame_count_ >= target_frame_count_) {
     return;
   }
-  wait_loop_ = std::make_unique<base::RunLoop>(
-      base::RunLoop::Type::kNestableTasksAllowed);
-  can_signal_wait_loop_ = true;
+  base::RunLoop wait_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  {
+    base::AutoLock lock(lock_);
+    wait_loop_quit_closure_ = wait_loop.QuitClosure();
+  }
 
-  wait_loop_->Run();
+  wait_loop.Run();
 
-  can_signal_wait_loop_ = false;
-  wait_loop_.reset();
+  {
+    base::AutoLock lock(lock_);
+    wait_loop_quit_closure_.Reset();
+  }
 }
 
 void MockXRDeviceHookBase::OnFrameSubmitted(
@@ -110,9 +123,15 @@ void MockXRDeviceHookBase::OnFrameSubmitted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   frame_count_++;
   ProcessSubmittedFrameUnlocked(views, layers);
-  if (can_signal_wait_loop_ && frame_count_ >= target_frame_count_) {
-    wait_loop_->Quit();
-    can_signal_wait_loop_ = false;
+  if (frame_count_ >= target_frame_count_) {
+    base::RepeatingClosure quit_closure;
+    {
+      base::AutoLock lock(lock_);
+      quit_closure = wait_loop_quit_closure_;
+    }
+    if (quit_closure) {
+      quit_closure.Run();
+    }
   }
 
   std::move(callback).Run();
@@ -142,12 +161,12 @@ void MockXRDeviceHookBase::WaitGetControllerRoleForTrackedDeviceIndex(
     device_test::mojom::XRTestHook::
         WaitGetControllerRoleForTrackedDeviceIndexCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  device::ControllerRole role = device::ControllerRole::kControllerRoleInvalid;
+  device::mojom::XRHandedness role = device::mojom::XRHandedness::NONE;
   {
     base::AutoLock lock(lock_);
     auto iter = controller_data_map_.find(index);
     if (iter != controller_data_map_.end()) {
-      role = iter->second.role;
+      role = iter->second.handedness;
     }
   }
 
@@ -167,8 +186,7 @@ void MockXRDeviceHookBase::WaitGetControllerData(
     } else {
       // Default to not being valid so that controllers aren't connected unless
       // a test specifically enables it.
-      data =
-          CreateValidController(device::ControllerRole::kControllerRoleInvalid);
+      data = CreateValidController(device::mojom::XRHandedness::NONE);
       data.is_valid = false;
     }
   }
@@ -225,15 +243,31 @@ void MockXRDeviceHookBase::DisconnectController(uint32_t index) {
 }
 
 device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
-    device::ControllerRole role) {
+    device::mojom::XRHandedness handedness) {
   // Stateless helper may be called on any sequence.
   device::ControllerFrameData ret;
-  // Because why shouldn't a 64 button controller exist?
-  ret.supported_buttons = UINT64_MAX;
-  std::ranges::fill(ret.axis_data, device::ControllerAxisData{});
-  ret.role = role;
+  ret.handedness = handedness;
   ret.is_valid = true;
   ret.pose_data = gfx::Transform();
+
+  auto gamepad = device::mojom::Gamepad::New();
+  gamepad->connected = true;
+  gamepad->mapping = device::GamepadMapping::kXrStandard;
+
+  // The 'xr-standard' WebXR gamepad layout defines up to 7 standard buttons:
+  // [0] Trigger, [1] Grip, [2] Trackpad, [3] Thumbstick, [4] A/X, [5] B/Y, [6]
+  // ThumbRest
+  gamepad->buttons.reserve(kMaxExpectedButtons);
+  for (size_t i = 0; i < kMaxExpectedXrStandardButtons; ++i) {
+    auto& button = gamepad->buttons.emplace_back();
+    button.used = true;
+    button.type = device::GamepadButtonType::kStandard;
+  }
+
+  // 4 standard axes for 'xr-standard': [touchpad_x, touchpad_y, thumbstick_x,
+  // thumbstick_y]
+  gamepad->axes = {0.0, 0.0, 0.0, 0.0};
+  ret.gamepad = std::move(gamepad);
   return ret;
 }
 

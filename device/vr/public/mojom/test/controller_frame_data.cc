@@ -8,10 +8,26 @@ namespace device {
 
 ControllerFrameData::ControllerFrameData() = default;
 ControllerFrameData::~ControllerFrameData() = default;
-ControllerFrameData::ControllerFrameData(const ControllerFrameData& other) =
-    default;
-ControllerFrameData& ControllerFrameData::operator=(
-    const ControllerFrameData& other) = default;
+ControllerFrameData::ControllerFrameData(ControllerFrameData&& other) = default;
 ControllerFrameData& ControllerFrameData::operator=(
     ControllerFrameData&& other) = default;
+
+ControllerFrameData::ControllerFrameData(const ControllerFrameData& other)
+    : handedness(other.handedness),
+      gamepad(other.gamepad ? other.gamepad.Clone() : nullptr),
+      pose_data(other.pose_data),
+      hand_data(other.hand_data ? other.hand_data.Clone() : nullptr),
+      is_valid(other.is_valid) {}
+
+ControllerFrameData& ControllerFrameData::operator=(
+    const ControllerFrameData& other) {
+  if (this != &other) {
+    handedness = other.handedness;
+    gamepad = other.gamepad ? other.gamepad.Clone() : nullptr;
+    pose_data = other.pose_data;
+    hand_data = other.hand_data ? other.hand_data.Clone() : nullptr;
+    is_valid = other.is_valid;
+  }
+  return *this;
+}
 }  // namespace device

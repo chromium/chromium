@@ -33,8 +33,8 @@ class VRTestHook {
   virtual DeviceConfig WaitGetDeviceConfig() = 0;
   virtual std::optional<gfx::Transform> WaitGetPresentingPose() = 0;
   virtual std::optional<gfx::Transform> WaitGetMagicWindowPose() = 0;
-  virtual ControllerRole WaitGetControllerRoleForTrackedDeviceIndex(
-      uint32_t index) = 0;
+  virtual device::mojom::XRHandedness
+  WaitGetControllerRoleForTrackedDeviceIndex(uint32_t index) = 0;
   virtual ControllerFrameData WaitGetControllerData(uint32_t index) = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
   virtual bool WaitGetCanCreateSession() = 0;
