@@ -1013,7 +1013,31 @@ TEST_F(WebuiOmniboxHandlerTest,
 }
 
 TEST_F(WebuiOmniboxHandlerTest,
-       CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapIconEnabled) {
+       CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapSuggestionIconEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGSwapSuggestionIcon", "true"}});
+
+  AutocompleteMatch match;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match.destination_url = GURL("https://example.com");
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_match = handler_->CreateAutocompleteMatch(
+      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+
+  ASSERT_TRUE(mojom_match.has_value());
+  EXPECT_EQ(mojom_match.value()->icon_path,
+            searchbox_internal::kSearchSparkIconResourceName);
+}
+
+TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapIconEnabledOnly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kWebUIOmniboxAskGAboutThisPage,
@@ -1033,7 +1057,7 @@ TEST_F(WebuiOmniboxHandlerTest,
 
   ASSERT_TRUE(mojom_match.has_value());
   EXPECT_EQ(mojom_match.value()->icon_path,
-            searchbox_internal::kSearchSparkIconResourceName);
+            searchbox_internal::kReplyRotated180IconResourceName);
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
