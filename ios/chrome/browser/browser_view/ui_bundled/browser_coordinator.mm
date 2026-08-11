@@ -3217,7 +3217,9 @@
     // Hide the Omnibox to avoid user's confusion about which text field is
     // currently focused. The mode is force to avoid the bottom Omnibox
     // appearing above the find in page collapsed toolbar when scrolling.
-    [self forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByCode];
+    if (!IsFullscreenRefactoringEnabled()) {
+      [self forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByCode];
+    }
     helper->SetFindUIActive(true);
   }
 
