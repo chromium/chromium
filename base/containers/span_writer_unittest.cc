@@ -17,6 +17,48 @@ using testing::ElementsAre;
 using testing::Optional;
 using testing::Pointee;
 
+enum class TestEnum8 : uint8_t { kValue = 0x01 };
+enum class TestEnum16 : uint16_t { kValueBig = 0x0203, kValueLittle = 0x0302 };
+
+static_assert(([] {
+  std::array<uint8_t, 1> array = {};
+  SpanWriter(span(array)).WriteEnumBigEndian(TestEnum8::kValue);
+  return array;
+}()[0] == 0x01));
+
+static_assert(([] {
+  std::array<uint8_t, 1> array = {};
+  SpanWriter(span(array)).WriteEnumLittleEndian(TestEnum8::kValue);
+  return array;
+}()[0] == 0x01));
+
+static_assert(([] {
+  std::array<uint8_t, 1> array = {};
+  SpanWriter(span(array)).WriteEnumNativeEndian(TestEnum8::kValue);
+  return array;
+}()[0] == 0x01));
+
+static_assert(
+    (([] {
+       std::array<uint8_t, 2> array = {};
+       SpanWriter(span(array)).WriteEnumBigEndian(TestEnum16::kValueBig);
+       return array;
+     }()) == std::to_array<uint8_t>({0x02, 0x03})));
+
+static_assert(
+    (([] {
+       std::array<uint8_t, 2> array = {};
+       SpanWriter(span(array)).WriteEnumLittleEndian(TestEnum16::kValueLittle);
+       return array;
+     }()) == std::to_array<uint8_t>({0x02, 0x03})));
+
+static_assert(
+    (([] {
+       std::array<uint8_t, 2> array = {};
+       SpanWriter(span(array)).WriteEnumNativeEndian(TestEnum16::kValueLittle);
+       return array;
+     }()) == std::to_array<uint8_t>({0x02, 0x03})));
+
 TEST(SpanWriterTest, Construct) {
   std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
 
@@ -368,6 +410,73 @@ TEST(SpanWriterTest, Chars) {
   EXPECT_TRUE(r.Write(span<const char>({'f', 'g'})));
   EXPECT_EQ(r.remaining(), 2u);
   EXPECT_EQ(kArray, span<const char>({'a', 'f', 'g', 'd', 'e'}));
+}
+
+enum class MyEnum1 : uint8_t { kValue = 0x01 };
+enum class MyEnum2 : uint16_t { kValue = 0x0203 };
+enum class MyEnum4 : uint32_t { kValue = 0x04050607 };
+enum class MyEnum8 : uint64_t { kValue = 0x08090A0B0C0D0E0Fll };
+
+enum class MySignedEnum : int16_t { kValue = -256 };
+
+TEST(SpanWriterTest, WriteEnumBigEndian) {
+  std::array<uint8_t, 17u> kArray = {0};
+
+  auto r = SpanWriter(span(kArray));
+  EXPECT_TRUE(r.WriteEnumBigEndian(MyEnum1::kValue));
+  EXPECT_TRUE(r.WriteEnumBigEndian(MyEnum2::kValue));
+  EXPECT_TRUE(r.WriteEnumBigEndian(MyEnum4::kValue));
+  EXPECT_TRUE(r.WriteEnumBigEndian(MyEnum8::kValue));
+  EXPECT_TRUE(r.WriteEnumBigEndian(MySignedEnum::kValue));
+
+  const std::array<uint8_t, 17u> kExpected = {
+      0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+      0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0xff, 0x00};
+  EXPECT_EQ(kArray, kExpected);
+}
+
+TEST(SpanWriterTest, WriteEnumLittleEndian) {
+  std::array<uint8_t, 17u> kArray = {0};
+
+  auto r = SpanWriter(span(kArray));
+  EXPECT_TRUE(r.WriteEnumLittleEndian(MyEnum1::kValue));
+  EXPECT_TRUE(r.WriteEnumLittleEndian(MyEnum2::kValue));
+  EXPECT_TRUE(r.WriteEnumLittleEndian(MyEnum4::kValue));
+  EXPECT_TRUE(r.WriteEnumLittleEndian(MyEnum8::kValue));
+  EXPECT_TRUE(r.WriteEnumLittleEndian(MySignedEnum::kValue));
+
+  const std::array<uint8_t, 17u> kExpected = {
+      0x01, 0x03, 0x02, 0x07, 0x06, 0x05, 0x04, 0x0f, 0x0e,
+      0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08, 0x00, 0xff};
+  EXPECT_EQ(kArray, kExpected);
+}
+
+TEST(SpanWriterTest, WriteEnumNativeEndian) {
+  std::array<uint8_t, 17u> kArray = {0};
+
+  auto r = SpanWriter(span(kArray));
+  EXPECT_TRUE(r.WriteEnumNativeEndian(MyEnum1::kValue));
+  EXPECT_TRUE(r.WriteEnumNativeEndian(MyEnum2::kValue));
+  EXPECT_TRUE(r.WriteEnumNativeEndian(MyEnum4::kValue));
+  EXPECT_TRUE(r.WriteEnumNativeEndian(MyEnum8::kValue));
+  EXPECT_TRUE(r.WriteEnumNativeEndian(MySignedEnum::kValue));
+
+  const std::array<uint8_t, 17u> kExpected = {
+      0x01, 0x03, 0x02, 0x07, 0x06, 0x05, 0x04, 0x0f, 0x0e,
+      0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08, 0x00, 0xff};
+  // Native endianness is tested assuming little endian since tests run on
+  // little endian machines
+  EXPECT_EQ(kArray, kExpected);
+}
+
+TEST(SpanWriterTest, WriteEnum_TooSmall) {
+  std::array<uint8_t, 2u> kArray = {0};
+  auto r = SpanWriter(span(kArray));
+  EXPECT_FALSE(r.WriteEnumBigEndian(MyEnum4::kValue));
+  EXPECT_FALSE(r.WriteEnumLittleEndian(MyEnum4::kValue));
+  EXPECT_FALSE(r.WriteEnumNativeEndian(MyEnum4::kValue));
+  EXPECT_EQ(r.remaining(), 2u);
+  EXPECT_EQ(r.num_written(), 0u);
 }
 
 }  // namespace

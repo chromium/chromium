@@ -254,6 +254,29 @@ constexpr auto TestReadDoubleNativeEndian() {
 static_assert(TestReadDoubleNativeEndian().has_value());
 static_assert(TestReadDoubleNativeEndian().value() == 1.0);
 
+enum class TestEnum8 : uint8_t { kValue = 0x01 };
+enum class TestEnum16 : uint16_t { kValueBig = 0x0203, kValueLittle = 0x0302 };
+
+static_assert((SpanReader(span(kConstArray)).ReadEnumBigEndian<TestEnum8>() ==
+               TestEnum8::kValue));
+
+static_assert((SpanReader(span(kConstArray))
+                   .ReadEnumLittleEndian<TestEnum8>() == TestEnum8::kValue));
+
+static_assert((SpanReader(span(kConstArray))
+                   .ReadEnumNativeEndian<TestEnum8>() == TestEnum8::kValue));
+
+static_assert((SpanReader(span(kConstArray).subspan(1u))
+                   .ReadEnumBigEndian<TestEnum16>() == TestEnum16::kValueBig));
+
+static_assert((SpanReader(span(kConstArray).subspan(1u))
+                   .ReadEnumLittleEndian<TestEnum16>() ==
+               TestEnum16::kValueLittle));
+
+static_assert((SpanReader(span(kConstArray).subspan(1u))
+                   .ReadEnumNativeEndian<TestEnum16>() ==
+               TestEnum16::kValueLittle));
+
 TEST(SpanReaderTest, Construct) {
   std::array<const int, 5u> kArray = {1, 2, 3, 4, 5};
 
@@ -814,6 +837,64 @@ TEST(SpanReaderTest, ReadFloatAndDouble) {
   double d;
   EXPECT_TRUE(r.ReadDoubleNativeEndian(d));
   EXPECT_EQ(d, 1.0);
+}
+
+enum class MyEnum1 : uint8_t { kValue = 0x01 };
+enum class MyEnum2 : uint16_t { kValue = 0x0203 };
+enum class MyEnum4 : uint32_t { kValue = 0x04050607 };
+enum class MyEnum8 : uint64_t { kValue = 0x08090A0B0C0D0E0Fll };
+
+enum class MySignedEnum : int16_t { kValue = -256 };
+
+TEST(SpanReaderTest, ReadEnumBigEndian) {
+  const std::array<uint8_t, 17u> kArray = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                                           0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+                                           0x0d, 0x0e, 0x0f, 0xff, 0x00};
+
+  auto r = SpanReader(span(kArray));
+  EXPECT_THAT(r.ReadEnumBigEndian<MyEnum1>(), Optional(MyEnum1::kValue));
+  EXPECT_THAT(r.ReadEnumBigEndian<MyEnum2>(), Optional(MyEnum2::kValue));
+  EXPECT_THAT(r.ReadEnumBigEndian<MyEnum4>(), Optional(MyEnum4::kValue));
+  EXPECT_THAT(r.ReadEnumBigEndian<MyEnum8>(), Optional(MyEnum8::kValue));
+  EXPECT_THAT(r.ReadEnumBigEndian<MySignedEnum>(),
+              Optional(MySignedEnum::kValue));
+}
+
+TEST(SpanReaderTest, ReadEnumLittleEndian) {
+  const std::array<uint8_t, 17u> kArray = {0x01, 0x03, 0x02, 0x07, 0x06, 0x05,
+                                           0x04, 0x0f, 0x0e, 0x0d, 0x0c, 0x0b,
+                                           0x0a, 0x09, 0x08, 0x00, 0xff};
+
+  auto r = SpanReader(span(kArray));
+  EXPECT_THAT(r.ReadEnumLittleEndian<MyEnum1>(), Optional(MyEnum1::kValue));
+  EXPECT_THAT(r.ReadEnumLittleEndian<MyEnum2>(), Optional(MyEnum2::kValue));
+  EXPECT_THAT(r.ReadEnumLittleEndian<MyEnum4>(), Optional(MyEnum4::kValue));
+  EXPECT_THAT(r.ReadEnumLittleEndian<MyEnum8>(), Optional(MyEnum8::kValue));
+  EXPECT_THAT(r.ReadEnumLittleEndian<MySignedEnum>(),
+              Optional(MySignedEnum::kValue));
+}
+
+TEST(SpanReaderTest, ReadEnumNativeEndian) {
+  const std::array<uint8_t, 17u> kArray = {0x01, 0x03, 0x02, 0x07, 0x06, 0x05,
+                                           0x04, 0x0f, 0x0e, 0x0d, 0x0c, 0x0b,
+                                           0x0a, 0x09, 0x08, 0x00, 0xff};
+
+  auto r = SpanReader(span(kArray));
+  EXPECT_THAT(r.ReadEnumNativeEndian<MyEnum1>(), Optional(MyEnum1::kValue));
+  EXPECT_THAT(r.ReadEnumNativeEndian<MyEnum2>(), Optional(MyEnum2::kValue));
+  EXPECT_THAT(r.ReadEnumNativeEndian<MyEnum4>(), Optional(MyEnum4::kValue));
+  EXPECT_THAT(r.ReadEnumNativeEndian<MyEnum8>(), Optional(MyEnum8::kValue));
+  EXPECT_THAT(r.ReadEnumNativeEndian<MySignedEnum>(),
+              Optional(MySignedEnum::kValue));
+}
+
+TEST(SpanReaderTest, ReadEnum_TooSmall) {
+  const std::array<uint8_t, 2u> kArray = {0x01, 0x02};
+  auto r = SpanReader(span(kArray));
+  EXPECT_FALSE(r.ReadEnumBigEndian<MyEnum4>().has_value());
+  EXPECT_FALSE(r.ReadEnumLittleEndian<MyEnum4>().has_value());
+  EXPECT_FALSE(r.ReadEnumNativeEndian<MyEnum4>().has_value());
+  EXPECT_EQ(r.remaining(), 2u);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <optional>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
@@ -171,6 +172,39 @@ class SpanReader<T> : public SpanReaderBase<T> {
 #undef BASE_SPANREADER_READ_BOTH_SIGNS_ALL_SIZES
 #undef BASE_SPANREADER_READ_BOTH_SIGNS
 #undef BASE_SPANREADER_READ
+
+  // Reads an enumeration by treating its underlying integer type from the span
+  // using big endianness. It advances the internal span by `sizeof(Enum)` and
+  // returns `std::optional<Enum>`, which will be `std::nullopt` if there are
+  // not enough bytes.
+  template <typename Enum>
+    requires(std::is_enum_v<Enum>)
+  constexpr std::optional<Enum> ReadEnumBigEndian() {
+    return this->template Read<sizeof(Enum)>().transform(
+        &EnumFromBigEndian<Enum>);
+  }
+
+  // Reads an enumeration by treating its underlying integer type from the span
+  // using little endianness. It advances the internal span by `sizeof(Enum)`
+  // and returns `std::optional<Enum>`, which will be `std::nullopt` if there
+  // are not enough bytes.
+  template <typename Enum>
+    requires(std::is_enum_v<Enum>)
+  constexpr std::optional<Enum> ReadEnumLittleEndian() {
+    return this->template Read<sizeof(Enum)>().transform(
+        &EnumFromLittleEndian<Enum>);
+  }
+
+  // Reads an enumeration by treating its underlying integer type from the span
+  // using native endianness. It advances the internal span by `sizeof(Enum)`
+  // and returns `std::optional<Enum>`, which will be `std::nullopt` if there
+  // are not enough bytes.
+  template <typename Enum>
+    requires(std::is_enum_v<Enum>)
+  constexpr std::optional<Enum> ReadEnumNativeEndian() {
+    return this->template Read<sizeof(Enum)>().transform(
+        &EnumFromNativeEndian<Enum>);
+  }
   // The macros below implement the following methods for non-integer types:
   //
   // std::optional<char> ReadChar()

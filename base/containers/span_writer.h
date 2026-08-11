@@ -5,7 +5,9 @@
 #ifndef BASE_CONTAINERS_SPAN_WRITER_H_
 #define BASE_CONTAINERS_SPAN_WRITER_H_
 
+#include <concepts>
 #include <optional>
+#include <type_traits>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
@@ -131,6 +133,36 @@ class SpanWriter {
 #undef BASE_SPANWRITER_WRITE_BOTH_SIGNS_ALL_SIZES
 #undef BASE_SPANWRITER_WRITE_BOTH_SIGNS
 #undef BASE_SPANWRITER_WRITE
+
+  // Writes the given enumeration value to the span using the big endianness
+  // representation of its underlying integer type. It advances the internal
+  // span by `sizeof(Enum)` and returns true if successful, or false if there
+  // wasn't enough space.
+  template <typename Enum>
+    requires(std::same_as<T, uint8_t> && std::is_enum_v<Enum>)
+  constexpr bool WriteEnumBigEndian(Enum value) {
+    return Write(EnumToBigEndian(value));
+  }
+
+  // Writes the given enumeration value to the span using the little endianness
+  // representation of its underlying integer type. It advances the internal
+  // span by `sizeof(Enum)` and returns true if successful, or false if there
+  // wasn't enough space.
+  template <typename Enum>
+    requires(std::same_as<T, uint8_t> && std::is_enum_v<Enum>)
+  constexpr bool WriteEnumLittleEndian(Enum value) {
+    return Write(EnumToLittleEndian(value));
+  }
+
+  // Writes the given enumeration value to the span using the native endianness
+  // representation of its underlying integer type. It advances the internal
+  // span by `sizeof(Enum)` and returns true if successful, or false if there
+  // wasn't enough space.
+  template <typename Enum>
+    requires(std::same_as<T, uint8_t> && std::is_enum_v<Enum>)
+  constexpr bool WriteEnumNativeEndian(Enum value) {
+    return Write(EnumToNativeEndian(value));
+  }
 
   // Returns the remaining not-yet-written-to object count.
   constexpr size_t remaining() const { return buf_.size(); }
