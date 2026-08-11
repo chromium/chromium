@@ -16,8 +16,8 @@
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/interaction/safe_castable.h"
 
-class BrowserView;
 class BrowserUserEducationInterfaceImpl;
+class BrowserView;
 
 // Specialization for UserEducationContext that is tied to a Browser window.
 class BrowserUserEducationContext

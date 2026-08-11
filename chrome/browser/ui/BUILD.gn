@@ -3908,21 +3908,6 @@ static_library("ui") {
       "views/update_recommended_message_box.h",
       "views/upgrade_notification_controller.cc",
       "views/upgrade_notification_controller.h",
-      "views/user_education/autofill_help_bubble_factory.cc",
-      "views/user_education/autofill_help_bubble_factory.h",
-      "views/user_education/browser_help_bubble.cc",
-      "views/user_education/browser_help_bubble.h",
-      "views/user_education/browser_help_bubble_event_relay.cc",
-      "views/user_education/browser_help_bubble_event_relay.h",
-      "views/user_education/browser_ntp_promos.cc",
-      "views/user_education/browser_ntp_promos.h",
-      "views/user_education/browser_user_education_service.cc",
-      "views/user_education/custom_webui_help_bubble.cc",
-      "views/user_education/custom_webui_help_bubble.h",
-      "views/user_education/custom_webui_help_bubble_controller.cc",
-      "views/user_education/custom_webui_help_bubble_controller.h",
-      "views/user_education/ios_promo_bubble_view.cc",
-      "views/user_education/ios_promo_bubble_view.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
       "views/web_apps/create_shortcut_confirmation_view.h",
       "views/web_apps/file_handler_launch_dialog_view.cc",
@@ -4144,6 +4129,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/translate",
       "//chrome/browser/ui/views/translate:impl",
       "//chrome/browser/ui/views/user_education",
+      "//chrome/browser/ui/views/user_education:impl",
       "//chrome/browser/ui/views/web_apps",
       "//chrome/browser/ui/views/web_dialogs",
       "//chrome/browser/ui/views/webauthn",
@@ -4405,7 +4391,6 @@ static_library("ui") {
       # c/b/ui/views/permissions/chip/permission_dashboard_controller.h
       # c/b/ui/views/permissions/chip/permission_dashboard_view.h
       # c/b/ui/views/permissions/chip/webui_permission_dashboard.h
-      # c/b/ui/views/user_education/browser_help_bubble.h
       "//chrome/browser/ui/views/location_bar:impl",
 
       # TODO(crbug.com/432061436) Remove this circular dependency when the
@@ -4483,6 +4468,22 @@ static_library("ui") {
       # c/b/ui/scoped_tabbed_browser_displayer.h
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/translate:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/browser.h, browser_commands.h, browser_tabstrip.h,
+      # singleton_tabs.h
+      # c/b/ui/views/autofill/at_memory_promo_bubble_view.h
+      # c/b/ui/views/autofill/popup/popup_view_views.h
+      # c/b/ui/views/frame/browser_view.h (also needed directly by
+      #   custom_webui_help_bubble.h's CreateForController<T> template,
+      #   which is why that header lives in :impl rather than the
+      #   public :user_education target)
+      # c/b/ui/views/frame/contents_web_view.h
+      # c/b/ui/views/frame/custom_corners_background.h
+      # c/b/ui/views/tabs/tab/tab_icon.h
+      # c/b/ui/views/web_apps/web_app_install_dialog_delegate.h
+      "//chrome/browser/ui/views/user_education:impl",
     ]
 
     if (is_linux) {
@@ -4515,7 +4516,6 @@ static_library("ui") {
         "views/chrome_views_delegate_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.h",
-        "views/user_education/browser_help_bubble_event_relay_mac.mm",
       ]
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals",
@@ -4613,14 +4613,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/autofill/autofill_ai:impl",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller",
-      "//chrome/browser/ui/views/user_education:impl",
       "//chrome/browser/ui/views/web_apps/sub_apps",
       "//chrome/browser/ui/views/web_apps/sub_apps:sub_apps_install_dialog",
     ]
-    allow_circular_includes_from += [
-      "//chrome/browser/ui/views/autofill/autofill_ai:impl",
-      "//chrome/browser/ui/views/user_education:impl",
-    ]
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views/autofill/autofill_ai:impl" ]
   }
 
   # TODO(https://crbug.com/330808104): Delete this code.

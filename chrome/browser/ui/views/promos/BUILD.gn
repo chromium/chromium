@@ -6,17 +6,24 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views)
 
+# Split out from :promos below because it has no real dependency on
+# //chrome/browser/ui/views/page_action (unlike ios_promo_bubble.{h,cc}),
+# letting consumers that only need the plain IOSPromoTypeConfigs struct
+# (e.g. //chrome/browser/ui/views/user_education) depend on it directly
+# without pulling in page_action's dependency chain, which cycles back
+# through toolbar/search/webui/new_tab_page into user_education.
+source_set("constants") {
+  public = [ "ios_promo_constants.h" ]
+  sources = [ "ios_promo_constants.cc" ]
+  public_deps = [ "//ui/base" ]
+}
+
 source_set("promos") {
-  public = [
-    "ios_promo_bubble.h",
-    "ios_promo_constants.h",
-  ]
-  sources = [
-    "ios_promo_bubble.cc",
-    "ios_promo_constants.cc",
-  ]
+  public = [ "ios_promo_bubble.h" ]
+  sources = [ "ios_promo_bubble.cc" ]
 
   public_deps = [
+    ":constants",
     "//base",
     "//ui/base",
     "//ui/views",
