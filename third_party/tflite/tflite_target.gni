@@ -49,11 +49,13 @@ minimal_vars_to_forward_to_target = [
   "configs",
   "defines",
   "deps",
+  "frameworks",
   "include_dirs",
   "public_configs",
   "public_deps",
   "sources",
   "visibility",
+  "weak_frameworks",
 ]
 
 declare_args() {

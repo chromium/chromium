@@ -6,7 +6,10 @@ import("//third_party/protobuf/proto_library.gni")
 # coremltools is used to support WebNN on macOS.
 
 proto_library("modelformat_proto") {
-  visibility = [ "//services/webnn/*" ]
+  visibility = [
+    "//services/webnn/*",
+    "//third_party/tflite:*",
+  ]
   sources = [
     "mlmodel/format/ArrayFeatureExtractor.proto",
     "mlmodel/format/AudioFeaturePrint.proto",

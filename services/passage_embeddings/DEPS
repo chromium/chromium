@@ -3,6 +3,7 @@ include_rules = [
   "+services/on_device_model",
   "+third_party/tflite_support",
   "+third_party/sentencepiece/src/src",
+  "+third_party/tflite/src/tensorflow/lite/delegates/coreml",
   "+third_party/tflite/src/tensorflow/lite/delegates/xnnpack",
   "+third_party/tflite/src/tensorflow/lite/interpreter.h",
   "+third_party/tflite/src/tensorflow/lite/signature_runner.h",

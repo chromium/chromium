@@ -232,6 +232,17 @@ if (!use_litert_tflite) {
       "-Wno-unused-variable",
     ]
 
+    cflags_objc = [
+      "-Wno-objc-missing-property-synthesis",
+      "-Wno-objc-property-no-attribute",
+      "-fno-objc-exceptions",
+    ]
+    cflags_objcc = [
+      "-Wno-objc-missing-property-synthesis",
+      "-Wno-objc-property-no-attribute",
+      "-fno-objc-exceptions",
+    ]
+
     defines = [
       "EIGEN_ALLOW_UNALIGNED_SCALARS",
       "FARMHASH_NO_CXX_STRING",
@@ -934,6 +945,78 @@ if (!use_litert_tflite) {
     visibility = [ ":*" ]
   }
 
+  if (is_ios) {
+    tflite_source_set("tflite_coreml_delegate") {
+      sources = [
+        "src/tensorflow/lite/delegates/coreml/builders/activation_layer_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/activation_layer_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/add_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/add_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/concatenation_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/concatenation_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/convolution_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/convolution_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/dummy_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/dummy_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/fully_connected_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/fully_connected_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/hardswish_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/hardswish_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/mul_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/mul_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/op_factory.h",
+        "src/tensorflow/lite/delegates/coreml/builders/op_validator.h",
+        "src/tensorflow/lite/delegates/coreml/builders/pad_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/pad_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/pooling_layer_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/pooling_layer_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/reshape_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/reshape_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/resize_bilinear_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/resize_bilinear_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/softmax_op_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/softmax_op_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/threshold_layer_builder.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/threshold_layer_builder.h",
+        "src/tensorflow/lite/delegates/coreml/builders/util.cc",
+        "src/tensorflow/lite/delegates/coreml/builders/util.h",
+        "src/tensorflow/lite/delegates/coreml/coreml_delegate.h",
+        "src/tensorflow/lite/delegates/coreml/coreml_delegate.mm",
+        "src/tensorflow/lite/delegates/coreml/coreml_delegate_kernel.h",
+        "src/tensorflow/lite/delegates/coreml/coreml_delegate_kernel.mm",
+        "src/tensorflow/lite/delegates/coreml/coreml_executor.h",
+        "src/tensorflow/lite/delegates/coreml/coreml_executor.mm",
+      ]
+      configs_to_remove = [ "//build/config/compiler:enable_arc" ]
+      configs_to_add = [
+        ":tflite_config",
+        ":tflite_flags",
+        "//third_party/eigen3:eigen_includes",
+      ]
+      public_deps = [
+        ":tflite_kernel_common_headers",
+        ":tflite_kernel_internals",
+        ":tflite_public_headers",
+      ]
+      deps = [
+        "//third_party/abseil-cpp:absl",
+        "//third_party/coremltools:modelformat_proto",
+        "//third_party/flatbuffers",
+        "//third_party/fp16",
+        "//third_party/gemmlowp",
+      ]
+      frameworks = [
+        "CoreML.framework",
+        "Foundation.framework",
+      ]
+      include_dirs = [ "$root_gen_dir/third_party/coremltools" ]
+      check_includes = false
+      visibility = [ ":*" ]
+    }
+  }
+
   # TODO(crbug.com/1147996): Update to a component build. Will require updating
   # the tflite version.
   # TODO(crbug.com/372526657): Use tflite registration directly and not the C
@@ -1124,6 +1207,9 @@ if (!use_litert_tflite) {
       # absl::Cord::CopyToArray is not available on fuchsia but is required by
       # this library.
       conditional_public_deps += [ ":tflite_op_shim" ]
+    }
+    if (is_ios) {
+      conditional_public_deps += [ ":tflite_coreml_delegate" ]
     }
 
     public_deps = [
