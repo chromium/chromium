@@ -1407,6 +1407,8 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java:StateChangeReason) -->
 
+<!-- LINT.IfChange(BrowserProfileType) -->
+
 <enum name="BrowserProfileType">
   <int value="0" label="Regular"/>
   <int value="1" label="Incognito"/>
@@ -1415,6 +1417,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Other Off The Record"/>
   <int value="5" label="Deprecated(10/23): Guest (Ephemeral)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/profile_metrics/browser_profile_type.h:BrowserProfileType) -->
 
 <enum name="BrowsingTopicsApiAccessResult">
   <int value="0" label="Invalid requesting context"/>

@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
   <variant name="System"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/profile_metrics/browser_profile_type.h:BrowserProfileType) -->
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_load_tracker_win.cc:BrowserProfileType) -->
 
 <!-- LINT.IfChange(ProfileActivityThreshold) -->
 
