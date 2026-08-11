@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -30,11 +31,11 @@
 #include "extensions/browser/update_install_gate.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
+#include "extensions/browser/warning_service.h"
+#include "extensions/browser/warning_set.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/browser/warning_service.h"
-#include "extensions/browser/warning_set.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -445,6 +446,21 @@ TEST_F(ChromeRuntimeAPIDelegateReloadTest,
   // The 31st reload should terminate the extension.
   ReloadExtensionAndWait();
   EXPECT_TRUE(registry()->terminated_extensions().Contains(extension_id()));
+
+  // Verify the warning was successfully dispatched and received.
+  extensions::WarningService* warning_service =
+      extensions::WarningService::Get(profile());
+  ASSERT_TRUE(warning_service);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& warning : warning_service->warnings()) {
+      if (warning.warning_type() == extensions::Warning::kReloadTooFrequent &&
+          warning.extension_id() == extension_id()) {
+        return true;
+      }
+    }
+    return false;
+  }));
 }
 
 TEST_F(ChromeRuntimeAPIDelegateReloadTest,
