@@ -22,7 +22,6 @@ source_set("omnibox_everywhere") {
     "//base",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
-    "//chrome/browser/new_tab_page",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/omnibox_everywhere:resources",
     "//chrome/browser/ui/browser_window",

@@ -67,10 +67,10 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   ~MostVisitedHandler() override;
 
   // See MostVisitedSites::EnableTileTypes.
-  void EnableTileTypes(
+  virtual void EnableTileTypes(
       const ntp_tiles::MostVisitedSites::EnableTileTypesOptions& options);
   // See MostVisitedSites::SetShortcutsVisible.
-  void SetShortcutsVisible(bool visible);
+  virtual void SetShortcutsVisible(bool visible);
 
   // most_visited::mojom::MostVisitedPageHandler:
   void AddMostVisitedTile(const GURL& url,

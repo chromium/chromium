@@ -224,6 +224,7 @@ source_set("unit_tests") {
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/webui/cr_components/most_visited",
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/test:test_support",
     "//components/feature_engagement/public",

@@ -9,7 +9,6 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
@@ -402,15 +402,8 @@ void OmniboxEverywhereUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_ui()->GetWebContents(), chrome::ChromeUINewTabPageURLAsGURL(),
       base::Time(), base::TimeTicks());
-  // TODO(crbug.com/538148295): Respect profile preferences (e.g.,
-  // ntp_prefs::kNtpUseMostVisited and ntp_prefs::kNtpShortcutsVisible) set in
-  // Customize Chrome via a PrefChangeRegistrar, and parameterize
-  // MostVisitedHandler to log OmniboxEverywhere surface-specific metrics.
-  ntp_tiles::MostVisitedSites::EnableTileTypesOptions options;
-  options.enable_custom_links = true;
-  options.enable_enterprise_shortcuts = true;
-  most_visited_handler_->EnableTileTypes(options);
-  most_visited_handler_->SetShortcutsVisible(true);
+  most_visited_pref_observer_ = std::make_unique<MostVisitedPrefObserver>(
+      profile_, most_visited_handler_.get());
 }
 
 contextual_search::ContextualSearchSessionHandle*

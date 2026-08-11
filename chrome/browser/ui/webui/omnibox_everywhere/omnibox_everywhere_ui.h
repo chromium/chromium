@@ -26,6 +26,7 @@ class OmniboxEverywhereDebugPageHandler;
 
 class ComposeboxEverywhereHandler;
 class MostVisitedHandler;
+class MostVisitedPrefObserver;
 class OmniboxEverywhereHandler;
 class Profile;
 
@@ -113,6 +114,7 @@ class OmniboxEverywhereUI
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
   std::unique_ptr<OmniboxEverywhereHandler> omnibox_handler_;
   std::unique_ptr<MostVisitedHandler> most_visited_handler_;
+  std::unique_ptr<MostVisitedPrefObserver> most_visited_pref_observer_;
 
   std::unique_ptr<omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>
       debug_page_handler_;

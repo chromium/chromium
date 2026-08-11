@@ -93,6 +93,7 @@ class MicrosoftAuthPageHandler;
 class MicrosoftFilesPageHandler;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
+class MostVisitedPrefObserver;
 class NewTabPageHandler;
 class NtpCustomBackgroundService;
 class PrefRegistrySimple;
@@ -318,22 +319,8 @@ class NewTabPageUI
       content::NavigationHandle* navigation_handle) override;
   void OnColorProviderChanged() override;
 
-  bool IsShortcutsVisible() const;
-
-  // Updates the NTP tile types based on current preferences.
-  void UpdateMostVisitedTileTypes();
-  // Callback for when the value of the prefs for determining the type of NTP
-  // tiles to show changes.
-  void OnTileTypesChanged();
-  // Callback for when the value of the pref for showing the NTP tiles changes.
-  void OnTilesVisibilityPrefChanged();
-  // Called when the enterprise shortcuts policy may have changed.
-  void OnEnterpriseShortcutsPolicyChanged();
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
-
-  // Called to maybe enable enterprise shortcuts visibility by default.
-  void MaybeEnableEnterpriseShortcutsVisibility();
 
   // Based on the current profile and NTP promo controller, determine which
   // type of NTP promos can be shown, if any.
@@ -353,6 +340,7 @@ class NewTabPageUI
   mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandlerFactory>
       customize_buttons_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
+  std::unique_ptr<MostVisitedPrefObserver> most_visited_pref_observer_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
@@ -410,7 +398,6 @@ class NewTabPageUI
   std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
   std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
   std::unique_ptr<TabGroupsPageHandler> tab_groups_handler_;
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 

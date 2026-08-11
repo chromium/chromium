@@ -233,6 +233,7 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -1948,6 +1949,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // !BUILDFLAG(IS_ANDROID)
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
+  MostVisitedPrefObserver::RegisterProfilePrefs(registry);
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
@@ -2498,7 +2500,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Added 08/2025.
-  NewTabPageUI::MigrateDeprecatedUseMostVisitedTilesPref(profile_prefs);
+  MostVisitedPrefObserver::MigrateDeprecatedUseMostVisitedTilesPref(
+      profile_prefs);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2534,7 +2537,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Added 10/2025
-  NewTabPageUI::MigrateDeprecatedShortcutsTypePref(profile_prefs);
+  MostVisitedPrefObserver::MigrateDeprecatedShortcutsTypePref(profile_prefs);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
   // Added 10/2025.
