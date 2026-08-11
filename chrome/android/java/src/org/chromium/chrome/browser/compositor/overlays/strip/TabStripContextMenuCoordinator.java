@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetrics
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -358,17 +359,19 @@ public class TabStripContextMenuCoordinator {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
                 }
-            } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic
-                    || model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
-                boolean isPin = model.get(MENU_ITEM_ID) == R.id.pin_glic;
-                if (isPin) {
-                    TabStripMenuMetricsUtils.recordStripMenuUserAction(
-                            StripMenuAction.PIN_GLIC, mTabStripLayout);
-                } else {
-                    TabStripMenuMetricsUtils.recordStripMenuUserAction(
-                            StripMenuAction.UNPIN_GLIC, mTabStripLayout);
+            } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.PIN_GLIC, mTabStripLayout);
+                if (profile != null) {
+                    GlicUtils.setButtonPinnedToTabStrip(profile, true);
                 }
-                if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, isPin);
+            } else if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.UNPIN_GLIC, mTabStripLayout);
+                if (profile != null) {
+                    GlicUtils.setButtonPinnedToTabStrip(profile, false);
+                    GlicHelper.showUnpinnedSnackbar(mSnackbarManager, mContext, profile);
+                }
             } else if (model.get(MENU_ITEM_ID) == R.id.task_manager) {
                 TabStripMenuMetricsUtils.recordStripMenuUserAction(
                         StripMenuAction.TASK_MANAGER, mTabStripLayout);

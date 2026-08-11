@@ -16259,6 +16259,14 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is warmed.</description>
 </action>
 
+<action name="Glic.Interaction.TabStripButton.UndoUnpin">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Undo' on the snackbar to undo unpinning the Glic button from
+    the tab strip.
+  </description>
+</action>
+
 <action name="Glic.Interaction.TabStripButton.UnpinnedInContextMenu">
   <owner>mklw@google.com</owner>
   <description>

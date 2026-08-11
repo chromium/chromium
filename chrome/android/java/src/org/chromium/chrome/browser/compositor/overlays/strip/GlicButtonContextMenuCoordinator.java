@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
+import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -71,7 +72,7 @@ public class GlicButtonContextMenuCoordinator {
 
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(
-                        mContext, modelList, getListMenuDelegate(profile));
+                        mContext, modelList, getListMenuDelegate(activity, profile));
         View contentView = listMenu.getContentView();
         View decorView = activity.getWindow().getDecorView();
         var popupWidthPx =
@@ -109,7 +110,7 @@ public class GlicButtonContextMenuCoordinator {
     }
 
     @VisibleForTesting
-    Delegate getListMenuDelegate(Profile profile) {
+    Delegate getListMenuDelegate(Activity activity, Profile profile) {
         return (model, view) -> {
             if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
                 if (mTabStripLayout == TabStripLayoutType.VERTICAL) {
@@ -120,6 +121,7 @@ public class GlicButtonContextMenuCoordinator {
                             "Glic.Interaction.TabStripButton.UnpinnedInContextMenu");
                 }
                 GlicUtils.setButtonPinnedToTabStrip(profile, false);
+                GlicHelper.showUnpinnedSnackbar(activity, profile);
             }
             assumeNonNull(mMenuWindow).dismiss();
         };

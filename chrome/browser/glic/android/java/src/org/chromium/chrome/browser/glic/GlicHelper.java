@@ -9,12 +9,15 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
 import java.lang.annotation.Retention;
@@ -72,6 +75,50 @@ public class GlicHelper {
                                 Snackbar.UMA_GLIC));
             }
         }
+    }
+
+    /**
+     * Shows a snackbar indicating the Glic button was unpinned, with an undo action button.
+     *
+     * @param activity The Android {@link Activity}.
+     * @param profile The current {@link Profile}.
+     */
+    public static void showUnpinnedSnackbar(Activity activity, Profile profile) {
+        if (activity instanceof SnackbarManageable) {
+            SnackbarManager snackbarManager = ((SnackbarManageable) activity).getSnackbarManager();
+            if (snackbarManager != null) {
+                showUnpinnedSnackbar(snackbarManager, activity, profile);
+            }
+        }
+    }
+
+    /**
+     * Shows a snackbar indicating the Glic button was unpinned, with an undo action button.
+     *
+     * @param snackbarManager The {@link SnackbarManager} used to show the snackbar.
+     * @param context The Android {@link Context}.
+     * @param profile The current {@link Profile}.
+     */
+    public static void showUnpinnedSnackbar(
+            SnackbarManager snackbarManager, Context context, Profile profile) {
+        SnackbarController controller =
+                new SnackbarController() {
+                    @Override
+                    public void onAction(@Nullable Object actionData) {
+                        RecordUserAction.record("Glic.Interaction.TabStripButton.UndoUnpin");
+                        GlicUtils.setButtonPinnedToTabStrip(profile, true);
+                    }
+
+                    @Override
+                    public void onDismissNoAction(@Nullable Object actionData) {}
+                };
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                                context.getString(R.string.glic_button_unpinned),
+                                controller,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_GLIC_UNPIN_UNDO)
+                        .setAction(context.getString(R.string.undo), null));
     }
 
     /**
