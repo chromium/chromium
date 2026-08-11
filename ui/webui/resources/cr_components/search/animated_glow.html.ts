@@ -78,6 +78,8 @@ export function getHtml(this: SearchAnimatedGlowElement) {
                   class='audio-animation'
                   .darkThemeColorsEnabled="${this.darkThemeColorsEnabled}"
                   .isListening="${this.isListening}"
+                  .transcript="${this.transcript}"
+                  .receivedSpeech="${this.receivedSpeech}"
               ></recording-wave>
               ${this.isListening ?
                   html`<slot name="tool-chip"></slot>`

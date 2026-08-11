@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './composebox_submit.js';
 
+import {AudioProcessor} from '//resources/cr_components/search/audio_processor.service.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -257,7 +258,7 @@ export class ComposeboxVoiceSearchElement extends
 
   private accessor state_: State = State.UNINITIALIZED;
 
-  isAndroid: boolean = getLoadTimeBoolean('isAndroid', false);
+  private readonly isAndroid_: boolean = getLoadTimeBoolean('isAndroid', false);
   private blurTimeoutId_: number|null = null;
   private listenerIds_: number[] = [];
   private pageHandler_: PageHandlerRemote =
@@ -287,6 +288,7 @@ export class ComposeboxVoiceSearchElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    AudioProcessor.setSimulate(this.isAndroid_);
     if (!this.metricSource) {
       this.searchboxHandler_.getPageClassification().then(({metricSource}) => {
         this.metricSource = metricSource || '';
@@ -523,18 +525,26 @@ export class ComposeboxVoiceSearchElement extends
     const speechResult = results[e.resultIndex];
     assert(speechResult);
 
-    // Process interim results based on confidence.
-    for (let j = 0; j < results.length; j++) {
-      const resultList = results[j]!;
-      const result = resultList[0];  // best guess
-      assert(result);
+    if (this.isAndroid_) {
+      // On Android, `SpeechRecognitionImpl` sends cumulative snapshots of the
+      // entire utterance. The last item in `results` represents the current
+      // full transcript.
+      const latestResultList = results[results.length - 1]!;
+      const latestResult = latestResultList[0];
+      assert(latestResult);
+      this.transcript_ = latestResult.transcript;
+      this.processSpeechTranscript_(
+          latestResult.transcript, latestResult.confidence, /*append=*/ false);
+    } else {
+      // Process interim results based on confidence.
+      for (let j = 0; j < results.length; j++) {
+        const resultList = results[j]!;
+        const result = resultList[0];  // best guess
+        assert(result);
 
-      this.transcript_ += result.transcript;
-      if (result.confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
-        this.finalResult_ += result.transcript;  // Displayed
-      } else {
-        // TODO(crbug.com/511795841) Delete this deprecated feature.
-        this.interimResult_ += result.transcript;
+        this.transcript_ += result.transcript;
+        this.processSpeechTranscript_(
+            result.transcript, result.confidence, /*append=*/ true);
       }
     }
     this.fire('transcript-update', this.transcript_);
@@ -581,6 +591,12 @@ export class ComposeboxVoiceSearchElement extends
         return;
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
+        // On Android, 'SpeechRecognitionImpl' always fires 'onEnd' when the
+        // utterance finishes. Submit immediately if a transcript is present.
+        if (this.isAndroid_ && this.transcript_) {
+          this.onFinalResult_(this.transcript_, /*forceSubmit=*/ true);
+          return;
+        }
         // If `continuous` is disabled, that means that speech
         // webkit is the source of truth for timing out and has
         // decided to time out.
@@ -844,6 +860,39 @@ export class ComposeboxVoiceSearchElement extends
     this.detailedError = null;
     this.start();
     this.fire('voice-search-restart');
+  }
+
+  getErrorForTesting(): VoiceSearchError|null {
+    return this.error_;
+  }
+
+  getErrorMessageForTesting(): string {
+    return this.errorMessage_;
+  }
+
+  setErrorMessageForTesting(errorMessage: string) {
+    this.errorMessage_ = errorMessage;
+  }
+
+  voiceModeEndCleanupForTesting() {
+    this.voiceModeEndCleanup_();
+  }
+
+  private processSpeechTranscript_(
+      transcript: string, confidence: number, append: boolean = false) {
+    if (confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
+      if (append) {
+        this.finalResult_ += transcript;
+      } else {
+        this.finalResult_ = transcript;
+      }
+    } else {
+      if (append) {
+        this.interimResult_ += transcript;
+      } else {
+        this.interimResult_ = transcript;
+      }
+    }
   }
 }
 

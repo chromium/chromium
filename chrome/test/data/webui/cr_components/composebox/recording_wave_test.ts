@@ -62,6 +62,7 @@ suite('RecordingWaveElementTest', () => {
     };
     AudioProcessor.stopListening = () => {
       stopCalled = true;
+      return Promise.resolve();
     };
 
     try {
@@ -269,6 +270,7 @@ suite('RecordingWaveElementTest', () => {
     const origStop = AudioProcessor.stopListening;
     AudioProcessor.stopListening = () => {
       stopCalled = true;
+      return Promise.resolve();
     };
 
     try {
@@ -287,4 +289,40 @@ suite('RecordingWaveElementTest', () => {
       AudioProcessor.stopListening = origStop;
     }
   });
+
+  test(
+      'AudioProcessor simulation mode returns simulated volume from transcript',
+      async () => {
+        AudioProcessor.setSimulate(true);
+        try {
+          assertEquals(
+              0, AudioProcessor.getVolume(),
+              'Volume should be 0 before startMonitoringLevels()');
+
+          const started = await AudioProcessor.startMonitoringLevels();
+          assertTrue(started);
+
+          // Simulate receiving speech: triggers initial amplitude spike.
+          AudioProcessor.updateReceivedSpeech(true);
+          const volAfterSpeech = AudioProcessor.getVolume();
+          assertTrue(
+              volAfterSpeech > 0,
+              'Volume should increase after receivedSpeech=true');
+
+          // Simulate transcript update with words: triggers syllable bumps.
+          AudioProcessor.updateTranscript('hello chromium world');
+          const volAfterTranscript = AudioProcessor.getVolume();
+          assertTrue(
+              volAfterTranscript > 0,
+              'Volume should remain non-zero during simulated speech');
+
+          // Ensure `stopListening()` cleans up and resets volume back to 0.
+          AudioProcessor.stopListening();
+          assertEquals(
+              0, AudioProcessor.getVolume(),
+              'Volume must reset to exactly 0 after stopListening()');
+        } finally {
+          AudioProcessor.setSimulate(false);
+        }
+      });
 });
