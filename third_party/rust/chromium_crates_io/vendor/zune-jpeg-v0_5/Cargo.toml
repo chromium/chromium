@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.77.1"
 name = "zune-jpeg"
-version = "0.5.15"
+version = "0.5.16-rc1"
 authors = ["caleb <etemesicaleb@gmail.com>"]
 build = false
 exclude = [
@@ -41,6 +41,7 @@ license = "MIT OR Apache-2.0 OR Zlib"
 repository = "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg"
 
 [features]
+arith = []
 default = [
     "x86",
     "neon",
@@ -57,7 +58,7 @@ name = "zune_jpeg"
 path = "src/lib.rs"
 
 [dependencies.zune-core]
-version = "0.5.1"
+version = "0.5.2"
 
 [dev-dependencies]
 

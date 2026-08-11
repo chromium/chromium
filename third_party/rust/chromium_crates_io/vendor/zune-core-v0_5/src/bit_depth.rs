@@ -8,6 +8,8 @@
 
 //! Image bit depth, information and manipulations
 
+use core::cmp::Ordering;
+
 /// The image bit depth.
 ///
 /// The library successfully supports depths up to
@@ -15,7 +17,7 @@
 ///
 /// This allows us to comfortably support a wide variety of images
 /// e.g 10 bit av1, 16 bit png and ppm.
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq,Default)]
 #[non_exhaustive]
 pub enum BitDepth {
     /// U8 bit depth.
@@ -41,7 +43,8 @@ pub enum BitDepth {
     /// Uses f32 to store data
     Float32,
     /// Bit depth information is unknown
-    Unknown
+    #[default]
+    Unknown,
 }
 
 /// The underlying bit representation of the image
@@ -60,7 +63,7 @@ pub enum BitType {
     U16,
     /// Images represented using a [`f32`] as their
     /// underlying pixel storage
-    F32
+    F32,
 }
 
 impl BitType {
@@ -69,17 +72,35 @@ impl BitType {
         match self {
             BitType::U8 => BitDepth::Eight,
             BitType::U16 => BitDepth::Sixteen,
-            BitType::F32 => BitDepth::Float32
+            BitType::F32 => BitDepth::Float32,
         }
     }
 }
 
-impl Default for BitDepth {
-    fn default() -> Self {
-        Self::Unknown
+
+impl core::cmp::PartialOrd for BitType {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
-
+impl core::cmp::Ord for BitType {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self == other {
+            core::cmp::Ordering::Equal
+        } else if *self == BitType::U8 {
+            // this did not match with the other bit
+            // type so it must be the smaller one
+            // eg Depth u8, depth u16
+            core::cmp::Ordering::Less
+        } else if *self == BitType::U16 && *other == BitType::F32 {
+            core::cmp::Ordering::Less
+        } else if *self == BitType::F32 {
+            core::cmp::Ordering::Greater
+        } else {
+            unreachable!()
+        }
+    }
+}
 impl BitDepth {
     /// Get the max value supported by the bit depth
     ///
@@ -124,7 +145,7 @@ impl BitDepth {
             Self::Eight => BitType::U8,
             Self::Sixteen => BitType::U16,
             Self::Float32 => BitType::F32,
-            Self::Unknown => panic!("Unknown bit type")
+            Self::Unknown => panic!("Unknown bit type"),
         }
     }
     /// Get the number of bytes needed to store a specific bit depth
@@ -147,7 +168,7 @@ impl BitDepth {
             Self::Eight => core::mem::size_of::<u8>(),
             Self::Sixteen => core::mem::size_of::<u16>(),
             Self::Float32 => core::mem::size_of::<f32>(),
-            Self::Unknown => panic!("Unknown bit type")
+            Self::Unknown => panic!("Unknown bit type"),
         }
     }
     pub const fn bit_size(&self) -> usize {
@@ -166,5 +187,5 @@ pub enum ByteEndian {
     /// Little Endian byte-order
     LE,
     /// Big Endian byte-order
-    BE
+    BE,
 }

@@ -16,6 +16,8 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs"
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs",
+    "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/cancel.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs",
     "//third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/neon64.rs",
@@ -53,7 +55,7 @@ cargo_crate("lib") {
   cargo_pkg_description = "A fast, correct and safe jpeg decoder"
   cargo_pkg_repository =
       "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg"
-  cargo_pkg_version = "0.5.15"
+  cargo_pkg_version = "0.5.16-rc1"
 
   allow_unsafe = true
 

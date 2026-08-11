@@ -37,6 +37,122 @@
 //! let mut pixels = decoder.decode().unwrap();
 //! ```
 //!
+//! ## Incremental input
+//!
+//! `JpegDecoder` can be retried on the same decoder when the underlying reader can
+//! see more bytes later. Callers should treat `DecodeErrors::is_recoverable_eof()`
+//! as the signal to feed more input and retry; any other error is a hard decode
+//! failure.
+//!
+//! After `decode_headers()` succeeds, `info()` and `output_buffer_size()` are
+//! available. During `decode_into()`, the same decoder and output buffer must be
+//! kept across retries. If scan decoding returns recoverable EOF,
+//! `decoded_output_bytes()` and `decoded_scanlines()` report the stable prefix of
+//! the output buffer that can be displayed or copied before retrying.
+//!
+//! By default, row checkpoints are recorded only after a previous scan decode
+//! attempt, so one-shot decoding keeps the lowest-overhead path. Call
+//! `set_incremental_mode(true)` before the first `decode_into()` attempt when the
+//! caller expects input to arrive incrementally; this records checkpoints during
+//! baseline Huffman scans and enables progressive preview preservation on the
+//! first progressive decode attempt.
+//!
+//! Fine-grained row checkpoints currently apply within baseline Huffman scan
+//! bodies, including baseline multi-SOS / non-interleaved images. Those images may
+//! still report no stable output rows until the later component scans have been
+//! decoded and final assembly has run.
+//!
+//! Scan checkpoints store only scalar resume state: stream position, next MCU
+//! row/column, restart countdown, SOS parameters, DC predictors, and bitstream
+//! state. Coefficients for already-decoded component scans stay on the decoder
+//! across retries. For multi-SOS images this means a retry can continue inside the
+//! current component scan, then decode later component scans, but output rows are
+//! not considered stable until final assembly has all component data.
+//!
+//! For progressive JPEGs, incremental scan preservation can render completed
+//! scans as full-frame previews from committed coefficient data. The preview APIs
+//! report that replaceable frame separately from the stable final-output prefix,
+//! which remains zero until all scans complete. When preservation is enabled, the
+//! active scan decodes into scratch coefficient storage and is committed only
+//! after the scan completes. No decoder-owned preview pixel buffer is kept;
+//! recoverable EOF may render committed coefficients into the caller-provided
+//! output slice. Internal buffers are raw DCT coefficient planes, while preview
+//! bytes are already IDCT-processed, upsampled, and converted into the requested
+//! output colorspace.
+//!
+//! On recoverable EOF, callers can use the same output buffer in two ways:
+//!
+//! - `decoded_output_bytes()` / `decoded_scanlines()` describe stable final
+//!   pixels. These bytes will not need to be corrected by later retries. For
+//!   progressive JPEGs, this stable prefix remains zero until all scans complete.
+//! - `decoded_preview_output_bytes()` / `decoded_preview_scanlines()` describe a
+//!   progressive preview assembled from completed scans. These methods return
+//!   `None` for non-progressive images and `Some(0)` for progressive images before
+//!   the first preview is rendered.
+//! - `decoded_scans()` reports how many progressive scans are represented in the
+//!   current preview. It returns `None` for non-progressive images; if the value
+//!   is unchanged across retries, no newer preview has been produced.
+//!
+//! Use the preview methods only after `decode_into()` returns a recoverable EOF.
+//! A positive preview byte count means the same output buffer now contains a
+//! complete provisional frame in `pixels[..preview_bytes]`. Treat that frame as
+//! replaceable: repaint it when `decoded_scans()` increases, then keep retrying
+//! with the same decoder and output buffer until `decode_into()` returns `Ok(())`.
+//! Do not append preview bytes to the final output stream; they are a display
+//! surface separate from the stable prefix reported by `decoded_output_bytes()`.
+//!
+//! ```no_run
+//! use zune_core::bytestream::ZCursor;
+//! use zune_jpeg::errors::DecodeErrors;
+//! use zune_jpeg::JpegDecoder;
+//!
+//! fn decode_incremental(jpeg_bytes: &[u8]) -> Result<Vec<u8>, DecodeErrors> {
+//!     let mut decoder = JpegDecoder::new(ZCursor::new(jpeg_bytes));
+//!
+//!     loop {
+//!         match decoder.decode_headers() {
+//!             Ok(()) => break,
+//!             Err(error) if error.is_recoverable_eof() => {
+//!                 // Make more input bytes visible to the same reader, then retry.
+//!             }
+//!             Err(error) => return Err(error)
+//!         }
+//!     }
+//!
+//!     let mut pixels = vec![0; decoder.output_buffer_size().unwrap()];
+//!     decoder.set_incremental_mode(true);
+//!     let mut displayed_preview_scans = 0;
+//!
+//!     loop {
+//!         match decoder.decode_into(&mut pixels) {
+//!             Ok(()) => break,
+//!             Err(error) if error.is_recoverable_eof() => {
+//!                 let stable_bytes = decoder.decoded_output_bytes().unwrap_or(0);
+//!                 let stable_scanlines = decoder.decoded_scanlines().unwrap_or(0);
+//!                 let preview_bytes = decoder.decoded_preview_output_bytes().unwrap_or(0);
+//!                 let preview_scanlines = decoder.decoded_preview_scanlines().unwrap_or(0);
+//!                 let preview_scans = decoder.decoded_scans().unwrap_or(0);
+//!
+//!                 if stable_bytes > 0 && stable_scanlines > 0 {
+//!                     // Display or copy the stable prefix in `pixels[..stable_bytes]`.
+//!                 } else if preview_bytes > 0
+//!                     && preview_scanlines > 0
+//!                     && preview_scans > displayed_preview_scans
+//!                 {
+//!                     // Repaint the replaceable preview in `pixels[..preview_bytes]`.
+//!                     displayed_preview_scans = preview_scans;
+//!                 }
+//!
+//!                 // Feed more input, then retry with the same decoder and `pixels` buffer.
+//!             }
+//!             Err(error) => return Err(error)
+//!         }
+//!     }
+//!
+//!     Ok(pixels)
+//! }
+//! ```
+//!
 //! ## Migrating from version 0.4--
 //!
 //! ### Motivation
@@ -152,7 +268,6 @@
     clippy::needless_return,
     clippy::similar_names,
     clippy::inline_always,
-    clippy::similar_names,
     clippy::doc_markdown,
     clippy::module_name_repetitions,
     clippy::missing_panics_doc,
@@ -172,7 +287,10 @@ pub use zune_core;
 pub use crate::components::SampleRatios;
 pub use crate::decoder::{ImageInfo, JpegDecoder};
 pub use crate::marker::Marker;
+pub use crate::cancel::{CancelCheck, NeverCancel};
 mod bitstream;
+#[cfg(feature = "arith")]
+mod bitstream_arith;
 mod color_convert;
 mod components;
 mod decoder;
@@ -187,6 +305,7 @@ mod marker;
 mod mcu;
 mod mcu_prog;
 mod misc;
+mod cancel;
 mod unsafe_utils;
 mod unsafe_utils_avx2;
 mod unsafe_utils_neon;

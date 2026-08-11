@@ -40,14 +40,14 @@ impl<T: io::BufRead + io::Seek> ZByteReaderTrait for T {
         Ok(())
     }
 
-    #[inline]
-    fn read_const_bytes<const N: usize>(&mut self, buf: &mut [u8; N]) -> Result<(), ZByteIoError> {
-        self.read_exact_bytes(buf)
-    }
-
-    fn read_const_bytes_no_error<const N: usize>(&mut self, buf: &mut [u8; N]) {
-        let _ = self.read_const_bytes(buf);
-    }
+    //#[inline]
+    // fn read_const_bytes<const N: usize>(&mut self, buf: &mut [u8; N]) -> Result<(), ZByteIoError> {
+    //     self.read_exact_bytes(buf)
+    // }
+    //
+    // fn read_const_bytes_no_error<const N: usize>(&mut self, buf: &mut [u8; N]) {
+    //     let _ = self.read_const_bytes(buf);
+    // }
 
     #[inline(always)]
     fn read_bytes(&mut self, buf: &mut [u8]) -> Result<usize, ZByteIoError> {
@@ -102,7 +102,7 @@ impl<T: io::BufRead + io::Seek> ZByteReaderTrait for T {
 impl<T: AsRef<[u8]>> std::io::Read for ZCursor<T> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         self.read_bytes_impl(buf)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, format!("{:?}", e)))
+            .map_err(|e| std::io::Error::other(format!("{e:?}")))
     }
 }
 
@@ -131,8 +131,7 @@ impl<T: AsRef<[u8]>> std::io::Seek for ZCursor<T> {
                 self.position = n;
                 Ok(self.position as u64)
             }
-            None => Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
+            None => Err(std::io::Error::other(
                 "Negative seek"
             ))
         }

@@ -30,7 +30,7 @@ pub enum ZSeekFrom {
     ///
     /// It is possible to seek beyond the end of an object, but it's an error to
     /// seek before byte 0.
-    Current(i64)
+    Current(i64),
 }
 
 impl ZSeekFrom {
@@ -42,7 +42,7 @@ impl ZSeekFrom {
         match self {
             ZSeekFrom::Start(pos) => std::io::SeekFrom::Start(pos),
             ZSeekFrom::End(pos) => std::io::SeekFrom::End(pos),
-            ZSeekFrom::Current(pos) => std::io::SeekFrom::Current(pos)
+            ZSeekFrom::Current(pos) => std::io::SeekFrom::Current(pos),
         }
     }
 }
@@ -64,7 +64,7 @@ pub enum ZByteIoError {
     /// An error that occurred during a seek operation
     SeekError(&'static str),
     /// An error that occurred during a seek operation
-    SeekErrorOwned(String)
+    SeekErrorOwned(String),
 }
 
 impl core::fmt::Debug for ZByteIoError {
@@ -72,10 +72,10 @@ impl core::fmt::Debug for ZByteIoError {
         match self {
             #[cfg(feature = "std")]
             ZByteIoError::StdIoError(err) => {
-                writeln!(f, "Underlying I/O error {}", err)
+                writeln!(f, "Underlying I/O error {err}")
             }
             ZByteIoError::TryFromIntError(err) => {
-                writeln!(f, "Cannot convert to int {}", err)
+                writeln!(f, "Cannot convert to int {err}")
             }
             ZByteIoError::NotEnoughBytes(found, expected) => {
                 writeln!(f, "Not enough bytes, expected {expected} but found {found}")
@@ -118,6 +118,24 @@ impl From<&'static str> for ZByteIoError {
     }
 }
 
+impl ZByteIoError {
+    /// Returns `true` when this error indicates the reader ran out of
+    /// data, as opposed to a format or data-corruption error.
+    ///
+    /// **Retry contract:** on `NotEnoughBytes`, the stream position is already
+    /// rewound to where the failed read began, so the caller can append more
+    /// data and retry the same operation without repositioning.
+    #[must_use]
+    pub fn is_recoverable_eof(&self) -> bool {
+        match self {
+            ZByteIoError::NotEnoughBytes(_, _) => true,
+            #[cfg(feature = "std")]
+            ZByteIoError::StdIoError(e) => e.kind() == std::io::ErrorKind::UnexpectedEof,
+            _ => false,
+        }
+    }
+}
+
 /// The image reader wrapper
 ///
 /// This wraps anything that implements [ZByteReaderTrait] and
@@ -126,8 +144,8 @@ impl From<&'static str> for ZByteIoError {
 ///
 /// This prevents each implementation from providing its own
 pub struct ZReader<T> {
-    inner:       T,
-    temp_buffer: Vec<u8>
+    inner: T,
+    temp_buffer: Vec<u8>,
 }
 
 impl<T: ZByteReaderTrait> ZReader<T> {
@@ -135,8 +153,8 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     /// that implements the [ZByteReaderTrait]
     pub fn new(source: T) -> ZReader<T> {
         ZReader {
-            inner:       source,
-            temp_buffer: vec![]
+            inner: source,
+            temp_buffer: vec![],
         }
     }
     /// Destroy this reader returning
@@ -159,7 +177,12 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     ///  - `Error` If something went wrong
     #[inline(always)]
     pub fn skip(&mut self, num: usize) -> Result<u64, ZByteIoError> {
-        self.inner.z_seek(ZSeekFrom::Current(num as i64))
+        //check for zero
+        if num != 0 {
+            self.inner.z_seek(ZSeekFrom::Current(num as i64))
+        } else {
+            Ok(0)
+        }
     }
     /// Move back from current position to a previous
     /// position
@@ -216,7 +239,7 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     #[inline(always)]
     pub fn read_u8_err(&mut self) -> Result<u8, ZByteIoError> {
         let mut buf = [0];
-        self.inner.read_const_bytes(&mut buf)?;
+        self.inner.read_exact_bytes(&mut buf)?;
         Ok(buf[0])
     }
 
@@ -236,6 +259,7 @@ impl<T: ZByteReaderTrait> ZReader<T> {
             self.skip(position)?;
         }
         if num_bytes > 20 * 1024 * 1024 {
+            self.rewind(num_bytes)?;
             // resize of 20 MBs, skipping too much, so panic
             return Err(ZByteIoError::Generic("Too many bytes skipped"));
         }
@@ -250,7 +274,10 @@ impl<T: ZByteReaderTrait> ZReader<T> {
                 }
                 Ok(&self.temp_buffer)
             }
-            Err(e) => Err(e)
+            Err(e) => {
+                self.rewind(position)?;
+                Err(e)
+            }
         }
     }
     /// Read a fixed number of known bytes to a buffer and return the bytes or an error
@@ -267,9 +294,9 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     #[inline(always)]
     pub fn read_fixed_bytes_or_error<const N: usize>(&mut self) -> Result<[u8; N], ZByteIoError> {
         let mut byte_store: [u8; N] = [0; N];
-        match self.inner.read_const_bytes(&mut byte_store) {
+        match self.inner.read_exact_bytes(&mut byte_store) {
             Ok(_) => Ok(byte_store),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     }
     /// Read a fixed bytes to an array and if that is impossible, return an array containing
@@ -279,7 +306,7 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     #[inline(always)]
     pub fn read_fixed_bytes_or_zero<const N: usize>(&mut self) -> [u8; N] {
         let mut byte_store: [u8; N] = [0; N];
-        self.inner.read_const_bytes_no_error(&mut byte_store);
+        let _ = self.inner.read_bytes(&mut byte_store);
         byte_store
     }
 
@@ -347,13 +374,22 @@ impl<T: ZByteReaderTrait> ZReader<T> {
     pub fn read_bytes(&mut self, buf: &mut [u8]) -> Result<usize, ZByteIoError> {
         self.inner.read_bytes(buf)
     }
+    /// Read all bytes remaining in this input to sink until we hit eof
+    ///
+    /// # Returns
+    ///
+    /// - `Ok(usize)`:  The actual number of bytes added to the sink
+    /// - `Err()` An error that occurred when reading bytes
+    pub fn read_all(&mut self, buf: &mut alloc::vec::Vec<u8>) -> Result<usize, ZByteIoError> {
+        self.inner.read_remaining(buf)
+    }
 }
 
 enum Mode {
     // Big endian
     BE,
     // Little Endian
-    LE
+    LE,
 }
 macro_rules! get_single_type {
     ($name:tt,$name2:tt,$name3:tt,$name4:tt,$name5:tt,$name6:tt,$int_type:tt) => {
@@ -366,7 +402,7 @@ macro_rules! get_single_type {
 
                 let mut space = [0; SIZE_OF_VAL];
 
-                self.inner.read_const_bytes_no_error(&mut space);
+                let  _ =self.inner.read_bytes(&mut space);
 
                 match mode {
                     Mode::BE => $int_type::from_be_bytes(space),
@@ -381,7 +417,7 @@ macro_rules! get_single_type {
 
                 let mut space = [0; SIZE_OF_VAL];
 
-                match self.inner.read_const_bytes(&mut space)
+                match self.inner.read_exact_bytes(&mut space)
                 {
                     Ok(_) => match mode {
                         Mode::BE => Ok($int_type::from_be_bytes(space)),
@@ -454,11 +490,42 @@ get_single_type!(
 #[cfg(feature = "std")]
 impl<T> std::io::Read for ZReader<T>
 where
-    T: ZByteReaderTrait
+    T: ZByteReaderTrait,
 {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        use std::io::ErrorKind;
         self.read_bytes(buf)
-            .map_err(|e| std::io::Error::new(ErrorKind::Other, format!("{:?}", e)))
+            .map_err(|e| std::io::Error::other(format!("{e:?}")))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn not_enough_bytes_is_recoverable() {
+        let err = ZByteIoError::NotEnoughBytes(0, 10);
+        assert!(err.is_recoverable_eof());
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    fn std_unexpected_eof_is_recoverable() {
+        let err =
+            ZByteIoError::StdIoError(std::io::Error::new(std::io::ErrorKind::UnexpectedEof, ""));
+        assert!(err.is_recoverable_eof());
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    fn std_other_io_error_is_not_recoverable() {
+        let err = ZByteIoError::StdIoError(std::io::Error::other(""));
+        assert!(!err.is_recoverable_eof());
+    }
+
+    #[test]
+    fn seek_error_is_not_recoverable() {
+        let err = ZByteIoError::SeekError("seek failed");
+        assert!(!err.is_recoverable_eof());
     }
 }

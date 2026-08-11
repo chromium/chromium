@@ -8,6 +8,6 @@
 //!
 pub use decoder::DecoderOptions;
 pub use encoder::EncoderOptions;
-
+pub use encoder::PngCompression;
 mod decoder;
 mod encoder;

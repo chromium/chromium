@@ -11,13 +11,13 @@ impl<T: AsRef<[u8]>> ZByteReaderTrait for ZCursor<T> {
         self.read_exact_bytes_impl(buf)
     }
 
-    fn read_const_bytes<const N: usize>(&mut self, buf: &mut [u8; N]) -> Result<(), ZByteIoError> {
-        self.read_const_bytes_impl::<N>(buf)
-    }
-
-    fn read_const_bytes_no_error<const N: usize>(&mut self, buf: &mut [u8; N]) {
-        self.read_const_bytes_no_error_impl::<N>(buf)
-    }
+    // fn read_const_bytes<const N: usize>(&mut self, buf: &mut [u8; N]) -> Result<(), ZByteIoError> {
+    //     self.read_const_bytes_impl::<N>(buf)
+    // }
+    //
+    // fn read_const_bytes_no_error<const N: usize>(&mut self, buf: &mut [u8; N]) {
+    //     self.read_const_bytes_no_error_impl::<N>(buf)
+    // }
 
     #[inline(always)]
     fn read_bytes(&mut self, buf: &mut [u8]) -> Result<usize, ZByteIoError> {

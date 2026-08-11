@@ -42,16 +42,11 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Core utilities for image processing in the zune family of crates"
   cargo_pkg_repository = "https://github.com/etemesi254/zune-image"
-  cargo_pkg_version = "0.5.1"
+  cargo_pkg_version = "0.5.3"
 
   allow_unsafe = false
 
   features = [ "std" ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # //third_party/rust/chromium_crates_io/Cargo.toml to use
-  # it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

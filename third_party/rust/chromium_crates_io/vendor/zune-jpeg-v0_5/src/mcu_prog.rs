@@ -7,18 +7,7 @@
  */
 
 //!Routines for progressive decoding
-/*
-This file is needlessly complicated,
 
-It is that way to ensure we don't burn memory anyhow
-
-Memory is a scarce resource in some environments, I would like this to be viable
-in such environments
-
-Half of the complexity comes from the jpeg spec, because progressive decoding,
-is one hell of a ride.
-
-*/
 use alloc::string::ToString;
 use alloc::vec::Vec;
 use alloc::{format, vec};
@@ -26,7 +15,7 @@ use core::cmp::min;
 
 use zune_core::bytestream::{ZByteReaderTrait, ZReader};
 use zune_core::colorspace::ColorSpace;
-use zune_core::log::{debug, error, warn};
+use zune_core::log::{error, trace, warn};
 
 use crate::bitstream::BitStream;
 use crate::components::SampleRatios;
@@ -41,6 +30,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     /// Decode a progressive image
     ///
     /// This routine decodes a progressive image, stopping if it finds any error.
+    ///
+    /// Completed progressive scans are committed into the decoder-owned
+    /// coefficient buffer. When incremental scan preservation is enabled, the
+    /// current scan decodes into a scratch copy so a recoverable EOF can expose
+    /// the last completed scan without reapplying partially decoded refinement
+    /// data on retry.
     #[allow(
         clippy::needless_range_loop,
         clippy::cast_sign_loss,
@@ -48,18 +43,29 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         clippy::too_many_lines
     )]
     #[inline(never)]
-    pub(crate) fn decode_mcu_ycbcr_progressive(
-        &mut self, pixels: &mut [u8]
+    pub(crate) fn decode_mcu_ycbcr_progressive<B: BitStream>(
+        &mut self, pixels: &mut [u8],
+    ) -> Result<(), DecodeErrors> {
+        // Move the coefficient buffers out so scan helpers can borrow `self`
+        // while receiving the buffers separately.
+        let mut block = core::mem::take(&mut self.progressive_mcus_buffer);
+        let result = self.decode_mcu_ycbcr_progressive_inner::<B>(pixels, &mut block);
+        self.progressive_mcus_buffer = block;
+        result
+    }
+
+    #[allow(
+        clippy::needless_range_loop,
+        clippy::cast_sign_loss,
+        clippy::redundant_else,
+        clippy::too_many_lines
+    )]
+    fn decode_mcu_ycbcr_progressive_inner<B: BitStream>(
+        &mut self, pixels: &mut [u8], block: &mut [Vec<i16>; MAX_COMPONENTS]
     ) -> Result<(), DecodeErrors> {
         setup_component_params(self)?;
-
         let mut mcu_height;
-
-        // memory location for decoded pixels for components
-        let mut block: [Vec<i16>; MAX_COMPONENTS] = [vec![], vec![], vec![], vec![]];
         let mut mcu_width;
-
-        let mut seen_scans = 1;
 
         if self.input_colorspace == ColorSpace::Luma && self.is_interleaved {
             warn!("Grayscale image with down-sampled component, resetting component details");
@@ -68,14 +74,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         if self.is_interleaved {
             // this helps us catch component errors.
-            self.set_upsampling()?;
+            self.set_upsampling();
         }
         if self.is_interleaved {
             mcu_width = self.mcu_x;
             mcu_height = self.mcu_y;
         } else {
-            mcu_width = (self.info.width as usize + 7) / 8;
-            mcu_height = (self.info.height as usize + 7) / 8;
+            mcu_width = (self.info.width as usize).div_ceil(8);
+            mcu_height = (self.info.height as usize).div_ceil(8);
         }
         if self.is_interleaved
             && self.input_colorspace.num_components() > 1
@@ -98,85 +104,94 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         mcu_width *= 64;
 
-        for i in 0..self.input_colorspace.num_components() {
-            let comp = &self.components[i];
+        if self.progressive_scan_checkpoint().is_none() {
+            self.progressive_completed_scans = 0;
+        }
+        for (i, comp) in self.components.iter().enumerate() {
             let len = mcu_width * comp.vertical_sample * comp.horizontal_sample * mcu_height;
-
-            block[i] = vec![0; len];
+            if block[i].len() != len {
+                block[i].clear();
+                block[i].resize(len, 0);
+            } else if self.progressive_completed_scans == 0 {
+                block[i].fill(0);
+            }
         }
 
-        let mut stream = BitStream::new_progressive(self.succ_low, self.spec_start, self.spec_end);
+        let mut stream = B::new_progressive(self.succ_low, self.spec_start, self.spec_end);
 
-        // there are multiple scans in the stream, this should resolve the first scan
-        let result = self.parse_entropy_coded_data(&mut stream, &mut block);
+        let preserve_progressive_scans = self.mcu_checkpoints_enabled;
 
-        if result.is_err() {
-            return if self.options.strict_mode() {
-                Err(result.err().unwrap())
-            } else {
-                error!("{}", result.err().unwrap());
-                // Go process it and return as much as we can, exiting here
-                return self.finish_progressive_decoding(&block, pixels);
-            };
+        if !self.decode_progressive_scan(&mut stream, block, pixels, preserve_progressive_scans)? {
+            return self.finish_progressive_decoding(block, pixels);
+        }
+        if self.progressive_completed_scans > self.options.jpeg_get_max_scans() {
+            return Err(DecodeErrors::Format(format!(
+                "Too many scans, exceeded limit of {}",
+                self.options.jpeg_get_max_scans()
+            )));
         }
 
-        // extract marker
-        let mut marker = stream
-            .marker
-            .take()
-            .ok_or(DecodeErrors::FormatStatic("Marker missing where expected"))?;
+        let mut marker = match get_marker(&mut self.stream, &mut stream) {
+            Ok(marker) => marker,
+            Err(e) => {
+                return self.handle_progressive_inter_scan_error(
+                    e,
+                    block,
+                    pixels,
+                    preserve_progressive_scans
+                )
+            }
+        };
 
-        // if marker is EOI, we are done, otherwise continue scanning.
-        //
-        // In case we have a premature image, we print a warning or return
-        // an error, depending on the strictness of the decoder, so there
-        // is that logic to handle too
+        // If marker is EOI, we are done; otherwise continue scanning.
         'eoi: while marker != Marker::EOI {
             match marker {
                 Marker::SOS => {
-                    parse_sos(self)?;
+                    if let Err(e) = parse_sos(self) {
+                        return self.handle_progressive_inter_scan_error(
+                            e,
+                            block,
+                            pixels,
+                            preserve_progressive_scans
+                        );
+                    }
 
                     stream.update_progressive_params(
                         self.succ_high,
                         self.succ_low,
                         self.spec_start,
-                        self.spec_end
+                        self.spec_end,
                     );
-                    // after every SOS, marker, parse data for that scan.
-                    let result = self.parse_entropy_coded_data(&mut stream, &mut block);
-
-                    // Do not error out too fast, allows the decoder to continue as much as possible
-                    // even after errors
-                    if result.is_err() {
-                        return if self.options.strict_mode() {
-                            Err(result.err().unwrap())
-                        } else {
-                            error!("{}", result.err().unwrap());
-                            break 'eoi;
-                        };
+                    if !self.decode_progressive_scan(
+                        &mut stream,
+                        block,
+                        pixels,
+                        preserve_progressive_scans
+                    )? {
+                        break 'eoi;
                     }
-                    // extract marker, might either indicate end of image or we continue
-                    // scanning(hence the continue statement to determine).
+
+                    if self.progressive_completed_scans > self.options.jpeg_get_max_scans() {
+                        return Err(DecodeErrors::Format(format!(
+                            "Too many scans, exceeded limit of {}",
+                            self.options.jpeg_get_max_scans()
+                        )));
+                    }
+
                     match get_marker(&mut self.stream, &mut stream) {
                         Ok(marker_n) => {
                             marker = marker_n;
-                            seen_scans += 1;
-                            if seen_scans > self.options.jpeg_get_max_scans() {
-                                return Err(DecodeErrors::Format(format!(
-                                    "Too many scans, exceeded limit of {}",
-                                    self.options.jpeg_get_max_scans()
-                                )));
-                            }
-
                             stream.reset();
+                            B::reset_arith_tables(&mut self.entropy_tables);
                             continue 'eoi;
                         }
-                        Err(msg) => {
-                            if self.options.strict_mode() {
-                                return Err(msg);
-                            }
-                            error!("{:?}", msg);
-                            break 'eoi;
+                        Err(e) => {
+                            return self.handle_progressive_inter_scan_error(
+                                e,
+                                block,
+                                pixels,
+                                preserve_progressive_scans
+                            )
                         }
                     }
                 }
@@ -184,7 +199,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     self.handle_rst(&mut stream)?;
                 }
                 _ => {
-                    self.parse_marker_inner(marker)?;
+                    if let Err(e) = self.parse_marker_inner(marker) {
+                        return self.handle_progressive_inter_scan_error(
+                            e,
+                            block,
+                            pixels,
+                            preserve_progressive_scans
+                        );
+                    }
                 }
             }
 
@@ -193,33 +215,183 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     marker = marker_n;
                 }
                 Err(e) => {
-                    if self.options.strict_mode() {
-                        return Err(e);
-                    }
-                    error!("{}", e);
-                    // If we can't get the marker, just break away
-                    // allows us to decode some corrupt images
-                    // e.g https://github.com/etemesi254/zune-image/issues/294
-                    break 'eoi;
+                    return self.handle_progressive_inter_scan_error(
+                        e,
+                        block,
+                        pixels,
+                        preserve_progressive_scans
+                    )
                 }
             }
         }
 
-        self.finish_progressive_decoding(&block, pixels)
+        self.finish_progressive_decoding(block, pixels)
+    }
+
+    fn decode_progressive_scan<B: BitStream>(
+        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS], pixels: &mut [u8],
+        use_scratch_coefficients: bool
+    ) -> Result<bool, DecodeErrors> {
+        if !use_scratch_coefficients {
+            // The default first decode attempt takes this path and updates the
+            // existing progressive buffers directly without cloning them.
+            return self.decode_progressive_scan_direct(stream, block);
+        }
+
+        // Incremental preservation was explicitly enabled for the first attempt,
+        // or this decoder is being retried. Clone only the components touched by
+        // the current scan so recoverable EOF can discard partial updates.
+        self.checkpoint_progressive_scan(self.progressive_completed_scans)?;
+        let mut touched_components = [false; MAX_COMPONENTS];
+        for scan_index in 0..usize::from(self.num_scans) {
+            let component = self.z_order[scan_index];
+            if component < MAX_COMPONENTS {
+                touched_components[component] = true;
+            }
+        }
+        let mut scan_block: [Vec<i16>; MAX_COMPONENTS] = core::array::from_fn(|idx| {
+            if touched_components[idx] {
+                block[idx].clone()
+            } else {
+                Vec::new()
+            }
+        });
+        let result = self.parse_entropy_coded_data(stream, &mut scan_block);
+
+        if let Err(e) = result {
+            // Completed scans are displayable, but a truncated scan is not:
+            // refinement passes read-modify-write coefficient data, so the
+            // scratch copy is discarded on recoverable EOF.
+            if e.is_recoverable_eof() {
+                self.finish_progressive_partial(block, pixels)?;
+                return Err(e);
+            }
+            if self.stream.eof()? {
+                self.finish_progressive_partial(block, pixels)?;
+                return Err(DecodeErrors::ExhaustedData);
+            }
+            if self.options.strict_mode() {
+                return Err(e);
+            }
+            error!("{e}");
+            // Match the direct path's best-effort non-strict output: keep
+            // partial corrupt-scan coefficients, but never for recoverable EOF.
+            for idx in 0..MAX_COMPONENTS {
+                if touched_components[idx] {
+                    core::mem::swap(&mut block[idx], &mut scan_block[idx]);
+                }
+            }
+            self.invalidate_progressive_scan_checkpoint();
+            return Ok(false);
+        }
+        if stream.overread_by() > 0 {
+            self.finish_progressive_partial(block, pixels)?;
+            return Err(DecodeErrors::ExhaustedData);
+        }
+
+        for idx in 0..MAX_COMPONENTS {
+            if touched_components[idx] {
+                core::mem::swap(&mut block[idx], &mut scan_block[idx]);
+            }
+        }
+        self.progressive_completed_scans += 1;
+        self.invalidate_progressive_scan_checkpoint();
+        Ok(true)
+    }
+
+    fn decode_progressive_scan_direct<B: BitStream>(
+        &mut self, stream: &mut B, block: &mut [Vec<i16>; MAX_COMPONENTS]
+    ) -> Result<bool, DecodeErrors> {
+        let result = self.parse_entropy_coded_data(stream, block);
+
+        if let Err(e) = result {
+            if e.is_recoverable_eof() {
+                self.discard_progressive_partial();
+                return Err(e);
+            }
+            if self.stream.eof()? {
+                self.discard_progressive_partial();
+                return Err(DecodeErrors::ExhaustedData);
+            }
+            if self.options.strict_mode() {
+                return Err(e);
+            }
+            error!("{e}");
+            return Ok(false);
+        }
+        if stream.overread_by() > 0 {
+            self.discard_progressive_partial();
+            return Err(DecodeErrors::ExhaustedData);
+        }
+
+        self.progressive_completed_scans += 1;
+        Ok(true)
+    }
+
+    fn handle_progressive_inter_scan_error(
+        &mut self, error: DecodeErrors, block: &[Vec<i16>; MAX_COMPONENTS], pixels: &mut [u8],
+        preserve_completed_scans: bool
+    ) -> Result<(), DecodeErrors> {
+        if error.is_recoverable_eof() {
+            if preserve_completed_scans {
+                self.finish_progressive_partial(block, pixels)?;
+            } else {
+                self.discard_progressive_partial();
+            }
+            return Err(error);
+        }
+        if self.options.strict_mode() {
+            return Err(error);
+        }
+        error!("{error}");
+        self.finish_progressive_decoding(block, pixels)
+    }
+
+    fn discard_progressive_partial(&mut self) {
+        self.invalidate_progressive_scan_checkpoint();
+        self.progressive_completed_scans = 0;
+        self.progressive_displayed_scans = 0;
+        self.pixels_decoded = 0;
+    }
+
+    fn finish_progressive_partial(
+        &mut self, block: &[Vec<i16>; MAX_COMPONENTS], pixels: &mut [u8]
+    ) -> Result<(), DecodeErrors> {
+        if self.progressive_completed_scans == 0 {
+            self.pixels_decoded = 0;
+            self.progressive_displayed_scans = 0;
+            return Ok(());
+        }
+
+        if self.progressive_displayed_scans != self.progressive_completed_scans {
+            self.finish_progressive_decoding(block, pixels)?;
+            self.progressive_displayed_scans = self.progressive_completed_scans;
+        }
+        self.pixels_decoded = 0;
+        Ok(())
     }
 
     /// Reset progressive parameters
-    fn reset_prog_params(&mut self, stream: &mut BitStream) {
+    fn reset_prog_params<B: BitStream>(&mut self, stream: &mut B) {
         stream.reset();
-        self.components.iter_mut().for_each(|x| x.dc_pred = 0);
+        B::reset_arith_tables(&mut self.entropy_tables);
+        self.components.iter_mut().for_each(|x| {
+            x.dc_pred = 0;
+            x.dc_diff = 0;
+        });
 
         // Also reset JPEG restart intervals
         self.todo = if self.restart_interval != 0 { self.restart_interval } else { usize::MAX };
     }
-
+    /// Parse a progressive scan's entropy-coded data into `buffer`.
+    ///
+    /// Progressive scans always start at MCU `(0, 0)`. Per-RST checkpoints
+    /// are not recorded for progressive: refine passes read-modify-write
+    /// `buffer`, so retries restart at the current scan boundary using the
+    /// last committed coefficient buffer.
     #[allow(clippy::too_many_lines, clippy::cast_sign_loss)]
-    fn parse_entropy_coded_data(
-        &mut self, stream: &mut BitStream, buffer: &mut [Vec<i16>; MAX_COMPONENTS]
+    fn parse_entropy_coded_data<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
     ) -> Result<(), DecodeErrors> {
         self.reset_prog_params(stream);
 
@@ -230,212 +402,308 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 self.input_colorspace.num_components()
             )));
         }
+
         if self.num_scans == 1 {
             // Safety checks
             if self.spec_end != 0 && self.spec_start == 0 {
                 return Err(DecodeErrors::FormatStatic(
-                    "Can't merge DC and AC corrupt jpeg"
+                    "Can't merge DC and AC corrupt jpeg",
                 ));
             }
-            // non interleaved data, process one block at a time in trivial scanline order
 
             let k = self.z_order[0];
-
             if k >= self.components.len() {
                 return Err(DecodeErrors::Format(format!(
                     "Cannot find component {k}, corrupt image"
                 )));
             }
-            // For non-interleaved scans, iterate over the component's actual data-unit grid.
-            let component = &self.components[k];
 
-            let mcu_width = (self.info.width as usize * component.horizontal_sample).div_ceil(self.h_max * 8);
-            let mcu_height = (self.info.height as usize * component.vertical_sample).div_ceil(self.v_max * 8);
-
-            for i in 0..mcu_height {
-                for j in 0..mcu_width {
-                    if self.spec_start != 0 && self.succ_high == 0 && stream.eob_run > 0 {
-                        // handle EOB runs here.
-                        stream.eob_run -= 1;
-                    } else {
-                        let start = 64 * (j + i * (self.components[k].width_stride / 8));
-
-                        let data: &mut [i16; 64] = buffer
-                            .get_mut(k)
-                            .unwrap()
-                            .get_mut(start..start + 64)
-                            .ok_or(DecodeErrors::FormatStatic("Slice to Small"))?
-                            .try_into()
-                            .unwrap();
-
-                        if self.spec_start == 0 {
-                            let pos = self.components[k].dc_huff_table & (MAX_COMPONENTS - 1);
-                            let dc_table = self
-                                .dc_huffman_tables
-                                .get(pos)
-                                .ok_or(DecodeErrors::FormatStatic(
-                                    "No huffman table for DC component"
-                                ))?
-                                .as_ref()
-                                .ok_or(DecodeErrors::FormatStatic(
-                                    "Huffman table at index  {} not initialized"
-                                ))?;
-
-                            let dc_pred = &mut self.components[k].dc_pred;
-
-                            if self.succ_high == 0 {
-                                // first scan for this mcu
-                                stream.decode_prog_dc_first(
-                                    &mut self.stream,
-                                    dc_table,
-                                    &mut data[0],
-                                    dc_pred
-                                )?;
-                            } else {
-                                // refining scans for this MCU
-                                stream.decode_prog_dc_refine(&mut self.stream, &mut data[0])?;
-                            }
-                        } else {
-                            let pos = self.components[k].ac_huff_table;
-                            let ac_table = self
-                                .ac_huffman_tables
-                                .get(pos)
-                                .ok_or_else(|| {
-                                    DecodeErrors::Format(format!(
-                                        "No huffman table for component:{pos}"
-                                    ))
-                                })?
-                                .as_ref()
-                                .ok_or_else(|| {
-                                    DecodeErrors::Format(format!(
-                                        "Huffman table at index  {pos} not initialized"
-                                    ))
-                                })?;
-
-                            if self.succ_high == 0 {
-                                debug_assert!(stream.eob_run == 0, "EOB run is not zero");
-
-                                stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)?;
-                            } else {
-                                // refinement scan
-                                stream.decode_mcu_ac_refine(&mut self.stream, ac_table, data)?;
-                            }
-                            // Check for a marker.
-                            // It can appear in stream CC https://github.com/etemesi254/zune-image/issues/300
-                            // if let Some(marker) = stream.marker.take() {
-                            //     self.parse_marker_inner(marker)?;
-                            // }
-                        }
-                    }
-
-                    // + EOB and investigate effect.
-                    self.todo -= 1;
-
-                    self.handle_rst_main(stream)?;
+            // Dispatch depending on type
+            if self.spec_start == 0 {
+                if self.succ_high == 0 {
+                    self.parse_dc_first_non_interleaved(stream, buffer, k)?;
+                } else {
+                    self.parse_dc_refine_non_interleaved(stream, buffer, k)?;
                 }
+            } else if self.succ_high == 0 {
+                self.parse_ac_first_non_interleaved(stream, buffer, k)?;
+            } else {
+                self.parse_ac_refine_non_interleaved(stream, buffer, k)?;
             }
         } else {
             if self.spec_end != 0 {
                 return Err(DecodeErrors::HuffmanDecode(
-                    "Can't merge dc and AC corrupt jpeg".to_string()
+                    "Can't merge dc and AC corrupt jpeg".to_string(),
                 ));
             }
-            // process scan n elements in order
 
-            // Do the error checking with allocs here.
-            // Make the one in the inner loop free of allocations.
+            // Verify components and tables for interleaved scans
             for k in 0..self.num_scans {
                 let n = self.z_order[k as usize];
-
                 if n >= self.components.len() {
                     return Err(DecodeErrors::Format(format!(
                         "Cannot find component {n}, corrupt image"
                     )));
                 }
-
                 let component = &mut self.components[n];
-                let _ = self
-                    .dc_huffman_tables
-                    .get(component.dc_huff_table)
-                    .ok_or_else(|| {
-                        DecodeErrors::Format(format!(
-                            "No huffman table for component:{}",
-                            component.dc_huff_table
-                        ))
-                    })?
-                    .as_ref()
-                    .ok_or_else(|| {
-                        DecodeErrors::Format(format!(
-                            "Huffman table at index  {} not initialized",
-                            component.dc_huff_table
-                        ))
-                    })?;
+                let _ = B::get_dc_table(&mut self.entropy_tables, component.dc_huff_table)?;
             }
-            // Interleaved scan
 
-            // Components shall not be interleaved in progressive mode, except for
-            // the DC coefficients in the first scan for each component of a progressive frame.
-            for i in 0..self.mcu_y {
-                for j in 0..self.mcu_x {
-                    // process scan n elements in order
-                    for k in 0..self.num_scans {
-                        let n = self.z_order[k as usize];
-                        let component = &mut self.components[n];
-                        let huff_table = self
-                            .dc_huffman_tables
-                            .get(component.dc_huff_table)
-                            .ok_or(DecodeErrors::FormatStatic("No huffman table for component"))?
-                            .as_ref()
-                            .ok_or(DecodeErrors::FormatStatic(
-                                "Huffman table at index not initialized"
-                            ))?;
+            if self.succ_high == 0 {
+                self.parse_dc_first_interleaved(stream, buffer)?;
+            } else {
+                self.parse_dc_refine_interleaved(stream, buffer)?;
+            }
+        }
+        Ok(())
+    }
 
-                        for v_samp in 0..component.vertical_sample {
-                            for h_samp in 0..component.horizontal_sample {
-                                let x2 = j * component.horizontal_sample + h_samp;
-                                let y2 = i * component.vertical_sample + v_samp;
-                                let position = 64 * (x2 + y2 * component.width_stride / 8);
-                                let buf_n = &mut buffer[n];
+    #[inline(always)]
+    fn get_non_interleaved_dimensions(&self, k: usize) -> (usize, usize) {
+        let component = &self.components[k];
+        let mcu_width =
+            (self.info.width as usize * component.horizontal_sample).div_ceil(self.h_max * 8);
+        let mcu_height =
+            (self.info.height as usize * component.vertical_sample).div_ceil(self.v_max * 8);
+        (mcu_width, mcu_height)
+    }
 
-                                let Some(data) = &mut buf_n.get_mut(position) else {
-                                    // TODO: (CAE), this is another weird sub-sampling bug, so on fix
-                                    // remove this
-                                    return Err(DecodeErrors::FormatStatic("Invalid image"));
-                                };
+    fn parse_dc_first_non_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+    ) -> Result<(), DecodeErrors> {
+        let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+        let dc_pos = self.components[k].dc_huff_table / MAX_COMPONENTS;
+        let width_stride = self.components[k].width_stride / 8;
 
-                                if self.succ_high == 0 {
-                                    stream.decode_prog_dc_first(
-                                        &mut self.stream,
-                                        huff_table,
-                                        data,
-                                        &mut component.dc_pred
-                                    )?;
-                                } else {
-                                    stream.decode_prog_dc_refine(&mut self.stream, data)?;
-                                }
-                            }
-                        }
-                    }
-                    // We want wrapping subtraction here because it means
-                    // we get a higher number in the case this underflows
+        let mut cancel = self.cancel_debounced(mcu_width);
+        for i in 0..mcu_height {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..mcu_width {
+                let start = 64 * (j + i * width_stride);
+                let dc_pred_opt: Option<&mut i16> = buffer[k].get_mut(start);
+
+                if let Some(dc_pred) = dc_pred_opt {
+                    let dc_table = B::get_dc_table(&mut self.entropy_tables, dc_pos)?;
+                    let component = &mut self.components[k];
+
+                    stream.decode_prog_dc_first(
+                        &mut self.stream,
+                        dc_table,
+                        dc_pred,
+                        &mut component.dc_pred,
+                        &mut component.dc_diff,
+                    )?;
+
                     self.todo -= 1;
-                    // after every scan that's a mcu, count down restart markers.
                     self.handle_rst_main(stream)?;
                 }
             }
         }
-        return Ok(());
+        Ok(())
     }
 
-    pub(crate) fn handle_rst_main(&mut self, stream: &mut BitStream) -> Result<(), DecodeErrors> {
+    fn parse_dc_refine_non_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+    ) -> Result<(), DecodeErrors> {
+        let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+        let width_stride = self.components[k].width_stride / 8;
+        let component_buffer = &mut buffer[k];
+
+        let mut cancel = self.cancel_debounced(mcu_width);
+        for i in 0..mcu_height {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..mcu_width {
+                let start = 64 * (j + i * width_stride);
+                let dc_pred_id: Option<&mut i16> = component_buffer.get_mut(start);
+
+                if let Some(dc_pred) = dc_pred_id {
+                    stream.decode_prog_dc_refine(&mut self.stream, dc_pred)?;
+                    self.todo -= 1;
+                    self.handle_rst_main(stream)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_ac_first_non_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+    ) -> Result<(), DecodeErrors> {
+        let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+        let ac_pos = self.components[k].ac_huff_table;
+        let component_buffer_data = &mut buffer[k];
+
+        let mut cancel = self.cancel_debounced(mcu_width);
+        for i in 0..mcu_height {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..mcu_width {
+                if *stream.eob_run() > 0 {
+                    // handle EOB runs here.
+                    *stream.eob_run() -= 1;
+                } else {
+                    let start = 64 * (j + i * (self.components[k].width_stride / 8));
+
+                    let data: &mut [i16; 64] = component_buffer_data
+                        .get_mut(start..start + 64)
+                        .ok_or(DecodeErrors::FormatStatic("Slice to Small"))?
+                        .try_into()
+                        .unwrap();
+
+                    let ac_table = B::get_ac_table(&mut self.entropy_tables, ac_pos)?;
+                    stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)?;
+                }
+
+                self.todo -= 1;
+                self.handle_rst_main(stream)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_ac_refine_non_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS], k: usize,
+    ) -> Result<(), DecodeErrors> {
+        let (mcu_width, mcu_height) = self.get_non_interleaved_dimensions(k);
+        let ac_pos = self.components[k].ac_huff_table;
+        let component_buffer_data = &mut buffer[k];
+        let width_stride = self.components[k].width_stride / 8;
+
+        let mut cancel = self.cancel_debounced(mcu_width);
+        for i in 0..mcu_height {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..mcu_width {
+                let start = 64 * (j + i * width_stride);
+                let data: &mut [i16; 64] = component_buffer_data
+                    .get_mut(start..start + 64)
+                    .ok_or(DecodeErrors::FormatStatic("Slice to Small"))?
+                    .try_into()
+                    .unwrap();
+
+                let ac_table = B::get_ac_table(&mut self.entropy_tables, ac_pos)?;
+                stream.decode_mcu_ac_refine(&mut self.stream, ac_table, data)?;
+
+                self.todo -= 1;
+                self.handle_rst_main(stream)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_dc_first_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
+    ) -> Result<(), DecodeErrors> {
+        let mut cancel = self.cancel_debounced(self.mcu_x);
+        for i in 0..self.mcu_y {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..self.mcu_x {
+                for k in 0..self.num_scans {
+                    let n = self.z_order[k as usize];
+                    let component = &mut self.components[n];
+                    let huff_table =
+                        B::get_dc_table(&mut self.entropy_tables, component.dc_huff_table)?;
+
+                    for v_samp in 0..component.vertical_sample {
+                        for h_samp in 0..component.horizontal_sample {
+                            let x2 = j * component.horizontal_sample + h_samp;
+                            let y2 = i * component.vertical_sample + v_samp;
+                            let position = 64 * (x2 + y2 * component.width_stride / 8);
+
+                            let Some(data) = buffer[n].get_mut(position) else {
+                                return Err(DecodeErrors::FormatStatic("Invalid image"));
+                            };
+
+                            stream.decode_prog_dc_first(
+                                &mut self.stream,
+                                huff_table,
+                                data,
+                                &mut component.dc_pred,
+                                &mut component.dc_diff,
+                            )?;
+                        }
+                    }
+                }
+                self.todo -= 1;
+                self.handle_rst_main(stream)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_dc_refine_interleaved<B: BitStream>(
+        &mut self, stream: &mut B, buffer: &mut [Vec<i16>; MAX_COMPONENTS],
+    ) -> Result<(), DecodeErrors> {
+        let mut cancel = self.cancel_debounced(self.mcu_x);
+        for i in 0..self.mcu_y {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            for j in 0..self.mcu_x {
+                for k in 0..self.num_scans {
+                    let n = self.z_order[k as usize];
+                    let component = &self.components[n];
+
+                    for v_samp in 0..component.vertical_sample {
+                        for h_samp in 0..component.horizontal_sample {
+                            let x2 = j * component.horizontal_sample + h_samp;
+                            let y2 = i * component.vertical_sample + v_samp;
+                            let position = 64 * (x2 + y2 * component.width_stride / 8);
+
+                            let Some(data) = buffer[n].get_mut(position) else {
+                                return Err(DecodeErrors::FormatStatic("Invalid image"));
+                            };
+
+                            stream.decode_prog_dc_refine(&mut self.stream, data)?;
+                        }
+                    }
+                }
+                self.todo -= 1;
+
+                // Progressive does not record per-RST checkpoints —
+                // refine scans do read-modify-write on `buffer` and
+                // mid-scan resume would re-apply partial deltas. On
+                // EOF the decoder falls back to scan-start replay.
+                self.handle_rst_main(stream)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Handle an RST marker mid-scan, if one is due. Used by the progressive
+    /// scan decoder, which does not record per-RST checkpoints and therefore
+    /// does not need to know whether a marker was actually consumed.
+    ///
+    /// The baseline decoder, which does checkpoint, calls
+    /// [`Self::handle_rst_main_with_status`] instead.
+    #[allow(clippy::used_underscore_binding)]
+    pub(crate) fn handle_rst_main<B: BitStream>(
+        &mut self, stream: &mut B,
+    ) -> Result<(), DecodeErrors> {
+        self.handle_rst_main_inner(stream).map(|_| ())
+    }
+
+    fn handle_rst_main_inner<B: BitStream>(
+        &mut self, stream: &mut B
+    ) -> Result<bool, DecodeErrors> {
         if self.todo == 0 {
             stream.refill(&mut self.stream)?;
         }
 
+        let mut handled_restart = false;
+
         if self.todo == 0
             && self.restart_interval != 0
-            && stream.marker.is_none()
-            && !stream.seen_eoi
+            && stream.marker().is_none()
+            && !*stream.seen_eoi()
         {
             // if no marker and we are to reset RST, look for the marker, this matches
             // libjpeg-turbo behaviour and allows us to decode images in
@@ -450,28 +718,65 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             // in the image and this would return an error, so for now
             // translate it to a warning, but return the image decoded up
             // until that point
-            if let Ok(marker) = marker {
-                let _end = self.stream.position()?;
-                stream.marker = Some(marker);
-                // NB some warnings may be false positives.
-                warn!(
-                    "{} Extraneous bytes before marker {:?}",
-                    _end - _start,
-                    marker
-                );
-            } else {
-                warn!("RST marker was not found, where expected, image may be garbled")
+            match marker {
+                Ok(marker) => {
+                    let _end = self.stream.position()?;
+                    handled_restart = matches!(marker, Marker::RST(_));
+                    *stream.marker() = Some(marker);
+                    // NB some warnings may be false positives.
+                    warn!(
+                        "{} Extraneous bytes before marker {:?}",
+                        _end - _start,
+                        marker
+                    );
+                }
+                Err(ref e) if e.is_recoverable_eof() => {
+                    return Err(DecodeErrors::ExhaustedData);
+                }
+                Err(_) => {
+                    warn!("RST marker was not found, where expected, image may be garbled");
+                }
             }
         }
         if self.todo == 0 {
-            self.handle_rst(stream)?
+            // Lookahead skipped above (marker was already latched by the
+            // bitstream refill); inspect the latched marker so the RST
+            // status reflects what `handle_rst` is about to consume.
+            handled_restart |= matches!(stream.marker(), Some(Marker::RST(_)));
+            self.handle_rst(stream)?;
         }
-        Ok(())
+        Ok(handled_restart)
+    }
+
+    /// Variant of [`Self::handle_rst_main`] used by the baseline scan decoder
+    /// to detect whether the consumed marker was actually an RST. Returns
+    /// `true` when `todo` had wrapped to 0 *and* a real RST marker was found
+    /// at the entropy-segment boundary, signalling a safe place to take a
+    /// resumability checkpoint. Returns `false` otherwise.
+    ///
+    /// Only baseline calls this; progressive uses the lighter
+    /// [`Self::handle_rst_main`] above so its per-MCU codegen stays
+    /// bit-identical to the pre-PR shape.
+    ///
+    /// Equivalent to the pre-refactor logic that inspected the latched
+    /// marker slot *after* `handle_rst_main` returned: RST consumption
+    /// empties that slot, so "slot is `None` or RST after" matches
+    /// "latched marker was RST before" in every reachable state. The
+    /// `restart_interval == 0` branch never sets `todo = 0` (the scan loop
+    /// uses `0x7fff_ffff` as the sentinel), so the one corner case where
+    /// the two formulations could disagree — `todo == 0`, no marker, no
+    /// interval — is unreachable.
+    pub(crate) fn handle_rst_main_with_status<B: BitStream>(
+        &mut self, stream: &mut B,
+    ) -> Result<bool, DecodeErrors> {
+        let was_due = self.todo == 0;
+        let handled_restart = self.handle_rst_main_inner(stream)?;
+        Ok(was_due && handled_restart)
     }
     #[allow(clippy::too_many_lines)]
     #[allow(clippy::needless_range_loop, clippy::cast_sign_loss)]
     fn finish_progressive_decoding(
-        &mut self, block: &[Vec<i16>; MAX_COMPONENTS], pixels: &mut [u8]
+        &mut self, block: &[Vec<i16>; MAX_COMPONENTS], pixels: &mut [u8],
     ) -> Result<(), DecodeErrors> {
         // This function is complicated because we need to replicate
         // the function in mcu.rs
@@ -502,7 +807,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         // Size of our output image(width*height)
         let is_hv = usize::from(self.is_interleaved);
-        let upsampler_scratch_size = is_hv * self.components[0].width_stride;
+        let upsampler_scratch_size = is_hv
+            * self
+                .components
+                .iter()
+                .map(|x| x.width_stride)
+                .max()
+                .unwrap_or(0)
+            * 8;
         let width = usize::from(self.info.width);
         let padded_width = calculate_padded_width(width, self.info.sample_ratio);
 
@@ -516,7 +828,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             // components.
             if min(
                 self.options.jpeg_get_out_colorspace().num_components() - 1,
-                pos
+                pos,
             ) == pos
                 || self.input_colorspace == ColorSpace::YCCK
                 || self.input_colorspace == ColorSpace::CMYK
@@ -536,7 +848,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         let mut pixels_written = 0;
 
         // dequantize, idct and color convert.
+        let mut cancel = self.cancel_debounced(self.mcu_x);
         for i in 0..mcu_height {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
             'component: for (position, component) in &mut self.components.iter_mut().enumerate() {
                 if !component.needed {
                     continue 'component;
@@ -575,7 +891,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         // See https://github.com/etemesi254/zune-image/issues/262 sample 3.
                         let Some(qt_slice) = slice.get(start..start + 64) else {
                             return Err(DecodeErrors::FormatStatic(
-                                "Invalid slice , would panic, invalid image"
+                                "Invalid slice , would panic, invalid image",
                             ));
                         };
                         // dequantize
@@ -610,11 +926,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 width,
                 padded_width,
                 &mut pixels_written,
-                &mut upsampler_scratch_space
+                &mut upsampler_scratch_space,
             )?;
         }
 
-        debug!("Finished decoding image");
+        trace!("Finished decoding image");
 
         return Ok(());
     }
@@ -632,7 +948,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         self.info.sample_ratio = SampleRatios::None;
         self.is_interleaved = false;
         self.components[0].vertical_sample = 1;
-        self.components[0].width_stride = (((self.info.width as usize) + 7) / 8) * 8;
+        self.components[0].width_stride = (self.info.width as usize).div_ceil(8) * 8;
         self.components[0].horizontal_sample = 1;
     }
 }
@@ -640,14 +956,13 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 ///Get a marker from the bit-stream.
 ///
 /// This reads until it gets a marker or end of file is encountered
-pub fn get_marker<T>(
-    reader: &mut ZReader<T>, stream: &mut BitStream
+pub fn get_marker<T, B: BitStream>(
+    reader: &mut ZReader<T>, stream: &mut B,
 ) -> Result<Marker, DecodeErrors>
 where
-    T: ZByteReaderTrait
+    T: ZByteReaderTrait,
 {
-    if let Some(marker) = stream.marker {
-        stream.marker = None;
+    if let Some(marker) = stream.marker().take() {
         return Ok(marker);
     }
 
@@ -673,9 +988,9 @@ where
 }
 
 #[cfg(test)]
-mod tests{
-    use zune_core::bytestream::ZCursor;
+mod tests {
     use crate::JpegDecoder;
+    use zune_core::bytestream::ZCursor;
 
     #[test]
     fn test_progressive_dri_420_color() {
@@ -735,14 +1050,44 @@ mod tests{
         );
 
         // Verify first pixel is close to expected (R≈0, G≈0, B≈128)
-        assert!(pixels[2] > 100, "Blue channel should be around 128, got {}", pixels[2]);
+        assert!(
+            pixels[2] > 100,
+            "Blue channel should be around 128, got {}",
+            pixels[2]
+        );
     }
 
     #[test]
-    fn make_test(){
-        let data = ZCursor::new([255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 0, 2, 0, 28, 0, 28, 0, 0, 255, 219, 0, 67, 0, 40, 28, 30, 20, 30, 25, 40, 35, 33, 35, 45, 43, 40, 48, 60, 100, 65, 60, 55, 55, 60, 123, 88, 93, 65, 100, 145, 128, 153, 150, 143, 128, 140, 138, 160, 180, 230, 195, 160, 170, 218, 173, 138, 140, 200, 255, 203, 218, 255, 238, 245, 255, 101, 0, 62, 8, 255, 255, 250, 255, 230, 253, 255, 17, 255, 219, 0, 67, 1, 43, 45, 45, 42, 60, 48, 60, 118, 65, 65, 118, 248, 165, 140, 165, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 241, 255, 255, 255, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 8, 0, 32, 0, 32, 3, 2, 17, 0, 1, 34, 1, 3, 17, 1, 255, 196, 0, 24, 0, 1, 1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 0, 1, 4, 255, 196, 0, 37, 16, 0, 2, 2, 1, 4, 1, 3, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 17, 0, 4, 18, 33, 48, 34, 65, 81, 113, 19, 20, 51, 97, 161, 255, 196, 0, 22, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 255, 196, 0, 26, 17, 1, 0, 2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 17, 18, 38, 65, 255, 218, 0, 12, 3, 1, 0, 2, 17, 3, 17, 0, 63, 0, 175, 119, 49, 197, 184, 2, 0, 0, 0, 16, 13, 129, 103, 161, 102, 178, 115, 125, 202, 68, 236, 173, 25, 42, 164, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 38, 0, 0, 0, 0, 250, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 67, 1, 43, 45, 45, 60, 48, 60, 118, 65, 65, 118, 248, 165, 140, 165, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 241, 255, 255, 255, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 8, 0, 32, 0, 32, 3, 1, 34, 0, 2, 17, 1, 3, 17, 1, 255, 196, 0, 24, 0, 1, 1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 126, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 198]);
+    fn make_test() {
+        let data = ZCursor::new([
+            255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 0, 2, 0, 28, 0, 28, 0, 0, 255, 219, 0,
+            67, 0, 40, 28, 30, 20, 30, 25, 40, 35, 33, 35, 45, 43, 40, 48, 60, 100, 65, 60, 55, 55,
+            60, 123, 88, 93, 65, 100, 145, 128, 153, 150, 143, 128, 140, 138, 160, 180, 230, 195,
+            160, 170, 218, 173, 138, 140, 200, 255, 203, 218, 255, 238, 245, 255, 101, 0, 62, 8,
+            255, 255, 250, 255, 230, 253, 255, 17, 255, 219, 0, 67, 1, 43, 45, 45, 42, 60, 48, 60,
+            118, 65, 65, 118, 248, 165, 140, 165, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            241, 255, 255, 255, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 8, 0, 32, 0, 32, 3, 2, 17, 0, 1, 34, 1,
+            3, 17, 1, 255, 196, 0, 24, 0, 1, 1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 0,
+            1, 4, 255, 196, 0, 37, 16, 0, 2, 2, 1, 4, 1, 3, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 17,
+            0, 4, 18, 33, 48, 34, 65, 81, 113, 19, 20, 51, 97, 161, 255, 196, 0, 22, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 255, 196, 0, 26, 17, 1, 0, 2, 3, 1, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 17, 18, 38, 65, 255, 218, 0, 12, 3, 1, 0, 2, 17, 3,
+            17, 0, 63, 0, 175, 119, 49, 197, 184, 2, 0, 0, 0, 16, 13, 129, 103, 161, 102, 178, 115,
+            125, 202, 68, 236, 173, 25, 42, 164, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0,
+            38, 0, 0, 0, 0, 250, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 67, 1, 43, 45, 45, 60, 48, 60,
+            118, 65, 65, 118, 248, 165, 140, 165, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            241, 255, 255, 255, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 248, 248,
+            248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 248,
+            248, 248, 248, 248, 248, 248, 248, 255, 192, 0, 17, 8, 0, 32, 0, 32, 3, 1, 34, 0, 2,
+            17, 1, 3, 17, 1, 255, 196, 0, 24, 0, 1, 1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            2, 0, 126, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 198,
+        ]);
         let mut decoder = JpegDecoder::new(data);
         decoder.decode().unwrap();
-
     }
 }

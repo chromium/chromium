@@ -51,7 +51,7 @@ small_ctor = "0.1"
 smallvec = "1"
 static_assertions = "1"
 xml = "1.3.0"
-zune-jpeg = "0.5.15"
+zune-jpeg = "=0.5.16-rc1"
 
 [dependencies.bytemuck]
 version = "1"
@@ -199,3 +199,7 @@ features = ["zeroize_derive"]
 version = "8.2.0"
 default-features = false
 features = ["deflate-flate2"]
+
+[dependencies.zune-core]
+version = "0.5.3"
+features = ["std"]

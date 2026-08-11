@@ -1,7 +1,7 @@
 [package]
 name = "zune-jpeg"
-version = "0.5.15"
-rust-version = "1.75.0"
+version = "0.5.16-rc1"
+rust-version = "1.77.1"
 authors = ["caleb <etemesicaleb@gmail.com>"]
 edition = "2021"
 repository = "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg"
@@ -24,13 +24,13 @@ neon = []
 std = ["zune-core/std"]
 # NOTE: portable_simd requires Rust 1.87+
 portable_simd = []
+arith = []
 log = ["zune-core/log"]
 default = ["x86", "neon", "std"]
 
 
 [dependencies]
-zune-core = { path = "../zune-core", version = "0.5.1" }
+zune-core = { path = "../zune-core", version = "0.5.2" }
 
 
 [dev-dependencies]
-zune-ppm = { path = "../zune-ppm" }

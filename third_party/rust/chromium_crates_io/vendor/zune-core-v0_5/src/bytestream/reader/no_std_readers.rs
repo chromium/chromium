@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#![allow(clippy::wrong_self_convention)]
+#![allow(clippy::wrong_self_convention)]
 
 use crate::bytestream::{ZByteIoError, ZByteReaderTrait, ZSeekFrom};
 /// Wraps an in memory buffer providing it with a `Seek` method

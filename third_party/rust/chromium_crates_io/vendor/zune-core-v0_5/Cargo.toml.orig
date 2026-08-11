@@ -1,6 +1,6 @@
 [package]
 name = "zune-core"
-version = "0.5.1"
+version = "0.5.3"
 rust-version = "1.75.0"
 edition = "2021"
 description = "Core utilities for image processing in the zune family of crates"

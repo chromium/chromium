@@ -88,7 +88,7 @@ pub fn choose_ycbcr_to_rgb_convert_func(
                 ColorSpace::RGB => return Some(ycbcr_to_rgb_neon),
                 ColorSpace::RGBA => return Some(ycbcr_to_rgba_neon),
                 _ => () // fall through to scalar, which has more types
-            };
+            }
         }
     }
     // when there is no x86 or we haven't returned by here, resort to scalar

@@ -33,8 +33,8 @@ impl<T: ZByteWriterTrait> ZWriter<T> {
     ///
     /// # Returns
     /// - `Ok(usize)` - Number of bytes written
-    /// This number may be less than `buf.len()` if the length of the buffer is greater
-    /// than the internal bytestream length
+    ///   This number may be less than `buf.len()` if the length of the buffer is greater
+    ///   than the internal bytestream length
     ///  
     /// If you want to be sure that all bytes were written, see [`write_all`](Self::write_all)
     ///
@@ -53,7 +53,7 @@ impl<T: ZByteWriterTrait> ZWriter<T> {
     ///# Returns
     /// - `Ok(())`: Indicates all bytes were written into the bytestream
     /// - `Err(&static str)`: In case all the bytes could not be written
-    /// to the stream
+    ///   to the stream
     pub fn write_all(&mut self, buf: &[u8]) -> Result<(), ZByteIoError> {
         self.buffer.write_all_bytes(buf)?;
         self.bytes_written += buf.len();

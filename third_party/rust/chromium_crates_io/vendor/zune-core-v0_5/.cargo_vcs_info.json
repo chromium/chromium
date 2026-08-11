@@ -1,6 +1,6 @@
 {
   "git": {
-    "sha1": "bf30e1ecb9034964bfa251189173328a8a1380a8"
+    "sha1": "de5dfc800cfa063116eb695edb6ccd01cb96ea7a"
   },
   "path_in_vcs": "crates/zune-core"
 }

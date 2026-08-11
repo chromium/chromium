@@ -7,7 +7,7 @@
  */
 
 #[cfg(target_arch = "aarch64")]
-use core::arch::aarch64::*;
+use core::arch::aarch64::{vdupq_n_s16, vld1q_s16, vaddq_s16, vmulq_s16, vshrq_n_s16, vzip1q_s16, vzip2q_s16, vst1q_s16};
 
 #[cfg(target_arch = "aarch64")]
 #[target_feature(enable = "neon")]
@@ -145,9 +145,9 @@ pub unsafe fn upsample_vertical_neon(
     if let Some(rest) = input.last_chunk::<8>() {
         if let Some(rest_near) = in_near.last_chunk::<8>() {
             if let Some(rest_far) = in_far.last_chunk::<8>() {
-                if let Some(mut rest_top) = out_top.last_chunk_mut::<8>() {
-                    if let Some(mut rest_bottom) = out_bottom.last_chunk_mut::<8>() {
-                        upsample8(rest, rest_near, rest_far, &mut rest_top, &mut rest_bottom);
+                if let Some(rest_top) = out_top.last_chunk_mut::<8>() {
+                    if let Some(rest_bottom) = out_bottom.last_chunk_mut::<8>() {
+                        upsample8(rest, rest_near, rest_far, rest_top, rest_bottom);
                     }
                 }
             }

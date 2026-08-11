@@ -41,25 +41,6 @@ pub trait ZByteReaderTrait {
     /// In case of an error, the implementation should not increment the internal position
     fn read_exact_bytes(&mut self, buf: &mut [u8]) -> Result<(), ZByteIoError>;
 
-    /// Read exact bytes required to fill `buf` or return an error if that isn't possible
-    ///
-    /// This is the same as [`read_exact_bytes`](Self::read_exact_bytes) but implemented as a separate
-    /// method to allow some implementations to optimize it to cost fewer instructions
-    ///
-    /// ## Arguments
-    ///  - `buf`: Buffer to fill with bytes from the underlying reader
-    ///  ## Errors
-    /// In case of an error, the implementation should not increment the internal position
-    fn read_const_bytes<const N: usize>(&mut self, buf: &mut [u8; N]) -> Result<(), ZByteIoError>;
-
-    /// Read exact bytes required to fill `buf` or ignore buf entirely if you can't fill it
-    /// due to an error like the inability to fill the buffer completely
-    /// ## Arguments
-    ///  - `buf`: Buffer to fill with bytes from the underlying reader
-    /// ## Errors
-    /// In case of an error, the implementation should not increment the internal position
-    fn read_const_bytes_no_error<const N: usize>(&mut self, buf: &mut [u8; N]);
-
     /// Read bytes into `buf` returning how many bytes you have read or an error if one occurred
     ///
     /// This doesn't guarantee that buf will be filled with bytes for such a guarantee see

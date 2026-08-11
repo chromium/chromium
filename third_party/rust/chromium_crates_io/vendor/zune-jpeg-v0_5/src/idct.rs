@@ -13,14 +13,14 @@
 //!
 //! There are 2 reasons why we have the avx one
 //! 1. No one compiles with -C target-features=avx2 hence binaries won't probably take advantage(even
-//! if it exists).
+//!    if it exists).
 //! 2. AVX employs zero short circuit in a way the scalar code cannot employ it.
 //!     - AVX does this by checking for MCU's whose 63 AC coefficients are zero and if true, it writes
-//!        values directly, if false, it goes the long way of calculating.
-//!     -   Although this can be trivially implemented in the scalar version, it  generates code
-//!         I'm not happy width(scalar version that basically loops and that is too many branches for me)
-//!         The avx one does a better job of using bitwise or's with (`_mm256_or_si256`) which is magnitudes of faster
-//!         than anything I could come up with
+//!       values directly, if false, it goes the long way of calculating.
+//!     - Although this can be trivially implemented in the scalar version, it  generates code
+//!       I'm not happy width(scalar version that basically loops and that is too many branches for me)
+//!       The avx one does a better job of using bitwise or's with (`_mm256_or_si256`) which is magnitudes of faster
+//!       than anything I could come up with
 //!
 //! The AVX code also has some cool transpose_u16 instructions which look so complicated to be cool
 //! (spoiler alert, i barely understand how it works, that's why I credited the owner).

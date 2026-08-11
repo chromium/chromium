@@ -2,7 +2,7 @@
 
 Here I compare how long it takes popular JPEG decoders to decode the below 7680*4320 image
 of (now defunct ?) [Cutefish OS](https://en.cutefishos.com/) default wallpaper.
-![img](benches/images/speed_bench.jpg)
+![img](../../../zune-image/test-images/jpeg/benchmarks/speed_bench.jpg)
 
 ## About benchmarks
 

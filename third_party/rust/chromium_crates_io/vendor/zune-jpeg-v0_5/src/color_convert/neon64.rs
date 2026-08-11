@@ -10,7 +10,7 @@
 //! NEON is mandatory on aarch64.
 
 #![cfg(all(feature = "neon", target_arch = "aarch64"))]
-use core::arch::aarch64::*;
+use core::arch::aarch64::{uint8x16_t, vdupq_n_s16, vcombine_s16, vcreate_s16, vld1q_s16, vsubq_s16, vdupq_n_s32, vmlal_laneq_s16, vget_low_s16, vmlal_high_laneq_s16, vqshrun_n_s32, vqmovn_u16, vcombine_u16, vcombine_u8, vst3q_u8, uint8x16x3_t, vst4q_u8, uint8x16x4_t, vdupq_n_u8};
 
 use crate::color_convert::scalar::{CB_CF, CR_CF, C_G_CB_COEF_2, C_G_CR_COEF_1, YUV_RND, Y_CF};
 
@@ -125,22 +125,26 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
 pub fn ycbcr_to_rgb_neon(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
-    // call this in another function to tell RUST to vectorize this
-    // storing
+    // check if we have enough space to write.
+    let out: &mut [u8; 48] = out.get_mut(*offset..*offset + 48).expect("Slice to small cannot write").try_into().unwrap();
+
     unsafe {
         let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
         vst3q_u8(out.as_mut_ptr(), uint8x16x3_t(r, g, b));
-        *offset += 48;
     }
+    *offset += 48;
 }
 
 #[inline(always)]
 pub fn ycbcr_to_rgba_neon(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
+    // check if we have enough space to write.
+    let out: &mut [u8; 64] = out.get_mut(*offset..*offset + 64).expect("Slice to small cannot write").try_into().unwrap();
+
     unsafe {
         let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
         vst4q_u8(out.as_mut_ptr(), uint8x16x4_t(r, g, b, vdupq_n_u8(255)));
-        *offset += 64;
     }
+    *offset += 64;
 }

@@ -56,6 +56,7 @@ pub enum Marker {
 }
 
 impl Marker {
+    #[must_use] 
     pub fn from_u8(n: u8) -> Option<Marker> {
         use self::Marker::{APP, COM, DAC, DHT, DNL, DQT, DRI, EOI, RST, SOF, SOI, SOS, UNKNOWN};
 
@@ -64,8 +65,18 @@ impl Marker {
             0xC0 => Some(SOF(0)),
             0xC1 => Some(SOF(1)),
             0xC2 => Some(SOF(2)),
+            0xC3 => Some(SOF(3)),
             0xC4 => Some(DHT),
+            0xC5 => Some(SOF(5)),
+            0xC6 => Some(SOF(6)),
+            0xC7 => Some(SOF(7)),
+            0xC9 => Some(SOF(9)),
+            0xCA => Some(SOF(10)),
+            0xCB => Some(SOF(11)),
             0xCC => Some(DAC),
+            0xCD => Some(SOF(13)),
+            0xCE => Some(SOF(14)),
+            0xCF => Some(SOF(15)),
             0xD0 => Some(RST(0)),
             0xD1 => Some(RST(1)),
             0xD2 => Some(RST(2)),

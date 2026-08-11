@@ -9,6 +9,38 @@
 use crate::bit_depth::BitDepth;
 use crate::colorspace::ColorSpace;
 
+/// The type and strength of applied compression.
+///
+/// This is a simple, high-level interface that will automatically choose
+/// the appropriate DEFLATE compression mode and PNG filter.
+///
+/// If you need more control over the encoding parameters,
+/// you can set the [DeflateCompression] and [Filter] manually.
+#[derive(Debug, Clone, Copy, Default)]
+pub enum PngCompression {
+    /// No compression whatsoever. Fastest, but results in large files.
+    NoCompression,
+    /// Extremely fast but light compression.
+    ///
+    /// Note: When used in streaming mode, this compression level can actually result in files
+    /// *larger* than would be produced by `NoCompression` on incompressible data because
+    /// it doesn't do any buffering of the output stream to detect whether the data is being compressed or not.
+    Fastest,
+    /// Extremely fast compression with a decent compression ratio.
+    ///
+    /// Significantly outperforms libpng and other popular encoders by using a [specialized DEFLATE
+    /// implementation tuned for PNG](https://crates.io/crates/fdeflate), while still providing
+    /// better compression ratio than the fastest modes of other encoders.
+    ///
+    /// Like `Compression::Fast` this can currently produce files larger than `NoCompression` in
+    /// streaming mode when given incompressible data. This may change in the future.
+    Fast,
+    /// Balances encoding speed and compression ratio
+    #[default]
+    Balanced,
+    /// Spend much more time to produce a slightly smaller file than with `Balanced`.
+    High
+}
 /// Encoder options that are flags
 #[derive(Copy, Debug, Clone, Default)]
 struct EncoderFlags {
@@ -17,7 +49,9 @@ struct EncoderFlags {
     /// Whether JPEG images should use optimized huffman tables
     jpeg_optimize_huffman:   bool,
     /// Whether to not preserve metadata across image transformations
-    image_strip_metadata:    bool
+    image_strip_metadata:    bool,
+    /// png compression
+    png_compression_level:   PngCompression
 }
 
 /// Options shared by some of the encoders in
@@ -95,13 +129,13 @@ impl EncoderOptions {
     ///
     ///  # Lossy
     /// - Higher quality means some images take longer to write and
-    /// are big but they look good
+    ///   have large file sizes but they look good (closer to lossless)
     ///
     /// - Lower quality means small images and low quality.
     ///
     /// # Lossless
     /// - High quality indicates more time is spent in making the file
-    /// smaller
+    ///   smaller
     ///
     /// - Low quality indicates less time is spent in making the file bigger
     pub const fn quality(&self) -> u8 {
@@ -183,7 +217,7 @@ impl EncoderOptions {
     /// The default value is false, and encoders that respect this try to preserve as much
     /// data as possible from one image to another
     pub const fn strip_metadata(&self) -> bool {
-        !self.flags.image_strip_metadata
+        self.flags.image_strip_metadata
     }
 }
 
@@ -212,6 +246,18 @@ impl EncoderOptions {
     /// Default is `false`
     pub fn set_jpeg_encode_progressive(mut self, yes: bool) -> Self {
         self.flags.jpeg_optimize_huffman = yes;
+        self
+    }
+}
+
+impl EncoderOptions {
+    /// Get png compression level
+    pub const fn png_compression_level(&self) -> PngCompression {
+        self.flags.png_compression_level
+    }
+    /// Set png compression level
+    pub fn set_png_compression_level(mut self, value: PngCompression) -> Self {
+        self.flags.png_compression_level = value;
         self
     }
 }

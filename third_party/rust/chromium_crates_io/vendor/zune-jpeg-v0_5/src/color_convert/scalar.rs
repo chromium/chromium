@@ -28,7 +28,6 @@ fn clamp(a: i32) -> u8 {
     a.clamp(0, 255) as u8
 }
 
-/// YCbCr to RGBA color conversion
 
 /// Convert YCbCr to RGB/BGR
 ///

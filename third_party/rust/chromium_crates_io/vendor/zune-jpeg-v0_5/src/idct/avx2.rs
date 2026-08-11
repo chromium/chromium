@@ -50,7 +50,6 @@ macro_rules! permute_store {
 
         // Clamp the values after packing, we can clamp more values at once
         let b = clamp_avx(a);
-        let mut tmp = [0;8];
         // /Undo shuffling
         let c = _mm256_permute4x64_epi64(b, shuffle(3, 1, 2, 0));
 
@@ -58,7 +57,7 @@ macro_rules! permute_store {
         _mm_storeu_si128(
             ($out)
                 .get_mut($index..$index + 8)
-                .unwrap_or(&mut tmp)
+                .unwrap()
                 .as_mut_ptr()
                 .cast(),
             _mm256_extractf128_si256::<0>(c),

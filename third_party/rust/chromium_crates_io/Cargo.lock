@@ -294,6 +294,7 @@ dependencies = [
  "xml",
  "zeroize",
  "zip",
+ "zune-core",
  "zune-jpeg",
 ]
 
@@ -2798,12 +2799,12 @@ dependencies = [
 
 [[package]]
 name = "zune-core"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "zune-jpeg"
-version = "0.5.15"
+version = "0.5.16-rc1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "zune-core",

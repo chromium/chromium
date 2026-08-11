@@ -36,7 +36,7 @@
 //! 1. Fast refills from libjpeg-turbo
 //! 2. As few as possible branches in decoder fast paths.
 //! 3. Accelerated AC table decoding borrowed from stb_image.h written by Fabian Gissen (@ rygorous),
-//! improved by me to handle more cases.
+//!    improved by me to handle more cases.
 //! 4. Safe and extensible routines(e.g. cool ways to eliminate bounds check)
 //! 5. No unsafe here
 //!
@@ -48,11 +48,12 @@
 //! Knock yourself out.
 use alloc::format;
 use alloc::string::ToString;
-use zune_core::log::warn;
 use core::cmp::min;
 
 use zune_core::bytestream::{ZByteReaderTrait, ZReader};
+use zune_core::log::warn;
 
+use crate::decoder::EntropyTables;
 use crate::errors::DecodeErrors;
 use crate::huffman::{HuffmanTable, HUFF_LOOKAHEAD};
 use crate::marker::Marker;
@@ -89,7 +90,7 @@ macro_rules! decode_huff {
                 // panic, because Huffman codes are sensitive, probably everything
                 // after this will be corrupt, so no need to continue.
                 // panic!("Bad Huffman code length");
-                return Err(DecodeErrors::Format(format!("Bad Huffman Code 0x{:X}, corrupt JPEG",$symbol)))
+                return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"))
             }
 
             $symbol >>= (16-code_length);
@@ -106,37 +107,359 @@ macro_rules! decode_huff {
     };
 }
 
+/// Opaque snapshot of Huffman bitstream state at an MCU boundary.
+///
+/// Mirrors libjpeg-turbo's `bitread_perm_state` — the minimum state needed to
+/// resume decoding from a previously-completed MCU without re-reading earlier
+/// entropy data.
+#[derive(Clone, Copy)]
+pub(crate) struct HuffmanBitstreamState {
+    pub(crate) buffer:         u64,
+    pub(crate) aligned_buffer: u64,
+    pub(crate) bits_left:      u8,
+    pub(crate) marker:         Option<Marker>,
+    pub(crate) overread_by:    usize,
+    pub(crate) seen_eoi:       bool,
+    pub(crate) eob_run:        i32
+}
+
+/// Type-erased bitstream state snapshot stored in `ScanCheckpoint`.
+///
+/// This allows the checkpoint struct to remain non-generic while supporting
+/// both Huffman and Arithmetic bitstream types.
+#[derive(Clone, Copy)]
+pub(crate) enum BitstreamStateSnapshot {
+    Huffman(HuffmanBitstreamState),
+    #[cfg(feature = "arith")]
+    Arithmetic(crate::bitstream_arith::ArithBitstreamState),
+    /// No bitstream state (checkpoint at scan start / RST boundary where
+    /// the bitstream is freshly reset).
+    None
+}
+
+/// A common `BitStream` interface abstracting both Huffman and Arithmetic bitstream decoding
+pub(crate) trait BitStream {
+    /// Snapshot type for per-MCU checkpoint/restore.
+    type State: Copy;
+    type DCEntropyTable;
+    type ACEntropyTable;
+
+    fn new() -> Self;
+
+    /// Create a new Bitstream for progressive decoding
+    fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> Self;
+
+    fn get_dc_table(
+        tables: &mut EntropyTables, dc_pos: usize
+    ) -> Result<&mut Self::DCEntropyTable, DecodeErrors>;
+    fn get_ac_table(
+        tables: &mut EntropyTables, ac_pos: usize
+    ) -> Result<&mut Self::ACEntropyTable, DecodeErrors>;
+    fn get_dc_ac_tables(
+        tables: &mut EntropyTables, dc_pos: usize, ac_pos: usize
+    ) -> Result<(&mut Self::DCEntropyTable, &mut Self::ACEntropyTable), DecodeErrors>;
+
+    fn reset_arith_tables(tables: &mut EntropyTables);
+
+    fn refill<T>(&mut self, reader: &mut ZReader<T>) -> Result<bool, DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    #[allow(clippy::too_many_arguments)]
+    fn decode_mcu_block<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut Self::DCEntropyTable,
+        ac_table: &mut Self::ACEntropyTable, qt_table: &[i32; DCT_BLOCK], block: &mut [i32; 64],
+        dc_prediction: &mut i32, last_dc_diff: &mut i32
+    ) -> Result<u16, DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn discard_mcu_block<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut Self::DCEntropyTable,
+        ac_table: &mut Self::ACEntropyTable, last_dc_diff: &mut i32
+    ) -> Result<u16, DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn decode_prog_dc_first<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut Self::DCEntropyTable, block: &mut i16,
+        dc_prediction: &mut i32, last_dc_diff: &mut i32
+    ) -> Result<(), DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn decode_prog_dc_refine<T>(
+        &mut self, reader: &mut ZReader<T>, block: &mut i16
+    ) -> Result<(), DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn decode_mcu_ac_first<T>(
+        &mut self, reader: &mut ZReader<T>, ac_table: &mut Self::ACEntropyTable,
+        block: &mut [i16; 64]
+    ) -> Result<bool, DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn decode_mcu_ac_refine<T>(
+        &mut self, reader: &mut ZReader<T>, table: &mut Self::ACEntropyTable, block: &mut [i16; 64]
+    ) -> Result<bool, DecodeErrors>
+    where
+        T: ZByteReaderTrait;
+
+    fn update_progressive_params(&mut self, _ah: u8, al: u8, spec_start: u8, spec_end: u8);
+
+    fn reset(&mut self);
+
+    fn overread_by(&self) -> usize;
+
+    /// True if we have seen end of image marker.
+    /// Don't read anything after that.
+    fn seen_eoi(&mut self) -> &mut bool;
+
+    /// Did we find a marker(RST/EOF) during decoding?
+    fn marker(&mut self) -> &mut Option<Marker>;
+
+    fn eob_run(&mut self) -> &mut i32;
+
+    /// Tell us the bits left the two buffer
+    fn bits_left(&self) -> u8;
+
+    /// Whether this bitstream type supports per-MCU checkpoint/restore.
+    /// Huffman coding supports it; arithmetic coding does not (the A/C/CT
+    /// registers are coupled to statistical context tables).
+    fn supports_mcu_checkpoint() -> bool;
+
+    /// Capture the bitstream state at an MCU boundary (libjpeg-turbo: BITREAD_SAVE_STATE).
+    fn save_state(&self) -> Self::State;
+
+    /// Restore a previously captured bitstream state (libjpeg-turbo: BITREAD_LOAD_STATE).
+    fn restore_state(&mut self, state: Self::State);
+
+    /// Capture and wrap the bitstream state into a type-erased snapshot for
+    /// storage in `ScanCheckpoint`.
+    fn snapshot_state(&self) -> BitstreamStateSnapshot;
+
+    /// Restore from a type-erased snapshot. Panics if variant doesn't match.
+    fn restore_snapshot(&mut self, snapshot: BitstreamStateSnapshot);
+}
+
 /// A `BitStream` struct, a bit by bit reader with super powers
 ///
 #[rustfmt::skip]
-pub(crate) struct BitStream {
+pub(crate) struct BitStreamHuffman {
     /// A MSB type buffer that is used for some certain operations
-    pub buffer:              u64,
+    buffer:              u64,
     /// A TOP  aligned MSB type buffer that is used to accelerate some operations like
     /// peek_bits and get_bits.
     ///
     /// By top aligned, I mean the top bit (63) represents the top bit in the buffer.
-    aligned_buffer:          u64,
+    aligned_buffer:      u64,
     /// Tell us the bits left the two buffer
-    pub(crate) bits_left:    u8,
+    bits_left:           u8,
     /// Did we find a marker(RST/EOF) during decoding?
-    pub marker:              Option<Marker>,
+    marker:              Option<Marker>,
     /// An i16 with the bit corresponding to successive_low set to 1, others 0.
-    pub successive_low_mask: i16,
-    spec_start:              u8,
-    spec_end:                u8,
-    pub eob_run:             i32,
-    pub overread_by:         usize,
+    successive_low_mask: i16,
+    spec_start:          u8,
+    spec_end:            u8,
+    eob_run:             i32,/// Did we find a marker(RST/EOF) during decoding?
+    overread_by:         usize,
     /// True if we have seen end of image marker.
     /// Don't read anything after that.
-    pub seen_eoi:            bool,
+    seen_eoi:            bool,
 }
 
-impl BitStream {
+impl BitStreamHuffman {
+    /// Get a single bit from the bitstream
+    fn get_bit(&mut self) -> u8 {
+        let k = (self.aligned_buffer >> 63) as u8;
+        // discard a bit
+        self.drop_bits(1);
+        return k;
+    }
+
+    /// Peek `look_ahead` bits ahead without discarding them from the buffer
+    #[inline(always)]
+    #[allow(clippy::cast_possible_truncation)]
+    const fn peek_bits<const LOOKAHEAD: u8>(&self) -> i32 {
+        (self.aligned_buffer >> (64 - LOOKAHEAD)) as i32
+    }
+
+    /// Discard the next `N` bits without checking
+    #[inline]
+    fn drop_bits(&mut self, n: u8) {
+        // PS: Its a good check, but triggers fuzzer and a lot of false positives
+        //debug_assert!(self.bits_left >= n);
+        //self.bits_left -= n;
+        self.bits_left = self.bits_left.saturating_sub(n);
+        self.aligned_buffer <<= n;
+    }
+
+    /// Read `n_bits` from the buffer  and discard them
+    #[inline(always)]
+    #[allow(clippy::cast_possible_truncation)]
+    fn get_bits(&mut self, n_bits: u8) -> i32 {
+        let mask = (1_u64 << n_bits) - 1;
+
+        self.aligned_buffer = self.aligned_buffer.rotate_left(u32::from(n_bits));
+        let bits = (self.aligned_buffer & mask) as i32;
+        self.bits_left = self.bits_left.wrapping_sub(n_bits);
+        bits
+    }
+
+
+    /// Decode the DC coefficient in a MCU block.
+    ///
+    /// The decoded coefficient is written to `dc_prediction`
+    ///
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::unwrap_used
+    )]
+    #[inline(always)]
+    fn decode_dc<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable, dc_prediction: &mut i32
+    ) -> Result<bool, DecodeErrors>
+    where
+    T: ZByteReaderTrait
+    {
+        let (mut symbol, r);
+
+        if self.bits_left < 32 {
+            self.refill(reader)?;
+        }
+        // look a head HUFF_LOOKAHEAD bits into the bitstream
+        symbol = self.peek_bits::<HUFF_LOOKAHEAD>();
+        symbol = dc_table.lookup[symbol as usize];
+
+        decode_huff!(self, symbol, dc_table);
+
+        if symbol != 0 {
+            r = self.get_bits(symbol as u8);
+            symbol = huff_extend(r, symbol);
+        }
+        // Update DC prediction
+        *dc_prediction = dc_prediction.wrapping_add(symbol);
+
+        return Ok(true);
+    }
+
+    /// Like `decode_dc` but we do not need the result of the component, we only want to remove it
+    /// from the bitstream of the MCU.
+    fn discard_dc<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable
+    ) -> Result<bool, DecodeErrors>
+    where
+    T: ZByteReaderTrait
+    {
+        let mut symbol;
+
+        if self.bits_left < 32 {
+            self.refill(reader)?;
+        }
+        // look a head HUFF_LOOKAHEAD bits into the bitstream
+        symbol = self.peek_bits::<HUFF_LOOKAHEAD>();
+        symbol = dc_table.lookup[symbol as usize];
+
+        decode_huff!(self, symbol, dc_table);
+
+        if symbol != 0 {
+            let _ = self.get_bits(symbol as u8);
+        }
+
+        return Ok(true);
+    }
+}
+
+impl BitStream for BitStreamHuffman {
+    type State = HuffmanBitstreamState;
+    type DCEntropyTable = HuffmanTable;
+    type ACEntropyTable = HuffmanTable;
+
+    #[inline(always)]
+    fn get_dc_table(
+        tables: &mut EntropyTables, dc_pos: usize
+    ) -> Result<&mut Self::DCEntropyTable, DecodeErrors> {
+        let dc_table = tables
+            .dc_huffman
+            .get_mut(dc_pos)
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!("No huffman table for DC component: {dc_pos}"))
+            })?
+            .as_mut()
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!(
+                    "DC Huffman table at index {dc_pos} not initialized"
+                ))
+            })?;
+
+        Ok(dc_table)
+    }
+
+    #[inline(always)]
+    fn get_ac_table(
+        tables: &mut EntropyTables, ac_pos: usize
+    ) -> Result<&mut Self::ACEntropyTable, DecodeErrors> {
+        let ac_table = tables
+            .ac_huffman
+            .get_mut(ac_pos)
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!("No huffman table for AC component: {ac_pos}"))
+            })?
+            .as_mut()
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!(
+                    "AC Huffman table at index {ac_pos} not initialized"
+                ))
+            })?;
+
+        Ok(ac_table)
+    }
+    #[inline(always)]
+    fn get_dc_ac_tables(
+        tables: &mut EntropyTables, dc_pos: usize, ac_pos: usize
+    ) -> Result<(&mut Self::DCEntropyTable, &mut Self::ACEntropyTable), DecodeErrors> {
+        let dc_table = tables
+            .dc_huffman
+            .get_mut(dc_pos)
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!("No huffman table for DC component: {dc_pos}"))
+            })?
+            .as_mut()
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!(
+                    "DC Huffman table at index {dc_pos} not initialized"
+                ))
+            })?;
+
+        let ac_table = tables
+            .ac_huffman
+            .get_mut(ac_pos)
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!("No huffman table for AC component: {ac_pos}"))
+            })?
+            .as_mut()
+            .ok_or_else(|| {
+                DecodeErrors::Format(format!(
+                    "AC Huffman table at index {ac_pos} not initialized"
+                ))
+            })?;
+
+        Ok((dc_table, ac_table))
+    }
+
+    #[inline(always)]
+    fn reset_arith_tables(_: &mut EntropyTables) {
+        // do nothing
+    }
+
     /// Create a new BitStream
     #[rustfmt::skip]
-    pub(crate) const fn new() -> BitStream {
-        BitStream {
+    #[inline(always)]
+    fn new() -> BitStreamHuffman {
+        BitStreamHuffman {
             buffer:              0,
             aligned_buffer:      0,
             bits_left:           0,
@@ -153,8 +476,9 @@ impl BitStream {
     /// Create a new Bitstream for progressive decoding
     #[allow(clippy::redundant_field_names)]
     #[rustfmt::skip]
-    pub(crate) fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> BitStream {
-        BitStream {
+    #[inline(always)]
+    fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> BitStreamHuffman {
+        BitStreamHuffman {
             buffer:              0,
             aligned_buffer:      0,
             bits_left:           0,
@@ -168,6 +492,71 @@ impl BitStream {
         }
     }
 
+    #[inline(always)]
+    fn overread_by(&self) -> usize {
+        self.overread_by
+    }
+    #[inline(always)]
+    fn seen_eoi(&mut self) -> &mut bool {
+        &mut self.seen_eoi
+    }
+    #[inline(always)]
+    fn marker(&mut self) -> &mut Option<Marker> {
+        &mut self.marker
+    }
+    #[inline(always)]
+    fn eob_run(&mut self) -> &mut i32 {
+        &mut self.eob_run
+    }
+    #[inline(always)]
+    fn bits_left(&self) -> u8 {
+        self.bits_left
+    }
+
+    #[inline(always)]
+    fn supports_mcu_checkpoint() -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn save_state(&self) -> HuffmanBitstreamState {
+        HuffmanBitstreamState {
+            buffer:         self.buffer,
+            aligned_buffer: self.aligned_buffer,
+            bits_left:      self.bits_left,
+            marker:         self.marker,
+            overread_by:    self.overread_by,
+            seen_eoi:       self.seen_eoi,
+            eob_run:        self.eob_run
+        }
+    }
+
+    #[inline(always)]
+    fn restore_state(&mut self, state: HuffmanBitstreamState) {
+        self.buffer = state.buffer;
+        self.aligned_buffer = state.aligned_buffer;
+        self.bits_left = state.bits_left;
+        self.marker = state.marker;
+        self.overread_by = state.overread_by;
+        self.seen_eoi = state.seen_eoi;
+        self.eob_run = state.eob_run;
+    }
+
+    #[inline(always)]
+    fn snapshot_state(&self) -> BitstreamStateSnapshot {
+        BitstreamStateSnapshot::Huffman(self.save_state())
+    }
+
+    #[inline(always)]
+    fn restore_snapshot(&mut self, snapshot: BitstreamStateSnapshot) {
+        match snapshot {
+            BitstreamStateSnapshot::Huffman(s) => self.restore_state(s),
+            BitstreamStateSnapshot::None => {}
+            #[cfg(feature = "arith")]
+            _ => unreachable!("Huffman stream given arithmetic snapshot"),
+        }
+    }
+
     /// Refill the bit buffer by (a maximum of) 32 bits
     ///
     /// # Arguments
@@ -176,7 +565,7 @@ impl BitStream {
     ///
     /// This function will only refill if `self.count` is less than 32
     #[inline(always)] // to many call sites? ( perf improvement by 4%)
-    pub fn refill<T>(&mut self, reader: &mut ZReader<T>) -> Result<bool, DecodeErrors>
+    fn refill<T>(&mut self, reader: &mut ZReader<T>) -> Result<bool, DecodeErrors>
     where
         T: ZByteReaderTrait
     {
@@ -297,68 +686,6 @@ impl BitStream {
         }
         return Ok(true);
     }
-    /// Decode the DC coefficient in a MCU block.
-    ///
-    /// The decoded coefficient is written to `dc_prediction`
-    ///
-    #[allow(
-        clippy::cast_possible_truncation,
-        clippy::cast_sign_loss,
-        clippy::unwrap_used
-    )]
-    #[inline(always)]
-    fn decode_dc<T>(
-        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable, dc_prediction: &mut i32
-    ) -> Result<bool, DecodeErrors>
-    where
-        T: ZByteReaderTrait
-    {
-        let (mut symbol, r);
-
-        if self.bits_left < 32 {
-            self.refill(reader)?;
-        };
-        // look a head HUFF_LOOKAHEAD bits into the bitstream
-        symbol = self.peek_bits::<HUFF_LOOKAHEAD>();
-        symbol = dc_table.lookup[symbol as usize];
-
-        decode_huff!(self, symbol, dc_table);
-
-        if symbol != 0 {
-            r = self.get_bits(symbol as u8);
-            symbol = huff_extend(r, symbol);
-        }
-        // Update DC prediction
-        *dc_prediction = dc_prediction.wrapping_add(symbol);
-
-        return Ok(true);
-    }
-
-    /// Like `decode_dc` but we do not need the result of the component, we only want to remove it
-    /// from the bitstream of the MCU.
-    fn discard_dc<T>(
-        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable
-    ) -> Result<bool, DecodeErrors>
-    where
-        T: ZByteReaderTrait
-    {
-        let mut symbol;
-
-        if self.bits_left < 32 {
-            self.refill(reader)?;
-        };
-        // look a head HUFF_LOOKAHEAD bits into the bitstream
-        symbol = self.peek_bits::<HUFF_LOOKAHEAD>();
-        symbol = dc_table.lookup[symbol as usize];
-
-        decode_huff!(self, symbol, dc_table);
-
-        if symbol != 0 {
-            let _ = self.get_bits(symbol as u8);
-        }
-
-        return Ok(true);
-    }
 
     /// Decode a Minimum Code Unit(MCU) as quickly as possible
     ///
@@ -375,9 +702,10 @@ impl BitStream {
         clippy::cast_sign_loss
     )]
     #[inline(never)]
-    pub fn decode_mcu_block<T>(
-        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable, ac_table: &HuffmanTable,
-        qt_table: &[i32; DCT_BLOCK], block: &mut [i32; 64], dc_prediction: &mut i32
+    fn decode_mcu_block<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut HuffmanTable,
+        ac_table: &mut HuffmanTable, qt_table: &[i32; DCT_BLOCK], block: &mut [i32; 64],
+        dc_prediction: &mut i32, _last_dc_diff: &mut i32
     ) -> Result<u16, DecodeErrors>
     where
         T: ZByteReaderTrait
@@ -397,7 +725,7 @@ impl BitStream {
         self.decode_dc(reader, dc_table, dc_prediction)?;
 
         // set dc to be the dc prediction.
-        block[0] = *dc_prediction * qt_table[0];
+        block[0] = dc_prediction.wrapping_mul(qt_table[0]);
 
         while pos < 64 {
             self.refill(reader)?;
@@ -410,7 +738,7 @@ impl BitStream {
                 pos += ((fast_ac >> 4) & 15) as usize; // run
                 let t_pos = UN_ZIGZAG[min(pos, 63)] & 63;
 
-                block[t_pos] = i32::from(fast_ac >> 8) * (qt_table[t_pos]); // Value
+                block[t_pos] = i32::from(fast_ac >> 8).wrapping_mul (qt_table[t_pos]); // Value
                 self.drop_bits((fast_ac & 15) as u8);
                 pos += 1;
             } else {
@@ -425,7 +753,7 @@ impl BitStream {
                     symbol = huff_extend(r, symbol);
                     let t_pos = UN_ZIGZAG[pos & 63] & 63;
 
-                    block[t_pos] = symbol * qt_table[t_pos];
+                    block[t_pos] = symbol .wrapping_mul( qt_table[t_pos]);
 
                     pos += 1;
                 } else if r != 15 {
@@ -443,8 +771,9 @@ impl BitStream {
     ///
     /// This updates DC prediction but we never dequantize and we never do any Zig-Zag translation
     /// either. Still returns the index of the last component read.
-    pub fn discard_mcu_block<T>(
-        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable, ac_table: &HuffmanTable
+    fn discard_mcu_block<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut HuffmanTable,
+        ac_table: &mut HuffmanTable, _last_dc_diff: &mut i32
     ) -> Result<u16, DecodeErrors>
     where
         T: ZByteReaderTrait
@@ -494,41 +823,12 @@ impl BitStream {
         return Ok(64);
     }
 
-    /// Peek `look_ahead` bits ahead without discarding them from the buffer
-    #[inline(always)]
-    #[allow(clippy::cast_possible_truncation)]
-    const fn peek_bits<const LOOKAHEAD: u8>(&self) -> i32 {
-        (self.aligned_buffer >> (64 - LOOKAHEAD)) as i32
-    }
-
-    /// Discard the next `N` bits without checking
-    #[inline]
-    fn drop_bits(&mut self, n: u8) {
-        // PS: Its a good check, but triggers fuzzer and a lot of false positives
-        //debug_assert!(self.bits_left >= n);
-        //self.bits_left -= n;
-        self.bits_left = self.bits_left.saturating_sub(n);
-        self.aligned_buffer <<= n;
-    }
-
-    /// Read `n_bits` from the buffer  and discard them
-    #[inline(always)]
-    #[allow(clippy::cast_possible_truncation)]
-    fn get_bits(&mut self, n_bits: u8) -> i32 {
-        let mask = (1_u64 << n_bits) - 1;
-
-        self.aligned_buffer = self.aligned_buffer.rotate_left(u32::from(n_bits));
-        let bits = (self.aligned_buffer & mask) as i32;
-        self.bits_left = self.bits_left.wrapping_sub(n_bits);
-        bits
-    }
-
     /// Decode a DC block
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
-    pub(crate) fn decode_prog_dc_first<T>(
-        &mut self, reader: &mut ZReader<T>, dc_table: &HuffmanTable, block: &mut i16,
-        dc_prediction: &mut i32
+    fn decode_prog_dc_first<T>(
+        &mut self, reader: &mut ZReader<T>, dc_table: &mut HuffmanTable, block: &mut i16,
+        dc_prediction: &mut i32, _last_dc_diff: &mut i32
     ) -> Result<(), DecodeErrors>
     where
         T: ZByteReaderTrait
@@ -538,7 +838,7 @@ impl BitStream {
         return Ok(());
     }
     #[inline]
-    pub(crate) fn decode_prog_dc_refine<T>(
+    fn decode_prog_dc_refine<T>(
         &mut self, reader: &mut ZReader<T>, block: &mut i16
     ) -> Result<(), DecodeErrors>
     where
@@ -563,15 +863,8 @@ impl BitStream {
         Ok(())
     }
 
-    /// Get a single bit from the bitstream
-    fn get_bit(&mut self) -> u8 {
-        let k = (self.aligned_buffer >> 63) as u8;
-        // discard a bit
-        self.drop_bits(1);
-        return k;
-    }
-    pub(crate) fn decode_mcu_ac_first<T>(
-        &mut self, reader: &mut ZReader<T>, ac_table: &HuffmanTable, block: &mut [i16; 64]
+    fn decode_mcu_ac_first<T>(
+        &mut self, reader: &mut ZReader<T>, ac_table: &mut HuffmanTable, block: &mut [i16; 64]
     ) -> Result<bool, DecodeErrors>
     where
         T: ZByteReaderTrait
@@ -628,8 +921,8 @@ impl BitStream {
         return Ok(true);
     }
     #[allow(clippy::too_many_lines, clippy::op_ref)]
-    pub(crate) fn decode_mcu_ac_refine<T>(
-        &mut self, reader: &mut ZReader<T>, table: &HuffmanTable, block: &mut [i16; 64]
+    fn decode_mcu_ac_refine<T>(
+        &mut self, reader: &mut ZReader<T>, table: &mut HuffmanTable, block: &mut [i16; 64]
     ) -> Result<bool, DecodeErrors>
     where
         T: ZByteReaderTrait
@@ -706,7 +999,7 @@ impl BitStream {
                                 // reached target zero coefficient.
                                 break 'advance_nonzero;
                             }
-                        };
+                        }
 
                         if k == self.spec_end {
                             break 'advance_nonzero;
@@ -731,6 +1024,8 @@ impl BitStream {
         }
         if self.eob_run > 0 {
             // only run if block does not consists of purely zeroes
+            // changing this to iter_any makes perf regress by 10%
+            //   time:   [+10.836% +11.589% +12.376%] (p = 0.00 < 0.05)
             if &block[1..] != &[0; 63] {
                 self.refill(reader)?;
 
@@ -758,10 +1053,11 @@ impl BitStream {
             // count a block completed in EOB run
             self.eob_run -= 1;
         }
+
         return Ok(true);
     }
 
-    pub fn update_progressive_params(&mut self, _ah: u8, al: u8, spec_start: u8, spec_end: u8) {
+    fn update_progressive_params(&mut self, _ah: u8, al: u8, spec_start: u8, spec_end: u8) {
         self.successive_low_mask = 1i16 << al;
         self.spec_start = spec_start;
         self.spec_end = spec_end;
@@ -772,7 +1068,7 @@ impl BitStream {
     /// Restart markers indicate drop those bits in the stream and zero out
     /// everything
     #[cold]
-    pub fn reset(&mut self) {
+    fn reset(&mut self) {
         self.bits_left = 0;
         self.marker = None;
         self.buffer = 0;
