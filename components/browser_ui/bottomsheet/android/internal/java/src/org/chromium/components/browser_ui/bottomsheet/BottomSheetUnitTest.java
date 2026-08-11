@@ -439,6 +439,64 @@ public class BottomSheetUnitTest {
     }
 
     @Test
+    public void testApplyLargeFormFactorBackgroundBounds() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+
+        // Stub layout properties that would normally be inflated or measured by Android framework
+        // natively.
+        final int shadowPaddingTop = 10;
+        final int shadowPaddingBottom = 20;
+        final int shadowTop = 10;
+        final int backgroundTop = 20;
+        final int backgroundMeasuredHeight = 300;
+        final float userDragTranslationY = 100f;
+
+        doReturn(shadowPaddingTop).when(mShadowLayerView).getPaddingTop();
+        doReturn(shadowPaddingBottom).when(mShadowLayerView).getPaddingBottom();
+        doReturn(shadowTop).when(mShadowLayerView).getTop();
+        doReturn(backgroundTop).when(mSheetBackground).getTop();
+        doReturn(backgroundMeasuredHeight).when(mSheetBackground).getMeasuredHeight();
+
+        sheet.showContent(mSheetContent);
+
+        // At this point, the layout and visibility should be initialized.
+        // We will call the private method indirectly by triggering a layout pass or updating
+        // translation.
+        sheet.setSheetOffsetFromBottom(
+                userDragTranslationY, BottomSheetController.StateChangeReason.NONE);
+
+        // Evaluate exactly what boundaries the method derived:
+        // visibleHeight = min(currentOffsetPx, measuredBgHeight) = min(100, 300) = 100.
+        // backgroundBottom = backgroundTop + visibleHeight = 20 + 100 = 120.
+        // shadowBottom = shadowTop + visibleHeight + shadowPaddingTop + shadowPaddingBottom
+        //              = 10 + 100 + 10 + 20 = 140.
+        verify(mSheetBackground, org.mockito.Mockito.atLeastOnce()).setBottom(120);
+        verify(mShadowLayerView, org.mockito.Mockito.atLeastOnce()).setBottom(140);
+    }
+
+    @Test
     public void testBackgroundGlowColor_LargeFormFactor() {
         BottomSheet sheet =
                 (BottomSheet)
@@ -464,11 +522,16 @@ public class BottomSheetUnitTest {
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
 
+        int expectedSize =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
+        doReturn(expectedSize).when(mShadowLayerView).getPaddingLeft();
+        doReturn(expectedSize).when(mShadowLayerView).getPaddingTop();
+        doReturn(expectedSize).when(mShadowLayerView).getPaddingRight();
+        doReturn(expectedSize).when(mShadowLayerView).getPaddingBottom();
+
         sheet.showContent(mSheetContent);
 
         verify(mShadowLayerView).setBackgroundResource(R.drawable.popup_bg_shadow_16dp);
-        int expectedSize =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length);
         ArgumentCaptor<ViewGroup.LayoutParams> captor =
                 ArgumentCaptor.forClass(ViewGroup.LayoutParams.class);
         verify(mShadowLayerView, org.mockito.Mockito.atLeastOnce())
