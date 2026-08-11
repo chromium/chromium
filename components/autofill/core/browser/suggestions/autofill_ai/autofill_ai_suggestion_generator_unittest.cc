@@ -569,7 +569,7 @@ TEST_F(
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_HideSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAiHideSuggestion);
+      features::kAutofillAmbientAutofillSuppressionUI);
 
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(

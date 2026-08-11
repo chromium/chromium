@@ -207,10 +207,6 @@ BASE_FEATURE(kAutofillAiEditEntitiesFromSaveUpdatePrompt,
 // to be accepted.
 BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Personal Context Autofill AI suggestions display a hide button
-// in the child submenu on Desktop.
-BASE_FEATURE(kAutofillAiHideSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
 // `kAutofillAiIgnoreGeoIp` is enabled):
@@ -465,6 +461,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // Controls whether pContext suggestion suppression in Ambient Autofill is
 // enabled.
 BASE_FEATURE(kAutofillAmbientAutofillSuppression,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Personal Context Autofill AI suggestions display UI to
+// suppress the suggestion.
+BASE_FEATURE(kAutofillAmbientAutofillSuppressionUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a

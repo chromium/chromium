@@ -543,7 +543,8 @@ Suggestion GetSuggestionForEntity(
     suggestion.labels.push_back({Suggestion::Text(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI))});
 
-    if (base::FeatureList::IsEnabled(features::kAutofillAiHideSuggestion)) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAmbientAutofillSuppressionUI)) {
       Suggestion remove_info(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
           SuggestionType::kRemoveAutofillAi);
