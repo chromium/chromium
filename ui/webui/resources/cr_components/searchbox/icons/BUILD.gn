@@ -37,6 +37,7 @@ generate_grd("build_grdp") {
     "incognito_cr23.svg",
     "journeys_cr23.svg",
     "mac_share_cr23.svg",
+    "mic_old.svg",
     "note.svg",
     "notes_spark.svg",
     "page_cr23.svg",
@@ -62,7 +63,6 @@ generate_grd("build_grdp") {
     input_files += [
       "camera.svg",
       "mic.svg",
-      "mic_old.svg",
     ]
   }
   input_files_base_dir = rebase_path(".", "//")
