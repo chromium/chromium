@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 
 namespace content {
