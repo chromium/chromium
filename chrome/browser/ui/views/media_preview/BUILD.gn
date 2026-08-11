@@ -94,6 +94,7 @@ source_set("interactive_ui_tests") {
   deps = [
     ":media_preview",
     "//base",
+    "//chrome/browser/ui/views/permissions",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",

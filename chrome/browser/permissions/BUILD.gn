@@ -359,6 +359,7 @@ if (!is_android) {
       "//chrome/browser/permissions/system",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/permissions",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/contextual_tasks/public",

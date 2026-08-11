@@ -3699,62 +3699,6 @@ static_library("ui") {
       "views/media_picker_utils.h",
       "views/message_box_dialog.cc",
       "views/message_box_dialog.h",
-      "views/permissions/chip/multi_image_container.cc",
-      "views/permissions/chip/multi_image_container.h",
-      "views/permissions/chip/permission_dashboard_controller.cc",
-      "views/permissions/chip/permission_dashboard_controller.h",
-      "views/permissions/chip/permission_dashboard_interface.h",
-      "views/permissions/chip/permission_dashboard_view.cc",
-      "views/permissions/chip/permission_dashboard_view.h",
-      "views/permissions/chip/permission_prompt_chip_model.cc",
-      "views/permissions/chip/permission_prompt_chip_model.h",
-      "views/permissions/chip/webui_permission_chip.cc",
-      "views/permissions/chip/webui_permission_chip.h",
-      "views/permissions/chip/webui_permission_dashboard.cc",
-      "views/permissions/chip/webui_permission_dashboard.h",
-      "views/permissions/chooser_bubble_ui.cc",
-      "views/permissions/embedded_permission_prompt.cc",
-      "views/permissions/embedded_permission_prompt.h",
-      "views/permissions/embedded_permission_prompt_ask_view.cc",
-      "views/permissions/embedded_permission_prompt_ask_view.h",
-      "views/permissions/embedded_permission_prompt_base_view.cc",
-      "views/permissions/embedded_permission_prompt_base_view.h",
-      "views/permissions/embedded_permission_prompt_content_scrim_view.cc",
-      "views/permissions/embedded_permission_prompt_content_scrim_view.h",
-      "views/permissions/embedded_permission_prompt_policy_view.cc",
-      "views/permissions/embedded_permission_prompt_policy_view.h",
-      "views/permissions/embedded_permission_prompt_previously_denied_view.cc",
-      "views/permissions/embedded_permission_prompt_previously_denied_view.h",
-      "views/permissions/embedded_permission_prompt_previously_granted_view.cc",
-      "views/permissions/embedded_permission_prompt_previously_granted_view.h",
-      "views/permissions/embedded_permission_prompt_show_system_prompt_view.cc",
-      "views/permissions/embedded_permission_prompt_show_system_prompt_view.h",
-      "views/permissions/embedded_permission_prompt_system_settings_view.cc",
-      "views/permissions/embedded_permission_prompt_system_settings_view.h",
-      "views/permissions/embedded_permission_prompt_view_delegate.h",
-      "views/permissions/exclusive_access_permission_prompt.cc",
-      "views/permissions/exclusive_access_permission_prompt.h",
-      "views/permissions/exclusive_access_permission_prompt_view.cc",
-      "views/permissions/exclusive_access_permission_prompt_view.h",
-      "views/permissions/permission_prompt_base_view.cc",
-      "views/permissions/permission_prompt_base_view.h",
-      "views/permissions/permission_prompt_bubble.cc",
-      "views/permissions/permission_prompt_bubble.h",
-      "views/permissions/permission_prompt_bubble_base_view.cc",
-      "views/permissions/permission_prompt_bubble_base_view.h",
-      "views/permissions/permission_prompt_bubble_one_origin_view.cc",
-      "views/permissions/permission_prompt_bubble_one_origin_view.h",
-      "views/permissions/permission_prompt_bubble_two_origins_view.cc",
-      "views/permissions/permission_prompt_bubble_two_origins_view.h",
-      "views/permissions/permission_prompt_bubble_view_factory.cc",
-      "views/permissions/permission_prompt_bubble_view_factory.h",
-      "views/permissions/permission_prompt_chip.cc",
-      "views/permissions/permission_prompt_chip.h",
-      "views/permissions/permission_prompt_desktop.cc",
-      "views/permissions/permission_prompt_desktop.h",
-      "views/permissions/permission_prompt_factory.cc",
-      "views/permissions/permission_prompt_quiet_icon.cc",
-      "views/permissions/permission_prompt_quiet_icon.h",
       "views/profiles/avatar_toolbar_button.cc",
       "views/profiles/avatar_toolbar_button.h",
       "views/profiles/avatar_toolbar_button_state_manager.cc",
@@ -4090,6 +4034,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/performance_controls",
       "//chrome/browser/ui/views/performance_controls:impl",
       "//chrome/browser/ui/views/permissions",
+      "//chrome/browser/ui/views/permissions:impl",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/promos",
@@ -4296,11 +4241,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/views/content_setting_bubble_contents.h
       # c/b/ui/views/omnibox/omnibox_view_views.h
-      # c/b/ui/views/permissions/chip/multi_image_container.h
-      # c/b/ui/views/permissions/chip/permission_dashboard_controller.h
-      # c/b/ui/views/permissions/chip/permission_dashboard_view.h
-      # c/b/ui/views/permissions/chip/permission_prompt_chip_model.h
-      # c/b/ui/views/permissions/permission_prompt_bubble_view_factory.h
       "//chrome/browser/ui/views/permissions/chip:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -4472,6 +4412,16 @@ static_library("ui") {
       # c/b/ui/views/tabs/tab/tab_icon.h
       # c/b/ui/views/web_apps/web_app_install_dialog_delegate.h
       "//chrome/browser/ui/views/user_education:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
+      # c/b/ui/views/content_setting_bubble_contents.h
+      # c/b/ui/views/extensions/extensions_container_views.h
+      # c/b/ui/views/frame/browser_view.h
+      # c/b/ui/views/frame/contents_web_view.h
+      # c/b/ui/views/sub_apps_permission_explanation.h
+      # c/b/ui/views/title_origin_label.h
+      "//chrome/browser/ui/views/permissions:impl",
     ]
 
     if (is_linux) {
@@ -4500,11 +4450,7 @@ static_library("ui") {
     }
 
     if (is_mac) {
-      sources += [
-        "views/chrome_views_delegate_mac.cc",
-        "views/permissions/permission_prompt_notifications_mac.cc",
-        "views/permissions/permission_prompt_notifications_mac.h",
-      ]
+      sources += [ "views/chrome_views_delegate_mac.cc" ]
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals",
         "//chrome/browser/ui/webui/unexportable_keys_internals:impl",

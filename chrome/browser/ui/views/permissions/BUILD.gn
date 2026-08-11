@@ -2,9 +2,254 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("permissions") {
-  public = [ "permission_prompt_style.h" ]
-}
+import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+# :permission_prompt_observer at the bottom of this file is used from
+# Android too (it's not toolkit_views-specific), so this can't be a
+# blanket assert(toolkit_views) for the whole file -- only the targets
+# below are wrapped in it.
+if (toolkit_views) {
+  # Split out from :permissions below (which needs chip:chip for
+  # chip_controller.h) purely so chip:chip can depend on this tiny,
+  # dependency-free header without depending on the whole :permissions
+  # target -- avoiding a real cycle between the two directories.
+  source_set("style") {
+    public = [ "permission_prompt_style.h" ]
+  }
+
+  source_set("permissions") {
+    public = [
+      "embedded_permission_prompt.h",
+      "embedded_permission_prompt_ask_view.h",
+      "embedded_permission_prompt_base_view.h",
+      "embedded_permission_prompt_content_scrim_view.h",
+      "embedded_permission_prompt_policy_view.h",
+      "embedded_permission_prompt_previously_denied_view.h",
+      "embedded_permission_prompt_previously_granted_view.h",
+      "embedded_permission_prompt_show_system_prompt_view.h",
+      "embedded_permission_prompt_system_settings_view.h",
+      "embedded_permission_prompt_view_delegate.h",
+      "exclusive_access_permission_prompt.h",
+      "exclusive_access_permission_prompt_view.h",
+      "permission_prompt_base_view.h",
+      "permission_prompt_bubble.h",
+      "permission_prompt_bubble_base_view.h",
+      "permission_prompt_bubble_one_origin_view.h",
+      "permission_prompt_bubble_two_origins_view.h",
+      "permission_prompt_bubble_view_factory.h",
+      "permission_prompt_chip.h",
+      "permission_prompt_desktop.h",
+      "permission_prompt_quiet_icon.h",
+    ]
+
+    public_deps = [
+      ":style",
+      "//base",
+      "//chrome/browser/permissions/system",
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/ui:url_identity",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/content_settings",
+      "//chrome/browser/ui/permission_bubble",
+      "//chrome/browser/ui/views/permissions/chip",
+      "//components/media_effects",
+      "//components/permissions",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+
+    if (!is_chromeos) {
+      # permission_prompt_bubble_one_origin_view.h guards both of these
+      # includes with the same #if !BUILDFLAG(IS_CHROMEOS) block:
+      # media_preview/permission_prompt_previews_coordinator.h and
+      # media_effects/media_device_info.h. media_preview itself asserts
+      # is_win || is_mac || is_linux (a strict subset of !is_chromeos on
+      # the platforms toolkit_views builds for), so this matches.
+      public_deps += [
+        "//chrome/browser/ui/views/media_preview",
+        "//components/media_effects",
+      ]
+    }
+
+    if (is_mac) {
+      public += [ "permission_prompt_notifications_mac.h" ]
+      public_deps += [ "//chrome/browser/apps/app_shim" ]
+    }
+  }
+
+  # frame/browser_view.h, frame/contents_web_view.h,
+  # content_setting_bubble_contents.h, extensions_container_views.h,
+  # sub_apps_permission_explanation.h, and title_origin_label.h are all
+  # still monolithic in ui:ui (crbug.com/353332589) and are only ever
+  # needed by the .cc files below, never by the public headers above --
+  # so this :impl target is the one that carries the real dependency and
+  # the corresponding allow_circular_includes_from grant on ui:ui, not
+  # the public :permissions target.
+  source_set("impl") {
+    sources = [
+      "chooser_bubble_ui.cc",
+      "embedded_permission_prompt.cc",
+      "embedded_permission_prompt_ask_view.cc",
+      "embedded_permission_prompt_base_view.cc",
+      "embedded_permission_prompt_content_scrim_view.cc",
+      "embedded_permission_prompt_policy_view.cc",
+      "embedded_permission_prompt_previously_denied_view.cc",
+      "embedded_permission_prompt_previously_granted_view.cc",
+      "embedded_permission_prompt_show_system_prompt_view.cc",
+      "embedded_permission_prompt_system_settings_view.cc",
+      "exclusive_access_permission_prompt.cc",
+      "exclusive_access_permission_prompt_view.cc",
+      "permission_prompt_base_view.cc",
+      "permission_prompt_bubble.cc",
+      "permission_prompt_bubble_base_view.cc",
+      "permission_prompt_bubble_one_origin_view.cc",
+      "permission_prompt_bubble_two_origins_view.cc",
+      "permission_prompt_bubble_view_factory.cc",
+      "permission_prompt_chip.cc",
+      "permission_prompt_desktop.cc",
+      "permission_prompt_factory.cc",
+      "permission_prompt_quiet_icon.cc",
+    ]
+
+    deps = [
+      ":permissions",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:primitives",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/custom_handlers",
+      "//chrome/browser/download",
+      "//chrome/browser/favicon",
+      "//chrome/browser/file_system_access",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/permissions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/browser_web_contents_delegate",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/views:bubble_anchor_util_views",
+      "//chrome/browser/ui/views:device_chooser_content_view",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/omnibox",
+      "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/permissions:permission_prompt_observer",
+      "//chrome/browser/ui/views/picture_in_picture",
+      "//chrome/browser/ui/views/tabs/common",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/window_metadata",
+      "//chrome/browser/web_applications",
+      "//chrome/common",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/views",
+    ]
+
+    if (enable_extensions) {
+      deps += [
+        "//chrome/browser/extensions",
+        "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [ "permission_prompt_notifications_mac.cc" ]
+      deps += [ "//chrome/browser/permissions/system" ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "permission_prompt_bubble_one_origin_view_unittest.cc" ]
+
+    deps = [
+      ":permissions",
+      "//chrome/test:test_support",
+      "//components/media_effects/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "embedded_permission_prompt_uitest.cc",
+      "exclusive_access_permission_prompt_browsertest.cc",
+      "permission_prompt_base_view_browsertest.cc",
+      "permission_prompt_bubble_base_view_browsertest.cc",
+      "permission_prompt_bubble_two_origins_view_browsertest.cc",
+      "permission_request_chip_browsertest.cc",
+    ]
+
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps = [
+      ":permission_prompt_observer",
+      ":permissions",
+      "//chrome/browser/custom_handlers",
+      "//chrome/browser/permissions",
+      "//chrome/browser/ui/permission_bubble:browser_tests",
+      "//chrome/browser/ui/views/permissions/chip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//ui/events:test_support",
+    ]
+  }
+
+  if (!is_chromeos_device) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      sources = [
+        "embedded_permission_prompt_interactive_uitest.cc",
+        "exclusive_access_permission_prompt_interactive_uitest.cc",
+        "midi_permissions_flow_interactive_uitest.cc",
+        "one_time_permission_interactive_ui_test.cc",
+        "permission_bubble_interactive_uitest.cc",
+        "permission_indicators_interactive_uitest.cc",
+        "permission_metrics_ui_test.cc",
+        "permission_rhs_indicators_interactive_uitest.cc",
+        "quiet_prompt_interactive_uitest.cc",
+      ]
+
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+      deps = [
+        ":permissions",
+        "//chrome/browser/content_settings",
+        "//chrome/browser/file_system_access",
+        "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+        "//chrome/browser/permissions",
+        "//chrome/browser/policy:test_support",
+        "//chrome/browser/ui/browser_web_contents_delegate",
+        "//chrome/browser/ui/views/infobars",
+        "//chrome/browser/ui/views/page_info",
+        "//chrome/browser/ui/views/permissions/chip",
+        "//chrome/test:test_support",
+        "//chrome/test:test_support_ui",
+        "//components/infobars/content",
+        "//ui/base:ozone_buildflags",
+      ]
+
+      if (use_ozone) {
+        deps += [ "//ui/ozone" ]
+      }
+    }
+  }
+}  # if (toolkit_views)
 
 source_set("permission_prompt_observer") {
   sources = [

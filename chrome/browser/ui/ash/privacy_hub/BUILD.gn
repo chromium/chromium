@@ -21,6 +21,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/views/permissions",
       "//chrome/test:test_support_ui",
       "//components/content_settings/core/common",
       "//content/test:test_support",

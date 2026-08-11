@@ -2,19 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 source_set("chip") {
   public = [
     "chip_controller.h",
+    "multi_image_container.h",
     "permission_chip_constants.h",
     "permission_chip_interface.h",
     "permission_chip_theme.h",
     "permission_chip_view.h",
+    "permission_dashboard_controller.h",
+    "permission_dashboard_interface.h",
+    "permission_dashboard_view.h",
+    "permission_prompt_chip_model.h",
+    "webui_permission_chip.h",
+    "webui_permission_dashboard.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/ui/content_settings",
-    "//chrome/browser/ui/views/permissions",
+    "//chrome/browser/ui/views/bubble",
+
+    # Only the tiny, dependency-free :style sub-target -- NOT the full
+    # :permissions, which itself depends on :chip for chip_controller.h
+    # (permission_prompt_bubble.h etc.); depending on the full target
+    # here would be a real cycle.
+    "//chrome/browser/ui/views/permissions:style",
     "//components/permissions",
     "//ui/gfx",
     "//ui/views",
@@ -26,15 +41,92 @@ source_set("chip") {
 source_set("impl") {
   sources = [
     "chip_controller.cc",
+    "multi_image_container.cc",
     "permission_chip_view.cc",
+    "permission_dashboard_controller.cc",
+    "permission_dashboard_view.cc",
+    "permission_prompt_chip_model.cc",
+    "webui_permission_chip.cc",
+    "webui_permission_dashboard.cc",
   ]
 
   deps = [
     ":chip",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_info",
+
+    # chip_controller.cc needs permission_prompt_bubble_view_factory.h,
+    # a real (non-:style) header from :permissions. This is safe: it's
+    # :impl depending on :permissions, not :chip depending on it, so it
+    # doesn't reintroduce the cycle :chip's own dep avoids above.
+    "//chrome/browser/ui/views/permissions",
+    "//ui/base",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "multi_image_container_unittest.cc",
+    "webui_permission_chip_unittest.cc",
+  ]
+
+  deps = [
+    ":chip",
+    "//chrome/browser/ui/views/permissions",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "permission_chip_browsertest.cc",
+    "permission_dashboard_browsertest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  deps = [
+    ":chip",
+    "//chrome/browser/ui/views/permissions",
+    "//chrome/browser/ui/window_metadata",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/infobars/content",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "LHS_indicators_interactive_uitest.cc",
+      "dashboard_kombucha_interactive_uitest.cc",
+      "permission_chip_interactive_uitest.cc",
+      "permission_chip_kombucha_interactive_uitest.cc",
+    ]
+
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps = [
+      ":chip",
+      "//chrome/browser/permissions",
+      "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/permissions",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//ui/events:test_support",
+    ]
+  }
 }

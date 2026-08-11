@@ -24,7 +24,6 @@ source_set("searchbox") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/omnibox",
-    "//chrome/browser/ui/views/permissions",
     "//chrome/browser/ui/views/permissions:permission_prompt_observer",
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",

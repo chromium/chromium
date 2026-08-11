@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
-#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "ui/views/mouse_constants.h"
@@ -21,6 +20,7 @@
 class LocationBar;
 class ChipController;
 class ContentSettingImageModel;
+class ContentSettingImageViewDelegate;
 class PermissionDashboardInterface;
 
 class PermissionDashboardController : public PermissionChipInterface::Observer {
