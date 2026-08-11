@@ -74,6 +74,13 @@ interface PageHandler {
   // Discards the call if `sequence_number` is stale.
   OnPaste(string text, gfx.mojom.Range selection, uint32 sequence_number);
 
+  // Notifies the browser that the user has cut or copied text from the Omnibox.
+  // Discards the call if `sequence_number` is stale.
+  OnCutOrCopy(uint32 sequence_number,
+              bool is_cut,
+              string full_text,
+              gfx.mojom.Range selection);
+
   // Requests the current native input state (text, selection, focus) from C++.
   RequestInputState();
 

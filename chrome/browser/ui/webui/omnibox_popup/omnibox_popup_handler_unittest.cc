@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
@@ -23,6 +24,8 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -35,6 +38,7 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    ui::TestClipboard::CreateForCurrentThread();
     web_ui_.set_web_contents(web_contents());
     omnibox_popup_ui_ = std::make_unique<OmniboxPopupUI>(&web_ui_);
     handler_ = std::make_unique<OmniboxPopupHandler>(
@@ -48,6 +52,7 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     handler_.reset();
     omnibox_popup_ui_.reset();
+    ui::Clipboard::DestroyClipboardForCurrentThread();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -305,6 +310,198 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
 
   // Reset the handler to avoid dangling raw_ptr to the local
   // omnibox_controller.
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnCutOrCopySequenceGuard) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/false);
+
+  // Stale call (sequence 0) discarded.
+  handler_->OnCutOrCopy(/*sequence_number=*/0, /*is_cut=*/false,
+                        "https://example.com/",
+                        /*selection=*/gfx::Range(0, 20));
+
+  // Active call (sequence 1) accepted.
+  handler_->OnCutOrCopy(/*sequence_number=*/1, /*is_cut=*/true,
+                        "https://example.com/",
+                        /*selection=*/gfx::Range(0, 20));
+
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnCutUpdatesEditModel) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto mock_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          omnibox_controller.get());
+  auto* mock_edit_model_ptr = mock_edit_model.get();
+  omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
+
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/false);
+
+  // OnCut (is_cut = true) cutting "example" (range 8-15) from
+  // "https://example.com/" should pass text_differs = true, just_deleted_text =
+  // true, new_selection = (8, 8).
+  std::u16string expected_new_text = u"https://.com/";
+  EXPECT_CALL(
+      *mock_edit_model_ptr,
+      OnAfterPossibleChange(
+          testing::AllOf(
+              testing::Field(&OmniboxView::StateChanges::text_differs, true),
+              testing::Field(&OmniboxView::StateChanges::just_deleted_text,
+                             true),
+              testing::Field(&OmniboxView::StateChanges::new_selection,
+                             gfx::Range(8, 8)),
+              testing::Field(&OmniboxView::StateChanges::new_text,
+                             testing::Pointee(expected_new_text))),
+          /*allow_keyword_ui_change=*/true))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_edit_model_ptr, OnChanged()).Times(1);
+
+  handler_->OnCutOrCopy(/*sequence_number=*/1, /*is_cut=*/true,
+                        "https://example.com/",
+                        /*selection=*/gfx::Range(8, 15));
+
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnCopyUpdatesEditModel) {
+  base::HistogramTester histogram_tester;
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto mock_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          omnibox_controller.get());
+  auto* mock_edit_model_ptr = mock_edit_model.get();
+  omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
+
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/false);
+
+  // Set focus on edit model to record last_omnibox_focus timestamp.
+  mock_edit_model_ptr->OnSetFocus(/*control_down=*/false);
+
+  // OnCopy (is_cut = false) select all (range 0-20) should pass text_differs =
+  // false, just_deleted_text = false, new_selection = (0, 20), and log cut/copy
+  // histogram.
+  std::u16string expected_text = u"https://example.com/";
+  EXPECT_CALL(
+      *mock_edit_model_ptr,
+      OnAfterPossibleChange(
+          testing::AllOf(
+              testing::Field(&OmniboxView::StateChanges::text_differs, false),
+              testing::Field(&OmniboxView::StateChanges::just_deleted_text,
+                             false),
+              testing::Field(&OmniboxView::StateChanges::new_selection,
+                             gfx::Range(0, 20)),
+              testing::Field(&OmniboxView::StateChanges::new_text,
+                             testing::Pointee(expected_text))),
+          /*allow_keyword_ui_change=*/true))
+      .WillOnce(testing::Return(true));
+
+  handler_->OnCutOrCopy(/*sequence_number=*/1, /*is_cut=*/false,
+                        "https://example.com/",
+                        /*selection=*/gfx::Range(0, 20));
+
+  histogram_tester.ExpectBucketCount(
+      OmniboxEditModel::kCutOrCopyAllTextHistogram, 1, 1);
+  histogram_tester.ExpectTotalCount("Omnibox.FocusToCutOrCopyAllTextTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusToCutOrCopyAllTextTime.ByPageContext.OTHER", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest.ByPageContext.OTHER",
+      1);
+
+  handler_.reset();
+}
+
+TEST_F(OmniboxPopupHandlerTest, OnCopyZeroSuggestUpdatesEditModel) {
+  base::HistogramTester histogram_tester;
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  auto mock_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          omnibox_controller.get());
+  auto* mock_edit_model_ptr = mock_edit_model.get();
+  omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
+
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  handler_->SetInputState("https://example.com/", gfx::Range(0, 0),
+                          /*user_input_in_progress=*/false, /*full_url=*/"",
+                          /*is_focused=*/true, /*permanent_display_text=*/"",
+                          /*show_full_url=*/false, /*query_zps=*/true);
+
+  // Set focus on edit model to record last_omnibox_focus timestamp.
+  mock_edit_model_ptr->OnSetFocus(/*control_down=*/false);
+
+  // Start ZeroSuggest input on autocomplete controller to make IsZeroSuggest()
+  // true.
+  AutocompleteInput zero_suggest_input(
+      u"", metrics::OmniboxEventProto::NTP,
+      ChromeAutocompleteSchemeClassifier(profile()));
+  zero_suggest_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  omnibox_controller->autocomplete_controller()->Start(zero_suggest_input);
+
+  std::u16string expected_text = u"https://example.com/";
+  EXPECT_CALL(
+      *mock_edit_model_ptr,
+      OnAfterPossibleChange(
+          testing::AllOf(
+              testing::Field(&OmniboxView::StateChanges::text_differs, false),
+              testing::Field(&OmniboxView::StateChanges::just_deleted_text,
+                             false),
+              testing::Field(&OmniboxView::StateChanges::new_selection,
+                             gfx::Range(0, 20)),
+              testing::Field(&OmniboxView::StateChanges::new_text,
+                             testing::Pointee(expected_text))),
+          /*allow_keyword_ui_change=*/true))
+      .WillOnce(testing::Return(true));
+
+  handler_->OnCutOrCopy(/*sequence_number=*/1, /*is_cut=*/false,
+                        "https://example.com/",
+                        /*selection=*/gfx::Range(0, 20));
+
+  histogram_tester.ExpectBucketCount(
+      OmniboxEditModel::kCutOrCopyAllTextHistogram, 1, 1);
+  histogram_tester.ExpectTotalCount("Omnibox.FocusToCutOrCopyAllTextTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest.ByPageContext.OTHER", 1);
+
   handler_.reset();
 }
 

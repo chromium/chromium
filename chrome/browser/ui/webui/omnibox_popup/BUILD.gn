@@ -21,6 +21,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/history_clusters",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/omnibox_popup:resources",
       "//chrome/browser/search_engines",
@@ -77,6 +78,7 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base/clipboard:clipboard_test_support",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     ]
   }

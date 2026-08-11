@@ -558,6 +558,44 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  protected onInputCutOrCopy_(e: ClipboardEvent, isCut: boolean) {
+    const input = this.getInputElement().inputElement;
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+    if (start === end) {
+      return;
+    }
+
+    e.preventDefault();
+    const oldValue = input.value;
+    this.popupPageHandler_.onCutOrCopy(
+        this.currentSequenceNum_, isCut, oldValue, {start, end});
+
+    if (isCut) {
+      const newValue = oldValue.substring(0, start) + oldValue.substring(end);
+      this.userInputInProgress_ = true;
+      this.hasUserInput_ = !!newValue.trim();
+      this.getInputElement().setInput({text: newValue, inline: ''});
+      this.getInputElement().setSelectionRange(start, start);
+
+      if (newValue.trim()) {
+        this.queryAutocomplete(
+            newValue, /*preventInlineAutocomplete=*/ true,
+            /*isOnFocus=*/ false);
+      } else {
+        this.clearAutocompleteMatches();
+      }
+    }
+  }
+
+  protected onInputCopy_(e: ClipboardEvent) {
+    this.onInputCutOrCopy_(e, /*isCut=*/ false);
+  }
+
+  protected onInputCut_(e: ClipboardEvent) {
+    this.onInputCutOrCopy_(e, /*isCut=*/ true);
+  }
+
   protected showFullUrlOnDeselect_() {
     if (this.userInputInProgress_) {
       return;

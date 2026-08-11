@@ -54,6 +54,10 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                uint32_t sequence_number) override;
   void RequestInputState() override;
   void OpenAimPopup(bool via_keyboard) override;
+  void OnCutOrCopy(uint32_t sequence_number,
+                   bool is_cut,
+                   const std::string& full_text,
+                   const gfx::Range& selection) override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();
