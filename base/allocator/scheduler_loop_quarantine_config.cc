@@ -3,18 +3,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/scheduler_loop_quarantine_config.h"
+
 #include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/strcat.h"
@@ -73,7 +73,7 @@ struct Match {
   size_t length;
 };
 
-std::optional<DictValue> CreateConfigProcessesDict() {
+std::optional<DictValue> GetConfigProcessesDict() {
   std::string config_str;
 
   // This is called after switches initialization.
@@ -98,12 +98,6 @@ std::optional<DictValue> CreateConfigProcessesDict() {
     return std::nullopt;  // Ill-formed JSON; disabled.
   }
   return config_processes;
-}
-
-std::optional<DictValue>& GetConfigProcessesDict() {
-  static base::NoDestructor<std::optional<DictValue>> config_processes(
-      CreateConfigProcessesDict());
-  return *config_processes;
 }
 
 std::vector<Match> GetMatchingProcessConfigs(
@@ -176,7 +170,7 @@ GetSchedulerLoopQuarantineConfiguration(
   config.branch_name[kMaxBranchNameLen] = '\0';
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  const std::optional<DictValue>& config_processes = GetConfigProcessesDict();
+  std::optional<DictValue> config_processes = GetConfigProcessesDict();
   if (!config_processes) {
     return config;
   }
@@ -231,37 +225,10 @@ GetSchedulerLoopQuarantineConfiguration(
   return config;
 }
 
-bool HasMiracleObject(std::string_view process_type_identifier) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  const std::optional<DictValue>& config_processes = GetConfigProcessesDict();
-  if (!config_processes) {
-    return false;
-  }
-  std::vector<Match> matches =
-      GetMatchingProcessConfigs(*config_processes, process_type_identifier);
-  for (const auto& match : matches) {
-    const DictValue* config_process = match.dict;
-    for (auto [branch_key, branch_val] : *config_process) {
-      if (branch_key == kBranchTypeAdvancedMemorySafetyChecksStr) {
-        continue;
-      }
-      if (!branch_val.is_dict()) {
-        continue;
-      }
-      const DictValue& branch_dict = branch_val.GetDict();
-      if (branch_dict.FindBool(kKeyEnableQuarantine).value_or(false)) {
-        return true;
-      }
-    }
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return false;
-}
-
 bool HasSchedulerLoopQuarantineTaskControl(
     std::string_view process_type_identifier) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  const std::optional<DictValue>& config_processes = GetConfigProcessesDict();
+  std::optional<DictValue> config_processes = GetConfigProcessesDict();
   if (!config_processes) {
     return false;
   }
@@ -282,12 +249,6 @@ bool HasSchedulerLoopQuarantineTaskControl(
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
-}
-
-void ResetSchedulerLoopQuarantineConfigForTesting() {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  GetConfigProcessesDict() = CreateConfigProcessesDict();
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace base::allocator

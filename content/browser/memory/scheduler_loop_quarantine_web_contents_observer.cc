@@ -4,7 +4,6 @@
 
 #include "content/browser/memory/scheduler_loop_quarantine_web_contents_observer.h"
 
-#include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/memory/safety_checks.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -127,7 +126,7 @@ void SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(
   // Without PartitionAlloc there is nothing to reconfigure, so skip creating
   // the observer entirely.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  if (base::allocator::HasMiracleObject("browser")) {
+  if (base::allocator::IsSchedulerLoopQuarantineEnabled("")) {
     SchedulerLoopQuarantineWebContentsObserver::CreateForWebContents(
         web_contents);
   }

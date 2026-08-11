@@ -18989,7 +18989,8 @@
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
+                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
+                        "PartitionAllocWithAdvancedChecks"
                     ],
                     "disable_features": [
                         "ScreenAIPartitionAllocAdvancedChecksEnabled"

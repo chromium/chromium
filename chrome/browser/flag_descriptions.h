@@ -4019,6 +4019,11 @@ inline constexpr char kPartitionAllocSchedulerLoopQuarantineDescription[] =
     "Enables PartitionAlloc's scheduler loop quarantine. Takes a JSON "
     "free-form configuration.";
 
+inline constexpr char kPartitionAllocWithAdvancedChecksName[] =
+    "PartitionAlloc with Advanced Checks";
+inline constexpr char kPartitionAllocWithAdvancedChecksDescription[] =
+    "Enables an extra security layer on PartitionAlloc.";
+
 inline constexpr char kPartitionVisitedLinkDatabaseWithSelfLinksName[] =
     "Partition the Visited Link Database, including 'self-links'";
 inline constexpr char kPartitionVisitedLinkDatabaseWithSelfLinksDescription[] =
