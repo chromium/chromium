@@ -154,7 +154,7 @@ void PrivacySandboxAdsPageLoadMetricsObserver::OnFeaturesUsageObserved(
       case WebFeature::kV8Navigator_JoinAdInterestGroup_Method:
         api = PrivacySandboxAdsApi::kProtectedAudienceJoinAdInterestGroup;
         break;
-      case WebFeature::kPrivateAggregationApiAll:
+      case WebFeature::kOBSOLETE_PrivateAggregationApiAll:
         api = PrivacySandboxAdsApi::kPrivateAggregation;
         break;
       case WebFeature::kSharedStorageAPI_SharedStorage_DOMReference:

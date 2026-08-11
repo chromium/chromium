@@ -28,11 +28,6 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void contributeToHistogram(ScriptState*,
                              const PrivateAggregationHistogramContribution*,
                              ExceptionState&);
-  void contributeToHistogramOnEvent(
-      ScriptState*,
-      const String&,
-      const PrivateAggregationHistogramContribution*,
-      ExceptionState&);
   void enableDebugMode(ScriptState*, ExceptionState&);
   void enableDebugMode(ScriptState*,
                        const PrivateAggregationDebugModeOptions*,

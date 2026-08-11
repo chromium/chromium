@@ -4879,9 +4879,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4330" label="FlexboxAbsPosJustifyContent"/>
   <int value="4331" label="MultipleFetchHandlersInServiceWorker"/>
   <int value="4332" label="StorageAccessAPI_requestStorageAccessFor_Method"/>
-  <int value="4333" label="PrivateAggregationApiAll"/>
-  <int value="4334" label="PrivateAggregationApiFledge"/>
-  <int value="4335" label="PrivateAggregationApiSharedStorage"/>
+  <int value="4333" label="OBSOLETE_PrivateAggregationApiAll"/>
+  <int value="4334" label="OBSOLETE_PrivateAggregationApiFledge"/>
+  <int value="4335" label="OBSOLETE_PrivateAggregationApiSharedStorage"/>
   <int value="4336" label="OBSOLETE_DeferredShaping2ReshapedByComputedStyle"/>
   <int value="4337"
       label="OBSOLETE_DeferredShaping2ReshapedByDomContentLoaded"/>
@@ -5054,7 +5054,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4485"
       label="OBSOLETE_ServiceWorkerBypassFetchHandlerForSubResource"/>
   <int value="4486" label="CSSAtRuleStartingStyle"/>
-  <int value="4487" label="PrivateAggregationApiFledgeExtensions"/>
+  <int value="4487" label="OBSOLETE_PrivateAggregationApiFledgeExtensions"/>
   <int value="4488" label="DeprecatedInterestGroupDailyUpdateUrl"/>
   <int value="4489" label="CSSColorGradientColorSpace"/>
   <int value="4490" label="DanglingMarkupInWindowName"/>
@@ -5231,7 +5231,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4653" label="FetchLaterErrorUnknownBodyLength"/>
   <int value="4654" label="FetchLaterErrorQuotaExceeded"/>
   <int value="4655" label="V8FileSystemHandle_GetCloudIdentifiers_Method"/>
-  <int value="4656" label="PrivateAggregationApiEnableDebugMode"/>
+  <int value="4656" label="OBSOLETE_PrivateAggregationApiEnableDebugMode"/>
   <int value="4657" label="LineBreakPhrase"/>
   <int value="4658"
       label="OBSOLETE_AttributionReportingUnderscorePrefixedFilterKey"/>
@@ -5605,7 +5605,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4964" label="ScriptingMediaFeature"/>
   <int value="4965" label="InvertedColorsMediaFeature"/>
   <int value="4966" label="CSSLightDark"/>
-  <int value="4967" label="PrivateAggregationApiFilteringIds"/>
+  <int value="4967" label="OBSOLETE_PrivateAggregationApiFilteringIds"/>
   <int value="4968" label="HTMLInputInSelect"/>
   <int value="4969" label="Canvas2DMesh"/>
   <int value="4970" label="CaretPositionFromPoint"/>
@@ -6187,7 +6187,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5483" label="NonPhrasingContentOptionChild"/>
   <int value="5484" label="InteractiveContentOptionChild"/>
   <int value="5485" label="InteractiveContentLegendChild"/>
-  <int value="5486" label="PrivateAggregationApiErrorReporting"/>
+  <int value="5486" label="OBSOLETE_PrivateAggregationApiErrorReporting"/>
   <int value="5487" label="LanguageModel_Prompt_Input_Image"/>
   <int value="5488" label="LanguageModel_Prompt_Input_Audio"/>
   <int value="5489" label="Http3"/>
