@@ -998,7 +998,7 @@ export class AppElement extends AppElementBase {
       const composebox =
           this.shadowRoot?.querySelector<NtpComposeboxElement>('#composebox');
       if (composebox) {
-        composebox.handleFuseboxAction(action);
+        await composebox.handleFuseboxAction(action);
       }
     }
   }

@@ -1357,7 +1357,7 @@ suite('NewTabPageAppTest', () => {
           NtpComposeboxElement.prototype.handleFuseboxAction = function(
               action: FuseboxAction) {
             handleFuseboxActionArg = action;
-            originalHandleFuseboxAction.call(this, action);
+            return originalHandleFuseboxAction.call(this, action);
           };
 
           const action: FuseboxAction = {
