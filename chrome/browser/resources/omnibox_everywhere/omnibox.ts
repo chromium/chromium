@@ -13,6 +13,7 @@ import './profile_icon.js';
 import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
+import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
@@ -34,6 +35,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
+import {UnboundedMenuManager} from './unbounded_utils.js';
 
 export interface OmniboxEverywhereOmniboxElement {
   $: {
@@ -136,7 +138,8 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor contextManagementInComposeboxEnabled: boolean = false;
+  accessor contextManagementInComposeboxEnabled: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor searchboxIcon_: string =
       '//resources/cr_components/searchbox/icons/google_g.svg';
   protected accessor searchboxVoiceSearchEnabled_: boolean =
@@ -353,6 +356,10 @@ export class OmniboxEverywhereOmniboxElement extends
     };
     recordContextualElementClickedMetric(
         this.composeboxSource, 'ClassicPopup', ContextType.TAB);
+    const contextMenu =
+        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    contextMenu?.closeMenu();
     this.openComposebox_([tabUpload]);
   }
 
@@ -424,12 +431,24 @@ export class OmniboxEverywhereOmniboxElement extends
     }
   }
 
+  private unboundedMenuManager_ = new UnboundedMenuManager(
+      () => this.shadowRoot?.querySelector('#context') ?? null);
+
   protected onContextMenuOpened_() {
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+    this.unboundedMenuManager_.onContextMenuOpened();
   }
 
   protected onContextMenuClosed_() {
     this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
+    this.unboundedMenuManager_.onContextMenuClosed();
+  }
+
+  override onInputWrapperFocusout(e: FocusEvent) {
+    if (this.unboundedMenuManager_.isDialogOpen()) {
+      return;
+    }
+    super.onInputWrapperFocusout(e);
   }
 
   protected onRequestTabSuggestionsLoad() {

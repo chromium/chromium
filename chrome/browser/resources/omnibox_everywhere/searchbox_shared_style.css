@@ -8,14 +8,16 @@
  * #css_wrapper_metadata_end */
 
 #bottomControls {
+  align-items: center;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
   padding-inline-end: 16px;
   padding-inline-start: 10px;
+  position: relative;
   width: 100%;
+  z-index: 1000;
 }
 
 #actionButtons {

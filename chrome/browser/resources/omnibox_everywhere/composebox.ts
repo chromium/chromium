@@ -31,6 +31,7 @@ import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebo
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import {UnboundedMenuManager} from './unbounded_utils.js';
 
 export interface OmniboxEverywhereComposeboxElement {
   $: {
@@ -153,6 +154,27 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
                '#contextEntrypoint') ||
         null;
   }
+
+  private unboundedMenuManager_ = new UnboundedMenuManager(
+      () => this.getContextEntrypointElement() as HTMLElement | null);
+
+  override computeShowDropdown(): boolean {
+    return this.unboundedMenuManager_.isDialogOpen() ||
+        super.computeShowDropdown();
+  }
+
+  override onContextMenuOpened() {
+    super.onContextMenuOpened();
+    this.showDropdown = this.computeShowDropdown();
+    this.unboundedMenuManager_.onContextMenuOpened();
+  }
+
+  override async onContextMenuClosed(): Promise<void> {
+    await super.onContextMenuClosed();
+    this.showDropdown = this.computeShowDropdown();
+    this.unboundedMenuManager_.onContextMenuClosed();
+  }
+
 
   override shouldShowDivider(): boolean {
     if (this.searchboxLayoutMode === 'TallBottomContext' &&

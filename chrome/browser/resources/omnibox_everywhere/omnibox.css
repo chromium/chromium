@@ -274,6 +274,13 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-icon-button-margin-start: 0px;
 }
 
+.contextualEntrypointContainer,
+.context-menu-container,
+cr-composebox-contextual-entrypoint-and-menu {
+  position: relative;
+  z-index: var(--cr-composebox-context-menu-z-index, 1001);
+}
+
 :host([is-fusebox-enabled]) .context-menu-container {
   padding-block: 10px;
 }
@@ -283,7 +290,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-inline-end: 6px;
   padding-inline-start: 8px;
   position: relative;
-  z-index: 100;
+  z-index: var(--cr-composebox-context-menu-z-index, 1001);
 }
 
 :host-context(

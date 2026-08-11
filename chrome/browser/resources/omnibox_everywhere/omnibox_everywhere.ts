@@ -9,3 +9,5 @@ export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchb
 export {OmniboxEverywhereAppElement} from './app.js';
 export {OmniboxEverywhereComposeboxElement} from './composebox.js';
 export {OmniboxEverywhereOmniboxElement} from './omnibox.js';
+export {getContextMenuDialog, UnboundedMenuManager, updateUnboundedElementVisibility} from './unbounded_utils.js';
+export type {UnboundedElement} from './unbounded_utils.js';

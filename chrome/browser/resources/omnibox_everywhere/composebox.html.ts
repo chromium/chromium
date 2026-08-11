@@ -132,6 +132,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         .fileNum="${this.files.size}"
                         .sharedTabs="${this.getSharedTabs()}"
                         ?upload-button-disabled="${this.uploadButtonDisabled}"
+                        unbounded-menu-enabled
                         ?show-context-menu-description="${
                             this.showContextMenuDescription}">
                     </cr-composebox-contextual-entrypoint-and-menu>

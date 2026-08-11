@@ -24,6 +24,7 @@ build_webui("build") {
     "profile_icon.ts",
     "debug/debug_app.html.ts",
     "debug/debug_app.ts",
+    "unbounded_utils.ts",
   ]
   css_files = [
     "composebox.css",
