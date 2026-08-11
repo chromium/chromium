@@ -59,7 +59,8 @@ bool IsFuseboxEligible(Profile* profile) {
 
 bool OmniboxEverywhereUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return omnibox::IsOmniboxEverywhereEnabled(profile);
 }
 
 bool OmniboxEverywhereUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild()
@@ -249,7 +250,7 @@ OmniboxEverywhereUI::~OmniboxEverywhereUI() = default;
 
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver) {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile_)) {
     return;
   }
   if (composebox_page_factory_receiver_.is_bound()) {
@@ -279,6 +280,9 @@ void OmniboxEverywhereUI::BindInterface(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
         pending_page_handler) {
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile_)) {
+    return;
+  }
   if (searchbox_page_factory_receiver_.is_bound()) {
     searchbox_page_factory_receiver_.reset();
   }

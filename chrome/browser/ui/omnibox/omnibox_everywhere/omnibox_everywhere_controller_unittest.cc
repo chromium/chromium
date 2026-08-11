@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -16,6 +17,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -67,14 +71,42 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
 
 class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
  public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    template_url_service_test_util_ =
+        std::make_unique<TemplateURLServiceFactoryTestUtil>(&profile_);
+    template_url_service_test_util_->VerifyLoad();
+    SetDefaultSearchProvider(true);
+  }
+
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
     ChromeViewsTestBase::TearDown();
   }
 
+  void SetDefaultSearchProvider(bool is_google) {
+    TemplateURLData template_url_data;
+    if (is_google) {
+      template_url_data.SetShortName(u"Google");
+      template_url_data.SetKeyword(u"google.com");
+      template_url_data.SetURL("https://www.google.com/search?q={searchTerms}");
+    } else {
+      template_url_data.SetShortName(u"Other");
+      template_url_data.SetKeyword(u"other.com");
+      template_url_data.SetURL("https://www.other.com/search?q={searchTerms}");
+    }
+    auto template_url = std::make_unique<TemplateURL>(template_url_data);
+    auto* template_url_ptr =
+        template_url_service_test_util_->model()->Add(std::move(template_url));
+    template_url_service_test_util_->model()
+        ->SetUserSelectedDefaultSearchProvider(template_url_ptr);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
   TestingProfile profile_;
+  std::unique_ptr<TemplateURLServiceFactoryTestUtil>
+      template_url_service_test_util_;
 };
 
 TEST_F(OmniboxEverywhereControllerTest, EnabledFeatureInstantiatesController) {
@@ -101,6 +133,26 @@ TEST_F(OmniboxEverywhereControllerTest, OnInvokeControlsWidget) {
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
                       &profile_, GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, NonGoogleDseBlocksOnInvoke) {
+  SetDefaultSearchProvider(false);
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      &profile_, GetContext());
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kProfilePicker,
+                      &profile_);
   EXPECT_FALSE(controller.IsVisible());
 }
 

@@ -406,4 +406,48 @@ TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
   }
 }
 
+TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEnabled) {
+  // Test with null profile.
+  EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(nullptr));
+
+  // Test with Google DSE and feature enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_TRUE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+  }
+
+  // Test with Google DSE and feature disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+  }
+
+  // Set non-Google default search provider.
+  TemplateURLData non_google_data;
+  non_google_data.SetShortName(u"Other");
+  non_google_data.SetKeyword(u"other.com");
+  non_google_data.SetURL("https://www.other.com/search?q={searchTerms}");
+  auto non_google_url = std::make_unique<TemplateURL>(non_google_data);
+  auto* non_google_ptr =
+      template_url_service_test_util_->model()->Add(std::move(non_google_url));
+  template_url_service_test_util_->model()
+      ->SetUserSelectedDefaultSearchProvider(non_google_ptr);
+
+  // Test with non-Google DSE and feature enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+  }
+
+  // Test with non-Google DSE and feature disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+  }
+}
+
 }  // namespace omnibox

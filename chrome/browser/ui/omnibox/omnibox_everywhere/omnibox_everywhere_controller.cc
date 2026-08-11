@@ -77,6 +77,9 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
 void OmniboxEverywhereController::OnInvoke(InvocationSource source,
                                            Profile* profile,
                                            gfx::NativeWindow context) {
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile)) {
+    return;
+  }
   switch (source) {
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
@@ -104,6 +107,8 @@ void OmniboxEverywhereController::ShowProfilePicker() {
   Close();
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/527183107): Filter out or disallow selecting profiles where
+  // Google is not the default search engine (DSE) in the Profile Picker.
   ProfilePicker::Show(ProfilePicker::Params::ForOmniboxEverywhere(
       base::BindOnce(&OmniboxEverywhereController::OnProfilePicked,
                      weak_factory_.GetWeakPtr())));
@@ -148,7 +153,7 @@ Profile* OmniboxEverywhereController::GetTargetProfile() {
 
   // Only use the profile of the last active browser window. If no browser
   // window is active (e.g. on the profile selection screen), return nullptr.
-  // Also check that the profile has the required service (e.g. it is not OTR).
+  // Also check that the profile has the required service.
   if (target_profile &&
       !OmniboxEverywhereServiceFactory::GetForProfile(target_profile)) {
     target_profile = nullptr;
