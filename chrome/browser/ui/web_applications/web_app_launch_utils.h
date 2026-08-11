@@ -108,16 +108,15 @@ void MaybeShowNavigationCaptureIph(webapps::AppId app_id,
 
 // This creates appropriate CreateParams for creating a PWA window or PWA popup
 // window.
-Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
-                                         bool is_popup,
-                                         bool trusted_source,
-                                         const gfx::Rect& window_bounds,
-                                         Profile* profile,
-                                         bool user_gesture);
+BrowserWindowCreateParams CreateParamsForApp(const webapps::AppId& app_id,
+                                             bool is_popup,
+                                             bool trusted_source,
+                                             const gfx::Rect& window_bounds,
+                                             Profile* profile,
+                                             bool user_gesture);
 
-Browser* CreateWebAppWindowMaybeWithHomeTab(
-    const webapps::AppId& app_id,
-    const Browser::CreateParams& params);
+Browser* CreateWebAppWindowMaybeWithHomeTab(const webapps::AppId& app_id,
+                                            BrowserWindowCreateParams params);
 
 // Report UMA metrics and updates  app's last launch time, site engagement
 // stats, etc.

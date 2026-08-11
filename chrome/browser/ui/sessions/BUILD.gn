@@ -22,6 +22,7 @@ source_set("sessions") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/sessions",
     "//components/split_tabs",

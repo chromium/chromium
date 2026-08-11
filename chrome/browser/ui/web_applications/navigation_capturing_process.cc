@@ -130,12 +130,12 @@ bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
 Browser* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
     const NavigateParams& navigate_params) {
-  Browser::CreateParams app_browser_params = CreateParamsForApp(
+  BrowserWindowCreateParams app_browser_params = CreateParamsForApp(
       app_id, /*is_popup=*/false,
       /*trusted_source=*/true, navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
-      CreateWebAppWindowMaybeWithHomeTab(app_id, app_browser_params);
+      CreateWebAppWindowMaybeWithHomeTab(app_id, std::move(app_browser_params));
   return created_browser;
 }
 

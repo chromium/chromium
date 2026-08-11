@@ -311,7 +311,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<WindowFeatureController>(
           *browser, fullscreen_controller_.get(), app_browser_controller_.get(),
           browser->GetType(),
-          BrowserInitState::From(browser)->create_params().trusted_source,
+          BrowserInitState::From(browser)
+              ->browser_window_create_params()
+              .is_trusted_source,
           browser->GetUnownedUserDataHost());
 
   side_panel_registry_ =
@@ -493,7 +495,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<SessionServiceBrowserHelper>(
           browser->GetTabStripModel(), browser->GetSessionID(),
           browser->GetType(), browser->GetProfile(),
-          &BrowserInitState::From(browser)->create_params());
+          &BrowserInitState::From(browser)->browser_window_create_params());
 
   // Must be after session_service_browser_helper_:
   //   tab_list_bridge_ depends on initialized session tab/window state.

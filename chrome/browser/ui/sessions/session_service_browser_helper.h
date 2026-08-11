@@ -34,6 +34,8 @@ namespace split_tabs {
 class SplitTabId;
 }
 
+struct BrowserWindowCreateParams;
+
 // Helper class to sync tab and window state with SessionService and
 // TabRestoreService to enable session restore. It observes TabStripModel
 // and forwards relevant events.
@@ -43,7 +45,7 @@ class SessionServiceBrowserHelper : public TabStripModelObserver {
                               SessionID session_id,
                               BrowserWindowInterface::Type browser_type,
                               Profile* profile,
-                              const Browser::CreateParams* create_params);
+                              const BrowserWindowCreateParams* create_params);
   ~SessionServiceBrowserHelper() override;
 
   SessionServiceBrowserHelper(const SessionServiceBrowserHelper&) = delete;

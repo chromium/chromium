@@ -456,7 +456,7 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
         ->GetBrowserForMigrationOnly();
   }
 
-  Browser::CreateParams browser_params = web_app::CreateParamsForApp(
+  BrowserWindowCreateParams browser_params = web_app::CreateParamsForApp(
       params_->app_id,
       /*is_popup=*/params_->disposition == WindowOpenDisposition::NEW_POPUP,
       /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
@@ -465,7 +465,8 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
 #if BUILDFLAG(IS_CHROMEOS)
   browser_params.restore_id = params_->restore_id;
 #endif
-  return CreateWebAppWindowMaybeWithHomeTab(params_->app_id, browser_params);
+  return CreateWebAppWindowMaybeWithHomeTab(params_->app_id,
+                                            std::move(browser_params));
 }
 
 }  // namespace web_app

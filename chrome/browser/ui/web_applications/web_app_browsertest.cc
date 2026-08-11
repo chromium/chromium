@@ -2447,13 +2447,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, PopupLocationBar) {
       "app.com", "/ssl/page_with_subresource.html");
   const webapps::AppId app_id = InstallPWA(app_url);
 
-  Browser::CreateParams params = web_app::CreateParamsForApp(
+  BrowserWindowCreateParams params = web_app::CreateParamsForApp(
       app_id,
-      /*is_popup*/ true,
+      /*is_popup=*/true,
       /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), profile(),
       /*user_gesture=*/true);
   Browser* popup_browser =
-      web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, params);
+      web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, std::move(params));
   popup_browser->GetWindow()->Show();
   ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
 

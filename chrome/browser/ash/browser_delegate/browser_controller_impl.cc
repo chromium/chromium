@@ -267,7 +267,7 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
     return nullptr;
   }
 
-  Browser::CreateParams cparams =
+  BrowserWindowCreateParams cparams =
       web_app::CreateParamsForApp(app_id, popup,
                                   /*trusted_source=*/true,
                                   /*window_bounds=*/gfx::Rect(), profile,
@@ -279,7 +279,7 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
   cparams.can_maximize = params.allow_maximize;
   cparams.can_fullscreen = params.allow_fullscreen;
   return GetDelegate(
-      web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, cparams));
+      web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, std::move(cparams)));
 }
 
 void BrowserControllerImpl::MayCloseAllBrowsers() {

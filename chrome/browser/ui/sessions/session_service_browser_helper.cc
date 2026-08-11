@@ -14,6 +14,7 @@
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -48,7 +49,7 @@ SessionServiceBrowserHelper::SessionServiceBrowserHelper(
     SessionID session_id,
     BrowserWindowInterface::Type browser_type,
     Profile* profile,
-    const Browser::CreateParams* create_params)
+    const BrowserWindowCreateParams* create_params)
     : tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       session_id_(session_id),
       browser_type_(browser_type),
