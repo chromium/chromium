@@ -1399,14 +1399,22 @@ TEST_F(GeminiBrowserAgentTest,
 
   NSString* tab_id_str =
       [NSString stringWithFormat:@"%d", active_id.identifier()];
+  base::UserActionTester user_action_tester;
   UpdateLocalTabAttachmentState(
       tab_id_str, ios::provider::GeminiPageContextAttachmentState::kDetached);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("MobileGeminiActiveTabDetached"));
 
-  // Verify it is still in the map but detached.
+  UpdateLocalTabAttachmentState(
+      tab_id_str, ios::provider::GeminiPageContextAttachmentState::kAttached);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("MobileGeminiActiveTabAttached"));
+
+  // Verify it is in the map as attached.
   tabs = GetRawAttachedTabs();
   EXPECT_EQ(1u, tabs.size());
   EXPECT_EQ(
-      ios::provider::GeminiPageContextAttachmentState::kDetached,
+      ios::provider::GeminiPageContextAttachmentState::kAttached,
       GetRawAttachedTabContext(active_id).geminiPageContextAttachmentState);
 }
 
@@ -1439,7 +1447,9 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
 
   NSString* other_tab_id_str =
       [NSString stringWithFormat:@"%d", other_id.identifier()];
+  base::UserActionTester user_action_tester;
   DetachTabWithID(other_tab_id_str);
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiTabDetached"));
 
   // Verify the shared tab is completely removed.
   tabs = GetRawAttachedTabs();

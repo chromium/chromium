@@ -2379,6 +2379,7 @@ void GeminiBrowserAgent::DetachTabWithID(NSString* tab_id) {
   CHECK(detached_tab_id != active_web_state_id);
 
   RemoveAttachedPageContext(detached_tab_id);
+  RecordGeminiTabDetached();
 
   GeminiPageContext* active_page_context =
       GetAttachedPageContext(active_web_state_id);
@@ -2399,6 +2400,13 @@ void GeminiBrowserAgent::UpdateLocalTabAttachmentState(
   if (GeminiPageContext* page_context =
           GetAttachedPageContext(attached_tab_id)) {
     page_context.geminiPageContextAttachmentState = new_state;
+    if (new_state ==
+        ios::provider::GeminiPageContextAttachmentState::kAttached) {
+      RecordGeminiActiveTabAttached();
+    } else if (new_state ==
+               ios::provider::GeminiPageContextAttachmentState::kDetached) {
+      RecordGeminiActiveTabDetached();
+    }
   }
 }
 

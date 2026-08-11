@@ -84,6 +84,7 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
 #pragma mark - TabPickerSnackbarPresenter
 
 - (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
+  RecordGeminiTabPickerErrorAttachmentLimit();
   [self
       showSnackbarWithTitle:l10n_util::GetPluralNSStringF(
                                 IDS_IOS_GEMINI_TAB_PICKER_MAXIMUM_TABS_REACHED,
@@ -91,12 +92,14 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
 }
 
 - (void)showCannotReloadTabError {
+  RecordGeminiTabPickerErrorCannotReloadTab();
   [self showSnackbarWithTitle:
             l10n_util::GetNSString(
                 IDS_IOS_GEMINI_TAB_PICKER_CANNOT_RELOAD_TAB_ERROR)];
 }
 
 - (void)showCannotAttachTabError {
+  RecordGeminiTabPickerErrorCannotAttachTab();
   [self showSnackbarWithTitle:l10n_util::GetNSString(
                                   IDS_IOS_GEMINI_TAB_PICKER_CANT_BE_SHARED)];
 }

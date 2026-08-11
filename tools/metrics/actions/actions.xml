@@ -28487,6 +28487,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiActiveTabAttached">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the active tab is attached by the user via a Floaty chip (e.g.
+    'Ask about this page') in a Gemini session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiActiveTabDetached">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the active tab is detached by the user via a Floaty chip in a
+    Gemini session. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiCameraFlowBegan">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -28996,11 +29014,47 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiTabDetached">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a shared (non-active) tab is detached by the user from a
+    Floaty chip in a Gemini session. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiTabPickerDismissed">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
   <description>
     Reported when the Tab Picker UI is dismissed in a Gemini session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiTabPickerErrorAttachmentLimit">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a snackbar error is shown due to the user trying to attach
+    more tabs than the limit in the Tab Picker in a Gemini session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiTabPickerErrorCannotAttachTab">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a snackbar error is shown due to the user attempting to attach
+    an ineligible tab in the Tab Picker in a Gemini session. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiTabPickerErrorCannotReloadTab">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when a snackbar error is shown due to a tab failing to reload in
+    the Tab Picker in a Gemini session. iOS only.
   </description>
 </action>
 
