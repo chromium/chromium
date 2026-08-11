@@ -534,12 +534,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testSetAudioDucking() {
-    assertDefined(this.host.setAudioDucking);
-
-    await this.host.setAudioDucking(true);
-  }
-
   async testGetDisplayMedia() {
     async function waitForFirstFrame(track: MediaStreamVideoTrack):
         Promise<boolean> {

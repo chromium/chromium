@@ -1409,6 +1409,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.setContextAccessIndicator);
     await this.host.setContextAccessIndicator(true);
   }
+
+  async testSetAudioDucking() {
+    assertDefined(this.host.setAudioDucking);
+    await this.host.setAudioDucking(true);
+  }
 }
 
 class FaviconTest extends ApiTests {
