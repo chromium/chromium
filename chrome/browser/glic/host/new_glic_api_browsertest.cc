@@ -2387,6 +2387,21 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testIsBrowserOpen) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testNavigateToDifferentClientPage) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  WebUIStateListener listener(&instance->host());
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnCommit",
+                                      6 /*RESPONSIVE*/, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
+                                      0 /*BOOTSTRAP_PENDING*/, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetUserProfileInfo) {
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());

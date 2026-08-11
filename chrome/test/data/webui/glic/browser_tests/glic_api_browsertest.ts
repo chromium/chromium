@@ -534,27 +534,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(await this.host.getOsMicrophonePermissionStatus());
   }
 
-  // Test navigating successfully after client connection.
-  async testNavigateToDifferentClientPage() {
-    // This test function is run twice.
-    const runCount: number = this.testParams;
-
-    const url = new URL(window.location.href);
-    // First time:
-    if (runCount === 0) {
-      url.searchParams.set('foobar', '1');
-      (async () => {
-        await sleep(100);
-        location.href = url.toString();
-      })();
-      return;
-    }
-
-    // Second time:
-    assertEquals(runCount, 1);
-    assertEquals(url.searchParams.get('foobar'), '1');
-  }
-
   // Test navigating unsuccessfully after client connection.
   async testNavigateToBadPage() {
     // This test function is run twice.
