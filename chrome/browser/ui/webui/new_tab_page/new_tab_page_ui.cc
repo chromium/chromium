@@ -338,6 +338,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "showCustomizeButton",
       base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid) ||
           !BUILDFLAG(IS_ANDROID));
+  source->AddBoolean("isAndroid", BUILDFLAG(IS_ANDROID));
 
   source->AddBoolean("ntpRealboxNextEnabled",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile));
