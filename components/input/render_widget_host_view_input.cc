@@ -150,6 +150,26 @@ RenderWidgetHostViewInput::GetParentViewInput() {
   return nullptr;
 }
 
+// static
+bool RenderWidgetHostViewInput::IsAncestorView(
+    RenderWidgetHostViewInput* starting_view,
+    const RenderWidgetHostViewInput* target_view,
+    const RenderWidgetHostViewInput* stay_within) {
+  RenderWidgetHostViewInput* cur_view = starting_view->GetParentViewInput();
+  while (cur_view) {
+    if (cur_view == target_view) {
+      return true;
+    }
+
+    if (stay_within && cur_view == stay_within) {
+      return false;
+    }
+
+    cur_view = cur_view->GetParentViewInput();
+  }
+  return false;
+}
+
 blink::mojom::InputEventResultState RenderWidgetHostViewInput::FilterInputEvent(
     const blink::WebInputEvent& input_event) {
   // By default, input events are simply forwarded to the renderer.

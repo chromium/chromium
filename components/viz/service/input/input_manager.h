@@ -98,6 +98,7 @@ class VIZ_SERVICE_EXPORT InputManager
 
   // RenderWidgetHostInputEventRouter::Delegate implementation.
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
+  void CancelAutoscroll(input::RenderWidgetHostViewInput* view) override;
 
   // RenderInputRouterSupportBase::Delegate implementation.
   const DisplayHitTestQueryMap& GetDisplayHitTestQuery() const override;

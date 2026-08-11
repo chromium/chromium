@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -150,7 +151,14 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
     down_event.button = blink::WebMouseEvent::Button::kMiddle;
     down_event.SetTimeStamp(ui::EventTimeForNow());
     down_event.SetPositionInScreen(x, y);
-    GetWidgetHost()->ForwardMouseEvent(down_event);
+
+    auto* router = GetWidgetHost()->delegate()->GetInputEventRouter();
+    if (router) {
+      router->RouteMouseEvent(GetWidgetHost()->GetView(), &down_event,
+                              ui::LatencyInfo());
+    } else {
+      GetWidgetHost()->ForwardMouseEvent(down_event);
+    }
 
     // Simulate and send middle click mouse up.
     blink::WebMouseEvent up_event = blink::SyntheticWebMouseEventBuilder::Build(
@@ -158,7 +166,13 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
     up_event.button = blink::WebMouseEvent::Button::kMiddle;
     up_event.SetTimeStamp(ui::EventTimeForNow());
     up_event.SetPositionInScreen(x, y);
-    GetWidgetHost()->ForwardMouseEvent(up_event);
+
+    if (router) {
+      router->RouteMouseEvent(GetWidgetHost()->GetView(), &up_event,
+                              ui::LatencyInfo());
+    } else {
+      GetWidgetHost()->ForwardMouseEvent(up_event);
+    }
 
     // Wait till the IPC messages arrive and IsAutoscrollInProgress() toggles.
     while (GetWidgetHost()->IsAutoscrollInProgress() ==

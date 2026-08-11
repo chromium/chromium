@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
    public:
     virtual ~Delegate() = default;
     virtual TouchEmulator* GetTouchEmulator(bool create_if_necessary) = 0;
+    virtual void CancelAutoscroll(RenderWidgetHostViewInput* view) = 0;
   };
 
   explicit RenderWidgetHostInputEventRouter(viz::HitTestDataProvider* provider,
@@ -193,6 +194,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewInput* ancestor_to_verify = nullptr) const override;
   bool ShouldContinueHitTesting(
       RenderWidgetHostViewInput* target_view) const override;
+  void CancelAutoscroll(RenderWidgetHostViewInput* view) override;
 
   // Allows a target to claim or release capture of mouse events.
   void SetMouseCaptureTarget(RenderWidgetHostViewInput* target,
@@ -235,12 +237,18 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
 
   size_t TouchEventAckQueueLengthForTesting() const;
   size_t RegisteredViewCountForTesting() const;
+  const gfx::PointF& mouse_down_post_transformed_coordinate_for_testing()
+      const {
+    return mouse_down_post_transformed_coordinate_;
+  }
 
   void set_route_to_root_for_devtools(bool route) {
     route_to_root_for_devtools_ = route;
   }
 
-  void SetAutoScrollInProgress(bool is_autoscroll_in_progress);
+  RenderWidgetTargeter::AutoscrollStatus SetAutoScrollInProgress(
+      RenderWidgetHostViewInput* view,
+      bool is_autoscroll_in_progress);
 
   RenderWidgetHostViewInput* GetLastMouseMoveTargetForTest();
   RenderWidgetHostViewInput* GetLastMouseMoveRootViewForTest();
