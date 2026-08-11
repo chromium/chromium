@@ -134,9 +134,9 @@ class BackFwdMenuModelIncognitoTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(BackFwdMenuModelTest, BasicCase) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -206,9 +206,9 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
 }
 
 TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -293,9 +293,9 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
 }
 
 TEST_F(BackFwdMenuModelTest, ChapterStops) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -516,9 +516,9 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
 }
 
 TEST_F(BackFwdMenuModelTest, EscapeLabel) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -544,9 +544,9 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
 
 // Test asynchronous loading of favicon from history service.
 TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
   base::RunLoop loop;
   TestBackForwardMenuDelegate delegate(loop.QuitWhenIdleClosure());
 
@@ -606,9 +606,9 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
 }
 
 TEST_F(BackFwdMenuModelTest, NavigationWhenMenuShownTest) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
   base::RunLoop loop;
   TestBackForwardMenuDelegate delegate(loop.QuitWhenIdleClosure());
 
@@ -638,10 +638,10 @@ TEST_F(BackFwdMenuModelTest, NavigationWhenMenuShownTest) {
 
 // Test to check the menu in Incognito mode.
 TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
-  Browser::CreateParams native_params(profile()->GetPrimaryOTRProfile(true),
-                                      true);
+  BrowserWindowCreateParams native_params(profile()->GetPrimaryOTRProfile(true),
+                                          true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -669,9 +669,9 @@ TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
 
 // Test the new helper functions for accessing menu sections.
 TEST_F(BackFwdMenuModelTest, MenuSections) {
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(
@@ -791,10 +791,10 @@ TEST_F(BackFwdMenuModelTest, MenuSections) {
 
 // Test menu section helpers in incognito mode (no "Show Full History").
 TEST_F(BackFwdMenuModelIncognitoTest, MenuSectionsIncognito) {
-  Browser::CreateParams native_params(profile()->GetPrimaryOTRProfile(true),
-                                      true);
+  BrowserWindowCreateParams native_params(profile()->GetPrimaryOTRProfile(true),
+                                          true);
   std::unique_ptr<Browser> browser(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
 
   std::unique_ptr<BackForwardMenuModel> back_model =
       std::make_unique<BackForwardMenuModel>(

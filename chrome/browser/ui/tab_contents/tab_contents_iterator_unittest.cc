@@ -43,16 +43,17 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
   EXPECT_EQ(0U, CountAllTabs());
 
   // Create more browsers/windows.
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser2(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
   // Create browser 3 and 4 on the Ash desktop (the iterator shouldn't see the
   // difference).
-  Browser::CreateParams ash_params(profile(), true);
+  BrowserWindowCreateParams ash_params3(profile(), true);
   std::unique_ptr<Browser> browser3(
-      CreateBrowserWithTestWindowForParams(ash_params));
+      CreateBrowserWithTestWindowForParams(std::move(ash_params3)));
+  BrowserWindowCreateParams ash_params4(profile(), true);
   std::unique_ptr<Browser> browser4(
-      CreateBrowserWithTestWindowForParams(ash_params));
+      CreateBrowserWithTestWindowForParams(std::move(ash_params4)));
 
   // Sanity checks.
   EXPECT_EQ(4U, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -91,14 +92,14 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Create more browsers/windows.
-  Browser::CreateParams native_params(profile(), true);
+  BrowserWindowCreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser2(
-      CreateBrowserWithTestWindowForParams(native_params));
+      CreateBrowserWithTestWindowForParams(std::move(native_params)));
   // Create browser 3 on the Ash desktop (the iterator shouldn't see the
   // difference).
-  Browser::CreateParams ash_params(profile(), true);
+  BrowserWindowCreateParams ash_params(profile(), true);
   std::unique_ptr<Browser> browser3(
-      CreateBrowserWithTestWindowForParams(ash_params));
+      CreateBrowserWithTestWindowForParams(std::move(ash_params)));
 
   // Sanity checks.
   EXPECT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());

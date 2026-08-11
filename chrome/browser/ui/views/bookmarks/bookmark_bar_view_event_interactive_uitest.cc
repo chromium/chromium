@@ -350,8 +350,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get()));
     profile_->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
 
-    Browser::CreateParams native_params(profile_.get(), true);
-    browser_ = CreateBrowserWithTestWindowForParams(native_params);
+    BrowserWindowCreateParams native_params(profile_.get(), true);
+    browser_ = CreateBrowserWithTestWindowForParams(std::move(native_params));
 
     model_->DisableWritesToDiskForTest();
     PinnedToolbarActionsModel::Get(browser_->GetProfile())
