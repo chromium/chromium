@@ -37,9 +37,9 @@ class WebContents;
 }
 
 namespace password_manager {
-struct CredentialUIEntry;
 class PasswordFeatureManager;
 class PasswordManagerSettingsService;
+struct StoredCredential;
 }
 
 class PrefService;
@@ -107,7 +107,7 @@ class ChromePasswordChangeService
   // Starts the password change flow from the Password Checkup page for the
   // given `credential`.
   virtual void StartPasswordChangeFromCheckup(
-      const password_manager::CredentialUIEntry& credential,
+      password_manager::StoredCredential credential,
       content::WebContents* web_contents,
       PasswordChangeFromCheckupDelegate::StateChangeCallback callback =
           base::DoNothing());

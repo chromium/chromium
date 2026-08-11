@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "url/gurl.h"
 
 class ChangePasswordFormWaiter;
@@ -25,7 +26,6 @@ class WebContents;
 }
 
 namespace password_manager {
-struct CredentialUIEntry;
 class PasswordFormManager;
 class PasswordManagerClient;
 }  // namespace password_manager
@@ -58,7 +58,7 @@ class PasswordChangeFromCheckupDelegate {
   ~PasswordChangeFromCheckupDelegate();
 
   void StartPasswordChangeFlow(
-      const password_manager::CredentialUIEntry& credential,
+      password_manager::StoredCredential credential,
       base::WeakPtr<content::WebContents> web_contents,
       StateChangeCallback callback = base::NullCallback());
 
@@ -99,10 +99,8 @@ class PasswordChangeFromCheckupDelegate {
 
   base::WeakPtr<glic::GlicInstance> glic_instance_;
 
-  std::u16string username_;
-  std::u16string current_password_;
+  password_manager::StoredCredential credential_;
   std::u16string generated_password_;
-  GURL credential_url_;
 
   std::optional<actor::TaskId> find_form_task_id_;
 

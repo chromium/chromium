@@ -33,7 +33,8 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -180,7 +181,7 @@ PasswordChangeFromCheckupDelegate::~PasswordChangeFromCheckupDelegate() {
 }
 
 void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
-    const password_manager::CredentialUIEntry& credential,
+    password_manager::StoredCredential credential,
     base::WeakPtr<content::WebContents> web_contents,
     StateChangeCallback callback) {
   if (!web_contents) {
@@ -190,13 +191,11 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   originator_ = std::move(web_contents);
 
   // TODO(crbug.com/485620841): Handle non-web URLs for Android passwords.
-  credential_url_ = credential.GetURL();
-  std::string site_domain(credential_url_.host());
-  username_ = credential.username;
-  current_password_ = credential.password;
+  credential_ = std::move(credential);
+  std::string site_domain(credential_.url.host());
 
-  std::string reach_form_prompt =
-      GetReachFormPrompt(site_domain, base::UTF16ToUTF8(username_));
+  std::string reach_form_prompt = GetReachFormPrompt(
+      site_domain, base::UTF16ToUTF8(credential_.username_value));
 
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(originator_.get());
@@ -210,7 +209,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   }
 
   content::OpenURLParams open_url_params(
-      credential_url_.GetWithEmptyPath(), content::Referrer(),
+      credential_.url.GetWithEmptyPath(), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false);
@@ -325,7 +324,7 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
       task.GetExecutionEngine().SetActorLoginService(
           std::make_unique<
               actor_login::PasswordChangeFromCheckupActorLoginService>(
-              username_, current_password_, credential_url_));
+              password_manager::CloneStoredCredential(credential_)));
     } else {
       return;
     }
@@ -401,7 +400,8 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
       /*logs_uploader=*/nullptr);
 
   form_filler_->FillForm(
-      form_manager, username_, current_password_, generated_password_,
+      form_manager, credential_.username_value,
+      credential_.password_value.value(), generated_password_,
       base::BindOnce(
           &PasswordChangeFromCheckupDelegate::OnChangePasswordFormFilled,
           weak_ptr_factory_.GetWeakPtr()));
@@ -474,7 +474,7 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
       task.GetExecutionEngine().SetActorLoginService(
           std::make_unique<
               actor_login::PasswordChangeFromCheckupActorLoginService>(
-              username_, current_password_, credential_url_));
+              password_manager::CloneStoredCredential(credential_)));
       if (auto logger = GetLoggerIfAvailable(client_)) {
         logger->LogMessage(
             Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED);

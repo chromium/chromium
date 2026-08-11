@@ -25,6 +25,8 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -221,7 +223,7 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
-    const password_manager::CredentialUIEntry& credential,
+    password_manager::StoredCredential credential,
     content::WebContents* web_contents,
     PasswordChangeFromCheckupDelegate::StateChangeCallback callback) {
   if (!web_contents) {
@@ -235,7 +237,7 @@ void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
   }
 
   password_change_from_checkup_delegate_->StartPasswordChangeFlow(
-      credential, web_contents->GetWeakPtr(), std::move(callback));
+      std::move(credential), web_contents->GetWeakPtr(), std::move(callback));
 }
 
 void ChromePasswordChangeService::StopPasswordChangeFromCheckup() {

@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -114,7 +115,7 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
 
   MOCK_METHOD(void,
               StartPasswordChangeFromCheckup,
-              (const password_manager::CredentialUIEntry&,
+              (password_manager::StoredCredential,
                content::WebContents*,
                PasswordChangeFromCheckupDelegate::StateChangeCallback),
               (override));
@@ -558,6 +559,12 @@ TEST_F(PasswordManagerUIHandlerUnitTest, ContinueImport_CallsDelegate) {
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_CallsServiceAndUpdatesState) {
+  InitPresenter();
+  const GURL kTestUrl("https://example.com/login");
+  const std::u16string kTestUsername = u"testuser";
+  CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
+                            /*actor_login_approved=*/true);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordCheckupPrototype);
@@ -572,8 +579,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
-  CredentialUIEntry credential;
-  credential.username = u"testuser";
+  PasswordForm form;
+  form.url = kTestUrl;
+  form.signon_realm = kTestUrl.spec();
+  form.username_value = kTestUsername;
+  CredentialUIEntry credential(form);
   const int kCredentialId = 123;
   EXPECT_CALL(mock_delegate(), GetCredentialFromId(kCredentialId))
       .WillRepeatedly(Return(credential));
@@ -623,6 +633,12 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_NullService_DoesNotCrash) {
+  InitPresenter();
+  const GURL kTestUrl("https://example.com/login");
+  const std::u16string kTestUsername = u"testuser";
+  CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
+                            /*actor_login_approved=*/true);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordCheckupPrototype);
@@ -633,8 +649,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
         return nullptr;
       }));
 
-  CredentialUIEntry credential;
-  credential.username = u"testuser";
+  PasswordForm form;
+  form.url = kTestUrl;
+  form.signon_realm = kTestUrl.spec();
+  form.username_value = kTestUsername;
+  CredentialUIEntry credential(form);
   const int kCredentialId = 123;
   EXPECT_CALL(mock_delegate(), GetCredentialFromId(kCredentialId))
       .WillRepeatedly(Return(credential));
@@ -647,6 +666,12 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        StartPasswordChange_MultipleStateTransitions) {
+  InitPresenter();
+  const GURL kTestUrl("https://example.com/login");
+  const std::u16string kTestUsername = u"testuser";
+  CreateAndSeedPasswordForm(kTestUrl, kTestUsername,
+                            /*actor_login_approved=*/true);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordCheckupPrototype);
@@ -661,8 +686,11 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
       PasswordChangeServiceFactory::GetForProfile(profile_.get()));
   ASSERT_TRUE(mock_service);
 
-  CredentialUIEntry credential;
-  credential.username = u"testuser";
+  PasswordForm form;
+  form.url = kTestUrl;
+  form.signon_realm = kTestUrl.spec();
+  form.username_value = kTestUsername;
+  CredentialUIEntry credential(form);
   const int kCredentialId = 123;
   EXPECT_CALL(mock_delegate(), GetCredentialFromId(kCredentialId))
       .WillRepeatedly(Return(credential));

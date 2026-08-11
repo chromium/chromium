@@ -22,8 +22,7 @@ AutomatedPasswordChangeCredentialFiller::
         base::TimeTicks attempt_login_start_time,
         IsTaskInFocus is_task_in_focus,
         LoginStatusResultOrErrorReply callback,
-        std::u16string username,
-        std::u16string password)
+        password_manager::StoredCredential stored_credential)
     : ActorLoginCredentialFiller(main_frame_origin,
                                  credential,
                                  /*should_store_permission=*/false,
@@ -35,8 +34,10 @@ AutomatedPasswordChangeCredentialFiller::
                                  // so no point in providing the callback.
                                  /*frame_filling_started_cb=*/{},
                                  std::move(callback)),
-      username_(std::move(username)),
-      password_(std::move(password)) {}
+      stored_credential_(std::move(stored_credential)) {
+  stored_credential_.match_type =
+      password_manager::PasswordForm::MatchType::kExact;
+}
 
 AutomatedPasswordChangeCredentialFiller::
     ~AutomatedPasswordChangeCredentialFiller() = default;
@@ -44,12 +45,7 @@ AutomatedPasswordChangeCredentialFiller::
 const password_manager::StoredCredential*
 AutomatedPasswordChangeCredentialFiller::GetMatchingStoredCredential(
     const password_manager::PasswordFormManager& signin_form_manager) {
-  automated_form_.username_value = username_;
-  automated_form_.password_value =
-      password_manager::PasswordString(std::u16string(password_));
-  automated_form_.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
-  return &automated_form_;
+  return &stored_credential_;
 }
 
 bool AutomatedPasswordChangeCredentialFiller::

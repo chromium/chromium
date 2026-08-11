@@ -40,7 +40,8 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -52,13 +53,13 @@
 
 namespace {
 
-password_manager::CredentialUIEntry CreateCredentialUIEntry(const GURL& url) {
+password_manager::StoredCredential CreateStoredCredential(const GURL& url) {
   password_manager::PasswordForm form;
   form.url = url;
   form.signon_realm = url::Origin::Create(url).GetURL().spec();
   form.username_value = u"testuser";
   form.password_value = u"testpass";
-  return password_manager::CredentialUIEntry(form);
+  return password_manager::FromPasswordForm(std::move(form));
 }
 
 std::unique_ptr<KeyedService> CreateMockOptimizationGuideService(
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
       ChromePasswordManagerClient::FromWebContents(web_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     web_contents->GetWeakPtr());
   auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
 
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   content::TestNavigationObserver observer(url.GetWithEmptyPath());
   observer.StartWatchingNewWebContents();
 
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     original_web_contents->GetWeakPtr());
   auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
 
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       ChromePasswordManagerClient::FromWebContents(originator_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
 
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     originator_contents->GetWeakPtr(),
                                     state_change_callback.Get());
   // A new tab for the actuation is opened.
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   content::TestNavigationObserver observer(url.GetWithEmptyPath());
   observer.StartWatchingNewWebContents();
 
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     original_web_contents->GetWeakPtr(),
                                     state_change_callback.Get());
 
@@ -360,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       ChromePasswordManagerClient::FromWebContents(originator_contents));
   const GURL origin_url = embedded_test_server()->GetURL("example.com", "/");
 
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(origin_url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(origin_url),
                                     originator_contents->GetWeakPtr());
   auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
 
@@ -406,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       ChromePasswordManagerClient::FromWebContents(originator_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
 
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     originator_contents->GetWeakPtr());
 
   std::optional<actor::TaskId> dummy_task_id = delegate->GetDummyTaskId();
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
       ChromePasswordManagerClient::FromWebContents(web_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     web_contents->GetWeakPtr());
   auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
 
@@ -473,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>(
       ChromePasswordManagerClient::FromWebContents(web_contents));
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
-  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+  delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
                                     web_contents->GetWeakPtr());
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());

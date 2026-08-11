@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/url_formatter/elide_url.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -26,12 +27,9 @@
 namespace actor_login {
 
 PasswordChangeFromCheckupActorLoginService::
-    PasswordChangeFromCheckupActorLoginService(std::u16string username,
-                                               std::u16string password,
-                                               GURL url)
-    : username_(std::move(username)),
-      password_(std::move(password)),
-      url_(std::move(url)) {}
+    PasswordChangeFromCheckupActorLoginService(
+        password_manager::StoredCredential credential)
+    : credential_(std::move(credential)) {}
 
 PasswordChangeFromCheckupActorLoginService::
     ~PasswordChangeFromCheckupActorLoginService() = default;
@@ -54,7 +52,8 @@ void PasswordChangeFromCheckupActorLoginService::GetCredentials(
     return;
   }
   url::Origin request_origin = client->GetLastCommittedOriginForMainFrame();
-  if (!net::SchemefulSite::IsSameSite(url_, request_origin.GetURL())) {
+  if (!net::SchemefulSite::IsSameSite(credential_.url,
+                                      request_origin.GetURL())) {
     // TODO(crbug.com/511976430): Update metrics for Actor Login.
     std::move(async_callback)
         .Run(base::unexpected(ActorLoginError::kFillingNotAllowed));
@@ -91,9 +90,10 @@ void PasswordChangeFromCheckupActorLoginService::
   std::vector<Credential> credentials;
   Credential credential;
   credential.id = Credential::Id(1);
-  credential.username = username_;
+  credential.username = credential_.username_value;
   credential.source_site_or_app =
-      actor_login::ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(url_);
+      actor_login::ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
+          credential_.url);
   credential.request_origin = request_origin;
   credential.display_origin = url_formatter::FormatOriginForSecurityDisplay(
       credential.request_origin,
@@ -127,10 +127,11 @@ void PasswordChangeFromCheckupActorLoginService::AttemptLogin(
         .Run(base::unexpected(ActorLoginError::kInvalidTabInterface));
     return;
   }
-  CHECK(credential.username == username_);
+  CHECK(credential.username == credential_.username_value);
 
   url::Origin request_origin = client->GetLastCommittedOriginForMainFrame();
-  if (!net::SchemefulSite::IsSameSite(url_, request_origin.GetURL())) {
+  if (!net::SchemefulSite::IsSameSite(credential_.url,
+                                      request_origin.GetURL())) {
     // TODO(crbug.com/511976430): Update metrics for Actor Login.
     std::move(async_callback).Run(LoginStatusResult::kErrorNoSigninForm);
     return;
@@ -161,8 +162,8 @@ void PasswordChangeFromCheckupActorLoginService::AttemptLogin(
       std::make_unique<AutomatedPasswordChangeCredentialFiller>(
           request_origin, credential, password_manager_client,
           /*mqls_logger=*/nullptr, attempt_login_tool_start_time,
-          base::NullCallback(), std::move(async_callback), username_,
-          password_);
+          base::NullCallback(), std::move(async_callback),
+          password_manager::CloneStoredCredential(credential_));
 
   credential_filler_->AttemptLogin(password_manager);
 }

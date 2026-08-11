@@ -23,6 +23,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -364,14 +365,25 @@ void PasswordManagerUIHandler::StartPasswordChange(int credential_id) {
     return;
   }
 
+  auto* presenter = passwords_private_delegate_->GetSavedPasswordsPresenter();
+  if (!presenter) {
+    return;
+  }
+  std::vector<password_manager::StoredCredential> stored_credentials =
+      presenter->GetCorrespondingStoredCredentials(*credential);
+  if (stored_credentials.empty()) {
+    return;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   auto* service = PasswordChangeServiceFactory::GetForProfile(profile);
   if (service) {
     service->StartPasswordChangeFromCheckup(
-        *credential, web_contents_,
-        base::BindRepeating(&PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated,
-                            weak_ptr_factory_.GetWeakPtr(), credential_id));
+        std::move(stored_credentials.front()), web_contents_,
+        base::BindRepeating(
+            &PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated,
+            weak_ptr_factory_.GetWeakPtr(), credential_id));
   }
 }
 
