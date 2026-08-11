@@ -1957,6 +1957,23 @@ public class StripLayoutHelper
     }
 
     /**
+     * Called when a set of tabs are going to be closed.
+     *
+     * @param tabs The list of tabs being closed.
+     * @param isAllTabs Whether all tabs are closing.
+     * @param allowUndo Whether undo is allowed for this closure.
+     */
+    public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+        if (isAllTabs) {
+            willCloseAllTabs();
+            return;
+        }
+        for (Tab tab : tabs) {
+            willCloseTab(tab);
+        }
+    }
+
+    /**
      * Called when a tab close has been undone and the tab has been restored. This also re-selects
      * the last tab the user was on before the tab was closed.
      *

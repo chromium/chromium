@@ -1572,6 +1572,20 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        if (tabs.isEmpty()) return;
+                        getStripLayoutHelper(tabs.get(0).isIncognitoBranded())
+                                .willCloseTabs(tabs, isAllTabs, allowUndo);
+                        for (Tab tab : tabs) {
+                            unregisterActorObserver(tab);
+                        }
+                        if (isAllTabs) {
+                            mTrailingButtonsCoordinator.updateTrailingButtons();
+                        }
+                    }
+
+                    @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (tab.getId() == lastId) return;
                         getStripLayoutHelper(tab.isIncognitoBranded())
