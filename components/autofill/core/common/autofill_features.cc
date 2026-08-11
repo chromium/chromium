@@ -352,7 +352,7 @@ BASE_FEATURE(kAutofillAiShowDialogInSettingsWhenUpstreamingFails,
 // If enabled, a loading dialog is shown to the user during the time their data
 // is fetched from the server.
 BASE_FEATURE(kAutofillAiShowPersonalContextFillingYourInfoDialog,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls whether a banner is shown in settings when wallet data sharing is
