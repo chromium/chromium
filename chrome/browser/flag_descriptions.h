@@ -5456,6 +5456,11 @@ inline constexpr char kAndroidDesktopBookmarkPopupDescription[] =
     "Enables the desktop-styled anchor popup when adding or editing a bookmark "
     "on Android Desktop devices.";
 
+inline constexpr char kAndroidDesktopBookmarkLayoutName[] =
+    "Android Desktop Bookmark Layout";
+inline constexpr char kAndroidDesktopBookmarkLayoutDescription[] =
+    "Enables the desktop-styled bookmark layout on Android Desktop devices.";
+
 inline constexpr char kAndroidDesktopUAPlatformName[] =
     "Android platform client hint for Desktop Android";
 inline constexpr char kAndroidDesktopUAPlatformDescription[] =

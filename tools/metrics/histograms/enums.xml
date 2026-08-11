@@ -20884,6 +20884,7 @@ from previous Chrome versions.
   <int value="1972275425" label="DevToolsAutomaticFileSystems:disabled"/>
   <int value="1972720114" label="WebPaymentsJustInTimePaymentApp:enabled"/>
   <int value="1973376634" label="WebXRMultiGpu:enabled"/>
+  <int value="1973449518" label="AndroidDesktopBookmarkLayout:enabled"/>
   <int value="1974013089" label="EmptyStates:enabled"/>
   <int value="1974565950" label="enable-experimental-accessibility-labels"/>
   <int value="1974776131" label="MediaFeeds:disabled"/>
@@ -21359,6 +21360,7 @@ from previous Chrome versions.
   <int value="2123567684" label="OptimizeLoadingIPCForSmallResources:enabled"/>
   <int value="2123779715" label="InlineScriptCache:disabled"/>
   <int value="2123977420" label="ZeroSuggestPrefetchDebouncing:disabled"/>
+  <int value="2124646345" label="AndroidDesktopBookmarkLayout:disabled"/>
   <int value="2124727851" label="data-sharing-debug-logs"/>
   <int value="2125095302" label="AutofillEnableAiCardRecommendation:enabled"/>
   <int value="2125732298" label="RetailCoupons:disabled"/>
