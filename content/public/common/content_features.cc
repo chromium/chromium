@@ -253,6 +253,11 @@ BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
 
 BASE_FEATURE(kCompositeBGColorAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Defer Session Storage scavenging to avoid LevelDB initialization blocking
+// the critical path of startup.
+BASE_FEATURE(kDeferSessionStorageScavengingOnStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until

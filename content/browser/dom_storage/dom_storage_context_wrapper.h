@@ -92,6 +92,9 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   scoped_refptr<SessionStorageNamespace> RecreateSessionStorage(
       const std::string& namespace_id) override;
   void StartScavengingUnusedSessionStorage() override;
+  bool scavenging_started_for_testing() const {
+    return scavenging_started_for_testing_;
+  }
 
   // Used by content settings to alter the behavior around
   // what data to keep and what data to discard at shutdown.
@@ -191,6 +194,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
 
   std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  bool scavenging_started_for_testing_ = false;
 };
 
 }  // namespace content

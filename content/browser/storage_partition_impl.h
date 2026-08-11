@@ -246,7 +246,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
-  void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+  void OverrideDeleteStaleSessionCleanupDelayForTesting(
       const base::TimeDelta& delay) override;
 
   // TODO(crbug.com/352651664): Consider merging to
@@ -732,6 +732,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
   void DeleteStaleSessionOnlyCookiesAfterDelay();
+  void DeleteStaleSessionDataAfterDelay();
 
   void ClearNetworkRestrictionsAfterDelayCallback(
       const std::vector<base::UnguessableToken>& network_restrictions_ids);
@@ -889,10 +890,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::map<base::UnguessableToken, network::ConnectionAllowlists>
       network_restrictions_ids_;
 
-  // We need to delay deleting stale session cookies until after the cookie db
-  // has initialized, otherwise we will bypass lazy loading and block.
-  // See crbug.com/40285083 for more info.
-  base::TimeDelta delete_stale_session_only_cookies_delay_{base::Minutes(1)};
+  // Delay used for deferring stale session cookies deletion and stale session
+  // storage scavenging on browser startup to avoid blocking critical paths.
+  base::TimeDelta stale_session_cleanup_delay_{base::Minutes(1)};
 
   // We need a delay when removing fenced frame nonces from here and from the
   // network service, to avoid races where a fenced frame could regain network

@@ -1949,25 +1949,43 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
 
 
 void StoragePartitionImpl::DeleteStaleSessionData() {
-  GetDOMStorageContext()->StartScavengingUnusedSessionStorage();
-  // We need to delay deleting stale session cookies until after the cookie db
-  // has initialized, otherwise we will bypass lazy loading and block.
-  // See crbug.com/40285083 for more info.
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          &StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay,
-          weak_factory_.GetWeakPtr()),
-      delete_stale_session_only_cookies_delay_);
+  if (base::FeatureList::IsEnabled(
+          features::kDeferSessionStorageScavengingOnStartup)) {
+    // Defer session storage scavenging to avoid LevelDB initialization
+    // blocking the critical path of startup. We reuse the cookie delay
+    // to batch these cleanup tasks.
+    GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&StoragePartitionImpl::DeleteStaleSessionDataAfterDelay,
+                       weak_factory_.GetWeakPtr()),
+        stale_session_cleanup_delay_);
+  } else {
+    GetDOMStorageContext()->StartScavengingUnusedSessionStorage();
+    // We need to delay deleting stale session cookies until after the cookie db
+    // has initialized, otherwise we will bypass lazy loading and block.
+    // See crbug.com/40285083 for more info.
+    GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay,
+            weak_factory_.GetWeakPtr()),
+        stale_session_cleanup_delay_);
+  }
 }
 
 void StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay() {
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   GetCookieManagerForBrowserProcess()->DeleteStaleSessionOnlyCookies(
       base::BindOnce([](const uint32_t num_deleted) {
         base::UmaHistogramCounts10M(
             "Cookie.StaleSessionCookiesDeletedOnStartup", num_deleted);
       }));
+}
+
+void StoragePartitionImpl::DeleteStaleSessionDataAfterDelay() {
+  GetDOMStorageContext()->StartScavengingUnusedSessionStorage();
+  DeleteStaleSessionOnlyCookiesAfterDelay();
 }
 
 void StoragePartitionImpl::OpenLocalStorage(
@@ -3318,9 +3336,9 @@ void StoragePartitionImpl::SetNetworkContextForTesting(
       std::move(network_context_remote));
 }
 
-void StoragePartitionImpl::OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+void StoragePartitionImpl::OverrideDeleteStaleSessionCleanupDelayForTesting(
     const base::TimeDelta& delay) {
-  delete_stale_session_only_cookies_delay_ = delay;
+  stale_session_cleanup_delay_ = delay;
 }
 
 void StoragePartitionImpl::

@@ -369,7 +369,7 @@ class CONTENT_EXPORT StoragePartition {
   static void SetDefaultQuotaSettingsForTesting(
       const storage::QuotaSettings* settings);
 
-  virtual void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+  virtual void OverrideDeleteStaleSessionCleanupDelayForTesting(
       const base::TimeDelta& delay) = 0;
 
  protected:

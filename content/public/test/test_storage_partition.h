@@ -237,7 +237,7 @@ class TestStoragePartition : public StoragePartition {
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
-  void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+  void OverrideDeleteStaleSessionCleanupDelayForTesting(
       const base::TimeDelta& delay) override {}
 
   base::WeakPtr<StoragePartition> GetWeakPtr();
