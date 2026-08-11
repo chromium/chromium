@@ -284,6 +284,8 @@ TEST_P(RequestSenderTest, RequestSendCupError) {
   histogram_tester.ExpectUniqueSample("UpdateClient.CupValidationResult", false,
                                       1);
   histogram_tester.ExpectTotalCount("UpdateClient.CupValidationTime", 1);
+  histogram_tester.ExpectUniqueSample("UpdateClient.CupFallbackToEtag", false,
+                                      1);
 }
 
 TEST_P(RequestSenderTest, RetryAfterSecClamped) {
@@ -345,6 +347,43 @@ TEST_P(RequestSenderTest, CupKeySelection) {
   EXPECT_TRUE(IsPqcCupSigningEnabled()
                   ? query.starts_with("cup2key=ML-DSA-44-16:")
                   : query.starts_with("cup2key=16:"));
+}
+
+TEST_P(RequestSenderTest, CupFallbackToEtagHistogram_XCupServerProofPreferred) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(post_interceptor_->ExpectRequest(
+      std::make_unique<PartialMatch>("test"),
+      GetTestFilePath("updatecheck_reply_1.json"),
+      {{"X-Cup-Server-Proof", "some_proof"}, {"ETag", "proof"}}));
+
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
+  request_sender_->Send(
+      {GURL(kUrl1)}, {}, "test", true,
+      base::BindOnce(&RequestSenderTest::RequestSenderComplete,
+                     base::Unretained(this)));
+  RunThreads();
+
+  histogram_tester.ExpectUniqueSample("UpdateClient.CupFallbackToEtag", false,
+                                      1);
+}
+
+TEST_P(RequestSenderTest, CupFallbackToEtagHistogram_EtagFallback) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(post_interceptor_->ExpectRequest(
+      std::make_unique<PartialMatch>("test"),
+      GetTestFilePath("updatecheck_reply_1.json"), {{"ETag", "proof"}}));
+
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
+  request_sender_->Send(
+      {GURL(kUrl1)}, {}, "test", true,
+      base::BindOnce(&RequestSenderTest::RequestSenderComplete,
+                     base::Unretained(this)));
+  RunThreads();
+
+  histogram_tester.ExpectUniqueSample("UpdateClient.CupFallbackToEtag", true,
+                                      1);
 }
 
 }  // namespace update_client

@@ -291,6 +291,8 @@ void RequestSender::SendInternalComplete(
     }
 
     CHECK(use_signing_);
+    metrics::RecordCupFallbackToEtag(response_cup_server_proof.empty() &&
+                                     !response_etag.empty());
     const base::TimeTicks start_time = base::TimeTicks::Now();
     const bool valid = signer_.ValidateResponse(
         response_body,
