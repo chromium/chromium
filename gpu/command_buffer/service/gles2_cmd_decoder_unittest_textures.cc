@@ -4307,6 +4307,7 @@ TEST_P(GLES3DecoderTest, ImmutableTextureBaseLevelMaxLevelClamping) {
   GLsizei kDepth = 20;
   GLint kClampedBaseLevel = kLevels - 1;
   GLint kClampedMaxLevel = kLevels - 1;
+  GLint kMax3DLevel = 10;  // log2(kMax3DTextureSize (1024))
 
   DoBindTexture(kTarget, client_texture_id_, kServiceTextureId);
   TextureRef* texture_ref =
@@ -4314,9 +4315,10 @@ TEST_P(GLES3DecoderTest, ImmutableTextureBaseLevelMaxLevelClamping) {
   ASSERT_TRUE(texture_ref != nullptr);
   Texture* texture = texture_ref->texture();
 
-  // Before TexStorage3D call, base/max levels are not clamped.
+  // Before TexStorage3D call, base/max levels are clamped to target max levels.
   {
-    EXPECT_CALL(*gl_, TexParameteri(kTarget, GL_TEXTURE_BASE_LEVEL, kBaseLevel))
+    EXPECT_CALL(*gl_,
+                TexParameteri(kTarget, GL_TEXTURE_BASE_LEVEL, kMax3DLevel))
         .Times(1)
         .RetiresOnSaturation();
     cmds::TexParameteri cmd;
@@ -4324,7 +4326,7 @@ TEST_P(GLES3DecoderTest, ImmutableTextureBaseLevelMaxLevelClamping) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   }
   {
-    EXPECT_CALL(*gl_, TexParameteri(kTarget, GL_TEXTURE_MAX_LEVEL, kMaxLevel))
+    EXPECT_CALL(*gl_, TexParameteri(kTarget, GL_TEXTURE_MAX_LEVEL, kMax3DLevel))
         .Times(1)
         .RetiresOnSaturation();
     cmds::TexParameteri cmd;
@@ -4332,8 +4334,8 @@ TEST_P(GLES3DecoderTest, ImmutableTextureBaseLevelMaxLevelClamping) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   }
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(kBaseLevel, texture->base_level());
-  EXPECT_EQ(kMaxLevel, texture->max_level());
+  EXPECT_EQ(kMax3DLevel, texture->base_level());
+  EXPECT_EQ(kMax3DLevel, texture->max_level());
 
   {
     EXPECT_CALL(*gl_, TexStorage3D(kTarget, kLevels, kInternalFormat, kWidth,
@@ -4420,7 +4422,9 @@ TEST_P(GLES3DecoderTest, ClearRenderableLevelsWithOutOfRangeBaseLevel) {
   ASSERT_TRUE(texture_ref != nullptr);
 
   {
-    EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 55));
+    // GL_TEXTURE_2D max levels is log2(kMaxTextureSize (2048)) = 11.
+    // 55 is clamped to 11.
+    EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 11));
     cmds::TexParameteri cmd;
     cmd.Init(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 55);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));

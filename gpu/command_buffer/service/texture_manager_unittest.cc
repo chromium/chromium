@@ -295,6 +295,80 @@ TEST_F(TextureManagerES3Test, UseDefaultTexturesFalseES3) {
   manager.Destroy();
 }
 
+TEST_F(TextureManagerES3Test, BaseMaxLevelClampingMutable) {
+  const GLuint kClient1Id = 1;
+  const GLuint kService1Id = 11;
+  manager_->CreateTexture(kClient1Id, kService1Id);
+  TextureRef* texture_ref = manager_->GetTexture(kClient1Id);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  manager_->SetTarget(texture_ref, GL_TEXTURE_2D);
+
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 5))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref,
+                          GL_TEXTURE_BASE_LEVEL, 10);
+  EXPECT_EQ(5, texture->base_level());
+  EXPECT_EQ(10, texture->unclamped_base_level());
+
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 5))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref,
+                          GL_TEXTURE_MAX_LEVEL, 10);
+  EXPECT_EQ(5, texture->max_level());
+  EXPECT_EQ(10, texture->unclamped_max_level());
+}
+
+TEST_F(TextureManagerES3Test, CompletenessUsesUnclampedBaseLevel) {
+  const GLuint kClient1Id = 1;
+  const GLuint kService1Id = 11;
+  manager_->CreateTexture(kClient1Id, kService1Id);
+  TextureRef* texture_ref = manager_->GetTexture(kClient1Id);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  manager_->SetTarget(texture_ref, GL_TEXTURE_2D);
+
+  manager_->SetLevelInfo(texture_ref, GL_TEXTURE_2D, 0, GL_RGBA, 4, 4, 1, 0,
+                         GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(4, 4));
+
+  EXPECT_CALL(*gl_,
+              TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref,
+                          GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  // Set MAX_LEVEL to 0 to make it mipmap complete with only level 0 defined.
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref,
+                          GL_TEXTURE_MAX_LEVEL, 0);
+
+  EXPECT_TRUE(texture->texture_complete());
+
+  // Set BASE_LEVEL to 10 (out of range). Clamped to 5.
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 5))
+      .Times(1)
+      .RetiresOnSaturation();
+  manager_->SetParameteri("", error_state_.get(), texture_ref,
+                          GL_TEXTURE_BASE_LEVEL, 10);
+
+  EXPECT_EQ(5, texture->base_level());
+  EXPECT_EQ(10, texture->unclamped_base_level());
+
+  // Define level 5. If we only checked base_level_ (5), it would be complete
+  // (since level 5 is defined and MAX_LEVEL is 0 which is clamped to 5, so
+  // levels 5 to 5 are defined).
+  // But unclamped_base_level_ is 10, so it should be incomplete.
+  manager_->SetLevelInfo(texture_ref, GL_TEXTURE_2D, 5, GL_RGBA, 1, 1, 1, 0,
+                         GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
+
+  EXPECT_FALSE(texture->texture_complete());
+}
+
 TEST_F(TextureManagerTest, TextureUsageExt) {
   TestHelper::SetupTextureManagerInitExpectations(
       gl_.get(), false, false, {"GL_ANGLE_texture_usage"}, kUseDefaultTextures);
