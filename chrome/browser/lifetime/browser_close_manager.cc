@@ -20,6 +20,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -214,7 +215,6 @@ void BrowserCloseManager::CloseBrowsers() {
         bool ignore_unload_handlers =
             browser_shutdown::ShouldIgnoreUnloadHandlers();
 
-        Browser* const browser = browser_window->GetBrowserForMigrationOnly();
         UnloadController::From(browser_window)
             ->set_force_skip_warning_user_on_close(ignore_unload_handlers);
         browser_window->GetWindow()->Close();
@@ -228,7 +228,7 @@ void BrowserCloseManager::CloseBrowsers() {
           // the tabs to make sure the browser is destroyed and cleanup can
           // happen.
           browser_window->GetTabStripModel()->CloseAllTabs();
-          browser->SynchronouslyDestroyBrowser();
+          BrowserManagerService::SynchronouslyDestroyBrowser(browser_window);
         }
         return true;
       });

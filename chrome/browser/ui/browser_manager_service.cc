@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -26,6 +27,17 @@ BrowserManagerService::BrowserManagerService(Profile* profile)
 }
 
 BrowserManagerService::~BrowserManagerService() = default;
+
+// static
+void BrowserManagerService::SynchronouslyDestroyBrowser(
+    BrowserWindowInterface* browser) {
+  CHECK(browser);
+  // TODO(crbug.com/413168662): Eliminate the need for BrowserCloseManager to
+  // call this directly, instead allow Browsers to be destroyed by their owning
+  // BrowserManagerService at shutdown.
+  BrowserManagerServiceFactory::GetForProfile(browser->GetProfile())
+      ->DeleteBrowser(browser);
+}
 
 void BrowserManagerService::Shutdown() {
   CHECK(browsers_and_subscriptions_for_testing_.empty());
@@ -95,13 +107,14 @@ void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
   }
 }
 
-void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
+void BrowserManagerService::DeleteBrowser(
+    BrowserWindowInterface* removed_browser) {
   // Extract the Browser from `browsers_and_subscriptions_` before deleting to
   // avoid UAF risk in the case of re-entrancy.
   std::optional<BrowserAndSubscriptions> target_browser_and_subscriptions;
   auto it = std::ranges::find_if(
       browsers_and_subscriptions_,
-      [&removed_browser](
+      [removed_browser](
           const BrowserAndSubscriptions& browser_and_subscriptions) {
         return browser_and_subscriptions.browser.get() == removed_browser;
       });

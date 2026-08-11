@@ -18,6 +18,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -387,7 +388,7 @@ void BrowserWidget::OnNativeWidgetDestroyed() {
   UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
   UnloadController::From(browser)->OnWindowClosing();
   Widget::OnNativeWidgetDestroyed();
-  browser->SynchronouslyDestroyBrowser();
+  BrowserManagerService::SynchronouslyDestroyBrowser(browser);
 }
 
 void BrowserWidget::ShowContextMenuForViewImpl(

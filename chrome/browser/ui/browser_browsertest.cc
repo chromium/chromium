@@ -70,6 +70,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
@@ -3418,7 +3419,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserCloseEmitsClosedNotificationsOnce) {
 }
 
 // Asserts that browser propagates browser closed notifications in the case the
-// object is synchronously destroyed via `SynchronouslyDestroyBrowser()`.
+// object is synchronously destroyed via
+// `BrowserManagerService::SynchronouslyDestroyBrowser()`.
 IN_PROC_BROWSER_TEST_F(BrowserTest,
                        BrowserCloseEmitsClosedNotificationsWhenDestroyed) {
   Browser* const new_browser = CreateBrowser(GetProfile());
@@ -3432,7 +3434,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       new_browser->RegisterBrowserDidClose(browser_did_close_callback.Get());
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  new_browser->SynchronouslyDestroyBrowser();
+  BrowserManagerService::SynchronouslyDestroyBrowser(new_browser);
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 }
 

@@ -183,13 +183,6 @@ class Browser : public TabStripModelObserver,
   DesktopBrowserWindowCapabilities* capabilities() override;
   const DesktopBrowserWindowCapabilities* capabilities() const override;
 
-  // Synchronously destroys the browser, `this` is no longer valid after the
-  // operation completes.
-  // WARNING: Clients should generally not use this and instead prefer
-  // requesting the browser close via BrowserWindow::Close(), which happens
-  // async and allows graceful teardown of the tab strip and associated data.
-  void SynchronouslyDestroyBrowser();
-
  private:
   friend class BrowserTest;
   friend class BrowserWebContentsDelegate;

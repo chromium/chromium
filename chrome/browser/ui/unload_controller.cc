@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -973,8 +974,14 @@ void UnloadController::OnWindowCloseComplete() {
   // TODO(crbug.com/413168662): Explore synchronously destroying the browser
   // instead.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
-                                browser_->AsWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<BrowserWindowInterface> browser) {
+            if (browser) {
+              BrowserManagerService::SynchronouslyDestroyBrowser(browser.get());
+            }
+          },
+          browser_->GetWeakPtr()));
 }
 
 base::CallbackListSubscription UnloadController::RegisterBrowserDidClose(

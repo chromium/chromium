@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_manager_service.h"
-#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -196,8 +195,7 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
     browsers_.clear();
 
     for (Browser* browser : local_browsers) {
-      BrowserManagerServiceFactory::GetForProfile(browser->GetProfile())
-          ->DeleteBrowser(browser);
+      BrowserManagerService::SynchronouslyDestroyBrowser(browser);
     }
 
     printing::PrintPreviewBrowserTest::TearDownOnMainThread();

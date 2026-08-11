@@ -525,14 +525,6 @@ base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
       std::move(callback));
 }
 
-void Browser::SynchronouslyDestroyBrowser() {
-  // TODO(crbug.com/413168662): Eliminate the need for BrowserCloseManager to
-  // call this directly, instead allow Browsers to be destroyed by their owning
-  // BrowserManagerService at shutdown.
-  BrowserManagerServiceFactory::GetForProfile(profile_)->DeleteBrowser(this);
-  // `this` is no longer valid from this point forward.
-}
-
 BrowserWindowInterface::Type Browser::GetType() const {
   return type_;
 }
