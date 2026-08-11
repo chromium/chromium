@@ -19,6 +19,7 @@ struct CallTimerState {
     kApplyFieldsAction,
     kBatchSelectOptionChange,
     kDidChangeScrollOffsetImpl,
+    kDidReceiveKeyDown,
     kExtractForm,
     kFocusedElementChanged,
     kGetFormDataFromUnownedInputElements,

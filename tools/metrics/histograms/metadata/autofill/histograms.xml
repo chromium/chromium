@@ -395,6 +395,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BatchSelectOptionChange"/>
   <variant name="DidChangeScrollOffsetImpl"/>
   <variant name="DidDispatchDomContentLoadedEvent"/>
+  <variant name="DidReceiveKeyDown"/>
   <variant name="EmitFormIssuesToDevtools"/>
   <variant name="ExtractForm"/>
   <variant name="ExtractForms"/>

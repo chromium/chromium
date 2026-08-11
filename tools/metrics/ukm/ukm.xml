@@ -3050,6 +3050,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.AtAtPressed">
+  <owner>schwering@google.com</owner>
+  <owner>autofill-internal@google.com</owner>
+  <summary>
+    Recorded whenever the user hits &quot;@&quot; twice in quick succession.
+  </summary>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The field signature of the field where the &quot;@@&quot; sequence was
+      typed (value taken modulo 1021).
+    </summary>
+  </metric>
+  <metric name="FormControlType" enum="AutofillFormControlType2">
+    <summary>
+      The form control type of the field where &quot;@@&quot; was typed.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The form signature of the form where &quot;@@&quot; was typed (value taken
+      modulo 1021).
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
