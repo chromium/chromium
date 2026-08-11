@@ -109,7 +109,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     }
 
     const gfx::Size& coded_size = frame->coded_size();
-    new_frame = media::VideoFrame::CreateFrame(
+    new_frame = media::VideoFrame::CreateZeroInitializedFrame(
         frame->format(), coded_size, frame->visible_rect(),
         frame->natural_size(), frame->timestamp());
     if (!new_frame) {
