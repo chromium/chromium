@@ -173,8 +173,7 @@ class ReadAnythingAppController
       base::ListValue languages_enabled_in_pref,
       read_anything::mojom::HighlightGranularity granularity,
       read_anything::mojom::LineFocus last_non_disabled_line_focus,
-      bool line_focus_enabled,
-      const std::vector<std::string>& recently_used_fonts) override;
+      bool line_focus_enabled) override;
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;

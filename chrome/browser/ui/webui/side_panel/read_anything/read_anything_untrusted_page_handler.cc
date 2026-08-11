@@ -883,19 +883,6 @@ void ReadAnythingUntrustedPageHandler::OnLetterSpaceChange(
       std::to_underlying(letter_spacing));
 }
 void ReadAnythingUntrustedPageHandler::OnFontChange(const std::string& font) {
-  if (features::IsReadAnythingImprovedUiEnabled()) {
-    PrefService* prefs = profile_->GetPrefs();
-    prefs->SetString(prefs::kAccessibilityReadAnythingFontName, font);
-    ScopedListPrefUpdate update(
-        prefs, prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    base::ListValue& list = update.Get();
-    list.EraseValue(base::Value(font));
-    list.Insert(list.begin(), base::Value(font));
-    if (list.size() > kReadAnythingMaxRecentFonts) {
-      list.resize(kReadAnythingMaxRecentFonts);
-    }
-    return;
-  }
   profile_->GetPrefs()->SetString(prefs::kAccessibilityReadAnythingFontName,
                                   font);
 }
@@ -1963,21 +1950,6 @@ void ReadAnythingUntrustedPageHandler::RestoreSettingsFromPrefs() {
           ? static_cast<read_anything::mojom::LineFocus>(prefs->GetInteger(
                 prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus))
           : read_anything::mojom::LineFocus::kDefaultValue;
-  std::vector<std::string> recently_used_fonts;
-  if (features::IsReadAnythingImprovedUiEnabled()) {
-    const base::ListValue& recent_fonts_list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    recently_used_fonts.reserve(
-        std::min(recent_fonts_list.size(), kReadAnythingMaxRecentFonts));
-    for (const auto& item : recent_fonts_list) {
-      if (recently_used_fonts.size() >= kReadAnythingMaxRecentFonts) {
-        break;
-      }
-      if (item.is_string() && !item.GetString().empty()) {
-        recently_used_fonts.push_back(item.GetString());
-      }
-    }
-  }
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(
@@ -1995,8 +1967,7 @@ void ReadAnythingUntrustedPageHandler::RestoreSettingsFromPrefs() {
       prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled).Clone(),
       static_cast<read_anything::mojom::HighlightGranularity>(prefs->GetDouble(
           prefs::kAccessibilityReadAnythingHighlightGranularity)),
-      last_non_disabled_line_focus, line_focus_enabled,
-      std::move(recently_used_fonts));
+      last_non_disabled_line_focus, line_focus_enabled);
 }
 
 void ReadAnythingUntrustedPageHandler::

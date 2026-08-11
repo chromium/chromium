@@ -88,11 +88,6 @@ void RegisterReadAnythingProfilePrefs(
         static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
-  if (features::IsReadAnythingImprovedUiEnabled()) {
-    registry->RegisterListPref(
-        prefs::kAccessibilityReadAnythingRecentlyUsedFonts, base::ListValue(),
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -170,130 +170,6 @@ TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_EQ(font_name, model().font_name());
 }
 
-TEST_F(ReadAnythingAppModelTest,
-       RecentlyUsedFonts_NoEffectWhenImprovedUiDisabled) {
-  // When improved UI is disabled, calling UpdateRecentlyUsedFonts should not
-  // reorder.
-  std::vector<std::string> default_fonts =
-      model().prioritized_supported_fonts();
-  model().UpdateRecentlyUsedFonts("Serif");
-  EXPECT_EQ(model().prioritized_supported_fonts(), default_fonts);
-}
-
-class ReadAnythingAppModelImprovedUiTest : public ReadAnythingAppModelTest {
- public:
-  ReadAnythingAppModelImprovedUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kReadAnythingImprovedUi);
-  }
-  ~ReadAnythingAppModelImprovedUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ReadAnythingAppModelImprovedUiTest, GetPrioritizedSupportedFonts) {
-  // By default (before language is explicitly set), model().supported_fonts()
-  // contains: "Poppins", "Sans-serif", "Serif", "Comic Neue", "Lexend Deca",
-  // "EB Garamond", "STIX Two Text", "Andika", "Atkinson Hyperlegible Next".
-
-  // Populate MRU fonts: include supported fonts ("Serif", "Poppins") and an
-  // unsupported font ("Times New Roman", which is not in default supported
-  // fonts).
-  model().UpdateRecentlyUsedFonts("Times New Roman");
-  model().UpdateRecentlyUsedFonts("Serif");
-  model().UpdateRecentlyUsedFonts("Poppins");
-
-  const std::vector<std::string>& prioritized_fonts =
-      model().prioritized_supported_fonts();
-
-  // Verify supported recently used fonts are moved in order without duplicates.
-  ASSERT_GE(prioritized_fonts.size(), 2u);
-  EXPECT_EQ(prioritized_fonts[0], "Poppins");
-  EXPECT_EQ(prioritized_fonts[1], "Serif");
-
-  // Verify unsupported font is filtered out.
-  EXPECT_FALSE(std::ranges::contains(prioritized_fonts, "Times New Roman"));
-
-  // Verify remaining default fonts are appended in their original order without
-  // duplicates.
-  EXPECT_THAT(
-      prioritized_fonts,
-      testing::ElementsAre("Poppins", "Serif", "Sans-serif", "Comic Neue",
-                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                           "Andika", "Atkinson Hyperlegible Next"));
-}
-
-TEST_F(ReadAnythingAppModelImprovedUiTest, UpdateRecentlyUsedFonts) {
-  std::vector<std::string> default_fonts =
-      model().prioritized_supported_fonts();
-  ASSERT_GE(default_fonts.size(), 3u);
-  std::string font1 = default_fonts[1];
-  std::string font2 = default_fonts[2];
-
-  // Calling UpdateRecentlyUsedFonts should move the font to the head.
-  model().UpdateRecentlyUsedFonts(font1);
-  EXPECT_EQ(model().prioritized_supported_fonts().front(), font1);
-
-  // Calling it again with another font should move it to the head.
-  model().UpdateRecentlyUsedFonts(font2);
-  EXPECT_EQ(model().prioritized_supported_fonts().front(), font2);
-  EXPECT_EQ(model().prioritized_supported_fonts()[1], font1);
-}
-
-TEST_F(ReadAnythingAppModelImprovedUiTest, OnSettingsRestoredFromPrefs) {
-  auto line_spacing = read_anything::mojom::LineSpacing::kLoose;
-  auto letter_spacing = read_anything::mojom::LetterSpacing::kWide;
-  std::string font_name = "Roboto";
-  double font_size = 3.0;
-  bool links_enabled = false;
-  bool images_enabled = true;
-  auto color = read_anything::mojom::Colors::kDark;
-  auto line_focus_enabled_mode =
-      read_anything::mojom::LineFocus::kMediumCursorWindow;
-
-  std::vector<std::string> recently_used_fonts = {"Serif", "Poppins"};
-
-  model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
-                                      font_size, links_enabled, images_enabled,
-                                      color, line_focus_enabled_mode, false,
-                                      recently_used_fonts);
-
-  // When improved UI is enabled, prioritized_supported_fonts starts with
-  // recently_used_fonts.
-  ASSERT_GE(model().prioritized_supported_fonts().size(), 2u);
-  EXPECT_EQ(model().prioritized_supported_fonts()[0], "Serif");
-  EXPECT_EQ(model().prioritized_supported_fonts()[1], "Poppins");
-}
-
-class ReadAnythingAppModelImprovedUiDisabledTest
-    : public ReadAnythingAppModelTest {
- public:
-  ReadAnythingAppModelImprovedUiDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kReadAnythingImprovedUi);
-  }
-  ~ReadAnythingAppModelImprovedUiDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ReadAnythingAppModelImprovedUiDisabledTest,
-       GetPrioritizedSupportedFonts) {
-  model().UpdateRecentlyUsedFonts("Serif");
-  model().UpdateRecentlyUsedFonts("Poppins");
-
-  // When improved UI is disabled, MRU fonts must NOT reorder the supported
-  // fonts list.
-  EXPECT_EQ(model().prioritized_supported_fonts(), model().supported_fonts());
-  EXPECT_THAT(
-      model().prioritized_supported_fonts(),
-      testing::ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
-                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                           "Andika", "Atkinson Hyperlegible Next"));
-}
-
 TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kWide;
@@ -305,12 +181,9 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   auto line_focus_enabled_mode =
       read_anything::mojom::LineFocus::kMediumCursorWindow;
 
-  std::vector<std::string> recently_used_fonts = {"Roboto", "Arial"};
-
   model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                                       font_size, links_enabled, images_enabled,
-                                      color, line_focus_enabled_mode, false,
-                                      recently_used_fonts);
+                                      color, line_focus_enabled_mode, false);
 
   EXPECT_EQ(line_spacing, model().line_spacing());
   EXPECT_EQ(letter_spacing, model().letter_spacing());
@@ -321,7 +194,6 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(color, model().color_theme());
   EXPECT_EQ(line_focus_enabled_mode, model().last_non_disabled_line_focus());
   EXPECT_FALSE(model().line_focus_enabled());
-  EXPECT_EQ(model().prioritized_supported_fonts(), model().supported_fonts());
 }
 
 TEST_F(ReadAnythingAppModelTest, ResetLineFocusSession_ResetsToStartingValue) {

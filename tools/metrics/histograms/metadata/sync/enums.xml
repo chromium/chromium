@@ -822,7 +822,6 @@ chromium-metrics-reviews@google.com.
   <int value="100384" label="ProfileDefaultContentSettingValuesInlineCueMenu"/>
   <int value="100385" label="ExtensionsPinnedByDefault"/>
   <int value="100386" label="AudioFocusEnforcementEnabled"/>
-  <int value="100387" label="AccessibilityReadAnythingRecentlyUsedFonts"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

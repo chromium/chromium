@@ -351,9 +351,21 @@ export class TextMenuElement extends TextMenuElementBase implements
 
   private computeFontOptions_() {
     const fonts = chrome.readingMode.supportedFonts;
-    const visibleFonts = (this.isFontMenuExpanded) ?
-        fonts :
-        fonts.slice(0, MAX_EXPANDED_FONT_COUNT);
+    let visibleFonts: string[];
+    if (this.isFontMenuExpanded || fonts.length <= MAX_EXPANDED_FONT_COUNT) {
+      visibleFonts = fonts;
+    } else {
+      const currentFont = chrome.readingMode.fontName;
+      const currentIndex = fonts.indexOf(currentFont);
+      if (currentIndex >= MAX_EXPANDED_FONT_COUNT) {
+        // Active font is outside the top 3.
+        // Pin first 2 default fonts + active font into the 3 visible slots.
+        visibleFonts = [...fonts.slice(0, 2), currentFont];
+      } else {
+        // Active font is in top 3 (or not set). Show top 3 fonts.
+        visibleFonts = fonts.slice(0, 3);
+      }
+    }
     this.fontOptions_ = visibleFonts.map(
         font => ({
           title: this.areFontsLoaded ?

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -44,7 +43,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/user_education/common/new_badge/new_badge_specification.h"
@@ -121,8 +119,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                base::ListValue languages_enabled_in_pref,
                read_anything::mojom::HighlightGranularity granularity,
                read_anything::mojom::LineFocus last_non_disabled_line_focus,
-               bool line_focus_enabled,
-               const std::vector<std::string>& recently_used_fonts));
+               bool line_focus_enabled));
   MOCK_METHOD(void,
               OnImageDataDownloaded,
               (const ui::AXTreeID&, int, const SkBitmap&));
@@ -571,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
           expected_font_scale, expected_links_enabled, expected_images_enabled,
           expected_color, expected_speech_rate, testing::IsEmpty(),
           testing::IsEmpty(), expected_highlight_granularity,
-          expected_line_focus, expected_line_focus_enabled, testing::IsEmpty()))
+          expected_line_focus, expected_line_focus_enabled))
       .Times(1);
 
   handler_ = CreateHandler();
@@ -773,90 +770,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
   const std::string font2 = browser()->GetProfile()->GetPrefs()->GetString(
       prefs::kAccessibilityReadAnythingFontName);
   ASSERT_EQ(font2, kFont2);
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       RestoreSettingsFromPrefs_RecentlyUsedFonts) {
-  // Set profile preference with valid fonts, an empty string, and excess items.
-  base::ListValue stored_recent_fonts;
-  stored_recent_fonts.Append("Roboto");
-  stored_recent_fonts.Append("Arial");
-  stored_recent_fonts.Append("");
-  stored_recent_fonts.Append("Poppins");
-  stored_recent_fonts.Append("Serif");
-
-  PrefService* prefs = browser()->GetProfile()->GetPrefs();
-  prefs->SetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts,
-                 std::move(stored_recent_fonts));
-
-  // Verify OnSettingsRestoredFromPrefs receives sanitized list in arg 13.
-  EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
-                         _, _, _, _, _, _, _, _, _, _, _, _, _,
-                         testing::ElementsAre("Roboto", "Arial", "Poppins")))
-      .Times(1);
-
-  // Constructing handler calls RestoreSettingsFromPrefs()
-  handler_ = CreateHandler();
-  page_.receiver_.FlushForTesting();
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
-                       OnFontChange_UpdatesProfilePrefs) {
-  handler_ = CreateHandler();
-  PrefService* prefs = browser()->GetProfile()->GetPrefs();
-
-  // Add font and check it's stored in prefs.
-  OnFontChange("Roboto");
-  {
-    const base::ListValue& list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    ASSERT_EQ(list.size(), 1u);
-    EXPECT_EQ(list[0].GetString(), "Roboto");
-  }
-
-  // Add new font and check it's stored in prefs at list head.
-  OnFontChange("Arial");
-  {
-    const base::ListValue& list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    ASSERT_EQ(list.size(), 2u);
-    EXPECT_EQ(list[0].GetString(), "Arial");
-    EXPECT_EQ(list[1].GetString(), "Roboto");
-  }
-
-  // Add new font and check it's stored in prefs at list head.
-  OnFontChange("Poppins");
-  {
-    const base::ListValue& list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    ASSERT_EQ(list.size(), 3u);
-    EXPECT_EQ(list[0].GetString(), "Poppins");
-    EXPECT_EQ(list[1].GetString(), "Arial");
-    EXPECT_EQ(list[2].GetString(), "Roboto");
-  }
-
-  // Add existing font and check it's stored in prefs at list head (without
-  // duplication)
-  OnFontChange("Roboto");
-  {
-    const base::ListValue& list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    ASSERT_EQ(list.size(), 3u);
-    EXPECT_EQ(list[0].GetString(), "Roboto");
-    EXPECT_EQ(list[1].GetString(), "Poppins");
-    EXPECT_EQ(list[2].GetString(), "Arial");
-  }
-
-  // Add new font, check list is trimmed to max size.
-  OnFontChange("Serif");
-  {
-    const base::ListValue& list =
-        prefs->GetList(prefs::kAccessibilityReadAnythingRecentlyUsedFonts);
-    ASSERT_EQ(list.size(), 3u);
-    EXPECT_EQ(list[0].GetString(), "Serif");
-    EXPECT_EQ(list[1].GetString(), "Roboto");
-    EXPECT_EQ(list[2].GetString(), "Poppins");
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
@@ -1073,7 +986,7 @@ IN_PROC_BROWSER_TEST_P(
   // Verify the values passed to the page are correct.
   EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
                          _, _, _, _, _, _, _, expected_speech_rate, _, _,
-                         expected_highlight_granularity, _, _, _))
+                         expected_highlight_granularity, _, _))
       .Times(1)
       .WillOnce(testing::WithArgs<8, 9>([&](base::DictValue voices,
                                             base::ListValue langs) {
@@ -1104,7 +1017,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   // Re-activating the handler should restore settings.
   EXPECT_CALL(page_, OnSettingsRestoredFromPrefs(
                          _, _, _, _, _, _, read_anything::mojom::Colors::kDark,
-                         _, _, _, _, _, _, _))
+                         _, _, _, _, _, _))
       .Times(1);
 
   Activate(true);

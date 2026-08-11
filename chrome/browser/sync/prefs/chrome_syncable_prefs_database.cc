@@ -447,7 +447,6 @@ enum {
   kProfileDefaultContentSettingValuesInlineCueMenu = 100384,
   kExtensionsPinnedByDefault = 100385,
   kAudioFocusEnforcementEnabled = 100386,
-  kAccessibilityReadAnythingRecentlyUsedFonts = 100387,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -566,10 +565,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
      {syncable_prefs_ids::kAccessibilityReadAnythingLastNonDisabledLineFocus,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kAccessibilityReadAnythingRecentlyUsedFonts,
-     {syncable_prefs_ids::kAccessibilityReadAnythingRecentlyUsedFonts,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
