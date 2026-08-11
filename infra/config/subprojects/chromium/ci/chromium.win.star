@@ -431,6 +431,9 @@ ci.builder(
                     shards = 55,
                 ),
             ),
+            "content_browsertests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "chromedriver_py_tests": targets.mixin(
                 # TODO(crbug.com/40868908): Fix & re-enable.
                 isolate_profile_data = False,
