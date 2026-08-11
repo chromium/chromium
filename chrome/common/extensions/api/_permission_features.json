@@ -774,9 +774,9 @@
     "platforms": ["chromeos", "linux", "mac", "win"]
   }],
   "notifications": [{
-    // The chrome.notifications functionality listed in notifications.idl is
-    // available only to extension/platform_app types. The implementation of
-    // that functionality enforces that restriction in
+    // The chrome.notifications functionality listed in notifications.webidl
+    // is available only to extension/platform_app types. The implementation
+    // of that functionality enforces that restriction in
     // NotificationsApiFunction::IsNotificationsApiAvailable(). This is more
     // complicated than other namespaces because we are sharing the
     // notifications permission with WebKit/Blink notifications.

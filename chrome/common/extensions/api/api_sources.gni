@@ -29,7 +29,7 @@ schema_sources_ = [
   "history.json",
   "identity.webidl",
   "instance_id.json",
-  "notifications.idl",
+  "notifications.webidl",
   "omnibox.json",
   "page_capture.json",
   "permissions.json",
