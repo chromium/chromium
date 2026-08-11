@@ -43,6 +43,11 @@ class UnpinnedTabContainerViewLayout : public views::LayoutManagerBase {
   gfx::Size CalculateVerticalMinimumSize(
       const UnpinnedTabContainerView* host) const;
 
+  bool IsChildVisibleInContainer(
+      const UnpinnedTabContainerView* tab_container_view,
+      std::optional<tab_groups::TabGroupId> focused_group_id,
+      const views::View* child) const;
+
   std::optional<tab_groups::TabGroupId> GetFocusedGroupId(
       const UnpinnedTabContainerView* tab_container_view) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdForChild(

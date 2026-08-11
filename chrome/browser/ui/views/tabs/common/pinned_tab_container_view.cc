@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
@@ -88,6 +89,28 @@ views::ProposedLayout PinnedTabContainerView::CalculateProposedLayout(
 gfx::Size PinnedTabContainerView::GetMinimumSize() const {
   if (!collection_node_ || collection_node_->GetDirectChildren().empty()) {
     return gfx::Size();
+  }
+
+  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    int min_width = 0;
+    size_t count = 0;
+    for (const auto* child : collection_node_->GetDirectChildren()) {
+      if (!layout_manager_->CanBeVisible(child)) {
+        continue;
+      }
+      auto drag_data = GetVisualDataForDraggedView(*child);
+      if (drag_data && drag_data->should_hide) {
+        continue;
+      }
+      min_width += child->GetMinimumSize().width();
+      count++;
+    }
+    const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+    if (count > 1) {
+      min_width =
+          std::max(0, min_width - static_cast<int>(count - 1) * tab_overlap);
+    }
+    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
   }
 
   // The minimum size should be enough to show a row and a half, if needed.
@@ -308,9 +331,12 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
       collection_node_ ? collection_node_->GetDirectChildren()
                        : std::vector<views::View*>();
 
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   int x = 0;
   const int container_height = size_bounds.height().value_or(
       GetLayoutConstant(LayoutConstant::kTabHeight));
+  size_t visible_count = 0;
+
   for (auto* child : children) {
     views::SizeBounds child_size_bounds =
         views::SizeBounds({}, size_bounds.height());
@@ -319,7 +345,8 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
     bounds.set_height(container_height);
 
     auto drag_data = GetVisualDataForDraggedView(*child);
-    const bool should_show_child = !(drag_data && drag_data->should_hide);
+    const bool should_show_child = layout_manager_->CanBeVisible(child) &&
+                                   !(drag_data && drag_data->should_hide);
     if (!should_show_child) {
       layouts.child_layouts.emplace_back(child, false, gfx::Rect());
       continue;
@@ -328,12 +355,16 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
     bounds.set_x(drag_data ? drag_data->offset.x() : x);
 
     if (!drag_data || !drag_data->should_float) {
-      x += bounds.width();
+      // Advance x position by child width minus tab overlap.
+      x += bounds.width() - tab_overlap;
+      visible_count++;
     }
 
     layouts.child_layouts.emplace_back(child, true, bounds);
   }
-  layouts.host_size = gfx::Size(x, container_height);
+
+  const int host_width = visible_count > 0 ? (x + tab_overlap) : 0;
+  layouts.host_size = gfx::Size(host_width, container_height);
   return layouts;
 }
 

@@ -130,7 +130,9 @@ gfx::Size SplitTabView::GetMinimumSize() const {
     for (views::View* child : children()) {
       min_width += child->GetMinimumSize().width();
     }
-    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+    const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+    return gfx::Size(std::max(0, min_width - tab_overlap),
+                     GetLayoutConstant(LayoutConstant::kTabHeight));
   }
   return views::View::GetMinimumSize();
 }
@@ -249,9 +251,11 @@ views::ProposedLayout SplitTabView::CalculateHorizontalLayout(
 
   const int height = size_bounds.height().value_or(
       GetLayoutConstant(LayoutConstant::kTabHeight));
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
   // Layout children horizontally side-by-side in order.
   int x = 0;
+  int first_child_width = 0;
   for (size_t i = 0; i < children.size(); ++i) {
     views::View* child = children[i];
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
@@ -260,10 +264,16 @@ views::ProposedLayout SplitTabView::CalculateHorizontalLayout(
 
     // Fill available width evenly if bounded.
     if (size_bounds.width().is_bounded()) {
-      bounds.set_width(i == 0 ? std::floor(size_bounds.width().value() / 2)
-                              : size_bounds.width().value() - x);
+      const int available_width = size_bounds.width().value() + tab_overlap;
+      bounds.set_width(i == 0 ? std::floor(available_width / 2)
+                              : available_width - first_child_width);
     }
-    x += bounds.width();
+    first_child_width = bounds.width();
+    if (i < children.size() - 1) {
+      x += bounds.width() - tab_overlap;
+    } else {
+      x += bounds.width();
+    }
     layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
   }
 

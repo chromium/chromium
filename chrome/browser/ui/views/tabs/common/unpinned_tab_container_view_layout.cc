@@ -9,11 +9,13 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
-#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -74,56 +76,46 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
     return layouts;
   }
 
-  std::vector<int> child_preferred_widths;
-  std::vector<int> child_min_widths;
-  int total_preferred_width = 0;
-  int total_min_width = 0;
+  const int container_height = size_bounds.height().value_or(
+      GetLayoutConstant(LayoutConstant::kTabHeight));
 
-  for (views::View* child : children) {
-    int child_pref_width =
-        child->GetPreferredSize(views::SizeBounds({}, size_bounds.height()))
-            .width();
-    int child_min_width = child->GetMinimumSize().width();
+  TabStripCollectionLayoutInfo collection = CollectVisibleChildLayoutInfo(
+      children, container_height,
+      base::BindRepeating(
+          &UnpinnedTabContainerViewLayout::IsChildVisibleInContainer,
+          base::Unretained(this), tab_container_view, focused_group_id));
 
-    child_preferred_widths.push_back(child_pref_width);
-    child_min_widths.push_back(child_min_width);
-    total_preferred_width += child_pref_width;
-    total_min_width += child_min_width;
+  if (collection.visible_children.empty()) {
+    return layouts;
   }
 
-  int available_width = total_preferred_width;
+  int available_width =
+      collection.total_preferred_width - collection.overlap_total;
   if (size_bounds.width().is_bounded()) {
     available_width = size_bounds.width().value();
   }
 
-  int computed_width = total_preferred_width;
+  int computed_width =
+      collection.total_preferred_width - collection.overlap_total;
   if (available_width > 0) {
-    computed_width =
-        std::clamp(available_width, total_min_width, total_preferred_width);
+    computed_width = std::clamp(
+        available_width, collection.total_min_width - collection.overlap_total,
+        collection.total_preferred_width - collection.overlap_total);
   }
 
+  int available_for_allocation = computed_width + collection.overlap_total;
   std::vector<int> allocated_widths = CalculateProportionalChildWidths(
-      computed_width, child_preferred_widths, child_min_widths,
-      total_preferred_width, total_min_width);
+      available_for_allocation, collection.preferred_widths,
+      collection.min_widths, collection.total_preferred_width,
+      collection.total_min_width);
 
   int x = 0;
-  const int container_height = size_bounds.height().value_or(
-      GetLayoutConstant(LayoutConstant::kTabHeight));
+  size_t visible_index = 0;
 
-  for (size_t i = 0; i < children.size(); ++i) {
-    views::View* child = children[i];
-    int child_width = allocated_widths[i];
-
+  for (views::View* child : children) {
     auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
-    bool should_show_child = !(drag_data && drag_data->should_hide);
-
-    if (should_show_child && focused_group_id.has_value()) {
-      std::optional<tab_groups::TabGroupId> group_id =
-          GetGroupIdForChild(child);
-      if (group_id != focused_group_id.value()) {
-        should_show_child = false;
-      }
-    }
+    bool should_show_child =
+        IsChildVisibleInContainer(tab_container_view, focused_group_id, child);
 
     if (!should_show_child) {
       layouts.child_layouts.emplace_back(
@@ -133,11 +125,20 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
       continue;
     }
 
-    gfx::Rect bounds(x, 0, child_width, container_height);
-    bounds.set_x(drag_data ? drag_data->offset.x() : x);
+    int child_width = allocated_widths[visible_index];
+    int child_x = drag_data ? drag_data->offset.x() : x;
+    gfx::Rect bounds(child_x, 0, child_width, container_height);
 
     layouts.child_layouts.emplace_back(child, true, bounds);
-    x += bounds.width();
+
+    if (visible_index < collection.visible_children.size() - 1) {
+      x += bounds.width() -
+           GetChildOverlap(collection.visible_children[visible_index].view,
+                           collection.visible_children[visible_index + 1].view);
+    } else {
+      x += bounds.width();
+    }
+    visible_index++;
   }
 
   layouts.host_size = gfx::Size(x, container_height);
@@ -191,15 +192,8 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
     bounds.set_x(x);
 
     auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
-    bool should_show_child = !(drag_data && drag_data->should_hide);
-
-    if (should_show_child && focused_group_id.has_value()) {
-      std::optional<tab_groups::TabGroupId> group_id =
-          GetGroupIdForChild(child);
-      if (group_id != focused_group_id.value()) {
-        should_show_child = false;
-      }
-    }
+    bool should_show_child =
+        IsChildVisibleInContainer(tab_container_view, focused_group_id, child);
 
     if (!should_show_child) {
       layouts.child_layouts.emplace_back(
@@ -238,25 +232,26 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
 gfx::Size UnpinnedTabContainerViewLayout::CalculateHorizontalMinimumSize(
     const UnpinnedTabContainerView* tab_container_view) const {
   int min_width = 0;
+  std::vector<const views::View*> visible_children;
   if (tab_container_view->collection_node_) {
     std::optional<tab_groups::TabGroupId> focused_group_id =
         GetFocusedGroupId(tab_container_view);
 
     for (const auto* child :
          tab_container_view->collection_node_->GetDirectChildren()) {
-      bool should_show = true;
-      if (focused_group_id.has_value()) {
-        std::optional<tab_groups::TabGroupId> group_id =
-            GetGroupIdForChild(child);
-        if (group_id != focused_group_id.value()) {
-          should_show = false;
-        }
-      }
-      if (should_show) {
+      if (IsChildVisibleInContainer(tab_container_view, focused_group_id,
+                                    child)) {
         min_width += child->GetMinimumSize().width();
+        visible_children.push_back(child);
       }
     }
   }
+  int overlap_total = 0;
+  for (size_t i = 0; i < visible_children.size() - 1; ++i) {
+    overlap_total +=
+        GetChildOverlap(visible_children[i], visible_children[i + 1]);
+  }
+  min_width = std::max(0, min_width - overlap_total);
   return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
 }
 
@@ -291,6 +286,24 @@ gfx::Size UnpinnedTabContainerViewLayout::CalculateVerticalMinimumSize(
       (num_children > 1 ? kTabVerticalPadding : 0);
   return gfx::Size(GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
                    min_height);
+}
+
+bool UnpinnedTabContainerViewLayout::IsChildVisibleInContainer(
+    const UnpinnedTabContainerView* tab_container_view,
+    std::optional<tab_groups::TabGroupId> focused_group_id,
+    const views::View* child) const {
+  if (!CanBeVisible(child)) {
+    return false;
+  }
+  auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
+  if (drag_data && drag_data->should_hide) {
+    return false;
+  }
+  if (focused_group_id.has_value() &&
+      GetGroupIdForChild(child) != focused_group_id.value()) {
+    return false;
+  }
+  return true;
 }
 
 std::optional<tab_groups::TabGroupId>
