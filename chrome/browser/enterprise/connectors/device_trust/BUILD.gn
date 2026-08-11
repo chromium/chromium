@@ -12,21 +12,6 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("test_support") {
-  testonly = true
-  configs += [ "//components/enterprise:extra_warnings" ]
-
-  sources = [ "mock_device_trust_service.cc" ]
-
-  public = [ "mock_device_trust_service.h" ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser",
-    "//testing/gmock",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -40,11 +25,9 @@ source_set("unit_tests") {
   if (is_linux || is_chromeos || is_mac || is_win) {
     sources += [
       "device_trust_connector_service_factory_unittest.cc",
-      "device_trust_service_unittest.cc",
       "navigation_throttle_unittest.cc",
     ]
     deps += [
-      ":test_support",
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/browser/enterprise/connectors/device_trust/signals:test_support",
@@ -52,9 +35,11 @@ source_set("unit_tests") {
       "//chrome/test:test_support",
       "//components/device_signals/core/browser:test_support",
       "//components/enterprise/device_trust/core:device_trust_connector_service",
+      "//components/enterprise/device_trust/core:device_trust_service",
       "//components/enterprise/device_trust/core:metrics",
       "//components/enterprise/device_trust/core:test_support",
       "//components/enterprise/device_trust/core/attestation:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

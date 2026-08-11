@@ -250,7 +250,6 @@ source_set("enterprise") {
   if (is_linux || is_win || is_mac || is_chromeos) {
     public += [
       "connectors/device_trust/device_trust_connector_service_factory.h",
-      "connectors/device_trust/device_trust_service.h",
       "connectors/device_trust/device_trust_service_factory.h",
       "connectors/device_trust/navigation_throttle.h",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
@@ -728,7 +727,6 @@ source_set("impl") {
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
       "connectors/device_trust/device_trust_connector_service_factory.cc",
-      "connectors/device_trust/device_trust_service.cc",
       "connectors/device_trust/device_trust_service_factory.cc",
       "connectors/device_trust/navigation_throttle.cc",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.cc",
@@ -807,6 +805,8 @@ source_set("impl") {
       "reporting/saas_usage/saas_usage_reporting_controller_factory.cc",
       "reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.cc",
     ]
+
+    deps += [ "//components/enterprise/device_trust/core:device_trust_service" ]
   }
 
   if (is_linux || is_win || is_mac) {

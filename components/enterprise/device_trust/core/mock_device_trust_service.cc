@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
+#include "components/enterprise/device_trust/core/mock_device_trust_service.h"
 
 namespace enterprise_connectors {
 namespace test {

@@ -29,6 +29,7 @@ source_set("connectors_internals") {
     "//components/enterprise/connectors:mojom",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/resources",
+    "//components/enterprise/device_trust/core:device_trust_service",
     "//components/enterprise/device_trust/core:metrics",
     "//components/policy/proto",
     "//crypto",

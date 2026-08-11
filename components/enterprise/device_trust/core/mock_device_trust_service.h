@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MOCK_DEVICE_TRUST_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MOCK_DEVICE_TRUST_SERVICE_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_MOCK_DEVICE_TRUST_SERVICE_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_MOCK_DEVICE_TRUST_SERVICE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "components/enterprise/device_trust/core/device_trust_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {
@@ -32,4 +32,4 @@ class MockDeviceTrustService : public DeviceTrustService {
 }  // namespace test
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MOCK_DEVICE_TRUST_SERVICE_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_MOCK_DEVICE_TRUST_SERVICE_H_

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "components/enterprise/device_trust/core/device_trust_service.h"
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
 #include "components/enterprise/device_trust/core/attestation/signals_type.h"
@@ -15,7 +14,6 @@
 #include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/enterprise/device_trust/core/metrics_utils.h"
 #include "components/enterprise/device_trust/core/signals/signals_service.h"
-#include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
 

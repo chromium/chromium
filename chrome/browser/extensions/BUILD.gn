@@ -2541,6 +2541,7 @@ source_set("browser_tests") {
     "//components/embedder_support",
     "//components/enterprise:test_support",
     "//components/enterprise/browser/promotion",
+    "//components/enterprise/device_trust/core:device_trust_service",
     "//components/infobars/content",
     "//components/javascript_dialogs",
     "//components/media_device_salt",
