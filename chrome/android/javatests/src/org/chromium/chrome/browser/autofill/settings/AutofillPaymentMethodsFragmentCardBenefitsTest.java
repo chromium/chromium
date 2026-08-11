@@ -23,8 +23,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsActivityInterface;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.policy.test.annotations.Policies;
 
@@ -37,9 +37,8 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @Rule public final AutofillTestRule mRule = new AutofillTestRule();
 
     @Rule
-    public final SettingsActivityTestRule<AutofillPaymentMethodsFragment>
-            mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(AutofillPaymentMethodsFragment.class);
+    public final SettingsTestRule<AutofillPaymentMethodsFragment> mSettingsTestRule =
+            new SettingsTestRule<>(AutofillPaymentMethodsFragment.class);
 
     private AutofillTestHelper mAutofillTestHelper;
 
@@ -50,7 +49,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     @After
     public void tearDown() throws TimeoutException {
-        mSettingsActivityTestRule.getActivity().finish();
+        mSettingsTestRule.getActivity().finish();
         mAutofillTestHelper.clearAllDataForTesting();
     }
 
@@ -60,7 +59,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @MediumTest
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
     public void testCardBenefitsPref_whenAutofillIsDisabled_notShown() throws Exception {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
@@ -74,7 +73,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @MediumTest
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenAutofillIsEnabled_shown() throws Exception {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
@@ -95,7 +94,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @MediumTest
     public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment()
             throws Exception {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
@@ -108,7 +107,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
     }
 
-    private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
+    private static PreferenceScreen getPreferenceScreen(SettingsActivityInterface activity) {
         return ((AutofillPaymentMethodsFragment) activity.getMainFragment()).getPreferenceScreen();
     }
 }
