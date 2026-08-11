@@ -180,12 +180,6 @@ BASE_FEATURE(kAutofillEnableDownstreamCardAwarenessIph,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// When enabled, IBAN regex pattern matching is expanded to support more
-// formats.
-BASE_FEATURE(kAutofillEnableExpandIbanRegexPattern,
-             "AutofillEnableExpandIbanRegexPattern",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, card flat rate benefit will not be shown on merchants in the
 // blocklist.
 BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsBlocklist,

@@ -86,7 +86,8 @@ enum class RegexFeature : uint8_t {
   kAutofillDisallowMoreHyphenLikeLabels = 3,
   kAutofillFixStateCountryMisclassification = 4,
   kAutofillSupportCombinedZipAndCityFR = 5,
-  kMaxValue = kAutofillSupportCombinedZipAndCityFR,
+  kAutofillEnableExpandIbanRegexPattern = 6,
+  kMaxValue = kAutofillEnableExpandIbanRegexPattern,
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding

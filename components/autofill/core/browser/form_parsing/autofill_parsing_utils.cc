@@ -29,6 +29,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillFixStateCountryMisclassification;
     case RegexFeature::kAutofillSupportCombinedZipAndCityFR:
       return &features::kAutofillSupportCombinedZipAndCityFR;
+    case RegexFeature::kAutofillEnableExpandIbanRegexPattern:
+      return &features::kAutofillEnableExpandIbanRegexPattern;
   }
   NOTREACHED();
 }
