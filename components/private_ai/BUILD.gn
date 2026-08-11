@@ -37,6 +37,39 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("streaming_websocket_client") {
+  sources = [
+    "streaming_websocket_client.cc",
+    "streaming_websocket_client.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("streaming_websocket_client_unit_tests") {
+  testonly = true
+  sources = [ "streaming_websocket_client_unittest.cc" ]
+  deps = [
+    ":streaming_websocket_client",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("private_ai") {
   sources = [
     "client.cc",
@@ -79,6 +112,7 @@ source_set("private_ai") {
   ]
   public_deps = [
     ":features",
+    ":streaming_websocket_client",
     "//components/private_ai/mojom",
   ]
   deps = [
@@ -162,6 +196,7 @@ source_set("unit_tests") {
   deps = [
     ":private_ai",
     ":proto",
+    ":streaming_websocket_client_unit_tests",
     ":testing",
     "//base",
     "//base/test:test_support",
@@ -184,6 +219,7 @@ source_set("unit_tests") {
     "//components/private_ai/phosphor:unit_tests",
     "//components/private_ai/proto_utils:unit_tests",
     "//mojo/public/cpp/system",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/mojom",
     "//testing/gmock",
