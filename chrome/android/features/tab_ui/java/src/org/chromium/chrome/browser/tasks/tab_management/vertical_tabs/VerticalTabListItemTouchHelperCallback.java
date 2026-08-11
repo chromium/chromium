@@ -32,9 +32,12 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabMultiSelectHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
@@ -553,6 +556,16 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            // TODO(crbug.com/544185227): Support batch drag and drop of multi-selected tabs.
+            // Currently, we fallback to a standard single-tab drag by clearing
+            // the multi-selection state if the user drags a highlighted item.
+            TabModel tabModel = mCurrentTabModelSupplier.get();
+            if (tabModel != null
+                    && VerticalTabUtils.isMultiSelectEnabled()
+                    && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
+                tabModel.clearMultiSelection(/* notifyObservers= */ true);
+            }
+
             // Pause undo snackbars while dragging.
             startThrottling();
             mDragResult = DragDropResult.ABORTED_NO_CHANGE;
@@ -1043,6 +1056,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             TabModel tabModel, @Nullable Tab tab, @TabSelectionType int type) {
         if (tab == null) return;
 
+        if (VerticalTabUtils.isMultiSelectEnabled()
+                && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
+            // TODO(crbug.com/544185227): Support batch drag and drop of multi-selected tabs.
+            // Currently, we fallback to a standard single-tab drag by clearing
+            // the multi-selection state if the user drags a highlighted item.
+            tabModel.clearMultiSelection(/* notifyObservers= */ true);
+        }
+
         int index = tabModel.indexOf(tab);
         if (index != TabModel.INVALID_TAB_INDEX && index != tabModel.index()) {
             tabModel.setIndex(index, type);
@@ -1125,8 +1146,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                                 mStartY = e.getY();
                                 mTrackingMouseDrag = true;
 
-                                // Select the tab immediately.
-                                selectTab(mActiveViewHolder);
+                                // Select the tab immediately, unless the user is holding Ctrl/Shift
+                                // to perform a multi-select operation (which should be handled by
+                                // onClick).
+                                MotionEventInfo info = MotionEventInfo.fromMotionEvent(e);
+                                if (!VerticalTabUtils.isMultiSelectEnabled()
+                                        || (!info.hasCtrlOrMeta() && !info.hasShift())) {
+                                    selectTab(mActiveViewHolder);
+                                }
                             }
                         }
                         break;

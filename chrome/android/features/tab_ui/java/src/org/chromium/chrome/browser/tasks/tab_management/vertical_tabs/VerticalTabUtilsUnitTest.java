@@ -151,6 +151,22 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
+    public void testIsMultiSelectEnabled_DefaultDisabled() {
+        assertFalse(VerticalTabUtils.isMultiSelectEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsMultiSelectEnabled_EnabledViaOverride() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.MULTI_SELECT_PARAM,
+                /* testValue= */ true);
+        assertTrue(VerticalTabUtils.isMultiSelectEnabled());
+    }
+
+    @Test
+    @SmallTest
     public void testRecordLayoutToggle_Enable_AppMenu() {
         assertLayoutToggleHistogram(
                 VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,

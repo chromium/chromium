@@ -34,6 +34,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
@@ -73,6 +74,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListI
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
+import org.chromium.chrome.browser.tasks.tab_management.TabMultiSelectHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
@@ -219,8 +221,6 @@ public class VerticalTabListCoordinator {
 
         @Override
         public void onTabSelecting(int tabId, boolean fromActionButton) {
-            // TODO(crbug.com/509226293): Coordinate tab selection with smooth side panel
-            // dismissal or collapse animations when running on narrow screens.
             TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
         }
 
@@ -1334,8 +1334,18 @@ public class VerticalTabListCoordinator {
     private void showTabItemContextMenu(
             Activity activity, RecyclerView recyclerView, View itemView, int tabId) {
         RectProvider rectProvider = getAnchorRectProvider(recyclerView, itemView);
-        List<Integer> allTabIds = List.of(tabId);
-        var anchorInfo = new TabContextMenuCoordinator.AnchorInfo(tabId, allTabIds);
+
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        List<Integer> allTabIds;
+        if (VerticalTabUtils.isMultiSelectEnabled()
+                && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)
+                && tabModel.isTabMultiSelected(tabId)) {
+            allTabIds = tabModel.getOrderedMultiSelectedTabIds();
+        } else {
+            allTabIds = List.of(tabId);
+        }
+
+        var anchorInfo = new AnchorInfo(tabId, allTabIds);
 
         if (mTabContextMenuCoordinator == null) {
             TabGroupCreationCallback tabGroupCreationCallback =

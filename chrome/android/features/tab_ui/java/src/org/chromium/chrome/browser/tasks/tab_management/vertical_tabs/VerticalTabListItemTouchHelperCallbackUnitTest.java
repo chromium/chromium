@@ -46,7 +46,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -111,13 +113,15 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     private PropertyModel mPropertyModel;
     private PropertyModel mTargetPropertyModel;
 
+    private Context mContext;
+
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
+        mContext = ApplicationProvider.getApplicationContext();
 
         when(mCurrentTabModelSupplier.get()).thenReturn(mTabModel);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mRecyclerView.getContext()).thenReturn(context);
+        when(mRecyclerView.getContext()).thenReturn(mContext);
         when(mRecyclerView.getOverlay()).thenReturn(mViewGroupOverlay);
 
         // Set up the mocked property model for the dragged view holder.
@@ -152,7 +156,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         mCallback =
                 new VerticalTabListItemTouchHelperCallback(
-                        context, mModel, mCurrentTabModelSupplier, mUndoBarThrottle);
+                        mContext, mModel, mCurrentTabModelSupplier, mUndoBarThrottle);
         mCallback.setRecyclerView(mRecyclerView);
     }
 
@@ -469,6 +473,22 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    public void testOnSelectedChanged_Drag_ClearsMultiSelection() {
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
+
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.index()).thenReturn(1);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        verify(mTabModel, org.mockito.Mockito.atLeastOnce()).clearMultiSelection(true);
+    }
+
+    @Test
+    @SmallTest
     public void testOnSelectedChanged_StartsUndoBarThrottling() {
         when(mUndoBarThrottle.startThrottling()).thenReturn(THROTTLE_TOKEN);
 
@@ -605,9 +625,32 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    public void testCreateMouseDragDetector_ActionDownSelectsTab_ClearsMultiSelection() {
+        RecyclerView.OnItemTouchListener listener =
+                mCallback.createMouseDragDetector(mItemTouchHelper);
+
+        MotionEvent event = createMouseEvent(MotionEvent.ACTION_DOWN, 10f, 10f);
+
+        when(mRecyclerView.findChildViewUnder(10f, 10f)).thenReturn(mChildView);
+        when(mRecyclerView.getChildViewHolder(mChildView)).thenReturn(mViewHolder);
+
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.index()).thenReturn(1);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, event));
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel, org.mockito.Mockito.atLeastOnce()).clearMultiSelection(true);
+
+        event.recycle();
+    }
+
+    @Test
+    @SmallTest
     public void testCreateMouseDragDetector_ActionMoveTriggersDrag() {
-        Context context = ApplicationProvider.getApplicationContext();
-        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        int touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
 
         RecyclerView.OnItemTouchListener listener =
                 mCallback.createMouseDragDetector(mItemTouchHelper);
@@ -626,11 +669,9 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // 2. ACTION_MOVE (exceeding slop).
         float moveY = 10f + (touchSlop / 4f) + 5f;
-        MotionEvent moveEvent = createMouseEvent(MotionEvent.ACTION_MOVE, 10f, moveY);
+        MotionEvent moveEvent = createMouseEvent(MotionEvent.ACTION_MOVE, /* x= */ 10f, moveY);
 
-        boolean intercepted = listener.onInterceptTouchEvent(mRecyclerView, moveEvent);
-
-        assertFalse(intercepted);
+        assertFalse(listener.onInterceptTouchEvent(mRecyclerView, moveEvent));
         verify(mItemTouchHelper).startDrag(mViewHolder);
 
         downEvent.recycle();
@@ -672,7 +713,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mActionButton.getHeight()).thenReturn(50);
 
         // Click at (120, 120) relative to RecyclerView (inside the close button).
-        MotionEvent downEvent = createMouseEvent(MotionEvent.ACTION_DOWN, 120f, 120f);
+        MotionEvent downEvent =
+                createMouseEvent(MotionEvent.ACTION_DOWN, /* x= */ 120f, /* y= */ 120f);
 
         when(mRecyclerView.findChildViewUnder(120f, 120f)).thenReturn(mChildView);
         when(mRecyclerView.getChildViewHolder(mChildView)).thenReturn(mViewHolder);
@@ -681,13 +723,13 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         boolean intercepted = listener.onInterceptTouchEvent(mRecyclerView, downEvent);
         assertFalse(intercepted);
 
-        // Verify NO tab selection occurred.
+        // Verify no tab selection occurred.
         verify(mTabModel, never()).setIndex(anyInt(), anyInt());
 
         // ACTION_MOVE (should not drag).
-        Context context = ApplicationProvider.getApplicationContext();
-        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-        MotionEvent moveEvent = createMouseEvent(MotionEvent.ACTION_MOVE, 120f, 120f + touchSlop);
+        int touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
+        MotionEvent moveEvent =
+                createMouseEvent(MotionEvent.ACTION_MOVE, /* x= */ 120f, /* y= */ 120f + touchSlop);
         listener.onInterceptTouchEvent(mRecyclerView, moveEvent);
 
         verify(mItemTouchHelper, never()).startDrag(any());
@@ -699,8 +741,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     @SmallTest
     public void testCreateMouseDragDetector_GroupHeaderNoSelectButDrags() {
-        Context context = ApplicationProvider.getApplicationContext();
-        int touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        int touchSlop = ViewConfiguration.get(mContext).getScaledTouchSlop();
 
         RecyclerView.OnItemTouchListener listener =
                 mCallback.createMouseDragDetector(mItemTouchHelper);

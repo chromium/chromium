@@ -8,6 +8,7 @@ import static androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PAR
 import static androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -52,6 +54,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -227,8 +230,7 @@ class TabVerticalViewBinder {
         } else if (TabProperties.IS_LOADING == propertyKey) {
             updateIcons(model, view);
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
-            TabListViewBinderUtils.setNullableClickListener(
-                    model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
+            setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             TabListViewBinderUtils.setNullableLongClickListener(
                     model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
@@ -245,6 +247,30 @@ class TabVerticalViewBinder {
             TabListViewBinderUtils.updateContentDescription(model, view);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private static void setNullableClickListener(
+            @Nullable TabActionListener listener, View view, PropertyModel propertyModel) {
+        if (listener == null) {
+            view.setOnTouchListener(null);
+            view.setOnClickListener(null);
+        } else {
+            // A passive tracker that records the last MotionEvent state but does not consume the
+            // touch. This ensures standard Android view ripples and other touch handling remain
+            // fully intact.
+            final MotionEventInfo[] lastMotion = new MotionEventInfo[1];
+            view.setOnTouchListener(
+                    (View v, MotionEvent event) -> {
+                        lastMotion[0] = MotionEventInfo.fromMotionEvent(event);
+                        return false;
+                    });
+
+            view.setOnClickListener(
+                    (View v) ->
+                            listener.run(
+                                    view, propertyModel.get(TabProperties.TAB_ID), lastMotion[0]));
         }
     }
 

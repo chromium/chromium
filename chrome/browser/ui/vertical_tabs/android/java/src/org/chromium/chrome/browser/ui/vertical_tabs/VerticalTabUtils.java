@@ -90,14 +90,17 @@ public class VerticalTabUtils {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
 
+    /** Feature parameter name for enabling auto-resize. */
+    public static final String AUTO_RESIZE_PARAM = "auto_resize";
+
     /** Feature parameter name for enabling Vertical Tabs by default. */
     public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
 
     /** Feature parameter name for enabling external drag. */
     public static final String EXTERNAL_DRAG_PARAM = "external_drag";
 
-    /** Feature parameter name for enabling auto-resize. */
-    public static final String AUTO_RESIZE_PARAM = "auto_resize";
+    /** Feature parameter name for enabling multi-select. */
+    public static final String MULTI_SELECT_PARAM = "multi_select";
 
     /**
      * Returns whether Vertical Tabs should be enabled by default for eligible users who have not
@@ -182,19 +185,33 @@ public class VerticalTabUtils {
     /** Returns whether expand-on-hover behavior is enabled for Vertical Tabs. */
     public static boolean isExpandOnHoverEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                "expand_on_hover",
+                /* defaultValue= */ false);
     }
 
     /** Returns whether external drag is enabled for Vertical Tabs. */
     public static boolean isExternalDragEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, EXTERNAL_DRAG_PARAM, false);
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                EXTERNAL_DRAG_PARAM,
+                /* defaultValue= */ false);
     }
 
     /** Returns whether auto-resize behavior is enabled for Vertical Tabs. */
     public static boolean isAutoResizeEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, AUTO_RESIZE_PARAM, false);
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                AUTO_RESIZE_PARAM,
+                /* defaultValue= */ false);
+    }
+
+    /** Returns whether multi-select behavior is enabled for Vertical Tabs. */
+    public static boolean isMultiSelectEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                MULTI_SELECT_PARAM,
+                /* defaultValue= */ false);
     }
 
     /** Reads the current view count for the Vertical Tabs "New" badge from shared preferences. */

@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -423,6 +424,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final TabListLayoutDelegate mTabListLayoutDelegate;
     private final TabActionListener mTabClosedListener;
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
+    private final TabMultiSelectHelper mMultiSelectHelper;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
@@ -504,7 +506,6 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     mNextTabId = tabId;
 
-                    TabModel tabModel = getCurrentTabModelChecked();
                     if (mLayoutType == TabListLayoutType.FLAT
                             || mLayoutType == TabListLayoutType.NESTED) {
                         // We filtered the tab switching related metric for components that takes
@@ -520,14 +521,14 @@ public class TabListMediator implements TabListNotificationHandler {
                         //     here.
                         recordTabSelection(tabId);
                     }
-                    if (mTabListItemOnClickListenerProvider != null) {
-                        mTabListItemOnClickListenerProvider.onTabSelecting(
-                                tabId, /* fromActionButton= */ true);
-                    } else {
-                        tabModel.setIndex(
-                                TabModelUtils.getTabIndexById(tabModel, tabId),
-                                TabSelectionType.FROM_USER);
+                    if (VerticalTabUtils.isMultiSelectEnabled()
+                            && mComponentId == TabComponentId.VERTICAL_TABS) {
+                        int modifiers = triggeringMotion != null ? triggeringMotion.metaState : 0;
+                        if (mMultiSelectHelper.handleTabClick(tabId, modifiers)) {
+                            return;
+                        }
                     }
+                    handleTabSelection(tabId);
                 }
 
                 @Override
@@ -976,6 +977,8 @@ public class TabListMediator implements TabListNotificationHandler {
         mSnackbarManager = snackbarManager;
         mAllowedSelectionCount = allowedSelectionCount;
         mIsSingleContextMode = isSingleContextMode;
+        mMultiSelectHelper =
+                new TabMultiSelectHelper(this::getCurrentTabModelChecked, this::handleTabSelection);
 
         switch (mLayoutType) {
             case TabListLayoutType.FLAT:
@@ -1086,6 +1089,24 @@ public class TabListMediator implements TabListNotificationHandler {
                                     == tabListModelIndex;
 
                             updateTab(tabListModelIndex, currentGroupSelectedTab, false, false);
+                        }
+                    }
+
+                    @Override
+                    public void onTabsSelectionChanged() {
+                        if (mComponentId != TabComponentId.VERTICAL_TABS) return;
+
+                        TabModel tabModel = mCurrentTabModelSupplier.get();
+                        if (tabModel == null) return;
+
+                        for (int i = 0; i < mModelList.size(); i++) {
+                            PropertyModel model = mModelList.get(i).model;
+                            if (model.getAllSetProperties().contains(TabProperties.TAB_ID)) {
+                                boolean isMultiSelected =
+                                        tabModel.isTabMultiSelected(
+                                                model.get(TabProperties.TAB_ID));
+                                model.set(TabProperties.IS_MULTI_SELECTED, isMultiSelected);
+                            }
                         }
                     }
 
@@ -2268,6 +2289,16 @@ public class TabListMediator implements TabListNotificationHandler {
             }
         }
         return tabSelectedListener;
+    }
+
+    private void handleTabSelection(int tabId) {
+        if (mTabListItemOnClickListenerProvider != null) {
+            mTabListItemOnClickListenerProvider.onTabSelecting(tabId, /* fromActionButton= */ true);
+        } else {
+            TabModel tabModel = getCurrentTabModelChecked();
+            tabModel.setIndex(
+                    TabModelUtils.getTabIndexById(tabModel, tabId), TabSelectionType.FROM_USER);
+        }
     }
 
     private boolean isTabSelected(

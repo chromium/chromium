@@ -82,6 +82,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/util/DimensionCompatUnitTest.java",
     "java/src/org/chromium/components/browser_ui/util/DownloadUtilsTest.java",
     "java/src/org/chromium/components/browser_ui/util/TimeTextResolverUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/util/motion/MotionEventInfoUnitTest.java",
   ]
   deps = [
     ":java",

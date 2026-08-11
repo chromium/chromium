@@ -61,6 +61,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.util.Size;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -182,6 +183,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
@@ -389,6 +391,7 @@ public class TabListMediatorUnitTest {
     @Mock MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock TabListConfigDelegate mTabListConfigDelegate;
+    @Mock MotionEvent mMotionEvent;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1041,6 +1044,26 @@ public class TabListMediatorUnitTest {
 
         assertTrue(userActionTester.getActions().contains("MobileTabSwitched.VerticalTabsPinned"));
         userActionTester.tearDown();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    public void testTabSelection_MultiSelect_ShiftClick_Vertical() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        when(mMotionEvent.getPointerCount()).thenReturn(0);
+        MotionEventInfo info = MotionEventInfo.fromMotionEvent(mMotionEvent);
+
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mTab1.getId(), info);
+
+        // Verify normal selection is bypassed when multi-selecting.
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
     }
 
     @Test

@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -716,6 +717,64 @@ public class VerticalTabListCoordinatorUnitTest {
 
         if (mCoordinator.getTabContextMenuCoordinatorForTesting() != null) {
             // Dismiss/destroy the instantiated context menu tracker to satisfy LifetimeAssert.
+            mCoordinator.getTabContextMenuCoordinatorForTesting().dismiss();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    public void testShowTabItemContextMenu_MultiSelect() {
+        TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+
+        // Set up multiple selection state on the mock model.
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        when(mTabModel.isTabMultiSelected(TAB_ID_1)).thenReturn(true);
+        List<Integer> multiSelectedIds = List.of(TAB_ID_1, TAB_ID_2);
+        when(mTabModel.getOrderedMultiSelectedTabIds()).thenReturn(multiSelectedIds);
+
+        // Create a mock View layout box for the tab card.
+        when(mMockChildView.getWidth()).thenReturn(300);
+        when(mMockChildView.getHeight()).thenReturn(100);
+
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            int[] pos = invocation.getArgument(0);
+                            pos[0] = 50;
+                            pos[1] = 100;
+                            return null;
+                        })
+                .when(mMockChildView)
+                .getLocationInWindow(any());
+
+        when(recyclerViewSpy.findChildViewUnder(150f, 250f)).thenReturn(mMockChildView);
+        when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        // Inject the mock context menu coordinator to intercept showMenu().
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        // Trigger context menu interaction.
+        boolean handled =
+                mCoordinator.handleContextMenuInteractionForTesting(
+                        mActivity, recyclerViewSpy, /* localX= */ 150f, /* localY= */ 250f);
+
+        assertTrue("Context gesture interaction on an active tab row should return true.", handled);
+
+        // Verify the AnchorInfo passed to the coordinator contains all the selected tab IDs.
+        ArgumentCaptor<AnchorInfo> anchorInfoCaptor = ArgumentCaptor.forClass(AnchorInfo.class);
+        verify(mTabContextMenuCoordinator)
+                .showMenu(any(RectProvider.class), anchorInfoCaptor.capture());
+
+        assertEquals(
+                "Anchor info should contain all multi-selected tab IDs.",
+                multiSelectedIds,
+                anchorInfoCaptor.getValue().getAllTabIds());
+        assertEquals(
+                "Anchor info anchor ID should match the clicked tab ID.",
+                TAB_ID_1,
+                anchorInfoCaptor.getValue().getAnchorTabId());
+
+        if (mCoordinator.getTabContextMenuCoordinatorForTesting() != null) {
             mCoordinator.getTabContextMenuCoordinatorForTesting().dismiss();
         }
     }
@@ -1899,9 +1958,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @SmallTest
     public void testGroupHeaderDragOut_AllTabsInWindow() {
         Token tabGroupId = new Token(1L, 2L);
-        Tab tab =
-                setupMockTabGroup(
-                        TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
         when(mTabModel.getCount()).thenReturn(1);
 
         createCoordinator();
@@ -1919,9 +1976,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @SmallTest
     public void testGroupHeaderDragOut_Success() {
         Token tabGroupId = new Token(1L, 2L);
-        Tab tab1 =
-                setupMockTabGroup(
-                        TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
         when(mTabModel.getCount()).thenReturn(2);
 
         createCoordinator();
@@ -2210,13 +2265,12 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     /** Helper method to create a mock pinned {@link Tab} and wire it into {@link #mTabModel}. */
-    private Tab prepareMockPinnedTab(Tab tab, int id, int index) {
+    private void prepareMockPinnedTab(Tab tab, int id, int index) {
         Tab preparedTab = prepareMockTab(tab, id);
         when(preparedTab.getIsPinned()).thenReturn(true);
         when(mTabModel.getTabById(id)).thenReturn(preparedTab);
         when(mTabModel.getTabAt(index)).thenReturn(preparedTab);
         when(mTabModel.indexOf(preparedTab)).thenReturn(index);
-        return preparedTab;
     }
 
     /** Helper method to manufacture synthetic {@link MotionEvent} objects for touch testing. */
@@ -2396,7 +2450,7 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     /** Helper to wire mock tab group data into {@link TabModel}. */
-    private Tab setupMockTabGroup(int repTabId, Token groupId, List<Tab> tabsInGroup) {
+    private void setupMockTabGroup(int repTabId, Token groupId, List<Tab> tabsInGroup) {
         Tab repTab = tabsInGroup.get(0);
         when(repTab.getTabGroupId()).thenReturn(groupId);
         for (Tab tab : tabsInGroup) {
@@ -2407,7 +2461,6 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(tabsInGroup);
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(repTab));
         when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(repTabId);
-        return repTab;
     }
 
     private Tab prepareAndShowHoverCard(Tab mockTab) {
