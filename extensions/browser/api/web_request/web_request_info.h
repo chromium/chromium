@@ -78,6 +78,7 @@ struct WebRequestInfoInitParams {
   bool is_service_worker_script = false;
   std::optional<int64_t> navigation_id;
   content::GlobalRenderFrameHostId parent_routing_id;
+  bool is_privileged = false;
 
  private:
   void InitializeWebViewAndFrameData(
@@ -206,6 +207,12 @@ struct WebRequestInfo {
   // TODO(karandeepb, mcnee): For subresources, having "parent" in the name is
   // misleading. This should be renamed to indicate that this is the initiator.
   const content::GlobalRenderFrameHostId parent_routing_id;
+
+  // True if this request is for privileged content (see //chrome's
+  // PrivilegedWebContents). Such requests are hidden from the webRequest API
+  // and exempt from Declarative Net Request. Computed once at construction,
+  // since a navigation may have no live renderer process to consult later.
+  const bool is_privileged;
 
   // For SecurityInfo object.
   std::optional<net::SSLInfo> ssl_info;

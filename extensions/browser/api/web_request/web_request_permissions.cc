@@ -252,6 +252,19 @@ bool WebRequestPermissions::HideRequest(
     return true;
   }
 
+  // Hide requests for privileged content (see //chrome's
+  // PrivilegedWebContents): privileged content is invisible to the webRequest
+  // API. This covers both a privileged WebContents' own (browser-initiated)
+  // main-frame navigation and requests from its renderer. It is keyed on the
+  // destination, not the URL, so the same URL loaded in an ordinary tab remains
+  // observable. `is_privileged` is computed at request construction, since
+  // there may be no live renderer process to consult here. Checked up front so
+  // a privileged request is always hidden, before any of the `return false`
+  // paths below.
+  if (request.is_privileged) {
+    return true;
+  }
+
   // Requests from <webview> are never hidden.
   if (request.is_web_view) {
     return false;

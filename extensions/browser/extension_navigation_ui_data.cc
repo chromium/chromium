@@ -140,6 +140,7 @@ std::unique_ptr<ExtensionNavigationUIData> ExtensionNavigationUIData::DeepCopy()
   copy->frame_data_ = frame_data_;
   copy->web_view_data_ = web_view_data_;
   copy->parent_routing_id_ = parent_routing_id_;
+  copy->is_privileged_ = is_privileged_;
   return copy;
 }
 
@@ -164,6 +165,7 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
                   frame_type,
                   document_lifecycle),
       web_view_data_(web_view_data),
+      is_privileged_(web_contents && web_contents->IsPrivileged()),
       parent_routing_id_(parent_routing_id) {}
 
 }  // namespace extensions

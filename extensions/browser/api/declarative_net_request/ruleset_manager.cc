@@ -583,6 +583,15 @@ bool RulesetManager::ShouldEvaluateRequest(
     const WebRequestInfo& request) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Requests for privileged content (see //chrome's PrivilegedWebContents) are
+  // exempt from Declarative Net Request, mirroring their invisibility to the
+  // webRequest API. This covers a privileged WebContents' own main-frame
+  // navigation as well as requests from its renderer. It must come before the
+  // HideRequest() DCHECK below, because such requests are also hidden.
+  if (request.is_privileged) {
+    return false;
+  }
+
   // Ensure clients filter out sensitive requests.
   DCHECK(!WebRequestPermissions::HideRequest(permission_helper_, request));
 

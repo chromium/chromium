@@ -70,6 +70,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -3568,6 +3569,32 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, DynamicRules) {
       {*block_dynamic_rule.id, *allow_rule.id, kMinValidID + 100}));
   EXPECT_FALSE(IsNavigationBlocked(google_url));
   EXPECT_TRUE(IsNavigationBlocked(yahoo_url));
+}
+
+// A privileged WebContents (see //chrome's PrivilegedWebContents) is exempt
+// from Declarative Net Request: a main-frame block rule that blocks an ordinary
+// tab does not fire for a privileged WebContents at the same URL.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       PrivilegedWebContentsExemptFromDNR) {
+  TestRule rule = CreateMainFrameBlockRule("block.example");
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
+
+  const GURL url = embedded_test_server()->GetURL(
+      "block.example", "/pages_with_script/index.html");
+
+  // An ordinary tab navigation is blocked by the rule.
+  EXPECT_TRUE(IsNavigationBlocked(url));
+
+  // A privileged WebContents navigation to the same URL is not evaluated
+  // against the ruleset, so the page loads.
+  content::WebContents::CreateParams params(profile());
+  content::WebContents::PrivilegedParams privileged_params;
+  privileged_params.feature_id = 42;
+  params.privileged_params = privileged_params;
+  std::unique_ptr<content::WebContents> privileged =
+      content::WebContents::Create(params);
+  EXPECT_TRUE(content::NavigateToURL(privileged.get(), url));
+  EXPECT_TRUE(WasFrameWithScriptLoaded(privileged->GetPrimaryMainFrame()));
 }
 
 // Tests rules using the Redirect dictionary.
