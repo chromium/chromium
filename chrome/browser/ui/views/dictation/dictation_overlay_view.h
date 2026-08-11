@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "content/public/browser/global_dom_node_id.h"
@@ -35,7 +36,8 @@ namespace dictation {
 // an active dictation stream.
 class DictationOverlayView : public views::BubbleDialogDelegate {
  public:
-  explicit DictationOverlayView(gfx::NativeView parent_window);
+  DictationOverlayView(gfx::NativeView parent_window,
+                       base::RepeatingClosure toggle_active_stream_callback);
   ~DictationOverlayView() override;
 
   DictationOverlayView(const DictationOverlayView&) = delete;
@@ -53,7 +55,7 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMicButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFinalizingButtonElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFinalizingImageElementIdForTesting);
 
  private:
   void OnFocusSelectionBoundsChanged(

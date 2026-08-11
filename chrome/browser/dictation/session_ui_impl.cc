@@ -152,7 +152,10 @@ void SessionUiImpl::OnStartedStream(content::GlobalDOMNodeId target_id) {
 
   if (!overlay_view_) {
     gfx::NativeView parent_view = web_contents->GetContentNativeView();
-    overlay_view_ = std::make_unique<DictationOverlayView>(parent_view);
+    overlay_view_ = std::make_unique<DictationOverlayView>(
+        parent_view,
+        base::BindRepeating(&SessionUiImpl::OnToggleActiveStreamClicked,
+                            base::Unretained(this)));
     overlay_view_->SetState(ToUiState(controller_->GetState()));
   }
 

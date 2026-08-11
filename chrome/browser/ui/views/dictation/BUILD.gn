@@ -13,12 +13,14 @@ source_set("dictation") {
     "onboarding_dialog_controller.h",
     "ui_state.h",
     "waveform_view.h",
+    "waveform_view_button.h",
   ]
   sources = [
     "dictation_bubble_ui.cc",
     "dictation_overlay_view.cc",
     "onboarding_dialog_controller.cc",
     "waveform_view.cc",
+    "waveform_view_button.cc",
   ]
 
   public_deps = [
