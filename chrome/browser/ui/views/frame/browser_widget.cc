@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -209,8 +210,11 @@ void BrowserWidget::InitBrowserWidget() {
     }
   }
 
-  if (features::IsGlassFrameEnabled()) {
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
+    if (glass_frame_service->IsBrowserWindowEligible(
+            browser_view_->browser())) {
+      params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+    }
   }
 
   Init(std::move(params));

@@ -1068,6 +1068,16 @@ ui::TextInputClient* NativeWidgetMacNSWindowHost::GetTextInputClient() {
   return text_input_host_->GetTextInputClient();
 }
 
+void NativeWidgetMacNSWindowHost::SetLayerAndCompositorOpaque(bool opaque) {
+  if (layer()) {
+    layer()->SetFillsBoundsOpaquely(opaque);
+  }
+  if (compositor_) {
+    compositor_->compositor()->SetBackgroundColor(opaque ? SK_ColorWHITE
+                                                         : SK_ColorTRANSPARENT);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::ApplicationHost::Observer:
 void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(

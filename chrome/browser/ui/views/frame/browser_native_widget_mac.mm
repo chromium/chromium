@@ -933,6 +933,8 @@ void BrowserNativeWidgetMac::UpdateGlassEligibility(bool is_glass_eligible) {
 
   last_is_glass_eligible_ = is_glass_eligible;
 
+  GetNSWindowHost()->SetLayerAndCompositorOpaque(!is_glass_eligible);
+
   if (!is_glass_eligible) {
     [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
     [ns_window setOpaque:YES];

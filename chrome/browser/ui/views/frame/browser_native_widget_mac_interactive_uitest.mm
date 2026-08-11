@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/native_widget_mac.h"
 
@@ -231,12 +232,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
       first_view->GetWidget()->GetNativeWindow().GetNativeNSWindow();
   NSView* first_content_view = [first_window contentView];
   EXPECT_EQ(0.001, [[first_window backgroundColor] alphaComponent]);
+  EXPECT_FALSE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
   auto [glass1, tint1] = GetGlassViews(first_content_view);
   EXPECT_NE(glass1, nil);
 
   Browser* second_browser = CreateBrowser(browser()->GetProfile());
   GlassFrameService::GetInstance()->OnBrowserActivated(second_browser);
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
+  EXPECT_TRUE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
   auto [glass1_ineligible, tint1_ineligible] =
       GetGlassViews(first_content_view);
   EXPECT_EQ(glass1_ineligible, nil);
@@ -251,6 +254,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   NSView* second_content_view = [second_window contentView];
 
   EXPECT_EQ(1.0, [[first_window backgroundColor] alphaComponent]);
+  EXPECT_TRUE(first_view->GetWidget()->GetLayer()->fills_bounds_opaquely());
+  EXPECT_TRUE([second_window isOpaque]);
   EXPECT_EQ(1.0, [[second_window backgroundColor] alphaComponent]);
   auto [glass2_ineligible, tint2_ineligible] =
       GetGlassViews(second_content_view);

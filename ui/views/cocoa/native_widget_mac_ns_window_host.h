@@ -294,6 +294,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Set the color mode of the window.
   void SetColorMode(ui::ColorProviderKey::ColorMode color_mode);
 
+  // Synchronize layer opaqueness and compositor background color.
+  void SetLayerAndCompositorOpaque(bool opaque);
+
  private:
   friend class TextInputHost;
   friend class views::test::BridgedNativeWidgetTestApi;
