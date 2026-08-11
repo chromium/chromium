@@ -186,7 +186,11 @@ enum class ProfileKeepAliveOrigin {
   // Fetch keepalive / fetchLater URLLoader.
   kFetchKeepAlive = 45,
 
-  kMaxValue = kFetchKeepAlive,
+  // Used by Omnibox Everywhere background mode manager to hold a profile keep
+  // alive.
+  kOmniboxEverywhere = 46,
+
+  kMaxValue = kOmniboxEverywhere,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 

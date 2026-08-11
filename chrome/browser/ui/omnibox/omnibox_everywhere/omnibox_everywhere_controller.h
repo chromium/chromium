@@ -9,6 +9,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -33,7 +36,8 @@ enum class InvocationSource {
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
 // Exists as a process-global singleton owned by GlobalFeatures.
 class OmniboxEverywhereController
-    : public ui::GlobalAcceleratorListener::Observer {
+    : public ui::GlobalAcceleratorListener::Observer,
+      public ProfileManagerObserver {
  public:
   explicit OmniboxEverywhereController(
       OmniboxEverywhereUIManager::ContentsWrapperFactory
@@ -67,6 +71,14 @@ class OmniboxEverywhereController
   // Called during profile teardown to synchronously close the widget.
   void ShutdownForProfile(Profile* profile);
 
+  // Sets the current target profile for Omnibox Everywhere and notifies the
+  // background mode manager.
+  void SetTargetProfile(Profile* profile);
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
   // ui::GlobalAcceleratorListener::Observer:
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
   void ExecuteCommand(const std::string& accelerator_group_id,
@@ -89,6 +101,9 @@ class OmniboxEverywhereController
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
   std::unique_ptr<OmniboxEverywhereBackgroundModeManager>
       background_mode_manager_;
+  raw_ptr<Profile> target_profile_ = nullptr;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
   raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
   base::WeakPtrFactory<OmniboxEverywhereController> weak_factory_{this};
 };

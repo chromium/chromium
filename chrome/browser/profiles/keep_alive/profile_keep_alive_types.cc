@@ -91,6 +91,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kWebAppDatabaseCorruptionRecovery";
     case ProfileKeepAliveOrigin::kFetchKeepAlive:
       return out << "kFetchKeepAlive";
+    case ProfileKeepAliveOrigin::kOmniboxEverywhere:
+      return out << "kOmniboxEverywhere";
   }
   NOTREACHED();
 }

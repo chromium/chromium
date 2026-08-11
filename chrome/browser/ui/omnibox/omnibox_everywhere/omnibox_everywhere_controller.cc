@@ -47,12 +47,42 @@ OmniboxEverywhereController::OmniboxEverywhereController(
             base::Unretained(this)));
   }
   UpdateHotkeyRegistration();
+
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    profile_manager_observation_.Observe(g_browser_process->profile_manager());
+    for (auto* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      OnProfileAdded(profile);
+    }
+  }
 }
 
 OmniboxEverywhereController::~OmniboxEverywhereController() {
   if (listener_) {
     listener_->UnregisterAccelerators(this);
   }
+}
+
+void OmniboxEverywhereController::SetTargetProfile(Profile* profile) {
+  if (profile && profile->IsOffTheRecord()) {
+    profile = nullptr;
+  }
+  if (target_profile_ == profile) {
+    return;
+  }
+  // TODO(crbug.com/532190282): Persist target profile across sessions.
+  target_profile_ = profile;
+  background_mode_manager_->SetProfile(target_profile_);
+}
+
+void OmniboxEverywhereController::OnProfileAdded(Profile* profile) {
+  if (!target_profile_) {
+    SetTargetProfile(profile);
+  }
+}
+
+void OmniboxEverywhereController::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void OmniboxEverywhereController::UpdateHotkeyRegistration() {
@@ -80,6 +110,8 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
   if (!omnibox::IsOmniboxEverywhereEnabled(profile)) {
     return;
   }
+
+  SetTargetProfile(profile);
   switch (source) {
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
@@ -131,17 +163,24 @@ void OmniboxEverywhereController::OnProfilePicked(Profile* new_profile) {
   if (!new_profile) {
     return;
   }
+  SetTargetProfile(new_profile);
   OnInvoke(InvocationSource::kProfilePicker, new_profile);
 }
 
 void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {
+  if (profile == target_profile_) {
+    SetTargetProfile(nullptr);
+  }
   if (profile == ui_manager_->profile()) {
     ui_manager_->Shutdown();
   }
 }
 
-// TODO(crbug.com/527183107): Implement a better profile selection heuristic.
 Profile* OmniboxEverywhereController::GetTargetProfile() {
+  if (target_profile_) {
+    return target_profile_;
+  }
+
   BrowserWindowInterface* active_bwi =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   Profile* target_profile = active_bwi ? active_bwi->GetProfile() : nullptr;
@@ -152,6 +191,9 @@ Profile* OmniboxEverywhereController::GetTargetProfile() {
   if (target_profile &&
       !OmniboxEverywhereServiceFactory::GetForProfile(target_profile)) {
     target_profile = nullptr;
+  }
+  if (target_profile) {
+    SetTargetProfile(target_profile);
   }
   return target_profile;
 }

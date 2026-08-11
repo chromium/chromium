@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -17,6 +20,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -448,6 +453,39 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
   EXPECT_FALSE(status_tray->HasStatusIconOfTypeForTesting(
       StatusTray::OMNIBOX_EVERYWHERE_ICON));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, BackgroundModeKeepAlive) {
+  Profile* profile = browser()->GetProfile();
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  KeepAliveRegistry* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(profile_manager);
+  ASSERT_TRUE(keep_alive_registry);
+  ASSERT_TRUE(local_state);
+
+  // Background mode should initially be disabled.
+  EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
+      profile, ProfileKeepAliveOrigin::kOmniboxEverywhere));
+
+  // Enable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+
+  // Verify both ScopedProfileKeepAlive and ScopedKeepAlive are held.
+  EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
+      profile, ProfileKeepAliveOrigin::kOmniboxEverywhere));
+  EXPECT_TRUE(keep_alive_registry->IsKeepingAlive());
+  EXPECT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+
+  // Disable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
+
+  // Wait until ScopedProfileKeepAlive is released on UI thread.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !profile_manager->HasKeepAliveForTesting(
+        profile, ProfileKeepAliveOrigin::kOmniboxEverywhere);
+  }));
 }
 
 }  // namespace omnibox_everywhere

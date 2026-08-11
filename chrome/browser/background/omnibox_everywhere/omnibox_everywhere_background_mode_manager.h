@@ -13,6 +13,9 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_member.h"
 
+class Profile;
+class ScopedProfileKeepAlive;
+
 namespace omnibox_everywhere {
 
 // Manages OmniboxEverywhere's background mode and status icon based on pref
@@ -31,12 +34,16 @@ class OmniboxEverywhereBackgroundModeManager
       const OmniboxEverywhereBackgroundModeManager&) = delete;
   ~OmniboxEverywhereBackgroundModeManager() override;
 
+  // Sets the profile for which to hold a profile keep alive.
+  void SetProfile(Profile* profile);
+
  private:
   void OnPrefChanged();
 
   void ShowStatusIcon();
   void HideStatusIcon();
   void UpdateStatusIconContextMenu();
+  void UpdateProfileKeepAlive();
 
   // StatusIconObserver:
   void OnStatusIconClicked() override;
@@ -47,7 +54,9 @@ class OmniboxEverywhereBackgroundModeManager
   void Reset();
 
   BooleanPrefMember background_mode_pref_member_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   raw_ptr<StatusIcon> status_icon_;
   ShowUICallback show_ui_callback_;
 };

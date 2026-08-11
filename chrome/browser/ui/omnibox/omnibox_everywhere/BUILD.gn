@@ -22,6 +22,7 @@ source_set("omnibox_everywhere") {
   public_deps = [
     ":prefs",
     "//base",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/prefs",
