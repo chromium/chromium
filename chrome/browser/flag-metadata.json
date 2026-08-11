@@ -8338,22 +8338,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "private-metrics-enable-puma",
-    "owners": [
-      "kjarosz@google.com",
-      "private-metrics@google.com"
-    ],
-    "expiry_milestone": 148
-  },
-  {
-    "name": "private-metrics-enable-puma-rc",
-    "owners": [
-      "kjarosz@google.com",
-      "private-metrics@google.com"
-    ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "proactive-suggestions-framework",
     "owners": [
       "kanouche@google.com",

@@ -135,7 +135,6 @@
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/manta/features.h"
-#include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -12690,16 +12689,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSwipeToSwitchPaneDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnableSwipeToSwitchPane)},
 #endif
-
-    {"private-metrics-enable-puma",
-     flag_descriptions::kPrivateMetricsEnablePumaName,
-     flag_descriptions::kPrivateMetricsEnablePumaDescription, kOsAll,
-     FEATURE_VALUE_TYPE(metrics::private_metrics::kPrivateMetricsPuma)},
-
-    {"private-metrics-enable-puma-rc",
-     flag_descriptions::kPrivateMetricsEnablePumaRcName,
-     flag_descriptions::kPrivateMetricsEnablePumaRcDescription, kOsAll,
-     FEATURE_VALUE_TYPE(metrics::private_metrics::kPrivateMetricsPumaRc)},
 
     {"autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",
      flag_descriptions::
