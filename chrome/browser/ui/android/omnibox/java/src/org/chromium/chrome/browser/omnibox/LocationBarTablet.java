@@ -882,11 +882,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
 
+        boolean isToolbarFuseboxActive =
+                (mFuseboxState == FuseboxState.COMPACT || mFuseboxState == FuseboxState.EXPANDED);
+        // Standby focus ring suppresses popup expansion and bottom insets when there are no
+        // suggestions.
+        boolean isExpanded = !mShowFocusRing && (mIsReparentedToPopover || isToolbarFuseboxActive);
+
         boolean suggestionsListScrolledDown =
                 mSuggestionsListScrollOffset > mLocationBarTabletFuseboxPopupInset;
         boolean bleedIntoDropdown =
-                mFuseboxState == FuseboxState.DISABLED
-                        || (mHasSuggestions && !suggestionsListScrolledDown);
+                !isExpanded || (mHasSuggestions && !suggestionsListScrolledDown);
 
         int bottomInset = bleedIntoDropdown ? 0 : mLocationBarTabletFuseboxPopupInset;
         boolean roundBottomCorners = !bleedIntoDropdown && !suggestionsListScrolledDown;
@@ -912,7 +917,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         setLayoutParams(layoutParams);
 
         GradientDrawable hoverRect = (GradientDrawable) mHoverDrawable.getDrawable(0);
-        if (mFuseboxState == FuseboxState.DISABLED) {
+        if (!isExpanded) {
             mHoverDrawable.setLayerInsetRelative(
                     0,
                     0,

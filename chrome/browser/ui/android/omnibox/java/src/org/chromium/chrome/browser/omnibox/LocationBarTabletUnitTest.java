@@ -676,10 +676,16 @@ public class LocationBarTabletUnitTest {
 
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.COMPACT);
         // Standby mode should override the fusebox state when deciding if to expand.
-        var layoutParams = (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mHolderView.getLayoutParams();
         assertEquals(0, layoutParams.leftMargin);
         assertEquals(0, layoutParams.rightMargin);
         assertEquals(0, layoutParams.topMargin);
+        assertEquals(0, mLocationBarTablet.getPaddingBottom());
+
+        FrameLayout.LayoutParams tabletLayoutParams =
+                (FrameLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        assertEquals(0, tabletLayoutParams.bottomMargin);
 
         View urlBar = mLocationBarTablet.findViewById(R.id.url_bar);
         View statusView = mLocationBarTablet.findViewById(R.id.location_bar_status);
