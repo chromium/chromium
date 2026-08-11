@@ -18,7 +18,7 @@
   --content-container-max-width: 500px;
   --sync-benefits-list-color: var(--google-grey-50);
   --sync-benefit-icon-color: var(--google-blue-600);
-  background-image: url('images/profile_picker_light_background.svg');
+  background-image: url('images/shared_gradient_light_background.svg');
   background-repeat: no-repeat;
   background-size: 100% 100%;
   color: var(--cr-primary-text-color);
@@ -29,7 +29,7 @@
   :host {
     --sync-benefits-list-color: var(--google-grey-800);
     --sync-benefit-icon-color: var(--google-blue-300);
-    background-image: url('images/profile_picker_dark_background.svg');
+    background-image: url('images/shared_gradient_dark_background.svg');
   }
 }
 

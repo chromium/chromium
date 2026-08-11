@@ -266,11 +266,11 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         "sync_confirmation_app_refresh.html.js",
         IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_APP_REFRESH_HTML_JS);
     source->AddResourcePath(
-        "images/profile_picker_light_background.svg",
-        IDR_SIGNIN_IMAGES_PROFILE_PICKER_LIGHT_BACKGROUND_SVG);
+        "images/shared_gradient_light_background.svg",
+        IDR_SIGNIN_IMAGES_SHARED_GRADIENT_LIGHT_BACKGROUND_SVG);
     source->AddResourcePath(
-        "images/profile_picker_dark_background.svg",
-        IDR_SIGNIN_IMAGES_PROFILE_PICKER_DARK_BACKGROUND_SVG);
+        "images/shared_gradient_dark_background.svg",
+        IDR_SIGNIN_IMAGES_SHARED_GRADIENT_DARK_BACKGROUND_SVG);
   }
 
   // TODO(crbug.com/40242558): Refactor SyncConfirmationStyle based on the

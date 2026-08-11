@@ -16,7 +16,7 @@
   --color-button-foreground-prominent: var(--color-sys-on-primary);
 
   align-items: center;
-  background-image: url(images/profile_picker_light_background.svg);
+  background-image: url(images/shared_gradient_light_background.svg);
   background-repeat: no-repeat;
   background-size: cover;
   display: flex;
@@ -28,7 +28,7 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    background-image: url(images/profile_picker_dark_background.svg);
+    background-image: url(images/shared_gradient_dark_background.svg);
   }
 }
 

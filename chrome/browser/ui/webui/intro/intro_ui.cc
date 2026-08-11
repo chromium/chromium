@@ -148,11 +148,11 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath(
-      "images/profile_picker_dark_background.svg",
-      IDR_SIGNIN_IMAGES_PROFILE_PICKER_DARK_BACKGROUND_SVG);
+      "images/shared_gradient_dark_background.svg",
+      IDR_SIGNIN_IMAGES_SHARED_GRADIENT_DARK_BACKGROUND_SVG);
   source->AddResourcePath(
-      "images/profile_picker_light_background.svg",
-      IDR_SIGNIN_IMAGES_PROFILE_PICKER_LIGHT_BACKGROUND_SVG);
+      "images/shared_gradient_light_background.svg",
+      IDR_SIGNIN_IMAGES_SHARED_GRADIENT_LIGHT_BACKGROUND_SVG);
   source->AddResourcePath("tangible_sync_style_shared.css.js",
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
