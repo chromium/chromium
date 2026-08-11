@@ -66,28 +66,62 @@ suite('ExtensionShortcutTest', function() {
     document.body.appendChild(keyboardShortcuts);
   });
 
+  /**
+   * Tests the layout of extension command cards and verifies that command
+   * details, input fields, dropdown menus, and visual text labels are properly
+   * rendered and visible.
+   */
   test('Layout', function() {
     function isVisibleOnCard(e: HTMLElement, s: string): boolean {
       // We check the light DOM in the card because it's a regular old div,
       // rather than a fancy-schmancy custom element.
       return isChildVisible(e, s, true);
     }
+
+    // Verify that `.shortcut-card` elements are rendered for extensions with
+    // commands.
     const cards = keyboardShortcuts.shadowRoot.querySelector('#container')!
                       .querySelectorAll('.shortcut-card');
     assertEquals(2, cards.length);
 
+    // Check the first card's title and command entry count.
     const card1 = cards[0]!;
     assertEquals(
         oneCommand.name,
         card1.querySelector<HTMLElement>('.card-title span')!.textContent);
     let commands = card1.querySelectorAll<HTMLElement>('.command-entry');
     assertEquals(1, commands.length);
+
+    // Verify that `.command-name`, `.shortcut-input-label`,
+    // `cr-shortcut-input`, `.shortcut-scope-label`, and `select.md-select`
+    // are visible on the command entry, and that label text is populated.
     assertTrue(isVisibleOnCard(commands[0]!, '.command-name'));
+    assertTrue(isVisibleOnCard(commands[0]!, '.shortcut-input-label'));
+    assertTrue(isVisibleOnCard(commands[0]!, 'cr-shortcut-input'));
+    assertTrue(isVisibleOnCard(commands[0]!, '.shortcut-scope-label'));
     assertTrue(isVisibleOnCard(commands[0]!, 'select.md-select'));
 
+    const inputLabel =
+        commands[0]!.querySelector<HTMLElement>('.shortcut-input-label')!;
+    const scopeLabel =
+        commands[0]!.querySelector<HTMLElement>('.shortcut-scope-label')!;
+    assertTrue(inputLabel.textContent.trim().length > 0);
+    assertTrue(scopeLabel.textContent.trim().length > 0);
+    assertEquals('true', inputLabel.getAttribute('aria-hidden'));
+    assertEquals('true', scopeLabel.getAttribute('aria-hidden'));
+
+    // Verify that the second card renders the expected command entries and
+    // that all controls and visual text labels are visible across all entries.
     const card2 = cards[1]!;
     commands = card2.querySelectorAll('.command-entry');
     assertEquals(2, commands.length);
+    for (const command of commands) {
+      assertTrue(isVisibleOnCard(command, '.command-name'));
+      assertTrue(isVisibleOnCard(command, '.shortcut-input-label'));
+      assertTrue(isVisibleOnCard(command, 'cr-shortcut-input'));
+      assertTrue(isVisibleOnCard(command, '.shortcut-scope-label'));
+      assertTrue(isVisibleOnCard(command, 'select.md-select'));
+    }
   });
 
   test('ScopeChange', async function() {

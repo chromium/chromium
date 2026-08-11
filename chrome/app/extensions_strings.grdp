@@ -511,6 +511,12 @@
   <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL" desc="The label to indicate that a shortcut will be triggerable globally (including outside of the Chrome application).">
     Global
   </message>
+  <message name="IDS_EXTENSIONS_SHORTCUT_INPUT_LABEL" desc="The visual text label above the shortcut input field.">
+    Type a shortcut
+  </message>
+  <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE" desc="The visual text label above the shortcut scope dropdown.">
+    Scope
+  </message>
   <message name="IDS_EXTENSIONS_APPS_TITLE" desc="The text displayed in the sidebar to go to the apps section of the page.">
     Chrome Apps
   </message>

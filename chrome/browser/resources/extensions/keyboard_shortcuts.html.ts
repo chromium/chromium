@@ -19,31 +19,41 @@ export function getHtml(this: KeyboardShortcutsElement) {
         ${item.commands.map(command => html`
           <div class="command-entry">
             <span class="command-name">${command.description}</span>
-            <cr-shortcut-input .shortcut="${command.keybinding}"
-                input-aria-label="${this.i18n('editShortcutInputLabel',
-                    command.description, item.name)}"
-                edit-button-aria-label="${this.i18n('editShortcutButtonLabel',
-                    command.description, item.name)}"
-                .inputDisabled="${this.computeInputDisabled_(item, command)}"
-                @input-capture-change="${this.onInputCaptureChange_}"
-                @shortcut-updated="${this.onShortcutUpdated_.bind(this, item.id,
-                    command.name)}">
-            </cr-shortcut-input>
-            <select class="md-select" @change="${this.onScopeChanged_}"
-                data-extension-id="${item.id}"
-                data-command-name="${command.name}"
-                aria-label="${this.computeScopeAriaLabel_(item, command)}"
-                ?disabled="${this.computeScopeDisabled_(command)}">
-              <option value="${chrome.developerPrivate.CommandScope.CHROME}"
-                  ?selected="${this.isChromeScopeSelected_(command)}">
-                $i18n{shortcutScopeInChrome}
-              </option>
-              ${this.showGlobalScopeOption_ ? html`
-                <option value="${chrome.developerPrivate.CommandScope.GLOBAL}"
-                    ?selected="${this.isGlobalScopeSelected_(command)}">
-                  $i18n{shortcutScopeGlobal}
-                </option>` : ''}
-            </select>
+            <div class="shortcut-input-container">
+              <span class="shortcut-input-label" aria-hidden="true">
+                $i18n{shortcutInputLabel}
+              </span>
+              <cr-shortcut-input .shortcut="${command.keybinding}"
+                  input-aria-label="${this.i18n('editShortcutInputLabel',
+                      command.description, item.name)}"
+                  edit-button-aria-label="${this.i18n('editShortcutButtonLabel',
+                      command.description, item.name)}"
+                  .inputDisabled="${this.computeInputDisabled_(item, command)}"
+                  @input-capture-change="${this.onInputCaptureChange_}"
+                  @shortcut-updated="${this.onShortcutUpdated_.bind(
+                      this, item.id, command.name)}">
+              </cr-shortcut-input>
+            </div>
+            <div class="shortcut-scope-container">
+              <span class="shortcut-scope-label" aria-hidden="true">
+                $i18n{shortcutScope}
+              </span>
+              <select class="md-select" @change="${this.onScopeChanged_}"
+                  data-extension-id="${item.id}"
+                  data-command-name="${command.name}"
+                  aria-label="${this.computeScopeAriaLabel_(item, command)}"
+                  ?disabled="${this.computeScopeDisabled_(command)}">
+                <option value="${chrome.developerPrivate.CommandScope.CHROME}"
+                    ?selected="${this.isChromeScopeSelected_(command)}">
+                  $i18n{shortcutScopeInChrome}
+                </option>
+                ${this.showGlobalScopeOption_ ? html`
+                  <option value="${chrome.developerPrivate.CommandScope.GLOBAL}"
+                      ?selected="${this.isGlobalScopeSelected_(command)}">
+                    $i18n{shortcutScopeGlobal}
+                  </option>` : ''}
+              </select>
+            </div>
           </div>`)}
       </div>
     </div>`)}

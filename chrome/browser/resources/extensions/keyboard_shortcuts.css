@@ -34,23 +34,53 @@
   padding-top: 24px;
 }
 
+/* Each extension command row is a horizontal flex container containing:
+ * 1. The command description (.command-name) on the start side.
+ * 2. The shortcut input control group (.shortcut-input-container).
+ * 3. The scope dropdown control group (.shortcut-scope-container). */
 .command-entry {
-  align-items: start;
+  align-items: center;
   display: flex;
   min-height: var(--cr-section-min-height);
-  padding-top: var(--cr-section-vertical-padding);
+  padding-bottom: 8px;
+  padding-top: 8px;
 }
 
 .command-name {
-  /* Align with cr-input by matching the field's top padding. */
   flex: 1;
-  margin-top: 6px;
+  margin-inline-end: var(--cr-section-padding);
+  overflow-wrap: break-word;
+}
+
+/* Columnar containers that stack each visual text label directly above its
+ * associated form control (<cr-shortcut-input> or <select.md-select>). */
+.shortcut-input-container,
+.shortcut-scope-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Spacing between the shortcut input group and the scope select group. */
+.shortcut-input-container {
+  margin-inline-end: var(--cr-section-padding);
+}
+
+/* Visual text labels ("Type a shortcut" and "Scope") placed above controls.
+ * Uses standard Chromium design token --cr-form-field-label-font-size (rem)
+ * and secondary text color so that label text scales fluidly with user
+ * accessibility font preferences, browser zoom, and high-DPI displays. */
+.shortcut-input-label,
+.shortcut-scope-label {
+  color: var(--cr-secondary-text-color);
+  font-size: var(--cr-form-field-label-font-size, 12px);
+  font-weight: 500;
+  line-height: var(--cr-form-field-label-line-height, 1.25);
+  margin-bottom: 4px;
 }
 
 .command-entry .md-select {
   /* TODO(johntlee): line-height needs adjustment to fix large fonts. */
   line-height: 22px;
-  margin-inline-start: var(--cr-section-padding);
 }
 
 .card-title {
