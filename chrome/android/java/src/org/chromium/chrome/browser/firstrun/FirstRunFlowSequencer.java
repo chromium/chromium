@@ -312,9 +312,8 @@ public abstract class FirstRunFlowSequencer {
         CrashKeys.getInstance().set(CrashKeyIndex.FIRST_RUN, "yes");
 
         if (inSameTask) {
-            FreIntentCreator intentCreator = new FreIntentCreator();
             Intent freIntent =
-                    intentCreator.create(
+                    FreIntentCreator.create(
                             caller,
                             fromIntent,
                             preferLightweightFre,
@@ -325,9 +324,8 @@ public abstract class FirstRunFlowSequencer {
         }
 
         if ((fromIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
-            FreIntentCreator intentCreator = new FreIntentCreator();
             Intent freIntent =
-                    intentCreator.create(
+                    FreIntentCreator.create(
                             caller, fromIntent, preferLightweightFre, /* usePendingIntent= */ true);
 
             // Although the FRE tries to run in the same task now, this is still needed for

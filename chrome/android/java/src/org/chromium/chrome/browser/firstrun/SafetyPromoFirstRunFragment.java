@@ -64,7 +64,7 @@ public class SafetyPromoFirstRunFragment extends Fragment implements FirstRunFra
         setupView(view, arm);
     }
 
-    private @LayoutRes int getLayoutId(@SafetyFrePromoArm int arm, boolean useLandscape) {
+    private static @LayoutRes int getLayoutId(@SafetyFrePromoArm int arm, boolean useLandscape) {
         if (FirstRunUtils.isCardBasedPromoArm(arm)) {
             return useLandscape
                     ? R.layout.safety_promo_fre_cards_landscape_view

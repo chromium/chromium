@@ -144,19 +144,11 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
                 // After the PendingIntent has been sent, send a first run callback to custom tabs
                 // if necessary.
                 onFinished =
-                        new PendingIntent.OnFinished() {
-                            @Override
-                            public void onSendFinished(
-                                    PendingIntent pendingIntent,
-                                    Intent intent,
-                                    int resultCode,
-                                    String resultData,
-                                    Bundle resultExtras) {
-                                // Use {@link FirstRunActivityBase#getIntent()} instead of {@link
-                                // intent} parameter in order to use a more similar code path for
-                                // completing first run and for aborting first run.
-                                notifyCustomTabCallbackFirstRunIfNecessary(getIntent(), true);
-                            }
+                        (_, _, _, _, _) -> {
+                            // Use {@link FirstRunActivityBase#getIntent()} instead of {@link
+                            // intent} parameter in order to use a more similar code path for
+                            // completing first run and for aborting first run.
+                            notifyCustomTabCallbackFirstRunIfNecessary(getIntent(), true);
                         };
             }
 

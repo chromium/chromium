@@ -279,15 +279,12 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         mFindQuery.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_FILTER);
         mFindQuery.setSelectAllOnFocus(true);
         mFindQuery.setOnFocusChangeListener(
-                new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (!hasFocus) {
-                            if (assumeNonNull(mFindQuery.getText()).length() > 0) {
-                                mSearchKeyShouldTriggerSearch = true;
-                            }
-                            mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
+                (View _, boolean hasFocus) -> {
+                    if (!hasFocus) {
+                        if (assumeNonNull(mFindQuery.getText()).length() > 0) {
+                            mSearchKeyShouldTriggerSearch = true;
                         }
+                        mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
                     }
                 });
         mFindQuery.addTextChangedListener(
@@ -321,24 +318,21 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                     }
                 });
         mFindQuery.setOnEditorActionListener(
-                new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (event != null && event.getAction() == KeyEvent.ACTION_UP) return false;
+                (TextView _, int _, KeyEvent event) -> {
+                    if (event != null && event.getAction() == KeyEvent.ACTION_UP) return false;
 
-                        if (mFindInPageBridge == null) return false;
+                    if (mFindInPageBridge == null) return false;
 
-                        // Only trigger a new find if the text was set programmatically.
-                        // Otherwise just revisit the current active match.
-                        if (mSearchKeyShouldTriggerSearch) {
-                            mSearchKeyShouldTriggerSearch = false;
-                            hideKeyboardAndStartFinding(true);
-                        } else {
-                            mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
-                            mFindInPageBridge.activateFindInPageResultForAccessibility();
-                        }
-                        return true;
+                    // Only trigger a new find if the text was set programmatically.
+                    // Otherwise just revisit the current active match.
+                    if (mSearchKeyShouldTriggerSearch) {
+                        mSearchKeyShouldTriggerSearch = false;
+                        hideKeyboardAndStartFinding(true);
+                    } else {
+                        mWindowAndroid.getKeyboardDelegate().hideKeyboard(mFindQuery);
+                        mFindInPageBridge.activateFindInPageResultForAccessibility();
                     }
+                    return true;
                 });
 
         mFindStatus = findViewById(R.id.find_status);
@@ -346,33 +340,15 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         mFindStatus.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         mFindPrevButton = findViewById(R.id.find_prev_button);
-        mFindPrevButton.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        hideKeyboardAndStartFinding(false);
-                    }
-                });
+        mFindPrevButton.setOnClickListener(_ -> hideKeyboardAndStartFinding(false));
 
         mFindNextButton = findViewById(R.id.find_next_button);
-        mFindNextButton.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        hideKeyboardAndStartFinding(true);
-                    }
-                });
+        mFindNextButton.setOnClickListener(_ -> hideKeyboardAndStartFinding(true));
 
         setPrevNextEnabled(false);
 
         mCloseFindButton = findViewById(R.id.close_find_button);
-        mCloseFindButton.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        deactivate();
-                    }
-                });
+        mCloseFindButton.setOnClickListener(_ -> deactivate());
 
         mDivider = findViewById(R.id.find_separator);
     }
@@ -452,23 +428,19 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
             // a zero wait time to delay until all the side-effects are complete
             // (e.g. becoming the target of the Input Method).
             mHandler.postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            showKeyboard();
+                    () -> {
+                        showKeyboard();
 
-                            // This is also a great time to set accessibility focus to the query box
-                            // -
-                            // this also fails if we don't wait until the window regains focus.
-                            // Sending a HOVER_ENTER event before the ACCESSIBILITY_FOCUSED event
-                            // is a widely-used hack to force TalkBack to move accessibility focus
-                            // to a view, which is discouraged in general but reasonable in this
-                            // case.
-                            mFindQuery.sendAccessibilityEvent(
-                                    AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
-                            mFindQuery.sendAccessibilityEvent(
-                                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
-                        }
+                        // This is also a great time to set accessibility focus to the query box
+                        // -
+                        // this also fails if we don't wait until the window regains focus.
+                        // Sending a HOVER_ENTER event before the ACCESSIBILITY_FOCUSED event
+                        // is a widely-used hack to force TalkBack to move accessibility focus
+                        // to a view, which is discouraged in general but reasonable in this
+                        // case.
+                        mFindQuery.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
+                        mFindQuery.sendAccessibilityEvent(
+                                AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                     },
                     0);
         }

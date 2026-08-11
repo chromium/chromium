@@ -42,7 +42,7 @@ public class FreIntentCreator {
      * @param usePendingIntent Whether to use PendingIntent or original Intent after FRE.
      * @return Intent to launch First Run Experience.
      */
-    public Intent create(
+    public static Intent create(
             Context caller,
             Intent fromIntent,
             boolean preferLightweightFre,
@@ -78,14 +78,14 @@ public class FreIntentCreator {
      * Selects one specific FRE implementation and creates an intent to launch this implementation.
      * Called by {@link #create} that also adds some final touches to the returned intent.
      *
-     * @param caller               Activity instance that is requesting the first run.
-     * @param fromIntent           Intent used to launch the caller.
+     * @param caller Activity instance that is requesting the first run.
+     * @param fromIntent Intent used to launch the caller.
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
-     * @param associatedAppName    WebAPK short name if this FRE flow was triggered by launching a
-     *                             WebAPK. Null otherwise.
+     * @param associatedAppName WebAPK short name if this FRE flow was triggered by launching a
+     *     WebAPK. Null otherwise.
      * @return Intent to launch First Run Experience.
      */
-    protected Intent createInternal(
+    protected static Intent createInternal(
             Context caller,
             Intent fromIntent,
             boolean preferLightweightFre,

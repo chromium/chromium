@@ -54,7 +54,7 @@ public class SafetyPromoFirstRunView extends RelativeLayout {
         }
     }
 
-    private void bindCard(View cardView, SafetyPromoCard card) {
+    private static void bindCard(View cardView, SafetyPromoCard card) {
         ImageView iconView = cardView.findViewById(R.id.card_icon);
         TextView titleView = cardView.findViewById(R.id.card_title);
         TextView subtitleView = cardView.findViewById(R.id.card_subtitle);

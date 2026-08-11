@@ -64,7 +64,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
 
     // TODO(https://crbug.com/494974037): Move the BehaviorType, InDef, and the selection logic into
     // a dedicated helper class.
-    private @BehaviorType int getBehaviorType() {
+    private static @BehaviorType int getBehaviorType() {
         String arm =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE, FRE_PROMO_ARM);
@@ -265,7 +265,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
         var pageDelegate = assumeNonNull(getPageDelegate());
         view.getContinueButtonView()
                 .setOnClickListener(
-                        v -> {
+                        _ -> {
                             // Record that the user accepted the promo.
                             pageDelegate.recordFreProgressHistogram(
                                     MobileFreProgress.DEFAULT_BROWSER_PROMO_ACCEPTED);
@@ -273,7 +273,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
                         });
         view.getDismissButtonView()
                 .setOnClickListener(
-                        v -> {
+                        _ -> {
                             // Record that the user rejected the promo.
                             pageDelegate.recordFreProgressHistogram(
                                     MobileFreProgress.DEFAULT_BROWSER_PROMO_REJECTED);
@@ -282,7 +282,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     }
 
     // These promotional rows are only visible in arm 3.
-    private void setUpPromotionalRows(
+    private static void setUpPromotionalRows(
             View rootView, int rowId, int iconRes, int stringRes, int bgRes) {
         View row = rootView.findViewById(rowId);
         row.setVisibility(View.VISIBLE);

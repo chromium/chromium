@@ -100,7 +100,7 @@ public class FirstRunActivity extends FirstRunActivityBase
      * A simple page transformer for transitions between successive Fragment, aiming to be as close
      * as possible to inter-Activity transitions.
      */
-    class FirstRunPageTransformer implements ViewPager2.PageTransformer {
+    static class FirstRunPageTransformer implements ViewPager2.PageTransformer {
         // The exiting page fades out, then tne entering page fades in. This is the alpha boundary
         // expressed as fraction of total animation duration.
         private static final float ALPHA_BOUNDARY_FRAC = 100f / 450f;
@@ -604,8 +604,8 @@ public class FirstRunActivity extends FirstRunActivityBase
     }
 
     /**
-     * @param {boolean} smoothScroll Whether to animate transition. This should be true for user
-     *     triggered transition, and false for quick skips by software.
+     * @param smoothScroll Whether to animate transition. This should be true for user triggered
+     *     transition, and false for quick skips by software.
      * @return Whether advancing to the next page succeeded.
      */
     private boolean advanceToNextPageInternal(boolean smoothScroll) {
@@ -700,8 +700,7 @@ public class FirstRunActivity extends FirstRunActivityBase
 
     @VisibleForTesting(otherwise = PRIVATE)
     boolean shouldPreventTouch() {
-        if (ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) return false;
-        return true;
+        return ApplicationStatus.getStateForActivity(this) != ActivityState.RESUMED;
     }
 
     // FirstRunPageDelegate:
@@ -751,7 +750,7 @@ public class FirstRunActivity extends FirstRunActivityBase
                     new ActivityStateListener() {
                         @Override
                         public void onActivityStateChange(Activity activity, int newState) {
-                            boolean shouldFinish = false;
+                            boolean shouldFinish;
                             if (activity == FirstRunActivity.this) {
                                 shouldFinish =
                                         (newState == ActivityState.STOPPED
@@ -817,7 +816,7 @@ public class FirstRunActivity extends FirstRunActivityBase
         }
     }
 
-    private boolean isRtl() {
+    private static boolean isRtl() {
         return LocalizationUtils.isLayoutRtl();
     }
 
@@ -864,7 +863,7 @@ public class FirstRunActivity extends FirstRunActivityBase
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    float frac = ((Float) animation.getAnimatedValue()).floatValue();
+                    float frac = (Float) animation.getAnimatedValue();
                     // Get the up-to-date width, which is subject to user change, e.g., by
                     // orientation changes or window resize.
                     int width = mPager.getWidth();
