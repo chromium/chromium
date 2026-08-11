@@ -58,20 +58,17 @@ public @interface SuggestionCommonProperties {
         int TOP_AND_BOTTOM = 2;
     }
 
+    /** The type of suggestion separator to draw between suggestions */
+    @IntDef({GroupSeparatorType.NONE, GroupSeparatorType.GAP, GroupSeparatorType.LINE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface GroupSeparatorType {
+        int NONE = 0;
+        int GAP = 1;
+        int LINE = 2;
+    }
+
     /** Whether non-zero horizontal margins should be applied to the suggestion view. */
     WritableBooleanPropertyKey APPLY_SIDE_SPACING = new WritableBooleanPropertyKey();
-
-    /** Whether dark colors should be applied to text, icons. */
-    WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
-
-    /** The fusebox layout mode (TOOLBAR vs SUGGESTIONS_POPOVER). */
-    WritableIntPropertyKey FUSEBOX_LAYOUT_MODE = new WritableIntPropertyKey();
-
-    /** The layout direction to be applied to the entire suggestion view. */
-    WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
-
-    /** The device type for calculating the tile margin in the suggestion view. */
-    WritableIntPropertyKey DEVICE_FORM_FACTOR = new WritableIntPropertyKey();
 
     /** The positional mode of the suggestion in its group, used for corner rounding. */
     WritableIntPropertyKey BG_POSITIONAL_MODE = new WritableIntPropertyKey();
@@ -79,11 +76,17 @@ public @interface SuggestionCommonProperties {
     /** The sides of the suggestion background that are allowed to be rounded. */
     WritableIntPropertyKey BG_ROUND_SIDES = new WritableIntPropertyKey();
 
-    /** Whether a divider should be shown at the bottom of the suggestion. */
-    WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
+    /** Whether dark colors should be applied to text, icons. */
+    WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
-    /** Whether to show a gap from the previous suggestion group. */
-    WritableBooleanPropertyKey SHOW_GROUP_SEPARATOR = new WritableBooleanPropertyKey();
+    /** The device type for calculating the tile margin in the suggestion view. */
+    WritableIntPropertyKey DEVICE_FORM_FACTOR = new WritableIntPropertyKey();
+
+    /** The fusebox layout mode (TOOLBAR vs SUGGESTIONS_POPOVER). */
+    WritableIntPropertyKey FUSEBOX_LAYOUT_MODE = new WritableIntPropertyKey();
+
+    /** The type of group separator to show before this item. */
+    WritableIntPropertyKey GROUP_SEPARATOR_TYPE = new WritableIntPropertyKey();
 
     /** The title text of the header above this item. */
     WritableObjectPropertyKey<String> HEADER_TITLE = new WritableObjectPropertyKey<>();
@@ -91,27 +94,33 @@ public @interface SuggestionCommonProperties {
     /** The 0-based index of this suggestion in the group. */
     WritableIntPropertyKey INDEX_IN_GROUP = new WritableIntPropertyKey();
 
-    /** The total number of visible suggestions in the group. */
-    WritableIntPropertyKey TOTAL_IN_GROUP = new WritableIntPropertyKey();
+    /** The layout direction to be applied to the entire suggestion view. */
+    WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
 
     /** The provider for omnibox resources. */
     WritableObjectPropertyKey<OmniboxResourceProvider> RESOURCE_PROVIDER =
             new WritableObjectPropertyKey<>();
 
+    /** Whether a divider should be shown at the bottom of the suggestion. */
+    WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
+
+    /** The total number of visible suggestions in the group. */
+    WritableIntPropertyKey TOTAL_IN_GROUP = new WritableIntPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 APPLY_SIDE_SPACING,
-                COLOR_SCHEME,
-                FUSEBOX_LAYOUT_MODE,
-                LAYOUT_DIRECTION,
-                DEVICE_FORM_FACTOR,
                 BG_POSITIONAL_MODE,
                 BG_ROUND_SIDES,
-                SHOW_DIVIDER,
-                SHOW_GROUP_SEPARATOR,
+                COLOR_SCHEME,
+                DEVICE_FORM_FACTOR,
+                FUSEBOX_LAYOUT_MODE,
+                GROUP_SEPARATOR_TYPE,
                 HEADER_TITLE,
                 INDEX_IN_GROUP,
-                TOTAL_IN_GROUP,
-                RESOURCE_PROVIDER
+                LAYOUT_DIRECTION,
+                RESOURCE_PROVIDER,
+                SHOW_DIVIDER,
+                TOTAL_IN_GROUP
             };
 }

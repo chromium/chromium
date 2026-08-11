@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.GroupSeparatorType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -221,13 +222,19 @@ class DropdownItemViewInfoListBuilder {
         // a group definition for specific ID may be unavailable, or the group
         // header text may be empty.
         String headerText = null;
-        boolean showGroupSeparatorDecoration = false;
+        @GroupSeparatorType
+        int groupSeparatorType =
+                OmniboxCapabilities.isDesktopPlatform()
+                                && previousDetails == null
+                                && input.hasAttachments()
+                        ? GroupSeparatorType.LINE
+                        : GroupSeparatorType.NONE;
 
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
             headerText = groupDetails.getHeaderText();
         } else if (previousDetails != null
                 && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
-            showGroupSeparatorDecoration = true;
+            groupSeparatorType = GroupSeparatorType.GAP;
         }
 
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
@@ -243,8 +250,8 @@ class DropdownItemViewInfoListBuilder {
                     getPositionalMode(isFirstItem, isLastItem));
             model.set(SuggestionCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
             model.set(
-                    SuggestionCommonProperties.SHOW_GROUP_SEPARATOR,
-                    showGroupSeparatorDecoration && isFirstItem);
+                    SuggestionCommonProperties.GROUP_SEPARATOR_TYPE,
+                    isFirstItem ? groupSeparatorType : GroupSeparatorType.NONE);
             model.set(SuggestionCommonProperties.HEADER_TITLE, isFirstItem ? headerText : null);
 
             model.set(SuggestionCommonProperties.INDEX_IN_GROUP, indexInList);

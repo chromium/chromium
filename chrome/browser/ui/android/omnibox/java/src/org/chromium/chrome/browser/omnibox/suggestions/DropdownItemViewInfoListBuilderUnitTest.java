@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.GroupSeparatorType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -296,7 +296,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         assertNull(model.get(0).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
         assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(1).type);
-        assertTrue(model.get(1).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
+        assertEquals(
+                GroupSeparatorType.GAP,
+                model.get(1).model.get(SuggestionCommonProperties.GROUP_SEPARATOR_TYPE));
         assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
         assertNull(model.get(1).model.get(SuggestionCommonProperties.HEADER_TITLE));
 
@@ -419,7 +421,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         assertEquals(/* 2 suggestions = */ 2, result.size());
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(0).type);
         assertEquals(OmniboxSuggestionUiType.DEFAULT, result.get(1).type);
-        assertTrue(result.get(0).model.get(SuggestionCommonProperties.SHOW_GROUP_SEPARATOR));
+        assertEquals(
+                GroupSeparatorType.GAP,
+                result.get(0).model.get(SuggestionCommonProperties.GROUP_SEPARATOR_TYPE));
     }
 
     @Test

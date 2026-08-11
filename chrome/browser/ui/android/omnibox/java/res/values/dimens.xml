@@ -118,7 +118,8 @@ found in the LICENSE file.
     </dimen>
     <dimen name="omnibox_suggestion_content_padding">8dp</dimen>
     <dimen name="omnibox_suggestion_compact_content_height">48dp</dimen>
-    <dimen name="omnibox_suggestion_list_divider_line_padding">12dp</dimen>
+    <dimen name="omnibox_suggestion_list_divider_line_vertical_padding">12dp</dimen>
+    <dimen name="omnibox_suggestion_list_divider_line_horizontal_padding">22dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_top">0dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
     <dimen name="omnibox_suggestion_list_toolbar_overlap">0dp</dimen>

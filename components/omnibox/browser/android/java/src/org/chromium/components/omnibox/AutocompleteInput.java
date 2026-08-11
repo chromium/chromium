@@ -636,6 +636,10 @@ public class AutocompleteInput implements UserData {
         mHasAttachments = hasAttachments;
     }
 
+    public boolean hasAttachments() {
+        return mHasAttachments;
+    }
+
     public AutocompleteInput setSelection(TextSelection selection) {
         mSelection = selection;
         return this;
