@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
@@ -16,6 +17,7 @@
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
@@ -43,12 +45,10 @@ int GetOffsetMultiplierForIndex(uint32_t index) {
   return ((index % 2 == 0) ? 1 : -1);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-device::Color GetFirstColor(base::span<char> pixels) {
-  CHECK_GE(pixels.size(), 3u);
-  return device::Color(pixels[0], pixels[1], pixels[2], pixels[3]);
+SkColor GetFirstColor(base::span<const uint8_t> pixels) {
+  CHECK_GE(pixels.size(), 4u);
+  return SkColorSetARGB(pixels[3], pixels[0], pixels[1], pixels[2]);
 }
-#endif
 
 }  // namespace
 
@@ -274,18 +274,16 @@ void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
 #if BUILDFLAG(IS_WIN)
 void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
                                                     device::ViewData& data) {
-  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
-  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
   d3d_device_->GetImmediateContext(&context);
 
-  // We copy the submitted texture to a new texture, so we can map it, and
-  // read back pixel data.
+  // We copy a 1x1 pixel region from the submitted texture to a staging texture
+  // so we can map it to CPU memory and read back the pixel color.
   auto desc = CD3D11_TEXTURE2D_DESC();
   desc.ArraySize = 1;
-  desc.Width = buffer_size_pixels;
+  desc.Width = 1;
   desc.Height = 1;
   desc.MipLevels = 1;
   desc.SampleDesc.Count = 1;
@@ -299,9 +297,8 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
       d3d_device_->CreateTexture2D(&desc, nullptr, &texture_destination);
   DCHECK_EQ(hr, S_OK);
 
-  // A strip of pixels along the top of the texture, however many will fit into
-  // our buffer.
-  D3D11_BOX box{x_start, 0, 0, x_start + buffer_size_pixels, 1, 1};
+  // Copy the single pixel at (x_start, 0) into our 1x1 staging texture.
+  D3D11_BOX box{x_start, 0, 0, x_start + 1, 1, 1};
   context->CopySubresourceRegion(
       texture_destination.Get(), 0, 0, 0, 0,
       textures_arr_[acquired_swapchain_texture_].Get(), 0, &box);
@@ -309,21 +306,12 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   D3D11_MAPPED_SUBRESOURCE map_data = {};
   hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
   DCHECK_EQ(hr, S_OK) << " hex value: " << std::hex << hr;
-  // We have a 1-pixel image, so store it in the provided ViewData
-  // along with the raw data.
-  device::Color* color = static_cast<device::Color*>(map_data.pData);
-  data.color = color[0];
-  base::span<char> data_buffer(data.raw_buffer);
-  // SAFETY: Required by `Map` call above, texture_destination (which populates
-  // the map_data), was created to be `buffer_size_pixels` in width, which is
-  // calculated from `buffer_size.
-  static_assert(buffer_size >= buffer_size_pixels * sizeof(device::Color));
-  auto mapped_data_span = UNSAFE_BUFFERS(base::span<const char>(
-      static_cast<const char*>(map_data.pData), buffer_size));
-  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
-  // arrays as a pointer and a size. The sole callers are our own product/test
-  // code.
-  data_buffer.copy_from_nonoverlapping(mapped_data_span);
+
+  // SAFETY: ID3D11DeviceContext::Map guarantees map_data.pData points to
+  // memory for the 1x1 DXGI_FORMAT_R8G8B8A8_UNORM texture (4 bytes).
+  auto mapped_pixels = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(map_data.pData), 4u));
+  data.color = GetFirstColor(mapped_pixels);
 
   context->Unmap(texture_destination.Get(), 0);
 }
@@ -331,15 +319,13 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
 void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
                                                     uint32_t x_start,
                                                     device::ViewData& data) {
-  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
-  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
   // In some build environment, XR_NULL_HANDLE is a signed integer
   // while XrSwapchain is unsigned.
   DCHECK_NE(swapchain, static_cast<XrSwapchain>(XR_NULL_HANDLE));
   auto texture_index = acquired_swapchain_textures_[swapchain];
   DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
-  base::span<char> out_buffer(data.raw_buffer);
+  uint8_t pixel[4];
 
   // Generate a framebuffer to read from and attach the current texture to it.
   GLuint fbo = 0;
@@ -351,11 +337,9 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
-    // Read a horizontal strip of pixels from the start of the texture; however
-    // many will fit.
-    glReadPixels(x_start, 0, buffer_size_pixels, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-                 out_buffer.data());
-    data.color = GetFirstColor(data.raw_buffer);
+    // Read the single pixel at (x_start, 0) into our 4-byte RGBA buffer.
+    glReadPixels(x_start, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+    data.color = GetFirstColor(pixel);
   } else {
     DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
   }
@@ -364,9 +348,9 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
   glDeleteFramebuffers(1, &fbo);
 }
 
-device::Color OpenXrTestHelper::ReadTextureColor(
+SkColor OpenXrTestHelper::ReadTextureColor(
     const XrSwapchainSubImage& sub_image) {
-  device::Color color;
+  SkColor color = SK_ColorTRANSPARENT;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
   auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
   DCHECK_LT(texture_index,
@@ -382,7 +366,7 @@ device::Color OpenXrTestHelper::ReadTextureColor(
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
-    char pixel[4];
+    uint8_t pixel[4];
     glReadPixels(sub_image.imageRect.offset.x, sub_image.imageRect.offset.y, 1,
                  1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
     color = GetFirstColor(pixel);
@@ -395,9 +379,9 @@ device::Color OpenXrTestHelper::ReadTextureColor(
   return color;
 }
 
-std::vector<device::Color> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
+std::vector<SkColor> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
     XrSwapchain swapchain) {
-  std::vector<device::Color> colors;
+  std::vector<SkColor> colors;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
   auto texture_index = acquired_swapchain_textures_[swapchain];
   DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
@@ -414,7 +398,7 @@ std::vector<device::Color> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status == GL_FRAMEBUFFER_COMPLETE) {
-      char pixel[4];
+      uint8_t pixel[4];
       glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
       colors.push_back(GetFirstColor(pixel));
     } else {

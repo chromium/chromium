@@ -12,6 +12,7 @@
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace vr {
 namespace {
@@ -55,10 +56,10 @@ class MyXRMock : public MockXRDeviceHookBase {
   std::atomic_int frame_id_ = 0;
 };
 
-uint32_t ParseColorFrameId(const device::Color& color) {
+uint32_t ParseColorFrameId(SkColor color) {
   // Corresponding math in test_webxr_poses.html.
-  uint32_t frame_id =
-      static_cast<uint32_t>(color.r) + 256 * color.g + 256 * 256 * color.b;
+  uint32_t frame_id = static_cast<uint32_t>(SkColorGetR(color)) +
+                      256 * SkColorGetG(color) + 256 * 256 * SkColorGetB(color);
   return frame_id;
 }
 

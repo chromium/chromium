@@ -8,6 +8,7 @@
 #include "chrome/browser/vr/test/ui_utils.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(ENABLE_OPENXR)
 
@@ -48,10 +49,7 @@ void MockForLayers::VerifyFrame(
   ASSERT_EQ(expected_views.size(), last_submitted_views_.size());
   for (size_t i = 0; i < expected_views.size(); ++i) {
     LOG(INFO) << "Verifying view " << i;
-    EXPECT_EQ(expected_views[i].color.r, last_submitted_views_[i].color.r);
-    EXPECT_EQ(expected_views[i].color.g, last_submitted_views_[i].color.g);
-    EXPECT_EQ(expected_views[i].color.b, last_submitted_views_[i].color.b);
-    EXPECT_EQ(expected_views[i].color.a, last_submitted_views_[i].color.a);
+    EXPECT_EQ(expected_views[i].color, last_submitted_views_[i].color);
     EXPECT_EQ(expected_views[i].eye, last_submitted_views_[i].eye);
     EXPECT_EQ(expected_views[i].viewport, last_submitted_views_[i].viewport);
   }
@@ -65,32 +63,30 @@ void MockForLayers::VerifyFrame(
     for (size_t j = 0; j < expected_layers[i].face_colors.size(); ++j) {
       LOG(INFO) << "Verifying face " << j;
       if (color_tolerance_ == 0) {
-        EXPECT_EQ(expected_layers[i].face_colors[j].r,
-                  last_submitted_layers_[i].face_colors[j].r);
-        EXPECT_EQ(expected_layers[i].face_colors[j].g,
-                  last_submitted_layers_[i].face_colors[j].g);
-        EXPECT_EQ(expected_layers[i].face_colors[j].b,
-                  last_submitted_layers_[i].face_colors[j].b);
-        EXPECT_EQ(expected_layers[i].face_colors[j].a,
-                  last_submitted_layers_[i].face_colors[j].a);
+        EXPECT_EQ(expected_layers[i].face_colors[j],
+                  last_submitted_layers_[i].face_colors[j]);
       } else {
         // Use a tolerance for video/media layers as YUV/RGB conversions can
         // introduce slight color variations.
         EXPECT_NEAR(
-            static_cast<int>(expected_layers[i].face_colors[j].r),
-            static_cast<int>(last_submitted_layers_[i].face_colors[j].r),
+            static_cast<int>(SkColorGetR(expected_layers[i].face_colors[j])),
+            static_cast<int>(
+                SkColorGetR(last_submitted_layers_[i].face_colors[j])),
             color_tolerance_);
         EXPECT_NEAR(
-            static_cast<int>(expected_layers[i].face_colors[j].g),
-            static_cast<int>(last_submitted_layers_[i].face_colors[j].g),
+            static_cast<int>(SkColorGetG(expected_layers[i].face_colors[j])),
+            static_cast<int>(
+                SkColorGetG(last_submitted_layers_[i].face_colors[j])),
             color_tolerance_);
         EXPECT_NEAR(
-            static_cast<int>(expected_layers[i].face_colors[j].b),
-            static_cast<int>(last_submitted_layers_[i].face_colors[j].b),
+            static_cast<int>(SkColorGetB(expected_layers[i].face_colors[j])),
+            static_cast<int>(
+                SkColorGetB(last_submitted_layers_[i].face_colors[j])),
             color_tolerance_);
         EXPECT_NEAR(
-            static_cast<int>(expected_layers[i].face_colors[j].a),
-            static_cast<int>(last_submitted_layers_[i].face_colors[j].a),
+            static_cast<int>(SkColorGetA(expected_layers[i].face_colors[j])),
+            static_cast<int>(
+                SkColorGetA(last_submitted_layers_[i].face_colors[j])),
             color_tolerance_);
       }
     }
@@ -116,55 +112,47 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestLayers) {
 
   mock.WaitForTotalFrameCount(1);
 
-  // See test_openxr_layers.html for the constants that should be used here.
-  // The order of layers should also match the order there.
-  constexpr device::Color red = {255, 0, 0, 255};
-  constexpr device::Color green = {0, 255, 0, 255};
-  constexpr device::Color blue = {0, 0, 255, 255};
-  constexpr device::Color yellow = {255, 255, 0, 255};
-  constexpr device::Color half_yellow = {128, 128, 0, 128};
-  constexpr device::Color cyan = {0, 255, 255, 255};
-  constexpr device::Color magenta = {255, 0, 255, 255};
-
   // See device/vr/openxr/test/openxr_test_helper.h.
   constexpr uint32_t view_dimension = 128;
 
   std::vector<device::ViewData> expected_views;
   expected_views.push_back(
-      {.color = red,
+      {.color = SK_ColorRED,
        .eye = device::mojom::XREye::kLeft,
        .viewport = {0, 0, view_dimension, view_dimension}});
   expected_views.push_back(
-      {.color = red,
+      {.color = SK_ColorRED,
        .eye = device::mojom::XREye::kRight,
        .viewport = {view_dimension, 0, view_dimension, view_dimension}});
 
+  // The order of layers should match the order in test_openxr_layers.html.
   std::vector<device::LayerData> expected_layers;
   // The quad layer has a left-right layout, so we expect 2 entries
   // with different colors.
   expected_layers.emplace_back(device::LayerType::kQuad);
-  expected_layers.back().face_colors.push_back(green);
+  expected_layers.back().face_colors.push_back(SK_ColorGREEN);
   expected_layers.emplace_back(device::LayerType::kQuad);
-  expected_layers.back().face_colors.push_back(cyan);
+  expected_layers.back().face_colors.push_back(SK_ColorCYAN);
 
   // The cylinder layer has a stereo layout, so we expect 2 entries
   // with different colors.
   expected_layers.emplace_back(device::LayerType::kCylinder);
-  expected_layers.back().face_colors.push_back(blue);
+  expected_layers.back().face_colors.push_back(SK_ColorBLUE);
   expected_layers.emplace_back(device::LayerType::kCylinder);
-  expected_layers.back().face_colors.push_back(magenta);
+  expected_layers.back().face_colors.push_back(SK_ColorMAGENTA);
 
-  // The equirect layer has 0.5 opacity.
+  // The equirect layer has 0.5 opacity (half alpha and half intensity).
   expected_layers.emplace_back(device::LayerType::kEquirect);
-  expected_layers.back().face_colors.push_back(half_yellow);
+  expected_layers.back().face_colors.push_back(
+      SkColorSetARGB(128, 128, 128, 0));
 
   expected_layers.emplace_back(device::LayerType::kCube);
-  expected_layers.back().face_colors.push_back(red);
-  expected_layers.back().face_colors.push_back(cyan);
-  expected_layers.back().face_colors.push_back(green);
-  expected_layers.back().face_colors.push_back(magenta);
-  expected_layers.back().face_colors.push_back(blue);
-  expected_layers.back().face_colors.push_back(yellow);
+  expected_layers.back().face_colors.push_back(SK_ColorRED);
+  expected_layers.back().face_colors.push_back(SK_ColorCYAN);
+  expected_layers.back().face_colors.push_back(SK_ColorGREEN);
+  expected_layers.back().face_colors.push_back(SK_ColorMAGENTA);
+  expected_layers.back().face_colors.push_back(SK_ColorBLUE);
+  expected_layers.back().face_colors.push_back(SK_ColorYELLOW);
 
   mock.VerifyFrame(expected_views, expected_layers);
 
@@ -185,25 +173,22 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
   // Ensure we check at least the first frame that successfully rendered
   mock.WaitForTotalFrameCount(1);
 
-  constexpr device::Color red = {255, 0, 0, 255};
-  constexpr device::Color green = {0, 255, 0, 255};
-
   // See device/vr/openxr/test/openxr_test_helper.h.
   constexpr uint32_t view_dimension = 128;
 
   std::vector<device::ViewData> expected_views;
   expected_views.push_back(
-      {.color = red,
+      {.color = SK_ColorRED,
        .eye = device::mojom::XREye::kLeft,
        .viewport = {0, 0, view_dimension, view_dimension}});
   expected_views.push_back(
-      {.color = red,
+      {.color = SK_ColorRED,
        .eye = device::mojom::XREye::kRight,
        .viewport = {view_dimension, 0, view_dimension, view_dimension}});
 
   std::vector<device::LayerData> expected_layers;
   expected_layers.emplace_back(device::LayerType::kQuad);
-  expected_layers.back().face_colors.push_back(green);
+  expected_layers.back().face_colors.push_back(SK_ColorGREEN);
 
   mock.VerifyFrame(expected_views, expected_layers);
 

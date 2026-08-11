@@ -19,6 +19,7 @@
 #include "device/vr/test/test_hook.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <wrl.h>
@@ -221,8 +222,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void CopyTextureDataIntoFrameData(XrSwapchain swapchain,
                                     uint32_t x_start,
                                     device::ViewData& data);
-  device::Color ReadTextureColor(const XrSwapchainSubImage&);
-  std::vector<device::Color> ReadCubeMapFirstPixelColor(XrSwapchain swapchain);
+  SkColor ReadTextureColor(const XrSwapchainSubImage&);
+  std::vector<SkColor> ReadCubeMapFirstPixelColor(XrSwapchain swapchain);
 #endif
   void AddDimensions(const device::OpenXrViewConfiguration& view_config,
                      uint32_t& width,

@@ -6,33 +6,18 @@
 #define DEVICE_VR_PUBLIC_MOJOM_TEST_BROWSER_TEST_INTERFACES_MOJOM_TRAITS_H_
 
 #include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
-#include "device/vr/public/mojom/test/color.h"
 #include "device/vr/public/mojom/test/controller_frame_data.h"
 #include "device/vr/public/mojom/test/device_config.h"
 #include "device/vr/public/mojom/test/layer_data.h"
 #include "device/vr/public/mojom/test/view_data.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "skia/public/mojom/skcolor_mojom_traits.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-struct StructTraits<device_test::mojom::ColorDataView, device::Color> {
-  static uint8_t r(const device::Color& color) { return color.r; }
-  static uint8_t g(const device::Color& color) { return color.g; }
-  static uint8_t b(const device::Color& color) { return color.b; }
-  static uint8_t a(const device::Color& color) { return color.a; }
-
-  static bool Read(device_test::mojom::ColorDataView data, device::Color* out) {
-    out->r = data.r();
-    out->g = data.g();
-    out->b = data.b();
-    out->a = data.a();
-    return true;
-  }
-};
 
 template <>
 struct EnumTraits<device_test::mojom::LayerType, device::LayerType> {
@@ -109,7 +94,7 @@ struct StructTraits<device_test::mojom::LayerDataDataView, device::LayerData> {
   static device::LayerType type(const device::LayerData& layer_data) {
     return layer_data.type;
   }
-  static const std::vector<device::Color>& face_colors(
+  static const std::vector<SkColor>& face_colors(
       const device::LayerData& layer_data) {
     return layer_data.face_colors;
   }
@@ -128,7 +113,7 @@ struct StructTraits<device_test::mojom::LayerDataDataView, device::LayerData> {
 
 template <>
 struct StructTraits<device_test::mojom::ViewDataDataView, device::ViewData> {
-  static device::Color color(const device::ViewData& view_data) {
+  static SkColor color(const device::ViewData& view_data) {
     return view_data.color;
   }
   static device::mojom::XREye eye(const device::ViewData& view_data) {

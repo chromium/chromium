@@ -11,6 +11,7 @@ mojom("test_mojom") {
   public_deps = [
     "//device/vr/public/mojom:vr_service",
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -60,7 +61,6 @@ component("vr_public_test_typemaps") {
   defines = [ "IS_VR_PUBLIC_TEST_TYPEMAPS_IMPL" ]
 
   sources = [
-    "color.h",
     "controller_frame_data.cc",
     "controller_frame_data.h",
     "device_config.h",
@@ -75,5 +75,8 @@ component("vr_public_test_typemaps") {
     "//ui/gfx/mojom",
   ]
 
-  public_deps = [ "//device/vr/public/mojom:vr_service" ]
+  public_deps = [
+    "//device/vr/public/mojom:vr_service",
+    "//skia/public/mojom",
+  ]
 }

@@ -7,15 +7,9 @@ module device_test.mojom;
 import "device/vr/public/mojom/openxr_interaction_profile_type.mojom";
 import "device/vr/public/mojom/vr_service.mojom";
 import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
-
-struct Color {
-  uint8 r;
-  uint8 g;
-  uint8 b;
-  uint8 a;
-};
 
 enum LayerType {
   NONE = 0,
@@ -28,11 +22,11 @@ enum LayerType {
 struct LayerData {
   LayerType type;
   // Color of first pixel on every face. Cube layers have 6 faces.
-  array<Color> face_colors;
+  array<skia.mojom.SkColor> face_colors;
 };
 
 struct ViewData {
-  Color color;
+  skia.mojom.SkColor color;
   device.mojom.XREye eye;
   gfx.mojom.Rect viewport;
 };

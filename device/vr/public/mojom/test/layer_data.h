@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "device/vr/public/mojom/test/color.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace device {
 
@@ -22,7 +22,7 @@ enum class LayerType {
 
 struct COMPONENT_EXPORT(VR_PUBLIC_TEST_TYPEMAPS) LayerData {
   LayerType type = LayerType::kNone;
-  std::vector<Color> face_colors;
+  std::vector<SkColor> face_colors;
 
   // We need to explicitly define these ctors/dtor to avoid style warnings.
   LayerData();

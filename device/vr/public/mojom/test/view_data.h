@@ -5,17 +5,16 @@
 #ifndef DEVICE_VR_PUBLIC_MOJOM_TEST_VIEW_DATA_H_
 #define DEVICE_VR_PUBLIC_MOJOM_TEST_VIEW_DATA_H_
 
-#include "device/vr/public/mojom/test/color.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace device {
 
 struct ViewData {
-  Color color;
+  SkColor color;
   mojom::XREye eye;
   gfx::Rect viewport;
-  char raw_buffer[256];  // Can encode raw data here.
 };
 
 }  // namespace device
