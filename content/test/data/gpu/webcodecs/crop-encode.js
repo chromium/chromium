@@ -52,6 +52,22 @@ async function main(arg) {
     return;
   }
 
+  // Try to match the encoder acceleration preference for symmetry, but fall
+  // back to 'no-preference' since decode acceleration is not symmetric with
+  // encode on all platforms for fully optional codecs like H.265 or sometimes
+  // optional codecs like H.264.
+  let decoder_acceleration = 'no-preference';
+  try {
+    let support = await VideoDecoder.isConfigSupported({
+      codec: arg.codec,
+      hardwareAcceleration: arg.acceleration,
+    });
+    if (support.supported) {
+      decoder_acceleration = arg.acceleration;
+    }
+  } catch (e) {
+  }
+
   let source =
       await createFrameSource(arg.source_type, frame_width, frame_height);
   if (!source) {
@@ -74,6 +90,7 @@ async function main(arg) {
     output(chunk, metadata) {
       let config = metadata.decoderConfig;
       if (config) {
+        config.hardwareAcceleration = decoder_acceleration;
         decoder.configure(config);
       }
       decoder.decode(chunk);
