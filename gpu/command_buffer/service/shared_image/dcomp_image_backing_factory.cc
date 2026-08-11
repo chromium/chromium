@@ -66,7 +66,8 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     return DCompSurfaceImageBacking::Create(mailbox, si_info, internal_format);
   } else {
     return DXGISwapChainImageBacking::Create(context_state_->GetD3D11Device(),
-                                             mailbox, si_info, internal_format);
+                                             mailbox, si_info, internal_format,
+                                             context_state_->gr_context_type());
   }
 }
 

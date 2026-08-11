@@ -56,9 +56,6 @@ GL_EXPORT const GlWorkarounds& GetGlWorkarounds();
 GL_EXPORT void SetGlWorkarounds(const GlWorkarounds& workarounds);
 
 #if BUILDFLAG(IS_WIN)
-// BufferCount for the root surface swap chain.
-GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
-
 // Labels swapchain with the name_prefix and its buffers with the string
 // name_prefix + _Buffer_ + <buffer_number>.
 GL_EXPORT void LabelSwapChainAndBuffers(IDXGISwapChain3* swap_chain,

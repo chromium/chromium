@@ -109,6 +109,11 @@ void InitSkiaGraphiteFeatureParams(const base::Feature* feature) {
           g_skia_graphite_feature_params
               .flush_d3d11_tile_raster_commands_to_driver)
           .Get();
+  g_skia_graphite_feature_params.triple_buffered_dcomp_root_surface =
+      base::FeatureParam<bool>(
+          feature, "triple_buffered_dcomp_root_surface",
+          g_skia_graphite_feature_params.triple_buffered_dcomp_root_surface)
+          .Get();
 #endif
 
   GetGraphiteParamsInitFlag().Set();

@@ -12,15 +12,16 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/service/display/overlay_candidate.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_overlay_params.h"
-#include "ui/gl/presenter.h"
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/presenter.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -91,6 +92,8 @@ class TestSkiaOutputDeviceDComp : public SkiaOutputDeviceDComp {
 class SkiaOutputDeviceDCompTest : public testing::Test {
  public:
   void SetUp() override {
+    features::InitSkiaGraphiteDefaultParamsForTesting();
+
     auto presenter = base::MakeRefCounted<MockPresenter>();
     presenter_ = presenter.get();
 

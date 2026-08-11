@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_preferences.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
@@ -39,7 +40,8 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
-      DXGI_FORMAT internal_format);
+      DXGI_FORMAT internal_format,
+      GrContextType gr_context_type);
 
   DXGISwapChainImageBacking(const DXGISwapChainImageBacking&) = delete;
   DXGISwapChainImageBacking& operator=(const DXGISwapChainImageBacking&) =
