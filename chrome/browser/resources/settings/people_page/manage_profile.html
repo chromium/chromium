@@ -1,88 +1,17 @@
-<style include="cr-shared-style settings-shared">
-  cr-input {
-    --cr-input-error-display: none;
-  }
-
-  .cr-row.manage-profile-section {
-    display: block;
-    padding-bottom: 24px;
-  }
-
-  .cr-row:not(.first) {
-    padding-top: 4px;
-  }
-
-  .content {
-    padding-inline-start: var(--cr-section-indent-width);
-    padding-top: 4px;
-  }
-
-  #nameInput {
-    width: 288px;
-  }
-
-  .grid-container {
-    --icon-grid-gap: 25px;
-    --icon-size: 72px;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  cr-theme-color-picker,
-  cr-profile-avatar-selector {
-    margin-bottom: 10px;
-  }
-
-  cr-theme-color-picker {
-    --selected-border: 9px; /* Selected border per side: 4.5px*/
-    --cr-theme-color-picker-column-width: calc(var(--icon-size) +
-        var(--selected-border));
-    --cr-theme-color-picker-grid-gap: calc(var(--icon-grid-gap) -
-        var(--selected-border));
-    --cr-theme-color-picker-grid-padding: 0;
-    /* With display: block, the bottom margin collapses. */
-    display: inline-block;
-  }
-
-  #profileAvatarSelector {
-    --avatar-size: var(--icon-size);
-    --avatar-spacing: var(--icon-grid-gap);
-    padding: 4px;
-  }
-
-  #outerRow {
-    align-items: center;
-    display: flex;
-    min-height: var(--cr-section-two-line-min-height);
-    padding: 0 var(--cr-section-padding);
-  }
-
-  #labelWrapper {
-    padding: var(--cr-section-vertical-padding) 0;
-  }
-
-  #policyIcon {
-    position: absolute;
-    right:5%;
-    height: 15px;
-    width: 15px;
-  }
-</style>
-
 <settings-subpage page-title="$i18n{editPerson}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
 <div class="cr-row first manage-profile-section">
   <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
   <div class="content">
-    <cr-input id="nameInput" value="[[profileName_]]" pattern="[[pattern_]]"
-        on-change="onNameInputChange_"
-        on-keydown="onNameInputKeydown_"
+    <cr-input id="nameInput" .value="${this.profileName_}"
+        pattern="${this.pattern_}"
+        @change="${this.onNameInputChange_}"
+        @keydown="${this.onNameInputKeydown_}"
         maxlength="500"
         aria-label="$i18n{nameInputLabel}" auto-validate required
-        spellcheck="false" disabled="[[hasEnterpriseLabel_]]">
+        spellcheck="false" ?disabled="${this.hasEnterpriseLabel_}">
       <cr-icon id="policyIcon" icon="cr:domain" slot="suffix"
-          hidden="[[!hasEnterpriseLabel_]]">
+          ?hidden="${!this.hasEnterpriseLabel_}">
       </cr-icon>
     </cr-input>
     <cr-tooltip id="tooltip"
@@ -101,23 +30,25 @@
   <h1 class="cr-title-text">$i18n{pickAvatar}</h1>
   <div class="content grid-container">
     <cr-profile-avatar-selector
-        id="profileAvatarSelector" avatars="[[availableIcons]]"
-        selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
+        id="profileAvatarSelector" .avatars="${this.availableIcons}"
+        .selectedAvatar="${this.profileAvatar_}"
+        @selected-avatar-changed="${this.onSelectedAvatarChanged_}"
+        ignore-modified-key-events>
     </cr-profile-avatar-selector>
  </div>
 </div>
-<template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
+${this.isProfileShortcutSettingVisible_ ? html`
   <div id="outerRow" class="hr">
     <div class="flex" id="labelWrapper">
       <div>$i18n{createShortcutTitle}</div>
       <div class="secondary">$i18n{createShortcutSubtitle}</div>
     </div>
     <cr-toggle id="hasShortcutToggle"
-        checked="{{hasProfileShortcut_}}"
-        on-change="onHasProfileShortcutChange_"
+        .checked="${this.hasProfileShortcut_}"
+        @change="${this.onHasProfileShortcutChange_}"
         aria-labelledby="labelWrapper">
     </cr-toggle>
   </div>
   <div class="hr"></div>
-</template>
+` : ''}
 </settings-subpage>

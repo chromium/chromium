@@ -495,6 +495,8 @@ build_webui("build") {
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",
     "people_page/import_data_dialog.css",
+    "people_page/manage_profile.css",
+    "people_page/signout_dialog.css",
     "performance_page/battery_page.css",
     "performance_page/memory_page.css",
     "performance_page/performance_page_index.css",

@@ -29,6 +29,7 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {StoredAccount} from 'chrome://settings/settings.js';
 
 import {simulateStoredAccounts} from './sync_test_util.js';
@@ -344,7 +345,7 @@ suite('SyncStatusTests', function() {
         peoplePage.shadowRoot!.querySelector('settings-signout-dialog')!;
     assertTrue(signoutDialog.$.dialog.open);
     const deleteProfileCheckbox =
-        signoutDialog.shadowRoot!.querySelector<CrCheckboxElement>(
+        signoutDialog.shadowRoot.querySelector<CrCheckboxElement>(
             '#deleteProfile');
     assertTrue(!!deleteProfileCheckbox);
     assertFalse(deleteProfileCheckbox.hidden);
@@ -387,10 +388,10 @@ suite('SyncStatusTests', function() {
     const signoutDialog =
         peoplePage.shadowRoot!.querySelector('settings-signout-dialog')!;
     assertTrue(signoutDialog.$.dialog.open);
-    assertTrue(!!signoutDialog.shadowRoot!.querySelector('#deleteProfile'));
+    assertTrue(!!signoutDialog.shadowRoot.querySelector('#deleteProfile'));
 
     const disconnectConfirm =
-        signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+        signoutDialog.shadowRoot.querySelector<HTMLElement>(
             '#disconnectConfirm');
     assertTrue(!!disconnectConfirm);
     assertFalse(disconnectConfirm.hidden);
@@ -427,7 +428,7 @@ suite('SyncStatusTests', function() {
     assertTrue(!!signoutDialog);
     assertTrue(signoutDialog.$.dialog.open);
 
-    const dialogBody = signoutDialog.shadowRoot!.querySelector('[slot=body]');
+    const dialogBody = signoutDialog.shadowRoot.querySelector('[slot=body]');
     assertTrue(!!dialogBody);
     assertEquals(
         'Explanation example.com<a href="http://example.com">link</a>',
@@ -445,22 +446,25 @@ suite('SyncStatusTests', function() {
     assertTrue(signoutDialog.$.dialog.open);
 
     // Assert the warning message is as expected.
-    const warningMessage = signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+    const warningMessage = signoutDialog.shadowRoot.querySelector<HTMLElement>(
         '.delete-profile-warning')!;
 
     webUIListenerCallback('profile-stats-count-ready', 0);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithoutCounts', 'fakeUsername'),
         warningMessage.textContent.trim());
 
     webUIListenerCallback('profile-stats-count-ready', 1);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithCountsSingular', 'fakeUsername'),
         warningMessage.textContent.trim());
 
     webUIListenerCallback('profile-stats-count-ready', 2);
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getStringF(
             'deleteProfileWarningWithCountsPlural', 2, 'fakeUsername'),

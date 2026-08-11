@@ -265,7 +265,7 @@ suite('AllBuilds', function() {
     assertTrue(signoutDialog.$.dialog.open);
 
     // The user clicks cancel.
-    const cancel = signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+    const cancel = signoutDialog.shadowRoot.querySelector<HTMLElement>(
         '#disconnectCancel')!;
     cancel.click();
 
@@ -292,7 +292,7 @@ suite('AllBuilds', function() {
 
     // The user clicks confirm, which signs them out.
     const disconnectConfirm =
-        signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+        signoutDialog.shadowRoot.querySelector<HTMLElement>(
             '#disconnectConfirm')!;
     disconnectConfirm.click();
 

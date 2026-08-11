@@ -1,0 +1,29 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.delete-profile-warning {
+  padding-bottom: 10px;
+  padding-inline-end: var(--cr-section-padding);
+  /* In order to line up with the checkbox text. */
+  padding-inline-start: calc(var(--cr-section-padding) + 32px);
+  padding-top: 10px;
+}
+
+#wideFooter {
+  /* Override the cr-dialog footer padding. */
+  padding: 0;
+}
+
+#dialog-body {
+  /* Add space for the link focus ring. See https://crbug.com/41432789. */
+  padding-bottom: 2px;
+}
