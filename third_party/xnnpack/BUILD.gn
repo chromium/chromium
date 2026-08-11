@@ -18133,6 +18133,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-lut64-p2-div-u8.c",
+        "src/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-p5-div-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -18162,6 +18163,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-lut64-p2-div-u8.c",
+        "src/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-p5-div-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]

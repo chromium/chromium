@@ -535,6 +535,7 @@
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-avx512f-rr2-lut32-p2-perm2-scalef-div-u64.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-scalar-rr2-lut64-p2-div-u2.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-lut64-p2-div-u8.c
+// - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-p5-div-u8.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse41-rr2-lut64-p2-div-u8.c
 // - external/xnnpack+/src/f32-vsigmoid/gen/f32-vsigmoid-sse41-rr2-p5-div-u8.c
 // - external/xnnpack+/src/f32-vsin/gen/f32-vsin-avx-rational-5-4-div.c
@@ -1099,10 +1100,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   72,  41, 165, 114, 137,  39, 216, 157,
-  247,  95,  48, 235,  63, 102,  63,  67,
-  241, 123, 154, 174,  70,  55, 167, 105,
-  184, 147,  30,  35, 158, 220,   1, 129
+  229,  22,  26, 118, 112,  44,  31, 234,
+  178, 245, 209, 219, 172, 241, 252, 106,
+   80,  10, 214,  65,   7, 193, 123,  98,
+   14, 213,  16,  86, 134, 125,  20, 117
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
