@@ -34,9 +34,11 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -1170,6 +1172,11 @@ void HTMLImageElement::SetLayoutDisposition(
     CHECK_NE(layout_disposition, LayoutDisposition::kImageReplacement);
     ImageReplacement::ResetImageReplacement(base::PassKey<HTMLImageElement>(),
                                             *this, GetDocument());
+    if (RuntimeEnabledFeatures::UAImageReplacementAPIEnabled(
+            GetExecutionContext())) {
+      EnqueueEvent(*Event::Create(event_type_names::kUareplaceend),
+                   TaskType::kDOMManipulation);
+    }
   }
 
   if (ShadowRoot* shadow_root = UserAgentShadowRoot()) {
@@ -1218,6 +1225,10 @@ void HTMLImageElement::AssociateWith(HTMLFormElement* form) {
   }
 }
 
+bool HTMLImageElement::replacedByUserAgent() const {
+  return HasImageReplacement();
+}
+
 bool HTMLImageElement::HasImageReplacement() const {
   return layout_disposition_ == LayoutDisposition::kImageReplacement;
 }
@@ -1240,6 +1251,11 @@ void HTMLImageElement::ResetImageReplacement(Document* document) {
 
 void HTMLImageElement::StartImageReplacement() {
   SetLayoutDisposition(LayoutDisposition::kImageReplacement);
+  if (RuntimeEnabledFeatures::UAImageReplacementAPIEnabled(
+          GetExecutionContext())) {
+    EnqueueEvent(*Event::Create(event_type_names::kUareplacestart),
+                 TaskType::kDOMManipulation);
+  }
 }
 
 }  // namespace blink

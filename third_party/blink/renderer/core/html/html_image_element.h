@@ -214,6 +214,10 @@ class CORE_EXPORT HTMLImageElement
   void ResetImageReplacement(Document* document = nullptr);
   void StartImageReplacement();
 
+  bool replacedByUserAgent() const;
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(uareplacestart, kUareplacestart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(uareplaceend, kUareplaceend)
+
  protected:
   // Controls how an image element appears in the layout. See:
   // https://html.spec.whatwg.org/C/#image-request
