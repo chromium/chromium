@@ -7,7 +7,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -32,7 +33,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -57,7 +59,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -82,7 +85,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -107,7 +111,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -132,7 +137,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -157,7 +163,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -183,7 +190,8 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -213,7 +221,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -238,7 +247,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -263,7 +273,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -288,7 +299,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -313,7 +325,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -338,7 +351,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -363,7 +377,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -388,7 +403,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -413,7 +429,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -441,7 +458,8 @@
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -466,7 +484,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -492,7 +511,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -520,7 +540,8 @@
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -546,7 +567,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -571,7 +593,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -596,7 +619,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -621,7 +645,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -646,7 +671,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -671,7 +697,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -696,7 +723,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -721,7 +749,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -746,7 +775,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -771,7 +801,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -796,7 +827,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -821,7 +853,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -846,7 +879,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -871,7 +905,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -896,7 +931,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -921,7 +957,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -946,7 +983,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -971,7 +1009,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -996,7 +1035,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1021,7 +1061,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1046,7 +1087,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1071,7 +1113,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1097,7 +1140,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1123,7 +1167,8 @@
       {
         "args": [
           "--test-arg=--ozone-platform=headless",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1148,7 +1193,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1173,7 +1219,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1198,7 +1245,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1224,7 +1272,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1249,7 +1298,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1274,7 +1324,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1299,7 +1350,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1324,7 +1376,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1349,7 +1402,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1375,7 +1429,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1400,7 +1455,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1425,7 +1481,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1450,7 +1507,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1476,7 +1534,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1502,7 +1561,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1528,7 +1588,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1553,7 +1614,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1578,7 +1640,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1603,7 +1666,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1628,7 +1692,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1653,7 +1718,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1678,7 +1744,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1705,7 +1772,8 @@
     "isolated_scripts": [
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1732,7 +1800,8 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1763,7 +1832,8 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1792,7 +1862,8 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1818,7 +1889,8 @@
       {
         "args": [
           "--platform=fuchsia",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "ci_only": true,
         "isolate_profile_data": true,
@@ -1854,7 +1926,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1893,7 +1966,8 @@
           "--test-machine-name",
           "${buildername}",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1925,7 +1999,8 @@
       {
         "args": [
           "--platform=fuchsia",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1959,7 +2034,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1994,7 +2070,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2033,7 +2110,8 @@
           "--test-machine-name",
           "${buildername}",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2074,7 +2152,8 @@
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--jobs=1",
-          "--device-spec=x64-emu-large"
+          "--device-spec=x64-emu-large",
+          "--orchestrate"
         ],
         "isolate_profile_data": true,
         "merge": {
