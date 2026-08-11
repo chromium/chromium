@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +26,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -89,11 +86,6 @@ public class SettingsHostFragmentTest {
         IdentityServicesProvider.setSigninManagerForTesting(mock(SigninManager.class));
         TemplateUrlServiceFactory.setInstanceForTesting(mock(TemplateUrlService.class));
         SyncServiceFactory.setInstanceForTesting(mock(SyncService.class));
-    }
-
-    @After
-    public void tearDown() {
-        DeviceInfo.resetIsDesktopForTesting();
     }
 
     private void attachHostFragment() {
@@ -246,50 +238,6 @@ public class SettingsHostFragmentTest {
         multiColumnSettings.getChildFragmentManager().executePendingTransactions();
 
         assertEquals(0, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
-    }
-
-    @Test
-    @Config(qualifiers = "w320dp")
-    public void testIsTwoColumn_UnlaidOutFallback_NarrowDisplay() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
-        mActivity
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .add(
-                        android.R.id.content,
-                        mSettingsHostFragment,
-                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
-                .commitNow();
-
-        MultiColumnSettings multiColumnSettings =
-                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
-        assertNotNull(multiColumnSettings);
-        assertFalse(
-                "isTwoColumn should return false on narrow display before layout pass",
-                multiColumnSettings.isTwoColumn());
-    }
-
-    @Test
-    @Config(qualifiers = "w1024dp")
-    public void testIsTwoColumn_UnlaidOutFallback_WideDisplay() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
-        mActivity
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .add(
-                        android.R.id.content,
-                        mSettingsHostFragment,
-                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
-                .commitNow();
-
-        MultiColumnSettings multiColumnSettings =
-                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
-        assertNotNull(multiColumnSettings);
-        assertTrue(
-                "isTwoColumn should return true on wide display before layout pass",
-                multiColumnSettings.isTwoColumn());
     }
 
     @Test

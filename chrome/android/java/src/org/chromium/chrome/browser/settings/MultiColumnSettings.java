@@ -19,7 +19,6 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.DialogFragment;
@@ -176,13 +175,6 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 getSlidingPaneLayout().openPane();
             }
             return processed.fragment;
-        }
-        // When SettingsInTab is enabled, do not instantiate an initial detail fragment if no
-        // sub-fragment intent was specified. Returning null prevents PreferenceHeaderFragmentCompat
-        // from calling openPane() on SlidingPaneLayout in single-column mode, ensuring MainSettings
-        // is displayed as the top-level root settings page.
-        if (SettingsInTab.isEnabled()) {
-            return null;
         }
         return super.onCreateInitialDetailFragment();
     }
@@ -481,38 +473,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     /** Returns whether the current layout is in two-column mode. */
     boolean isTwoColumn() {
-        SlidingPaneLayout slidingPane = getSlidingPaneLayout();
-        // If SlidingPaneLayout has already completed layout, use its computed slideable state.
-        if (slidingPane != null
-                && ViewCompat.isLaidOut(slidingPane)
-                && slidingPane.getWidth() > 0) {
-            return !slidingPane.isSlideable();
-        }
-        // Before the initial layout pass, isSlideable() defaults to false. Fall back to comparing
-        // available container/window width to prevent incorrectly assuming two-column mode before
-        // measurement.
-        int minMultiColumnWidth =
-                getResources()
-                        .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
-        int availableWidth = getAvailableWidth(slidingPane);
-        return availableWidth >= minMultiColumnWidth;
-    }
-
-    /** Returns the available width for the sliding pane. */
-    private int getAvailableWidth(@Nullable SlidingPaneLayout slidingPane) {
-        // If the sliding pane is laid out, use its width
-        if (slidingPane != null && slidingPane.getWidth() > 0) {
-            return slidingPane.getWidth();
-        }
-        // Otherwise, use the activity's window width.
-        if (getActivity() != null && getActivity().getWindow() != null) {
-            View decorView = getActivity().getWindow().getDecorView();
-            if (decorView.getWidth() > 0) {
-                return decorView.getWidth();
-            }
-        }
-        // Fall back to display width.
-        return getResources().getDisplayMetrics().widthPixels;
+        return !getSlidingPaneLayout().isSlideable();
     }
 
     private class SlideStateTracker
