@@ -41,6 +41,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -7058,8 +7059,12 @@ std::optional<base::Time> Document::lastModifiedTime() const {
 
 // https://html.spec.whatwg.org/C#dom-document-lastmodified
 String Document::lastModified() const {
-  return String(base::UnlocalizedTimeFormatWithPattern(
-      lastModifiedTime().value_or(base::Time::Now()), "MM/dd/yyyy HH:mm:ss"));
+  base::Time time = lastModifiedTime().value_or(base::Time::Now());
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  return String(base::StringPrintf(
+      "%02d/%02d/%04d %02d:%02d:%02d", exploded.month, exploded.day_of_month,
+      exploded.year, exploded.hour, exploded.minute, exploded.second));
 }
 
 scoped_refptr<const SecurityOrigin> Document::TopFrameOrigin() const {
