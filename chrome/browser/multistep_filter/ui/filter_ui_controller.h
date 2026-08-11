@@ -151,6 +151,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Clears the cue UI.
   void ClearCue();
 
+  // Shows the suggestion chip.
+  void ShowSuggestionChip();
+
   // Attempts to show the First Run Experience Toast promo bubble.
   void MaybeShowPromo();
 

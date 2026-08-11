@@ -49,6 +49,9 @@ namespace {
 
 using SuggestionViewState = FilterUiController::SuggestionViewState;
 
+constexpr page_actions::PageActionPriorityCategory kMultistepFilterPriority =
+    page_actions::PageActionPriorityCategory::kContextualCue;
+
 constexpr std::string_view ViewStateToString(SuggestionViewState state) {
   switch (state) {
     case SuggestionViewState::kInactive:
@@ -383,8 +386,7 @@ void FilterUiController::ShowCueWithFavicon() {
   page_action_controller_->Show(kActionMultistepFilter);
 
   page_action_controller_->ShowAnchoredMessage(
-      kActionMultistepFilter,
-      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
+      kActionMultistepFilter, {.priority = kMultistepFilterPriority});
 }
 
 void FilterUiController::ClearCue() {
@@ -394,6 +396,17 @@ void FilterUiController::ClearCue() {
   page_action_controller_->HideAnchoredMessage(kActionMultistepFilter);
   page_action_controller_->Hide(kActionMultistepFilter);
   page_action_controller_->ClearOverrideText(kActionMultistepFilter);
+}
+
+void FilterUiController::ShowSuggestionChip() {
+  if (!page_action_controller_ || !suggestion_state_) {
+    return;
+  }
+  page_action_controller_->OverrideText(
+      kActionMultistepFilter,
+      suggestion_state_->suggestion.short_suggestion_message);
+  page_action_controller_->ShowSuggestionChip(
+      kActionMultistepFilter, {.priority = kMultistepFilterPriority});
 }
 
 void FilterUiController::OnPageActionAnchoredMessageShown(
@@ -452,12 +465,14 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
     return;
   }
 
-  bool is_tab_hidden =
-      tab().GetContents() &&
-      tab().GetContents()->GetVisibility() != content::Visibility::VISIBLE;
-  if (is_tab_hidden) {
-    suggestion_state_->state_before_tab_hide = suggestion_state_->view_state;
-    suggestion_state_->view_state = SuggestionViewState::kTabHidden;
+  const bool is_tab_visible =
+      tab().IsActivated() && tab().GetContents() &&
+      tab().GetContents()->GetVisibility() == content::Visibility::VISIBLE;
+  if (!is_tab_visible) {
+    if (suggestion_state_->view_state != SuggestionViewState::kTabHidden) {
+      suggestion_state_->state_before_tab_hide = suggestion_state_->view_state;
+      suggestion_state_->view_state = SuggestionViewState::kTabHidden;
+    }
     return;
   }
 
@@ -468,22 +483,14 @@ void FilterUiController::OnPageActionAnchoredMessageHidden(
                            /*ui_shown=*/false, /*reason=*/"collapsed");
       suggestion_state_->view_state = SuggestionViewState::kCollapsedInOmnibox;
       ClosePromo(kDecision);
-      if (page_action_controller_) {
-        page_action_controller_->OverrideText(
-            kActionMultistepFilter,
-            suggestion_state_->suggestion.short_suggestion_message);
-      }
+      ShowSuggestionChip();
       break;
     case SuggestionViewState::kReopenedFromOmnibox:
       LogSuggestionUiShown(log_router_, suggestion_state_->suggestion,
                            /*ui_shown=*/false, /*reason=*/"collapsed");
       suggestion_state_->view_state =
           SuggestionViewState::kCollapsedInOmniboxAfterReopen;
-      if (page_action_controller_) {
-        page_action_controller_->OverrideText(
-            kActionMultistepFilter,
-            suggestion_state_->suggestion.short_suggestion_message);
-      }
+      ShowSuggestionChip();
       break;
     case SuggestionViewState::kInactive:
     case SuggestionViewState::kCollapsedInOmnibox:

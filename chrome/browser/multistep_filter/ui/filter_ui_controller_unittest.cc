@@ -121,6 +121,7 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     ON_CALL(*mock_tab_, GetContents()).WillByDefault(Return(web_contents()));
     ON_CALL(*mock_tab_, GetProfile()).WillByDefault(Return(profile()));
+    ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(true));
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(unowned_user_data_host_));
     controller_ =
@@ -619,6 +620,14 @@ TEST_F(FilterUiControllerTest,
   controller_->ShowSuggestion(suggestion, {});
 
   test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_CALL(
+      *mock_page_action_controller_,
+      ShowSuggestionChip(
+          kActionMultistepFilter,
+          page_actions::SuggestionChipConfig{
+              .priority =
+                  page_actions::PageActionPriorityCategory::kContextualCue}))
+      .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
             FilterUiController::SuggestionViewState::kCollapsedInOmnibox);
@@ -636,6 +645,14 @@ TEST_F(
   // Transition: Inactive -> ShowingInitialCue -> CollapsedInOmnibox ->
   // ReopenedFromOmnibox
   test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_CALL(
+      *mock_page_action_controller_,
+      ShowSuggestionChip(
+          kActionMultistepFilter,
+          page_actions::SuggestionChipConfig{
+              .priority =
+                  page_actions::PageActionPriorityCategory::kContextualCue}))
+      .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   controller_->OnActionInvoked();
   test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
@@ -644,6 +661,14 @@ TEST_F(
 
   // Transition: ReopenedFromOmnibox -> CollapsedInOmniboxAfterReopen (on
   // hidden)
+  EXPECT_CALL(
+      *mock_page_action_controller_,
+      ShowSuggestionChip(
+          kActionMultistepFilter,
+          page_actions::SuggestionChipConfig{
+              .priority =
+                  page_actions::PageActionPriorityCategory::kContextualCue}))
+      .Times(1);
   test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
   EXPECT_EQ(
       test_api(*controller_).suggestion_state()->view_state,
@@ -733,6 +758,30 @@ TEST_F(FilterUiControllerTest, TabHiddenWhenCueCollapsed) {
   EXPECT_FALSE(test_api(*controller_)
                    .suggestion_state()
                    ->state_before_tab_hide.has_value());
+}
+
+// Tests that deactivating the tab triggers the hidden transition even if
+// WebContents visibility hasn't changed.
+TEST_F(FilterUiControllerTest,
+       OnPageActionAnchoredMessageHiddenWhenTabDeactivated) {
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->ShowSuggestion(suggestion, {});
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kShowingInitialCue);
+
+  EXPECT_CALL(*mock_tab_, IsActivated()).WillOnce(Return(false));
+  test_api(*controller_).OnPageActionAnchoredMessageHidden(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kTabHidden);
+  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
+
+  EXPECT_CALL(*mock_tab_, IsActivated()).WillRepeatedly(Return(true));
+  test_api(*controller_).OnPageActionAnchoredMessageShown(ActionState());
+  EXPECT_EQ(test_api(*controller_).suggestion_state()->view_state,
+            FilterUiController::SuggestionViewState::kShowingInitialCue);
+  EXPECT_TRUE(test_api(*controller_).suggestion_state().has_value());
 }
 
 }  // namespace
