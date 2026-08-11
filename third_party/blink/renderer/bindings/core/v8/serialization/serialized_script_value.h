@@ -105,6 +105,8 @@ class CORE_EXPORT SerializedScriptValue
 
   using ArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
   using SharedArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
+  using SharedImmutableArrayBufferContentsArray =
+      Vector<ArrayBufferContents, 1>;
   using ImageBitmapContentsArray = Vector<scoped_refptr<StaticBitmapImage>, 1>;
   using ElementImageContentsArray = Vector<CanvasChildPaintRecord, 1>;
   using TransferredWasmModulesArray = Vector<v8::CompiledWasmModule>;
@@ -298,6 +300,16 @@ class CORE_EXPORT SerializedScriptValue
   SharedArrayBufferContentsArray& SharedArrayBuffersContents() {
     return shared_array_buffers_contents_;
   }
+  SharedImmutableArrayBufferContentsArray&
+  SharedImmutableArrayBuffersContents() {
+    return shared_immutable_array_buffers_contents_;
+  }
+  void MoveSharedImmutableBackingStores(
+      decltype(std::declval<v8::ValueSerializer>()
+                   .ReleaseSharedImmutableBackingStores()) backing_stores);
+  decltype(std::declval<v8::ValueSerializer>()
+               .ReleaseSharedImmutableBackingStores())
+  ReleaseSharedImmutableBackingStores() const;
   BlobDataHandleMap& BlobDataHandles() { return blob_data_handles_; }
   FileSystemAccessTokensArray& FileSystemAccessTokens() {
     return file_system_access_tokens_;
@@ -452,6 +464,8 @@ class CORE_EXPORT SerializedScriptValue
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;
+  SharedImmutableArrayBufferContentsArray
+      shared_immutable_array_buffers_contents_;
   FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 

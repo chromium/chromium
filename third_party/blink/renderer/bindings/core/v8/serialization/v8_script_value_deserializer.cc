@@ -194,6 +194,13 @@ V8ScriptValueDeserializer::V8ScriptValueDeserializer(
       transferred_message_ports_(options.message_ports),
       blob_info_array_(options.blob_info) {
   deserializer_.SetSupportsLegacyWireFormat(true);
+  if (!serialized_script_value_->SharedImmutableArrayBuffersContents()
+           .empty()) {
+    auto* execution_context = ExecutionContext::From(script_state_);
+    CHECK(execution_context->SharedArrayBufferTransferAllowed());
+    deserializer_.SetSharedImmutableBackingStores(
+        serialized_script_value_->ReleaseSharedImmutableBackingStores());
+  }
 }
 
 v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
@@ -341,6 +348,10 @@ void V8ScriptValueDeserializer::MaskDeserializationTimings(
     v8::ValueDeserializer deserializer(isolate, serialized->Data(),
                                        serialized->DataLengthInBytes(),
                                        &delegate);
+    if (!serialized->SharedImmutableArrayBuffersContents().empty()) {
+      deserializer.SetSharedImmutableBackingStores(
+          serialized->ReleaseSharedImmutableBackingStores());
+    }
 
     uint32_t version;
     size_t version_envelope_size =

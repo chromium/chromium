@@ -532,6 +532,32 @@ void SerializedScriptValue::CloneSharedArrayBuffers(
   }
 }
 
+void SerializedScriptValue::MoveSharedImmutableBackingStores(
+    decltype(std::declval<v8::ValueSerializer>()
+                 .ReleaseSharedImmutableBackingStores()) backing_stores) {
+  if (backing_stores.empty()) {
+    return;
+  }
+  shared_immutable_array_buffers_contents_.ReserveInitialCapacity(
+      base::checked_cast<wtf_size_t>(backing_stores.size()));
+  for (auto& backing_store : backing_stores) {
+    shared_immutable_array_buffers_contents_.emplace_back(
+        std::move(backing_store));
+  }
+}
+
+decltype(std::declval<v8::ValueSerializer>()
+             .ReleaseSharedImmutableBackingStores())
+SerializedScriptValue::ReleaseSharedImmutableBackingStores() const {
+  decltype(std::declval<v8::ValueSerializer>()
+               .ReleaseSharedImmutableBackingStores()) backing_stores;
+  backing_stores.reserve(shared_immutable_array_buffers_contents_.size());
+  for (const auto& contents : shared_immutable_array_buffers_contents_) {
+    backing_stores.push_back(contents.BackingStore());
+  }
+  return backing_stores;
+}
+
 v8::Local<v8::Value> SerializedScriptValue::Deserialize(
     v8::Isolate* isolate,
     const DeserializeOptions& options) {
@@ -703,6 +729,7 @@ SerializedScriptValue::MaybeGetSharedValueConveyor() const {
 
 bool SerializedScriptValue::IsLockedToAgentCluster() const {
   return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
+         !shared_immutable_array_buffers_contents_.empty() ||
          std::ranges::any_of(attachments_,
                              [](const auto& entry) {
                                return entry.value->IsLockedToAgentCluster();

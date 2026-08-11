@@ -226,7 +226,14 @@ V8ScriptValueSerializer::V8ScriptValueSerializer(ScriptState* script_state,
                                                  const Options& options)
     : script_state_(script_state),
       serialized_script_value_(SerializedScriptValue::Create()),
-      serializer_(script_state_->GetIsolate(), this),
+      serializer_(
+          script_state_->GetIsolate(),
+          this,
+          (options.for_storage == SerializedScriptValue::kForStorage ||
+           !ExecutionContext::From(script_state_)
+                ->SharedArrayBufferTransferAllowed())
+              ? v8::ValueSerializer::SharedImmutableArrayBufferMode::kDisabled
+              : v8::ValueSerializer::SharedImmutableArrayBufferMode::kEnabled),
       transferables_(options.transferables),
       blob_info_array_(options.blob_info),
       wasm_policy_(options.wasm_policy),
@@ -301,6 +308,8 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
   }
 
   // Finalize the results.
+  serialized_script_value_->MoveSharedImmutableBackingStores(
+      serializer_.ReleaseSharedImmutableBackingStores());
   auto [buffer_ptr, buffer_size] = serializer_.Release();
   auto buffer =
       // SAFETY: The size from Release() is promised to be the size of the
