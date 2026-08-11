@@ -1529,12 +1529,9 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
 
 OverlayBaseController::PreselectionUIConfig
 LensOverlayController::GetPreselectionBubbleConfig() {
-  int message_string_id =
-      CoBrowsePanelWithLensOverlayEnabled()
-          ? IDS_LENS_OVERLAY_COBROWSE_INITIAL_TOAST_LABEL
-          : IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED;
-  return {.message_string_id = message_string_id,
-          .bubble_background_color = kColorLensOverlayToastBackground,
+  return {
+      .message_string_id = IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED,
+      .bubble_background_color = kColorLensOverlayToastBackground,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           .icon = &vector_icons::kGoogleLensMonochromeLogoIcon
 #else

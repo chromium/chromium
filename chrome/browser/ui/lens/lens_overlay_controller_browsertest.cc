@@ -10086,9 +10086,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCoBrowsePreselectionTest,
   ASSERT_TRUE(preselection_widget);
   EXPECT_TRUE(preselection_widget->IsVisible());
 
-  // Verify the bubble uses the IDS_LENS_OVERLAY_COBROWSE_INITIAL_TOAST_LABEL
-  // label.
-  EXPECT_EQ(
-      preselection_widget->widget_delegate()->GetAccessibleWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_COBROWSE_INITIAL_TOAST_LABEL));
+  // Verify the bubble uses the
+  // IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED label.
+  EXPECT_EQ(preselection_widget->widget_delegate()->GetAccessibleWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED));
 }
