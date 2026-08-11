@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.AutomaticPasskeyUpgrade.Result"
-    enum="PasskeyUpgradeResult" expires_after="2026-12-06">
+    enum="PasskeyUpgradeResult" expires_after="2027-02-07">
   <owner>martinkr@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Enclave.PinRenewalActionOutcome"
-    enum="EnclaveManagerActionOutcome" expires_after="2026-12-09">
+    enum="EnclaveManagerActionOutcome" expires_after="2027-02-07">
   <owner>agl@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>

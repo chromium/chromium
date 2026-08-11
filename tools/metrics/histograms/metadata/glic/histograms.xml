@@ -1213,7 +1213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.HadEvent" enum="GlicInstanceEvent"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2471,7 +2471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ProfileEnablement.DisabledReason.{Suffix}"
-    enum="GlicProfileEnablementReason" expires_after="2026-11-29">
+    enum="GlicProfileEnablementReason" expires_after="2027-02-07">
   <owner>dewittj@chromium.org</owner>
   <owner>glic@chromium.org</owner>
   <summary>
@@ -2822,7 +2822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Session.Open.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2026-12-06">
+    enum="GlicInvocationSource" expires_after="2027-02-07">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
