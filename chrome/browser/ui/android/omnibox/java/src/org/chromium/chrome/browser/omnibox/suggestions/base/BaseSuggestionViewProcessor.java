@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
@@ -286,7 +285,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(BaseSuggestionViewProperties.SHOW_DECORATION, true);
         model.set(
                 BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING,
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+                mUiContext.resourceProvider.getSuggestionDecorationIconSizeWidth());
         model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
 
         if (OmniboxFeatures.isTouchDownTriggerForPrefetchEnabled()

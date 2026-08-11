@@ -47,16 +47,16 @@ public class SuggestionLayoutUnitTest {
     private final View mActionButtonView = new View(mContext);
     private final View mContentView = new View(mContext);
     private SuggestionLayout mLayout = new SuggestionLayout(mContext);
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
-        var resourceProvider =
-                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         mLayout.setSuggestionDimensions(
-                resourceProvider.getSuggestionDecorationIconSizeWidth(),
-                resourceProvider.getSuggestionContentHeight(),
-                resourceProvider.getSuggestionCompactContentHeight(),
-                resourceProvider.getSuggestionContentVerticalPadding());
+                mResourceProvider.getSuggestionDecorationIconSizeWidth(),
+                mResourceProvider.getSuggestionContentHeight(),
+                mResourceProvider.getSuggestionCompactContentHeight(),
+                mResourceProvider.getSuggestionContentVerticalPadding());
     }
 
     @Test
@@ -199,8 +199,7 @@ public class SuggestionLayoutUnitTest {
         mLayout.layout(0, 0, 200, 48);
 
         assertEquals(
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext),
-                mContentView.getLeft());
+                mResourceProvider.getSuggestionDecorationIconSizeWidth(), mContentView.getLeft());
 
         mDecorationView.setVisibility(View.GONE);
 

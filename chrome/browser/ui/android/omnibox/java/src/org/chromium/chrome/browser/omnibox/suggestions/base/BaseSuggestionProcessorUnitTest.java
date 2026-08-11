@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
@@ -458,7 +457,7 @@ public class BaseSuggestionProcessorUnitTest {
         assertEquals(false, mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+                mUiContext.resourceProvider.getSuggestionDecorationIconSizeWidth());
 
         mModel.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, true);
         mModel.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, 43);
@@ -467,7 +466,7 @@ public class BaseSuggestionProcessorUnitTest {
         assertEquals(false, mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         assertEquals(
                 mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+                mUiContext.resourceProvider.getSuggestionDecorationIconSizeWidth());
     }
 
     @Test

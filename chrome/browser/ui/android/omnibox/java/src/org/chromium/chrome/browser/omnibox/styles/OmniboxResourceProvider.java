@@ -439,31 +439,22 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
-    /**
-     * Get most visited carousel top padding.
-     *
-     * @see #getMostVisitedCarouselTopPadding(Context, ...)
-     */
+    /** Get most visited carousel top padding. */
     public @Px int getMostVisitedCarouselTopPadding() {
-        return getMostVisitedCarouselTopPadding(mContext);
+        return mCache.getDimen(R.dimen.omnibox_carousel_suggestion_padding_smaller);
     }
 
-    /**
-     * Get most visited carousel bottom padding.
-     *
-     * @see #getMostVisitedCarouselBottomPadding(Context, ...)
-     */
+    /** Get most visited carousel bottom padding. */
     public @Px int getMostVisitedCarouselBottomPadding() {
-        return getMostVisitedCarouselBottomPadding(mContext);
+        return mCache.getDimen(R.dimen.omnibox_carousel_suggestion_padding);
     }
 
-    /**
-     * Get header start padding.
-     *
-     * @see #getHeaderStartPadding(Context, ...)
-     */
+    /** Get header start padding. */
     public @Px int getHeaderStartPadding() {
-        return getHeaderStartPadding(mContext);
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return mCache.getDimen(R.dimen.omnibox_suggestion_header_padding_start_desktop);
+        }
+        return mCache.getDimen(R.dimen.omnibox_suggestion_header_padding_start);
     }
 
     /**
@@ -493,13 +484,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return getToolbarSidePaddingForNtp(mContext);
     }
 
-    /**
-     * Get suggestion decoration icon size width.
-     *
-     * @see #getSuggestionDecorationIconSizeWidth(Context, ...)
-     */
+    /** Get suggestion decoration icon size width. */
     public @Px int getSuggestionDecorationIconSizeWidth() {
-        return getSuggestionDecorationIconSizeWidth(mContext);
+        return mCache.getDimen(R.dimen.omnibox_suggestion_icon_area_size);
     }
 
     /**
@@ -1102,28 +1089,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                 .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
     }
 
-    /** Get the top padding for the MV carousel. */
-    public static @Px int getMostVisitedCarouselTopPadding(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller);
-    }
-
-    /** Get the bottom padding for the MV carousel. */
-    public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-    }
-
-    /** Gets the start padding for a header suggestion. */
-    public static @Px int getHeaderStartPadding(Context context) {
-        if (OmniboxCapabilities.isDesktopPlatform()) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start_desktop);
-        }
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-    }
-
     /**
      * Returns the amount of pixels the location bar background should increase in height by when
      * the omnibox is focused.
@@ -1144,12 +1109,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      */
     public static @Px int getToolbarSidePaddingForNtp(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
-    }
-
-    /** Returns the width of the Omnibox Suggestion decoration icon. */
-    public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
     }
 
     /** Returns the height of the content of an Omnibox Suggestion. */
