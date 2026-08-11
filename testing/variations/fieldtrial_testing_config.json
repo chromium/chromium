@@ -20878,7 +20878,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ProfileDiscOnAllPages"
+                        "ProfileDiscOnAllPages",
+                        "SigninLevelUpButton"
                     ]
                 }
             ]
@@ -23012,21 +23013,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShutdownPreNativeThreadPoolAfterStartup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SigninLevelUpButton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SigninLevelUpButton"
                     ]
                 }
             ]
