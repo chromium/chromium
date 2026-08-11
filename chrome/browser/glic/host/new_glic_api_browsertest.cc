@@ -1325,6 +1325,27 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithMqlsIdGetterDisabled,
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetTabById) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  tabs::TabInterface* new_tab = CreateBackgroundTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  auto tab_id = new_tab->GetHandle();
+  ExecuteJsTest(
+      {.params = base::Value(base::NumberToString(tab_id.raw_value()))});
+
+  // Navigate the tab.
+  GURL::Replacements replacements;
+  replacements.SetQueryStr("q=hi");
+  ASSERT_TRUE(content::NavigateToURL(new_tab->GetContents(),
+                                     embedded_test_server()
+                                         ->GetURL("/browser_tests/test.html")
+                                         .ReplaceComponents(replacements)));
+  ContinueJsTest();
+
+  // Close the tab.
+  GetTabListInterface()->CloseTab(new_tab->GetHandle());
+  ContinueJsTest();
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithFileUploadPolicyEnabled : public NewGlicApiTest {

@@ -662,6 +662,27 @@ class GlicBrowserTestMixin : public T {
     return CreateAndActivateTab(TabListInterface::From(browser), url);
   }
 
+  // Opens a new background tab with the given URL and waits for load to
+  // complete.
+  tabs::TabInterface* CreateBackgroundTab(TabListInterface* tab_list,
+                                          const GURL& url) {
+    CHECK(tab_list);
+    tabs::TabInterface* new_tab =
+        tab_list->OpenTab(url, -1, /*foreground=*/false);
+    CHECK(new_tab);
+    CHECK(content::WaitForLoadStop(new_tab->GetContents()));
+    return new_tab;
+  }
+
+  tabs::TabInterface* CreateBackgroundTab(const GURL& url) {
+    return CreateBackgroundTab(T::GetTabListInterface(), url);
+  }
+
+  tabs::TabInterface* CreateBackgroundTab(BrowserWindowInterface* browser,
+                                          const GURL& url) {
+    return CreateBackgroundTab(TabListInterface::From(browser), url);
+  }
+
   // Creates a new browser window and returns it. On Desktop, it will also
   // automatically create a blank tab.
   // TODO(crbug.com/530318599): CreateBrowserWindow() does not create a tab on

@@ -1306,25 +1306,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabById) {
-  NavigateTabAndOpenGlic();
-  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
-  auto tab_id = browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle();
-  ExecuteJsTest(
-      {.params = base::Value(base::NumberToString(tab_id.raw_value()))});
-
-  // Navigate the tab.
-  GURL::Replacements replacements;
-  replacements.SetQueryStr("q=hi");
-  ASSERT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetTabAtIndex(1)->GetContents(),
-      page_url().ReplaceComponents(replacements)));
-  ContinueJsTest();
-
-  // Close the tab.
-  browser()->tab_strip_model()->CloseWebContentsAt(1, CLOSE_NONE);
-  ContinueJsTest();
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetTabByIdWithDiscard) {
   NavigateTabAndOpenGlic();
