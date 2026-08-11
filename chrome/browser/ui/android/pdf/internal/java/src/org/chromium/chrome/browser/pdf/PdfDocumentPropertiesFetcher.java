@@ -43,7 +43,8 @@ class PdfDocumentPropertiesFetcher {
             Context appContext,
             @Nullable Uri uri,
             String title,
-            @Nullable String pdfFilePath) {
+            @Nullable String pdfFilePath,
+            boolean isIncognito) {
 
         DocProperties props = new DocProperties();
         props.mFileName = title;
@@ -164,7 +165,8 @@ class PdfDocumentPropertiesFetcher {
                 if (props.mCreationTime <= 0) {
                     props.mCreationTime = getFileCreationTime(file.getAbsolutePath());
                 }
-                if (TextUtils.isEmpty(props.mFileName) || props.mFileName.equals(title)) {
+                if (!isIncognito
+                        && (TextUtils.isEmpty(props.mFileName) || props.mFileName.equals(title))) {
                     props.mFileName = file.getName();
                 }
             }

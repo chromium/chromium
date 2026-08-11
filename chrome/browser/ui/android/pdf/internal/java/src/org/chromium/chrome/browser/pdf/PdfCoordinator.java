@@ -1515,7 +1515,7 @@ public class PdfCoordinator
                             () -> {
                                 PdfDocumentPropertiesFetcher.DocProperties fileProps =
                                         PdfDocumentPropertiesFetcher.getDocProperties(
-                                                appContext, uri, title, pdfFilePath);
+                                                appContext, uri, title, pdfFilePath, mIsIncognito);
                                 // Post back to UI thread to show dialog
                                 ThreadUtils.postOnUiThread(
                                         () -> {
