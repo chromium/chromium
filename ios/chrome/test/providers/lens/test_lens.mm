@@ -39,13 +39,6 @@ NewChromeLensViewFinderController(LensConfiguration* config) {
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     LensImageSource* imageSource,
     LensConfiguration* config,
-    NSArray<UIAction*>* additionalMenuItems) {
-  return [[TestLensOverlayController alloc] init];
-}
-
-UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
-    LensImageSource* imageSource,
-    LensConfiguration* config,
     NSArray<UIAction*>* precedingMenuItems,
     NSArray<UIAction*>* additionalMenuItems) {
   return [[TestLensOverlayController alloc] init];
