@@ -132,6 +132,12 @@ public class TabSwitcherMessageManager {
                 }
 
                 @Override
+                public void willCloseTabs(
+                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                    removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ tabs.size());
+                }
+
+                @Override
                 public void tabClosureUndone(Tab tab) {
                     TabModel tabModel = mCurrentTabModelSupplier.get();
                     assumeNonNull(tabModel);
