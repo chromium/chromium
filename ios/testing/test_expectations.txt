@@ -88,3 +88,8 @@ crbug.com/541290681 SafariDataImportTestCase/testPasswordConflictResolution [ Pa
 # Gardening suppression 2026-08-06
 crbug.com/543490495 GeminiCopresenceTestCase/testFloatyHiddenOnNTPAndTabGrid [ Failure ]
 
+# Gardening suppression 2026-08-11
+crbug.com/545120617 [ Device ] AutofillCreditCardSettingsTestCase/testToolbarDeleteButtonWithAddPaymentMethodFeatureEnabled [ Pass Failure ]
+crbug.com/545120835 [ Simulator ] PasswordCheckupTestCase/testPasswordCheckupDismissCompromisedPasswordWarning [ Pass Failure ]
+crbug.com/545123760 [ iPad Simulator ] TabGroupsTestCase/testReopenGroupFromAnotherWindow [ Pass Failure ]
+crbug.com/545122908 [ iPad Simulator ] MailtoHandlerTestCase/testDefaultAppsInMultiWindow [ Pass Failure ]
