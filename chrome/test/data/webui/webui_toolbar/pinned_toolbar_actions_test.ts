@@ -741,7 +741,7 @@ suite('PinnedToolbarActions', function() {
       });
 
   test(
-      'State updates during drag cancel the drag and apply immediately',
+      'State updates during drag do not abort if dragged item not removed',
       async () => {
         const actionElements =
             container.shadowRoot.querySelectorAll('pinned-toolbar-action');
@@ -779,7 +779,6 @@ suite('PinnedToolbarActions', function() {
         // Verify drag-start was broadcast
         assertEquals(1, receivedMessages.length);
         assertEquals('drag-start', receivedMessages[0].type);
-        assertEquals('1', receivedMessages[0].itemId);
 
         // 2. Simulate a backend state update during drag (removing Action 2)
         container.states = [
@@ -788,18 +787,74 @@ suite('PinnedToolbarActions', function() {
         ];
         await microtasksFinished();
 
-        // Verify drag was aborted immediately and layout updated
-        assertEquals(null, (container as any).draggedItemId_);
+        // Verify drag is NOT aborted
+        assertEquals('1', (container as any).draggedItemId_);
         keyedStates = container.keyedStates;
         assertEquals(2, keyedStates.length);  // Action 1, Divider
         assertEquals('1', keyedStates[0]!.key);
-        assertTrue(!keyedStates[0]!.dragPlaceholder);
+        assertTrue(keyedStates[0]!.dragPlaceholder === true);
 
-        // Verify abort message was broadcasted
+        // Verify NO abort message was broadcasted yet
+        assertEquals(1, receivedMessages.length);
+
+        // 3. Simulate dragend (aborted)
+        firstAction.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
+          detail: {itemId: '1', dropEffect: 'none'},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        // Verify layout is updated after drag ends
+        assertEquals(null, (container as any).draggedItemId_);
+        keyedStates = container.keyedStates;
+        assertEquals(2, keyedStates.length);  // Action 1, Divider
+        assertFalse(keyedStates[0]!.dragPlaceholder === true);
+
+        // Verify abort message was broadcasted now
         assertEquals(2, receivedMessages.length);
         assertEquals('drag-end', receivedMessages[1].type);
         assertTrue(receivedMessages[1].aborted);
 
         listenerChannel.close();
       });
+
+  test('State updates that remove dragged item abort the drag', async () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action');
+    const firstAction = actionElements[0]!;
+
+    // 1. Simulate local drag start of Action 1
+    const firstActionButton =
+        firstAction.shadowRoot.querySelector('cr-icon-button')!;
+    const dragStartEvent = new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    Object.defineProperty(dragStartEvent, 'dataTransfer', {
+      value: {
+        setData: () => {},
+        effectAllowed: 'none',
+      },
+    });
+    firstActionButton.dispatchEvent(dragStartEvent);
+
+    assertEquals('1', (container as any).draggedItemId_);
+
+    // 2. Simulate removing Action 1 (dragged item)
+    container.states = [
+      container.states[1]!,
+      container.states[2]!,
+    ];
+    await microtasksFinished();
+
+    // Verify drag is aborted immediately
+    assertEquals(null, (container as any).draggedItemId_);
+
+    // Verify layout is updated immediately (Action 1 removed)
+    const keyedStates = container.keyedStates;
+    assertEquals(2, keyedStates.length);  // Action 2, Divider
+    assertEquals('2', keyedStates[0]!.key);
+  });
 });

@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ExtensionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -601,7 +601,7 @@ suite('Extensions', function() {
     assertTrue(dataSet);
   });
 
-  test('State updates are deferred during pointerdown', async () => {
+  test('State updates during pointerdown are applied immediately', async () => {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
@@ -615,12 +615,12 @@ suite('Extensions', function() {
     Object.defineProperty(pointerDownEvent, 'isPrimary', {value: true});
     firstAction.dispatchEvent(pointerDownEvent);
 
-    // 2. Update state (change tooltip of action-1)
+    // 2. Update state
     container.states = [
       {
         id: 'action-1',
         accessibleName: 'Action 1',
-        tooltip: 'Action 1 Tooltip Changed',
+        tooltip: 'Action 1 Tooltip',
         isVisible: true,
         icon: {handleId: 1n},
       },
@@ -630,6 +630,13 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+      },
+      {
+        id: 'action-3',
+        accessibleName: 'Action 3',
+        tooltip: 'Action 3 Tooltip',
+        isVisible: true,
+        icon: {handleId: 4n},
       },
       {
         id: '',
@@ -642,26 +649,146 @@ suite('Extensions', function() {
 
     await microtasksFinished();
 
-    // Verify update is deferred (still has old tooltip in keyedStates)
-    let keyedStates = container.keyedStates;
-    assertEquals('Action 1 Tooltip', keyedStates[0]!.state.tooltip);
-
-    // 3. Dispatch pointerup on window
-    const pointerUpEvent = new PointerEvent('pointerup', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    });
-    window.dispatchEvent(pointerUpEvent);
-
-    await microtasksFinished();
-
-    // Verify update is now applied
-    keyedStates = container.keyedStates;
-    assertEquals('Action 1 Tooltip Changed', keyedStates[0]!.state.tooltip);
+    // Verify update is applied immediately (length is 4)
+    const keyedStates = container.keyedStates;
+    assertEquals(4, keyedStates.length);
+    assertEquals('action-3', keyedStates[2]!.key);
   });
 
-  test('State updates are deferred during drag', async () => {
+  test(
+      'State updates during drag are applied immediately without aborting',
+      async () => {
+        const actionElements =
+            container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+        const firstAction = actionElements[0]!;
+        const button = firstAction.shadowRoot.querySelector('cr-button')!;
+
+        // 1. Start drag
+        const dragStartEvent = new DragEvent('dragstart', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        Object.defineProperty(dragStartEvent, 'dataTransfer', {
+          value: {
+            setData: () => {},
+            effectAllowed: 'none',
+          },
+        });
+        button.dispatchEvent(dragStartEvent);
+
+        assertEquals('action-1', (container as any).draggedItemId_);
+
+        // 2. Update state (add action-3)
+        container.states = [
+          {
+            id: 'action-1',
+            accessibleName: 'Action 1',
+            tooltip: 'Action 1 Tooltip',
+            isVisible: true,
+            icon: {handleId: 1n},
+          },
+          {
+            id: 'action-2',
+            accessibleName: 'Action 2',
+            tooltip: 'Action 2 Tooltip',
+            isVisible: true,
+            icon: {handleId: 2n},
+          },
+          {
+            id: 'action-3',
+            accessibleName: 'Action 3',
+            tooltip: 'Action 3 Tooltip',
+            isVisible: true,
+            icon: {handleId: 4n},
+          },
+          {
+            id: '',
+            accessibleName: 'Extensions Button',
+            tooltip: 'Extensions Button Tooltip',
+            isVisible: true,
+            icon: {handleId: 3n},
+          },
+        ];
+
+        await microtasksFinished();
+
+        // Verify drag is NOT aborted
+        assertEquals('action-1', (container as any).draggedItemId_);
+
+        // Verify update is applied (length is 4) and placeholder is preserved
+        const keyedStates = container.keyedStates;
+        assertEquals(4, keyedStates.length);
+        assertEquals('action-1', keyedStates[0]!.key);
+        assertTrue(keyedStates[0]!.dragPlaceholder === true);
+        assertEquals('action-3', keyedStates[2]!.key);
+
+        // 3. End drag
+        const dragEndEvent = new DragEvent('dragend', {
+          bubbles: true,
+          composed: true,
+        });
+        Object.defineProperty(dragEndEvent, 'dataTransfer', {
+          value: {
+            dropEffect: 'none',
+          },
+        });
+        button.dispatchEvent(dragEndEvent);
+
+        await microtasksFinished();
+        assertEquals(null, (container as any).draggedItemId_);
+        assertFalse(container.keyedStates[0]!.dragPlaceholder === true);
+      });
+
+  test(
+      'Property updates are applied immediately during pointerdown',
+      async () => {
+        const actionElements =
+            container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+        const firstAction = actionElements[0]!;
+
+        // 1. Dispatch pointerdown on the action
+        const pointerDownEvent = new PointerEvent('pointerdown', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        Object.defineProperty(pointerDownEvent, 'isPrimary', {value: true});
+        firstAction.dispatchEvent(pointerDownEvent);
+
+        // 2. Update state (change tooltip)
+        container.states = [
+          {
+            id: 'action-1',
+            accessibleName: 'Action 1',
+            tooltip: 'Action 1 Tooltip Changed',
+            isVisible: true,
+            icon: {handleId: 1n},
+          },
+          {
+            id: 'action-2',
+            accessibleName: 'Action 2',
+            tooltip: 'Action 2 Tooltip',
+            isVisible: true,
+            icon: {handleId: 2n},
+          },
+          {
+            id: '',
+            accessibleName: 'Extensions Button',
+            tooltip: 'Extensions Button Tooltip',
+            isVisible: true,
+            icon: {handleId: 3n},
+          },
+        ];
+
+        await microtasksFinished();
+
+        // Verify update is applied immediately (has new tooltip)
+        const keyedStates = container.keyedStates;
+        assertEquals('Action 1 Tooltip Changed', keyedStates[0]!.state.tooltip);
+      });
+
+  test('Property updates are applied immediately during drag', async () => {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
@@ -708,11 +835,11 @@ suite('Extensions', function() {
 
     await microtasksFinished();
 
-    // Verify update is deferred
-    let keyedStates = container.keyedStates;
-    assertEquals('Action 1 Tooltip', keyedStates[0]!.state.tooltip);
+    // Verify update is NOT deferred (has new tooltip)
+    const keyedStates = container.keyedStates;
+    assertEquals('Action 1 Tooltip Changed', keyedStates[0]!.state.tooltip);
 
-    // 3. End drag (aborted)
+    // 3. End drag
     const dragEndEvent = new DragEvent('dragend', {
       bubbles: true,
       cancelable: true,
@@ -720,19 +847,98 @@ suite('Extensions', function() {
     });
     Object.defineProperty(dragEndEvent, 'dataTransfer', {
       value: {
-        dropEffect: 'none',  // aborted
+        dropEffect: 'none',
       },
     });
     button.dispatchEvent(dragEndEvent);
-
-    await microtasksFinished();
-
-    // Verify update is now applied
-    keyedStates = container.keyedStates;
-    assertEquals('Action 1 Tooltip Changed', keyedStates[0]!.state.tooltip);
   });
 
-  test('State updates that change order abort the drag', async () => {
+
+  test(
+      'State updates that change order do not abort the drag if dragged item is not removed',
+      async () => {
+        const actionElements =
+            container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+        const firstAction = actionElements[0]!;
+        const button = firstAction.shadowRoot.querySelector('cr-button')!;
+
+        // 1. Start drag
+        const dragStartEvent = new DragEvent('dragstart', {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        Object.defineProperty(dragStartEvent, 'dataTransfer', {
+          value: {
+            setData: () => {},
+            effectAllowed: 'none',
+          },
+        });
+        button.dispatchEvent(dragStartEvent);
+
+        assertEquals('action-1', (container as any).draggedItemId_);
+
+        // 2. Update state changing order (swap action-1 and action-2 in Mojo)
+        container.states = [
+          {
+            id: 'action-2',
+            accessibleName: 'Action 2',
+            tooltip: 'Action 2 Tooltip',
+            isVisible: true,
+            icon: {handleId: 2n},
+          },
+          {
+            id: 'action-1',
+            accessibleName: 'Action 1',
+            tooltip: 'Action 1 Tooltip',
+            isVisible: true,
+            icon: {handleId: 1n},
+          },
+          {
+            id: '',
+            accessibleName: 'Extensions Button',
+            tooltip: 'Extensions Button Tooltip',
+            isVisible: true,
+            icon: {handleId: 3n},
+          },
+        ];
+
+        await microtasksFinished();
+
+        // Verify drag is NOT aborted
+        assertEquals('action-1', (container as any).draggedItemId_);
+
+        // Verify layout is NOT updated immediately to the new Mojo order,
+        // it should preserve local placeholder index 0.
+        let keyedStates = container.keyedStates;
+        assertEquals('action-1', keyedStates[0]!.key);
+        assertTrue(keyedStates[0]!.dragPlaceholder === true);
+        assertEquals('action-2', keyedStates[1]!.key);
+
+        // 3. End drag (aborted)
+        const dragEndEvent = new DragEvent('dragend', {
+          bubbles: true,
+          composed: true,
+        });
+        Object.defineProperty(dragEndEvent, 'dataTransfer', {
+          value: {
+            dropEffect: 'none',
+          },
+        });
+        button.dispatchEvent(dragEndEvent);
+
+        await microtasksFinished();
+
+        // Verify drag is now ended and layout updated to the deferred Mojo
+        // order
+        assertEquals(null, (container as any).draggedItemId_);
+        keyedStates = container.keyedStates;
+        assertEquals('action-2', keyedStates[0]!.key);
+        assertEquals('action-1', keyedStates[1]!.key);
+        assertFalse(keyedStates[1]!.dragPlaceholder === true);
+      });
+
+  test('State updates that remove dragged item abort the drag', async () => {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
     const firstAction = actionElements[0]!;
@@ -754,7 +960,7 @@ suite('Extensions', function() {
 
     assertEquals('action-1', (container as any).draggedItemId_);
 
-    // 2. Update state changing order (swap action-1 and action-2)
+    // 2. Update state removing action-1
     container.states = [
       {
         id: 'action-2',
@@ -762,13 +968,6 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
-      },
-      {
-        id: 'action-1',
-        accessibleName: 'Action 1',
-        tooltip: 'Action 1 Tooltip',
-        isVisible: true,
-        icon: {handleId: 1n},
       },
       {
         id: '',
@@ -781,14 +980,35 @@ suite('Extensions', function() {
 
     await microtasksFinished();
 
-    // Verify drag is aborted (draggedItemId_ becomes null)
+    // Verify drag is aborted immediately
     assertEquals(null, (container as any).draggedItemId_);
 
-    // Verify layout is updated immediately to the new order
-    const keyedStates = container.keyedStates;
+    // Verify layout is updated immediately (action-1 removed)
+    let keyedStates = container.keyedStates;
+    assertEquals(2, keyedStates.length);  // action-2, button
     assertEquals('action-2', keyedStates[0]!.key);
-    assertEquals('action-1', keyedStates[1]!.key);
-    assertTrue(!keyedStates[1]!.dragPlaceholder);
+
+    // 3. Re-add action-1 to states
+    container.states = [
+      {
+        id: 'action-1',
+        accessibleName: 'Action 1',
+        tooltip: 'Action 1 Tooltip',
+        isVisible: true,
+        icon: {handleId: 1n},
+      },
+      ...container.states,
+    ];
+    await microtasksFinished();
+
+    // Verify action-1 is restored in the layout
+    keyedStates = container.keyedStates;
+    assertEquals(3, keyedStates.length);
+    assertEquals('action-1', keyedStates[0]!.key);
+    // And it should have a DOM element
+    const restoredAction =
+        container.shadowRoot.querySelector('[data-key="action-1"]');
+    assertTrue(!!restoredAction);
   });
 
   test('Extensions menu button is not draggable', () => {

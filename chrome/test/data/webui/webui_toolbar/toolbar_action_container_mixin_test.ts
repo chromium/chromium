@@ -524,4 +524,130 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertEquals('d', element.keyedStates[4]!.key);
     assertTrue(element.keyedStates[1]!.dragPlaceholder === true);
   });
+
+  test('DragStartNotAbortedByNonOrderChangingUpdates', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    const childElA = element.shadowRoot.querySelector('[data-key="a"]');
+    assertTrue(!!childElA);
+
+    // Simulate pointerdown on 'a'.
+    childElA.dispatchEvent(new PointerEvent('pointerdown', {
+      isPrimary: true,
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Simulate a state update that doesn't change order.
+    element.states = [
+      {id: 'a', name: 'Item A Updated'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // The update should NOT be deferred, so DOM should have updated.
+    const childElA_afterUpdate =
+        element.shadowRoot.querySelector('[data-key="a"]');
+    assertTrue(!!childElA_afterUpdate);
+    assertEquals('Item A Updated', childElA_afterUpdate.textContent.trim());
+
+    // Start drag on 'a'.
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
+      detail: {itemId: 'a'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify drag is NOT aborted (placeholder flag should be set).
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+  });
+
+  test('DragNotAbortedOnOrderChangeIfDraggedItemNotRemoved', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // Start drag.
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
+      detail: {itemId: 'a'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify element 'a' has dragPlaceholder.
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+    assertEquals('a', (element as any).draggedItemId_);
+
+    // Change states (swap order in Mojo).
+    element.states = [
+      {id: 'b', name: 'Item B'},
+      {id: 'a', name: 'Item A'},
+    ];
+    await microtasksFinished();
+
+    // Drag should NOT be aborted.
+    assertEquals('a', (element as any).draggedItemId_);
+
+    // Layout should NOT update to Mojo order immediately, preserve local
+    // placeholder. So order is still 'a*' then 'b'.
+    assertEquals('a', element.keyedStates[0]!.key);
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+    assertEquals('b', element.keyedStates[1]!.key);
+
+    // End drag (aborted)
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-end', {
+      detail: {itemId: 'a', dropEffect: 'none'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify drag is ended and layout updated to Mojo order (b then a).
+    assertEquals(null, (element as any).draggedItemId_);
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertEquals('a', element.keyedStates[1]!.key);
+    assertFalse(element.keyedStates[1]!.dragPlaceholder === true);
+  });
+
+  test('AbortDragOnDraggedItemRemoval', async function() {
+    element.states = [
+      {id: 'a', name: 'Item A'},
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // Start drag.
+    element.dispatchEvent(new CustomEvent('toolbar-action-drag-start', {
+      detail: {itemId: 'a'},
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    assertTrue(element.keyedStates[0]!.dragPlaceholder === true);
+
+    // Remove dragged item 'a'
+    element.states = [
+      {id: 'b', name: 'Item B'},
+    ];
+    await microtasksFinished();
+
+    // Drag should be aborted immediately
+    assertEquals(null, (element as any).draggedItemId_);
+
+    // Layout updated immediately (a marked as exiting)
+    assertEquals(2, element.keyedStates.length);
+    assertEquals('a', element.keyedStates[0]!.key);
+    assertTrue(element.keyedStates[0]!.exiting === true);
+    assertEquals('b', element.keyedStates[1]!.key);
+  });
 });
