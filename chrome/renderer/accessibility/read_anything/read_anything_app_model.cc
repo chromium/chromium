@@ -562,6 +562,22 @@ void ReadAnythingAppModel::SetTreeInfoUrlInformation(
   }
 }
 
+void ReadAnythingAppModel::UpdateDistillationForDocsIfNeeded() {
+  // GetInitialDistillationMethod is sometimes called during
+  // OnActiveAXTreeIDChanged before SetTreeInfoUrlInformation has run and
+  // before the Google Docs URL is known. When the active page is later
+  // identified as Google Docs, fallback from Readability to Screen2x.
+  // Both next_distillation_method_ and current_content_distillation_method_
+  // are updated because this fallback occurs during initial page load while
+  // the UI is showing loading and no content has been rendered yet.
+  if (IsDocs() && is_readability_next_distillation_method()) {
+    set_next_distillation_method(DistillationMethod::kScreen2x);
+    set_current_content_distillation_method(DistillationMethod::kScreen2x);
+    set_requires_readability_distillation(false);
+    set_requires_distillation(true);
+  }
+}
+
 bool ReadAnythingAppModel::IsDocs() const {
   // Sometimes during an initial page load, this may be called before the
   // tree has been initialized. If this happens, IsDocs should return false
@@ -679,6 +695,10 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
 
   ProcessGeneratedEvents(tree_id, event_generator, prev_tree_size,
                          tree->size());
+
+  if (tree_id == active_tree_id_) {
+    UpdateDistillationForDocsIfNeeded();
+  }
 }
 
 void ReadAnythingAppModel::PrepareForAXTreeUpdates(

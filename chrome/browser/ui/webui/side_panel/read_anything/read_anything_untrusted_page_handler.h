@@ -366,6 +366,7 @@ class ReadAnythingUntrustedPageHandler :
 
   bool AreInnerContentsPdfContent(
       std::vector<content::WebContents*> inner_contents);
+  bool IsGoogleDocs(const GURL& url) const;
 
   content::WebContents* GetWebContents() const;
 

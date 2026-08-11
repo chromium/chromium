@@ -938,6 +938,10 @@ class ReadAnythingAppModel {
   // same page's text.
   bool IsAXRangeOccupied(size_t ax_start, size_t ax_end) const;
 
+  // Updates the current distillation for Docs if it was previously updated
+  // in SetTreeInfoUrlInformation.
+  void UpdateDistillationForDocsIfNeeded();
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
 

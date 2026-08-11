@@ -1717,6 +1717,55 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(u"", controller().GetTextContent(3));
 }
 
+// Verifies that when Google Docs is opened, the controller falls back from
+// Readability to Screen2x distillation and does not recompute display nodes
+// during draw.
+TEST_F(ReadAnythingAppControllerTest,
+       Draw_DoNotRecomputeDisplayNodesForDocs_Screen2xFallback) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+  ui::AXNodeData node;
+  node.id = 2;
+
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
+  root.child_ids = {node.id};
+  update.root_id = root.id;
+  update.nodes = {std::move(root), std::move(node)};
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({std::move(update)}, {std::move(load_complete)});
+
+  // Populate display_node_ids_ for tree_id_.
+  model().Reset({3});
+  model().ComputeDisplayNodeIdsForDistilledTree();
+
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  EXPECT_TRUE(controller().IsGoogleDocs());
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  ui::AXNodeData node1;
+  node1.id = 4;
+
+  // This update changes the structure of the tree. When the controller receives
+  // it in AccessibilityEventReceived, it will re-distill the tree.
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, id_1);
+  update2.nodes = {std::move(node1)};
+  AccessibilityEventReceived({std::move(update2)});
+
+  model().Reset({3, 4});
+  controller().Draw(/* recompute_display_nodes= */ true);
+  EXPECT_FALSE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_FALSE(model().display_node_ids().contains(3));
+  EXPECT_FALSE(model().display_node_ids().contains(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        GetTextContent_UseNameAttributeTextIfGoogleDocs) {
   std::u16string text_content = u"Hello";
@@ -2152,7 +2201,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
       model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   OnAXTreeDistilled(tree_id_, {1});
 
-  ExpectDistill(1);
+  EXPECT_CALL(*distiller_, Distill).Times(0);
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_FALSE(controller().IsGoogleDocs());
   Mock::VerifyAndClearExpectations(distiller_);
@@ -2167,7 +2216,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
       model().tree_infos_for_testing().at(tree_id_)->is_url_information_set);
   OnAXTreeDistilled(tree_id_, {1});
 
-  ExpectDistill(1);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
   controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
   Mock::VerifyAndClearExpectations(distiller_);
@@ -5532,46 +5581,6 @@ TEST_F(ReadAnythingAppControllerScreen2xTest, Draw_RecomputeDisplayNodes) {
   EXPECT_FALSE(model().display_node_ids().contains(2));
   EXPECT_TRUE(model().display_node_ids().contains(3));
   EXPECT_TRUE(model().display_node_ids().contains(4));
-}
-
-TEST_F(ReadAnythingAppControllerScreen2xTest,
-       Draw_DoNotRecomputeDisplayNodesForDocs) {
-  model().set_current_content_distillation_method(
-      ReadAnythingAppModel::DistillationMethod::kScreen2x);
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-  ui::AXNodeData node;
-  node.id = 2;
-
-  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
-  root.child_ids = {node.id};
-  update.root_id = root.id;
-  update.nodes = {std::move(root), std::move(node)};
-
-  ExpectDistill(1);
-  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
-  AccessibilityEventReceived({std::move(update)}, {std::move(load_complete)});
-  OnAXTreeDistilled(tree_id_, {3});
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  EXPECT_TRUE(controller().IsGoogleDocs());
-  EXPECT_TRUE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_TRUE(model().display_node_ids().contains(3));
-  Mock::VerifyAndClearExpectations(distiller_);
-
-  ui::AXNodeData node1;
-  node1.id = 4;
-
-  // This update changes the structure of the tree. When the controller receives
-  // it in AccessibilityEventReceived, it will re-distill the tree.
-  SendUpdateWithNodes({std::move(node1)});
-  model().Reset({3, 4});
-  controller().Draw(/* recompute_display_nodes= */ true);
-  EXPECT_FALSE(model().display_node_ids().contains(1));
-  EXPECT_FALSE(model().display_node_ids().contains(2));
-  EXPECT_FALSE(model().display_node_ids().contains(3));
-  EXPECT_FALSE(model().display_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,

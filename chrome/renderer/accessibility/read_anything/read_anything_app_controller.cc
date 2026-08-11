@@ -906,11 +906,14 @@ ReadAnythingAppController::GetInitialDistillationMethod(bool is_pdf) const {
   if (forced_distillation_method_for_testing_) {
     return *forced_distillation_method_for_testing_;
   }
-  // If |is_pdf| = true, or if phrase highlighting is enabled, override
-  // IsReadAnythingWithReadabilityEnabled flag and return kScreen2x.
+
+  // If |is_pdf| = true, or if phrase highlighting is enabled, or if the current
+  // page is a Google Doc, override IsReadAnythingWithReadabilityEnabled flag
+  // and return kScreen2x.
   // TODO: crbug.com/444029483- Update the phrase highlighting implementation
   // so that it works with Readability.
-  return is_pdf || !features::IsReadAnythingWithReadabilityEnabled() ||
+  return is_pdf || IsGoogleDocs() ||
+                 !features::IsReadAnythingWithReadabilityEnabled() ||
                  features::IsReadAnythingReadAloudPhraseHighlightingEnabled()
              ? ReadAnythingAppModel::DistillationMethod::kScreen2x
              : ReadAnythingAppModel::DistillationMethod::kReadability;

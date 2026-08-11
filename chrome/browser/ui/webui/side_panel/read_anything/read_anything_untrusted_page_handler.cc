@@ -531,6 +531,13 @@ bool ReadAnythingUntrustedPageHandler::AreInnerContentsPdfContent(
 #endif
 }
 
+bool ReadAnythingUntrustedPageHandler::IsGoogleDocs(const GURL& url) const {
+  return url.SchemeIsHTTPOrHTTPS() &&
+         (url.DomainIs("docs.google.com") ||
+          url.DomainIs("docs.sandbox.google.com")) &&
+         url.GetPath().starts_with("/document");
+}
+
 void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
   translate_observation_.Reset();
   audible_closure_.RunAndReset();
@@ -1569,8 +1576,13 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   // with the TS text segmentation method. Therefore, it doesn't work with
   // Readability. Until phrase highlighting works with TSTextSegmentation,
   // default to using Screen2x when the phrase highlighting flag is enabled.
+  // Google Docs enforces a strict TrustedHTML Content Security Policy that
+  // causes Readability script injection to fail. Avoid requesting Readability
+  // distillation when on Google Docs so the renderer can fall back cleanly to
+  // Screen2x.
   const bool use_readability =
       features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_with_frame_ &&
+      !IsGoogleDocs(contents->GetLastCommittedURL()) &&
       !features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
   if (use_readability) {
@@ -1602,7 +1614,8 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
   if (!features::IsReadAnythingWithReadabilityEnabled() ||
       features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
-      is_pdf_with_frame_) {
+      is_pdf_with_frame_ ||
+      (content && IsGoogleDocs(content->GetLastCommittedURL()))) {
     return;
   }
 
