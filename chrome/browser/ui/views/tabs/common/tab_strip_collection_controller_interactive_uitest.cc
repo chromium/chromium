@@ -562,6 +562,69 @@ IN_PROC_BROWSER_TEST_F(
       WaitForHide(kUnfocusTabGroupButtonElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TabStripCollectionControllerTabGroupFocusingInteractiveUiTest,
+    FocusNextAndPreviousTabGroupInFocusMode) {
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId group3 = tab_groups::TabGroupId::GenerateNew();
+
+  RunTestSequence(WaitForShow(kNewTabButtonElementId),
+                  PressButton(kNewTabButtonElementId),
+                  PressButton(kNewTabButtonElementId),
+                  PressButton(kNewTabButtonElementId), Do([&]() {
+                    TabStripModel* model = browser()->tab_strip_model();
+                    ASSERT_EQ(model->count(), 4);
+                    group1 = model->AddToNewGroup({0});
+                    group2 = model->AddToNewGroup({1, 2});
+                    group3 = model->AddToNewGroup({3});
+
+                    EXPECT_EQ(model->group_model()->ListTabGroups().size(), 3u);
+
+                    // In unfocused state, FocusNextTabGroup uses legacy
+                    // behavior (activates tab).
+                    EXPECT_EQ(model->GetFocusedGroup(), std::nullopt);
+                    model->ActivateTabAt(0);
+                    EXPECT_EQ(model->active_index(), 0);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), std::nullopt);
+                    EXPECT_EQ(model->active_index(), 1);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), std::nullopt);
+                    EXPECT_EQ(model->active_index(), 3);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), std::nullopt);
+                    EXPECT_EQ(model->active_index(), 0);
+
+                    // 2. Enter Focus Mode on group 1.
+                    model->SetFocusedGroup(group1);
+                    EXPECT_EQ(model->GetFocusedGroup(), group1);
+
+                    // FocusNextTabGroup should cycle focus.
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group2);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group3);
+
+                    chrome::FocusNextTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group1);
+
+                    // FocusPreviousTabGroup should cycle focus.
+                    chrome::FocusPreviousTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group3);
+
+                    chrome::FocusPreviousTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group2);
+
+                    chrome::FocusPreviousTabGroup(browser());
+                    EXPECT_EQ(model->GetFocusedGroup(), group1);
+                  }));
+}
+
 // TODO(crbug.com/481392191) Fix these flaky hovercard tests.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_VerticalTabHoverCardShowUnpinned \

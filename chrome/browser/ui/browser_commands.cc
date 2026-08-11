@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_commands.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -562,6 +563,42 @@ bool IsTabSelectable(
     return false;
   }
 
+  return true;
+}
+
+bool FocusAdjacentTabGroupInFocusMode(TabStripModel* tab_strip_model,
+                                      bool next) {
+  std::optional<tab_groups::TabGroupId> current_focused_group =
+      tab_strip_model->GetFocusedGroup();
+  if (!current_focused_group.has_value()) {
+    return false;
+  }
+
+  TabGroupModel* group_model = tab_strip_model->group_model();
+  if (!group_model) {
+    return false;
+  }
+
+  std::vector<tab_groups::TabGroupId> groups_in_order =
+      group_model->ListTabGroups();
+  if (groups_in_order.empty()) {
+    return false;
+  }
+
+  std::ranges::sort(groups_in_order, {}, [&](const tab_groups::TabGroupId& id) {
+    return group_model->GetTabGroup(id)->ListTabs().start();
+  });
+
+  auto it = std::ranges::find(groups_in_order, *current_focused_group);
+  if (it == groups_in_order.end()) {
+    return false;
+  }
+
+  size_t current_index = std::distance(groups_in_order.begin(), it);
+  size_t target_index = next ? (current_index + 1) % groups_in_order.size()
+                             : (current_index + groups_in_order.size() - 1) %
+                                   groups_in_order.size();
+  tab_strip_model->SetFocusedGroup(groups_in_order[target_index]);
   return true;
 }
 
@@ -1801,6 +1838,10 @@ void FocusNextTabGroup(BrowserWindowInterface* browser) {
     return;
   }
 
+  if (FocusAdjacentTabGroupInFocusMode(tab_strip_model, /*next=*/true)) {
+    return;
+  }
+
   int current_index = tab_strip_model->active_index();
   std::optional<tab_groups::TabGroupId> current_group_id =
       tab_strip_model->GetTabGroupForTab(current_index);
@@ -1823,6 +1864,10 @@ void FocusNextTabGroup(BrowserWindowInterface* browser) {
 void FocusPreviousTabGroup(BrowserWindowInterface* browser) {
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
   if (!tab_strip_model->SupportsTabGroups()) {
+    return;
+  }
+
+  if (FocusAdjacentTabGroupInFocusMode(tab_strip_model, /*next=*/false)) {
     return;
   }
 
