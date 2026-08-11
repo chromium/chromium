@@ -135,7 +135,7 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
   ui::ClipboardSequenceNumberToken sequence_number =
       system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
   mojo_clipboard()->CommitWrite();
-  base::RunLoop().RunUntilIdle();
+  mojo_clipboard().FlushForTesting();
 
   EXPECT_NE(sequence_number, system_clipboard()->GetSequenceNumber(
                                  ui::ClipboardBuffer::kCopyPaste));
@@ -387,20 +387,22 @@ TEST_F(ClipboardHostImplWriteTest, MainFrameURL) {
   ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.text = u"data";
 
+  base::RunLoop run_loop;
   fake_clipboard_host_impl_grandchild->PasteIfPolicyAllowed(
       ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste),
       clipboard_paste_data,
       base::BindLambdaForTesting(
-          [&is_policy_callback_called](
-              std::optional<ClipboardHostImpl::ClipboardPasteData>
-                  clipboard_paste_data) {
+          [&is_policy_callback_called,
+           &run_loop](std::optional<ClipboardHostImpl::ClipboardPasteData>
+                          clipboard_paste_data) {
             is_policy_callback_called = true;
-            ASSERT_TRUE(clipboard_paste_data);
-            ASSERT_EQ(clipboard_paste_data->text, u"data");
+            EXPECT_TRUE(clipboard_paste_data);
+            EXPECT_EQ(clipboard_paste_data->text, u"data");
+            run_loop.Quit();
           }));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_TRUE(is_policy_callback_called);
 }
@@ -1185,8 +1187,13 @@ TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
   // Create the mock listener and bind it
   auto mock_listener = std::make_unique<MockClipboardListener>();
 
-  // Set up the expectation that OnClipboardDataChanged will be called once
-  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(1);
+  // Set up the expectation that OnClipboardDataChanged will be called once,
+  // and use it to end the wait below.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged)
+      .Times(1)
+      .WillOnce([&run_loop](const std::vector<std::u16string>&,
+                            const absl::uint128&) { run_loop.Quit(); });
 
   // Add the clipboard listener to the clipboard host
   clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
@@ -1197,8 +1204,8 @@ TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
   // Simulate clipboard data change - this should trigger OnClipboardDataChanged
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
-  // Run message loop to allow mojo communication to complete
-  base::RunLoop().RunUntilIdle();
+  // Wait for the notification to be delivered.
+  run_loop.Run();
 }
 
 TEST_F(ClipboardHostImplChangeTest, NoNotificationToInactiveDocument) {
@@ -1236,18 +1243,18 @@ TEST_F(ClipboardHostImplChangeTest, ClipboardListenerDisconnect) {
   // Close the connection from the client side
   mock_listener->CloseConnection();
 
-  // Run message loop to allow mojo communication to complete
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that the class is no longer listening for clipboard changes
+  // Round-trip the host pipe so the queued disconnect notification is
+  // processed, then verify the class stopped listening.
+  remote_.FlushForTesting();
   EXPECT_FALSE(clipboard_host_impl()->listening_to_clipboard_);
 
   // Simulate clipboard data change - this should not trigger
   // OnClipboardDataChanged
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
-  // Run message loop again to ensure no pending messages exist
-  base::RunLoop().RunUntilIdle();
+  // Drain the host pipe so that any unwanted message would have been
+  // dispatched, and therefore caught by the Times(0) expectation.
+  remote_.FlushForTesting();
 }
 
 TEST_F(ClipboardHostImplTest,
@@ -1284,7 +1291,7 @@ TEST_F(ClipboardHostImplTest,
   // Write some standard format data that TestClipboard can handle
   mojo_clipboard()->WriteText(u"test text");
   mojo_clipboard()->CommitWrite();
-  base::RunLoop().RunUntilIdle();
+  mojo_clipboard().FlushForTesting();
 
   // Test: Read available formats with permission allowed
   base::test::TestFuture<const std::vector<std::u16string>&> future;
