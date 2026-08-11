@@ -9,12 +9,14 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #if defined(USE_AURA)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #endif
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -24,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/buildflags/buildflags.h"
@@ -58,6 +61,15 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
+
+bool IsEphemeral() {
+  bool is_ephemeral = false;
+  if (g_browser_process && g_browser_process->local_state()) {
+    is_ephemeral = g_browser_process->local_state()->GetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel);
+  }
+  return is_ephemeral;
+}
 
 class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
  public:
@@ -233,15 +245,17 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
+  bool is_ephemeral = IsEphemeral();
 #if BUILDFLAG(IS_WIN)
-  params.dont_show_in_taskbar = true;
+  params.dont_show_in_taskbar = is_ephemeral;
 #endif  // BUILDFLAG(IS_WIN)
   widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
   if (draggable_region_) {
     widget_delegate_->SetDraggableRegion(draggable_region_);
   }
   params.delegate = widget_delegate_.get();
-  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.z_order = is_ephemeral ? ui::ZOrderLevel::kFloatingWindow
+                                : ui::ZOrderLevel::kNormal;
   if (context) {
     params.context = context;
   }
@@ -273,7 +287,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
 
   widget_->Init(std::move(params));
 #if BUILDFLAG(IS_MAC)
-  widget_->SetActivationIndependence(true);
+  widget_->SetActivationIndependence(is_ephemeral);
   widget_->SetVisibleOnAllWorkspaces(true);
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
@@ -296,6 +310,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   if (!widget_) {
     return;
   }
+  widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
   widget_->Show();
   widget_->Activate();
 
@@ -372,14 +387,22 @@ bool OmniboxEverywhereUIManager::IsVisible() const {
   return widget_ && widget_->IsVisible();
 }
 
+bool OmniboxEverywhereUIManager::IsActive() const {
+  return widget_ && widget_->IsActive();
+}
+
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
   if (!active && !is_file_chooser_open_ && !is_drive_picker_open_ &&
       !is_context_menu_open_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
-                                  weak_factory_.GetWeakPtr()));
+    if (IsEphemeral()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
+                                    weak_factory_.GetWeakPtr()));
+    } else if (widget_) {
+      widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    }
   }
 }
 
@@ -395,9 +418,13 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
   }
   if (widget_ && !widget_->IsActive() && !is_file_chooser_open_ &&
       !is_drive_picker_open_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
-                                  weak_factory_.GetWeakPtr()));
+    if (IsEphemeral()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
+                                    weak_factory_.GetWeakPtr()));
+    } else {
+      widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    }
   }
 }
 

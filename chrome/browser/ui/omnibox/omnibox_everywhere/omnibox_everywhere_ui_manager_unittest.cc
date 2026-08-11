@@ -9,12 +9,15 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -156,7 +159,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, FileChooserStateTracking) {
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivation) {
+TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivationInEphemeralMode) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
@@ -164,13 +171,47 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivation) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Simulating deactivation (active = false) should hide the widget.
+  // Simulating deactivation (active = false) in ephemeral mode should hide the
+  // widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
   EXPECT_TRUE(ui_manager->widget());
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest, PersistentDeactivationDemotesZOrder) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Initial show promotes ZOrder to kFloatingUIElement.
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kFloatingUIElement);
+
+  // Simulating deactivation (active = false) in persistent mode should demote
+  // ZOrder to kNormal while keeping widget visible.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Re-invoking ShowForProfile should re-elevate ZOrder to kFloatingUIElement.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kFloatingUIElement);
+
+  ui_manager->Close();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
@@ -189,7 +230,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Clean up: closing file chooser and triggering deactivation should hide the
-  // widget.
+  // widget in ephemeral mode.
   ui_manager->OnFileChooserClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
@@ -347,6 +388,10 @@ TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
@@ -365,7 +410,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Clean up: closing drive picker and triggering deactivation should hide the
-  // widget.
+  // widget in ephemeral mode.
   ui_manager->OnDrivePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
@@ -457,6 +502,10 @@ TEST_F(OmniboxEverywhereUIManagerTest, EarlyDraggableRegionsChangedPreserved) {
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
   auto ui_manager = CreateUIManager();
 
   ui_manager->ShowForProfile(&profile_, GetContext());
@@ -475,7 +524,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Clean up: closing context menu and triggering deactivation should close the
-  // widget.
+  // widget in ephemeral mode.
   ui_manager->OnContextMenuClosedForTesting();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));

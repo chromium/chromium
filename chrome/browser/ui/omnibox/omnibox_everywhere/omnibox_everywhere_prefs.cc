@@ -11,6 +11,7 @@ namespace omnibox_everywhere::prefs {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHotkeyEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
+  registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, false);
 }
 
 }  // namespace omnibox_everywhere::prefs

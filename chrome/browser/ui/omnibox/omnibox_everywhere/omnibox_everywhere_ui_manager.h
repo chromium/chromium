@@ -77,6 +77,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // Returns true if the widget is visible.
   bool IsVisible() const;
 
+  // Returns true if the widget is active/focused.
+  bool IsActive() const;
+
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
