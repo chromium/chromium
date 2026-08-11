@@ -81,9 +81,17 @@ message AutofillFetchSpecification {
   message TypedValueFilter {
     TypedValue typed_value = 1;
 
-    // TODO(crbug.com/542022101): Add support for different filter operators
-    // (e.g., equality, greater than, less than, etc.). For now, everything is
-    // an equality check.
+    enum FilterOperator {
+      FILTER_OPERATOR_UNSPECIFIED = 0;
+      FILTER_OPERATOR_EQUAL = 1;
+      FILTER_OPERATOR_NOT_EQUAL = 2;
+      // Applied only to typed values with numerical/temporal representation.
+      FILTER_OPERATOR_LESS_THAN = 3;
+      FILTER_OPERATOR_LESS_THAN_OR_EQUAL = 4;
+      FILTER_OPERATOR_GREATER_THAN = 5;
+      FILTER_OPERATOR_GREATER_THAN_OR_EQUAL = 6;
+    }
+    FilterOperator filter_operator = 2;
   }
 
   message Filter {
