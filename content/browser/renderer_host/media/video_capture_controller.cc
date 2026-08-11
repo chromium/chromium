@@ -453,9 +453,10 @@ void VideoCaptureController::OnNewBuffer(
     int32_t buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-  CHECK(FindUnretiredBufferContextFromBufferId(buffer_id) ==
-            buffer_contexts_.end(),
-        base::NotFatalUntil::M152);
+  // TODO(crbug.com/543790950): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(FindUnretiredBufferContextFromBufferId(buffer_id) ==
+         buffer_contexts_.end());
   buffer_contexts_.emplace_back(next_buffer_context_id_++, buffer_id,
                                 launched_device_.get(),
                                 std::move(buffer_handle));
