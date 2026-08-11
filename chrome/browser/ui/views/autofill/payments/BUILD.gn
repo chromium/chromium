@@ -61,3 +61,22 @@ source_set("bnpl_dialog_footnote") {
     "//chrome/browser/ui/views:layout_provider",
   ]
 }
+
+source_set("bnpl_tos_dialog") {
+  public = [ "bnpl_tos_dialog.h" ]
+  sources = [ "bnpl_tos_dialog.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/autofill/payments:payments_view_util",
+    "//components/tabs:public",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
