@@ -223,7 +223,6 @@ component("accessibility_internal") {
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
-    "//third_party/cld_3/src/src:cld_3",
   ]
 
   public_deps = [
