@@ -435,18 +435,11 @@ void InputStateModel::notifySubscribers() {
 }
 
 void InputStateModel::setActiveTool(ToolMode tool) {
-  // Track tools that user just actually removed to avoid setting a tool
-  // from an outdated URL right after submitting a query. Clear the
-  // removed tool if a tool was just added.
-  // TODO(crbug.com/539684815): Remove this code/set once Google3 fixes
-  // the slow-to-update URL.
-  if (tool == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
-      state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
-    // `active_tool` represents last tool set before this change.
-    user_removed_tools_.insert(state_.active_tool);
+  if (tool != state_.active_tool) {
+    user_modified_tool_in_thread_ = true;
+  }
+  if (tool == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     state_.is_canvas_query_submitted = false;
-  } else if (tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
-    user_removed_tools_.erase(tool);
   }
   updateSelectedState(tool, state_.active_model);
 }
@@ -456,42 +449,41 @@ void InputStateModel::setActiveModel(ModelMode model) {
 }
 
 void InputStateModel::UpdateStateFromUrl(const GURL& url) {
-  // `GetActiveToolFromUrl` is still needed for thread changes and deep links.
   auto matched_tool =
       GetActiveToolFromUrl(url, state_.tool_configs, state_.allowed_tools);
 
-  bool thread_changed = GetThreadId(url) != GetThreadId(current_url_);
+  auto prev_thread_id = GetThreadId(current_url_);
+  auto new_thread_id = GetThreadId(url);
+
+  bool thread_changed = prev_thread_id != new_thread_id;
+
   current_url_ = url;
-
-  // Ignore tools removed by user in last turn unless thread changes.
+  // If thread changes, be prepared to listen to any subsequent URL changes that
+  // could include changes in the tool param (due to thread change).
   if (thread_changed) {
-    user_removed_tools_.clear();
+    user_modified_tool_in_thread_ = false;
   }
 
-  if (matched_tool.has_value() && user_removed_tools_.contains(*matched_tool)) {
-    matched_tool = std::nullopt;
-  }
+  ToolMode new_tool = state_.active_tool;
 
-  ToolMode new_tool = matched_tool.value_or(
-      thread_changed ? ToolMode::TOOL_MODE_UNSPECIFIED : state_.active_tool);
-
-  bool new_canvas_submitted =
-      thread_changed ? false : state_.is_canvas_query_submitted;
-  if (matched_tool.has_value()) {
-    new_canvas_submitted = (*matched_tool == ToolMode::TOOL_MODE_CANVAS);
-  }
-
-  if (user_removed_tools_.contains(omnibox::ToolMode::TOOL_MODE_CANVAS)) {
-    new_canvas_submitted = false;
+  // If the user has modified the tool in the thread, do not use tool from URL
+  // params until user changes the thread, as that will dirty the tool state
+  // with outdated tools that are only relevant at initialization.
+  if (matched_tool.has_value() && !user_modified_tool_in_thread_) {
+    new_tool = *matched_tool;
+  } else if (thread_changed) {
+    new_tool = ToolMode::TOOL_MODE_UNSPECIFIED;
   }
 
   auto matched_model =
       GetActiveModelFromUrl(url, state_.model_configs, state_.allowed_models);
   ModelMode new_model = matched_model.value_or(state_.active_model);
 
-  if (new_model != state_.active_model || new_tool != state_.active_tool ||
-      new_canvas_submitted != state_.is_canvas_query_submitted) {
-    state_.is_canvas_query_submitted = new_canvas_submitted;
+  state_.is_canvas_query_submitted =
+      (new_tool == omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  if (thread_changed || new_model != state_.active_model ||
+      new_tool != state_.active_tool) {
     updateSelectedState(new_tool, new_model);
   }
 }
