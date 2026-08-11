@@ -61,13 +61,26 @@ bool UseCALayerContentsHeadroom() {
   return false;
 }
 
-// Sets CALayer `layer`'s corner radii from `rrect` using `scale_factor`.
+// Clips CALayer `layer`'s to `rrect` using `scale_factor`. Sets all clipping,
+// transform, and corner properties necessary to ensure a correct clip.
+//
 // Fails on any `rrect` which is not compatible with CALayer's rendering
 // capabilities (this should have been detected earlier and sent through a
 // different rendering pathway).
-void SetCALayerRadii(CALayer* layer,
-                     const gfx::RRectF& rrect,
-                     float scale_factor) {
+void ClipCALayerToRRectF(CALayer* layer,
+                         const gfx::RRectF& rrect,
+                         float scale_factor) {
+  // Do common configuration regardless of RRectF type.
+  gfx::RectF dip_rounded_corner_bounds = gfx::RectF(rrect.rect());
+  dip_rounded_corner_bounds.Scale(1 / scale_factor);
+  layer.masksToBounds = true;
+  layer.position =
+      CGPointMake(dip_rounded_corner_bounds.x(), dip_rounded_corner_bounds.y());
+  layer.bounds = CGRectMake(0, 0, dip_rounded_corner_bounds.width(),
+                            dip_rounded_corner_bounds.height());
+  layer.sublayerTransform = CATransform3DMakeTranslation(
+      -dip_rounded_corner_bounds.x(), -dip_rounded_corner_bounds.y(), 0);
+
   // With all one radius no further computation is necessary.
   if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
     static constexpr CACornerMask kAllCorners =
@@ -1054,22 +1067,8 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
   if (!old_layer_ ||
       old_layer_->rounded_corner_bounds_ != rounded_corner_bounds_) {
     if (!rounded_corner_bounds_.IsEmpty()) {
-      gfx::RectF dip_rounded_corner_bounds =
-          gfx::RectF(rounded_corner_bounds_.rect());
-      dip_rounded_corner_bounds.Scale(1 / tree()->scale_factor_);
-
-      rounded_corner_ca_layer_.masksToBounds = true;
-
-      rounded_corner_ca_layer_.position = CGPointMake(
-          dip_rounded_corner_bounds.x(), dip_rounded_corner_bounds.y());
-      rounded_corner_ca_layer_.bounds =
-          CGRectMake(0, 0, dip_rounded_corner_bounds.width(),
-                     dip_rounded_corner_bounds.height());
-      rounded_corner_ca_layer_.sublayerTransform = CATransform3DMakeTranslation(
-          -dip_rounded_corner_bounds.x(), -dip_rounded_corner_bounds.y(), 0);
-
-      SetCALayerRadii(rounded_corner_ca_layer_, rounded_corner_bounds_,
-                      tree()->scale_factor_);
+      ClipCALayerToRRectF(rounded_corner_ca_layer_, rounded_corner_bounds_,
+                          tree()->scale_factor_);
     } else {
       rounded_corner_ca_layer_.masksToBounds = false;
       rounded_corner_ca_layer_.position = CGPointZero;
