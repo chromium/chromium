@@ -20,13 +20,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
-#include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
-#include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
@@ -39,7 +38,6 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
@@ -51,12 +49,13 @@
 
 namespace {
 
-class TabStyleViewsImpl : public TabStyleViews {
+class HorizontalTabStyleViews : public TabStyleViews {
  public:
-  explicit TabStyleViewsImpl(std::unique_ptr<TabStyleViewDelegate> delegate);
-  ~TabStyleViewsImpl() override = default;
-  TabStyleViewsImpl(const TabStyleViewsImpl&) = delete;
-  TabStyleViewsImpl& operator=(const TabStyleViewsImpl&) = delete;
+  explicit HorizontalTabStyleViews(
+      std::unique_ptr<TabStyleViewDelegate> delegate);
+  ~HorizontalTabStyleViews() override = default;
+  HorizontalTabStyleViews(const HorizontalTabStyleViews&) = delete;
+  HorizontalTabStyleViews& operator=(const HorizontalTabStyleViews&) = delete;
 
   int GetStrokeThickness() const override;
   const TabStyleViewDelegate* delegate() const override {
@@ -153,25 +152,14 @@ class TabStyleViewsImpl : public TabStyleViews {
   void PaintBackgroundStroke(gfx::Canvas* canvas, SkColor stroke_color) const;
   void PaintSeparators(gfx::Canvas* canvas) const;
 
-  // Returns true if the tab is the leftmost in a set of split tabs. In RTL,
-  // this will still return the leftmost tab which is needed when setting
-  // left/right insets and positioning.
-  bool IsLeftSplitTab(const Tab* tab) const;
-  // Returns true if the tab is the rightmost in a set of split tabs. In RTL,
-  // this will still return the rightmost tab which is needed when setting
-  // left/right insets and positioning.
-  bool IsRightSplitTab(const Tab* tab) const;
-
   BrowserFrameView* GetBrowserFrameView() const;
-
-  const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<TabStyleViewDelegate> delegate_;
 };
 
-// TabStyleViewsImpl ----------------------------------------------------------
+// HorizontalTabStyleViews ----------------------------------------------------
 
-TabStyleViewsImpl::TabStyleViewsImpl(
+HorizontalTabStyleViews::HorizontalTabStyleViews(
     std::unique_ptr<TabStyleViewDelegate> delegate)
     : delegate_(std::move(delegate)) {
   CHECK(delegate_);
@@ -179,9 +167,9 @@ TabStyleViewsImpl::TabStyleViewsImpl(
   // repurposing CONTEXT_BUTTON_MD.
 }
 
-SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
-                                  float scale,
-                                  const TabPathFlags& flags) const {
+SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
+                                        float scale,
+                                        const TabPathFlags& flags) const {
   const int stroke_thickness = GetStrokeThickness();
 
   // We'll do the entire path calculation in aligned pixels.
@@ -243,7 +231,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     }
 
     // While the tab is closing do not add extra space as it degrades the close
-    // tab annimation.
+    // tab animation.
     if (!delegate_->IsClosing()) {
       // If the size of the space for the path is smaller than the size of a
       // favicon, if we are building a path for the hit test, or if we are
@@ -460,7 +448,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   return path.detach();
 }
 
-void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
+void HorizontalTabStyleViews::PaintTab(gfx::Canvas* canvas) const {
   std::optional<int> active_tab_fill_id;
   if (delegate_->GetView()->GetThemeProvider()->HasCustomImage(
           IDR_THEME_TOOLBAR)) {
@@ -480,7 +468,7 @@ void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
   }
 }
 
-void TabStyleViewsImpl::PaintTabBackgroundWithImages(
+void HorizontalTabStyleViews::PaintTabBackgroundWithImages(
     gfx::Canvas* canvas,
     std::optional<int> active_tab_fill_id,
     std::optional<int> inactive_tab_fill_id) const {
@@ -508,7 +496,7 @@ void TabStyleViewsImpl::PaintTabBackgroundWithImages(
   }
 }
 
-gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
+gfx::Insets HorizontalTabStyleViews::GetContentsInsets() const {
   gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
   gfx::Insets split_insets = gfx::Insets(0);
 
@@ -531,7 +519,7 @@ gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
          base_style_insets + split_insets;
 }
 
-bool TabStyleViewsImpl::IsApparentlyActive() const {
+bool HorizontalTabStyleViews::IsApparentlyActive() const {
   const TabStyle::TabSelectionState selection_state = GetSelectionState();
   if (selection_state == TabStyle::TabSelectionState::kActive) {
     return true;
@@ -542,7 +530,7 @@ bool TabStyleViewsImpl::IsApparentlyActive() const {
   return selection_state == TabStyle::TabSelectionState::kSelected;
 }
 
-float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
+float HorizontalTabStyleViews::GetCurrentActiveOpacity() const {
   const TabStyle::TabSelectionState selection_state = GetSelectionState();
   if (selection_state == TabStyle::TabSelectionState::kActive) {
     return 1.0f;
@@ -557,7 +545,7 @@ float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
   return std::lerp(base_opacity, GetHoverOpacity(), GetHoverAnimationValue());
 }
 
-TabStyle::TabColors TabStyleViewsImpl::CalculateTargetColors() const {
+TabStyle::TabColors HorizontalTabStyleViews::CalculateTargetColors() const {
   return tab_style()->CalculateTargetColors(
       GetSelectionState(), IsApparentlyActive(), IsHovering(),
       delegate_->GetView()->GetWidget()
@@ -566,7 +554,7 @@ TabStyle::TabColors TabStyleViewsImpl::CalculateTargetColors() const {
       delegate_->GetView()->GetColorProvider());
 }
 
-TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
+TabStyle::SeparatorBounds HorizontalTabStyleViews::GetSeparatorBounds(
     float scale) const {
   const gfx::Rect original_bounds = delegate_->GetView()->bounds();
   // Factor out the amount of the tab strip that is overlapped by the toolbar.
@@ -608,7 +596,7 @@ TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
   return separator_bounds;
 }
 
-TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
+TabStyle::SeparatorOpacities HorizontalTabStyleViews::GetSeparatorOpacities(
     bool for_layout) const {
   // Adjacent slots should be visually separated from each other. This can be
   // achieved in multiple ways:
@@ -634,8 +622,8 @@ TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
   return {leading_opacity, trailing_opacity};
 }
 
-float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
-                                             bool leading) const {
+float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
+                                                   bool leading) const {
   // Do not show separators if the tab strip is in a decluttered state.
   if (features::IsTabStripDeclutterEnabled() &&
       delegate_->GetTabCount() >=
@@ -704,7 +692,7 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   return shown_separator_opacity;
 }
 
-float TabStyleViewsImpl::GetHoverInterpolatedSeparatorOpacity(
+float HorizontalTabStyleViews::GetHoverInterpolatedSeparatorOpacity(
     bool for_layout,
     const TabStyleViewDelegate* other_tab) const {
   // Fade out the intervening separator while this tab or an adjacent tab is
@@ -723,23 +711,23 @@ float TabStyleViewsImpl::GetHoverInterpolatedSeparatorOpacity(
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
 }
 
-bool TabStyleViewsImpl::IsHovering() const {
+bool HorizontalTabStyleViews::IsHovering() const {
   return delegate_->IsHovering();
 }
 
-bool TabStyleViewsImpl::IsHoverAnimationActive() const {
+bool HorizontalTabStyleViews::IsHoverAnimationActive() const {
   return delegate_->IsHoverAnimationActive();
 }
 
-double TabStyleViewsImpl::GetHoverAnimationValue() const {
+double HorizontalTabStyleViews::GetHoverAnimationValue() const {
   return delegate_->GetHoverAnimationValue();
 }
 
-float TabStyleViewsImpl::GetHoverOpacity() const {
+float HorizontalTabStyleViews::GetHoverOpacity() const {
   return delegate_->GetHoverOpacity();
 }
 
-int TabStyleViewsImpl::GetStrokeThickness() const {
+int HorizontalTabStyleViews::GetStrokeThickness() const {
   if (delegate_->GetGroup().has_value() && !delegate_->IsInFocusedGroup() &&
       delegate_->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
@@ -752,7 +740,7 @@ int TabStyleViewsImpl::GetStrokeThickness() const {
   return 0;
 }
 
-bool TabStyleViewsImpl::ShouldPaintTabBackgroundColor(
+bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background) const {
   // In the active and selected cases, always paint the tab background. The fill
@@ -775,7 +763,7 @@ bool TabStyleViewsImpl::ShouldPaintTabBackgroundColor(
   return delegate_->ShouldPaintTabBackgroundColor();
 }
 
-SkColor TabStyleViewsImpl::GetTabSeparatorColor() const {
+SkColor HorizontalTabStyleViews::GetTabSeparatorColor() const {
   const auto* cp = delegate_->GetView()->GetWidget()->GetColorProvider();
   DCHECK(cp);
   if (!cp) {
@@ -787,7 +775,7 @@ SkColor TabStyleViewsImpl::GetTabSeparatorColor() const {
                           : kColorTabDividerFrameInactive);
 }
 
-SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
+SkColor HorizontalTabStyleViews::GetCurrentTabBackgroundColor(
     const TabStyle::TabSelectionState selection_state,
     bool hovered) const {
   const bool frame_active =
@@ -800,7 +788,7 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
       frame_glass, delegate_->GetView()->GetColorProvider());
 }
 
-TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
+TabStyle::TabSelectionState HorizontalTabStyleViews::GetSelectionState() const {
   if (delegate_->IsActive()) {
     return TabStyle::TabSelectionState::kActive;
   }
@@ -812,9 +800,10 @@ TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
   return TabStyle::TabSelectionState::kInactive;
 }
 
-void TabStyleViewsImpl::PaintTabBackground(gfx::Canvas* canvas,
-                                           bool hovered,
-                                           std::optional<int> fill_id) const {
+void HorizontalTabStyleViews::PaintTabBackground(
+    gfx::Canvas* canvas,
+    bool hovered,
+    std::optional<int> fill_id) const {
   std::optional<SkColor> group_color = delegate_->GetGroupColor();
 
   PaintTabBackgroundFill(canvas, hovered, fill_id);
@@ -829,7 +818,7 @@ void TabStyleViewsImpl::PaintTabBackground(gfx::Canvas* canvas,
   PaintSeparators(canvas);
 }
 
-void TabStyleViewsImpl::PaintTabBackgroundFill(
+void HorizontalTabStyleViews::PaintTabBackgroundFill(
     gfx::Canvas* canvas,
     bool hovered,
     std::optional<int> fill_id) const {
@@ -875,8 +864,8 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
   }
 }
 
-void TabStyleViewsImpl::PaintBackgroundHover(gfx::Canvas* canvas,
-                                             float scale) const {
+void HorizontalTabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
+                                                   float scale) const {
   const SkPath fill_path =
       GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(), {});
   canvas->ClipPath(fill_path, true);
@@ -892,8 +881,9 @@ void TabStyleViewsImpl::PaintBackgroundHover(gfx::Canvas* canvas,
       flags);
 }
 
-void TabStyleViewsImpl::PaintBackgroundStroke(gfx::Canvas* canvas,
-                                              SkColor stroke_color) const {
+void HorizontalTabStyleViews::PaintBackgroundStroke(
+    gfx::Canvas* canvas,
+    SkColor stroke_color) const {
   const int stroke_thickness = GetStrokeThickness();
   if (!stroke_thickness) {
     return;
@@ -912,7 +902,7 @@ void TabStyleViewsImpl::PaintBackgroundStroke(gfx::Canvas* canvas,
   canvas->DrawPath(outer_path, flags);
 }
 
-void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
+void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
   const auto separator_opacities = GetSeparatorOpacities(false);
   if (!separator_opacities.left && !separator_opacities.right) {
     return;
@@ -940,11 +930,11 @@ void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
                         tab_style()->GetSeparatorCornerRadius() * scale, flags);
 }
 
-BrowserFrameView* TabStyleViewsImpl::GetBrowserFrameView() const {
+BrowserFrameView* HorizontalTabStyleViews::GetBrowserFrameView() const {
   return delegate_->GetBrowserFrameView();
 }
 
-float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {
+float HorizontalTabStyleViews::GetTopCornerRadiusForWidth(int width) const {
   // Get the width of the top of the tab by subtracting the width of the outer
   // corners.
   const int ideal_radius = tab_style()->GetTopCornerRadius();
@@ -956,9 +946,10 @@ float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {
   return std::clamp<float>(radius, 0, ideal_radius);
 }
 
-gfx::RectF TabStyleViewsImpl::ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                                  float scale,
-                                                  int stroke_thickness) const {
+gfx::RectF HorizontalTabStyleViews::ScaleAndAlignBounds(
+    const gfx::Rect& bounds,
+    float scale,
+    int stroke_thickness) const {
   // Convert to layout bounds.  We must inset the width such that the right edge
   // of one tab's layout bounds is the same as the left edge of the next tab's;
   // this way the two tabs' separators will be drawn at the same coordinate.
@@ -1044,7 +1035,7 @@ std::unique_ptr<TabStyleViews> TabStyleViews::Create(
   if (orientation == TabStripOrientation::kVertical) {
     return std::make_unique<VerticalTabStyleViews>(std::move(delegate));
   }
-  return std::make_unique<TabStyleViewsImpl>(std::move(delegate));
+  return std::make_unique<HorizontalTabStyleViews>(std::move(delegate));
 }
 
 TabStyleViews::TabStyleViews() : tab_style_(TabStyle::Get()) {}
