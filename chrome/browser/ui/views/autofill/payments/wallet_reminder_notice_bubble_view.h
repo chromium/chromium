@@ -39,6 +39,7 @@ class WalletReminderNoticeBubbleView : public AutofillLocationBarBubble {
   void Hide() override;
 
   // LocationBarBubbleDelegateView:
+  void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 

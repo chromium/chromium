@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_BUBBLE_CONTROLLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -41,6 +44,8 @@ class WalletReminderNoticeBubbleController
   // Re-opens the bubble when the user clicks the page action icon (e.g. after
   // the bubble was dismissed by clicking outside the bubble).
   void ReshowBubble();
+  std::u16string GetWindowTitle() const;
+  const LegalMessageLines& GetLegalMessageLines() const;
   AutofillBubbleBase* GetBubbleView() const;
   base::WeakPtr<WalletReminderNoticeBubbleController> GetWeakPtr();
 
@@ -62,6 +67,9 @@ class WalletReminderNoticeBubbleController
   // as an alert without stealing input focus from the webpage. Clicking the
   // bubble or its icon again sets this to true, which focuses the bubble.
   bool is_reshow_ = false;
+
+  // The legal message lines with links displayed in the notice bubble.
+  LegalMessageLines legal_message_lines_;
 
   base::WeakPtrFactory<WalletReminderNoticeBubbleController> weak_ptr_factory_{
       this};
