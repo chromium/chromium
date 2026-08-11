@@ -34,7 +34,8 @@ UIWindow* GetAnyKeyWindow();
 void GREYAssertErrorNil(NSError* error);
 
 // Assert the error is nil. Postpone the error description to the error message.
-void GREYAssertErrorNil(NSError* error, NSString* description);
+void GREYAssertErrorNil(NSError* error, NSString* format, ...)
+    NS_FORMAT_FUNCTION(2, 3);
 
 }  // namespace chrome_test_util
 

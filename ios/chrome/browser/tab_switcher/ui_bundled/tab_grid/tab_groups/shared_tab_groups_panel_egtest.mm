@@ -27,6 +27,7 @@
 
 using chrome_test_util::DeleteSharedConfirmationButton;
 using chrome_test_util::DeleteSharedGroupButton;
+using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::LeaveSharedGroupButton;
 using chrome_test_util::LeaveSharedGroupConfirmationButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
@@ -94,8 +95,7 @@ void AddSharedGroup(BOOL owner,
 
   // Make sure that the MessagingBackendService is fully initialized.
   NSError* error = [ChromeEarlGrey waitForMessagingBackendServiceInitialized];
-  GREYAssertNil(error, @"Failed to initialize MessagingBackendService: %@",
-                error);
+  GREYAssertErrorNil(error, @"Failed to initialize MessagingBackendService");
 }
 
 - (void)tearDownHelper {

@@ -95,7 +95,11 @@ void GREYAssertErrorNil(NSError* error) {
   GREYAssertNil(error, error.description);
 }
 
-void GREYAssertErrorNil(NSError* error, NSString* message) {
+void GREYAssertErrorNil(NSError* error, NSString* format, ...) {
+  va_list args;
+  va_start(args, format);
+  NSString* message = [[NSString alloc] initWithFormat:format arguments:args];
+  va_end(args);
   GREYAssertNil(error, @"%@\n%@", message, error.description);
 }
 }  // namespace chrome_test_util

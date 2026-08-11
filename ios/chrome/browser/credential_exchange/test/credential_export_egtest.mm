@@ -24,6 +24,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::GREYAssertErrorNil;
+
 namespace {
 
 using ::password_manager_test_utils::OpenPasswordManager;
@@ -102,7 +104,8 @@ void CheckCredentialExportScreenActionMetric(
   NSError* error = [MetricsAppInterface expectCount:1
                                           forBucket:static_cast<int>(action)
                                        forHistogram:histogram];
-  GREYAssertNil(error, @"Failed to record credential export screen histogram.");
+  GREYAssertErrorNil(error,
+                     @"Failed to record credential export screen histogram.");
 }
 
 }  // namespace

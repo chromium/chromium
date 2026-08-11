@@ -486,8 +486,8 @@ void CheckReauthenticationUIEventMetric(ReauthenticationEvent event) {
                                           forBucket:static_cast<int>(event)
                                        forHistogram:histogram];
 
-  GREYAssertNil(error,
-                @"Failed to record reauthentication ui event histogram.");
+  chrome_test_util::GREYAssertErrorNil(
+      error, @"Failed to record reauthentication ui event histogram.");
 }
 
 // Verifies the total count of reauthentication UI histogram recorded.
@@ -497,8 +497,8 @@ void CheckReauthenticationUIEventMetricTotalCount(int count) {
 
   NSError* error = [MetricsAppInterface expectTotalCount:count
                                             forHistogram:histogram];
-  GREYAssertNil(error,
-                @"Unexpected reauthentication ui event histogram count.");
+  chrome_test_util::GREYAssertErrorNil(
+      error, @"Unexpected reauthentication ui event histogram count.");
 }
 
 // Verifies the total count of password manager visit histogram recorded.

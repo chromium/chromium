@@ -29,6 +29,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 
+using chrome_test_util::GREYAssertErrorNil;
+
 namespace {
 
 void VerifySigninPromoSufficientlyVisible() {
@@ -238,22 +240,22 @@ void OpenNTPAndBackgroundAndForegroundApp() {
                         forBucket:1
                      forHistogram:base::SysUTF8ToNSString(
                                       kUMASSORecallAccountsAvailable)];
-  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
-                kUMASSORecallAccountsAvailable, error);
+  GREYAssertErrorNil(error, @"Failed to record show count histogram %s",
+                     kUMASSORecallAccountsAvailable);
   error = [MetricsAppInterface
       expectUniqueSampleWithCount:1
                         forBucket:1
                      forHistogram:base::SysUTF8ToNSString(
                                       kUMASSORecallPromoSeenCount)];
-  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
-                kUMASSORecallPromoSeenCount, error);
+  GREYAssertErrorNil(error, @"Failed to record show count histogram %s",
+                     kUMASSORecallPromoSeenCount);
   error = [MetricsAppInterface
       expectUniqueSampleWithCount:1
                         forBucket:PromoActionEnabledSSOAccount
                      forHistogram:base::SysUTF8ToNSString(
                                       kUMASSORecallPromoAction)];
-  GREYAssertNil(error, @"Failed to record show count histogram %s %@",
-                kUMASSORecallPromoAction, error);
+  GREYAssertErrorNil(error, @"Failed to record show count histogram %s",
+                     kUMASSORecallPromoAction);
   NSNumber* value =
       [ChromeEarlGrey userDefaultsObjectForKey:kSigninPromoViewDisplayCountKey];
   GREYAssertEqual(1, value.integerValue, @"Failed to increase %@ pref",
