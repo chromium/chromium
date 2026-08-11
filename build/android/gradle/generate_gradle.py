@@ -742,23 +742,16 @@ def _GenerateModuleAll(
     def Relativize(paths):
         return _RebasePath(paths, os.path.join(gradle_output_dir, _MODULE_ALL))
 
-    # As after clank modularization, the java and javatests code will live side by
-    # side in the same module, we will list both of them in the main target here.
-    main_java_dirs = [d for d in java_dirs if 'junit/' not in d]
-    junit_test_java_dirs = [d for d in java_dirs if 'junit/' in d]
+    # All java and test code (including junit / robolectric tests) should live
+    # in the main target so that Android Studio can resolve symbols across all
+    # source files for editing and navigation.
     variables['main'] = {
         'android_manifest': Relativize(_DEFAULT_ANDROID_MANIFEST_PATH),
-        'java_dirs': Relativize(main_java_dirs),
+        'java_dirs': Relativize(java_dirs),
         'prebuilts': Relativize(prebuilts),
         'java_excludes': ['**/*.java', '**/*.kt'],
         'res_dirs': Relativize(res_dirs),
     }
-    variables['android_test'] = [
-        {
-            'java_dirs': Relativize(junit_test_java_dirs),
-            'java_excludes': ['**/*.java', '**/*.kt'],
-        }
-    ]
     if native_targets:
         variables['native'] = _GetNative(
             relative_func=Relativize, target_names=native_targets
