@@ -12217,8 +12217,8 @@
                     "name": "Default",
                     "params": {
                         "glic-actor-eligible-tiers": "1,2",
-                        "glic_actor_enterprise_pref_default": "disabled_by_default",
-                        "glic_actor_policy_control_exemption": "false"
+                        "glic-actor-page-tool-timeout": "30s",
+                        "glic_actor_enterprise_pref_default": "disabled_by_default"
                     },
                     "enable_features": [
                         "GlicActor",
