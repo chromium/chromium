@@ -223,6 +223,7 @@ class GlicApiBrowserTestMixin : public T {
              {
                  {"glic-default-hotkey", "Ctrl+G"},
              }},
+            {features::kGlicForceNonSkSLBorder, {}},
             {features::kGlicWebClientLoadTimes,
              {
                  // Shorten transition times.
@@ -251,6 +252,11 @@ class GlicApiBrowserTestMixin : public T {
     // TODO(b/495451913): This shouldn't be necessary.
     command_line->AppendSwitch(switches::kDisableRendererBackgrounding);
     command_line->AppendSwitch(switches::kDisableBackgroundTimerThrottling);
+    // Bypass media picker UI and auto-accept tab capture to avoid GPU crashes
+    // in headless tests.
+    command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
+    command_line->AppendSwitch(switches::kThisTabCaptureAutoAccept);
+    command_line->AppendSwitch("use-fake-device-for-media-stream");
   }
 
   void SetUpOnMainThread() override {

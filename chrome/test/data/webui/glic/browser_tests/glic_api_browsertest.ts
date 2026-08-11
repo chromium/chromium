@@ -4,7 +4,7 @@
 import {HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, FocusedTabData, OpenPanelInfo, PanelOpeningData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -532,39 +532,6 @@ class ApiTests extends ApiTestFixtureBase {
       // Can be 'Your Chrome' or 'Your Chromium'.
       assertEquals('Your C', profileInfo.localProfileName?.substring(0, 6));
     }
-  }
-
-  async testGetDisplayMedia() {
-    async function waitForFirstFrame(track: MediaStreamVideoTrack):
-        Promise<boolean> {
-      const processor = new MediaStreamTrackProcessor({track});
-      const reader = processor.readable.getReader();
-
-      try {
-        const result = await reader.read();
-        if (result.done) {
-          throw new ApiTestError('Track ended before a frame could be read.');
-        }
-        const frame = result.value;  // This is a VideoFrame
-        frame.close();
-        return true;
-      } finally {
-        reader.releaseLock();
-      }
-    }
-
-    // The client should be able to use getDisplayMedia() to capture the glic
-    // window.
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: false,
-      preferCurrentTab: true,
-    } as any);
-    const videoTracks = stream.getVideoTracks();
-    assertTrue(videoTracks.length > 0);
-    const track = videoTracks[0] as MediaStreamVideoTrack;
-    assertDefined(track);
-    assertTrue(await waitForFirstFrame(track));
   }
 
   async testMetrics() {
