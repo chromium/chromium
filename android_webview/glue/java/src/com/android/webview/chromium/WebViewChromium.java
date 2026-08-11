@@ -144,6 +144,7 @@ class WebViewChromium
 
     private boolean mEvaluateJavaScriptCalled;
     private boolean mGetAccessibilityNodeProviderCalledWhenAwContentsNull;
+    private boolean mIsDestroyed;
 
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
@@ -1660,6 +1661,8 @@ class WebViewChromium
         onWindowVisibilityChanged(android.view.View.GONE);
         onDetachedFromWindow();
 
+        mIsDestroyed = true;
+
         // TODO(bewise): Replace this stubbed AwContents approach with better state management
         // so that long term we can clean up the default profile when it isn't in use.
         mAwContents = mFactory.getSharedDestroyedAwContents();
@@ -1668,6 +1671,7 @@ class WebViewChromium
 
     @Override
     public void destroy() {
+        if (mIsDestroyed) return;
         forbidBuilderConfiguration();
         if (checkNeedsPost()) {
             mFactory.addTask(
@@ -1679,6 +1683,8 @@ class WebViewChromium
                     });
             return;
         }
+        mIsDestroyed = true;
+
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.DESTROY")) {
             recordWebViewApiCall(ApiCall.DESTROY, ApiCallUserAction.WEBVIEW_INSTANCE_DESTROY);
 
