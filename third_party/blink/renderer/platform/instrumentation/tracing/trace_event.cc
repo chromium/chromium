@@ -19,13 +19,7 @@ void DisableTracingForTesting() {
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
 }
 
-void AddTraceSessionObserver(TraceSessionObserver* observer) {
-  base::trace_event::TraceSessionObserverList::AddObserver(observer);
-}
 
-void RemoveTraceSessionObserver(TraceSessionObserver* observer) {
-  base::trace_event::TraceSessionObserverList::RemoveObserver(observer);
-}
 
 }  // namespace trace_event
 }  // namespace blink

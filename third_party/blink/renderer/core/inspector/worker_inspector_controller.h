@@ -81,13 +81,14 @@ class WorkerInspectorController final
   void WaitForDebuggerIfNeeded();
   void WorkerScriptLoaded();
 
+  // trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+
  private:
   // Thread::TaskObserver implementation.
   void WillProcessTask(const base::PendingTask&, bool) override;
   void DidProcessTask(const base::PendingTask&) override;
 
-  // trace_event::TraceSessionObserver implementation:
-  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   void EmitTraceEvent();
 

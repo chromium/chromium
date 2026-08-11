@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base::trace_event {
 namespace {
@@ -48,6 +49,30 @@ bool IsCategoryEnabledOnStop(size_t category_index,
   return enabled;
 }
 
+MainThreadObserverHolder::MainThreadObserverHolder() = default;
+MainThreadObserverHolder::~MainThreadObserverHolder() = default;
+
+void MainThreadObserverHolder::OnSetup(
+    const perfetto::DataSourceBase::SetupArgs& args) {
+  setup_observers_.Notify(&TraceSessionObserver::OnSetup, args);
+}
+
+void MainThreadObserverHolder::OnStart(
+    const perfetto::DataSourceBase::StartArgs& args) {
+  start_observers_.Notify(&TraceSessionObserver::OnStart, args);
+}
+
+void MainThreadObserverHolder::OnStop(
+    const perfetto::DataSourceBase::StopArgs& args) {
+  stop_observers_.Notify(&TraceSessionObserver::OnStop, args);
+}
+
+void MainThreadObserverHolder::WillClearIncrementalState(
+    const perfetto::DataSourceBase::ClearIncrementalStateArgs& args) {
+  incremental_state_observers_.Notify(
+      &TraceSessionObserver::WillClearIncrementalState, args);
+}
+
 // static
 void TraceSessionObserverList::Initialize() {
   GetInstance();
@@ -60,7 +85,14 @@ TraceSessionObserverList& TraceSessionObserverList::GetInstance() {
 }
 
 TraceSessionObserverList::TraceSessionObserverList()
-    : observers_(base::MakeRefCounted<ObserverList>()) {
+    : setup_observers_(base::MakeRefCounted<ObserverList>()),
+      start_observers_(base::MakeRefCounted<ObserverList>()),
+      stop_observers_(base::MakeRefCounted<ObserverList>()),
+      incremental_state_observers_(base::MakeRefCounted<ObserverList>()) {
+  if (base::SingleThreadTaskRunner::HasMainThreadDefault()) {
+    main_thread_task_runner_ =
+        base::SingleThreadTaskRunner::GetMainThreadDefault();
+  }
   base::TrackEvent::AddSessionObserver(this);
 }
 
@@ -68,39 +100,137 @@ TraceSessionObserverList::~TraceSessionObserverList() {
   base::TrackEvent::RemoveSessionObserver(this);
 }
 
-void TraceSessionObserverList::AddObserver(
-    perfetto::TrackEventSessionObserver* observer) {
-  GetInstance().observers_->AddObserver(observer);
+void TraceSessionObserverList::AddObserverImpl(TraceSessionObserver* observer,
+                                               bool has_setup,
+                                               bool has_start,
+                                               bool has_stop,
+                                               bool has_incremental) {
+  TraceSessionObserverList& instance = GetInstance();
+  bool is_main_thread =
+      instance.main_thread_task_runner_ &&
+      instance.main_thread_task_runner_->RunsTasksInCurrentSequence();
+
+  MainThreadObserverHolder* holder =
+      is_main_thread ? &instance.main_thread_holder_ : nullptr;
+
+  if (has_setup) {
+    if (is_main_thread) {
+      if (holder->setup_observers_.empty()) {
+        instance.setup_observers_->AddObserver(holder);
+      }
+      holder->setup_observers_.AddObserver(observer);
+    } else {
+      instance.setup_observers_->AddObserver(observer);
+    }
+  }
+  if (has_start) {
+    if (is_main_thread) {
+      if (holder->start_observers_.empty()) {
+        instance.start_observers_->AddObserver(holder);
+      }
+      holder->start_observers_.AddObserver(observer);
+    } else {
+      instance.start_observers_->AddObserver(observer);
+    }
+  }
+  if (has_stop) {
+    if (is_main_thread) {
+      if (holder->stop_observers_.empty()) {
+        instance.stop_observers_->AddObserver(holder);
+      }
+      holder->stop_observers_.AddObserver(observer);
+    } else {
+      instance.stop_observers_->AddObserver(observer);
+    }
+  }
+  if (has_incremental) {
+    if (is_main_thread) {
+      if (holder->incremental_state_observers_.empty()) {
+        instance.incremental_state_observers_->AddObserver(holder);
+      }
+      holder->incremental_state_observers_.AddObserver(observer);
+    } else {
+      instance.incremental_state_observers_->AddObserver(observer);
+    }
+  }
 }
 
-void TraceSessionObserverList::RemoveObserver(
-    perfetto::TrackEventSessionObserver* observer) {
-  GetInstance().observers_->RemoveObserver(observer);
+void TraceSessionObserverList::RemoveObserverImpl(
+    TraceSessionObserver* observer,
+    bool has_setup,
+    bool has_start,
+    bool has_stop,
+    bool has_incremental) {
+  TraceSessionObserverList& instance = GetInstance();
+  bool is_main_thread =
+      instance.main_thread_task_runner_ &&
+      instance.main_thread_task_runner_->RunsTasksInCurrentSequence();
+
+  MainThreadObserverHolder* holder =
+      is_main_thread ? &instance.main_thread_holder_ : nullptr;
+
+  if (has_setup) {
+    if (is_main_thread) {
+      holder->setup_observers_.RemoveObserver(observer);
+      if (holder->setup_observers_.empty()) {
+        instance.setup_observers_->RemoveObserver(holder);
+      }
+    } else {
+      instance.setup_observers_->RemoveObserver(observer);
+    }
+  }
+  if (has_start) {
+    if (is_main_thread) {
+      holder->start_observers_.RemoveObserver(observer);
+      if (holder->start_observers_.empty()) {
+        instance.start_observers_->RemoveObserver(holder);
+      }
+    } else {
+      instance.start_observers_->RemoveObserver(observer);
+    }
+  }
+  if (has_stop) {
+    if (is_main_thread) {
+      holder->stop_observers_.RemoveObserver(observer);
+      if (holder->stop_observers_.empty()) {
+        instance.stop_observers_->RemoveObserver(holder);
+      }
+    } else {
+      instance.stop_observers_->RemoveObserver(observer);
+    }
+  }
+  if (has_incremental) {
+    if (is_main_thread) {
+      holder->incremental_state_observers_.RemoveObserver(observer);
+      if (holder->incremental_state_observers_.empty()) {
+        instance.incremental_state_observers_->RemoveObserver(holder);
+      }
+    } else {
+      instance.incremental_state_observers_->RemoveObserver(observer);
+    }
+  }
 }
 
 void TraceSessionObserverList::OnSetup(
     const perfetto::DataSourceBase::SetupArgs& args) {
-  observers_->Notify(FROM_HERE, &perfetto::TrackEventSessionObserver::OnSetup,
-                     args);
+  setup_observers_->Notify(FROM_HERE, &TraceSessionObserver::OnSetup, args);
 }
 
 void TraceSessionObserverList::OnStart(
     const perfetto::DataSourceBase::StartArgs& args) {
-  observers_->Notify(FROM_HERE, &perfetto::TrackEventSessionObserver::OnStart,
-                     args);
+  start_observers_->Notify(FROM_HERE, &TraceSessionObserver::OnStart, args);
 }
 
 void TraceSessionObserverList::OnStop(
     const perfetto::DataSourceBase::StopArgs& args) {
-  observers_->Notify(FROM_HERE, &perfetto::TrackEventSessionObserver::OnStop,
-                     StopArgsImpl{args});
+  stop_observers_->Notify(FROM_HERE, &TraceSessionObserver::OnStop,
+                          StopArgsImpl{args});
 }
 
 void TraceSessionObserverList::WillClearIncrementalState(
     const perfetto::DataSourceBase::ClearIncrementalStateArgs& args) {
-  observers_->Notify(
-      FROM_HERE,
-      &perfetto::TrackEventSessionObserver::WillClearIncrementalState, args);
+  incremental_state_observers_->Notify(
+      FROM_HERE, &TraceSessionObserver::WillClearIncrementalState, args);
 }
 
 }  // namespace base::trace_event

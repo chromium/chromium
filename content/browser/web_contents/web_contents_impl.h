@@ -1693,6 +1693,9 @@ class CONTENT_EXPORT WebContentsImpl
   // changed.
   void OnCapturerCountChanged();
 
+  // base::trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2891,8 +2894,6 @@ class CONTENT_EXPORT WebContentsImpl
   void SetDragSource(const DragId& drag_id,
                      const GlobalRenderFrameHostToken& source_rfh_token);
 
-  // base::trace_event::TraceSessionObserver implementation:
-  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   std::optional<DragId> active_drag_id_;
 
