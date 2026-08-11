@@ -640,6 +640,8 @@ void WebInstallServiceImpl::OnManifestParsed(
   // Skip requesting the user permission prompt when install is triggered from
   // the <install> element. The element handles user consent via its own UI
   // (trusted user gesture on the element itself).
+  // TODO(liahiscock): Add test coverage for this branch once its publicly
+  // reachable.
   if (triggered_from_element) {
     ContinueManifestInstall(std::move(callback_with_metrics),
                             std::move(options), std::move(install_tracker),
