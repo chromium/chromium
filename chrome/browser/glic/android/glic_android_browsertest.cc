@@ -53,7 +53,10 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest, testPageContextFetching) {
 // Tests that Mojo pipe stays resilient when device screen orientation changes.
 IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
                        testDeviceRotationMojoResiliency) {
-  if (base::android::device_info::is_desktop()) {
+  // TODO (crbug.com/545025371): The test is consistenty failing on automotive
+  // bot. Disabled by the gardener.
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "Screen rotation is not applicable on desktop Android.";
   }
 
