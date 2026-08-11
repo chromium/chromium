@@ -866,10 +866,6 @@ if (is_android) {
       # TODO(crbug.com/504985497): Remove this circular dependency.
       "//chrome/browser/keyboard_accessory/android:impl",
 
-      # TODO(crbug.com/335257259): Resolve circular deps caused by including
-      # `IdentityManagerFactory` in facilitated payments.
-      "//chrome/browser/facilitated_payments",
-
       # TODO(crbug.com/40261269): Remove when password_manager/android/
       # grouped_affiliations headers get componentized.
       "//chrome/browser/touch_to_fill/autofill/android:impl",

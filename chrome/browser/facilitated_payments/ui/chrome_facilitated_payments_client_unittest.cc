@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
@@ -327,4 +328,27 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
 
   base_client().ShowAccountLinkingFailureNotification(
       payments::facilitated::FacilitatedPaymentsType::kPix);
+}
+
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       IsInChromeCustomTabMode_NullCallback) {
+  EXPECT_FALSE(base_client().IsInChromeCustomTabMode());
+}
+
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       IsInChromeCustomTabMode_CallbackReturnsTrue) {
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_,
+      base::BindRepeating([](content::WebContents*) { return true; }));
+
+  EXPECT_TRUE(base_client().IsInChromeCustomTabMode());
+}
+
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       IsInChromeCustomTabMode_CallbackReturnsFalse) {
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_,
+      base::BindRepeating([](content::WebContents*) { return false; }));
+
+  EXPECT_FALSE(base_client().IsInChromeCustomTabMode());
 }
