@@ -501,6 +501,8 @@ crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-
 ## Apple M2 ##
 
 crbug.com/537387984 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/glsl/misc/shader-with-for-loop.html [ Slow ]
+crbug.com/544806579 [ mac angle-swiftshader arch-arm64 asan ] conformance/rendering/gl-drawelements.html [ RetryOnFailure ]
+crbug.com/527353878 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
