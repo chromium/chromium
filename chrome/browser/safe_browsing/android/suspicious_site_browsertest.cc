@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
@@ -83,8 +84,7 @@ class SuspiciousSiteBrowserTest : public AndroidBrowserTest {
   TestSafeBrowsingServiceFactory factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
-                       DISABLED_ShowsWarningBeforeCommit) {
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, ShowsWarningBeforeCommit) {
   GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
@@ -94,15 +94,15 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
       GetActiveWebContents(), GURL("about:blank"),
       /* number_of_navigations= */ 1);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
 }
@@ -112,15 +112,15 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, DismissalNavigateBack) {
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   auto* controller =
       safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
           GetActiveWebContents());
@@ -137,15 +137,15 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, DismissalContinueAnyway) {
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   auto* controller =
       safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
           GetActiveWebContents());
@@ -183,14 +183,14 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
 
   // 3. Navigate back to the malicious URL. Because it was allowlisted, no
   // dialog should be shown.
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_FALSE(dialog_shown);
+  EXPECT_FALSE(shown_future.IsReady());
   EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
 }
@@ -202,15 +202,15 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
 
@@ -224,30 +224,47 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
-                       DISABLED_TabSwitchingHidesAndRestoresWarning) {
+                       TabSwitchingHidesAndRestoresWarning) {
   GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
   SetURLThreatType(malicious_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), malicious_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   auto* controller =
       safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
           GetActiveWebContents());
   ASSERT_TRUE(controller);
 
+  // 1. Wait for Dialog Dismissal on Hide
+  base::test::TestFuture<void> dismissed_future;
+  SuspiciousSiteControllerAndroid::SetDialogDismissedCallbackForTesting(
+      dismissed_future.GetCallback());
+
   // Hide tab (simulating switching away to another tab).
+  // Note: In an AndroidBrowserTest, calling WebContents::WasHidden() doesn't
+  // reliably trigger the Java-side ModalDialogManager to dismiss the dialog
+  // with TAB_SWITCHED. We simulate the dismissal from Java directly.
   GetActiveWebContents()->WasHidden();
+  controller->CloseDialog(ui::ModalDialogWrapper::DismissalCause::TAB_SWITCHED);
+
+  EXPECT_TRUE(dismissed_future.Wait());
+
+  // 2. Wait for Dialog Reshown on Show
+  base::test::TestFuture<void> restored_shown_future;
+  SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
+      restored_shown_future.GetCallback());
 
   // Show tab again (simulating switching back to this tab).
   GetActiveWebContents()->WasShown();
+  EXPECT_TRUE(restored_shown_future.Wait());
 
   EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
@@ -265,9 +282,9 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
   SetURLThreatType(phishing_url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), redirect_url,
@@ -275,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
 
   // Full page interstitial takes precedence; warning dialog should not be
   // shown.
-  EXPECT_FALSE(dialog_shown);
+  EXPECT_FALSE(shown_future.IsReady());
   EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
 }
@@ -291,15 +308,15 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
   SetURLThreatType(redirect_url,
                    SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
 
-  bool dialog_shown = false;
+  base::test::TestFuture<void> shown_future;
   SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
-      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+      shown_future.GetCallback());
 
   content::NavigateToURLBlockUntilNavigationsComplete(
       GetActiveWebContents(), redirect_url,
       /* number_of_navigations= */ 1);
 
-  EXPECT_TRUE(dialog_shown);
+  EXPECT_TRUE(shown_future.Wait());
   EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
       GetActiveWebContents()));
 }

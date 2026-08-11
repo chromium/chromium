@@ -79,13 +79,6 @@ SuspiciousSiteControllerAndroid::SuspiciousSiteControllerAndroid(
 }
 
 SuspiciousSiteControllerAndroid::~SuspiciousSiteControllerAndroid() {
-  if (web_contents() && is_observing_async_check_tracker_) {
-    auto* tracker = AsyncCheckTracker::FromWebContents(web_contents());
-    if (tracker) {
-      tracker->RemoveObserver(this);
-    }
-  }
-
   // If the dialog was shown, log the tracked warning outcome directly.
   if (has_shown_) {
     base::UmaHistogramEnumeration(
@@ -120,9 +113,8 @@ void SuspiciousSiteControllerAndroid::ShowForWebContents(
   controller->is_suspended_ = true;
 
   auto* tracker = AsyncCheckTracker::FromWebContents(web_contents);
-  if (tracker && !controller->is_observing_async_check_tracker_) {
-    tracker->AddObserver(controller);
-    controller->is_observing_async_check_tracker_ = true;
+  if (tracker && !controller->async_check_observation_.IsObserving()) {
+    controller->async_check_observation_.Observe(tracker);
   }
 
   controller->MaybeShowDialog();
@@ -160,7 +152,7 @@ void SuspiciousSiteControllerAndroid::OnAsyncSafeBrowsingCheckCompleted() {
 
 void SuspiciousSiteControllerAndroid::
     OnAsyncSafeBrowsingCheckTrackerDestructed() {
-  // AsyncCheckTracker is being destroyed; no action required.
+  async_check_observation_.Reset();
 }
 
 void SuspiciousSiteControllerAndroid::MaybeShowDialog() {

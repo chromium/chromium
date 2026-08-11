@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -186,7 +187,8 @@ class SuspiciousSiteControllerAndroid
   WarningOutcome warning_outcome_ = WarningOutcome::kUnknown;
 
   // Tracks if this controller is observing AsyncCheckTracker.
-  bool is_observing_async_check_tracker_ = false;
+  base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
+      async_check_observation_{this};
 
   // The suspicious URL currently added to the allowlist for this warning.
   GURL current_suspicious_url_;
