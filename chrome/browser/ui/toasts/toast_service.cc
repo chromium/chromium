@@ -565,11 +565,15 @@ void ToastService::RegisterToasts(
           .Build());
 
 #if !BUILDFLAG(IS_CHROMEOS)
+  // Global-scoped: on the visual guide path this is triggered as the guide tab
+  // navigates to the New Tab Page, and a tab-scoped toast would be dismissed
+  // by that navigation before the user could see it.
   toast_registry_->RegisterToast(
       ToastId::kDefaultBrowserUpdateSuccess,
       ToastSpecification::Builder(
           features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           IDS_DEFAULT_BROWSER_SUCCESS_TOAST_BODY)
+          .AddGlobalScoped()
           .Build());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
