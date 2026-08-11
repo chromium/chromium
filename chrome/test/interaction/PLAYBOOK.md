@@ -156,6 +156,25 @@ You will still notice that the actual test sequence is quite terse; it’s only 
 
 Also notice that it’s possible for a test to fail if the structure of a page changes; this is by design. If a page’s structure or function changes, regression tests *should* be updated to match the new functionality. And in the case that it is purely an organizational change, the update would simply be modifying a couple of queries to reflect the new paths to the elements in question.
 
+### Advanced: Working with WebUI Elements {#advanced:-working-with-webui-elements}
+
+If an element in a WebUI has been assigned an `ElementIdentifier` via `TrackedElementManager` or a `HelpBubbleMixin` class, it will also show up in the element tree as a `TrackedElementWebUI`. These will correctly report their bounds, native window, etc. - all the properties an element is expected to have. The `ElementContext` associated with these elements may be the same as the browser, or unique to that WebUI, depending on how it's configured.
+
+You apply many common action verbs to these elements (e.g. `PressButton()`). There are also versions of `ExecuteJsAt()` and `CheckJsResultAt()` which can target a `TrackedElementWebUI` directly:
+
+```cpp
+RunTestSequence(
+  PressButton(kAppMenuButtonElementId),
+  SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
+  InAnyContext(WaitForShow(kSomeElementInTheDownloadsPageElementId)),
+  InSameContext(CheckJsResultAt(
+      kSomeElementInTheDownloadsPageElementId,
+      "el => el.innerText",
+      "expected element text")));
+```
+
+Note that in this test, while `kSomeElementInTheDownloadsPageElementId` must be implemented in WebUI, `kAppMenuButtonElementId` and `AppMenuModel::kDownloadsMenuItem` could be implemented in Views, WebUI, or any other presentation framework that supports Kombucha!
+
 ### Advanced: Waiting for Non-UI State {#advanced:-waiting-for-non-ui-state}
 
 Kombucha now allows you to observe system state in tests without having to go through a UI element or use a custom event. (Custom events are still great for discrete events that you want to respond to in real-time though\!)
@@ -722,6 +741,8 @@ Note that the dumped elements may include the following tags:
 * \[FOCUS\] \- for tests involving the Views framework, this is the focused View.
 
 Views and Widgets are also laid out in a tree that represents ownership, though it may not be direct ownership - for example, since the toolbar view does not have an identifier, toolbar buttons show up directly under TopContainerView.
+
+For `InteractiveBrowser[Window]Test` tests, any instrumented web contents are also dumped, to a specific depth and number of DOM nodes you can configure using `browser_test_impl().set_max_dom_depth()` and `browser_test_impl().set_max_dom_nodes()`. You may also specify `std::nullopt` to remove the limit.
 
 ```
 [41980:26288:0223/135034.630:ERROR:interactive_test.cc(285)] Expected element ElementIdentifier 140696530034808 [kTabStripElementId] not to be present but it was present.
@@ -1372,6 +1393,26 @@ RunTestSequence(
       seq->NameElement(el, kNewTabGroupHeaderName);
     })
     .SetTransitionOnlyOnEvent(true),
+);
+```
+
+### I need to refer to a specific element which I know exists, but its identifier is not unique: using secondary identifiers. {#i-need-to-refer-to-a-specific-element,-but-its-identifier-is-not-unique:-using-secondary-identifiers.}
+
+Finally, some elements have explicit **secondary identifiers**. By default an element's secondary identifier is auto-generated in such a way that multiple elements in the same context with the same identifier are guaranteed to get unique secondary identifiers. As such, you almost never want to use secondary identifiers directly.
+
+However, there are ways to explicitly specify the secondary identifier in such a way that the secondary identifier for the element you want is pre-determined. This is used for e.g. some implementations of extensions buttons, where the secondary ID is set to "ext:" plus the extension's UID.
+
+If you know the secondary ID of the element you want, you can name it directly with:
+
+```cpp
+constexpr std::string_view kMyAction = "my-action";
+const std::string known_action_secondary_id = "action:" + kMyActionUid;
+RunTestSequence(
+  NameElementWithSecondaryId(kToolbarActionViewElementId,  // non-unique id
+                             known_action_secondary_id,    // expected secondary id
+                             kMyAction),                   // name to use in the test
+  // Trigger the specific action by pressing the button.
+  PressButton(kMyAction)
 );
 ```
 
