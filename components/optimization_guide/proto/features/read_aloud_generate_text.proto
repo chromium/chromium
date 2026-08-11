@@ -38,6 +38,9 @@ message ReadAloudGenerateTextRequest {
 
   // Sanitized origin or URL of the webpage (query params scrubbed by client).
   string page_url = 3 [features = { field_presence: EXPLICIT }];
+
+  // Two-letter ISO 639-1 language code of the webpage (e.g., "es", "fr", "ja").
+  string language_code = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // Response message containing the generated text for Read Aloud AI Playback
