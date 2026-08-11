@@ -476,19 +476,6 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   document_pip_context_observer_->SetContextLifecycleNotifier(
       pip_document->GetExecutionContext());
 
-  // While this API could be synchronous since we're using the |window.open()|
-  // API to open the PiP window, we still use a Promise and post a task to make
-  // it asynchronous because:
-  // 1) We may eventually make this an asynchronous call to the browsser
-  // 2) Other UAs may want to implement the API in an asynchronous way
-
-  // If we have a task waiting already, just cancel the task and immediately
-  // resolve.
-  if (open_document_pip_task_.IsActive()) {
-    open_document_pip_task_.Cancel();
-    ResolveOpenDocumentPictureInPicture();
-  }
-
   document_picture_in_picture_window_ = local_dom_window;
 
   // Give the pip document's PictureInPictureControllerImpl a pointer to our
@@ -496,32 +483,23 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   From(*pip_document)
       .SetDocumentPictureInPictureOwner(GetSupplementable()->domWindow());
 
-  // There should not be an unresolved ScriptPromiseResolverBase at this point.
-  // Leaving one unresolved and letting it get garbage collected will crash the
-  // renderer.
-  DCHECK(!open_document_pip_resolver_);
-  open_document_pip_resolver_ = resolver;
+  opener.GetTaskRunner(TaskType::kDOMManipulation)
+      ->PostTask(
+          FROM_HERE,
+          BindOnce(&PictureInPictureControllerImpl::DispatchEnterEvent,
+                   WrapPersistent(this), WrapPersistent(local_dom_window)));
 
-  open_document_pip_task_ = PostCancellableTask(
-      *opener.GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      BindOnce(
-          &PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture,
-          WrapPersistent(this)));
+  resolver->Resolve(local_dom_window);
 }
 
-void PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture() {
-  CHECK(document_picture_in_picture_window_);
-  CHECK(open_document_pip_resolver_);
-
+void PictureInPictureControllerImpl::DispatchEnterEvent(
+    LocalDOMWindow* document_picture_in_picture_window) {
   if (DomWindow()) {
     DocumentPictureInPicture::From(*DomWindow())
         ->DispatchEvent(*DocumentPictureInPictureEvent::Create(
             event_type_names::kEnter,
-            WrapPersistent(document_picture_in_picture_window_.Get())));
+            WrapPersistent(document_picture_in_picture_window)));
   }
-
-  open_document_pip_resolver_->Resolve(document_picture_in_picture_window_);
-  open_document_pip_resolver_ = nullptr;
 }
 
 PictureInPictureControllerImpl::DocumentPictureInPictureObserver::
@@ -562,15 +540,6 @@ void PictureInPictureControllerImpl::
   // associated with it.  Allow throttling again.
   SetMayThrottleIfUndrawnFrames(true);
   document_picture_in_picture_window_ = nullptr;
-
-  // If there is an unresolved promise for a document PiP window, reject it now.
-  // Note that we know that it goes with the current session, since we replace
-  // the context observer's context at the same time we replace the session.
-  if (open_document_pip_task_.IsActive()) {
-    open_document_pip_task_.Cancel();
-    open_document_pip_resolver_->Reject();
-    open_document_pip_resolver_ = nullptr;
-  }
 }
 
 void PictureInPictureControllerImpl::
@@ -637,7 +606,6 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(document_picture_in_picture_window_);
   visitor->Trace(document_picture_in_picture_owner_);
   visitor->Trace(document_pip_context_observer_);
-  visitor->Trace(open_document_pip_resolver_);
   visitor->Trace(picture_in_picture_element_);
   visitor->Trace(picture_in_picture_window_);
   visitor->Trace(session_observer_receiver_);
