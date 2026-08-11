@@ -415,7 +415,13 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // Tests that `chrome.windows.update` enters fullscreen without the immersive
 // UI. See https://crbug.com/419812047
 using UpdateFullscreenTest = extensions::ExtensionApiTest;
-IN_PROC_BROWSER_TEST_F(UpdateFullscreenTest, NoImmersiveUI) {
+// TODO(crbug.com/541956900): Fails on ChromeOS ASan/LSan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NoImmersiveUI DISABLED_NoImmersiveUI
+#else
+#define MAYBE_NoImmersiveUI NoImmersiveUI
+#endif
+IN_PROC_BROWSER_TEST_F(UpdateFullscreenTest, MAYBE_NoImmersiveUI) {
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWontReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("windows/update_fullscreen")));
