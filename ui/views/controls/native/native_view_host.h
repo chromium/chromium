@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 
@@ -128,6 +129,13 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // DEPRECATED: Use layer() or native_view()->layer() instead.
   ui::Layer* GetUILayer();
 
+  // Normally, all events relevant to here are routed to the corresponding
+  // native view directly, and no handling needs to be done at Views level.
+  // Some applications, however, forward events at Views layer, at which point
+  // they would normally end up ignored here. This method provides a way of
+  // intercepting mouse events with these circumstances.
+  void SetMouseEventFallback(ui::EventHandler* handler);
+
   // Overridden from View:
   void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -136,7 +144,8 @@ class VIEWS_EXPORT NativeViewHost : public View {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void SetVisible(bool visible) override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
 
  protected:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -183,6 +192,8 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // `layer_managed_by_views_` and `native_view_`) which must not be destroyed
   // yet.
   std::unique_ptr<NativeViewHostWrapper> native_wrapper_;
+
+  raw_ptr<ui::EventHandler> mouse_event_fallback_ = nullptr;
 };
 
 }  // namespace views

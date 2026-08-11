@@ -141,6 +141,10 @@ ui::Layer* NativeViewHost::GetUILayer() {
   return layer_managed_by_views() ? layer() : native_wrapper_->GetUILayer();
 }
 
+void NativeViewHost::SetMouseEventFallback(ui::EventHandler* handler) {
+  mouse_event_fallback_ = handler;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
@@ -289,18 +293,24 @@ void NativeViewHost::SetVisible(bool visible) {
   View::SetVisible(visible);
 }
 
-bool NativeViewHost::OnMousePressed(const ui::MouseEvent& event) {
-  // In the typical case the attached NativeView receives the events directly
-  // from the system and this function is not called. There are scenarios
-  // where that may not happen. For example, if the NativeView is configured
-  // not to receive events, then this function will be called. An additional
-  // scenario is if the WidgetDelegate overrides
-  // ShouldDescendIntoChildForEventHandling(). In that case the NativeView
-  // will not receive the events, and this function will be called. Regardless,
-  // this function does not need to forward to the NativeView, because it is
-  // expected to be done by the system, and the only cases where this is called
-  // is if the NativeView should not receive events.
-  return View::OnMousePressed(event);
+void NativeViewHost::OnMouseMoved(const ui::MouseEvent& event) {
+  if (mouse_event_fallback_) {
+    // Need a copy for mutability.
+    auto event_copy = event.Clone();
+    mouse_event_fallback_->OnMouseEvent(
+        static_cast<ui::MouseEvent*>(event_copy.get()));
+  } else {
+    views::View::OnMouseMoved(event);
+  }
+}
+
+void NativeViewHost::OnMouseEvent(ui::MouseEvent* event) {
+  if (mouse_event_fallback_) {
+    mouse_event_fallback_->OnMouseEvent(event);
+    event->SetHandled();
+  } else {
+    views::View::OnMouseEvent(event);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
