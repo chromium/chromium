@@ -125,13 +125,13 @@ found in the LICENSE file.
         <item name="android:layout_height">@dimen/min_touch_target_size</item>
         <item name="icon">@drawable/search_spark_black_24dp</item>
         <item name="iconTint">@color/default_text_color_dark</item>
-        <item name="iconWidth">24dp</item>
-        <item name="iconHeight">24dp</item>
-        <!-- 8dp visual start padding + 5dp horizontalInset. -->
-        <item name="chipStartPadding">13dp</item>
+        <item name="iconWidth">20dp</item>
+        <item name="iconHeight">20dp</item>
+        <!-- 10dp visual start padding + 5dp horizontalInset. -->
+        <item name="chipStartPadding">15dp</item>
         <!-- 12dp visual end padding + 5dp horizontalInset. -->
         <item name="chipEndPadding">17dp</item>
-        <item name="primaryTextStartPadding">2dp</item>
+        <item name="primaryTextStartPadding">4dp</item>
         <item name="allowMultipleLines">false</item>
         <item name="android:text">@string/ai_mode_entrypoint_label</item>
         <item name="textAlignStart">true</item>
