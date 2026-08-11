@@ -15,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SearchView;
@@ -68,8 +70,16 @@ public class MultiColumnTitleUpdaterTest {
     @SuppressWarnings("MissingSuperCall")
     public static class FakeMultiColumnSettings extends MultiColumnSettings {
         private List<Title> mFakeTitles = new ArrayList<>();
+        private View mDetailView;
 
-        public FakeMultiColumnSettings() {}
+        void setDetailView(View detailView) {
+            mDetailView = detailView;
+        }
+
+        @Override
+        public View getDetailView() {
+            return mDetailView != null ? mDetailView : super.getDetailView();
+        }
 
         void setFakeTitles(List<Title> titles) {
             mFakeTitles = titles;
@@ -199,10 +209,11 @@ public class MultiColumnTitleUpdaterTest {
         assertEquals(2, mContainer.getChildCount());
         assertTrue(mContainer.getChildAt(0) instanceof ChromeImageButton);
 
-        // Back button should be offset to the left.
+        // Back button's left edge should align with the parent so its ripple is not clipped. See
+        // https://crbug.com/542040289 which was caused by assigning a negative margin.
         ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
         var layoutParams = (LinearLayout.LayoutParams) backButton.getLayoutParams();
-        assertTrue(layoutParams.getMarginStart() < 0);
+        assertEquals(0, layoutParams.getMarginStart());
 
         // Last title should be shown.
         assertTrue(mContainer.getChildAt(1) instanceof TextView);
@@ -439,5 +450,60 @@ public class MultiColumnTitleUpdaterTest {
         // mContainer.
         assertEquals(3, mContainer.getChildCount());
         assertNotNull(searchViewProviderFragment.getSearchView());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testMaybeUpdateStartMargin_accountsForBackButtonOffset() {
+        FrameLayout detailView = new FrameLayout(mActivity);
+        View recyclerView = new View(mActivity);
+        recyclerView.setId(R.id.recycler_view);
+        recyclerView.layout(0, 0, 1000, 100);
+        detailView.addView(recyclerView);
+        mMultiColumnSettings.setDetailView(detailView);
+
+        RelativeLayout rootLayout = new RelativeLayout(mActivity);
+        HorizontalScrollView titleScrollView = new HorizontalScrollView(mActivity);
+        RelativeLayout.LayoutParams scrollParams =
+                new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rootLayout.addView(titleScrollView, scrollParams);
+        titleScrollView.addView(mContainer);
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater =
+                new MultiColumnTitleUpdater(
+                        /* savedInstanceState= */ null,
+                        mMultiColumnSettings,
+                        mActivity,
+                        mContainer,
+                        /* mainTitleSetter= */ (t) -> {},
+                        /* titleTapCallback= */ mTitleTapCallback,
+                        /* initialBreadcrumbPath= */ null);
+        updater.onTitleUpdated();
+
+        var paramsWithoutBack = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
+        int marginWithoutBack = paramsWithoutBack.getMarginStart();
+
+        titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+        updater.onTitleUpdated();
+
+        var paramsWithBack = (RelativeLayout.LayoutParams) titleScrollView.getLayoutParams();
+        int marginWithBack = paramsWithBack.getMarginStart();
+
+        int minTouchTargetPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+        ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
+        int iconWidthPx = backButton.getDrawable().getIntrinsicWidth();
+        int expectedOffset = (minTouchTargetPx - iconWidthPx) / 2;
+
+        // Verify that the title scroll view start margin is shifted left by expectedOffset when the
+        // back button is shown.
+        assertEquals(marginWithoutBack - expectedOffset, marginWithBack);
     }
 }
