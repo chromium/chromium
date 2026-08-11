@@ -528,6 +528,24 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
     }
   }
 
+  if (is_editing_or_empty) {
+    // Permission requests get cancelled if user edits the URL.
+    // (And won't show up if it was already edited when they occurred).
+    bool has_visible_chip = GetChipController()->chip()->GetVisible();
+    bool has_permission_prompt =
+        GetChipController()->active_permission_request_manager().has_value() &&
+        GetChipController()
+            ->active_permission_request_manager()
+            .value()
+            ->GetCurrentPrompt();
+
+    if (has_visible_chip || has_permission_prompt) {
+      // If a user starts typing, a permission request should be ignored and the
+      // chip finalized.
+      GetChipController()->ResetPermissionPromptChip();
+    }
+  }
+
   auto accessibility_state = location_bar::GetSecurityChipAccessibilityState(
       model, is_editing_or_empty, security_chip_text);
 
