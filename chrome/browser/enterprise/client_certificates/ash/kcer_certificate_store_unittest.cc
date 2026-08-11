@@ -150,16 +150,17 @@ TEST_F(KcerCertificateStoreTest, CreatePrivateKey_Success) {
   StoreErrorOr<scoped_refptr<PrivateKey>> result = future.Take();
   ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result.value());
-  // The software-only NSS test slot lets GenerateEcKey(hardware_backed=true)
-  // succeed, so the store records the hardware-backed source.
-  EXPECT_EQ(result.value()->GetSource(), PrivateKeySource::kChromeOsHwKey);
+  // GenerateEcKey(hardware_backed=true) succeeds on the software-only NSS
+  // test slot, but the store resolves the source from KeyInfo, not from that
+  // success - and a non-Chaps slot holds nothing hardware backed.
+  EXPECT_EQ(result.value()->GetSource(), PrivateKeySource::kChromeOsSwKey);
   EXPECT_FALSE(result.value()->GetSubjectPublicKeyInfo().empty());
 
-  // Verify the SPKI and (hardware) key source were persisted to prefs.
+  // Verify the SPKI and (software) key source were persisted to prefs.
   const base::DictValue& identity = pref_service_.GetDict(kTestIdentityName);
   EXPECT_TRUE(identity.FindString(kSpkiKey));
   EXPECT_EQ(identity.FindInt(kKeySource).value_or(-1),
-            static_cast<int>(PrivateKeySource::kChromeOsHwKey));
+            static_cast<int>(PrivateKeySource::kChromeOsSwKey));
 }
 
 TEST_F(KcerCertificateStoreTest, CreatePrivateKey_ConflictingIdentity) {

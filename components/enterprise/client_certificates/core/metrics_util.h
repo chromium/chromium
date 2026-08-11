@@ -89,6 +89,16 @@ void RecordKcerHardwareKeyGenerationError(kcer::Error error);
 // this tracks how often the ownership metadata ends up missing.
 void RecordKcerKeyTaggingError(kcer::Error error);
 
+// Records the `kcer::Error` reported when reading back the KeyInfo of a
+// freshly generated key fails. The key itself was still generated
+// successfully; only its hardware-backing state could not be confirmed, so the
+// key is reported as software-backed.
+void RecordKcerGeneratedKeyInfoError(kcer::Error error);
+
+// Records the `kcer::Error` reported when the software-backed fallback key
+// generation also fails, after the hardware-backed attempt already failed.
+void RecordKcerSoftwareKeyGenerationError(kcer::Error error);
+
 // Records the `kcer::Error` reported when importing a client certificate into
 // Kcer fails.
 void RecordKcerCertificateImportError(kcer::Error error);

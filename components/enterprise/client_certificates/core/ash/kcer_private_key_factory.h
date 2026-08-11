@@ -46,28 +46,34 @@ class KcerPrivateKeyFactory : public PrivateKeyFactory {
   void OnKeyGenerated(PrivateKeyCallback callback,
                       base::expected<kcer::PublicKey, kcer::Error> result);
 
-  void OnHardwareKeyFailed(PrivateKeyCallback callback, kcer::Error error);
+  void OnHardwareKeyGenerationError(PrivateKeyCallback callback,
+                                    kcer::Error error);
 
   void OnSoftwareKeyGenerated(
       PrivateKeyCallback callback,
       base::expected<kcer::PublicKey, kcer::Error> result);
 
-  // Tags the freshly generated `public_key` as owned by the browser enterprise
-  // client certificate (CA Connector) provisioning flow, then builds a
-  // KcerPrivateKey wrapping it and returns it via `callback` from
-  // OnBrowserEnterpriseClientCertTagSet.
+  // Tags the freshly generated `public_key` as owned by the CA Connector flow,
+  // then builds and delivers a KcerPrivateKey via OnGeneratedKeyInfo. Takes no
+  // PrivateKeySource - that's resolved from the key itself further down.
   void DeliverGeneratedKey(PrivateKeyCallback callback,
-                           kcer::PublicKey public_key,
-                           PrivateKeySource source);
+                           kcer::PublicKey public_key);
 
   // Continuation of DeliverGeneratedKey, invoked once the ownership tag write
-  // completes. A tag failure is non-blocking: the key is still delivered (only
-  // the cleanup/audit metadata is missing).
+  // completes. A tag failure is non-blocking (only cleanup/audit metadata is
+  // missing); reads back the key's KeyInfo to check if it's hardware backed.
   void OnBrowserEnterpriseClientCertTagSet(
       PrivateKeyCallback callback,
       kcer::PublicKeySpki spki,
-      PrivateKeySource source,
       base::expected<void, kcer::Error> result);
+
+  // Tail of the generation chain: maps the generated key's KeyInfo onto
+  // kChromeOsHwKey / kChromeOsSwKey and delivers the KcerPrivateKey. A KeyInfo
+  // failure resolves to software rather than aborting - the key still
+  // generated.
+  void OnGeneratedKeyInfo(PrivateKeyCallback callback,
+                          kcer::PublicKeySpki spki,
+                          base::expected<kcer::KeyInfo, kcer::Error> key_info);
 
   // Common tail of LoadPrivateKey / LoadPrivateKeyFromDict. Both public methods
   // only extract the source and the key from their respective serialization
@@ -79,11 +85,10 @@ class KcerPrivateKeyFactory : public PrivateKeyFactory {
                           kcer::PublicKeySpki spki,
                           PrivateKeyCallback callback);
 
-  // Continuations of the load chain. GetKeyInfo both confirms the key is
-  // usable (any error - missing key, malformed SPKI, transient failure -
-  // aborts the load) and yields its KeyInfo (signing schemes / key type); we
-  // then look up the matching certificate so we can call
-  // KcerPrivateKey::BindCert before returning.
+  // Continuations of the load chain: GetKeyInfo confirms the key is usable
+  // (any error aborts the load) and feeds the cert lookup/BindCert call.
+  // OnGotKeyInfo also reconciles `source` against the key's actual
+  // hardware-backing state; see the .cc for why this can be out of sync.
   void OnGotKeyInfo(PrivateKeyCallback callback,
                     kcer::PublicKeySpki spki,
                     PrivateKeySource source,

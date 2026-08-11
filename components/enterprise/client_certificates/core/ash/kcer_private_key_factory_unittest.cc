@@ -29,15 +29,9 @@ namespace client_certificates {
 
 namespace {
 
-// Aligned with the integration-test pattern Google reviewers asked for
-// (ssl_private_key_kcer_unittest.cc, client_cert_identity_kcer_unittest.cc):
-// no TPM/Kcer simulation — a real kcer::Kcer is wired to a real (in-memory)
-// NSS slot via crypto::ScopedTestNSSDB. The slot is software-only, so every
-// GenerateEcKey(hardware_backed=true) succeeds and the factory delivers a key
-// whose source is kChromeOsHwKey. The "hardware-fails-fall-back-to-software"
-// branch in the factory is therefore not naturally reachable from this
-// fixture; on Flex/no-TPM devices the chaps client (not present here) is
-// what surfaces that failure in production.
+// Integration-style (per Google reviewers): a real kcer::Kcer wired to a
+// software-only NSS slot (crypto::ScopedTestNSSDB), modeling a no-TPM device
+// where hardware_backed=true "succeeds" but yields kChromeOsSwKey.
 class KcerPrivateKeyFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
@@ -62,9 +56,10 @@ TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_GeneratesRealEcKey) {
 
   scoped_refptr<PrivateKey> key = future.Take();
   ASSERT_TRUE(key);
-  // The software-only NSS test slot lets GenerateEcKey(hardware_backed=true)
-  // succeed, so the factory tags the key as the hardware-backed source.
-  EXPECT_EQ(key->GetSource(), PrivateKeySource::kChromeOsHwKey);
+  // GenerateEcKey(hardware_backed=true) succeeds on the software-only NSS
+  // test slot, but the factory resolves the source from KeyInfo, not from
+  // that success - and a non-Chaps slot holds nothing hardware backed.
+  EXPECT_EQ(key->GetSource(), PrivateKeySource::kChromeOsSwKey);
   EXPECT_EQ(key->GetAlgorithm(), crypto::SignatureVerifier::ECDSA_SHA256);
 
   // EC P-256 SubjectPublicKeyInfo is 91 bytes; a non-empty SPKI implies the
@@ -123,7 +118,7 @@ TEST_F(KcerPrivateKeyFactoryTest, LoadPrivateKey_ProtoRoundTrip) {
   scoped_refptr<PrivateKey> loaded = load_future.Take();
 
   ASSERT_TRUE(loaded);
-  EXPECT_EQ(loaded->GetSource(), PrivateKeySource::kChromeOsHwKey);
+  EXPECT_EQ(loaded->GetSource(), PrivateKeySource::kChromeOsSwKey);
   EXPECT_EQ(loaded->GetSubjectPublicKeyInfo(), original_spki);
   EXPECT_EQ(loaded->GetSource(), created->GetSource());
   // No matching cert in Kcer yet -> TLS surface stays disabled.
@@ -178,6 +173,30 @@ TEST_F(KcerPrivateKeyFactoryTest,
   base::DictValue dict;
   dict.Set(kKey, base::Base64Encode(created->GetSubjectPublicKeyInfo()));
   dict.Set(kKeySource, static_cast<int>(PrivateKeySource::kChromeOsSwKey));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> load_future;
+  factory->LoadPrivateKeyFromDict(dict, load_future.GetCallback());
+  scoped_refptr<PrivateKey> loaded = load_future.Take();
+
+  ASSERT_TRUE(loaded);
+  EXPECT_EQ(loaded->GetSource(), PrivateKeySource::kChromeOsSwKey);
+}
+
+TEST_F(KcerPrivateKeyFactoryTest,
+       LoadPrivateKeyFromDict_StaleHardwareSourceIsDowngraded) {
+  auto factory = MakeFactory();
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> create_future;
+  factory->CreatePrivateKey(create_future.GetCallback());
+  scoped_refptr<PrivateKey> created = create_future.Take();
+  ASSERT_TRUE(created);
+
+  // Simulate an identity from before the factory stopped inferring hardware
+  // backing from generation success: prefs claim kChromeOsHwKey for a
+  // software-backed key. The load must trust live KeyInfo over the stale pref.
+  base::DictValue dict;
+  dict.Set(kKey, base::Base64Encode(created->GetSubjectPublicKeyInfo()));
+  dict.Set(kKeySource, static_cast<int>(PrivateKeySource::kChromeOsHwKey));
 
   base::test::TestFuture<scoped_refptr<PrivateKey>> load_future;
   factory->LoadPrivateKeyFromDict(dict, load_future.GetCallback());

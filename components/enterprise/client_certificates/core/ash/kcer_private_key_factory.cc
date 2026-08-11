@@ -102,16 +102,16 @@ void KcerPrivateKeyFactory::OnKeyGenerated(
     PrivateKeyCallback callback,
     base::expected<kcer::PublicKey, kcer::Error> result) {
   if (result.has_value()) {
-    DeliverGeneratedKey(std::move(callback), std::move(result.value()),
-                        PrivateKeySource::kChromeOsHwKey);
+    DeliverGeneratedKey(std::move(callback), std::move(result.value()));
     return;
   }
   // Hardware-backed key generation failed. Fall back to software key.
-  OnHardwareKeyFailed(std::move(callback), result.error());
+  OnHardwareKeyGenerationError(std::move(callback), result.error());
 }
 
-void KcerPrivateKeyFactory::OnHardwareKeyFailed(PrivateKeyCallback callback,
-                                                kcer::Error error) {
+void KcerPrivateKeyFactory::OnHardwareKeyGenerationError(
+    PrivateKeyCallback callback,
+    kcer::Error error) {
   // Track how often (and why) hardware-backed key generation falls back to
   // software at an aggregate level.
   RecordKcerHardwareKeyGenerationError(error);
@@ -130,18 +130,15 @@ void KcerPrivateKeyFactory::OnSoftwareKeyGenerated(
     PrivateKeyCallback callback,
     base::expected<kcer::PublicKey, kcer::Error> result) {
   if (!result.has_value()) {
-    LOG(ERROR) << "Software key generation also failed (error: "
-               << static_cast<int>(result.error()) << ").";
+    RecordKcerSoftwareKeyGenerationError(result.error());
     std::move(callback).Run(nullptr);
     return;
   }
-  DeliverGeneratedKey(std::move(callback), std::move(result.value()),
-                      PrivateKeySource::kChromeOsSwKey);
+  DeliverGeneratedKey(std::move(callback), std::move(result.value()));
 }
 
 void KcerPrivateKeyFactory::DeliverGeneratedKey(PrivateKeyCallback callback,
-                                                kcer::PublicKey public_key,
-                                                PrivateKeySource source) {
+                                                kcer::PublicKey public_key) {
   if (!kcer_) {
     std::move(callback).Run(nullptr);
     return;
@@ -158,14 +155,12 @@ void KcerPrivateKeyFactory::DeliverGeneratedKey(PrivateKeyCallback callback,
       std::move(handle),
       base::BindOnce(
           &KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet,
-          weak_factory_.GetWeakPtr(), std::move(callback), std::move(spki),
-          source));
+          weak_factory_.GetWeakPtr(), std::move(callback), std::move(spki)));
 }
 
 void KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet(
     PrivateKeyCallback callback,
     kcer::PublicKeySpki spki,
-    PrivateKeySource source,
     base::expected<void, kcer::Error> result) {
   if (!kcer_) {
     std::move(callback).Run(nullptr);
@@ -177,6 +172,35 @@ void KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet(
     // for future cleanup/auditing is missing.
     RecordKcerKeyTaggingError(result.error());
   }
+  // Resolve where the key actually ended up: which GenerateEcKey() call
+  // succeeded doesn't tell us, since a no-TPM device's software fallback slot
+  // also accepts hardware_backed=true. Ask Kcer instead of guessing.
+  kcer_->GetKeyInfo(
+      kcer::PrivateKeyHandle(kcer::Token::kUser, kcer::PublicKeySpki(spki)),
+      base::BindOnce(&KcerPrivateKeyFactory::OnGeneratedKeyInfo,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(spki)));
+}
+
+void KcerPrivateKeyFactory::OnGeneratedKeyInfo(
+    PrivateKeyCallback callback,
+    kcer::PublicKeySpki spki,
+    base::expected<kcer::KeyInfo, kcer::Error> key_info) {
+  if (!kcer_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  if (!key_info.has_value()) {
+    // Non-blocking: the key was generated successfully, only its
+    // hardware-backing metadata is unavailable. Fall through to the software
+    // source - under-reporting is safer than claiming unconfirmed hardware
+    // backing.
+    RecordKcerGeneratedKeyInfoError(key_info.error());
+  }
+  const PrivateKeySource source =
+      (key_info.has_value() && key_info->is_hardware_backed)
+          ? PrivateKeySource::kChromeOsHwKey
+          : PrivateKeySource::kChromeOsSwKey;
   std::move(callback).Run(base::MakeRefCounted<KcerPrivateKey>(
       kcer_, std::move(spki), kcer_task_runner_, source));
 }
@@ -225,6 +249,16 @@ void KcerPrivateKeyFactory::OnGotKeyInfo(
     // implies the key is present, so we must not return an unbound key here.)
     std::move(callback).Run(nullptr);
     return;
+  }
+  // Reconcile the persisted source against the key's live state. Keys
+  // generated before this fix could be persisted as kChromeOsHwKey while
+  // actually software-backed, because GenerateEcKey(hardware_backed=true)
+  // succeeded regardless of hardware availability - so a stale pref can't
+  // be trusted at face value here. Downgrade only; KeyInfo must never
+  // promote a software key to hardware.
+  if (source == PrivateKeySource::kChromeOsHwKey &&
+      !key_info->is_hardware_backed) {
+    source = PrivateKeySource::kChromeOsSwKey;
   }
   kcer_->ListCerts(
       base::flat_set<kcer::Token>({kcer::Token::kUser}),

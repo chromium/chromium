@@ -778,6 +778,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificate.Ash.GeneratedKeyInfoError"
+    enum="KcerError" expires_after="2027-08-11">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when reading back the KeyInfo of a freshly
+    generated ChromeOS client certificate key fails. The key itself was still
+    generated successfully; only its hardware-backing state could not be
+    confirmed, so it is reported as software-backed. See also
+    Enterprise.ClientCertificate.Ash.KeyTaggingError, which is recorded
+    immediately before this KeyInfo lookup in the same post-generation sequence.
+    Managed-identity keys are generated at most once per profile: only when the
+    profile has no usable persisted key, which in practice means once, the first
+    time the policy provisions an identity. Certificate renewal reuses the
+    existing key, so this is not recorded on a TLS handshake, navigation, or
+    browser boot.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ClientCertificate.Ash.HardwareKeyGenerationError"
     enum="KcerError" expires_after="2028-01-02">
   <owner>seblalancette@chromium.org</owner>
@@ -785,8 +804,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Captures the Kcer error returned when hardware-backed (TPM) key generation
     fails and the ChromeOS client certificate provisioning flow falls back to a
-    software key. Recorded on ChromeOS each time the hardware-backed generation
-    attempt fails.
+    software key. Key generation is recorded at most once per profile: only when
+    the profile has no usable persisted key, which in practice means once, the
+    first time the policy provisions an identity. Certificate renewal reuses the
+    existing key, so this is not recorded on a TLS handshake, navigation, or
+    browser boot.
   </summary>
 </histogram>
 
@@ -810,8 +832,24 @@ chromium-metrics-reviews@google.com.
     Captures the Kcer error returned when tagging a freshly generated key as a
     browser enterprise client certificate key fails. Tagging is best-effort and
     does not abort provisioning, so this tracks how often the ownership metadata
-    used for later cleanup/auditing ends up missing. Recorded on ChromeOS each
-    time a tag write fails.
+    used for later cleanup/auditing ends up missing. Recorded at most once per
+    profile (in practice, once, the first time the policy provisions an
+    identity).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Ash.SoftwareKeyGenerationError"
+    enum="KcerError" expires_after="2027-08-11">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when software-backed key generation fails
+    after the hardware-backed generation attempt already failed. See also
+    Enterprise.ClientCertificate.Ash.HardwareKeyGenerationError, which is always
+    recorded first in this fallback path. Same cadence as that metric: recorded
+    at most once per profile, only when the profile has no usable persisted key
+    (in practice, once, the first time the policy provisions an identity); not
+    recorded on certificate renewal, which reuses the existing key.
   </summary>
 </histogram>
 

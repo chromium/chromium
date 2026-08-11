@@ -1382,8 +1382,9 @@ void KcerFuzzer::RunGetKeyInfo() {
   ASSERT_TRUE(key_info_waiter.Get().has_value());
   const KeyInfo& key_info = key_info_waiter.Get().value();
 
-  // Software-backed keys are never generated in the current implementation.
-  EXPECT_EQ(key_info.is_hardware_backed, true);
+  // The fuzzer runs against an NSS softoken slot, which Chaps does not provide,
+  // so no key in it can be hardware backed.
+  EXPECT_EQ(key_info.is_hardware_backed, false);
   EXPECT_EQ(key_info.key_type, expected_key->key_type);
 
   if (expected_key->nickname_known) {
