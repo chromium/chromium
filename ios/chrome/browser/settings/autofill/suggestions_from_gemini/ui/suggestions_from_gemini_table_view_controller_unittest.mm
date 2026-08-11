@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_constants.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_view.h"
@@ -86,14 +88,14 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestInitialization) {
   EXPECT_EQ(TableViewDetailTextCellAccessorySymbolExternalLink,
             item.accessorySymbol);
 
-  TableViewDetailTextItem* helpImproveItem =
-      base::apple::ObjCCastStrict<TableViewDetailTextItem>(
+  TableViewMultiDetailTextItem* helpImproveItem =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(
           GetTableViewItem(1, 0));
   EXPECT_NSEQ(
       l10n_util::GetNSString(
           IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE),
       helpImproveItem.text);
-  EXPECT_EQ(nil, helpImproveItem.detailText);
+  EXPECT_EQ(nil, helpImproveItem.trailingDetailText);
   EXPECT_EQ(UITableViewCellAccessoryDisclosureIndicator,
             helpImproveItem.accessoryType);
 }
@@ -112,6 +114,73 @@ TEST_F(SuggestionsFromGeminiTableViewControllerTest, TestConsumerSetsSwitchOn) {
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
   EXPECT_TRUE(switchItem.on);
+}
+
+// Tests that setting the policy state via the consumer interface updates the
+// switch to a managed info button item.
+TEST_F(SuggestionsFromGeminiTableViewControllerTest,
+       TestConsumerSetsSuggestionsFromGeminiDisabledByPolicy) {
+  CreateController();
+  CheckController();
+
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController setSuggestionsFromGeminiPolicyState:
+                        SuggestionsFromGeminiPolicyState::kFullyDisabled];
+
+  TableViewInfoButtonItem* infoButtonItem =
+      base::apple::ObjCCastStrict<TableViewInfoButtonItem>(
+          GetTableViewItem(0, 0));
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE),
+              infoButtonItem.text);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY),
+              infoButtonItem.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+              infoButtonItem.statusText);
+}
+
+// Tests that setting the policy state via the consumer interface updates the
+// help improve item to display "Off".
+TEST_F(SuggestionsFromGeminiTableViewControllerTest,
+       TestHelpImproveItemShowsOffWhenSuggestionsFromGeminiDisabledByPolicy) {
+  CreateController();
+  CheckController();
+
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController setSuggestionsFromGeminiPolicyState:
+                        SuggestionsFromGeminiPolicyState::kFullyDisabled];
+
+  TableViewMultiDetailTextItem* helpImproveItem =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(
+          GetTableViewItem(1, 0));
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+              helpImproveItem.trailingDetailText);
+}
+
+// Tests that setting the help improve policy state via the consumer interface
+// updates the help improve item to display "Off".
+TEST_F(
+    SuggestionsFromGeminiTableViewControllerTest,
+    TestHelpImproveItemShowsOffWhenHelpImproveQualityLoggingDisabledByPolicy) {
+  CreateController();
+  CheckController();
+
+  SuggestionsFromGeminiTableViewController* geminiController =
+      base::apple::ObjCCastStrict<SuggestionsFromGeminiTableViewController>(
+          controller());
+  [geminiController setSuggestionsFromGeminiPolicyState:
+                        SuggestionsFromGeminiPolicyState::kLoggingDisabled];
+
+  TableViewMultiDetailTextItem* helpImproveItem =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(
+          GetTableViewItem(1, 0));
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+              helpImproveItem.trailingDetailText);
 }
 
 // Tests that view controller actions correctly invoke mutators.

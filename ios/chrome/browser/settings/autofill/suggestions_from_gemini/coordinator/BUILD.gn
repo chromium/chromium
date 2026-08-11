@@ -6,14 +6,21 @@ source_set("coordinator") {
   sources = [
     "suggestions_from_gemini_coordinator.h",
     "suggestions_from_gemini_coordinator.mm",
+    "suggestions_from_gemini_help_improve_coordinator.h",
+    "suggestions_from_gemini_help_improve_coordinator.mm",
+    "suggestions_from_gemini_help_improve_mediator.h",
+    "suggestions_from_gemini_help_improve_mediator.mm",
     "suggestions_from_gemini_mediator.h",
     "suggestions_from_gemini_mediator.mm",
   ]
   deps = [
     "//base",
+    "//components/optimization_guide/core:features",
     "//components/personal_context/core:prefs",
     "//components/prefs",
+    "//components/prefs/ios",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",
+    "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs",
@@ -30,11 +37,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "suggestions_from_gemini_coordinator_unittest.mm",
+    "suggestions_from_gemini_help_improve_mediator_unittest.mm",
     "suggestions_from_gemini_mediator_unittest.mm",
   ]
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/optimization_guide/core:features",
     "//components/personal_context/core:prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui",

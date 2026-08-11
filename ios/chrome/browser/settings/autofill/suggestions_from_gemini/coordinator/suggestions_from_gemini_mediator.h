@@ -26,6 +26,8 @@
 
 @end
 
+class PrefService;
+
 // The Mediator for controlling the Suggestions from Gemini settings.
 @interface SuggestionsFromGeminiMediator
     : NSObject <SuggestionsFromGeminiMutator>
@@ -36,8 +38,8 @@
 // The delegate for this mediator.
 @property(nonatomic, weak) id<SuggestionsFromGeminiMediatorDelegate> delegate;
 
-- (instancetype)initWithPrefBackedBoolean:
-    (PrefBackedBoolean*)personalContextSwitchEnabled NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

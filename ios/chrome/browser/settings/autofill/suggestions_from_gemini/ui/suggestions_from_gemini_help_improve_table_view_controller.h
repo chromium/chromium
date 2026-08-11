@@ -5,13 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_SUGGESTIONS_FROM_GEMINI_UI_SUGGESTIONS_FROM_GEMINI_HELP_IMPROVE_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_SUGGESTIONS_FROM_GEMINI_UI_SUGGESTIONS_FROM_GEMINI_HELP_IMPROVE_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 // The TableView for the Suggestions from Gemini "Help improve enhanced
 // autofill" settings.
 @interface SuggestionsFromGeminiHelpImproveTableViewController
-    : SettingsRootTableViewController <SettingsControllerProtocol>
+    : SettingsRootTableViewController <SettingsControllerProtocol,
+                                       SuggestionsFromGeminiHelpImproveConsumer>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

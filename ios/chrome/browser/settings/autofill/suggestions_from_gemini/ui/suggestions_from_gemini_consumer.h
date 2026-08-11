@@ -7,11 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_constants.h"
+
 // Consumer for the Suggestions from Gemini settings.
 @protocol SuggestionsFromGeminiConsumer <NSObject>
 
 // Tells the consumer to update the state of the Suggestions from Gemini switch.
 - (void)setSuggestionsFromGeminiSwitchOn:(BOOL)on;
+
+// Tells the consumer the policy state for Suggestions from Gemini.
+- (void)setSuggestionsFromGeminiPolicyState:
+    (SuggestionsFromGeminiPolicyState)state;
 
 @end
 

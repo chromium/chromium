@@ -6,6 +6,7 @@ source_set("ui") {
   sources = [
     "suggestions_from_gemini_constants.h",
     "suggestions_from_gemini_consumer.h",
+    "suggestions_from_gemini_help_improve_consumer.h",
     "suggestions_from_gemini_help_improve_table_view_controller.h",
     "suggestions_from_gemini_help_improve_table_view_controller.mm",
     "suggestions_from_gemini_mutator.h",
@@ -16,8 +17,10 @@ source_set("ui") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
+    "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",

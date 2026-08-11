@@ -8,19 +8,29 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_constants.h"
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+@interface SuggestionsFromGeminiTableViewController () <
+    PopoverLabelViewControllerDelegate>
+@end
+
 @implementation SuggestionsFromGeminiTableViewController {
   BOOL _settingsAreDismissed;
   // Tracks whether the Suggestions from Gemini setting switch is toggled on.
   BOOL _suggestionsFromGeminiSwitchOn;
+  // Tracks the enterprise policy state for Suggestions from Gemini.
+  SuggestionsFromGeminiPolicyState _policyState;
 }
 
 - (instancetype)init {
@@ -44,8 +54,13 @@
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
 
-  [model addItem:[self findAndFillSwitchItem]
-      toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+  if (_policyState == SuggestionsFromGeminiPolicyState::kFullyDisabled) {
+    [model addItem:[self findAndFillManagedItem]
+        toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+  } else {
+    [model addItem:[self findAndFillSwitchItem]
+        toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
+  }
 
   [model addItem:[self manageConnectedAppsItem]
       toSectionWithIdentifier:SectionIdentifierSuggestionsFromGemini];
@@ -76,6 +91,18 @@
       [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                             withRowAnimation:UITableViewRowAnimationNone];
     }
+  }
+}
+
+- (void)setSuggestionsFromGeminiPolicyState:
+    (SuggestionsFromGeminiPolicyState)state {
+  if (_policyState == state) {
+    return;
+  }
+
+  _policyState = state;
+  if (self.isViewLoaded) {
+    [self reloadData];
   }
 }
 
@@ -122,6 +149,38 @@
 
 - (void)settingsWillBeDismissed {
   _settingsAreDismissed = YES;
+}
+
+#pragma mark - Actions
+
+// Called when the user clicks on the information button of the managed
+// setting's UI. Shows a textual bubble with the information of the enterprise.
+- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  if (_settingsAreDismissed) {
+    return;
+  }
+
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+  bubbleViewController.delegate = self;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+}
+
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  if (_settingsAreDismissed) {
+    return;
+  }
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 #pragma mark - Switch Callbacks
@@ -178,6 +237,23 @@
   return switchItem;
 }
 
+// Returns a configured info button item for the "Suggestions from Gemini"
+// setting.
+- (TableViewInfoButtonItem*)findAndFillManagedItem {
+  TableViewInfoButtonItem* managedItem =
+      [[TableViewInfoButtonItem alloc] initWithType:ItemTypeFindAndFillSwitch];
+  managedItem.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_TITLE);
+  managedItem.detailText = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SWITCH_SUMMARY);
+  managedItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  managedItem.target = self;
+  managedItem.selector = @selector(didTapManagedUIInfoButton:);
+  return managedItem;
+}
+
 // Returns a configured detail text item for the "Manage connected apps" link.
 - (TableViewDetailTextItem*)manageConnectedAppsItem {
   TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
@@ -193,11 +269,16 @@
 
 // Returns a configured detail text item for the "Help improve enhanced
 // autofill" subpage row.
-- (TableViewDetailTextItem*)helpImproveItem {
-  TableViewDetailTextItem* helpImproveItem =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeHelpImprove];
+- (TableViewMultiDetailTextItem*)helpImproveItem {
+  TableViewMultiDetailTextItem* helpImproveItem =
+      [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeHelpImprove];
   helpImproveItem.text = l10n_util::GetNSString(
       IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HELPING_IMPROVE_NOTICE_TITLE);
+  if (_policyState == SuggestionsFromGeminiPolicyState::kFullyDisabled ||
+      _policyState == SuggestionsFromGeminiPolicyState::kLoggingDisabled) {
+    helpImproveItem.trailingDetailText =
+        l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  }
   helpImproveItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   helpImproveItem.accessibilityTraits |= UIAccessibilityTraitButton;
   return helpImproveItem;

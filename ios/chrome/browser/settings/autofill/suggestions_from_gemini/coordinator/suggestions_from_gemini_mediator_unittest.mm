@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_mediator.h"
 
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
+#import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -23,12 +25,12 @@ class SuggestionsFromGeminiMediatorTest : public PlatformTest {
     pref_service_.registry()->RegisterBooleanPref(
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
-    PrefBackedBoolean* personalContextSwitchEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:&pref_service_
-                   prefName:personal_context::prefs::
-                                kPersonalContextInAutofillSettingsToggleStatus];
+    pref_service_.registry()->RegisterIntegerPref(
+        optimization_guide::prefs::
+            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+        0);
     mediator_ = [[SuggestionsFromGeminiMediator alloc]
-        initWithPrefBackedBoolean:personalContextSwitchEnabled];
+        initWithPrefService:&pref_service_];
     mock_consumer_ = OCMProtocolMock(@protocol(SuggestionsFromGeminiConsumer));
     mock_delegate_ =
         OCMProtocolMock(@protocol(SuggestionsFromGeminiMediatorDelegate));
@@ -53,6 +55,53 @@ TEST_F(SuggestionsFromGeminiMediatorTest, TestInitialization) {
 // Tests that setting the consumer updates it with the current preference state.
 TEST_F(SuggestionsFromGeminiMediatorTest, TestInitializationUpdatesConsumer) {
   OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
+  OCMExpect(
+      [mock_consumer_ setSuggestionsFromGeminiPolicyState:
+                          SuggestionsFromGeminiPolicyState::kFullyAllowed]);
+  mediator_.consumer = mock_consumer_;
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that setting the policy status propagates to the consumer when
+// suggestions are disabled.
+TEST_F(SuggestionsFromGeminiMediatorTest,
+       TestPolicyDisablePropagatesToConsumer) {
+  mediator_.consumer = nil;
+
+  pref_service_.SetManagedPref(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      std::make_unique<base::Value>(
+          static_cast<int>(optimization_guide::model_execution::prefs::
+                               ModelExecutionEnterprisePolicyValue::kDisable)));
+
+  OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
+  OCMExpect(
+      [mock_consumer_ setSuggestionsFromGeminiPolicyState:
+                          SuggestionsFromGeminiPolicyState::kFullyDisabled]);
+
+  mediator_.consumer = mock_consumer_;
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that setting the policy status propagates to the consumer when logging
+// is disabled.
+TEST_F(SuggestionsFromGeminiMediatorTest,
+       TestPolicyAllowWithoutLoggingPropagatesToConsumer) {
+  mediator_.consumer = nil;
+
+  pref_service_.SetManagedPref(
+      optimization_guide::prefs::
+          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      std::make_unique<base::Value>(static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)));
+
+  OCMExpect([mock_consumer_ setSuggestionsFromGeminiSwitchOn:YES]);
+  OCMExpect(
+      [mock_consumer_ setSuggestionsFromGeminiPolicyState:
+                          SuggestionsFromGeminiPolicyState::kLoggingDisabled]);
+
   mediator_.consumer = mock_consumer_;
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
