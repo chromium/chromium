@@ -115,8 +115,6 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
 
   void HandleIntroSigninChoice(IntroChoice choice);
 
-  void PlaySignInCelebrationSound();
-
   void StartBrowsing();
 
   // Run the `finish_flow_callback_` if it's not empty.
@@ -130,16 +128,14 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
 
   void ToggleFeatureShowcaseAmbientSound(bool active);
 
-  void PlayFeatureShowcaseProgressSound();
-
-  void PlayAllSetSound();
-
   bool AreEffectsEnabled() const;
 
   void MaybeTriggerHatsSurvey();
 
   void OnFlowFinished(PostHostClearedCallback post_host_cleared_callback);
   void OnFinishOrContinueChoice(FinishOrContinueChoice choice);
+
+  void PlaySound(audio::SoundsManager::SoundKey sound_key);
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
