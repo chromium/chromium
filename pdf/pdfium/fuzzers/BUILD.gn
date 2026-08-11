@@ -14,14 +14,12 @@ import("//third_party/protobuf/proto_library.gni")
 template("pdfium_fuzzer_test") {
   fuzzer_test(target_name) {
     forward_variables_from(invoker, "*", [ "deps" ])
-
     sources = [ "initialize_process.cc" ]
     deps = [
       "//base",
       "//base/test:test_support",
+      "//third_party/pdfium/testing/fuzzers:${target_name}_src",
     ]
-
-    deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_src" ]
     if (is_component_build) {
       deps += [ "//third_party/pdfium/testing/fuzzers:${target_name}_impl" ]
     }
@@ -62,29 +60,19 @@ group("pdf_fuzzers") {
         ":pdf_bidi_fuzzer",
         ":pdf_cfgas_stringformatter_fuzzer",
         ":pdf_cfx_barcode_fuzzer",
+        ":pdf_codec_bmp_fuzzer",
+        ":pdf_codec_gif_fuzzer",
         ":pdf_codec_jpeg_fuzzer",
+        ":pdf_codec_png_fuzzer",
+        ":pdf_codec_tiff_fuzzer",
         ":pdf_css_fuzzer",
         ":pdf_formcalc_context_fuzzer",
         ":pdf_formcalc_fuzzer",
         ":pdf_formcalc_translate_fuzzer",
+        ":pdf_lzw_fuzzer",
         ":pdfium_xfa_fuzzer",
         ":pdfium_xfa_lpm_fuzzer",
       ]
-      if (pdf_enable_xfa_bmp) {
-        deps += [ ":pdf_codec_bmp_fuzzer" ]
-      }
-      if (pdf_enable_xfa_gif) {
-        deps += [
-          ":pdf_codec_gif_fuzzer",
-          ":pdf_lzw_fuzzer",
-        ]
-      }
-      if (pdf_enable_xfa_png) {
-        deps += [ ":pdf_codec_png_fuzzer" ]
-      }
-      if (pdf_enable_xfa_tiff) {
-        deps += [ ":pdf_codec_tiff_fuzzer" ]
-      }
     }
   }
   if (is_clang) {
@@ -159,17 +147,13 @@ if (pdf_enable_v8) {
   }
 
   if (pdf_enable_xfa) {
-    if (pdf_enable_xfa_bmp) {
-      pdfium_fuzzer_test("pdf_codec_bmp_fuzzer") {
-        seed_corpus = "corpora/pdf_codec_bmp"
-      }
+    pdfium_fuzzer_test("pdf_codec_bmp_fuzzer") {
+      seed_corpus = "corpora/pdf_codec_bmp"
     }
 
-    if (pdf_enable_xfa_gif) {
-      pdfium_fuzzer_test("pdf_codec_gif_fuzzer") {
-        dict = "dicts/pdf_codec_gif.dict"
-        seed_corpus = "corpora/pdf_codec_gif"
-      }
+    pdfium_fuzzer_test("pdf_codec_gif_fuzzer") {
+      dict = "dicts/pdf_codec_gif.dict"
+      seed_corpus = "corpora/pdf_codec_gif"
     }
 
     pdfium_fuzzer_test("pdf_codec_jpeg_fuzzer") {
@@ -177,23 +161,19 @@ if (pdf_enable_v8) {
       seed_corpus = "corpora/pdf_codec_jpeg"
     }
 
-    if (pdf_enable_xfa_png) {
-      pdfium_fuzzer_test("pdf_codec_png_fuzzer") {
-        dict = "dicts/pdf_codec_png.dict"
-        seed_corpuses = [
-          "corpora/pdf_codec_png",
-          "//components/test/data/viz",
-          "//third_party/blink/web_tests/images/png-suite/samples",
-          "//third_party/blink/web_tests/images/resources/pngfuzz",
-        ]
-      }
+    pdfium_fuzzer_test("pdf_codec_png_fuzzer") {
+      dict = "dicts/pdf_codec_png.dict"
+      seed_corpuses = [
+        "corpora/pdf_codec_png",
+        "//components/test/data/viz",
+        "//third_party/blink/web_tests/images/png-suite/samples",
+        "//third_party/blink/web_tests/images/resources/pngfuzz",
+      ]
     }
 
-    if (pdf_enable_xfa_tiff) {
-      pdfium_fuzzer_test("pdf_codec_tiff_fuzzer") {
-        dict = "dicts/pdf_codec_tiff.dict"
-        seed_corpus = "corpora/pdf_codec_tiff"
-      }
+    pdfium_fuzzer_test("pdf_codec_tiff_fuzzer") {
+      dict = "dicts/pdf_codec_tiff.dict"
+      seed_corpus = "corpora/pdf_codec_tiff"
     }
 
     pdfium_fuzzer_test("pdf_css_fuzzer") {
@@ -212,9 +192,7 @@ if (pdf_enable_v8) {
       dict = "dicts/pdf_formcalc.dict"
     }
 
-    if (pdf_enable_xfa_gif) {
-      pdfium_fuzzer_test("pdf_lzw_fuzzer") {
-      }
+    pdfium_fuzzer_test("pdf_lzw_fuzzer") {
     }
 
     pdfium_fuzzer_test("pdf_bidi_fuzzer") {
