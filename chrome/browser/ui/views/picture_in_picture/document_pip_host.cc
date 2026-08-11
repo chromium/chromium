@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -411,7 +412,9 @@ content::WebContents* DocumentPipHost::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-    ClosePipWindow();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&DocumentPipHost::ClosePipWindow,
+                                  weak_factory_.GetWeakPtr()));
     return nullptr;
   }
 

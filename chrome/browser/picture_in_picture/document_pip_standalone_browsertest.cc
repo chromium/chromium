@@ -182,6 +182,34 @@ IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
   EXPECT_EQ(nullptr, host->GetChildWebContents());
 }
 
+// Regression test for crbug.com/544038274: a renderer-initiated same-window
+// navigation from the standalone PiP child must not synchronously destroy the
+// child WebContents while content::WebContentsImpl::OpenURL() is still using
+// source-frame state on the stack.
+IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
+                       ChildCurrentTabNavigationClosesWindowWithoutCrashing) {
+  OpenDocumentPipWindow();
+
+  auto* host = GetDocumentPipHost();
+  ASSERT_NE(nullptr, host);
+  content::WebContents* child = host->GetChildWebContents();
+  ASSERT_NE(nullptr, child);
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+
+  content::ExecuteScriptAsync(
+      child, content::JsReplace("location.href = $1;",
+                                embedded_test_server()->GetURL(
+                                    "example.test", "/title1.html")));
+
+  child_destroyed_watcher.Wait();
+
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  EXPECT_EQ(
+      nullptr,
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents());
+}
+
 // Closing the opener tab destroys the host and leaves no PiP window behind.
 IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
                        OpenerDestroyedClosesWindow) {

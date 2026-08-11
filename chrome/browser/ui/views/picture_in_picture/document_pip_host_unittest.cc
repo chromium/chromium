@@ -507,6 +507,12 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_CurrentTabClosesPipWindow) {
   EXPECT_EQ(nullptr, host->OpenURLFromTab(child, params, base::NullCallback()));
 
   EXPECT_EQ(0, opener_delegate.call_count());
+  EXPECT_TRUE(host->GetWidget());
+  EXPECT_EQ(child, host->GetChildWebContents());
+  EXPECT_FALSE(child_destroyed_watcher.IsDestroyed());
+
+  content::RunAllTasksUntilIdle();
+
   EXPECT_EQ(nullptr, host->GetWidget());
   EXPECT_EQ(nullptr, host->GetChildWebContents());
   EXPECT_TRUE(child_destroyed_watcher.IsDestroyed());
