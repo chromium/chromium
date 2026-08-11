@@ -212,8 +212,7 @@ void InstallerDownloaderModelImpl::StartDownload(
 
 bool InstallerDownloaderModelImpl::CanShowInfobar() const {
   const PrefService* local_state = g_browser_process->local_state();
-  if (local_state->GetBoolean(
-          prefs::kInstallerDownloaderDownloadCompleted)) {
+  if (local_state->GetBoolean(prefs::kInstallerDownloaderDownloadCompleted)) {
     return false;
   }
 
@@ -268,21 +267,47 @@ void InstallerDownloaderModelImpl::IncrementShowCount() {
 
   local_state->SetTime(prefs::kInstallerDownloaderInfobarLastShowTime,
                        base::Time::Now());
+
+  if (IsCurrentCycleFinished()) {
+    if (!base::FeatureList::IsEnabled(kInstallerDownloaderReengagement) ||
+        GetCurrentCycle() >= installer_downloader::kMaxCycleCount.Get()) {
+      MaybeRecordTotalShowCountVal();
+    }
+  }
 }
 
 void InstallerDownloaderModelImpl::PreventFutureDisplay() {
   g_browser_process->local_state()->SetBoolean(
       prefs::kInstallerDownloaderPreventFutureDisplay, true);
+  if (!base::FeatureList::IsEnabled(kInstallerDownloaderReengagement) ||
+      GetCurrentCycle() >= installer_downloader::kMaxCycleCount.Get()) {
+    MaybeRecordTotalShowCountVal();
+  }
 }
 
 void InstallerDownloaderModelImpl::RecordDownloadCompleted() {
   g_browser_process->local_state()->SetBoolean(
       prefs::kInstallerDownloaderDownloadCompleted, true);
+  MaybeRecordTotalShowCountVal();
 }
 
 bool InstallerDownloaderModelImpl::ShouldByPassEligibilityCheck() const {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kInstallerDownloaderBypassEligibilityCheck);
+}
+
+void InstallerDownloaderModelImpl::MaybeRecordTotalShowCountVal() {
+  if (total_show_count_recorded_) {
+    return;
+  }
+  total_show_count_recorded_ = true;
+  const PrefService* local_state = g_browser_process->local_state();
+  // Logging with an exclusive max of 20 to future-proof against potential
+  // increases in cycle count or shows-per-cycle without breaking histogram
+  // compatibility. Current max is 9 (3 cycles * 3 shows).
+  base::UmaHistogramExactLinear(
+      "Windows.InstallerDownloader.TotalShowCount",
+      local_state->GetInteger(prefs::kInstallerDownloaderTotalShowCount), 20);
 }
 
 bool InstallerDownloaderModelImpl::IsCurrentCycleFinished() const {

@@ -65,12 +65,13 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   void PreventFutureDisplay() override;
   void RecordDownloadCompleted() override;
   bool ShouldByPassEligibilityCheck() const override;
+  int GetCurrentCycle() const override;
 
  private:
   std::optional<base::FilePath> GetInstallerDestination() const;
 
   bool IsCurrentCycleFinished() const;
-  int GetCurrentCycle() const;
+  void MaybeRecordTotalShowCountVal();
 
   // Invoked when the installer download started.
   void OnInstallerDownloadCreated(const base::FilePath& expected_path,
@@ -87,6 +88,10 @@ class InstallerDownloaderModelImpl : public InstallerDownloaderModel {
   // download is finished or stopped. It should be null at any point when no
   // download is in progress.
   std::unique_ptr<InstallerDownloaderObserver> installer_downloader_observer_;
+
+  // In-memory flag to prevent double-logging of the total show count metric
+  // within the same session.
+  bool total_show_count_recorded_ = false;
 };
 
 }  // namespace installer_downloader

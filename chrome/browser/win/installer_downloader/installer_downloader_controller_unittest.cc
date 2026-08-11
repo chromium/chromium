@@ -60,6 +60,7 @@ class MockInstallerDownloaderModel : public InstallerDownloaderModel {
   MOCK_METHOD(void, PreventFutureDisplay, (), (override));
   MOCK_METHOD(void, RecordDownloadCompleted, (), (override));
   MOCK_METHOD(bool, ShouldByPassEligibilityCheck, (), (const, override));
+  MOCK_METHOD(int, GetCurrentCycle, (), (const, override));
 };
 
 class InstallerDownloaderControllerTest : public testing::Test {
@@ -73,6 +74,7 @@ class InstallerDownloaderControllerTest : public testing::Test {
 
     auto model = std::make_unique<StrictMock<MockInstallerDownloaderModel>>();
     mock_model_ = model.get();
+    EXPECT_CALL(*mock_model_, GetCurrentCycle()).WillRepeatedly(Return(1));
 
     controller_ = std::make_unique<InstallerDownloaderController>(
         show_infobar_callback_.Get(), is_metric_enabled_mock_callback_.Get(),
@@ -193,11 +195,10 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsEnabled) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
 
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
-  EXPECT_CALL(
-      *mock_model_,
-      StartDownload(Property(&GURL::spec, HasSubstr("&stats=1")),
-                    destination.AppendASCII(kDownloadedInstallerFileName),
-                    _, _));
+  EXPECT_CALL(*mock_model_,
+              StartDownload(
+                  Property(&GURL::spec, HasSubstr("&stats=1")),
+                  destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -206,11 +207,10 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlStatsDisabled) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(false));
 
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
-  EXPECT_CALL(
-      *mock_model_,
-      StartDownload(Property(&GURL::spec, HasSubstr("&stats=0")),
-                    destination.AppendASCII(kDownloadedInstallerFileName),
-                    _, _));
+  EXPECT_CALL(*mock_model_,
+              StartDownload(
+                  Property(&GURL::spec, HasSubstr("&stats=0")),
+                  destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -219,12 +219,11 @@ TEST_F(InstallerDownloaderControllerTest, DownloadUrlLanguageSubstitution) {
   EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
 
   const base::FilePath destination(FILE_PATH_LITERAL("C:\\tmp"));
-  EXPECT_CALL(
-      *mock_model_,
-      StartDownload(
-          Property(&GURL::spec,
-                   AllOf(HasSubstr("&lang=en"), Not(HasSubstr("LANGUAGE")))),
-          destination.AppendASCII(kDownloadedInstallerFileName), _, _));
+  EXPECT_CALL(*mock_model_,
+              StartDownload(
+                  Property(&GURL::spec, AllOf(HasSubstr("&lang=en"),
+                                              Not(HasSubstr("LANGUAGE")))),
+                  destination.AppendASCII(kDownloadedInstallerFileName), _, _));
 
   controller_->OnDownloadRequestAccepted(destination);
 }
@@ -324,6 +323,9 @@ TEST_F(InstallerDownloaderControllerTest, InfobarShownLoggedOncePerSession) {
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.InfobarShown",
                                 /*true=*/1, /*expected_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.Reengagement.InfobarShown",
+      /*cycle=*/1, /*expected_count=*/1);
 }
 
 TEST_F(InstallerDownloaderControllerTest, RequestAcceptedTrueMetric) {
@@ -338,6 +340,9 @@ TEST_F(InstallerDownloaderControllerTest, RequestAcceptedTrueMetric) {
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
                                 /*true=*/1, /*expected_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.Reengagement.RequestAccepted",
+      /*cycle=*/1, /*expected_count=*/1);
 }
 
 TEST_F(InstallerDownloaderControllerTest, RequestAcceptedFalseMetric) {
@@ -349,6 +354,8 @@ TEST_F(InstallerDownloaderControllerTest, RequestAcceptedFalseMetric) {
 
   histograms.ExpectUniqueSample("Windows.InstallerDownloader.RequestAccepted",
                                 /*false=*/0, /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Windows.InstallerDownloader.Reengagement.RequestAccepted", 0);
 }
 
 TEST_F(InstallerDownloaderControllerTest, LogsDownloadResultMetric) {
@@ -422,6 +429,42 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenActiveBrowserHasNoTabs) {
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
   controller_->MaybeShowInfoBar();
+}
+
+TEST_F(InstallerDownloaderControllerTest, ReengagementMetricsLogCorrectCycle) {
+  base::HistogramTester histograms;
+
+  // Simulate being in Cycle 2.
+  EXPECT_CALL(*mock_model_, GetCurrentCycle()).WillRepeatedly(Return(2));
+
+  EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
+  EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
+
+  EXPECT_CALL(show_infobar_callback_, Run(_, _, _))
+      .WillOnce(Return(reinterpret_cast<infobars::InfoBar*>(0x1)));
+
+  controller_->MaybeShowInfoBar();
+
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.Reengagement.InfobarShown",
+      /*cycle=*/2, /*expected_count=*/1);
+
+  // Now accept it.
+  EXPECT_CALL(is_metric_enabled_mock_callback_, Run()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_model_, StartDownload(_, _, _, _)).Times(1);
+
+  controller_->OnDownloadRequestAccepted(
+      base::FilePath(FILE_PATH_LITERAL("C:\\tmp"))
+          .AppendASCII(kDownloadedInstallerFileName));
+
+  histograms.ExpectUniqueSample(
+      "Windows.InstallerDownloader.Reengagement.RequestAccepted",
+      /*cycle=*/2, /*expected_count=*/1);
 }
 
 }  // namespace

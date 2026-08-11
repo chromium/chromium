@@ -58,6 +58,9 @@ class InstallerDownloaderModel {
   // Returns true if eligibility check should be overridden for manual testing
   // purpose.
   virtual bool ShouldByPassEligibilityCheck() const = 0;
+
+  // Returns the current re-engagement campaign cycle (1-indexed).
+  virtual int GetCurrentCycle() const = 0;
 };
 
 }  // namespace installer_downloader
