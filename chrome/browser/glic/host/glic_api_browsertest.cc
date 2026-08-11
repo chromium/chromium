@@ -1325,11 +1325,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testJournal) {
-  ExecuteJsTest();
-  histogram_tester->ExpectTotalCount("Glic.Actor.JournalEvent.async_event", 1);
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testStopMicrophone) {
   ExecuteJsTest();
   base::test::TestFuture<void> microphone_stopped;

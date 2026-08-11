@@ -1447,6 +1447,30 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(track);
     assertTrue(await waitForFirstFrame(track));
   }
+
+  async testJournal() {
+    assertDefined(this.host.getJournalHost);
+    const journalHost = this.host.getJournalHost();
+    assertDefined(journalHost);
+    journalHost.start(64 * 1024 * 1024, true);
+    let snapshot = await journalHost.snapshot(false);
+    let lastJournalSize = snapshot.data.byteLength;
+    assertTrue(lastJournalSize > 0);
+    journalHost.instantEvent(23, 'instant_event', 'some_details');
+    snapshot = await journalHost.snapshot(false);
+    assertTrue(snapshot.data.byteLength > lastJournalSize);
+    lastJournalSize = snapshot.data.byteLength;
+    journalHost.clear();
+    snapshot = await journalHost.snapshot(false);
+    assertTrue(snapshot.data.byteLength < lastJournalSize);
+    lastJournalSize = snapshot.data.byteLength;
+    journalHost.beginAsyncEvent(10, 23, 'async_event', 'some_details');
+    journalHost.endAsyncEvent(10, 'some_details_end');
+    snapshot = await journalHost.snapshot(false);
+    assertTrue(snapshot.data.byteLength > lastJournalSize);
+    lastJournalSize = snapshot.data.byteLength;
+    journalHost.stop();
+  }
 }
 
 class FaviconTest extends ApiTests {

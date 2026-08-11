@@ -3522,6 +3522,13 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetDisplayMedia) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testJournal) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  histogram_tester.ExpectTotalCount("Glic.Actor.JournalEvent.async_event", 1);
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
