@@ -25,7 +25,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, installMock, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_TAB_CONTEXT_FN, setupAutocompleteResults, uploadFileAndVerify} from './test_searchbox_utils.js';
@@ -1137,8 +1137,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           await app.updateComplete;
 
           assertEquals(
-              '', inputElement.value,
-              'Input should be cleared, but input = ' + inputElement.value);
+              '', getInputValue(inputElement),
+              'Input should be cleared, but input = ' +
+                  getInputValue(inputElement));
         });
 
         test('ComposeboxSubmitSendsQueryAndClearsInput', async () => {
@@ -1178,8 +1179,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           await app.updateComplete;
 
           assertEquals(
-              '', inputElement.value,
-              'Input should be cleared, but input = ' + inputElement.value);
+              '', getInputValue(inputElement),
+              'Input should be cleared, but input = ' +
+                  getInputValue(inputElement));
           assertEquals(
               null, innerComposebox.getDropdownElement().result,
               'Matches should be cleared');
@@ -1515,7 +1517,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           // Verify input is set.
           assertEquals(TEST_QUERY, innerComposebox.input);
           assertEquals(
-              TEST_QUERY, innerComposebox.getInputElement().$.input.value);
+              TEST_QUERY,
+              getInputValue(innerComposebox.getInputElement().$.input));
 
           // Verify `submitQuery` was not called.
           assertEquals(

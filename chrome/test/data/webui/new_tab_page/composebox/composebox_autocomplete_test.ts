@@ -18,6 +18,23 @@ enum Attributes {
   SELECTED = 'selected',
 }
 
+function setInputValue(inputElement: HTMLElement, value: string) {
+  if (inputElement instanceof HTMLTextAreaElement ||
+      inputElement instanceof HTMLInputElement) {
+    inputElement.value = value;
+  } else {
+    inputElement.innerText = value;
+  }
+}
+
+function getInputValue(inputElement: HTMLElement): string {
+  if (inputElement instanceof HTMLTextAreaElement ||
+      inputElement instanceof HTMLInputElement) {
+    return inputElement.value;
+  }
+  return inputElement.innerText;
+}
+
 suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
   const testProxy = setupComposeboxTest();
 
@@ -28,7 +45,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -61,7 +78,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'Test');
     testProxy.element.getInputElement().inputElement.style.height = '64px';
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
@@ -105,7 +122,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -166,7 +183,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -188,7 +205,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     // Dropdown should show for when matches are available.
     assertFalse(composeboxDropdown!.hidden);
 
-    testProxy.element.getInputElement().inputElement.value = 'Hello';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'Hello');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -205,7 +222,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'Test');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -262,7 +279,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
         await microtasksFinished();
 
         // Add typed input.
-        testProxy.element.getInputElement().inputElement.value = 'Test';
+        setInputValue(testProxy.element.getInputElement().inputElement, 'Test');
         testProxy.element.getInputElement().inputElement.dispatchEvent(
             new Event('input'));
         await microtasksFinished();
@@ -293,7 +310,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     await microtasksFinished();
 
     // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
 
@@ -318,7 +335,7 @@ suite(`NewTabPageComposeboxAutocompleteDropdownTest`, () => {
     assertStyle(matchEl, 'display', 'block');
 
     // Add typed input
-    testProxy.element.getInputElement().inputElement.value = 'awesome';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'awesome');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     const typedMatches = [
@@ -474,7 +491,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     let closed = false;
     closePromise.then(() => closed = true);
 
-    testProxy.element.getInputElement().inputElement.value = 'test';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'test');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -486,7 +503,8 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
 
     assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
     assertFalse(closed);
-    assertEquals('', testProxy.element.getInputElement().inputElement.value);
+    assertEquals(
+        '', getInputValue(testProxy.element.getInputElement().inputElement));
 
     // Case 2: closeOnEscape = true. Escape should close the composebox.
     testProxy.element.closeOnEscape = true;
@@ -506,7 +524,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     await microtasksFinished();
 
     // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'Test');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -556,7 +574,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
         'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
 
     // Arrow down should do default action.
     const arrowUpEvent = new KeyboardEvent('keydown', {
@@ -575,7 +593,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
         'hello world 4',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
 
     // When arrowing up from last match, first SHOWN match should be
     // selected.
@@ -586,7 +604,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
         'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
   });
 
   test('arrow up/down moves selection / focus', async () => {
@@ -595,7 +613,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     await microtasksFinished();
 
     // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
 
@@ -631,7 +649,8 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     // First match is selected
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
+        'hello world',
+        getInputValue(testProxy.element.getInputElement().inputElement));
 
     // Move the focus to the second match.
     matchEls[1]!.focus();
@@ -646,7 +665,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
         'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
     assertEquals(
         matchEls[1], testProxy.element.$.matches.shadowRoot.activeElement);
 
@@ -665,7 +684,8 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
     // matches.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
+        'hello world',
+        getInputValue(testProxy.element.getInputElement().inputElement));
     assertEquals(
         matchEls[0], testProxy.element.$.matches.shadowRoot.activeElement);
 
@@ -682,7 +702,7 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
         await microtasksFinished();
 
         // Add zps input.
-        testProxy.element.getInputElement().inputElement.value = '';
+        setInputValue(testProxy.element.getInputElement().inputElement, '');
         testProxy.element.getInputElement().inputElement.dispatchEvent(
             new Event('input'));
 
@@ -718,7 +738,8 @@ suite(`NewTabPageComposeboxAutocompleteKeyboardNavigationTest`, () => {
         // First match is selected
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
         assertEquals(
-            '', testProxy.element.getInputElement().inputElement.value);
+            '',
+            getInputValue(testProxy.element.getInputElement().inputElement));
 
         // Assert submit is enabled.
         const submitButton = getSubmitIcon(testProxy);
@@ -755,7 +776,7 @@ suite(`NewTabPageComposeboxAutocompleteMatchRemovalTest`, () => {
     createComposeboxElement(testProxy);
     await microtasksFinished();
 
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new InputEvent('input'));
 
@@ -767,8 +788,8 @@ suite(`NewTabPageComposeboxAutocompleteMatchRemovalTest`, () => {
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           queryId: testProxy.element.activeQueryId,
-          input: testProxy.element.getInputElement()
-                     .inputElement.value.trimStart(),
+          input: getInputValue(testProxy.element.getInputElement().inputElement)
+                     .trimStart(),
           matches,
         }));
     await microtasksFinished();
@@ -829,7 +850,8 @@ suite(`NewTabPageComposeboxAutocompleteMatchRemovalTest`, () => {
     // First match is selected
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
+        'hello world',
+        getInputValue(testProxy.element.getInputElement().inputElement));
 
     // By pressing 'Enter' on the button.
     const keydownEvent = (new KeyboardEvent('keydown', {
@@ -863,7 +885,7 @@ suite(`NewTabPageComposeboxAutocompleteMatchRemovalTest`, () => {
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(
         'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
   });
 
   test('delete button removes match', async () => {
@@ -941,7 +963,7 @@ suite(`NewTabPageComposeboxAutocompleteSmartComposeTest`, () => {
     await microtasksFinished();
 
     // Add input.
-    testProxy.element.getInputElement().inputElement.value = 'smart ';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'smart ');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
 
@@ -966,7 +988,7 @@ suite(`NewTabPageComposeboxAutocompleteSmartComposeTest`, () => {
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
 
     // Add input.
-    testProxy.element.getInputElement().inputElement.value = 'smart ';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'smart ');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
 
@@ -997,7 +1019,7 @@ suite(`NewTabPageComposeboxAutocompleteSmartComposeTest`, () => {
 
     assertEquals(
         'smart compose',
-        testProxy.element.getInputElement().inputElement.value);
+        getInputValue(testProxy.element.getInputElement().inputElement));
     // Autocomplete queried when smart compose accepted.
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
@@ -1014,7 +1036,7 @@ suite(`NewTabPageComposeboxAutocompleteSmartComposeTest`, () => {
     ];
 
     // Add typed input
-    testProxy.element.getInputElement().inputElement.value = 'awesome';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'awesome');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
@@ -1076,7 +1098,7 @@ suite(`NewTabPageComposeboxAutocompleteQueryingTest`, () => {
         testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 0);
 
     // Autocomplete complete should be queried when input is typed.
-    testProxy.element.getInputElement().inputElement.value = 'T';
+    setInputValue(testProxy.element.getInputElement().inputElement, 'T');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();
@@ -1085,7 +1107,7 @@ suite(`NewTabPageComposeboxAutocompleteQueryingTest`, () => {
 
     // Deleting to empty input should stop autocomplete before querying it
     // again.
-    testProxy.element.getInputElement().inputElement.value = '';
+    setInputValue(testProxy.element.getInputElement().inputElement, '');
     testProxy.element.getInputElement().inputElement.dispatchEvent(
         new Event('input'));
     await microtasksFinished();

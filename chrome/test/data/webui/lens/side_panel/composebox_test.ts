@@ -231,7 +231,7 @@ suite('Composebox', () => {
     assertTrue(cancelButton.hasAttribute('disabled'));
 
     // The buttons should be visible now that there is text.
-    input.value = 'hello world';
+    input.innerText = 'hello world';
     const cancelShowPromise = getTransitionEndPromise(cancelButton, 'opacity');
     const cancelContainerShowPromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
@@ -252,7 +252,7 @@ suite('Composebox', () => {
     assertFalse(cancelButton.hasAttribute('disabled'));
 
     // Clear the input to allow the composebox to collapse.
-    input.value = '';
+    input.innerText = '';
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await waitAfterNextRender(composebox);
 
@@ -447,7 +447,7 @@ suite('Composebox', () => {
     assertEquals(input, focusable[0]);
 
     // When text is present, tabbing follows order: input -> cancel -> submit.
-    input.value = 'some text';
+    input.innerText = 'some text';
     input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
 
@@ -489,7 +489,7 @@ suite('Composebox', () => {
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
-    input.value = 'some text';
+    input.innerText = 'some text';
     input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
 
@@ -501,11 +501,11 @@ suite('Composebox', () => {
       composed: true,
     }));
     await waitAfterNextRender(composebox);
-    assertEquals(input.value, '');
+    assertEquals(input.innerText, '');
 
     // Focusing the submit button and pressing enter should submit the query.
     const query = 'some other text';
-    input.value = query;
+    input.innerText = query;
     input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
 
@@ -590,19 +590,19 @@ suite('Composebox', () => {
     input.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
-    assertEquals(input.value, 'match 1');
+    assertEquals(input.innerText, 'match 1');
 
     // Pressing ArrowDown again should select the second item.
     input.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
-    assertEquals(input.value, 'match 2');
+    assertEquals(input.innerText, 'match 2');
 
     // Pressing ArrowUp should select the first item again.
     input.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
     await waitAfterNextRender(composebox);
-    assertEquals(input.value, 'match 1');
+    assertEquals(input.innerText, 'match 1');
   });
 
   test('LensButtonClickNotifiesHandler', async () => {

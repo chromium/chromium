@@ -59,10 +59,23 @@ export function installMock<T extends object>(
 
 
 export function simulateUserInput(
-    inputElement: HTMLInputElement|HTMLTextAreaElement, value: string) {
-  inputElement.value = value;
+    inputElement: HTMLInputElement|HTMLTextAreaElement|HTMLElement,
+    value: string) {
+  if ('value' in inputElement) {
+    (inputElement as HTMLInputElement).value = value;
+  } else {
+    inputElement.innerText = value;
+  }
   inputElement.dispatchEvent(
       new Event('input', {bubbles: true, composed: true}));
+}
+
+export function getInputValue(
+    inputElement: HTMLInputElement|HTMLTextAreaElement|HTMLElement): string {
+  if ('value' in inputElement) {
+    return (inputElement as HTMLInputElement).value;
+  }
+  return inputElement.innerText;
 }
 
 /**

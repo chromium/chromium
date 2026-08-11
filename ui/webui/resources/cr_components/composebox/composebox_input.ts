@@ -17,7 +17,7 @@ const ZERO_SPACE_STRING: string = '\u200b';
 export interface ComposeboxInputElement {
   $: {
     cancelIcon: CrIconButtonElement,
-    input: HTMLInputElement|HTMLTextAreaElement,
+    input: HTMLElement,
   };
 }
 
@@ -80,7 +80,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   private lockedMinHeight_: number = 0;
   private isRtl_: boolean = false;
 
-  get inputElement(): HTMLInputElement|HTMLTextAreaElement {
+  get inputElement(): HTMLElement {
     return this.$.input;
   }
 
@@ -112,6 +112,24 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('input')) {
+      if (this.composeboxSkillsEnabled) {
+        if (this.$.input) {
+          const text = this.input || '';
+          if (text !== this.$.input.innerText) {
+            this.$.input.innerText = text;
+            if (text === '') {
+              this.$.input.replaceChildren();
+            }
+            if (!this.disableCaretColorAnimation) {
+              this.updateMirror_();
+              this.resetCaret();
+            }
+          }
+        }
+      }
+    }
 
     if (changedProperties.has('input') ||
         changedProperties.has('disableCaretColorAnimation')) {
@@ -239,7 +257,19 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   protected onInputInput_(e: Event) {
-    this.input = (e.target as HTMLInputElement).value;
+    if (this.composeboxSkillsEnabled) {
+      let text = (e.target as HTMLDivElement).innerText || '';
+      // If the input only consists of whitespace or empty newline artifacts
+      // from deleted lines, clear the input and remove the text nodes.
+      if (text === '\n' || text === '\r\n') {
+        text = '';
+        (e.target as HTMLDivElement).replaceChildren();
+      }
+      this.input = text;
+    } else {
+      this.input = (e.target as HTMLTextAreaElement).value;
+    }
+
     if (!this.disableCaretColorAnimation) {
       this.updateMirror_();
       this.updateCaret_();
@@ -261,7 +291,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       return false;
     }
 
-    const cursorPosition = this.$.input.selectionEnd;
+    const cursorPosition = this.getSelectionEnd();
     // Don't show smart compose if the cursor is not at the end of the text.
     if (cursorPosition === null || cursorPosition !== this.input.length) {
       return false;
@@ -413,7 +443,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       return;
     }
 
-    if (mirror.textContent?.length !== input.value.length) {
+    if (mirror.textContent?.length !== this.input.length) {
       this.updateMirror_();
     }
 
@@ -429,10 +459,10 @@ export class ComposeboxInputElement extends I18nMixinLit
 
     // Set anchor-name on the span at the cursor position.
     // CSS `position-anchor: --cursor-char` on #caret does the rest.
-    const selectionEnd = (input as HTMLInputElement).selectionEnd;
+    const selectionEnd = this.getSelectionEnd();
     const atStart = selectionEnd === 0;
     const targetSpan =
-        getTargetSpan(input as HTMLInputElement, mirror, this.isRtl_);
+        getTargetSpan(selectionEnd, this.input.length, mirror, this.isRtl_);
 
     if (targetSpan) {
       targetSpan.style.anchorName = '--cursor-char';
@@ -476,14 +506,47 @@ export class ComposeboxInputElement extends I18nMixinLit
       inputWrapper.style.minHeight = '';
     }
   }
+
+  getSelectionEnd(): number {
+    const isFocused = this.shadowRoot?.activeElement === this.$.input ||
+        document.activeElement === this.$.input;
+    if (!isFocused) {
+      return this.input ? this.input.length : 0;
+    }
+    if (this.composeboxSkillsEnabled) {
+      return getCaretCharacterOffsetWithin(this.$.input, this.shadowRoot);
+    }
+    return (this.$.input as HTMLTextAreaElement).selectionEnd ??
+        (this.input ? this.input.length : 0);
+  }
+}
+
+function getCaretCharacterOffsetWithin(
+    element: HTMLElement, shadowRoot?: ShadowRoot|null): number {
+  let caretOffset = 0;
+  const sel = (shadowRoot && 'getSelection' in shadowRoot ?
+                   (shadowRoot as unknown as Document).getSelection() :
+                   null) ??
+      window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    try {
+      const preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(element);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      caretOffset = preCaretRange.toString().length;
+    } catch {
+      return 0;
+    }
+  }
+  return caretOffset;
 }
 
 function getTargetSpan(
-    input: Readonly<HTMLInputElement|HTMLTextAreaElement>,
-    mirror: Readonly<HTMLElement>, isRtl: boolean): HTMLElement|null {
-  const selectionEnd = input.selectionEnd;
+    selectionEnd: number, textLength: number, mirror: Readonly<HTMLElement>,
+    isRtl: boolean): HTMLElement|null {
   const atStart = selectionEnd === 0;
-  const atEnd = selectionEnd === input.value.length;
+  const atEnd = selectionEnd === textLength;
 
   if (atStart) {
     return mirror.firstChild as HTMLElement;
@@ -500,7 +563,7 @@ function getTargetSpan(
     }
     return targetSpan;
   }
-  return mirror.childNodes[selectionEnd! - 1] as HTMLElement;
+  return mirror.childNodes[selectionEnd - 1] as HTMLElement;
 }
 
 declare global {

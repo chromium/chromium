@@ -1452,11 +1452,15 @@ suite('NewTabPageAppTest', () => {
           app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
       // 1. Setup: Simulate input content.
-      composebox.getInputElement().$.input.value = 'test input';
-      composebox.getInputElement().$.input.dispatchEvent(new Event('input'));
+      const input = composebox.getInputElement().$.input;
+      if ('value' in input) {
+        (input as HTMLTextAreaElement).value = 'test input';
+      }
+      input.innerText = 'test input';
+      input.dispatchEvent(new Event('input'));
       await microtasksFinished();
 
-      assertEquals('test input', composebox.getInputElement().$.input.value);
+      assertEquals('test input', composebox.input);
 
       // First ESC: Clear Input (Content present)
       const closePromise1 = eventToPromise('close-composebox', composebox);
@@ -1473,8 +1477,7 @@ suite('NewTabPageAppTest', () => {
           closedAfterFirstEsc,
           'First ESC should clear input, not close the box.');
       assertEquals(
-          '', composebox.getInputElement().$.input.value,
-          'Input must be cleared after first ESC.');
+          '', composebox.input, 'Input must be cleared after first ESC.');
 
       // Second ESC: Close Box (Content empty)
       // Act: Press ESC 2.
@@ -2910,7 +2913,7 @@ suite('NewTabPageAppTest', () => {
           app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
 
-      assertEquals('text', composebox.getInputElement().$.input.value);
+      assertEquals('text', composebox.input);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
 
@@ -3200,7 +3203,7 @@ suite('NewTabPageAppTest', () => {
           assertEquals(1, tabId);
           assertEquals(true, delayUpload);
           assertTrue(!!composebox.getInputElement().$.input);
-          assertEquals(suggestion, composebox.getInputElement().$.input.value);
+          assertEquals(suggestion, composebox.input);
         });
     test(
         'Action chip click sets preselected model in composebox state',

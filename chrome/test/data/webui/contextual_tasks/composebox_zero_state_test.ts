@@ -910,7 +910,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about these',
-        innerComposebox.getInputElement().$.input.placeholder);
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
   });
 
   test('Single tab file updates zero state placeholder', async () => {
@@ -925,7 +925,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this tab',
-        innerComposebox.getInputElement().$.input.placeholder);
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
   });
 
   test('Single image file updates zero state placeholder', async () => {
@@ -940,7 +940,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this image',
-        innerComposebox.getInputElement().$.input.placeholder);
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
   });
 
   test('Single pdf file updates zero state placeholder', async () => {
@@ -955,7 +955,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this doc',
-        innerComposebox.getInputElement().$.input.placeholder);
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
   });
 
   test('Single unknown file updates zero state placeholder', async () => {
@@ -968,8 +968,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertFalse(innerComposebox.getInputElement().$.input.placeholder.includes(
-        'Ask about'));
+    const placeholder =
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder') ||
+        '';
+    assertFalse(placeholder.includes('Ask about'));
   });
 
   test('Overlay hint text overridden by file hint', async () => {
@@ -990,7 +992,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     // File hint should take precedence over overlay hint.
     assertEquals(
         'Ask about this image',
-        innerComposebox.getInputElement().$.input.placeholder);
+        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
   });
 
   test('Arrow in zero state is ignored in full tab', async () => {

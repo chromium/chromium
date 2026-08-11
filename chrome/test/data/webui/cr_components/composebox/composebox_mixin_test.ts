@@ -37,6 +37,24 @@ function simulateUserTextInput(
   return microtasksFinished();
 }
 
+function setSelectionOffset(input: HTMLElement, offset: number) {
+  if (input instanceof HTMLTextAreaElement) {
+    input.setSelectionRange(offset, offset);
+    return;
+  }
+  const range = document.createRange();
+  const sel = window.getSelection();
+  if (sel) {
+    const textNode = input.childNodes[0];
+    if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+      range.setStart(textNode, offset);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+
 suite('ComposeboxMixinTest', () => {
   let element: TestComposeboxMixinElement;
   let searchboxHandler: SearchboxPageHandlerRemote&
@@ -503,10 +521,9 @@ suite('ComposeboxMixinTest', () => {
     await microtasksFinished();
 
     const inputElement = element.getInputElement();
-    inputElement.inputElement.value = 'hello';
+    (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
     inputElement.inputElement.focus();
-    inputElement.inputElement.selectionStart = 3;
-    inputElement.inputElement.selectionEnd = 3;
+    setSelectionOffset(inputElement.inputElement, 3);
 
     searchboxHandler.resetResolver('queryAutocomplete');
     element.queryAutocomplete(/*clearMatches=*/ false);
@@ -531,10 +548,8 @@ suite('ComposeboxMixinTest', () => {
         await microtasksFinished();
 
         const inputElement = element.getInputElement();
-        inputElement.inputElement.value = 'hello';
+        (inputElement.inputElement as HTMLTextAreaElement).value = 'hello';
         inputElement.inputElement.focus();
-        inputElement.inputElement.selectionStart = 3;
-        inputElement.inputElement.selectionEnd = 3;
 
         // Simulate a programming update of the input as happens when, e.g., the
         // user closes the composebox. This update won't be immediately
@@ -1088,7 +1103,7 @@ suite('ComposeboxMixinTest', () => {
     input.dispatchEvent(tabEvent);
     await microtasksFinished();
 
-    assertEquals('test', input.value);
+    assertEquals('test', (input as HTMLTextAreaElement).value);
     assertTrue(tabEvent.defaultPrevented);
   });
 
@@ -1176,7 +1191,6 @@ suite('ComposeboxMixinTest', () => {
   test('Smart Compose hint is hidden when cursor is not at end', async () => {
     element.smartComposeEnabled = true;
     const inputElem = element.getInputElement();
-    const input = inputElem.inputElement;
 
     await simulateUserTextInput(inputElem, 'test');
     element.smartComposeInlineHint = 'a';
@@ -1184,8 +1198,8 @@ suite('ComposeboxMixinTest', () => {
 
     assertTrue(!!inputElem.shadowRoot.querySelector('#smartCompose'));
 
-    input.selectionStart = 2;
-    input.selectionEnd = 2;
+    inputElem.inputElement.focus();
+    setSelectionOffset(inputElem.inputElement, 1);
     inputElem.requestUpdate();
     await microtasksFinished();
 

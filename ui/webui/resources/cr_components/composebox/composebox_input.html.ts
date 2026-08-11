@@ -18,20 +18,36 @@ export function getHtml(this: ComposeboxInputElement) {
             <div id="mirror" part="mirror" aria-hidden="true"></div>
             <div id="caret"></div>
           ` : ''}
-          <textarea
-            aria-expanded="${this.showDropdown}" aria-controls="matches"
-            role="combobox" autocomplete="off" id="input"
-            type="search" spellcheck="false"
-            placeholder="${this.inputPlaceholder}"
-            part="input"
-            .value="${this.input}"
-            @click="${this.onInputClick_}"
-            @keydown="${this.onInputKeydown_}"
-            @keyup="${this.onInputKeyup_}"
-            @input="${this.onInputInput_}"
-            @focusin="${this.onInputFocusin_}"
-            @focus="${this.onInputFocus_}"
-            @blur="${this.onInputBlur_}"></textarea>
+          ${this.composeboxSkillsEnabled ? html`
+            <div
+              aria-expanded="${this.showDropdown}" aria-controls="matches"
+              role="combobox" autocomplete="off" id="input"
+              contenteditable="true" spellcheck="false"
+              placeholder="${this.inputPlaceholder}"
+              part="input"
+              @click="${this.onInputClick_}"
+              @keydown="${this.onInputKeydown_}"
+              @keyup="${this.onInputKeyup_}"
+              @input="${this.onInputInput_}"
+              @focusin="${this.onInputFocusin_}"
+              @focus="${this.onInputFocus_}"
+              @blur="${this.onInputBlur_}"></div>
+          ` : html`
+            <textarea
+              aria-expanded="${this.showDropdown}" aria-controls="matches"
+              role="combobox" autocomplete="off" id="input"
+              type="search" spellcheck="false"
+              placeholder="${this.inputPlaceholder}"
+              part="input"
+              .value="${this.input}"
+              @click="${this.onInputClick_}"
+              @keydown="${this.onInputKeydown_}"
+              @keyup="${this.onInputKeyup_}"
+              @input="${this.onInputInput_}"
+              @focusin="${this.onInputFocusin_}"
+              @focus="${this.onInputFocus_}"
+              @blur="${this.onInputBlur_}"></textarea>
+          `}
           ${this.showSmartComposeInlineHint_() ? html`
             <div id="smartCompose" part="smart-compose">
               <!-- Comments in between spans to eliminate spacing between

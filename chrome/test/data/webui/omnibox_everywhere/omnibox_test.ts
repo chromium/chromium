@@ -21,6 +21,14 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
+function getInputValue(
+    inputElement: HTMLInputElement|HTMLTextAreaElement|HTMLElement): string {
+  if ('value' in inputElement) {
+    return (inputElement as HTMLInputElement).value;
+  }
+  return inputElement.innerText;
+}
+
 suite('OmniboxEverywhereOmniboxTest', () => {
   let omnibox: OmniboxEverywhereOmniboxElement;
   let testProxy: TestSearchboxBrowserProxy;
@@ -885,7 +893,7 @@ suite('OmniboxEverywhereAppTest', () => {
 
         assertEquals(
             'composebox stopped speech query',
-            composebox.$.composeboxInput.inputElement.value);
+            getInputValue(composebox.$.composeboxInput.inputElement));
         assertEquals(0, testProxy.handler.getCallCount('submitQuery'));
       });
 

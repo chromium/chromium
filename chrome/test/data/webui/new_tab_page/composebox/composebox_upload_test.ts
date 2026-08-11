@@ -1130,7 +1130,8 @@ suite(`NewTabPageComposeboxUploadToolModeTest`, () => {
         testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
     // Query autocomplete with image present to get verbatim match.
-    testProxy.element.getInputElement().$.input.value = 'T';
+    (testProxy.element.getInputElement().$.input as HTMLTextAreaElement).value =
+        'T';
     testProxy.element.getInputElement().$.input.dispatchEvent(
         new Event('input'));
     await microtasksFinished();

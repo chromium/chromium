@@ -133,6 +133,13 @@
   resize: none;
 }
 
+:host([composebox-skills-enabled]) #input {
+  display: inline-block;
+  min-height: 24px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 :host(:not([disable-caret-color-animation])) #input {
   caret-color: transparent;
 }
@@ -208,11 +215,15 @@
   }
 }
 
-#input::placeholder {
+#input::placeholder,
+#input:empty::before {
+  content: attr(placeholder);
   color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
+  pointer-events: none;
 }
 
-:host-context([searchbox-next-enabled]) #input::placeholder {
+:host-context([searchbox-next-enabled]) #input::placeholder,
+:host-context([searchbox-next-enabled]) #input:empty::before {
   font-size: var(--cr-composebox-input-placeholder-font-size, 16px);
   font-weight: 400;
 }

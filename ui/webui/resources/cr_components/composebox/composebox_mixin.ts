@@ -2039,10 +2039,9 @@ export const ComposeboxEmbedderMixin =
           // the cursor position fetched from the dom would be stale, so use the
           // text length instead, since that's what the dom cursor position will
           // be set to once the update propagates.
-          const cursorPosition =
-              this.getInputElement().inputElement.value === this.input ?
-              this.getInputElement().inputElement.selectionStart || 0 :
-              this.input.length;
+          const cursorPosition = this.input !== this.getInputElement().input ?
+              this.input.length :
+              this.getInputElement().getSelectionEnd();
           this.getSearchboxHandler().queryAutocomplete(
               this.activeQueryId, this.input,
               /*preventInlineAutocomplete=*/ false, cursorPosition,
