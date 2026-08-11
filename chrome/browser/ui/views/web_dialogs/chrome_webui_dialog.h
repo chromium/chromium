@@ -71,8 +71,12 @@ struct WebDialogSpec {
   // own.
   int buttons = static_cast<int>(ui::mojom::DialogButton::kNone);
 
-  // Optional element ID used for the dialog.
+  // Applied to the hosted views::WebView.
   ui::ElementIdentifier element_identifier;
+
+  // Applied to the contents view. A View carries only one identifier, so tests
+  // that wait on the dialog and instrument its contents need both.
+  ui::ElementIdentifier dialog_element_identifier;
 };
 
 // A reusable dialog delegate that hosts a TopChrome WebUI page.

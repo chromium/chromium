@@ -20,7 +20,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -124,7 +124,17 @@ ChromeWebUIDialog::ChromeWebUIDialog(
                                          EffectiveMaxSize(spec_));
 
   view_observation_.Observe(web_view_);
-  SetContentsView(std::move(web_view));
+
+  // Nested rather than being the contents view directly: a View holds at most
+  // one element identifier and the dialog needs one of its own.
+  auto contents_container = std::make_unique<views::View>();
+  contents_container->SetUseDefaultFillLayout(true);
+  if (spec_.dialog_element_identifier) {
+    contents_container->SetProperty(views::kElementIdentifierKey,
+                                    spec_.dialog_element_identifier);
+  }
+  contents_container->AddChildView(std::move(web_view));
+  SetContentsView(std::move(contents_container));
 
   contents_wrapper_->SetHost(weak_ptr_factory_.GetWeakPtr());
 }

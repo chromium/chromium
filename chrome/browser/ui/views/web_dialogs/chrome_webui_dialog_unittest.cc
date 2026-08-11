@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -299,6 +300,31 @@ TEST_F(ChromeWebUIDialogTest, ElementIdentifierSet) {
 
   EXPECT_EQ(web_view->GetProperty(views::kElementIdentifierKey),
             spec.element_identifier);
+}
+
+TEST_F(ChromeWebUIDialogTest, DialogElementIdentifierIsDistinctFromWebView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestDialogId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestWebViewId);
+
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.element_identifier = kTestWebViewId;
+  spec.dialog_element_identifier = kTestDialogId;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+  views::View* contents_view = widget->widget_delegate()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Both must be observable at once, so they cannot share a View.
+  EXPECT_NE(contents_view, delegate->web_view());
+  EXPECT_EQ(contents_view->GetProperty(views::kElementIdentifierKey),
+            kTestDialogId);
+  EXPECT_EQ(delegate->web_view()->GetProperty(views::kElementIdentifierKey),
+            kTestWebViewId);
 }
 
 TEST_F(ChromeWebUIDialogTest, InitiallyFocusedViewIsWebView) {
