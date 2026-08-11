@@ -2402,6 +2402,26 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testNavigateToDifferentClientPage) {
                                       0 /*BOOTSTRAP_PENDING*/, 1);
 }
 
+// TODO(b/544866316): Consider moving this to a different test suite
+// since it does not use the JS test runner.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testCookieSyncFails) {
+  glic::GlicHistogramTester histogram_tester;
+  GlicTestEnvironment::GetService(GetProfile())
+      ->SetResultForFutureCookieSync(false);
+
+  ToggleGlicForActiveTab(/*prevent_close=*/false);
+
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+
+  ASSERT_OK(
+      RunUntilEqual([&]() { return instance->host().GetPrimaryWebUiState(); },
+                    mojom::WebUiState::kError));
+
+  histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
+                                     2 /*COOKIE_SYNC_ERROR*/, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetUserProfileInfo) {
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());

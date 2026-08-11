@@ -702,32 +702,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-class GlicApiTestWithFailedCookieSync : public GlicApiTest {
- public:
-  GlicApiTestWithFailedCookieSync()
-      : GlicApiTest(
-            base::FieldTrialParams(),
-            GlicTestEnvironmentConfig{.override_cookie_sync_result = false}) {}
-};
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFailedCookieSync, testCookieSyncFails) {
-  GlicHistogramTester histogram_tester;
-  GlicInstanceTracker instance_tracker(browser()->GetProfile());
-
-  GetService()->ToggleUI(/*bwi=*/browser(), /*prevent_close=*/false,
-                         /*source=*/mojom::InvocationSource::kOsButton);
-
-  ASSERT_TRUE(instance_tracker.WaitForShow());
-
-  Host* host = instance_tracker.GetHost();
-  ASSERT_TRUE(host);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return host->GetPrimaryWebUiState() == mojom::WebUiState::kError;
-  }));
-
-  histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
-                                     2 /*COOKIE_SYNC_ERROR*/, 1);
-}
 
 class GlicApiTestWithDaisyChain : public GlicApiTest {
  public:
@@ -2467,10 +2441,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDaisyChain,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithFailedCookieSync,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
