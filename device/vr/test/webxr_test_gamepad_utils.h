@@ -29,13 +29,6 @@ enum XrButtonId {
   kMax = 11,
 };
 
-enum XrAxisType {
-  kNone = 0,
-  kTrackpad = 1,
-  kJoystick = 2,
-  kTrigger = 3,
-};
-
 // Maps an XrButtonId to its button index in the test Gamepad layout:
 // - [0] Trigger (kAxisTrigger)
 // - [1] Grip / Squeeze (kGrip)
@@ -65,6 +58,7 @@ constexpr std::optional<size_t> GamepadButtonIndexFromButtonId(XrButtonId id) {
     case XrButtonId::kShoulder:
       return 6;
     case XrButtonId::kMenu:
+    case XrButtonId::kMax:
       return 7;
     default:
       return std::nullopt;

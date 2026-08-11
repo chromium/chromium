@@ -3,6 +3,7 @@ include_rules = [
   "+cc/test",
   "+chrome/android/features/vr/jni_headers",
   "+components/webxr",
+  "+device/gamepad/public/mojom",
   "+device/vr",
   "+third_party/jni_zero",
   # The third_party version of openxr_platform depends on certain platform

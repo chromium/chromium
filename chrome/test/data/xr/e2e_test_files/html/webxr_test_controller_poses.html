@@ -12,7 +12,6 @@ Tests that WebXR controller poses are properly surfaced.
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
       let expectedMatrix = null;
-      let expectedIndex = -1;
 
       function matricesApproximatelyEqual(a, b) {
         console.error('Given ' + JSON.stringify(a));
@@ -31,21 +30,20 @@ Tests that WebXR controller poses are properly surfaced.
         return true;
       }
 
-      function stepWaitForMatchingPose(index, m) {
+      function stepWaitForMatchingPose(m) {
         expectedMatrix = m;
-        expectedIndex = index;
         onImmersiveXRFrameCallback = function(session, frame) {
           console.log('Got immersive frame');
           let inputSources = session.inputSources;
-          if (inputSources.length <= expectedIndex)
-            return
-          let inputSource = inputSources[expectedIndex];
+          if (inputSources.length === 0)
+            return;
+          let inputSource = inputSources[0];
           if (!inputSource.gripSpace)
-            return
+            return;
           let refSpace = sessionInfos[getSessionType(session)].currentRefSpace;
           let pose = frame.getPose(inputSource.gripSpace, refSpace);
           if (!pose)
-            return
+            return;
           if (matricesApproximatelyEqual(
               pose.transform.matrix, expectedMatrix)) {
             onImmersiveXRFrameCallback = null;

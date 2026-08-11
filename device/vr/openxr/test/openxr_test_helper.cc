@@ -1491,9 +1491,7 @@ std::string OpenXrTestHelper::PathToString(XrPath path) const {
 bool OpenXrTestHelper::UpdateData() {
   base::AutoLock auto_lock(lock_);
   if (test_hook_) {
-    for (uint32_t i = 0; i < controllers_.size(); i++) {
-      controllers_[i] = test_hook_->WaitGetControllerData(i);
-    }
+    controllers_ = test_hook_->WaitGetAllControllerData();
     return true;
   }
   return false;

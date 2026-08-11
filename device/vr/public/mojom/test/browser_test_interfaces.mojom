@@ -86,16 +86,9 @@ interface XRTestHook {
   // magic window/non-exclusive session.
   [Sync] WaitGetMagicWindowPose() => (gfx.mojom.Transform? data);
 
-  // Called by the XR runtime to retrieve the handedness of the device
-  // that the test has registered at the given index, i.e. which hand the
-  // controller is mapped to.
-  [Sync] WaitGetControllerRoleForTrackedDeviceIndex(uint32 index) =>
-      (device.mojom.XRHandedness role);
-
   // Called by the XR runtime anytime it updates its controller data to retrieve
-  // the controller data of the device that the test has registered at the
-  // given index, e.g. its current position and pressed buttons.
-  [Sync] WaitGetControllerData(uint32 index) => (ControllerFrameData data);
+  // all controller data registered by the test.
+  [Sync] WaitGetAllControllerData() => (array<ControllerFrameData> data);
 
   // Called by the OpenXR test to simulate runtime events.
   [Sync] WaitGetEventData() => (EventData data);

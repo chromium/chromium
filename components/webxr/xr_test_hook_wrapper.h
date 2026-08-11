@@ -32,9 +32,7 @@ class XRTestHookWrapper : public device::VRTestHook {
   device::DeviceConfig WaitGetDeviceConfig() override;
   std::optional<gfx::Transform> WaitGetPresentingPose() override;
   std::optional<gfx::Transform> WaitGetMagicWindowPose() override;
-  device::mojom::XRHandedness WaitGetControllerRoleForTrackedDeviceIndex(
-      uint32_t index) override;
-  device::ControllerFrameData WaitGetControllerData(uint32_t index) override;
+  std::vector<device::ControllerFrameData> WaitGetAllControllerData() override;
   device_test::mojom::EventData WaitGetEventData() override;
   bool WaitGetCanCreateSession() override;
   device::mojom::XRVisibilityMaskPtr WaitGetVisibilityMask(

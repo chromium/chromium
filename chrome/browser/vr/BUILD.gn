@@ -450,6 +450,8 @@ if (enable_vr) {
       sources = [
         "test/mock_xr_device_hook_base.cc",
         "test/mock_xr_device_hook_base.h",
+        "test/mock_xr_input_source.cc",
+        "test/mock_xr_input_source.h",
       ]
 
       deps = [
