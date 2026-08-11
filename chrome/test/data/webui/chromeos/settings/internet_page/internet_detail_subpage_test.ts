@@ -2343,8 +2343,11 @@ suite('<settings-internet-detail-subpage>', () => {
           const showTetherDialogPromise = new Promise((resolve) => {
             showTetherDialogFinished = resolve;
           });
-          const showTetherDialog = internetDetailPage['showTetherDialog_'];
-          internetDetailPage['showTetherDialog_'] = () => {
+          const page = internetDetailPage as unknown as {
+            showTetherDialog_: () => void,
+          };
+          const showTetherDialog = page.showTetherDialog_;
+          page.showTetherDialog_ = () => {
             showTetherDialog.call(internetDetailPage);
             showTetherDialogFinished(null);
           };

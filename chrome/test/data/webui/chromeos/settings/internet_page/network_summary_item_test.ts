@@ -18,6 +18,11 @@ import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.j
 suite('<network-summary-item>', () => {
   let netSummaryItem: NetworkSummaryItemElement;
 
+  interface NetworkSummaryItemElementInternal {
+    getNetworkStateText_: () => string;
+    getTitleText_: () => string;
+  }
+
   /**
    * Checks if the element exists and has not been 'removed' by the Polymer
    * template system.
@@ -165,7 +170,8 @@ suite('<network-summary-item>', () => {
             .querySelector<CrToggleElement>('#deviceEnabledButton')!.disabled);
     assertEquals(
         netSummaryItem.i18n('internetDeviceBusy'),
-        netSummaryItem['getNetworkStateText_']());
+        (netSummaryItem as unknown as NetworkSummaryItemElementInternal)
+            .getNetworkStateText_());
   });
 
   test('Not inhibited device on cellular network', () => {
@@ -434,10 +440,12 @@ suite('<network-summary-item>', () => {
                          .classList.contains('warning-message'));
           assertFalse(netSummaryItem.shadowRoot!.querySelector('#networkState')!
                           .classList.contains('network-state'));
+          const item =
+              netSummaryItem as unknown as NetworkSummaryItemElementInternal;
           assertEquals(
               netSummaryItem.i18n('networkListItemSignIn'),
-              netSummaryItem['getNetworkStateText_']());
-          assertEquals(testName, netSummaryItem['getTitleText_']());
+              item.getNetworkStateText_());
+          assertEquals(testName, item.getTitleText_());
 
           // Verify clicking network summary item will open portal signin
           const networkSummaryItemRow =
@@ -461,10 +469,12 @@ suite('<network-summary-item>', () => {
                          .classList.contains('warning-message'));
           assertFalse(netSummaryItem.shadowRoot!.querySelector('#networkState')!
                           .classList.contains('network-state'));
+          const item =
+              netSummaryItem as unknown as NetworkSummaryItemElementInternal;
           assertEquals(
               netSummaryItem.i18n('networkListItemSignIn'),
-              netSummaryItem['getNetworkStateText_']());
-          assertEquals(testName, netSummaryItem['getTitleText_']());
+              item.getNetworkStateText_());
+          assertEquals(testName, item.getTitleText_());
 
           // Verify clicking network summary item arrow icon will show networks
           const networkSummaryItemRowArrowIcon =
@@ -484,10 +494,12 @@ suite('<network-summary-item>', () => {
                          .classList.contains('warning-message'));
           assertFalse(netSummaryItem.shadowRoot!.querySelector('#networkState')!
                           .classList.contains('network-state'));
+          const item =
+              netSummaryItem as unknown as NetworkSummaryItemElementInternal;
           assertEquals(
               netSummaryItem.i18n('networkListItemSignIn'),
-              netSummaryItem['getNetworkStateText_']());
-          assertEquals(testName, netSummaryItem['getTitleText_']());
+              item.getNetworkStateText_());
+          assertEquals(testName, item.getTitleText_());
 
           // Verify clicking network summary item will open portal signin
           const networkSummaryItemRow =

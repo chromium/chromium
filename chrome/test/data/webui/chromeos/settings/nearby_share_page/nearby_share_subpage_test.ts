@@ -29,6 +29,11 @@ suite('<settings-nearby-share-subpage>', () => {
   let fakeContactManager: FakeContactManager;
   let fakeSettings: FakeNearbyShareSettings;
 
+  interface NearbyShareHighVisibilityPageElementInternal {
+    calculateRemainingTime_: () => void;
+    highVisibilityTimedOut_: () => boolean;
+  }
+
   suiteSetup(() => {
     accountManagerBrowserProxy = new TestNearbyAccountManagerBrowserProxy();
     NearbyAccountManagerBrowserProxyImpl.setInstanceForTesting(
@@ -365,7 +370,7 @@ suite('<settings-nearby-share-subpage>', () => {
         dialog.shadowRoot!.querySelector('nearby-share-high-visibility-page');
     assertTrue(isVisible(highVisibilityDialog));
 
-    dialog['close_']();
+    (dialog as unknown as {close_: () => void}).close_();
     assertFalse(fakeReceiveManager.getInHighVisibilityForTest());
   });
 
@@ -401,7 +406,9 @@ suite('<settings-nearby-share-subpage>', () => {
     // E.g. if Bluetooth is off when high visibility is toggled.
     fakeReceiveManager.setInHighVisibilityForTest(false);
     subpage.set('inHighVisibility_', true);
-    subpage['showHighVisibilityPage_']();
+    (subpage as unknown as {
+      showHighVisibilityPage_: () => void,
+    }).showHighVisibilityPage_();
     const dialog =
         subpage.shadowRoot!.querySelector('nearby-share-receive-dialog');
     assertTrue(!!dialog);
@@ -464,7 +471,9 @@ suite('<settings-nearby-share-subpage>', () => {
     const highVisibilityDialog =
         dialog.shadowRoot!.querySelector('nearby-share-high-visibility-page');
     assertTrue(!!highVisibilityDialog);
-    assertFalse(highVisibilityDialog['highVisibilityTimedOut_']());
+    assertFalse((highVisibilityDialog as unknown as
+                 NearbyShareHighVisibilityPageElementInternal)
+                    .highVisibilityTimedOut_());
 
     flush();
     await waitAfterNextRender(dialog);
@@ -495,18 +504,20 @@ suite('<settings-nearby-share-subpage>', () => {
         dialog.shadowRoot!.querySelector('nearby-share-high-visibility-page');
     assertTrue(!!highVisibilityDialog);
 
-    highVisibilityDialog['calculateRemainingTime_']();
-    assertFalse(highVisibilityDialog['highVisibilityTimedOut_']());
+    const hvPage = highVisibilityDialog as unknown as
+        NearbyShareHighVisibilityPageElementInternal;
+    hvPage.calculateRemainingTime_();
+    assertFalse(hvPage.highVisibilityTimedOut_());
 
     // Set time past the shutoffTime.
     performance.now = () => {
       return 6000001;
     };
 
-    highVisibilityDialog['calculateRemainingTime_']();
+    hvPage.calculateRemainingTime_();
     await waitAfterNextRender(dialog);
     assertTrue(isVisible(highVisibilityDialog));
-    assertTrue(highVisibilityDialog['highVisibilityTimedOut_']());
+    assertTrue(hvPage.highVisibilityTimedOut_());
 
     // Restore mock
     performance.now = originalNow;

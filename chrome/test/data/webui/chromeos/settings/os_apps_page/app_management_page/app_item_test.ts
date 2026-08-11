@@ -8,6 +8,7 @@ import type {AppManagementAppItemElement} from 'chrome://os-settings/lazy_load.j
 import {Router} from 'chrome://os-settings/os_settings.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -50,6 +51,6 @@ suite('<app-management-app-item>', () => {
     const icon = appItem.shadowRoot!.querySelector('#appIcon');
 
     assertTrue(!!icon);
-    assertEquals(appItem['iconUrlFromId_'](arcApp), icon.getAttribute('src'));
+    assertEquals(getAppIcon(arcApp), icon.getAttribute('src'));
   });
 });

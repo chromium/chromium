@@ -130,6 +130,7 @@ export {InternetPageBrowserProxyImpl} from './internet_page/internet_page_browse
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';
 export {SettingsKerberosPageElement} from './kerberos_page/kerberos_page.js';
+export {LockScreenUnlockType, LockStateMixin} from './lock_state_mixin.js';
 export {MainPageContainerElement} from './main_page_container/main_page_container.js';
 export {PageDisplayerElement} from './main_page_container/page_displayer.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
@@ -201,6 +202,8 @@ export {AccountManagerSettingsCardElement} from './os_people_page/account_manage
 export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
 export {setGraduationHandlerProviderForTesting} from './os_people_page/graduation/mojo_interface_provider.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
+export {QuickUnlockBrowserProxyImpl} from './os_people_page/quick_unlock_browser_proxy.js';
+export type {QuickUnlockBrowserProxy} from './os_people_page/quick_unlock_browser_proxy.js';
 export type {MetricsConsentBrowserProxy, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {MetricsConsentBrowserProxyImpl} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interface_provider.js';
@@ -225,6 +228,7 @@ export {SettingsCardElement} from './os_settings_page/settings_card.js';
 export {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 export type {OsSettingsRoutes} from './os_settings_routes.js';
 export {createRoutes as createRoutesForTesting} from './os_settings_routes.js';
+export {OsSearchResultRowElement} from './os_settings_search_box/os_search_result_row.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export type {OsSettingsSearchBoxBrowserProxy} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
@@ -238,9 +242,6 @@ export {ParentalControlsSettingsCardElement} from './parental_controls_page/pare
 export type {PersonalizationHubBrowserProxy} from './personalization_page/personalization_hub_browser_proxy.js';
 export {PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';
-export {LockScreenUnlockType, LockStateMixin} from './lock_state_mixin.js';
-export {QuickUnlockBrowserProxyImpl} from './os_people_page/quick_unlock_browser_proxy.js';
-export type {QuickUnlockBrowserProxy} from './os_people_page/quick_unlock_browser_proxy.js';
 export {createRouter as createRouterForTesting, Route, Router, routes} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';

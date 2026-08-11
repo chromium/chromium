@@ -67,6 +67,10 @@ export class MockMethod {
     this.calls_.push(args.filter(this.notFunction_));
   }
 
+  get calls(): any[][] {
+    return this.calls_;
+  }
+
   /**
    * Verifies that the function is called the expected number of times and with
    * the correct signature for each call.

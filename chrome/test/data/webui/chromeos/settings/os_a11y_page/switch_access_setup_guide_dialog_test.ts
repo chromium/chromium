@@ -20,6 +20,13 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     value: boolean|number;
   }
 
+  interface SettingsSwitchAccessSetupGuideDialogElementInternal {
+    loadPage_: (page: number) => void;
+    onNextClick_: () => void;
+    onPreviousClick_: () => void;
+    onSwitchAssignmentMaybeChanged_: () => void;
+  }
+
   setup(() => {
     dialog =
         document.createElement('settings-switch-access-setup-guide-dialog');
@@ -225,14 +232,16 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
   test('Page contents are hidden and shown as expected', () => {
     assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
 
-    dialog['loadPage_'](/*Intro=*/ 0);
+    const dialogInternal = dialog as unknown as
+        SettingsSwitchAccessSetupGuideDialogElementInternal;
+    dialogInternal.loadPage_(/*Intro=*/ 0);
 
     // Verify the contents of the Intro page.
     let introEl = dialog.shadowRoot!.querySelector<HTMLElement>('#intro');
     assertTrue(!!introEl);
     assertFalse(introEl.hidden);
 
-    dialog['loadPage_'](/*Assign select=*/ 1);
+    dialogInternal.loadPage_(/*Assign select=*/ 1);
 
     // Verify the contents of the assign select page.
     introEl = dialog.shadowRoot!.querySelector<HTMLElement>('#intro');
@@ -243,7 +252,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(!!assignSwitch);
     assertFalse(assignSwitch.hidden);
 
-    dialog['loadPage_'](/*Auto-scan enabled=*/ 2);
+    dialogInternal.loadPage_(/*Auto-scan enabled=*/ 2);
 
     // Verify the contents of the auto-scan enabled page.
     assignSwitch =
@@ -255,7 +264,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(!!autoScanEnabled);
     assertFalse(autoScanEnabled.hidden);
 
-    dialog['loadPage_'](/*Choose switch count=*/ 3);
+    dialogInternal.loadPage_(/*Choose switch count=*/ 3);
 
     // Verify the contents of the choose switch count page.
     autoScanEnabled =
@@ -264,7 +273,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(autoScanEnabled.hidden);
     assertFalse(dialog.$.chooseSwitchCount.hidden);
 
-    dialog['loadPage_'](/*Auto-scan speed=*/ 4);
+    dialogInternal.loadPage_(/*Auto-scan speed=*/ 4);
 
     // Verify the contents of the auto-scan speed page.
     assertTrue(dialog.$.chooseSwitchCount.hidden);
@@ -273,7 +282,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(!!autoScanSpeed);
     assertFalse(autoScanSpeed.hidden);
 
-    dialog['loadPage_'](/*Assign next=*/ 5);
+    dialogInternal.loadPage_(/*Assign next=*/ 5);
 
     // Verify the contents of the assign next page.
     autoScanSpeed =
@@ -285,7 +294,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(!!assignSwitch);
     assertFalse(assignSwitch.hidden);
 
-    dialog['loadPage_'](/*Assign previous=*/ 6);
+    dialogInternal.loadPage_(/*Assign previous=*/ 6);
 
     // Verify the contents of the assign previous page.
     assignSwitch =
@@ -293,7 +302,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertTrue(!!assignSwitch);
     assertFalse(assignSwitch.hidden);
 
-    dialog['loadPage_'](/*Closing=*/ 8);
+    dialogInternal.loadPage_(/*Closing=*/ 8);
 
     // Verify the contents of the closing page.
     autoScanSpeed =
@@ -326,8 +335,11 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     // Mock that we are on the page before auto scan is enabled.
     dialog.set('currentPageId_', /*Assign select=*/ 1);
 
+    const dialogInternal = dialog as unknown as
+        SettingsSwitchAccessSetupGuideDialogElementInternal;
+
     // Moving forward should enable auto-scan.
-    dialog['onNextClick_']();
+    dialogInternal.onNextClick_();
     assertEquals(/*Auto-scan enabled=*/ 2, dialog.get('currentPageId_'));
 
     // Check that the settings API was called with the correct parameters.
@@ -337,7 +349,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     assertEquals(true, setPrefData[0]!.value);
 
     // Moving backward should disable auto-scan.
-    dialog['onPreviousClick_']();
+    dialogInternal.onPreviousClick_();
     assertNotEquals(/*Auto-scan enabled=*/ 2, dialog.get('currentPageId_'));
 
     assertEquals(2, setPrefData.length);
@@ -350,7 +362,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     setPrefData = [];
     dialog.set('currentPageId_', /*Choose switch count=*/ 3);
     dialog.set('switchCount_', 2);
-    dialog['onNextClick_']();
+    dialogInternal.onNextClick_();
 
     // Loading the assignment pane generates additional calls to setPref, so
     // expect at least one call to that function.
@@ -411,26 +423,32 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
             '#switchCountGroup');
     assertTrue(!!switchCountGroup);
 
+    const group = switchCountGroup as unknown as {
+      select_: (el: Element) => void,
+    };
     const twoSwitches = switchCountGroup.querySelector('[name="two-switches"]');
     assertTrue(!!twoSwitches);
-    switchCountGroup['select_'](twoSwitches);
+    group.select_(twoSwitches);
     assertEquals('2', chooseSwitchCountEl.getAttribute('data-switch-count'));
 
     const threeSwitches =
         switchCountGroup.querySelector('[name="three-switches"]');
     assertTrue(!!threeSwitches);
-    switchCountGroup['select_'](threeSwitches);
+    group.select_(threeSwitches);
     assertEquals('3', chooseSwitchCountEl.getAttribute('data-switch-count'));
 
     const oneSwitch = switchCountGroup.querySelector('[name="one-switch"]');
     assertTrue(!!oneSwitch);
-    switchCountGroup['select_'](oneSwitch);
+    group.select_(oneSwitch);
     assertEquals('1', chooseSwitchCountEl.getAttribute('data-switch-count'));
   });
 
   test('Assignment pane behaves correctly', () => {
     assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
     dialog.set('switchCount_', 3);
+
+    const dialogInternal = dialog as unknown as
+        SettingsSwitchAccessSetupGuideDialogElementInternal;
 
     const assignSwitch = dialog.shadowRoot!.querySelector('#assignSwitch');
     assertTrue(!!assignSwitch);
@@ -471,7 +489,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
         .value = {
       23: 'usb',
     };
-    dialog['onSwitchAssignmentMaybeChanged_']();
+    dialogInternal.onSwitchAssignmentMaybeChanged_();
 
     // Confirm that we're on the next page.
     assertEquals(/*Auto-scan enabled=*/ 2, dialog.get('currentPageId_'));
@@ -494,7 +512,7 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
         .value = {
       101: 'bluetooth',
     };
-    dialog['onSwitchAssignmentMaybeChanged_']();
+    dialogInternal.onSwitchAssignmentMaybeChanged_();
 
     // Confirm that we're on the page to assign previous, and that there's only
     // one dialog.

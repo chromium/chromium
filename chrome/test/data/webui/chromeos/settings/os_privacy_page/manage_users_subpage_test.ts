@@ -74,7 +74,11 @@ suite('<settings-manage-users-subpage>', () => {
       // array in our mocked usersPrivate API. With this, we refetch the users
       // after each removal which is consistent with how the page handles
       // removals.
-      userList['setUsers_'](userList['usersPrivate_'].users);
+      const list = userList as unknown as {
+        setUsers_: (users: unknown[]) => void,
+        usersPrivate_: {users: unknown[]},
+      };
+      list.setUsers_(list.usersPrivate_.users);
       flush();
     }
   }
@@ -97,7 +101,9 @@ suite('<settings-manage-users-subpage>', () => {
     const fakeUsersPrivate = new FakeUsersPrivate();
     fakeUsersPrivate.setUsersForTesting(users);
     userList.set('usersPrivate_', fakeUsersPrivate);
-    userList['setUsers_'](fakeUsersPrivate.users);
+    (userList as unknown as {
+      setUsers_: (users: unknown[]) => void,
+    }).setUsers_(fakeUsersPrivate.users);
     flush();
     const removeUserIcons =
         userList.shadowRoot!.querySelectorAll('cr-icon-button');

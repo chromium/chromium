@@ -327,9 +327,9 @@ suite('<settings-switch-access-subpage>', () => {
         });
 
         initPage();
-        // Normally on startup, the browser proxy calls a C++ function,
-        // which then fires an event that calls this function.
-        page['onAssignmentsChanged_']({select: [], next: [], previous: []});
+        webUIListenerCallback(
+            'switch-access-assignments-changed',
+            {select: [], next: [], previous: []});
         flush();
         await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 

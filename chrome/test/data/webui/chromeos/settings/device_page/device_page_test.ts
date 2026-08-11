@@ -985,7 +985,7 @@ suite('<settings-device-page>', () => {
         assertTrue(voiceIsolationToggleSection.checked);
         assertEquals(
             /* expected_call_count */ 1,
-            recordVoiceIsolationEnabledChange['calls_'].length);
+            recordVoiceIsolationEnabledChange.calls.length);
 
         // Toggle off
         await voiceIsolationToggleSection.click();
@@ -993,7 +993,7 @@ suite('<settings-device-page>', () => {
         assertFalse(voiceIsolationToggleSection.checked);
         assertEquals(
             /* expected_call_count */ 2,
-            recordVoiceIsolationEnabledChange['calls_'].length);
+            recordVoiceIsolationEnabledChange.calls.length);
       });
 
       test('system properties change', async () => {
@@ -1004,24 +1004,21 @@ suite('<settings-device-page>', () => {
             crosAudioConfig, 'setVoiceIsolationEnabled');
 
         assertEquals(
-            /* expected_call_count */ 0,
-            setVoiceIsolationEnabled['calls_'].length);
+            /* expected_call_count */ 0, setVoiceIsolationEnabled.calls.length);
 
         crosAudioConfig.setAudioSystemProperties(
             effectNoiseCancellationAudioSystemProperties);
         await flushTasks();
 
         assertEquals(
-            /* expected_call_count */ 0,
-            setVoiceIsolationEnabled['calls_'].length);
+            /* expected_call_count */ 0, setVoiceIsolationEnabled.calls.length);
 
         crosAudioConfig.setAudioSystemProperties(
             effectNoneAudioSystemProperties);
         await flushTasks();
 
         assertEquals(
-            /* expected_call_count */ 0,
-            setVoiceIsolationEnabled['calls_'].length);
+            /* expected_call_count */ 0, setVoiceIsolationEnabled.calls.length);
       });
 
       test('effect mode - visibility', async () => {

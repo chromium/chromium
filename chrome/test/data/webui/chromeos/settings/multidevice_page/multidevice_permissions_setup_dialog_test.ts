@@ -44,7 +44,7 @@ suite('<settings-multidevice-permissions-setup-dialog>', () => {
   }
 
   function isExpectedFlowState(setupState: SetupFlowStatus) {
-    return permissionsSetupDialog['flowState_'] === setupState;
+    return permissionsSetupDialog.get('flowState_') === setupState;
   }
 
   function queryCancelButton(): HTMLButtonElement|null {
