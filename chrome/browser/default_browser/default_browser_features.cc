@@ -13,6 +13,15 @@
 #include "chrome/common/webui_url_constants.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <vector>
+
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/i18n.h"
+#include "chrome/browser/browser_process.h"
+#endif
+
 namespace default_browser {
 
 bool IsDefaultBrowserFrameworkEnabled() {
@@ -48,7 +57,35 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
     return DefaultBrowserPromptSurface::kInfobar;
   }
 
-  return kDefaultBrowserPromptSurfaceParam.Get();
+  DefaultBrowserPromptSurface prompt_surface =
+      kDefaultBrowserPromptSurfaceParam.Get();
+#if BUILDFLAG(IS_WIN)
+  // The modal prompt surface with settings illustration features an OS-level
+  // diagram of Windows Settings with text in English. Because the visual UI
+  // in Windows Settings reflects the user's primary Windows OS display language
+  // (rather than Chrome's browser UI locale), display the illustration only
+  // when the Windows display language is English. For non-English Windows UI
+  // locales, fall back to the self-contained illustration-free modal dialog.
+  if (prompt_surface ==
+      DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration) {
+    std::string os_locale;
+    std::vector<std::wstring> os_languages;
+    if (base::win::i18n::GetUserPreferredUILanguageList(&os_languages) &&
+        !os_languages.empty()) {
+      os_locale = base::WideToUTF8(os_languages[0]);
+    } else if (g_browser_process) {
+      os_locale = g_browser_process->GetApplicationLocale();
+    }
+
+    if (!base::StartsWith(os_locale, "en",
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      return DefaultBrowserPromptSurface::
+          kModalDialogWithoutSettingsIllustration;
+    }
+  }
+#endif
+
+  return prompt_surface;
 }
 
 DefaultBrowserSetterType GetDefaultBrowserSetterType() {
