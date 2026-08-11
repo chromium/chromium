@@ -195,6 +195,16 @@ SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
   return mojom_suggest_template_info;
 }
 
+// Locally generated chips explicitly request the current click behavior:
+// paste the query into the Composebox without submitting it.
+void SetPasteAndComposeboxOverrides(
+    fusebox_action::mojom::FuseboxAction& action) {
+  action.query_action_override =
+      fusebox_action::mojom::QueryActionOverride::kPaste;
+  action.searchbox_override =
+      fusebox_action::mojom::SearchboxOverride::kComposebox;
+}
+
 // Create a recent tab chip. The chip by default (in U.S.) would look like the
 // following:
 // |-------------------------|
@@ -216,6 +226,9 @@ ActionChipPtr CreateRecentTabChip(TabInfoPtr tab, std::string_view suggestion) {
   chip->suggest_template_info->secondary_text =
       action_chips::mojom::FormattedString::New();
   chip->suggest_template_info->secondary_text->text = chip->tab->title;
+  chip->suggest_template_info->fusebox_action =
+      fusebox_action::mojom::FuseboxAction::New();
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -238,6 +251,7 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
       omnibox::TOOL_MODE_DEEP_SEARCH;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -270,6 +284,7 @@ ActionChipPtr CreateImageCreationChip(std::string_view suggestion) {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
       omnibox::TOOL_MODE_IMAGE_GEN;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -300,6 +315,7 @@ ActionChipPtr CreateStarterChip() {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -333,6 +349,7 @@ ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preselected_tool =
       omnibox::TOOL_MODE_CANVAS;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -360,6 +377,7 @@ ActionChipPtr CreateBrainstormChip() {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_BRAINSTORM;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -385,6 +403,7 @@ ActionChipPtr CreateLearnChip() {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_HELP_ME_LEARN;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 
@@ -410,6 +429,7 @@ ActionChipPtr CreateWriteChip() {
       fusebox_action::mojom::FuseboxAction::New();
   chip->suggest_template_info->fusebox_action->preferred_inventory =
       omnibox::SUGGEST_INVENTORY_WRITE_OR_EDIT;
+  SetPasteAndComposeboxOverrides(*chip->suggest_template_info->fusebox_action);
   return chip;
 }
 

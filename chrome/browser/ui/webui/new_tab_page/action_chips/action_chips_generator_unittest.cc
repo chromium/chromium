@@ -213,10 +213,16 @@ ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
   const std::string title = "Ask about previous tab";
   // Clone tab title before move.
   const std::string subtitle = tab->title;
+  auto action = fusebox_action::mojom::FuseboxAction::New();
+  action->query_action_override =
+      fusebox_action::mojom::QueryActionOverride::kPaste;
+  action->searchbox_override =
+      fusebox_action::mojom::SearchboxOverride::kComposebox;
   return CreateActionChip(
       "",
       SuggestTemplateInfo::New(IconType::kFavicon, CreateFormattedString(title),
-                               CreateFormattedString(subtitle), nullptr),
+                               CreateFormattedString(subtitle),
+                               std::move(action)),
       std::move(tab));
 }
 
@@ -224,6 +230,10 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance([]() {
     auto action = fusebox_action::mojom::FuseboxAction::New();
     action->preselected_tool = omnibox::TOOL_MODE_DEEP_SEARCH;
+    action->query_action_override =
+        fusebox_action::mojom::QueryActionOverride::kPaste;
+    action->searchbox_override =
+        fusebox_action::mojom::SearchboxOverride::kComposebox;
     return CreateActionChip(
         /*suggestion=*/"",
         SuggestTemplateInfo::New(
@@ -240,6 +250,10 @@ const ActionChipPtr& GetStaticImageGenerationChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance([]() {
     auto action = fusebox_action::mojom::FuseboxAction::New();
     action->preselected_tool = omnibox::TOOL_MODE_IMAGE_GEN;
+    action->query_action_override =
+        fusebox_action::mojom::QueryActionOverride::kPaste;
+    action->searchbox_override =
+        fusebox_action::mojom::SearchboxOverride::kComposebox;
     return CreateActionChip(
         /*suggestion=*/"",
         SuggestTemplateInfo::New(
@@ -255,6 +269,10 @@ const ActionChipPtr& GetStaticCanvasChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance([]() {
     auto action = fusebox_action::mojom::FuseboxAction::New();
     action->preselected_tool = omnibox::TOOL_MODE_CANVAS;
+    action->query_action_override =
+        fusebox_action::mojom::QueryActionOverride::kPaste;
+    action->searchbox_override =
+        fusebox_action::mojom::SearchboxOverride::kComposebox;
     return CreateActionChip(
         /*suggestion=*/"",
         SuggestTemplateInfo::New(IconType::kDraftSpark,
@@ -273,6 +291,10 @@ const ActionChipPtr& GetStaticStarterChip() {
     auto action = fusebox_action::mojom::FuseboxAction::New();
     action->preferred_inventory =
         omnibox::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
+    action->query_action_override =
+        fusebox_action::mojom::QueryActionOverride::kPaste;
+    action->searchbox_override =
+        fusebox_action::mojom::SearchboxOverride::kComposebox;
     return CreateActionChip(
         /*suggestion=*/"",
         SuggestTemplateInfo::New(IconType::kSearchLoopWithSparkle,
@@ -291,7 +313,14 @@ MATCHER(BrainstormChip, "") {
          arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
-             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING);
+             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING) &&
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
+             omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM &&
+         arg->suggest_template_info->fusebox_action->query_action_override ==
+             fusebox_action::mojom::QueryActionOverride::kPaste &&
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
+             fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
 MATCHER(LearnChip, "") {
@@ -300,7 +329,14 @@ MATCHER(LearnChip, "") {
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
              l10n_util::GetStringUTF8(
-                 IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING);
+                 IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING) &&
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
+             omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN &&
+         arg->suggest_template_info->fusebox_action->query_action_override ==
+             fusebox_action::mojom::QueryActionOverride::kPaste &&
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
+             fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
 MATCHER(WriteChip, "") {
@@ -308,7 +344,14 @@ MATCHER(WriteChip, "") {
          arg->suggest_template_info->type_icon == IconType::kDraftSpark &&
          arg->suggest_template_info->primary_text &&
          arg->suggest_template_info->primary_text->text ==
-             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING);
+             l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING) &&
+         arg->suggest_template_info->fusebox_action &&
+         arg->suggest_template_info->fusebox_action->preferred_inventory ==
+             omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT &&
+         arg->suggest_template_info->fusebox_action->query_action_override ==
+             fusebox_action::mojom::QueryActionOverride::kPaste &&
+         arg->suggest_template_info->fusebox_action->searchbox_override ==
+             fusebox_action::mojom::SearchboxOverride::kComposebox;
 }
 
 // A container to store WebContents and its dependency.
