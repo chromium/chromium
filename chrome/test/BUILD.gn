@@ -5324,6 +5324,7 @@ test("unit_tests") {
     "//chrome/browser/preloading/prerender:unit_tests",
     "//chrome/browser/privacy_sandbox:unit_tests",
     "//chrome/browser/private_ai:unit_tests",
+    "//chrome/browser/private_verification_tokens:unit_tests",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_downloader",
