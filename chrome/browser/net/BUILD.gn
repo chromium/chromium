@@ -57,6 +57,12 @@ source_set("net") {
     "system_network_context_manager.h",
   ]
 
+  if (enable_device_bound_sessions) {
+    public += [
+      "device_bound_session_prewarmer.h",
+    ]
+  }
+
   public_deps = [
     ":probe_message_proto",
     "//base",
@@ -151,6 +157,12 @@ source_set("impl") {
     "stub_resolver_config_reader.cc",
     "system_network_context_manager.cc",
   ]
+
+  if (enable_device_bound_sessions) {
+    sources += [
+      "device_bound_session_prewarmer.cc",
+    ]
+  }
 
   public_deps = [
     ":net",
@@ -383,6 +395,11 @@ source_set("unit_tests") {
     "secure_dns_util_unittest.cc",
     "stub_resolver_config_reader_unittest.cc",
   ]
+
+  if (enable_device_bound_sessions) {
+    sources += [ "device_bound_session_prewarmer_unittest.cc" ]
+  }
+
   deps = [
     ":impl",
     ":net",
