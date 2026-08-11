@@ -481,8 +481,7 @@ class ShelfViewTest : public AshTestBase {
     test_api_ = std::make_unique<ShelfViewTestAPI>(GetShelfView());
     test_api_->SetAnimationDuration(base::Milliseconds(1));
 
-    // Add a browser shortcut shelf item, as chrome does, for testing.
-    AddItem(TYPE_BROWSER_SHORTCUT, true);
+    // Browser shortcut shelf item is added in AshTestBase::SetUp()`.
   }
 
   void TearDown() override {

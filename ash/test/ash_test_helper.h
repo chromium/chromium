@@ -103,6 +103,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // Whether or not to destroy the screen in the destructor.
     bool destroy_screen = true;
+
+    // True if a default pinned app shortcut should be added to the Shelf.
+    bool add_default_shelf_icon = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a

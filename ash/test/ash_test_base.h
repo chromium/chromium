@@ -284,6 +284,12 @@ class AshTestBase : public testing::Test {
     init_params_->create_quick_pair_mediator = create_quick_pair_mediator;
   }
 
+  void set_add_default_shelf_icon(bool add_default_shelf_icon) {
+    CHECK(init_params_)
+        << "add_default_shelf_icon must be set before calling SetUp()";
+    init_params_->add_default_shelf_icon = add_default_shelf_icon;
+  }
+
   void set_shell_delegate(std::unique_ptr<ShellDelegate> shell_delegate) {
     CHECK(init_params_) << "shell_delegate mustset before calling SetUp()";
     CHECK(!init_params_->delegate);

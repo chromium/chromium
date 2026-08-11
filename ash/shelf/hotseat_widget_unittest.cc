@@ -217,6 +217,11 @@ class HotseatWidgetTest
 
 using StackedHotseatWidgetTest = HotseatWidgetTest;
 
+class HotseatWidgetDragTest : public HotseatWidgetTest {
+ public:
+  HotseatWidgetDragTest() { set_add_default_shelf_icon(false); }
+};
+
 // Counts the number of times the work area changes.
 class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
  public:
@@ -333,6 +338,15 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     StackedHotseatWidgetTest,
+    testing::Combine(
+        testing::Values(ShelfAutoHideBehavior::kNever,
+                        ShelfAutoHideBehavior::kAlways),
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HotseatWidgetDragTest,
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
@@ -562,7 +576,7 @@ TEST_P(HotseatWidgetTest, CloseLastWindowOpenedInTabletMode) {
 }
 
 // Verifies removing a shelf item by dragging it off the extended hotseat.
-TEST_P(HotseatWidgetTest, DragItemOffExtendedHotseat) {
+TEST_P(HotseatWidgetDragTest, DragItemOffExtendedHotseat) {
   TabletModeControllerTestApi().EnterTabletMode();
   std::unique_ptr<aura::Window> window =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 400});

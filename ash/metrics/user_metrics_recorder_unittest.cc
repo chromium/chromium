@@ -53,6 +53,11 @@ class UserMetricsRecorderTest : public NoSessionAshTestBase {
   base::HistogramTester histograms_;
 };
 
+class UserMetricsRecorderShelfItemTest : public UserMetricsRecorderTest {
+ public:
+  UserMetricsRecorderShelfItemTest() { set_add_default_shelf_icon(false); }
+};
+
 // Verifies the return value of IsUserInActiveDesktopEnvironment() for the
 // different login status values.
 TEST_F(UserMetricsRecorderTest, VerifyIsUserInActiveDesktopEnvironmentValues) {
@@ -107,7 +112,8 @@ TEST_F(UserMetricsRecorderTest,
 
 // Verify the shelf item counts recorded by the
 // UserMetricsRecorder::RecordPeriodicMetrics() method.
-TEST_F(UserMetricsRecorderTest, ValuesRecordedByRecordShelfItemCounts) {
+TEST_F(UserMetricsRecorderShelfItemTest,
+       ValuesRecordedByRecordShelfItemCounts) {
   SimulateUserLogin(kRegularUserLoginInfo);
 
   // Make sure the shelf model is empty at first.

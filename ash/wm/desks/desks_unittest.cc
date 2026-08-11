@@ -8932,7 +8932,9 @@ class DeskBarTest : public AshTestBase,
   DeskBarTest()
       : test_close_all_window_close_timeout_(
             DesksTestApi::SetCloseAllWindowCloseTimeout(
-                base::Milliseconds(20))) {}
+                base::Milliseconds(20))) {
+    set_add_default_shelf_icon(false);
+  }
   DeskBarTest(const DeskBarTest&) = delete;
   DeskBarTest& operator=(const DeskBarTest&) = delete;
   ~DeskBarTest() override = default;
@@ -10572,7 +10574,7 @@ class DeskButtonTest
     : public AshTestBase,
       public ::testing::WithParamInterface<DeskButtonTestParams> {
  public:
-  DeskButtonTest() = default;
+  DeskButtonTest() { set_add_default_shelf_icon(false); }
   DeskButtonTest(const DeskButtonTest&) = delete;
   DeskButtonTest& operator=(const DeskButtonTest&) = delete;
   ~DeskButtonTest() override = default;

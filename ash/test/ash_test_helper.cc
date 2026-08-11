@@ -23,6 +23,7 @@
 #include "ash/quick_pair/keyed_service/fake_quick_pair_mediator_factory.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/shelf_test_util.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -469,6 +470,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   if (TabletMode::IsBoardTypeMarkedAsTabletCapable()) {
     shell->tablet_mode_controller()->OnDeviceListsComplete();
+  }
+
+  if (init_params.add_default_shelf_icon) {
+    // Add a pinned app shortcut to Shelf, in order to reflect the unpinnable
+    // Browser shortcut.
+    ShelfTestUtil::AddAppShortcut("default_app", TYPE_BROWSER_SHORTCUT);
   }
 
   fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();

@@ -47,7 +47,10 @@ static ShelfID CreateShelfItem(aura::Window* window) {
   return shelf_id;
 }
 
-using ShelfWindowWatcherTest = AshTestBase;
+class ShelfWindowWatcherTest : public AshTestBase {
+ public:
+  ShelfWindowWatcherTest() { set_add_default_shelf_icon(false); }
+};
 
 // Ensure shelf items are added and removed as windows are opened and closed.
 TEST_F(ShelfWindowWatcherTest, OpenAndClose) {
@@ -316,7 +319,11 @@ TEST_F(ShelfWindowWatcherTest, CreateShelfEntriesForTransientWindows) {
 }
 
 // Ensures ShelfWindowWatcher supports windows opened prior to session start.
-using ShelfWindowWatcherSessionStartTest = NoSessionAshTestBase;
+class ShelfWindowWatcherSessionStartTest : public NoSessionAshTestBase {
+ public:
+  ShelfWindowWatcherSessionStartTest() { set_add_default_shelf_icon(false); }
+};
+
 TEST_F(ShelfWindowWatcherSessionStartTest, PreExistingWindow) {
   ShelfModel* model = ShelfModel::Get();
   ASSERT_FALSE(

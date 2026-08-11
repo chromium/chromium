@@ -261,7 +261,7 @@ class AutoHideStateDetector : public ShelfLayoutManagerObserver {
 
 class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
  public:
-  ShelfLayoutManagerTest() = default;
+  ShelfLayoutManagerTest() { set_add_default_shelf_icon(false); }
 
   // Sets up a Kiosk session after the app has launched.
   void SetUpKioskSession() {
@@ -4318,7 +4318,9 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
 class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
-  QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {}
+  QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {
+    set_add_default_shelf_icon(false);
+  }
   ~QuickActionShowBubbleTest() override = default;
 
  private:
@@ -4439,6 +4441,7 @@ TEST_P(QuickActionShowBubbleTest, ScrollFromShelfToShowAppListOverShelfApps) {
   const size_t max_app_count = 4;
   for (size_t app_count = 1; app_count <= max_app_count; ++app_count)
     AddApp();
+
   EXPECT_EQ(max_app_count, shelf_view->number_of_visible_apps());
 
   for (auto test : test_table) {

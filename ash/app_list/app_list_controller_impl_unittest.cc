@@ -159,7 +159,7 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 
 class AppListControllerImplTest : public AshTestBase {
  public:
-  AppListControllerImplTest() = default;
+  AppListControllerImplTest() { set_add_default_shelf_icon(false); }
 
   AppListControllerImplTest(const AppListControllerImplTest&) = delete;
   AppListControllerImplTest& operator=(const AppListControllerImplTest&) =
@@ -371,6 +371,7 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   // Once the app list is closed, the page should be reset when the timer is
   // skipped.
   EXPECT_EQ(0, apps_grid_view->pagination_model()->selected_page());
+  GetAppListView()->SetSkipPageResetTimerForTesting(false);
 }
 
 TEST_F(AppListControllerImplTest, PagePersistanceTabletModeTest) {

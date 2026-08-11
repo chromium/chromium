@@ -132,7 +132,7 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
 class ScrollableShelfViewTest : public ShelfTestBase {
  public:
-  ScrollableShelfViewTest() = default;
+  ScrollableShelfViewTest() { set_add_default_shelf_icon(false); }
   ~ScrollableShelfViewTest() override = default;
 
  protected:

@@ -800,7 +800,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class AppsGridViewDragTestBase : public AppsGridViewTest {
  public:
-  AppsGridViewDragTestBase() = default;
+  AppsGridViewDragTestBase() { set_add_default_shelf_icon(false); }
 
   // AppsGridViewTest:
   void SetUp() override {

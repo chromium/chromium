@@ -10,6 +10,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/root_window_controller.h"
@@ -494,9 +495,14 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
   }
 }
 
+class ShelfWidgetHitTest : public ShelfWidgetTest {
+ public:
+  ShelfWidgetHitTest() { set_add_default_shelf_icon(false); }
+};
+
 // Tests that the shelf lets mouse-events close to the edge fall through to the
 // window underneath.
-TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
+TEST_F(ShelfWidgetHitTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   UpdateDisplay("500x400");
   ShelfWidget* shelf_widget = GetShelfWidget();
   gfx::Rect shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
@@ -1115,6 +1121,9 @@ TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {
 }
 
 class ShelfWidgetVirtualKeyboardTest : public AshTestBase {
+ public:
+  ShelfWidgetVirtualKeyboardTest() { set_add_default_shelf_icon(false); }
+
  protected:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
