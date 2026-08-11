@@ -213,10 +213,6 @@ bool SetOpenerOfTab(Profile& profile,
 
   BrowserWindowInterface* opener_browser =
       browser_window_util::GetBrowserForTabContents(*opener.GetContents());
-  // NOTE: This would be more efficient if there were a
-  // TabListInterface::GetIndexOfWebContents() or similar, since then we could
-  // just check `opener_browser->GetIndexOfWebContents(&tab)` instead of looking
-  // up the tab's browser.
   BrowserWindowInterface* tab_browser =
       browser_window_util::GetBrowserForTabContents(*tab.GetContents());
   if (!opener_browser || opener_browser != tab_browser) {
