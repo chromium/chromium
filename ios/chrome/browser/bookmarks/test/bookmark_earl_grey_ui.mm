@@ -729,6 +729,7 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(editorId)]
       assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 - (NSString*)contextBarNewFolderString {
