@@ -541,8 +541,14 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
 
 def create_extra_symlinks(install_root: str, arch: str):
     if RELEASES[arch] != "bullseye":
-        # Recent debian releases no longer symlink lib{dl,pthread,rt}.so
-        for lib in ["libdl.so.2", "librt.so.1", "libpthread.so.0"]:
+        # Recent debian releases no longer symlink lib{dl,pthread,rt,util}.so
+        # because they are integrated into libc.so.6 itself
+        for lib in [
+            "libdl.so.2",
+            "librt.so.1",
+            "libpthread.so.0",
+            "libutil.so.1",
+        ]:
             os.symlink(
                 lib,
                 os.path.join(
