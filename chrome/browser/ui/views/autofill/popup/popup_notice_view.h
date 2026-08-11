@@ -60,16 +60,9 @@ class PopupNoticeView : public PopupInteractiveRowView {
   PopupNoticeView& operator=(const PopupNoticeView&) = delete;
   ~PopupNoticeView() override;
 
-  views::StyledLabel* description_for_testing() const { return description_; }
-  views::MdTextButton* accept_button_for_testing() const {
-    return accept_button_;
-  }
-  bool is_link_focused_for_testing() const { return is_link_focused_; }
-  bool is_accept_button_focused_for_testing() const {
-    return is_accept_button_focused_;
-  }
-
  private:
+  friend class PopupNoticeViewTestApi;
+
   // Marks the notice as acknowledged and removes it from the parent view.
   void OnAcceptButtonClicked();
 
