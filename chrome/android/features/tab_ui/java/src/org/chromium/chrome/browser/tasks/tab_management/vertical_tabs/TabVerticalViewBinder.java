@@ -196,6 +196,18 @@ class TabVerticalViewBinder {
             updateTitle(R.id.group_title, model, view);
             updateChildRowPadding(model, view);
             updateParentPadding(model, view, /* isHeader= */ true);
+            updateGroupHeaderIcons(model, view, view.isHovered());
+        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
+            View menuButton = view.findViewById(R.id.menu_button);
+            if (menuButton != null) {
+                TabListViewBinderUtils.bindActionButton(
+                        model, menuButton, model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+            }
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            View menuButton = view.findViewById(R.id.menu_button);
+            if (menuButton != null) {
+                TabListViewBinderUtils.updateActionButtonContentDescription(model, menuButton);
+            }
         }
     }
 
@@ -711,6 +723,13 @@ class TabVerticalViewBinder {
             ImageViewCompat.setImageTintList(
                     expandChevron, ColorStateList.valueOf(foregroundColor));
         }
+
+        @Nullable ImageView menuButton = view.findViewById(R.id.menu_button);
+        if (menuButton != null) {
+            ImageViewCompat.setImageTintList(menuButton, ColorStateList.valueOf(foregroundColor));
+        }
+
+        setupTabGroupHeaderHoverListener(model, view);
     }
 
     private static void updateTabItemSize(
@@ -1073,6 +1092,61 @@ class TabVerticalViewBinder {
                         }
                         return false;
                     });
+        }
+    }
+
+    private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
+        @Nullable View menuButton = view.findViewById(R.id.menu_button);
+
+        view.setOnHoverListener(
+                (v, motionEvent) -> {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_HOVER_ENTER:
+                            updateGroupHeaderIcons(model, view, /* isHovered= */ true);
+                            return true;
+                        case MotionEvent.ACTION_HOVER_EXIT:
+                            float x = motionEvent.getX();
+                            float y = motionEvent.getY();
+                            if (x < 0 || x >= view.getWidth() || y < 0 || y >= view.getHeight()) {
+                                updateGroupHeaderIcons(model, view, /* isHovered= */ false);
+                            }
+                            return true;
+                    }
+                    return false;
+                });
+
+        if (menuButton != null) {
+            menuButton.setOnHoverListener(
+                    (v, motionEvent) -> {
+                        int action = motionEvent.getAction();
+                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
+                            v.setHovered(true);
+                            updateGroupHeaderIcons(model, view, /* isHovered= */ true);
+                            return true;
+                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+                            v.setHovered(false);
+                            float xInView = v.getLeft() + motionEvent.getX();
+                            float yInView = v.getTop() + motionEvent.getY();
+                            if (xInView < 0
+                                    || xInView >= view.getWidth()
+                                    || yInView < 0
+                                    || yInView >= view.getHeight()) {
+                                updateGroupHeaderIcons(model, view, /* isHovered= */ false);
+                            }
+                            return true;
+                        }
+                        return false;
+                    });
+        }
+    }
+
+    private static void updateGroupHeaderIcons(
+            PropertyModel model, ViewGroup view, boolean isHovered) {
+        boolean isRailCollapsed =
+                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
+        View menuButton = view.findViewById(R.id.menu_button);
+        if (menuButton != null) {
+            menuButton.setVisibility(!isRailCollapsed && isHovered ? View.VISIBLE : View.GONE);
         }
     }
 

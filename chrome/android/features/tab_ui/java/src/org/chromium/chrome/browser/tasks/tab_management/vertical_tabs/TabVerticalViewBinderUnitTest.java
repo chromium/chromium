@@ -983,6 +983,10 @@ public class TabVerticalViewBinderUnitTest {
                         mActivity, TabGroupColorId.RED, /* isIncognito= */ false);
         assertEquals(expectedForegroundColor, titleView.getCurrentTextColor());
         assertEquals(expectedForegroundColor, expandChevron.getImageTintList().getDefaultColor());
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
+        assertNotNull(menuButton);
+        assertEquals(expectedForegroundColor, menuButton.getImageTintList().getDefaultColor());
+        assertEquals(View.GONE, menuButton.getVisibility());
     }
 
     @Test
@@ -995,6 +999,7 @@ public class TabVerticalViewBinderUnitTest {
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
         TextView titleView = headerView.findViewById(R.id.group_title);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
 
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
@@ -1016,6 +1021,8 @@ public class TabVerticalViewBinderUnitTest {
                         mActivity, TabGroupColorId.RED, /* isIncognito= */ true);
         assertEquals(expectedForegroundColor, titleView.getCurrentTextColor());
         assertEquals(expectedForegroundColor, expandChevron.getImageTintList().getDefaultColor());
+        assertEquals(expectedForegroundColor, menuButton.getImageTintList().getDefaultColor());
+        assertEquals(View.GONE, menuButton.getVisibility());
     }
 
     @Test
@@ -1029,6 +1036,7 @@ public class TabVerticalViewBinderUnitTest {
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
         TextView titleView = headerView.findViewById(R.id.group_title);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
 
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
@@ -1050,6 +1058,148 @@ public class TabVerticalViewBinderUnitTest {
                         mActivity, TabGroupColorId.RED, /* isIncognito= */ false);
         assertEquals(expectedForegroundColor, titleView.getCurrentTextColor());
         assertEquals(expectedForegroundColor, expandChevron.getImageTintList().getDefaultColor());
+        assertEquals(expectedForegroundColor, menuButton.getImageTintList().getDefaultColor());
+        assertEquals(View.GONE, menuButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+    public void testTabGroupHeaderHover_MenuButtonVisibility() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+
+        int expectedBackgroundColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, TabGroupColorId.RED, /* isIncognito= */ false);
+        ColorStateList bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
+        assertEquals(View.GONE, menuButton.getVisibility());
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        // Background color must NOT change on hover
+        bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+        assertEquals(View.VISIBLE, menuButton.getVisibility());
+
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(hoverExitEvent);
+
+        bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+        assertEquals(View.GONE, menuButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+    public void testTabGroupHeaderHover_MenuButtonVisibility_Incognito() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(TabProperties.IS_INCOGNITO, true)
+                        .with(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED)
+                        .build();
+        TabVerticalViewBinder.bindTabGroupHeader(model, headerView, TabProperties.IS_INCOGNITO);
+
+        int expectedBackgroundColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, TabGroupColorId.RED, /* isIncognito= */ true);
+        ColorStateList bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
+        assertEquals(View.GONE, menuButton.getVisibility());
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        // Background color must NOT change on hover
+        bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+        assertEquals(View.VISIBLE, menuButton.getVisibility());
+
+        MotionEvent hoverExitEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 0f, 0f, 0);
+        hoverExitEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(hoverExitEvent);
+
+        bgTint = headerView.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertEquals(expectedBackgroundColor, bgTint.getDefaultColor());
+        assertEquals(View.GONE, menuButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+    public void testTabGroupHeaderHover_RailCollapsed() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
+        assertEquals(View.GONE, menuButton.getVisibility());
+
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        headerView.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        // Even when hovered, menu button should remain GONE on collapsed rail
+        assertEquals(View.GONE, menuButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+    public void testTabGroupHeaderHover_MenuButtonDirectHover() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+
+        ImageView menuButton = headerView.findViewById(R.id.menu_button);
+        assertEquals(View.GONE, menuButton.getVisibility());
+
+        // Hover enter directly on menuButton
+        MotionEvent hoverEnterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnterEvent.setSource(InputDevice.SOURCE_MOUSE);
+        menuButton.dispatchGenericMotionEvent(hoverEnterEvent);
+
+        assertTrue(menuButton.isHovered());
+        assertEquals(View.VISIBLE, menuButton.getVisibility());
+
+        // Hover exit directly on menuButton (coordinates outside parent headerView)
+        MotionEvent hoverExitOutsideEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 500f, 500f, 0);
+        hoverExitOutsideEvent.setSource(InputDevice.SOURCE_MOUSE);
+        menuButton.dispatchGenericMotionEvent(hoverExitOutsideEvent);
+
+        assertFalse(menuButton.isHovered());
+        assertEquals(View.GONE, menuButton.getVisibility());
     }
 
     @Test
@@ -1156,6 +1306,41 @@ public class TabVerticalViewBinderUnitTest {
             }
         }
         assertTrue("Should contain collapse click action", hasCollapseAction);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_ActionButton() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        View menuButton = headerView.findViewById(R.id.menu_button);
+        assertNotNull(menuButton);
+
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.OVERFLOW, mCloseListener);
+
+        mModel.set(TabProperties.TAB_ID, 123);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        menuButton.performClick();
+        verify(mCloseListener).run(any(View.class), eq(123), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_ActionButtonDescription() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        View menuButton = headerView.findViewById(R.id.menu_button);
+        assertNotNull(menuButton);
+
+        mModel.set(
+                TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
+                (context) -> "Tab group menu");
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+
+        assertEquals("Tab group menu", menuButton.getContentDescription());
     }
 
     @Test

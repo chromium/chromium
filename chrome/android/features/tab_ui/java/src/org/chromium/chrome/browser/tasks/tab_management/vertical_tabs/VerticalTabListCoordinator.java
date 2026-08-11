@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.StaticPinnedTabsMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewBinder;
@@ -202,7 +203,7 @@ public class VerticalTabListCoordinator {
                     @Override
                     public void run(
                             View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
-                        // Intentional no-op.
+                        // Intentional no-op: Sync groups are not supported in Vertical Tabs.
                     }
                 };
 
@@ -236,9 +237,27 @@ public class VerticalTabListCoordinator {
                 Tab tab,
                 PropertyModel model,
                 Supplier<TabActionListener> defaultOverflowListenerSupplier) {
-            // Vertical Tabs group header cards act strictly as accordion expansion toggles
-            // and do not display any action button (neither close nor overflow menu).
-            return null;
+            Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) {
+                return null;
+            }
+            return new TabActionButtonData(
+                    TabActionButtonType.OVERFLOW,
+                    new TabActionListener() {
+                        @Override
+                        public void run(
+                                View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                            showTabGroupHeaderContextMenu(view, tabGroupId);
+                        }
+
+                        @Override
+                        public void run(
+                                View view,
+                                String syncId,
+                                @Nullable MotionEventInfo triggeringMotion) {
+                            // Intentional no-op: Sync groups are not supported in Vertical Tabs.
+                        }
+                    });
         }
     }
 

@@ -33,6 +33,17 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         android:importantForAccessibility="no" />
 
+    <!-- Three-dot menu button -->
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/menu_button"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:layout_marginEnd="@dimen/vertical_tab_item_title_margin_end"
+        android:src="@drawable/ic_more_vert_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/accessibility_toolbar_btn_menu"
+        android:visibility="gone" />
+
     <!-- Expand/Collapse Arrow (Points down naturally by default for Collapsed state) -->
     <ImageView
         android:id="@+id/expand_chevron"

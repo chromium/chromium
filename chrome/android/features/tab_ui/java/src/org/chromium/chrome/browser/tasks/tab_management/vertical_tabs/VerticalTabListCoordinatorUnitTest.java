@@ -97,6 +97,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
@@ -777,12 +779,81 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(1, adapter.getModelList().size());
         PropertyModel groupModel = adapter.getModelList().get(0).model;
         assertTrue(groupModel.get(TabProperties.IS_COLLAPSED));
-        assertNull(groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+        assertNotNull(groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA));
 
         mCoordinator.toggleTabGroupExpansion(TAB_ID_1);
         assertFalse(
                 "Tab group should be expanded (IS_COLLAPSED = false) after first toggle click.",
                 groupModel.get(TabProperties.IS_COLLAPSED));
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroupHeaderActionButton_ClickShowsContextMenu() {
+        Token tabGroupId = new Token(1L, 2L);
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+
+        createCoordinator();
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        PropertyModel groupModel = adapter.getModelList().get(0).model;
+        assertTrue(TabProperties.isTabGroupHeader(groupModel));
+        TabActionButtonData actionButtonData = groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+        assertNotNull(actionButtonData);
+        assertEquals(TabActionButtonType.OVERFLOW, actionButtonData.type);
+        assertNotNull(actionButtonData.tabActionListener);
+
+        View mockButtonView = mock(View.class);
+        actionButtonData.tabActionListener.run(
+                mockButtonView, TAB_ID_1, /* triggeringMotion= */ null);
+
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(RectProvider.class), eq(tabGroupId));
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroupHeaderActionButton_SyncId_NoOp() {
+        Token tabGroupId = new Token(1L, 2L);
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+
+        createCoordinator();
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        PropertyModel groupModel = adapter.getModelList().get(0).model;
+        TabActionButtonData actionButtonData = groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+        assertNotNull(actionButtonData);
+
+        View mockButtonView = mock(View.class);
+        actionButtonData.tabActionListener.run(
+                mockButtonView, "sync_id_123", /* triggeringMotion= */ null);
+
+        verify(mTabGroupContextMenuCoordinator, never()).showMenu(any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabGroupHeaderActionButton_NullGroupId_ReturnsNull() {
+        createCoordinator();
+        Tab tab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(tab.getTabGroupId()).thenReturn(null);
+
+        TabListMediator mediator = ReflectionHelpers.getField(mCoordinator, "mMediator");
+        TabListItemOnClickListenerProvider clickHandler =
+                ReflectionHelpers.getField(mediator, "mTabListItemOnClickListenerProvider");
+        PropertyModel model =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB).build();
+
+        assertNull(
+                clickHandler.getTabGroupActionButtonData(
+                        tab, model, /* defaultOverflowListenerSupplier= */ () -> null));
     }
 
     @Test
