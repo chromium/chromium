@@ -34,7 +34,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link DeferredIMEWindowInsetApplicationCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class DeferredIMEWindowInsetApplicationCallbackTest {
+public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 62, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 84);
 

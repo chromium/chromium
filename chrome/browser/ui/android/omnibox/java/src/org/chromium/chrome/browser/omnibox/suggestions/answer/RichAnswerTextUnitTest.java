@@ -29,7 +29,7 @@ import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplat
 
 /** Tests for {@link RichAnswerText}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class RichAnswerTextTest {
+public class RichAnswerTextUnitTest {
     private Context mContext;
     private TextAppearanceSpan mGreenText;
     private TextAppearanceSpan mRedText;

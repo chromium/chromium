@@ -40,7 +40,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Tests for {@link HeaderDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class HeaderDecorationTest {
+public class HeaderDecorationUnitTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private RecyclerView mRecyclerView;
     @Mock private View mChildViewWithHeader;

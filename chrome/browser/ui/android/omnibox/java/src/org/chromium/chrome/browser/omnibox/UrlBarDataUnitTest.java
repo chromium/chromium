@@ -19,7 +19,7 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link UrlBarData}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class UrlBarDataTest {
+public class UrlBarDataUnitTest {
     @Test
     public void forUrlAndText_nonHttpOrHttps_DisplayTextDiffersFromUrl() {
         var url = new GURL("data:text/html,blah,blah");

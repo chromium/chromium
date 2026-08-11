@@ -29,7 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UnsyncedSuggestionsListAnimation}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class UnsyncedSuggestionsListAnimationTest {
+public class UnsyncedSuggestionsListAnimationUnitTest {
 
     private static final int VERTICAL_OFFSET = 20;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

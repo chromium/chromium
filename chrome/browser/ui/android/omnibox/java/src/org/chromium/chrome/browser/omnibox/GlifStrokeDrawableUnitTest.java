@@ -25,7 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link GlifStrokeDrawable}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class GlifStrokeDrawableTest {
+public class GlifStrokeDrawableUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Canvas mCanvas;
     private GlifStrokeDrawable mDrawable;

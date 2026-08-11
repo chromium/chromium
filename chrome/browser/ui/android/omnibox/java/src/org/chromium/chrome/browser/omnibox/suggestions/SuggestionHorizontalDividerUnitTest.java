@@ -35,7 +35,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Tests for {@link SuggestionHorizontalDivider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class SuggestionHorizontalDividerTest {
+public class SuggestionHorizontalDividerUnitTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private RecyclerView mRecyclerView;
     @Mock private View mChildViewWithDivider;

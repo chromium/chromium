@@ -33,7 +33,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
-public class FuseboxMetricsTest {
+public class FuseboxMetricsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final PropertyModel mPropertyModel = new PropertyModel(FuseboxProperties.ALL_KEYS);

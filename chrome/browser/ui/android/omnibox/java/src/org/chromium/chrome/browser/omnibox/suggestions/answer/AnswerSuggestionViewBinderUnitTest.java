@@ -26,7 +26,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link AnswerSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AnswerSuggestionViewBinderTest {
+public class AnswerSuggestionViewBinderUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private BaseSuggestionView<View> mBaseView;

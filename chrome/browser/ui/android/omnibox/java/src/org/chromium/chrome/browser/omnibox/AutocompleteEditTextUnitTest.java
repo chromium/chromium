@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class AutocompleteEditTextTest {
+public class AutocompleteEditTextUnitTest {
     private static final String TAG = "AutocompleteTest";
 
     private static final boolean DEBUG = false;
@@ -248,7 +248,7 @@ public class AutocompleteEditTextTest {
         }
     }
 
-    public AutocompleteEditTextTest() {}
+    public AutocompleteEditTextUnitTest() {}
 
     @Before
     public void setUp() {

@@ -54,7 +54,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link LocationBarDragDropHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LocationBarDragDropHandlerTest {
+public class LocationBarDragDropHandlerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private OmniboxStub mOmniboxStub;

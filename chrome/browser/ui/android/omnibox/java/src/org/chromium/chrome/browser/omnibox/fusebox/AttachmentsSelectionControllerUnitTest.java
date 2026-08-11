@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachm
 
 /** Unit tests for {@link AttachmentsSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AttachmentsSelectionControllerTest {
+public class AttachmentsSelectionControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;

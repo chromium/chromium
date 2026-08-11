@@ -23,7 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit Test for {@link VoiceRecognitionUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class VoiceRecognitionUtilTest {
+public class VoiceRecognitionUtilUnitTest {
     private static final String RECOGNITION_PACKAGE_NAME = "com.some.package";
     private ShadowPackageManager mShadowPackageManager;
 
