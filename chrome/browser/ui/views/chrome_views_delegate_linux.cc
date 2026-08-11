@@ -20,8 +20,25 @@
 
 namespace {
 
-bool IsDesktopEnvironmentUnity() {
+// Returns true if the window manager forcefully draws a title bar over
+// maximized windows, in which case Chrome must not draw its own caption
+// buttons.
+//
+// Ubuntu Unity is the only desktop that does this, and it only ever shipped as
+// an X11 session. Unity is detected from XDG_CURRENT_DESKTOP, which Chrome
+// inherits from whichever process started it rather than from the running
+// session, so the variable can name a desktop that isn't actually in use when
+// Chrome is launched from a terminal, from another application, or from an
+// automation harness. Requiring a non-Wayland session keeps such a value from
+// stripping the minimize, maximize and close buttons out of a maximized window
+// on Wayland, where nothing replaces them: a Wayland compositor cannot add
+// decorations to a window that draws its own.
+bool WindowManagerDrawsTitleBarOverMaximizedWindows() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
+  if (base::nix::GetSessionType(*env) == base::nix::SessionType::kWayland) {
+    return false;
+  }
+
   base::nix::DesktopEnvironment desktop_env =
       base::nix::GetDesktopEnvironment(env.get());
   return desktop_env == base::nix::DESKTOP_ENVIRONMENT_UNITY;
@@ -101,6 +118,8 @@ bool ChromeViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   if (!maximized) {
     return false;
   }
-  static bool is_desktop_environment_unity = IsDesktopEnvironmentUnity();
-  return is_desktop_environment_unity;
+
+  static bool window_manager_draws_title_bar =
+      WindowManagerDrawsTitleBarOverMaximizedWindows();
+  return window_manager_draws_title_bar;
 }
