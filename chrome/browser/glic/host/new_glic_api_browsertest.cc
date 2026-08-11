@@ -1354,6 +1354,13 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFileUploadPolicyEnabled,
       std::to_underlying(glic::prefs::GlicFileUploadPolicyState::kDisabled));
   ContinueJsTest();
 }
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+  CloseMainBrowserWithIncognitoKeepAlive();
+  ContinueJsTest();
+}
 #endif
 
 class NewGlicApiTestWithContextualCueing : public NewGlicApiTest {

@@ -1068,22 +1068,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
-  // TODO(harringtond): This test is flaky in multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-
-  // Note: ideally this test would only open Glic after the main browser is
-  // closed. This however crashes in `DeprecatedOpenGlicWindow()`.
-  TrackOnlyGlicInstance();
-  RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents,
-                                         /*conversation_id=*/std::nullopt));
-
-  // Open a new incognito window first so that Chrome doesn't exit, then close
-  // the first browser window.
-  CloseMainBrowserWithIncognitoKeepAlive();
-
-  ExecuteJsTest({.wait_for_guest = false});
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {

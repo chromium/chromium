@@ -221,17 +221,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testGetFocusedTabStateV2BrowserClosed() {
-    assertDefined(this.host.getFocusedTabStateV2);
-    const sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    // Ignore the initial focus.
-    await sequence.next();
-    const focus = await sequence.next();
-    assertFalse(!!focus.hasFocus);
-    assertDefined(focus.hasNoFocus);
-  }
-
   async testGetContextFromFocusedTabWithoutPermission() {
     assertDefined(this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(false);
