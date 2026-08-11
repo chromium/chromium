@@ -757,6 +757,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
         frame_timestamp);
     DCHECK(frame);
     frame->BackWithOwnedSharedMemory(std::move(dup_region), std::move(mapping));
+    frame->set_color_space(layout_->planes().size() > 1
+                               ? gfx::ColorSpace::CreateREC709()
+                               : gfx::ColorSpace::CreateSRGB());
     return frame;
   }
 }
