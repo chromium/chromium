@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
@@ -238,6 +239,7 @@ TEST_F(RequestSenderTest, RequestSendFailedNoUrls) {
 
 // Tests that a CUP request fails if the response is not signed.
 TEST_F(RequestSenderTest, RequestSendCupError) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("test"),
       GetTestFilePath("updatecheck_reply_1.json")));
@@ -259,6 +261,7 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
   EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
   EXPECT_EQ(-10000, error_);
   EXPECT_TRUE(response_.empty());
+  histogram_tester.ExpectTotalCount("UpdateClient.CupFallbackToEtag2", 0);
 }
 
 TEST_F(RequestSenderTest, RetryAfterSecClamped) {
@@ -300,6 +303,24 @@ TEST_F(RequestSenderTest, RetryAfterSecNotHonoredForHttp) {
 
   EXPECT_EQ(0, error_);
   EXPECT_EQ(retry_after_sec_, -1);
+}
+
+TEST_P(RequestSenderTest, CupFallbackToEtag2Histogram_ValidationFailed) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(post_interceptor_->ExpectRequest(
+      std::make_unique<PartialMatch>("test"),
+      GetTestFilePath("updatecheck_reply_1.json"),
+      {{"X-Cup-Server-Proof", "some_proof"}, {"ETag", "proof"}}));
+
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
+  request_sender_->Send(
+      {GURL(kUrl1)}, {}, "test", true,
+      base::BindOnce(&RequestSenderTest::RequestSenderComplete,
+                     base::Unretained(this)));
+  RunThreads();
+
+  histogram_tester.ExpectTotalCount("UpdateClient.CupFallbackToEtag2", 0);
 }
 
 }  // namespace update_client

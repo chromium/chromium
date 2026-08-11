@@ -24,4 +24,9 @@ void RecordCRXUnzipTime(base::TimeDelta time, const std::string& app_id) {
   base::UmaHistogramMediumTimes("UpdateClient.UnzipTime", time);
 }
 
+void RecordCupFallbackToEtag2(bool fallback_occurred) {
+  base::UmaHistogramBoolean("UpdateClient.CupFallbackToEtag2",
+                            fallback_occurred);
+}
+
 }  // namespace update_client::metrics
