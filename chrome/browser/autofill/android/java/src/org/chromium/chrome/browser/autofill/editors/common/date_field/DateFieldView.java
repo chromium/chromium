@@ -14,13 +14,25 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE_CHANGED_CALLBACK;
 
 import android.content.Context;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentManager;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.TextInputLayout;
+
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
@@ -29,13 +41,16 @@ import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.Dropdo
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldViewBinder;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,22 +63,112 @@ import java.util.Locale;
  */
 @NullMarked
 public class DateFieldView extends LinearLayout implements FieldView {
+    private static final String MATERIAL_DATE_PICKER_TAG = "MaterialDatePicker";
+
     private final PropertyModel mPropertyModel;
-    private final LinearLayout mSpinnerGroup;
-    private final TextView mLabel;
-    private final DropdownFieldView mMonthDropdown;
-    private final DropdownFieldView mDayDropdown;
-    private final DropdownFieldView mYearDropdown;
-    private final TextView mErrorMessage;
+    private final FragmentManager mFragmentManager;
+
+    // The widgets below are used for the legacy date picker.
+    private @Nullable LinearLayout mSpinnerGroup;
+    private @Nullable TextView mLabel;
+    private @Nullable DropdownFieldView mMonthDropdown;
+    private @Nullable DropdownFieldView mDayDropdown;
+    private @Nullable DropdownFieldView mYearDropdown;
+    private @Nullable TextView mErrorMessage;
+
+    // The widgets below are used for the material date picker.
+    // TODO: crbug.com/487565242 - Make final after the feature is launched.
+    private @Nullable View mMaterialDatePickerLayout;
+    private @Nullable TextInputLayout mMaterialDatePickerInputLayout;
+    private @Nullable AutoCompleteTextView mMaterialDatePickerInput;
+
     private @Nullable EditorFieldValidator mValidator;
 
     // TODO: crbug.com/489405975 - Remove PropertyModel references.
-    public DateFieldView(Context context, PropertyModel propertyModel) {
+    public DateFieldView(
+            Context context, FragmentManager fragmentManager, PropertyModel propertyModel) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
-
+        mFragmentManager = fragmentManager;
         mPropertyModel = propertyModel;
 
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)) {
+            createMaterialDatePickerLayout(context);
+        } else {
+            createLegacyDatePickerLayout(context);
+        }
+    }
+
+    private void createMaterialDatePickerLayout(Context context) {
+        mMaterialDatePickerLayout =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.autofill_editor_dialog_textview, this, false);
+        mMaterialDatePickerInputLayout =
+                (TextInputLayout) mMaterialDatePickerLayout.findViewById(R.id.text_input_layout);
+        mMaterialDatePickerInput =
+                (AutoCompleteTextView) mMaterialDatePickerLayout.findViewById(R.id.text_view);
+        // 1. Make it focusable so keyboard/a11y users can navigate to it.
+        mMaterialDatePickerInput.setFocusable(true);
+        // 2. Prevent touch events from trapping focus; tapping will just trigger the click
+        // listener.
+        mMaterialDatePickerInput.setFocusableInTouchMode(false);
+        // 3. Make it non-editable so the soft keyboard never appears.
+        mMaterialDatePickerInput.setInputType(InputType.TYPE_NULL);
+        // 4. Ensure it still responds to straightforward clicks to launch the dialog.
+        mMaterialDatePickerInput.setClickable(true);
+        mMaterialDatePickerInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+        mMaterialDatePickerInputLayout.setEndIconDrawable(R.drawable.calendar_month_24dp);
+
+        mMaterialDatePickerInput.setOnClickListener(
+                v -> {
+                    if (mFragmentManager.findFragmentByTag(MATERIAL_DATE_PICKER_TAG) != null) {
+                        // Make sure that the date picker is not opened yet. This can happen when
+                        // the user double taps the input field very fast, so that the second tap is
+                        // registered before the date picker's open animation is finished.
+                        return;
+                    }
+                    long initialTime =
+                            LocalDate.now(ZoneId.of("UTC"))
+                                    .atStartOfDay(ZoneOffset.UTC)
+                                    .toInstant()
+                                    .toEpochMilli();
+                    long minTime =
+                            LocalDate.of(getMinYear(), Month.JANUARY, 1)
+                                    .atStartOfDay(ZoneOffset.UTC)
+                                    .toInstant()
+                                    .toEpochMilli();
+                    long maxTime =
+                            LocalDate.of(getMaxYear(), Month.DECEMBER, 31)
+                                    .atStartOfDay(ZoneOffset.UTC)
+                                    .toInstant()
+                                    .toEpochMilli();
+
+                    CalendarConstraints constraints =
+                            new CalendarConstraints.Builder()
+                                    .setStart(minTime)
+                                    .setEnd(maxTime)
+                                    .setValidator(
+                                            CompositeDateValidator.allOf(
+                                                    List.of(
+                                                            DateValidatorPointForward.from(minTime),
+                                                            DateValidatorPointBackward.before(
+                                                                    maxTime))))
+                                    .build();
+
+                    MaterialDatePicker<Long> picker =
+                            MaterialDatePicker.Builder.datePicker()
+                                    .setCalendarConstraints(constraints)
+                                    .setSelection(initialTime)
+                                    .build();
+
+                    picker.show(mFragmentManager, MATERIAL_DATE_PICKER_TAG);
+                });
+
+        addView(mMaterialDatePickerLayout);
+    }
+
+    private void createLegacyDatePickerLayout(Context context) {
         mLabel = new TextView(context, null, 0, R.style.TextAppearance_TextSmall_Secondary);
         mLabel.setVisibility(View.GONE);
         mLabel.setId(R.id.date_field_label);
@@ -194,11 +299,19 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     public void setLabel(String label, boolean isRequired) {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Set the hint to the material date picker.
+            return;
+        }
         mLabel.setVisibility(View.VISIBLE);
         mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
     }
 
     public void setValue(String value) {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Set the date to the material date picker.
+            return;
+        }
         // VALUE of the date fields is implemented as a String instead of the LocalDate to keep
         // it consistent with the VALUE property for other fields. That's why the parsing still
         // needs to happen.
@@ -224,6 +337,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     @Override
     public void scrollToAndFocus() {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Implement focus for the material date picker.
+            return;
+        }
         // Just request focus on the first dropdown.
         mMonthDropdown.scrollToAndFocus();
     }
@@ -288,12 +405,15 @@ public class DateFieldView extends LinearLayout implements FieldView {
      * @return True if the date picker is empty.
      */
     private boolean isEmptyDateSelected() {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Check if the empty date is selected.
+            return true;
+        }
         if (!getYearDropdownHint(getContext())
                 .equals(mYearDropdown.getFieldModel().get(DROPDOWN_HINT))) {
             // An empty date can't be selected if initial date was out of range.
             return false;
         }
-
         // The dropdown field `VALUE` is empty if the hint is selected.
         return TextUtils.isEmpty(mMonthDropdown.getFieldModel().get(VALUE))
                 && TextUtils.isEmpty(mDayDropdown.getFieldModel().get(VALUE))
@@ -306,6 +426,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
      * combination (like February 31st) is selected.
      */
     private @Nullable LocalDate getSelectedDate() {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Get the selected date from the date picker.
+            return null;
+        }
         @Nullable String monthValue = mMonthDropdown.getFieldModel().get(VALUE);
         @Nullable String dayValue = mDayDropdown.getFieldModel().get(VALUE);
         @Nullable String yearValue = mYearDropdown.getFieldModel().get(VALUE);
@@ -340,6 +464,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     public void setErrorMessage(@Nullable String errorMessage) {
+        if (useMaterialDatePicker()) {
+            // TODO: crbug.com/487565242 - Set the error message to the material date picker.
+            return;
+        }
         mErrorMessage.setVisibility(TextUtils.isEmpty(errorMessage) ? View.GONE : View.VISIBLE);
         mErrorMessage.setText(errorMessage);
     }
@@ -388,6 +516,33 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return LocalDate.now(ZoneId.systemDefault());
     }
 
+    @EnsuresNonNullIf(
+            value = {
+                "mSpinnerGroup",
+                "mLabel",
+                "mMonthDropdown",
+                "mDayDropdown",
+                "mYearDropdown",
+                "mErrorMessage"
+            },
+            result = false)
+    private boolean useMaterialDatePicker() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)) {
+            return true;
+        }
+        // Make sure the legacy date picker widgets are initialized.
+        // TODO: crbug.com/487565242 - Remove once the feature is launched.
+        assert mSpinnerGroup != null
+                        && mLabel != null
+                        && mMonthDropdown != null
+                        && mDayDropdown != null
+                        && mYearDropdown != null
+                        && mErrorMessage != null
+                : "Legacy date picker widgets must be non-null";
+        return false;
+    }
+
     @VisibleForTesting
     public static String getMonthDropdownHint(Context context) {
         return context.getString(R.string.autofill_ai_entity_editor_date_field_month_label);
@@ -403,15 +558,15 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return context.getString(R.string.autofill_ai_entity_editor_date_field_year_label);
     }
 
-    public DropdownFieldView getMonthPickerForTest() {
+    public @Nullable DropdownFieldView getMonthPickerForTest() {
         return mMonthDropdown;
     }
 
-    public DropdownFieldView getDayPickerForTest() {
+    public @Nullable DropdownFieldView getDayPickerForTest() {
         return mDayDropdown;
     }
 
-    public DropdownFieldView getYearPickerForTest() {
+    public @Nullable DropdownFieldView getYearPickerForTest() {
         return mYearDropdown;
     }
 }

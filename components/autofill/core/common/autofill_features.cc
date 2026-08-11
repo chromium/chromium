@@ -364,6 +364,13 @@ BASE_FEATURE(kAutofillAiShowPersonalContextFillingYourInfoDialog,
 BASE_FEATURE(kAutofillAiShowWalletDisabledBanner,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, the entity editor on Android uses the date picker from the
+// material design library instead of the ad-hoc date picker implementation.
+BASE_FEATURE(kAutofillAiUseMaterialDatePickerInEntityEditor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions using Private AI Compute.
 BASE_FEATURE(kAutofillAiUsePrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);

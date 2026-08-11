@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
-
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -39,7 +37,7 @@ public class EntityEditorViewTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private Activity mActivity;
+    private TestActivity mActivity;
     private EntityEditorView mEditorView;
 
     @Before

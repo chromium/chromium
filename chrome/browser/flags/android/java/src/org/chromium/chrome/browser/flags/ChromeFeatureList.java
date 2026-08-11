@@ -261,6 +261,8 @@ public abstract class ChromeFeatureList {
             "AutofillAiShowDialogInSettingsWhenUpstreamingFails";
     public static final String AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER =
             "AutofillAiShowWalletDisabledBanner";
+    public static final String AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR =
+            "AutofillAiUseMaterialDatePickerInEntityEditor";
     public static final String AUTOFILL_AI_USE_PRIVATE_AI = "AutofillAiUsePrivateAi";
     public static final String AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK =
             "AutofillAiWalletPrivatePassesDeepLink";

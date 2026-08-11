@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSaveUpdateEntityPrompt.ENTITY_EDITOR_OPENED_HISTOGRAM;
 
-import android.app.Activity;
 import android.graphics.Paint;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
@@ -88,7 +87,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                     .setGuid("guid1")
                     .setRecordType(RecordType.LOCAL)
                     .build();
-    private Activity mActivity;
+    private TestActivity mActivity;
     private AutofillAiSaveUpdateEntityPromptController mPromptController;
     private AutofillAiSaveUpdateEntityPrompt mPrompt;
     private FakeModalDialogManager mModalDialogManager;

@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.FragmentActivity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -66,7 +67,7 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
     public AutofillAiSaveUpdateEntityPrompt(
             AutofillAiSaveUpdateEntityPromptController controller,
             ModalDialogManager modalDialogManager,
-            Activity activity,
+            FragmentActivity activity,
             Profile profile,
             EntityInstance entityInstance) {
         mController = controller;
@@ -124,10 +125,18 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
             @JniType("autofill::EntityInstanceAndroid") EntityInstance entityInstance) {
         @Nullable Activity activity = windowAndroid.getActivity().get();
         @Nullable ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
-        if (activity == null || modalDialogManager == null) return null;
+        if (activity == null
+                || modalDialogManager == null
+                || !(activity instanceof FragmentActivity)) {
+            return null;
+        }
 
         return new AutofillAiSaveUpdateEntityPrompt(
-                controller, modalDialogManager, activity, browserProfile, entityInstance);
+                controller,
+                modalDialogManager,
+                (FragmentActivity) activity,
+                browserProfile,
+                entityInstance);
     }
 
     /**

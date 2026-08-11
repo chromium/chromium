@@ -213,6 +213,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/account_box.xml",
     "java/res/drawable/autofill_editor_notice_background.xml",
+    "java/res/drawable/calendar_month_24dp.xml",
     "java/res/drawable/finance.xml",
     "java/res/drawable/google_24dp.xml",
     "java/res/drawable/insight_spark.xml",
