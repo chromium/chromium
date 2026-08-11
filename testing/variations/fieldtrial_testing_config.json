@@ -17121,6 +17121,21 @@
             ]
         }
     ],
+    "NetworkServiceIncreasedPriorityWhileLoading": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "WhileLoading",
+                    "enable_features": [
+                        "NetworkServiceIncreasedPriorityWhileLoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceSandboxLinuxAndChromeOS": [
         {
             "platforms": [
@@ -17149,21 +17164,6 @@
                     "name": "Enabled_20231025",
                     "enable_features": [
                         "NetworkServiceSandbox"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NetworkServiceThreadIncreasedPriorityV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "WhileLoading",
-                    "enable_features": [
-                        "NetworkServiceIncreasedPriorityWhileLoading"
                     ]
                 }
             ]
