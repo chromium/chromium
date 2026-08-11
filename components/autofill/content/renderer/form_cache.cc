@@ -60,6 +60,12 @@ void FormCache::Reset() {
   extracted_forms_.clear();
 }
 
+void FormCache::ClearCache() {
+  for (auto& [id, form] : extracted_forms_) {
+    form.reset();
+  }
+}
+
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state) {
@@ -109,6 +115,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     if (IsFormInteresting(form)) {
       FormRendererId form_id = form.renderer_id();
       auto it = old_extracted_forms.find(form_id);
+      // it->second may be null because the cache was cleared. In this case
+      // we want to list the form as an updated form.
       if (it == old_extracted_forms.end() || !it->second ||
           !FormData::IdenticalAndEquivalentDomElements(
               *it->second, form, {FormFieldData::Exclusion::kValue})) {

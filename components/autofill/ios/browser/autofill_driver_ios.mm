@@ -459,6 +459,10 @@ void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::ClearFormCacheInAllFrames() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::ObserveFieldVisibility(
     const FieldGlobalId& field_id,
     mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {

@@ -59,4 +59,6 @@ void TestAutofillDriver::TriggerFormExtractionInAllFrames(
   }
 }
 
+void TestAutofillDriver::ClearFormCacheInAllFrames() {}
+
 }  // namespace autofill

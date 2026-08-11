@@ -45,6 +45,11 @@ class FormCache {
 
   void Reset();
 
+  // Resets all FormData pointers in `extracted_forms_` to nullptr while keeping
+  // the keys. This causes subsequent calls to `UpdateFormCache()` to treat all
+  // currently present forms as updated forms.
+  void ClearCache();
+
   // Returns the diff of forms since the last call to UpdateFormCache(): the new
   // forms, the still present but changed forms, and the removed forms.
   //
@@ -79,8 +84,14 @@ class FormCache {
       const FieldDataManager& field_data_manager,
       const CallTimerState& timer_state);
 
-  const std::map<FormRendererId, std::unique_ptr<FormData>>& extracted_forms()
-      const {
+  // This function is labeled "unsafe" because it may only be called after
+  // AutofillAgent::ExtractFormsUnthrottled has retrieved updated forms from
+  // the page, or if the caller is aware that the FormData values may be
+  // wiped by ClearCache(). It is not possible to distinguish a null entry
+  // in the `extracted_forms_` that was created by clearing the cache from a
+  // null entry that was created because the form extraction failed.
+  const std::map<FormRendererId, std::unique_ptr<FormData>>&
+  extracted_forms_unsafe() const {
     return extracted_forms_;
   }
 
@@ -95,7 +106,10 @@ class FormCache {
   // reparsed later and not all forms. A null form means that for a given web
   // form (either a WebFormElement or the form of unowned elements), extraction
   // failed (see `form_util::ExtractFormData()` for reasons of failing
-  // extractions).
+  // extractions) OR the cache has been reset. These null pointers must be kept
+  // so that UpdateFormCache() can report them as removed forms. Any user of
+  // the cache must be aware that it's not possible to distinguish null entries
+  // from a failed extraction and null entries from a cleared cache.
   std::map<FormRendererId, std::unique_ptr<FormData>> extracted_forms_;
 };
 

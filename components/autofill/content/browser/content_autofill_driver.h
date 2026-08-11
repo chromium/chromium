@@ -222,6 +222,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)> form_extraction_finished_callback)
       override;
+  void ClearFormCacheInAllFrames() override;
   void RendererShouldClearPreviewedForm() override;
 
   // Group (1b): browser -> renderer events, routed (see comment above).

@@ -79,6 +79,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               TriggerFormExtractionInAllFrames,
               (base::OnceCallback<void(bool)>),
               ());
+  MOCK_METHOD(void, ClearFormCacheInAllFrames, (), (override));
 };
 
 class MockFieldClassificationModelHandler
@@ -899,6 +900,12 @@ TEST_F(AutofillManagerTest, CanShowAutofillUi) {
 TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
   EXPECT_CALL(autofill_driver(), TriggerFormExtractionInAllFrames);
   autofill_manager().TriggerFormExtractionInAllFrames(base::DoNothing());
+}
+
+TEST_F(AutofillManagerTest, ReparseKnownForms) {
+  EXPECT_CALL(autofill_driver(), ClearFormCacheInAllFrames);
+  EXPECT_CALL(autofill_driver(), TriggerFormExtractionInAllFrames);
+  autofill_manager().ReparseKnownForms();
 }
 
 // Ensure that `FieldClassificationModelHandler`s are called when parsing the

@@ -251,6 +251,9 @@ class AutofillDriver {
       base::OnceCallback<void(bool success)>
           form_extraction_finished_callback) = 0;
 
+  // Clears the form cache in all frames of the same frame tree.
+  virtual void ClearFormCacheInAllFrames() = 0;
+
   // Response handler for ExtractForm(). The `host_frame_driver` manages `form`,
   // i.e., `form.host_frame == host_frame_driver->GetFrameToken()`. The form is
   // the flattened representation of the form (see autofill_driver_router.h or

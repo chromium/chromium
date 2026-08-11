@@ -588,8 +588,10 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   ExtractFormsUnthrottled(/*callback=*/{},
                           GetCallTimerState(kDidDispatchDomContentLoadedEvent));
   if (password_autofill_agent_) {
+    // It is safe to call `extracted_forms_unsafe()` because the form_cache
+    // has just been initialized by `ExtractFormsUnthrottled()`.
     password_autofill_agent_->DispatchedDOMContentLoadedEvent(
-        SynchronousFormCache(form_cache_.extracted_forms()));
+        SynchronousFormCache(form_cache_.extracted_forms_unsafe()));
   }
 
   if (WebDocument document = GetDocument();
@@ -1814,6 +1816,10 @@ void AutofillAgent::TriggerFormExtractionWithResponse(
                std::move(callback));
 }
 
+void AutofillAgent::ClearFormCache() {
+  form_cache_.ClearCache();
+}
+
 void AutofillAgent::ExtractFormWithField(
     FieldRendererId field_id,
     base::OnceCallback<void(const std::optional<FormData>&)> callback) {
@@ -1954,8 +1960,12 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
               [](PasswordAutofillAgent* password_autofill_agent,
                  FormCache* form_cache, bool success) {
                 if (success && password_autofill_agent) {
+                  // It is safe to call `extracted_forms_unsafe()` because the
+                  // form_cache has just been initialized by
+                  // `ExtractFormsUnthrottled()`.
                   password_autofill_agent->OnDynamicFormsSeen(
-                      SynchronousFormCache(form_cache->extracted_forms()));
+                      SynchronousFormCache(
+                          form_cache->extracted_forms_unsafe()));
                 }
               },
               base::Unretained(password_autofill_agent_.get()),

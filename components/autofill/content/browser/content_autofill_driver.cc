@@ -367,6 +367,17 @@ void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
   }
 }
 
+void ContentAutofillDriver::ClearFormCacheInAllFrames() {
+  render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
+      [](content::RenderFrameHost* rfh) {
+        if (rfh->IsActive()) {
+          if (auto* driver = GetForRenderFrameHost(rfh)) {
+            driver->GetAutofillAgent()->ClearFormCache();
+          }
+        }
+      });
+}
+
 void ContentAutofillDriver::ObserveFieldVisibility(
     const FieldGlobalId& field_id,
     mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) {

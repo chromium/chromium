@@ -195,7 +195,7 @@ class AutofillAgentTest : public test::AutofillRendererTest {
 
   size_t num_extracted_forms() {
     return std::ranges::count_if(
-        test_api(autofill_agent()).form_cache().extracted_forms(),
+        test_api(autofill_agent()).form_cache().extracted_forms_unsafe(),
         [](const auto& id_and_form) {
           const auto& [id, form] = id_and_form;
           return form != nullptr;
@@ -292,6 +292,16 @@ TEST_F(AutofillAgentTest, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
+}
+
+TEST_F(AutofillAgentTest, ClearFormCache) {
+  EXPECT_CALL(autofill_driver(), FormsSeen(SizeIs(1), _)).Times(2);
+  LoadHTML(R"(<body> <input> </body>)");
+  WaitForFormsSeen();
+  autofill_agent().ClearFormCache();
+  base::MockOnceCallback<void(bool)> mock_callback;
+  autofill_agent().TriggerFormExtractionWithResponse(mock_callback.Get());
+  task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle);
 }
 
 // Tests that button titles are extracted and reported to the browser.
@@ -1068,7 +1078,7 @@ TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddNonAutofillableElement) {
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
-      test_api(autofill_agent()).form_cache().extracted_forms();
+      test_api(autofill_agent()).form_cache().extracted_forms_unsafe();
   ASSERT_EQ(num_extracted_forms(), 1u);
   ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 
@@ -1103,7 +1113,7 @@ TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddAutofillableElement) {
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
-      test_api(autofill_agent()).form_cache().extracted_forms();
+      test_api(autofill_agent()).form_cache().extracted_forms_unsafe();
   ASSERT_EQ(num_extracted_forms(), 1u);
   ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
 

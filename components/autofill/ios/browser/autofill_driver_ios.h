@@ -136,6 +136,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
+  void ClearFormCacheInAllFrames() override;
   void ObserveFieldVisibility(
       const FieldGlobalId& field_id,
       mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) override;

@@ -29,6 +29,8 @@ SynchronousFormCache::SynchronousFormCache(
 SynchronousFormCache::SynchronousFormCache(
     const std::map<FormRendererId, std::unique_ptr<FormData>>& forms) {
   for (const auto& [id, form] : forms) {
+    // A nullptr in the original form cache indicates that the forms need to be
+    // reextracted.
     Insert(id, form.get());
   }
 }
@@ -42,13 +44,14 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache) const {
   if (!cache_.empty()) {
-    if (const base::optional_ref<const FormData>* cached_form =
-            base::FindOrNull(cache_,
-                             form_util::GetFormRendererId(form_element))) {
-      // Even if the cache returns a null form, we do not try to extract
-      // because this means extraction happened synchronously before and
-      // failed, meaning that it would fail again if we do it now.
-      return cached_form->CopyAsOptional();
+    const base::optional_ref<const FormData>* cache_entry =
+        base::FindOrNull(cache_, form_util::GetFormRendererId(form_element));
+    if (cache_entry) {
+      // The cache contained an entry for `form_element`. The value of the entry
+      // may be a null reference if the previous extraction failed. In this
+      // case, we do not try to extract the form again, because we would fail
+      // again. CopyAsOptional() reproduces the null reference in this case.
+      return cache_entry->CopyAsOptional();
     }
     // This codepath should not be reached, as it would mean that we populated
     // the cache with wrong forms before passing it around methods. We do not

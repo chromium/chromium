@@ -232,6 +232,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
+  void ClearFormCache() override {}
 
   void ApplyFieldsAction(mojom::FormActionType action_type,
                          mojom::ActionPersistence action_persistence,

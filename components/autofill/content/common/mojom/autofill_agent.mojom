@@ -26,6 +26,10 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
+  // Clears the form cache in the renderer. Use this before
+  // `TriggerFormExtraction` to get a full new extraction of forms.
+  ClearFormCache();
+
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.

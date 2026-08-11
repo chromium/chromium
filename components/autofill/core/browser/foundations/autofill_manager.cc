@@ -643,6 +643,7 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
 }
 
 void AutofillManager::ReparseKnownForms() {
+  driver_->ClearFormCacheInAllFrames();
   TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
