@@ -6,16 +6,19 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -107,17 +110,16 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
         "cr-searchbox-input",
     };
     search_input_loaded.event = kSearchInputLoadedEvent;
-    return Steps(
-        InstrumentNonTabWebView(
-            web_contents_id, base::BindOnce([]() -> views::View* {
-              OmniboxEverywhereController* controller =
-                  g_browser_process->GetFeatures()
-                      ->omnibox_everywhere_controller();
-              return controller->ui_manager()
-                  ->widget_delegate()
-                  ->GetContentsView();
-            })),
-        WaitForStateChange(web_contents_id, search_input_loaded));
+    return Steps(InstrumentNonTabWebView(
+                     web_contents_id, base::BindOnce([]() -> views::View* {
+                       OmniboxEverywhereController* controller =
+                           g_browser_process->GetFeatures()
+                               ->omnibox_everywhere_controller();
+                       return controller->ui_manager()
+                           ->widget_delegate()
+                           ->GetContentsView();
+                     })),
+                 WaitForStateChange(web_contents_id, search_input_loaded));
   }
 
   // Simulates dragging the mouse from `start_point` to `end_point` within
@@ -416,6 +418,36 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
       CheckJsResultAt(kOmniboxWebContentsId, kInputElementQuery,
                       "el => el.value", "hello wor"),
       InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StatusIconLifecycle DISABLED_StatusIconLifecycle_
+#else
+#define MAYBE_StatusIconLifecycle StatusIconLifecycle
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_StatusIconLifecycle) {
+  StatusTray* status_tray = g_browser_process->status_tray();
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  if (!status_tray) {
+    GTEST_SKIP() << "StatusTray is not supported on this platform.";
+  }
+
+  // Initially background mode pref is false, status icon should not exist.
+  EXPECT_FALSE(status_tray->HasStatusIconOfTypeForTesting(
+      StatusTray::OMNIBOX_EVERYWHERE_ICON));
+
+  // Enable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+  EXPECT_TRUE(status_tray->HasStatusIconOfTypeForTesting(
+      StatusTray::OMNIBOX_EVERYWHERE_ICON));
+
+  // Disable background mode pref.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
+  EXPECT_FALSE(status_tray->HasStatusIconOfTypeForTesting(
+      StatusTray::OMNIBOX_EVERYWHERE_ICON));
 }
 
 }  // namespace omnibox_everywhere

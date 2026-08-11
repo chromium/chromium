@@ -26,6 +26,7 @@ ChromeCustomIconCatalogName GetCatalogName(StatusTray::StatusIconType type) {
     case StatusTray::NOTIFICATION_TRAY_ICON:
     case StatusTray::MEDIA_STREAM_CAPTURE_ICON:
     case StatusTray::BACKGROUND_MODE_ICON:
+    case StatusTray::OMNIBOX_EVERYWHERE_ICON:
     case StatusTray::OTHER_ICON:
       return ChromeCustomIconCatalogName::kNotSupported;
     default:

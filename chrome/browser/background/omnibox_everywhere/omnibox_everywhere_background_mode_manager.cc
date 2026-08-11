@@ -4,6 +4,8 @@
 
 #include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -106,10 +108,14 @@ void OmniboxEverywhereBackgroundModeManager::HideStatusIcon() {
   StatusTray* status_tray =
       g_browser_process ? g_browser_process->status_tray() : nullptr;
   if (status_tray) {
-    status_tray->RemoveStatusIcon(status_icon_);
+    // Avoids dangling the `status_icon_` raw_ptr while `RemoveStatusIcon` is
+    // called.
+    StatusIcon* status_icon = status_icon_;
+    status_icon_ = nullptr;
+    status_tray->RemoveStatusIcon(status_icon);
+  } else {
+    status_icon_ = nullptr;
   }
-
-  status_icon_ = nullptr;
 }
 
 void OmniboxEverywhereBackgroundModeManager::OnStatusIconClicked() {
