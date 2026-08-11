@@ -479,7 +479,125 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   EXPECT_EQ(result2.task_metadata->sender_sequence_number, 0);
   EXPECT_EQ(result2.task_metadata->last_seen_sequence_number, 43);
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class GlicExperimentalTriggeringCoordinatorWithTabTest
+    : public GlicExperimentalTriggeringCoordinatorTest {
+ public:
+  GlicExperimentalTriggeringCoordinatorWithTabTest() = default;
+  ~GlicExperimentalTriggeringCoordinatorWithTabTest() override = default;
+
+  void SetUp() override {
+    GlicExperimentalTriggeringCoordinatorTest::SetUp();
+    coordinator_->set_browser_window(&mock_browser_window_);
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile_));
+    ON_CALL(mock_tab_, GetContents())
+        .WillByDefault(testing::Return(web_contents_.get()));
+    ON_CALL(mock_tab_, GetWeakPtr())
+        .WillByDefault(testing::Return(tab_weak_factory_.GetWeakPtr()));
+    ON_CALL(mock_tab_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+    instance_helper_ = std::make_unique<GlicInstanceHelper>(&mock_tab_);
+    coordinator_->set_active_tab(&mock_tab_);
+  }
+
+  void TearDown() override {
+    instance_helper_.reset();
+    web_contents_.reset();
+    GlicExperimentalTriggeringCoordinatorTest::TearDown();
+  }
+
+ protected:
+  MockBrowserWindowInterface mock_browser_window_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  tabs::MockTabInterface mock_tab_;
+  base::WeakPtrFactory<tabs::TabInterface> tab_weak_factory_{&mock_tab_};
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  std::unique_ptr<GlicInstanceHelper> instance_helper_;
+};
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       RelaysParentConversationMetadataInitial) {
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .parent_conversation_metadata =
+          ParentConversationMetadata{
+              .conversation_id = "test_init_id",
+              .conversation_title = "test_init_title",
+          },
+  };
+  request.payload = TriggerActuationRequest{.initial_prompt = "hello"};
+
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       RelaysParentConversationMetadataUpdated) {
+  ExperimentalTriggeringRequest init_request;
+  init_request.version = 1;
+  init_request.context_id = kTestContextId;
+  init_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  init_request.payload = TriggerActuationRequest{.initial_prompt = "hello"};
+  auto init_response = SendRequest(init_request);
+  ASSERT_TRUE(init_response.has_value());
+  ASSERT_TRUE(init_response->task_update.has_value());
+  EXPECT_EQ(init_response->task_update->state, TaskUpdate::State::kStarting);
+
+  ExperimentalTriggeringRequest update_request;
+  update_request.version = 1;
+  update_request.context_id = kTestContextId;
+  update_request.task_metadata = TaskMetadata{
+      .parent_conversation_metadata =
+          ParentConversationMetadata{
+              .conversation_id = "test_conv_id",
+              .conversation_title = "test_title",
+          },
+  };
+  update_request.payload = TaskMetadataUpdated{};
+
+  base::HistogramTester histogram_tester;
+  auto response = SendRequest(update_request);
+  EXPECT_FALSE(response.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       RespectsLastSeenSequenceNumber) {
+  ExperimentalTriggeringRequest init_request;
+  init_request.version = 1;
+  init_request.context_id = kTestContextId;
+  init_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  init_request.payload = TriggerActuationRequest{.initial_prompt = "hello"};
+  auto init_response = SendRequest(init_request);
+  ASSERT_TRUE(init_response.has_value());
+  ASSERT_TRUE(init_response->task_update.has_value());
+  EXPECT_EQ(init_response->task_update->state, TaskUpdate::State::kStarting);
+
+  ExperimentalTriggeringRequest stop_request;
+  stop_request.version = 1;
+  stop_request.context_id = kTestContextId;
+  stop_request.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 42,
+  };
+  stop_request.payload = StopActuationRequest{.stop_reason = "STOPPED_BY_USER"};
+
+  auto response = SendRequest(stop_request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStopped);
+  EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
+}
 
 }  // namespace
 }  // namespace glic
