@@ -13,7 +13,6 @@
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
-#include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
@@ -21,27 +20,22 @@
 namespace mojo {
 
 // static
-bool StructTraits<viz::mojom::MetadataOverrideDataView,
-                  viz::TransferableResource::MetadataOverride>::
+base::expected<void, DeserializationError>
+StructTraits<viz::mojom::MetadataOverrideDataView,
+             viz::TransferableResource::MetadataOverride>::
     Read(viz::mojom::MetadataOverrideDataView data,
          viz::TransferableResource::MetadataOverride* out) {
   out->is_overlay_candidate = data.is_overlay_candidate();
   if (!data.ReadColorSpace(&out->color_space)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::MetadataOverride::color_space");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadOrigin(&out->origin)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::MetadataOverride::origin");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadAlphaType(&out->alpha_type)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::MetadataOverride::alpha_type");
-    return false;
+    return base::unexpected(DeserializationError());
   }
-  return true;
+  return base::ok();
 }
 
 // static
@@ -162,10 +156,11 @@ EnumTraits<viz::mojom::ResourceSource,
 }
 
 // static
-bool StructTraits<viz::mojom::TransferableResourceDataView,
-                  viz::TransferableResource>::
-    Read(viz::mojom::TransferableResourceDataView data,
-         viz::TransferableResource* out) {
+base::expected<void, DeserializationError> StructTraits<
+    viz::mojom::TransferableResourceDataView,
+    viz::TransferableResource>::Read(viz::mojom::TransferableResourceDataView
+                                         data,
+                                     viz::TransferableResource* out) {
   viz::ResourceId id;
 
   gpu::SyncToken sync_token;
@@ -173,45 +168,29 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   viz::TransferableResource::MetadataOverride metadata_override;
 
   if (!data.ReadSharedImage(&exported_shared_image)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::shared_image");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadSyncToken(&sync_token)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::sync_token");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadMetadataOverride(&metadata_override)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::metadata_override");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadHdrMetadata(&out->hdr_metadata)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::hdr_metadata");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadId(&id)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::id");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadSynchronizationType(&out->synchronization_type)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::synchronization_type");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadResourceSource(&out->resource_source)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::resource_source");
-    return false;
+    return base::unexpected(DeserializationError());
   }
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadYcbcrInfo(&out->ycbcr_info)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TransferableResource::ycbcr_info");
-    return false;
+    return base::unexpected(DeserializationError());
   }
 #endif
 
@@ -230,7 +209,7 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->wants_promotion_hint = data.wants_promotion_hint();
 #endif
 
-  return true;
+  return base::ok();
 }
 
 }  // namespace mojo

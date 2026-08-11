@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/types/expected.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass.mojom-shared.h"
@@ -115,8 +117,9 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->quad_list;
   }
 
-  static bool Read(viz::mojom::CompositorRenderPassDataView data,
-                   std::unique_ptr<viz::CompositorRenderPass>* out);
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::CompositorRenderPassDataView data,
+      std::unique_ptr<viz::CompositorRenderPass>* out);
 };
 
 }  // namespace mojo

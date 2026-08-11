@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -36,8 +38,9 @@ struct StructTraits<viz::mojom::HitTestRegionDataView, viz::HitTestRegion> {
     return region.transform;
   }
 
-  static bool Read(viz::mojom::HitTestRegionDataView data,
-                   viz::HitTestRegion* out);
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::HitTestRegionDataView data,
+      viz::HitTestRegion* out);
 };
 
 template <>
@@ -60,8 +63,9 @@ struct StructTraits<viz::mojom::HitTestRegionListDataView,
     return list.regions;
   }
 
-  static bool Read(viz::mojom::HitTestRegionListDataView data,
-                   viz::HitTestRegionList* out);
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::HitTestRegionListDataView data,
+      viz::HitTestRegionList* out);
 };
 
 }  // namespace mojo

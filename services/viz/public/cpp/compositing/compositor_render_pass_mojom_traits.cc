@@ -9,76 +9,53 @@
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h"
-#include "services/viz/public/cpp/crash_keys.h"
 #include "skia/public/mojom/skpath_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace mojo {
 
 // static
-bool StructTraits<viz::mojom::CompositorRenderPassDataView,
-                  std::unique_ptr<viz::CompositorRenderPass>>::
+base::expected<void, DeserializationError>
+StructTraits<viz::mojom::CompositorRenderPassDataView,
+             std::unique_ptr<viz::CompositorRenderPass>>::
     Read(viz::mojom::CompositorRenderPassDataView data,
          std::unique_ptr<viz::CompositorRenderPass>* out) {
   *out = viz::CompositorRenderPass::Create();
   std::optional<viz::ViewTransitionElementResourceId>
       opt_view_transition_element_resource_id;
   if (!data.ReadOutputRect(&(*out)->output_rect)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::output_rect");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadDamageRect(&(*out)->damage_rect)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::damage_rect");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadTransformToRootTarget(&(*out)->transform_to_root_target)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::transform_to_root_target");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadFilters(&(*out)->filters)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::filters");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadBackdropFilters(&(*out)->backdrop_filters)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::backdrop_filters");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::backdrop_filter_bounds");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::subtree_capture_id");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadSubtreeSize(&(*out)->subtree_size)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::subtree_size");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadCopyRequests(&(*out)->copy_requests)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::copy_requests");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadViewTransitionElementResourceId(
           &opt_view_transition_element_resource_id)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read "
-        "CompositorRenderPass::view_transition_element_resource_id");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadId(&(*out)->id)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read CompositorRenderPass::id");
-    return false;
+    return base::unexpected(DeserializationError());
   }
 
   if (opt_view_transition_element_resource_id) {
@@ -88,14 +65,11 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
 
   // CompositorRenderPass ids are never zero.
   if (!(*out)->id) {
-    viz::SetDeserializationCrashKeyString("Invalid render pass ID");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if ((*out)->subtree_size.width() > (*out)->output_rect.size().width() ||
       (*out)->subtree_size.height() > (*out)->output_rect.size().height()) {
-    viz::SetDeserializationCrashKeyString(
-        "Subtree size exceeds output rect size");
-    return false;
+    return base::unexpected(DeserializationError());
   }
 
   (*out)->has_transparent_background = data.has_transparent_background();
@@ -118,8 +92,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     viz::DrawQuad* quad =
         AllocateAndConstruct(quad_state_data_view.tag(), &(*out)->quad_list);
     if (!quad) {
-      viz::SetDeserializationCrashKeyString("AllocateAndConstruct quad failed");
-      return false;
+      return base::unexpected(DeserializationError::CustomCode(i));
     }
 
     // Read the SharedQuadState.
@@ -131,23 +104,21 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       using SqsTraits = StructTraits<viz::mojom::SharedQuadStateDataView,
                                      viz::SharedQuadState>;
       last_sqs = (*out)->CreateAndAppendSharedQuadState();
-      if (!SqsTraits::Read(sqs_data_view, last_sqs)) {
-        viz::SetDeserializationCrashKeyString("Failed read SharedQuadState");
-        return false;
+      auto res = SqsTraits::Read(sqs_data_view, last_sqs);
+      if (!res.has_value()) {
+        return res;
       }
     }
     quad->shared_quad_state = last_sqs;
     if (!quad->shared_quad_state) {
-      viz::SetDeserializationCrashKeyString("No shared quad state");
-      return false;
+      return base::unexpected(DeserializationError::CustomCode(i));
     }
 
     if (!quads.Read(i, quad)) {
-      viz::SetDeserializationCrashKeyString("Failed read DrawQuad");
-      return false;
+      return base::unexpected(DeserializationError::CustomCode(i));
     }
   }
-  return true;
+  return base::ok();
 }
 
 }  // namespace mojo

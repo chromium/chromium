@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/test/task_environment.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -112,23 +113,50 @@ auto AnyHitTestRegionList() {
       fuzztest::VectorOf(AnyHitTestRegion()).WithMaxSize(100));
 }
 
-using HitTestStructTraitsTest = testing::Test;
+class HitTestStructTraitsTest : public testing::Test {
+ public:
+  HitTestStructTraitsTest() = default;
+  ~HitTestStructTraitsTest() override = default;
+
+ private:
+  // StructTraits for hit testing can return deserialization error traces,
+  // which have an implicit dependency on a functioning task environment to
+  // look up the current `MessageDispatchContext`.
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+class HitTestStructTraitsFuzzTest {
+ public:
+  HitTestStructTraitsFuzzTest() = default;
+  ~HitTestStructTraitsFuzzTest() = default;
+
+  void AggregatedHitTestRegionFuzz(const AggregatedHitTestRegion& input);
+  void HitTestRegionListFuzz(const HitTestRegionList& input);
+
+ private:
+  // StructTraits for hit testing can return deserialization error traces,
+  // which have an implicit dependency on a functioning task environment to
+  // look up the current `MessageDispatchContext`.
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
 
 }  // namespace
 
-void AggregatedHitTestRegionFuzz(const AggregatedHitTestRegion& input) {
+void HitTestStructTraitsFuzzTest::AggregatedHitTestRegionFuzz(
+    const AggregatedHitTestRegion& input) {
   AggregatedHitTestRegion output;
   mojo::test::SerializeAndDeserialize<mojom::AggregatedHitTestRegion>(input,
                                                                       output);
 }
-FUZZ_TEST(HitTestStructTraitsFuzzTest, AggregatedHitTestRegionFuzz)
+FUZZ_TEST_F(HitTestStructTraitsFuzzTest, AggregatedHitTestRegionFuzz)
     .WithDomains(AnyAggregatedHitTestRegion());
 
-void HitTestRegionListFuzz(const HitTestRegionList& input) {
+void HitTestStructTraitsFuzzTest::HitTestRegionListFuzz(
+    const HitTestRegionList& input) {
   HitTestRegionList output;
   mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
 }
-FUZZ_TEST(HitTestStructTraitsFuzzTest, HitTestRegionListFuzz)
+FUZZ_TEST_F(HitTestStructTraitsFuzzTest, HitTestRegionListFuzz)
     .WithDomains(AnyHitTestRegionList());
 
 TEST_F(HitTestStructTraitsTest, AggregatedHitTestRegion) {

@@ -214,10 +214,7 @@ mojom("mojom") {
       traits_private_headers = [
         "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
       ]
-      traits_public_deps = [
-        "//components/viz/common",
-        "//services/viz/public/cpp:crash_keys",
-      ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [
@@ -397,7 +394,6 @@ mojom("mojom") {
       traits_sources = [ "//services/viz/public/cpp/hit_test/hit_test_region_list_mojom_traits.cc" ]
       traits_public_deps = [
         "//components/viz/common",
-        "//services/viz/public/cpp:crash_keys",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -552,7 +548,6 @@ mojom("mojom") {
       traits_headers = [ "//services/viz/public/cpp/hit_test/hit_test_region_list_mojom_traits.h" ]
       traits_public_deps = [
         "//components/viz/common",
-        "//services/viz/public/cpp:crash_keys",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -679,10 +674,7 @@ mojom("surfaces") {
       traits_headers = [
         "//services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h",
       ]
-      traits_public_deps = [
-        "//components/viz/common",
-        "//services/viz/public/cpp:crash_keys",
-      ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

@@ -4,7 +4,6 @@
 
 #include "services/viz/public/cpp/compositing/trees_in_viz_timing_mojom_traits.h"
 
-#include "services/viz/public/cpp/crash_keys.h"
 #include "services/viz/public/mojom/compositing/trees_in_viz_timing.mojom.h"
 
 namespace mojo {
@@ -12,36 +11,27 @@ namespace mojo {
 using Traits =
     StructTraits<viz::mojom::TreesInVizTimingDataView, viz::TreesInVizTiming>;
 // static
-bool Traits::Read(viz::mojom::TreesInVizTimingDataView data,
-                  viz::TreesInVizTiming* out) {
+base::expected<void, DeserializationError> Traits::Read(
+    viz::mojom::TreesInVizTimingDataView data,
+    viz::TreesInVizTiming* out) {
   if (!data.ReadStartUpdateDisplayTree(&out->start_update_display_tree)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TreesInVizTiming::start_update_display_tree");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadStartPrepareToDraw(&out->start_prepare_to_draw)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TreesInVizTiming::start_prepare_to_draw");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadStartDrawLayers(&out->start_draw_layers)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TreesInVizTiming::start_draw_layers");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!data.ReadSubmitCompositorFrame(&out->submit_compositor_frame)) {
-    viz::SetDeserializationCrashKeyString(
-        "Failed read TreesInVizTiming::submit_compositor_frame");
-    return false;
+    return base::unexpected(DeserializationError());
   }
   if (!(out->start_update_display_tree <= out->start_prepare_to_draw &&
         out->start_prepare_to_draw <= out->start_draw_layers &&
         out->start_draw_layers <= out->submit_compositor_frame)) {
-    viz::SetDeserializationCrashKeyString(
-        "Invalid timestamps in TreesInVizTiming");
-    return false;
+    return base::unexpected(DeserializationError());
   }
-  return true;
+  return base::ok();
 }
 
 }  // namespace mojo

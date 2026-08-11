@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/types/expected.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/copy_output_request.mojom.h"
@@ -68,8 +70,9 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
   static mojo::PendingRemote<viz::mojom::CopyOutputResultSender> result_sender(
       const std::unique_ptr<viz::CopyOutputRequest>& request);
 
-  static bool Read(viz::mojom::CopyOutputRequestDataView data,
-                   std::unique_ptr<viz::CopyOutputRequest>* out_p);
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::CopyOutputRequestDataView data,
+      std::unique_ptr<viz::CopyOutputRequest>* out_p);
 };
 
 }  // namespace mojo

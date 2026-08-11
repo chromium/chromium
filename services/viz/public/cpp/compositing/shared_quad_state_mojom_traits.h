@@ -9,9 +9,10 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/types/expected.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
-#include "services/viz/public/cpp/crash_keys.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/mojom/mask_filter_info_mojom_traits.h"
@@ -138,39 +139,28 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     return sqs.offset_tag;
   }
 
-  static bool Read(viz::mojom::SharedQuadStateDataView data,
-                   viz::SharedQuadState* out) {
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::SharedQuadStateDataView data,
+      viz::SharedQuadState* out) {
     if (!data.ReadQuadToTargetTransform(&out->quad_to_target_transform)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::quad_to_target_transform");
-      return false;
+      return base::unexpected(DeserializationError());
     }
     if (!data.ReadQuadLayerRect(&out->quad_layer_rect)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::quad_layer_rect");
-      return false;
+      return base::unexpected(DeserializationError());
     }
     if (!data.ReadVisibleQuadLayerRect(&out->visible_quad_layer_rect)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::visible_quad_layer_rect");
-      return false;
+      return base::unexpected(DeserializationError());
     }
     if (!data.ReadClipRect(&out->clip_rect)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::clip_rect");
-      return false;
+      return base::unexpected(DeserializationError());
     }
     if (!data.ReadOffsetTag(&out->offset_tag)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::offset_tag");
-      return false;
+      return base::unexpected(DeserializationError());
     }
 
     std::optional<gfx::MaskFilterInfo> mask_filter;
     if (!data.ReadMaskFilterInfo(&mask_filter)) {
-      viz::SetDeserializationCrashKeyString(
-          "Failed read SharedQuadState::mask_filter_info");
-      return false;
+      return base::unexpected(DeserializationError());
     }
 
     out->mask_filter_info = mask_filter.value_or(gfx::MaskFilterInfo());
@@ -178,16 +168,15 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     out->are_contents_opaque = data.are_contents_opaque();
     out->opacity = data.opacity();
     if (data.blend_mode() > static_cast<int>(SkBlendMode::kLastMode)) {
-      viz::SetDeserializationCrashKeyString(
-          "Invalid blend mode in SharedQuadState");
-      return false;
+      return base::unexpected(
+          DeserializationError::CustomCode(data.blend_mode()));
     }
     out->blend_mode = static_cast<SkBlendMode>(data.blend_mode());
     out->sorting_context_id = data.sorting_context_id();
     out->layer_id = data.layer_id();
     out->is_fast_rounded_corner = data.is_fast_rounded_corner();
 
-    return true;
+    return base::ok();
   }
 };
 

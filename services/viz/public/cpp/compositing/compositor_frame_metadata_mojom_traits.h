@@ -9,11 +9,13 @@
 #include <optional>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "mojo/public/cpp/bindings/deserialization_error.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
@@ -196,8 +198,9 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.tracked_element_rects;
   }
 
-  static bool Read(viz::mojom::CompositorFrameMetadataDataView data,
-                   viz::CompositorFrameMetadata* out);
+  static base::expected<void, DeserializationError> Read(
+      viz::mojom::CompositorFrameMetadataDataView data,
+      viz::CompositorFrameMetadata* out);
 };
 
 }  // namespace mojo
