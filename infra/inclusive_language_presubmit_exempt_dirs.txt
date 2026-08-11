@@ -94,7 +94,6 @@ chrome/test/chromedriver
 chrome/test/chromedriver/chrome
 chrome/test/chromedriver/server
 chrome/test/chromeos/autotest
-chrome/test/data/browsing_topics
 chrome/test/data/downloads
 chrome/test/data/dromaeo
 chrome/test/data/dromaeo/lib
@@ -109,7 +108,6 @@ chrome/test/data/webui
 chrome/test/data/webui/chromeos
 chrome/updater/win
 codelabs/mojo_examples
-components
 components/android_autofill/browser/test_support/java/src/org/chromium/components/autofill
 components/autofill/core/browser/data_model/addresses
 components/autofill/core/browser/filling/payments
@@ -149,7 +147,6 @@ components/supervised_user/core/browser/proto
 components/surface_embed
 components/sync/model/crypto
 components/test/data/autofill/heuristics/input
-components/test/data/browsing_topics
 components/test/data/optimization_guide
 components/ukm
 components/url_formatter
@@ -283,6 +280,8 @@ third_party/android_deps/buildSrc/src/main/groovy
 third_party/android_deps/libs
 third_party/android_toolchain
 third_party/arcore-android-sdk
+third_party/aria-practices/src/content/patterns/landmarks/examples/css
+third_party/aria-practices/src/content/patterns/landmarks/examples/js
 third_party/aria-practices/src/content/patterns/tabs/examples
 third_party/axe-core
 third_party/blink/perf_tests/bindings/resources/data
@@ -326,7 +325,6 @@ third_party/blink/renderer/core/editing/ime
 third_party/blink/renderer/core/frame
 third_party/blink/renderer/core/html
 third_party/blink/renderer/core/html/custom
-third_party/blink/renderer/core/html/fenced_frame
 third_party/blink/renderer/core/layout
 third_party/blink/renderer/core/layout/flex
 third_party/blink/renderer/core/layout/grid
@@ -413,7 +411,6 @@ third_party/blink/web_tests/fast/block/float
 third_party/blink/web_tests/fast/canvas
 third_party/blink/web_tests/fast/invalid
 third_party/blink/web_tests/fast/mediarecorder
-third_party/blink/web_tests/http/tests/devtools/persistence
 third_party/blink/web_tests/http/tests/devtools/sources/debugger-pause
 third_party/blink/web_tests/http/tests/dom
 third_party/blink/web_tests/images/resources/avif
@@ -501,6 +498,7 @@ third_party/hyphenation-patterns
 third_party/hyphenation-patterns/src/am
 third_party/inspector_protocol
 third_party/jsoncpp
+third_party/ktfmt/3pp
 third_party/libdisplay-info
 third_party/libdmg-hfsplus/patches
 third_party/libdmg-hfsplus/src/dmg
@@ -672,7 +670,7 @@ third_party/rust/chromium_crates_io/vendor/itertools-v0_14/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1/src
-third_party/rust/chromium_crates_io/vendor/jxl-v0_4/src/util
+third_party/rust/chromium_crates_io/vendor/jxl-v0_5/src/util
 third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src
 third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os
 third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus
@@ -726,8 +724,6 @@ third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/.github/workflows
 third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/.github/workflows
-third_party/rust/chromium_crates_io/vendor/proc-macro-error2-v2
-third_party/rust/chromium_crates_io/vendor/proc-macro-error2-v2/src
 third_party/rust/chromium_crates_io/vendor/prost-v0_14
 third_party/rust/chromium_crates_io/vendor/qr_code-v2
 third_party/rust/chromium_crates_io/vendor/quote-v1
@@ -788,6 +784,7 @@ third_party/rust/chromium_crates_io/vendor/typeid-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/unicode-xid-v0_2
+third_party/rust/chromium_crates_io/vendor/utf16_iter-v1
 third_party/rust/chromium_crates_io/vendor/utf8_iter-v1
 third_party/rust/chromium_crates_io/vendor/wait-timeout-v0_2
 third_party/rust/chromium_crates_io/vendor/wait-timeout-v0_2/.github/workflows
@@ -798,6 +795,7 @@ third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
+third_party/rust/chromium_crates_io/vendor/write16-v1
 third_party/rust/chromium_crates_io/vendor/write-fonts-v0_50/src/tables/variations
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src
