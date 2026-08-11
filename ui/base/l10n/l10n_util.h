@@ -30,9 +30,6 @@ namespace l10n_util {
 // Takes normalized locale as `locale`. Returns language part (before '-').
 COMPONENT_EXPORT(UI_BASE) std::string_view GetLanguage(std::string_view locale);
 
-// Takes normalized locale as `locale`. Returns country part (after '-').
-COMPONENT_EXPORT(UI_BASE) std::string_view GetCountry(std::string_view locale);
-
 enum class CheckLocaleMode {
   // Checks that the localization data is present on disk. It is the default,
   // but potentially costly.

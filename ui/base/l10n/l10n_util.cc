@@ -96,12 +96,6 @@ std::string_view GetLanguage(std::string_view locale) {
   return locale.substr(0, locale.find('-'));
 }
 
-std::string_view GetCountry(std::string_view locale) {
-  size_t hyphen_pos = locale.find('-');
-  return (hyphen_pos == std::string::npos) ? std::string_view()
-                                           : locale.substr(hyphen_pos + 1);
-}
-
 std::optional<LanguageTag> CheckAndResolveLocale(const LanguageTag& locale,
                                                  CheckLocaleMode mode) {
   if (mode == CheckLocaleMode::kVerifyLocalizationDataExists &&
