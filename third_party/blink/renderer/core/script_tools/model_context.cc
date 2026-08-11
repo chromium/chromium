@@ -395,19 +395,9 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  AbortSignal::AlgorithmHandle* abort_handle = nullptr;
-  if (options && options->hasSignal()) {
-    AbortSignal* signal = options->signal();
-    if (signal->aborted()) {
-      resolver->Reject(signal->reason(script_state));
-      return promise;
-    }
-
-    // Grab the `AlgorithmHandle` and tie its lifetime to `ToolData` farther
-    // below.
-    abort_handle =
-        signal->AddAlgorithm(MakeGarbageCollected<ToolUnregisterAbortAlgorithm>(
-            this, tool->name(), resolver, signal));
+  if (options && options->hasSignal() && options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
   }
 
   Vector<scoped_refptr<const SecurityOrigin>> exposed_origins;
@@ -423,6 +413,18 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
       }
       exposed_origins.push_back(origin);
     }
+  }
+
+  AbortSignal::AlgorithmHandle* abort_handle = nullptr;
+  if (options && options->hasSignal()) {
+    AbortSignal* signal = options->signal();
+    CHECK(!signal->aborted());
+
+    // Grab the `AlgorithmHandle` and tie its lifetime to `ToolData` farther
+    // below.
+    abort_handle =
+        signal->AddAlgorithm(MakeGarbageCollected<ToolUnregisterAbortAlgorithm>(
+            this, tool->name(), resolver, signal));
   }
 
   auto script_tool = mojom::blink::ScriptTool::New();
