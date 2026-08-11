@@ -54,7 +54,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
             mNameFixFlowPrompt = null;
             // Clean up the native counterpart. This is posted to allow the native counterpart
             // to fully finish the construction of this glue object before we attempt to delete it.
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onPromptDismissed());
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::onPromptDismissed);
         }
     }
 

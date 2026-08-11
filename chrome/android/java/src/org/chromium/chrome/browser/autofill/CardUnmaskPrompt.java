@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -259,7 +258,7 @@ public class CardUnmaskPrompt
 
         // Hitting the "submit" button on the software keyboard should submit the form if valid.
         mCardUnmaskInput.setOnEditorActionListener(
-                (v14, actionId, event) -> {
+                (_, actionId, _) -> {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         assumeNonNull(mDialogModel);
                         if (!mDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED)) {
@@ -274,17 +273,17 @@ public class CardUnmaskPrompt
 
         // Create the listeners to be notified when the user focuses out the input fields.
         mCardUnmaskInput.setOnFocusChangeListener(
-                (v13, hasFocus) -> {
+                (_, _) -> {
                     mDidFocusOnCvc = true;
                     validate();
                 });
         mMonthInput.setOnFocusChangeListener(
-                (v12, hasFocus) -> {
+                (_, _) -> {
                     mDidFocusOnMonth = true;
                     validate();
                 });
         mYearInput.setOnFocusChangeListener(
-                (v1, hasFocus) -> {
+                (_, _) -> {
                     mDidFocusOnYear = true;
                     validate();
                 });
@@ -293,12 +292,9 @@ public class CardUnmaskPrompt
         mMainView
                 .getViewTreeObserver()
                 .addOnWindowFocusChangeListener(
-                        new ViewTreeObserver.OnWindowFocusChangeListener() {
-                            @Override
-                            public void onWindowFocusChanged(boolean hasFocus) {
-                                if (hasFocus) {
-                                    setInitialFocus();
-                                }
+                        hasFocus -> {
+                            if (hasFocus) {
+                                setInitialFocus();
                             }
                         });
     }

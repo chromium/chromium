@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill.save_card;
 
 import android.content.Context;
 import android.net.Uri;
-import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -141,14 +140,8 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         uiInfo.isForUpload(),
                         skipLoadingForFixFlow);
 
-        mView.mAcceptButton.setOnClickListener(
-                (View button) -> {
-                    mMediator.onAccepted();
-                });
-        mView.mCancelButton.setOnClickListener(
-                (View button) -> {
-                    mMediator.onCanceled();
-                });
+        mView.mAcceptButton.setOnClickListener(_ -> mMediator.onAccepted());
+        mView.mCancelButton.setOnClickListener(_ -> mMediator.onCanceled());
     }
 
     /**

@@ -101,17 +101,11 @@ public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptB
 
         mMonthInput = mDialogView.findViewById(R.id.cc_month_edit);
         mMonthInput.addTextChangedListener(this);
-        mMonthInput.setOnFocusChangeListener(
-                (view, hasFocus) -> {
-                    mDidFocusOnMonth |= hasFocus;
-                });
+        mMonthInput.setOnFocusChangeListener((_, hasFocus) -> mDidFocusOnMonth |= hasFocus);
 
         mYearInput = mDialogView.findViewById(R.id.cc_year_edit);
         mYearInput.addTextChangedListener(this);
-        mYearInput.setOnFocusChangeListener(
-                (view, hasFocus) -> {
-                    mDidFocusOnYear |= hasFocus;
-                });
+        mYearInput.setOnFocusChangeListener((_, hasFocus) -> mDidFocusOnYear |= hasFocus);
     }
 
     @Override

@@ -73,14 +73,9 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
 
         ServiceWorkerPaymentAppBridge.getServiceWorkerPaymentAppsInfo(
                 getProfile(),
-                new ServiceWorkerPaymentAppBridge.GetServiceWorkerPaymentAppsInfoCallback() {
-                    @Override
-                    public void onGetServiceWorkerPaymentAppsInfo(
-                            Map<String, Pair<String, Bitmap>> appsInfo) {
+                (Map<String, Pair<String, Bitmap>> appsInfo) ->
                         addPaymentAppsPreference(
-                                AndroidPaymentAppFactory.getAndroidPaymentAppsInfo(), appsInfo);
-                    }
-                });
+                                AndroidPaymentAppFactory.getAndroidPaymentAppsInfo(), appsInfo));
     }
 
     private void addPaymentAppsPreference(

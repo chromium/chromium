@@ -222,8 +222,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
         @Override
         public boolean equals(Object other) {
-            if (!(other instanceof BackupState)) return false;
-            BackupState otherBackupState = (BackupState) other;
+            if (!(other instanceof BackupState otherBackupState)) return false;
             return mNames.equals(otherBackupState.mNames)
                     && Arrays.deepEquals(mValues.toArray(), otherBackupState.mValues.toArray());
         }
@@ -468,13 +467,9 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
         // Chrome has to be running before it can check if the account exists. Because the native
         // library is already loaded Chrome startup should be fast.
+        // Start the browser if necessary.
         boolean browserStarted =
-                PostTask.runSynchronously(
-                        TaskTraits.UI_DEFAULT,
-                        () -> {
-                            // Start the browser if necessary.
-                            return initializeBrowser();
-                        });
+                PostTask.runSynchronously(TaskTraits.UI_DEFAULT, this::initializeBrowser);
         if (!browserStarted) {
             // Something went wrong starting Chrome, skip the restore.
             setRestoreStatus(RestoreStatus.BROWSER_STARTUP_FAILED);
@@ -725,13 +720,12 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                                 // ability to re-show the confirmation dialog here anyways.
                                 if (isManaged) signinManager.setUserAcceptedAccountManagement(true);
                                 signinManager.runAfterOperationInProgress(
-                                        () -> {
-                                            signinManager.signin(
-                                                    accountInfo,
-                                                    SigninAccessPoint
-                                                            .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
-                                                    callback);
-                                        });
+                                        () ->
+                                                signinManager.signin(
+                                                        accountInfo,
+                                                        SigninAccessPoint
+                                                                .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
+                                                        callback));
                             };
 
                     signinManager.isAccountManaged(accountInfo, accountManagedCallback);

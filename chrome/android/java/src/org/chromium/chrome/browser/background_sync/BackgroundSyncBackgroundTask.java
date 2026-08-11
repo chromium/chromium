@@ -55,9 +55,7 @@ public class BackgroundSyncBackgroundTask extends NativeBackgroundTask {
         // wait for it to finish doing so.
         BackgroundSyncBackgroundTaskJni.get()
                 .fireOneShotBackgroundSyncEvents(
-                        () -> {
-                            callback.taskFinished(/* needsReschedule= */ false);
-                        });
+                        () -> callback.taskFinished(/* needsReschedule= */ false));
     }
 
     @Override

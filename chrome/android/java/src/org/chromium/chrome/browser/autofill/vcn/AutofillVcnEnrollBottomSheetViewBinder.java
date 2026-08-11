@@ -115,7 +115,7 @@ import java.util.function.Function;
 
     // Returns the virtual card description text with a "learn more" link.
     private static SpannableString getDescriptionSpan(Description description) {
-        SpannableString result = new SpannableString(new String());
+        SpannableString result = new SpannableString("");
         if (description == null
                 || description.mText == null
                 || description.mText.isEmpty()
@@ -171,9 +171,8 @@ import java.util.function.Function;
                         context,
                         legalMessages.mLines,
                         /* underlineLinks= */ true,
-                        (String url) -> {
-                            legalMessages.mLinkOpener.openLink(url, legalMessages.mLinkType);
-                        })
+                        (String url) ->
+                                legalMessages.mLinkOpener.openLink(url, legalMessages.mLinkType))
                 : new SpannableStringBuilder();
     }
 

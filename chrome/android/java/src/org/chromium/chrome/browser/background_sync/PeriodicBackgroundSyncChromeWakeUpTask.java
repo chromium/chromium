@@ -53,9 +53,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTask extends NativeBackgroundTask
         // wait for it to finish doing so.
         PeriodicBackgroundSyncChromeWakeUpTaskJni.get()
                 .firePeriodicBackgroundSyncEvents(
-                        () -> {
-                            callback.taskFinished(/* needsReschedule= */ false);
-                        });
+                        () -> callback.taskFinished(/* needsReschedule= */ false));
     }
 
     @Override

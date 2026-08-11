@@ -411,14 +411,13 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     getResources()
                             .getString(R.string.autofill_create_first_credit_card_button_text));
             addFirstCardPref.setOnButtonClick(
-                    () -> {
-                        SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(
-                                        getActivity(),
-                                        AutofillLocalCardEditor.class,
-                                        /* fragmentArgs= */ null,
-                                        /* addToBackStack= */ true);
-                    });
+                    () ->
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .startSettings(
+                                            getActivity(),
+                                            AutofillLocalCardEditor.class,
+                                            /* fragmentArgs= */ null,
+                                            /* addToBackStack= */ true));
             getPreferenceScreen().addPreference(addFirstCardPref);
             RecordHistogram.recordBooleanHistogram(
                     VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM, true);
@@ -544,13 +543,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     private void refreshPaymentAppsPrefForServiceWorkerPaymentApps(Preference pref) {
         ServiceWorkerPaymentAppBridge.hasServiceWorkerPaymentApps(
-                getProfile(),
-                new ServiceWorkerPaymentAppBridge.HasServiceWorkerPaymentAppsCallback() {
-                    @Override
-                    public void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps) {
-                        setPaymentAppsPrefStatus(pref, hasPaymentApps);
-                    }
-                });
+                getProfile(), hasPaymentApps -> setPaymentAppsPrefStatus(pref, hasPaymentApps));
     }
 
     private void setPaymentAppsPrefStatus(Preference pref, boolean enabled) {

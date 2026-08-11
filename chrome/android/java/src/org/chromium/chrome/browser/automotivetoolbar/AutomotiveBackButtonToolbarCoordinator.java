@@ -157,9 +157,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
         mOnSwipeAutomotiveToolbar = (Toolbar) onSwipeAutomotiveToolbarStub.inflate();
         assert mOnSwipeAutomotiveToolbar != null;
         mOnSwipeAutomotiveToolbar.setNavigationOnClickListener(
-                view -> {
-                    mBackPressedManager.getCallback().handleOnBackPressed();
-                });
+                _ -> mBackPressedManager.getCallback().handleOnBackPressed());
 
         @AnimRes
         int showOnSwipeTransition =
