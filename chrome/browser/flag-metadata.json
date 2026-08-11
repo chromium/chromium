@@ -1566,7 +1566,7 @@
   {
     "name": "cast-message-logging",
     "owners": [ "mfoltz@chromium.org", "ahmedmoussa@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 179
   },
   {
     "name": "cast-mirroring-native-nv12",
