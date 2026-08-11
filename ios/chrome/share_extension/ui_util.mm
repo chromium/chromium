@@ -6,17 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
 namespace ui_util {
 
 const CGFloat kAnimationDuration = 0.3;
 
 void ConstrainAllSidesOfViewToView(UIView* container, UIView* filler) {
-  [NSLayoutConstraint activateConstraints:@[
-    [filler.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
-    [filler.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],
-    [filler.topAnchor constraintEqualToAnchor:container.topAnchor],
-    [filler.bottomAnchor constraintEqualToAnchor:container.bottomAnchor],
-  ]];
+  AddSameConstraints(filler, container);
 }
 
 }  // namespace ui_util

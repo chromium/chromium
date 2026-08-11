@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -175,15 +176,7 @@ bool IsWebActuationTool(NSString* tool) {
   [_tabIdContainer addSubview:tabStack];
   _tabIdContainer.hidden = YES;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [tabStack.leadingAnchor
-        constraintEqualToAnchor:_tabIdContainer.leadingAnchor],
-    [tabStack.trailingAnchor
-        constraintEqualToAnchor:_tabIdContainer.trailingAnchor],
-    [tabStack.topAnchor constraintEqualToAnchor:_tabIdContainer.topAnchor],
-    [tabStack.bottomAnchor
-        constraintEqualToAnchor:_tabIdContainer.bottomAnchor],
-  ]];
+  AddSameConstraints(tabStack, _tabIdContainer);
 
   _frameIdButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [_frameIdButton setTitle:@"Select Frame" forState:UIControlStateNormal];
@@ -248,15 +241,7 @@ bool IsWebActuationTool(NSString* tool) {
   [_frameIdContainer addSubview:frameStack];
   _frameIdContainer.hidden = YES;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [frameStack.leadingAnchor
-        constraintEqualToAnchor:_frameIdContainer.leadingAnchor],
-    [frameStack.trailingAnchor
-        constraintEqualToAnchor:_frameIdContainer.trailingAnchor],
-    [frameStack.topAnchor constraintEqualToAnchor:_frameIdContainer.topAnchor],
-    [frameStack.bottomAnchor
-        constraintEqualToAnchor:_frameIdContainer.bottomAnchor],
-  ]];
+  AddSameConstraints(frameStack, _frameIdContainer);
 
   _jsonInputView = [[UITextView alloc] init];
   _jsonInputView.translatesAutoresizingMaskIntoConstraints = NO;

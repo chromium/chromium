@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/not_fatal_until.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface BrandedNavigationItemTitleView () {
   UILabel* _titleLabel;
@@ -72,15 +73,7 @@
 
   [self addSubview:_containerStackView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_containerStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_containerStackView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-    [_containerStackView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [_containerStackView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-  ]];
+  AddSameConstraints(_containerStackView, self);
 
   self.backgroundColor = UIColor.clearColor;
 

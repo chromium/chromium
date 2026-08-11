@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/ui/pop_up_menu_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation TableViewPopUpCell {
   PopUpMenuControl* _menuControl;
@@ -22,16 +23,7 @@
     _menuControl.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_menuControl];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_menuControl.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor],
-      [_menuControl.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor],
-      [_menuControl.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor],
-      [_menuControl.bottomAnchor
-          constraintEqualToAnchor:self.contentView.bottomAnchor],
-    ]];
+    AddSameConstraints(_menuControl, self.contentView);
   }
   return self;
 }

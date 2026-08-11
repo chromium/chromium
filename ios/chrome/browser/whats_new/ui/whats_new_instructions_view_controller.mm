@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -103,16 +104,7 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     [UISheetPresentationControllerDetent largeDetent]
   ];
   self.alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [self.alertScreen.view.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor],
-    [self.alertScreen.view.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
-    [self.alertScreen.view.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [self.alertScreen.view.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-  ]];
+  AddSameConstraints(self.alertScreen.view, self.view);
 }
 
 @end

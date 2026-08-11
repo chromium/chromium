@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -36,14 +37,7 @@
   self.TOSView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.TOSView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [self.TOSView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [self.TOSView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [self.TOSView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [self.TOSView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-  ]];
+  AddSameConstraints(self.TOSView, self.view);
 }
 
 #pragma mark - Button events

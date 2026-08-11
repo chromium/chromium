@@ -159,15 +159,7 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   _playerView.accessibilityLabel = accessibilityLabel(_feature);
   _playerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentView addSubview:_playerView];
-  [NSLayoutConstraint activateConstraints:@[
-    [_playerView.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor],
-    [_playerView.trailingAnchor
-        constraintEqualToAnchor:self.contentView.trailingAnchor],
-    [_playerView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
-    [_playerView.bottomAnchor
-        constraintEqualToAnchor:self.contentView.bottomAnchor],
-  ]];
+  AddSameConstraints(_playerView, self.contentView);
 
   AVPlayerItem* playerItem = [AVPlayerItem playerItemWithURL:_videoURL];
   _player = [AVQueuePlayer queuePlayerWithItems:@[ playerItem ]];
