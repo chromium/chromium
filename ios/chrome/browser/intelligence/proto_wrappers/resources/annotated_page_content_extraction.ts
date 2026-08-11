@@ -1077,6 +1077,8 @@ function mayContainSensitivePayment(element: HTMLElement): boolean {
 
 /**
  * Checks whether geometry should be extracted for sensitive payment redaction.
+ * Iframes may also be included because their geomteries may be required for
+ * absolute coordinate calculations for redaction purposes.
  *
  * @param element The DOM element to check.
  * @param includeSensitivePaymentsForRedaction Whether the configuration is
@@ -1087,7 +1089,7 @@ function shouldExtractGeometryForSensitivePayment(
     element: HTMLElement,
     includeSensitivePaymentsForRedaction: boolean): boolean {
   return includeSensitivePaymentsForRedaction &&
-      mayContainSensitivePayment(element);
+      (mayContainSensitivePayment(element) || element.tagName === TAG_IFRAME);
 }
 
 /**

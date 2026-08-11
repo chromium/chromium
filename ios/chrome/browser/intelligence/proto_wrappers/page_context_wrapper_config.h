@@ -159,15 +159,15 @@ class PageContextWrapperConfigBuilder {
   // for blink.
   PageContextWrapperConfigBuilder& SetExtractAutofill(bool extract_autofill);
 
-  // Sets whether to apply Autofill credit card redaction to field values. Does
-  // the equivalent of the kAnnotatedPageContentAutofillCreditCardRedactions
-  // feature switch in
-  // components/optimization_guide/content/browser/page_content_proto_util.cc
-  // for blink.
+  // Sets whether to apply Autofill credit card redaction to field values.
+  // Note: If `kPageContextAutofillCreditCardRedactions` is enabled,
+  // this setting is overridden to true upon `Build()`.
   PageContextWrapperConfigBuilder& SetExtractAutofillCreditCardRedactions(
       bool extract_autofill_credit_card_redactions);
 
   // Sets whether to include sensitive payments for redaction.
+  // Note: If `kPageContextScreenshotSensitivePaymentRedaction` is enabled, this
+  // setting is overridden to true upon `Build()`.
   PageContextWrapperConfigBuilder& SetIncludeSensitivePaymentsForRedaction(
       bool include_sensitive_payments_for_redaction);
 

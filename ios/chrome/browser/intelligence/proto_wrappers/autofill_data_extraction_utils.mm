@@ -11,7 +11,6 @@
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 
 // TODO(crbug.com/490114734): Share the logic in
 // components/autofill/content/browser/integrators/actor/autofill_annotations_provider_impl.cc

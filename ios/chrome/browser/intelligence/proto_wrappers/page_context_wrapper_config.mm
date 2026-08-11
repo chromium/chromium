@@ -48,18 +48,13 @@ bool PageContextWrapperConfig::use_refactored_extractor() const {
 }
 
 bool PageContextWrapperConfig::graft_cross_origin_frame_content() const {
-  return graft_cross_origin_frame_content_ || use_rich_extraction_ ||
-         use_rich_extraction_with_actionable_ || extract_paid_content_ ||
-         attempt_paid_content_json_fixing_ || extract_autofill_ ||
-         extract_autofill_credit_card_redactions_ ||
-         include_sensitive_payments_for_redaction_;
+  return graft_cross_origin_frame_content_ || use_rich_extraction();
 }
 
 bool PageContextWrapperConfig::use_rich_extraction() const {
   return use_rich_extraction_ || use_rich_extraction_with_actionable_ ||
          extract_paid_content_ || attempt_paid_content_json_fixing_ ||
-         extract_autofill_ || extract_autofill_credit_card_redactions_ ||
-         include_sensitive_payments_for_redaction_;
+         extract_autofill_;
 }
 
 bool PageContextWrapperConfig::use_rich_extraction_with_actionable() const {
@@ -67,7 +62,7 @@ bool PageContextWrapperConfig::use_rich_extraction_with_actionable() const {
 }
 
 bool PageContextWrapperConfig::extract_autofill() const {
-  return extract_autofill_ || extract_autofill_credit_card_redactions_;
+  return extract_autofill_;
 }
 
 bool PageContextWrapperConfig::extract_autofill_credit_card_redactions() const {
@@ -208,11 +203,18 @@ PageContextWrapperConfigBuilder::SetIncludeSameSiteOnly(
 }
 
 PageContextWrapperConfig PageContextWrapperConfigBuilder::Build() const {
+  bool extract_autofill_credit_card_redactions =
+      extract_autofill_credit_card_redactions_ ||
+      IsPageContextAutofillCreditCardRedactionsEnabled();
+  bool include_sensitive_payments_for_redaction =
+      include_sensitive_payments_for_redaction_ ||
+      IsPageContextScreenshotSensitivePaymentRedactionEnabled();
+
   return PageContextWrapperConfig(
       use_refactored_extractor_, graft_cross_origin_frame_content_,
       use_rich_extraction_, use_rich_extraction_with_actionable_,
       extract_paid_content_, attempt_paid_content_json_fixing_,
-      extract_autofill_, extract_autofill_credit_card_redactions_,
-      include_sensitive_payments_for_redaction_, block_unsafe_pages_,
+      extract_autofill_, extract_autofill_credit_card_redactions,
+      include_sensitive_payments_for_redaction, block_unsafe_pages_,
       include_same_site_only_);
 }

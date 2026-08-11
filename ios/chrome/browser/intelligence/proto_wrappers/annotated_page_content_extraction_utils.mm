@@ -13,9 +13,9 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/web/public/web_state.h"
@@ -487,7 +487,9 @@ void PopulateAutofillData(
   proto_form_control_data->add_coarse_autofill_field_type(
       autofill_metadata->coarse_field_type);
 
-  if (!autofill_context->extract_autofill_credit_card_redactions) {
+  if (autofill_metadata->redaction_reason ==
+          AutofillFieldRedactionReason::kShouldRedactForPayments &&
+      !autofill_context->extract_autofill_credit_card_redactions) {
     return;
   }
 

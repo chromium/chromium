@@ -879,3 +879,18 @@ BASE_FEATURE(kGeminiVisualRichFRE, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiVisualRichFREEnabled() {
   return base::FeatureList::IsEnabled(kGeminiVisualRichFRE);
 }
+
+BASE_FEATURE(kPageContextScreenshotSensitivePaymentRedaction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextScreenshotSensitivePaymentRedactionEnabled() {
+  return base::FeatureList::IsEnabled(
+      kPageContextScreenshotSensitivePaymentRedaction);
+}
+
+BASE_FEATURE(kPageContextAutofillCreditCardRedactions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextAutofillCreditCardRedactionsEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextAutofillCreditCardRedactions);
+}

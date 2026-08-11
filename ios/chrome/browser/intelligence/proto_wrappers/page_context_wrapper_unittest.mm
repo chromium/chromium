@@ -7578,6 +7578,63 @@ TEST_P(PageContextWrapperTest,
       password_input.content_attributes().geometry().has_outer_bounding_box());
 }
 
+// Test that the global kPageContextScreenshotSensitivePaymentRedaction feature
+// flag overrides any local config setting for redaction geometry extraction.
+// Configures a test page with a checkbox and a credit card number field with
+// actionable mode off and include_sensitive_payments_for_redaction false,
+// and verifies that enabling the feature flag forces geometry extraction.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_SensitivePaymentRedactionGeometry_FeatureFlag) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kPageContextScreenshotSensitivePaymentRedaction);
+
+  auto page_structure =
+      HtmlPage("Sensitive Payment Geometry Test",
+               RawHtml("<form>"
+                       "  <input type='checkbox' id='normal_checkbox'>"
+                       "  <input type='number' id='credit_card_field'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(false)
+          .SetIncludeSensitivePaymentsForRedaction(false)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  ASSERT_EQ(form.children_nodes_size(), 2);
+
+  const auto& payment_input = form.children_nodes(1);
+  EXPECT_TRUE(
+      payment_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_TRUE(
+      payment_input.content_attributes().geometry().has_visible_bounding_box());
+}
+
 // Tests that the version and mode fields are correctly populated in the
 // AnnotatedPageContent proto based on the configured extraction mode.
 TEST_P(PageContextWrapperTest, PopulatePageContext_ApcVersionAndMode) {

@@ -454,4 +454,27 @@ BASE_DECLARE_FEATURE(kGeminiVisualRichFRE);
 // Returns true if the Gemini Visual Rich FRE experiment is enabled.
 bool IsGeminiVisualRichFREEnabled();
 
+// Controls whether blacked out bounding boxes for sensitive payment fields are
+// applied to the screenshot in `PageContext`. Matches Blink's
+// `kGlicScreenshotSensitivePaymentRedaction`.
+// Note: When enabled, this feature enforces screenshot payment redactions on
+// `PageContext` extractions that use rich extraction, overriding any local
+// `PageContextWrapperConfig` setting. It has no effect on light extractions.
+BASE_DECLARE_FEATURE(kPageContextScreenshotSensitivePaymentRedaction);
+
+// Returns true if `kPageContextScreenshotSensitivePaymentRedaction` is enabled.
+bool IsPageContextScreenshotSensitivePaymentRedactionEnabled();
+
+// Controls whether Autofill credit card redactions are applied to clear
+// sensitive field values in the `AnnotatedPageContent` (APC) proto. Matches
+// Blink's `kAnnotatedPageContentAutofillCreditCardRedactions`.
+// Note: When enabled, this feature enforces field value redactions on
+// `PageContext` extractions that use rich extraction, overriding any local
+// `PageContextWrapperConfig` setting. It has no effect on light extractions.
+BASE_DECLARE_FEATURE(kPageContextAutofillCreditCardRedactions);
+
+// Returns true if `kPageContextAutofillCreditCardRedactions` is
+// enabled.
+bool IsPageContextAutofillCreditCardRedactionsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

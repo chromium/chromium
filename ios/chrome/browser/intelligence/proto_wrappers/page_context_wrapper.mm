@@ -1023,11 +1023,17 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 // Returns YES for any RedactionDecision enums that require screenshot
 // redaction.
 // Note: In this CL, this defaults to NO. Subsequent CLs will override
-// this method to return YES for their respective redaction decision enums
+// this method to return YES for their respective redaction decisions
 // when enabled.
 - (BOOL)shouldRedactDecisionForScreenshot:
     (optimization_guide::proto::RedactionDecision)decision {
-  return NO;
+  switch (decision) {
+    case optimization_guide::proto::
+        REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD:
+      return _config->include_sensitive_payments_for_redaction();
+    default:
+      return NO;
+  }
 }
 
 - (void)applyRedactionsAndEncodeScreenshot:(UIImage*)image {
@@ -1243,7 +1249,9 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
           });
 
   std::optional<AutofillExtractionContext> autofill_context;
-  if (_config->extract_autofill()) {
+  if (_config->extract_autofill() ||
+      _config->extract_autofill_credit_card_redactions() ||
+      _config->include_sensitive_payments_for_redaction()) {
     autofill_context.emplace(_webState, localFrameToken,
                              _config->extract_autofill_credit_card_redactions(),
                              &_autofillSectionNumbers);
