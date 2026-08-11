@@ -1523,7 +1523,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': 'version:2@1671013',
+          'version': 'version:2@1672062',
         },
       ],
   },
