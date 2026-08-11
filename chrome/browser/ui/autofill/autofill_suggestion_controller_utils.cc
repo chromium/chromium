@@ -165,7 +165,89 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
   // Unselectable suggestions use deactivated (greyed out) styling by default,
   // except for suggestion types like source attribution, which are
   // informational.
-  return suggestion.type != SuggestionType::kAtMemorySourceAttribution;
+  switch (suggestion.type) {
+    case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemorySourceAttribution:
+      return false;
+    case SuggestionType::kAtMemorySearchResult:
+      // No data suggestions do not have an `AtMemoryPayload`.
+      // Do not gray those out.
+      return std::holds_alternative<Suggestion::AtMemoryPayload>(
+          suggestion.payload);
+
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
+    case SuggestionType::kAtMemoryFetching:
+    case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
+    case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kBnplFootnote:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFetchingAmbientData:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kLoadingThrobber:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageAutofillAiIdentityDocs:
+    case SuggestionType::kManageAutofillAiShopping:
+    case SuggestionType::kManageAutofillAiTravel:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageEnhancedAutofill:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kOpenGemini:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPersonalContextNotice:
+    case SuggestionType::kRemoveAutofillAi:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kTitle:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kUndo:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnPasskeyQrCode:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return true;
+  }
 }
 
 bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source) {

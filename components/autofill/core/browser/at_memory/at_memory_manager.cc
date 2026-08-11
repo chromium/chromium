@@ -278,7 +278,7 @@ Suggestion CreateNoDataSuggestion() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA),
       SuggestionType::kAtMemorySearchResult);
   suggestion.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -837,7 +837,7 @@ Suggestion AtMemoryManager::CreateGenericErrorSuggestion() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR),
       SuggestionType::kAtMemoryGenericError);
   suggestion.acceptability =
-      Suggestion::Acceptability::kSelectableButUnacceptable;
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;

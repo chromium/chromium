@@ -1399,7 +1399,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoData) {
                 testing::Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 testing::Field(
                     &Suggestion::acceptability,
-                    Suggestion::Acceptability::kSelectableButUnacceptable))));
+                    Suggestion::Acceptability::kUnselectableAndUnacceptable))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");
@@ -1465,8 +1465,9 @@ TEST_P(AutofillExternalDelegateAtMemoryGenericErrorTest,
                     IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR)),
                 Field(&Suggestion::type, SuggestionType::kAtMemoryGenericError),
                 Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
-                Field(&Suggestion::acceptability,
-                      Suggestion::Acceptability::kSelectableButUnacceptable))));
+                Field(
+                    &Suggestion::acceptability,
+                    Suggestion::Acceptability::kUnselectableAndUnacceptable))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");

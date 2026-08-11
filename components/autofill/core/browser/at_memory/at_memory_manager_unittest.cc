@@ -1769,7 +1769,7 @@ TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
     EXPECT_EQ(resulting_suggestions[0].type,
               SuggestionType::kAtMemorySearchResult);
     EXPECT_EQ(resulting_suggestions[0].acceptability,
-              Suggestion::Acceptability::kSelectableButUnacceptable);
+              Suggestion::Acceptability::kUnselectableAndUnacceptable);
   }
 }
 
@@ -1839,7 +1839,7 @@ TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
     EXPECT_EQ(resulting_suggestions[0].type,
               SuggestionType::kAtMemorySearchResult);
     EXPECT_EQ(resulting_suggestions[0].acceptability,
-              Suggestion::Acceptability::kSelectableButUnacceptable);
+              Suggestion::Acceptability::kUnselectableAndUnacceptable);
   }
 }
 
