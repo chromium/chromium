@@ -558,6 +558,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
     CHECK(first_dragged_tab_model_index.has_value());
 
+    if (!can_insert_into_groups &&
+        GetTabStripModel()->GetFocusedGroup().has_value()) {
+      return first_dragged_tab_model_index.value();
+    }
+
     const int index = CalculateInsertionIndex(
         dragged_bounds, first_dragged_tab_model_index.value(), num_dragged_tabs,
         can_insert_into_groups);
@@ -2382,6 +2387,10 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
 
 void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
                                   int offset) {
+  if (GetFocusedGroup() == group) {
+    return;
+  }
+
   CHECK_EQ(1, std::abs(offset))
       << "Offset must be 1 or -1 to shift the group left or right.";
   gfx::Range tabs_in_group = controller_->ListTabsInGroup(group);

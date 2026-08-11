@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
@@ -895,6 +896,54 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
                         ->is_collapsed();
           },
           true));
+}
+
+class VerticalTabDragFocusModeTest : public VerticalTabDragTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabDragTest::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabDragFocusModeTest,
+                       DragGroupHeaderInFocusModeDoesNotMoveGroup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  const char kGroupToDragFrom[] = "Group to drag";
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      AddTabsToNewGroup({1, 2}),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller,
+                   URLs({url::kAboutBlankURL,
+                         TabGroupURLs({chrome::kChromeUIBookmarksURL,
+                                       chrome::kChromeUISettingsURL}),
+                         chrome::kChromeUIVersionURL})),
+
+      Do([&]() {
+        const std::vector<tab_groups::TabGroupId> groups =
+            tab_strip_model->group_model()->ListTabGroups();
+        ASSERT_EQ(1u, groups.size());
+        tab_strip_model->SetFocusedGroup(groups[0]);
+      }),
+
+      NameDescendantViewByType<TabGroupHeaderView>(kBrowserViewElementId,
+                                                   kGroupToDragFrom, 0),
+      MoveMouseTo(kGroupToDragFrom),
+      DragMouseTo(kNewTabButtonElementId, CenterPoint(), /*release=*/false),
+      RunScheduledLayout(), ReleaseMouse(),
+
+      CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
+                  URLs({url::kAboutBlankURL,
+                        TabGroupURLs({chrome::kChromeUIBookmarksURL,
+                                      chrome::kChromeUISettingsURL}),
+                        chrome::kChromeUIVersionURL})));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragCollapsedGroupStaysCollapsed) {

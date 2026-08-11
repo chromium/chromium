@@ -977,6 +977,9 @@ bool TabDragHandlerImpl::HandleDraggedTabsIntoPosition(
   }
 
   if (auto dragged_group = GetDraggingGroupHeaderId()) {
+    if (tab_strip_model_->GetFocusedGroup() == dragged_group) {
+      return false;
+    }
     tab_strip_model_->MoveGroupTo(*dragged_group, adjusted_target_index);
   } else {
     tab_strip_model_->MoveSelectedTabsTo(adjusted_target_index,
