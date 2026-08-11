@@ -12,17 +12,13 @@
 #include "chrome/browser/enterprise/reporting/browser_launch/browser_launch_event_uploader_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/browser_launch/browser_launch_event_controller.h"
-#include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {
 
 // static
 std::unique_ptr<BrowserLaunchEventController>
 BrowserLaunchEventControllerFactoryDesktop::CreateForBrowser() {
-  if (!g_browser_process || !g_browser_process->local_state() ||
-      !g_browser_process->local_state()->GetBoolean(
-          enterprise_reporting::kCloudReportingEnabled)) {
+  if (!g_browser_process) {
     return nullptr;
   }
   return std::make_unique<BrowserLaunchEventController>(
@@ -33,9 +29,7 @@ BrowserLaunchEventControllerFactoryDesktop::CreateForBrowser() {
 // static
 std::unique_ptr<BrowserLaunchEventController>
 BrowserLaunchEventControllerFactoryDesktop::CreateForProfile(Profile* profile) {
-  if (!profile || !profile->GetPrefs() ||
-      !profile->GetPrefs()->GetBoolean(
-          enterprise_reporting::kCloudProfileReportingEnabled)) {
+  if (!profile) {
     return nullptr;
   }
   return std::make_unique<BrowserLaunchEventController>(

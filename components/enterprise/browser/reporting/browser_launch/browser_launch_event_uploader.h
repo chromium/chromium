@@ -9,12 +9,20 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
+class PrefService;
+
 namespace enterprise_reporting {
 
 // Interface for capturing the upload of browser launch events.
 class BrowserLaunchEventUploader {
  public:
   virtual ~BrowserLaunchEventUploader() = default;
+
+  // Returns the PrefService associated with this uploader scope.
+  virtual PrefService* GetPrefService() const = 0;
+
+  // Returns the policy preference name associated with this uploader scope.
+  virtual const char* GetPolicyPrefName() const = 0;
 
   // Returns the metric suffix for histograms ("Browser" or "Profile").
   virtual std::string_view GetMetricSuffix() const = 0;
