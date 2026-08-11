@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 //
-[Exposed=Window]
+[Exposed=Window, RuntimeEnabled=ConditionalTracingLoAF]
 interface PerformanceMarkConditional : PerformanceEntry {
 };
