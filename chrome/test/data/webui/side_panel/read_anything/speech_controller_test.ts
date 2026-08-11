@@ -704,6 +704,37 @@ suite('SpeechController', () => {
         assertTrue(speechController.isSpeechActive());
       });
 
+  test(
+      'onend ignored when speech is paused and resume speaks next segment',
+      async () => {
+        const text = 'First sentence. Second sentence.';
+        setContent(text, readAloudModel);
+
+        // Start playing speech.
+        const element = onPlayPauseToggle(text);
+        const spoken = await speech.whenCalled('speak');
+        spoken.onstart(new SpeechSynthesisEvent('start', {utterance: spoken}));
+
+        // Pause speech.
+        speechController.onPlayPauseToggle(element);
+        assertFalse(speechController.isSpeechActive());
+        speech.reset();
+
+        // Simulate an asynchronous onend event arriving after pause.
+        spoken.onend();
+
+        // No new utterance should be queued or spoken immediately.
+        assertEquals(0, speech.getCallCount('speak'));
+        assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
+
+        // Resuming speech after onend should speak the next segment instead
+        // of calling resume() on a finished utterance.
+        speechController.onPlayPauseToggle(element);
+        assertEquals(0, speech.getCallCount('resume'));
+        await speech.whenCalled('speak');
+        assertTrue(speechController.isSpeechActive());
+      });
+
   test('onNextGranularityClick propagates change', () => {
     speechController.onNextGranularityClick();
     assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));

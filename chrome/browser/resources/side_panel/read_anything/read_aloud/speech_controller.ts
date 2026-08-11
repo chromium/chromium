@@ -579,6 +579,10 @@ export class SpeechController {
         // of the current utterance until the utterance is complete. The
         // entire utterance is highlighted, so there's no need to update
         // highlighting until the utterance substring is an acceptable size.
+        if (!this.isSpeechActive()) {
+          this.model_.setPauseSource(PauseActionSource.DEFAULT);
+          return;
+        }
         const remainingText = utteranceText.substring(textToPlay.length);
         this.playText_(remainingText);
         return;
@@ -590,6 +594,16 @@ export class SpeechController {
       // boundary index whenever we move the granularity position.
       this.wordBoundaries_.resetToDefaultState();
       this.moveToNextGranularity_();
+
+      // If speech was paused (e.g. via the play/pause button calling pause()
+      // instead of cancel()), do not speak the next block of text. Clear the
+      // pause source so that resuming speech correctly calls speak() on the
+      // new granularity instead of resume() on the finished utterance.
+      if (!this.isSpeechActive()) {
+        this.model_.setPauseSource(PauseActionSource.DEFAULT);
+        return;
+      }
+
       // Continue speaking with the next block of text.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
