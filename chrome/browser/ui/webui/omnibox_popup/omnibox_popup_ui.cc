@@ -48,6 +48,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -71,7 +72,10 @@ void PopulateAiModeButtonUiConfig(content::WebUIDataSource* source,
   // Use AIM button service to dynamically populate the various AIM button
   // properties based on the current config, if present.
   GURL compose_icon(
-      "chrome://resources/cr_components/searchbox/icons/search_spark.svg");
+      features::IsRoundedIconsEnabled()
+          ? "chrome://resources/cr_components/searchbox/icons/search_spark.svg"
+          : "chrome://resources/cr_components/searchbox/icons/"
+            "search_spark_old.svg");
   if (auto* service = AiModeButtonServiceFactory::GetForProfile(profile)) {
     if (const auto* config = service->GetCurrentConfig()) {
       source->AddString("searchboxComposeButtonText", config->text);

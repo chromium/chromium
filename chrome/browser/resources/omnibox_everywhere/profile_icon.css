@@ -132,7 +132,7 @@
   height: 24px;
   margin-inline-end: 12px;
   width: 24px;
-  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/account_circle.svg);
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/account_circle_old.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 20px 20px;
@@ -142,4 +142,10 @@
   color: var(--color-sys-on-surface, #1f1f1f);
   font-size: 14px;
   font-weight: 500;
+}
+
+:host-context([webui-rounded-icons]) {
+  .profile-card-switch-icon {
+    -webkit-mask-image: url(//resources/cr_components/searchbox/icons/account_circle.svg);
+  }
 }
