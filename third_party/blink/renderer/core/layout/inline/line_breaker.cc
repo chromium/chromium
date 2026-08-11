@@ -3854,7 +3854,8 @@ void LineBreaker::UpdateLineOpportunity() {
   const LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
   LayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
       {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
-      constraint_space_.AvailableSize().inline_size);
+      constraint_space_.AvailableSize().inline_size,
+      constraint_space_.Direction());
 
   DCHECK_EQ(bfc_block_offset, opportunity.rect.BlockStartOffset());
 

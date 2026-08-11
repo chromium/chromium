@@ -2113,7 +2113,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
 
   LayoutOpportunityVector opportunities =
       GetExclusionSpace().AllLayoutOpportunities(
-          origin_offset, ChildAvailableSize().inline_size);
+          origin_offset, ChildAvailableSize().inline_size, direction);
   ClearCollectionScope scope(&opportunities);
 
   // We should always have at least one opportunity.

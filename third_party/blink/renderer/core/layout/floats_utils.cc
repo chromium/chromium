@@ -56,6 +56,7 @@ LayoutOpportunity FindLayoutOpportunityForFloat(
 
   return exclusion_space.FindLayoutOpportunity(
       adjusted_origin_point, unpositioned_float.available_size.inline_size,
+      direction,
       inline_size + fragment_margins.InlineSum() /* minimum_inline_size */);
 }
 

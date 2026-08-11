@@ -9,14 +9,15 @@
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/bfc_rect.h"
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 #include "third_party/blink/renderer/core/layout/exclusions/layout_opportunity.h"
+#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/bfc_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -49,6 +50,7 @@ class CORE_EXPORT ExclusionSpaceInternal final
   LayoutOpportunity FindLayoutOpportunity(
       const BfcOffset& offset,
       const LayoutUnit available_inline_size,
+      TextDirection direction,
       const LayoutUnit minimum_inline_size) const {
     const LayoutUnit max_clear_offset =
         std::max({left_clear_offset_, right_clear_offset_,
@@ -64,13 +66,14 @@ class CORE_EXPORT ExclusionSpaceInternal final
     }
 
     return GetDerivedGeometry(offset.block_offset)
-        .FindLayoutOpportunity(offset, available_inline_size,
+        .FindLayoutOpportunity(offset, available_inline_size, direction,
                                minimum_inline_size);
   }
 
   LayoutOpportunityVector AllLayoutOpportunities(
       const BfcOffset& offset,
-      const LayoutUnit available_inline_size) const {
+      const LayoutUnit available_inline_size,
+      TextDirection direction) const {
     const LayoutUnit max_clear_offset =
         std::max({left_clear_offset_, right_clear_offset_,
                   initial_letter_left_clear_offset_,
@@ -86,7 +89,7 @@ class CORE_EXPORT ExclusionSpaceInternal final
     }
 
     return GetDerivedGeometry(offset.block_offset)
-        .AllLayoutOpportunities(offset, available_inline_size);
+        .AllLayoutOpportunities(offset, available_inline_size, direction);
   }
 
   LayoutUnit ClearanceOffset(EClear clear_type) const {
@@ -487,15 +490,18 @@ class CORE_EXPORT ExclusionSpaceInternal final
     LayoutOpportunity FindLayoutOpportunity(
         const BfcOffset& offset,
         const LayoutUnit available_inline_size,
+        TextDirection direction,
         const LayoutUnit minimum_inline_size) const;
 
     LayoutOpportunityVector AllLayoutOpportunities(
         const BfcOffset& offset,
-        const LayoutUnit available_inline_size) const;
+        const LayoutUnit available_inline_size,
+        TextDirection direction) const;
 
     template <typename LambdaFunc>
     void IterateAllLayoutOpportunities(const BfcOffset& offset,
                                        const LayoutUnit available_inline_size,
+                                       TextDirection direction,
                                        const LambdaFunc&) const;
 
     void Trace(Visitor* visitor) const {
@@ -611,6 +617,7 @@ class CORE_EXPORT ExclusionSpace {
   LayoutOpportunity FindLayoutOpportunity(
       const BfcOffset& offset,
       const LayoutUnit available_inline_size,
+      TextDirection direction,
       const LayoutUnit minimum_inline_size = LayoutUnit()) const {
     if (!exclusion_space_) {
       BfcOffset end_offset(
@@ -619,13 +626,14 @@ class CORE_EXPORT ExclusionSpace {
       return LayoutOpportunity(BfcRect(offset, end_offset), nullptr);
     }
     return exclusion_space_->FindLayoutOpportunity(
-        offset, available_inline_size, minimum_inline_size);
+        offset, available_inline_size, direction, minimum_inline_size);
   }
 
   // If possible prefer FindLayoutOpportunity over this function.
   LayoutOpportunityVector AllLayoutOpportunities(
       const BfcOffset& offset,
-      const LayoutUnit available_inline_size) const {
+      const LayoutUnit available_inline_size,
+      TextDirection direction) const {
     if (!exclusion_space_) {
       BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
@@ -633,8 +641,8 @@ class CORE_EXPORT ExclusionSpace {
       return LayoutOpportunityVector(
           {LayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
     }
-    return exclusion_space_->AllLayoutOpportunities(offset,
-                                                    available_inline_size);
+    return exclusion_space_->AllLayoutOpportunities(
+        offset, available_inline_size, direction);
   }
 
   LayoutUnit ClearanceOffset(EClear clear_type) const {

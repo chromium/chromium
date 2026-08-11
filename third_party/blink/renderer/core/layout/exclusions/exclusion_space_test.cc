@@ -63,7 +63,7 @@ struct ExclusionSpaceForTesting {
                                                  float block_offset) const {
     return exclusion_space.AllLayoutOpportunities(
         BfcOffset(LayoutUnit(inline_offset), LayoutUnit(block_offset)),
-        available_inline_size);
+        available_inline_size, TextDirection::kLtr);
   }
 
   LayoutOpportunity FindLayoutOpportunity(float inline_offset,
@@ -71,7 +71,8 @@ struct ExclusionSpaceForTesting {
                                           float minimal_inline_size) {
     return exclusion_space.FindLayoutOpportunity(
         BfcOffset(LayoutUnit(inline_offset), LayoutUnit(block_offset)),
-        available_inline_size, LayoutUnit(minimal_inline_size));
+        available_inline_size, TextDirection::kLtr,
+        LayoutUnit(minimal_inline_size));
   }
 };
 
@@ -92,7 +93,7 @@ TEST(ExclusionSpaceTest, Empty) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(1u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(), LayoutUnit()),
@@ -100,7 +101,7 @@ TEST(ExclusionSpaceTest, Empty) {
 
   opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(-30), LayoutUnit(-100)},
-      /* available_size */ LayoutUnit(50));
+      /* available_size */ LayoutUnit(50), TextDirection::kLtr);
 
   EXPECT_EQ(1u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0],
@@ -109,7 +110,7 @@ TEST(ExclusionSpaceTest, Empty) {
 
   opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(30), LayoutUnit(100)},
-      /* available_size */ LayoutUnit(50));
+      /* available_size */ LayoutUnit(50), TextDirection::kLtr);
 
   EXPECT_EQ(1u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(30), LayoutUnit(100)),
@@ -174,7 +175,7 @@ TEST(ExclusionSpaceTest, SingleExclusion) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(), LayoutUnit()),
@@ -186,7 +187,7 @@ TEST(ExclusionSpaceTest, SingleExclusion) {
 
   opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(-10), LayoutUnit(-100)},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0],
@@ -201,7 +202,7 @@ TEST(ExclusionSpaceTest, SingleExclusion) {
   // opportunity.
   opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(10), LayoutUnit(10)},
-      /* available_size */ LayoutUnit(50));
+      /* available_size */ LayoutUnit(50), TextDirection::kLtr);
 
   EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(10), LayoutUnit(10)),
@@ -215,7 +216,7 @@ TEST(ExclusionSpaceTest, SingleExclusion) {
   // the search area creates a zero-width opportunity.
   opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(10), LayoutUnit(10)},
-      /* available_size */ LayoutUnit(49));
+      /* available_size */ LayoutUnit(49), TextDirection::kLtr);
 
   EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(10), LayoutUnit(10)),
@@ -241,7 +242,7 @@ TEST(ExclusionSpaceTest, TwoExclusions) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(400));
+      /* available_size */ LayoutUnit(400), TextDirection::kLtr);
 
   EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(150), LayoutUnit()),
@@ -290,7 +291,7 @@ TEST(ExclusionSpaceTest, SolidEdges) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(80));
+      /* available_size */ LayoutUnit(80), TextDirection::kLtr);
 
   EXPECT_EQ(5u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(20), LayoutUnit()),
@@ -338,7 +339,7 @@ TEST(ExclusionSpaceTest, OverlappingWithShelf) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(80));
+      /* available_size */ LayoutUnit(80), TextDirection::kLtr);
 
   EXPECT_EQ(4u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(20), LayoutUnit()),
@@ -386,7 +387,7 @@ TEST(ExclusionSpaceTest, InsertBetweenShelves) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(30), LayoutUnit(15)},
-      /* available_size */ LayoutUnit(30));
+      /* available_size */ LayoutUnit(30), TextDirection::kLtr);
 
   // NOTE: This demonstrates a quirk when querying the exclusion space for
   // opportunities. The exclusion space may return multiple exclusions of
@@ -862,7 +863,7 @@ TEST(ExclusionSpaceTest, ZeroInlineSizeOpportunity) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(2u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(100), LayoutUnit()),
@@ -882,11 +883,21 @@ TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(2u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(120), LayoutUnit()),
                    BfcOffset(LayoutUnit(120), LayoutUnit::Max()));
+  TEST_OPPORTUNITY(opportunites[1], BfcOffset(LayoutUnit(), LayoutUnit(10)),
+                   BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
+
+  opportunites = exclusion_space.AllLayoutOpportunities(
+      /* offset */ {LayoutUnit(), LayoutUnit()},
+      /* available_size */ LayoutUnit(100), TextDirection::kRtl);
+
+  EXPECT_EQ(2u, opportunites.size());
+  TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(100), LayoutUnit()),
+                   BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
   TEST_OPPORTUNITY(opportunites[1], BfcOffset(LayoutUnit(), LayoutUnit(10)),
                    BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
@@ -902,11 +913,21 @@ TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
-      /* available_size */ LayoutUnit(100));
+      /* available_size */ LayoutUnit(100), TextDirection::kLtr);
 
   EXPECT_EQ(2u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(), LayoutUnit()),
                    BfcOffset(LayoutUnit(), LayoutUnit::Max()));
+  TEST_OPPORTUNITY(opportunites[1], BfcOffset(LayoutUnit(), LayoutUnit(10)),
+                   BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
+
+  opportunites = exclusion_space.AllLayoutOpportunities(
+      /* offset */ {LayoutUnit(), LayoutUnit()},
+      /* available_size */ LayoutUnit(100), TextDirection::kRtl);
+
+  EXPECT_EQ(2u, opportunites.size());
+  TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(-20), LayoutUnit()),
+                   BfcOffset(LayoutUnit(-20), LayoutUnit::Max()));
   TEST_OPPORTUNITY(opportunites[1], BfcOffset(LayoutUnit(), LayoutUnit(10)),
                    BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }

@@ -183,11 +183,11 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
       *container_builder->BfcBlockOffset() + marker_block_offset};
   const LayoutUnit available_size =
       container_builder->ChildAvailableSize().inline_size;
-  LayoutOpportunity opportunity =
-      space.GetExclusionSpace().FindLayoutOpportunity(origin_offset,
-                                                      available_size);
   DCHECK(marker_layout_object_);
   const TextDirection direction = marker_layout_object_->StyleRef().Direction();
+  const LayoutOpportunity opportunity =
+      space.GetExclusionSpace().FindLayoutOpportunity(
+          origin_offset, available_size, direction);
   if (direction == TextDirection::kLtr) {
     // If Ltr, compare the left side.
     if (opportunity.rect.LineStartOffset() > origin_offset.line_offset)

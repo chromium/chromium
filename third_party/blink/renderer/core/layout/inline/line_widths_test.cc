@@ -44,7 +44,7 @@ class LineWidthsTest : public RenderingTest {
         exclusion_space.AllLayoutOpportunities(
             {space.GetBfcOffset().line_offset,
              /*bfc_block_offset*/ LayoutUnit()},
-            space.AvailableSize().inline_size);
+            space.AvailableSize().inline_size, space.Direction());
     LineWidths line_width;
     if (line_width.Set(node, opportunities)) {
       return line_width;

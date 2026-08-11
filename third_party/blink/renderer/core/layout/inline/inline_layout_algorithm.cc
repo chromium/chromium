@@ -1166,7 +1166,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   LayoutOpportunityVector opportunities =
       initial_exclusion_space.AllLayoutOpportunities(
           {constraint_space.GetBfcOffset().line_offset, bfc_block_offset},
-          constraint_space.AvailableSize().inline_size);
+          constraint_space.AvailableSize().inline_size,
+          constraint_space.Direction());
   ClearCollectionScope scope(&opportunities);
 
   const InlineBreakToken* break_token = GetBreakToken();

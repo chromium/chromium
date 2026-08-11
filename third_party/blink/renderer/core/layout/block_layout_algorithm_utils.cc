@@ -132,7 +132,7 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
 
   // Find a layout opportunity, where we would have placed a zero-sized line.
   LayoutOpportunity opportunity = exclusion_space.FindLayoutOpportunity(
-      origin_bfc_offset, child_available_inline_size);
+      origin_bfc_offset, child_available_inline_size, direction);
 
   LayoutUnit child_line_offset = IsLtr(direction)
                                      ? opportunity.rect.LineStartOffset()
