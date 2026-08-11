@@ -6,11 +6,25 @@
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_HELPER_METRICS_H_
 
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace glic {
+
+// LINT.IfChange(AutoOpenCloseReason)
+// Reason why an auto-opened Glic panel was closed or dismissed.
+enum class AutoOpenCloseReason {
+  // Explicitly closed by the user (e.g. clicking close on the panel) or the
+  // tab/window containing the panel was closed.
+  kExplicitlyClosed = 0,
+  // The user switched to a different tab while the auto-opened panel was open.
+  kTabSwitched = 1,
+  kMaxValue = kTabSwitched,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAutoOpenCloseReason)
 
 // LINT.IfChange(DaisyChainFirstAction)
 enum class DaisyChainFirstAction {
@@ -45,15 +59,20 @@ class GlicInstanceHelperMetrics {
   // TODO(crbug.com/489758590) Overhaul names with "DaisyChain" and maybe rename
   // to "AutoOpenPanel";
   //  Marks the tab as being part of a daisy chain session.
-  void SetIsDaisyChained(DaisyChainSource source);
+  void SetIsDaisyChained(DaisyChainSource source,
+                         ukm::SourceId source_id = ukm::kInvalidSourceId);
 
   // Records a significant user action during a daisy chain session.
   // Only the *first* action is recorded as the session outcome.
   void OnDaisyChainAction(DaisyChainFirstAction action);
 
-  void FlushMetric();
+  void FlushFirstActionMetric();
 
  private:
+  void FlushAutoOpenMetrics(AutoOpenCloseReason close_reason,
+                            base::TimeTicks close_time);
+  void RecordUkm(AutoOpenCloseReason close_reason, base::TimeTicks end_time);
+
   base::flat_set<InstanceId> bound_instances_;
   base::flat_set<InstanceId> pinned_by_instances_;
 
@@ -63,6 +82,12 @@ class GlicInstanceHelperMetrics {
   DaisyChainFirstAction current_metric_action_ =
       DaisyChainFirstAction::kNoAction;
   base::OneShotTimer flush_timer_;
+
+  base::TimeTicks start_time_;
+  base::TimeTicks first_action_time_;
+  int prompt_count_ = 0;
+  bool ukm_recorded_ = false;
+  ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };
 
 }  // namespace glic

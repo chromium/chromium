@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -97,7 +98,13 @@ GlicInstanceHelper::GetPinnedInstances() const {
 }
 
 void GlicInstanceHelper::SetIsDaisyChained(DaisyChainSource source) {
-  metrics_->SetIsDaisyChained(source);
+  ukm::SourceId source_id = ukm::kInvalidSourceId;
+  if (tab_ && tab_->GetContents() &&
+      tab_->GetContents()->GetPrimaryMainFrame()) {
+    source_id =
+        tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
+  metrics_->SetIsDaisyChained(source, source_id);
 }
 
 void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {

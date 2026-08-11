@@ -11,7 +11,11 @@
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -188,5 +192,140 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
   EXPECT_OK(run_until_importance_is(content::ChildProcessImportance::NORMAL));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
+                       AutoOpenPdfLogsUkmOnClose) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab);
+  ukm::SourceId active_tab_source_id =
+      tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  GlicKeyedService::Get(GetProfile())
+      ->ToggleUI(tab->GetBrowserWindowInterface(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kAutoOpenedForPdf);
+  ASSERT_OK(WaitForGlicOpen(tab));
+  EXPECT_OK(CloseGlicForTabAndWait(tab));
+
+  // Wait for the 5-second debounce timer to flush UKM.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !ukm_tester
+                .GetEntriesByName(
+                    ukm::builders::Glic_AutoOpen_Closed::kEntryName)
+                .empty();
+  }));
+
+  auto entries = ukm_tester.GetEntriesByName(
+      ukm::builders::Glic_AutoOpen_Closed::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kSessionDurationMsName));
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0],
+      ukm::builders::Glic_AutoOpen_Closed::kTimeToFirstActionMsName));
+  EXPECT_EQ(entries[0]->source_id, active_tab_source_id);
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kCloseReasonName,
+      static_cast<int64_t>(AutoOpenCloseReason::kExplicitlyClosed));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kFirstActionName,
+      static_cast<int64_t>(DaisyChainFirstAction::kSidePanelClosed));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kPromptCountName,
+      ukm::GetExponentialBucketMinForCounts1000(0));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
+                       AutoOpenPdfLogsUkmOnTabSwitch) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab1);
+  ukm::SourceId first_tab_source_id =
+      tab1->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  GlicKeyedService::Get(GetProfile())
+      ->ToggleUI(tab1->GetBrowserWindowInterface(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kAutoOpenedForPdf);
+  ASSERT_OK(WaitForGlicOpen(tab1));
+
+  // Create and switch to tab2.
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab2);
+
+  // Wait for the 5-second debounce timer to flush UKM.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !ukm_tester
+                .GetEntriesByName(
+                    ukm::builders::Glic_AutoOpen_Closed::kEntryName)
+                .empty();
+  }));
+
+  auto entries = ukm_tester.GetEntriesByName(
+      ukm::builders::Glic_AutoOpen_Closed::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kSessionDurationMsName));
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0],
+      ukm::builders::Glic_AutoOpen_Closed::kTimeToFirstActionMsName));
+  EXPECT_EQ(entries[0]->source_id, first_tab_source_id);
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kCloseReasonName,
+      static_cast<int64_t>(AutoOpenCloseReason::kTabSwitched));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kFirstActionName,
+      static_cast<int64_t>(DaisyChainFirstAction::kTabSwitched));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kPromptCountName,
+      ukm::GetExponentialBucketMinForCounts1000(0));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
+                       AutoOpenPdfLogsUkmWithUserInput) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab);
+  ukm::SourceId active_tab_source_id =
+      tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  GlicKeyedService::Get(GetProfile())
+      ->ToggleUI(tab->GetBrowserWindowInterface(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kAutoOpenedForPdf);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
+
+  instance->instance_metrics().OnUserInputSubmitted(
+      mojom::WebClientMode::kAudio);
+  instance->instance_metrics().OnUserInputSubmitted(
+      mojom::WebClientMode::kText);
+
+  EXPECT_OK(CloseGlicForTabAndWait(tab));
+
+  // Wait for the 5-second debounce timer to flush UKM.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !ukm_tester
+                .GetEntriesByName(
+                    ukm::builders::Glic_AutoOpen_Closed::kEntryName)
+                .empty();
+  }));
+
+  auto entries = ukm_tester.GetEntriesByName(
+      ukm::builders::Glic_AutoOpen_Closed::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kSessionDurationMsName));
+  EXPECT_TRUE(ukm_tester.EntryHasMetric(
+      entries[0],
+      ukm::builders::Glic_AutoOpen_Closed::kTimeToFirstActionMsName));
+  EXPECT_EQ(entries[0]->source_id, active_tab_source_id);
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kCloseReasonName,
+      static_cast<int64_t>(AutoOpenCloseReason::kExplicitlyClosed));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kFirstActionName,
+      static_cast<int64_t>(DaisyChainFirstAction::kInputSubmitted));
+  ukm_tester.ExpectEntryMetric(
+      entries[0], ukm::builders::Glic_AutoOpen_Closed::kPromptCountName,
+      ukm::GetExponentialBucketMinForCounts1000(2));
+}
 
 }  // namespace glic
