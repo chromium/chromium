@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -201,7 +202,7 @@ public class AutofillAndPasswordsFragmentTest {
     public void testSignInPromoVisible_noAccount() {
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_title))
@@ -227,7 +228,7 @@ public class AutofillAndPasswordsFragmentTest {
     public void testSignInPromoNotSelectable() {
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         AutofillAndPasswordsFragment fragment = mSettingsTestRule.getFragment();
         SigninPromoPreference preference =
@@ -248,7 +249,7 @@ public class AutofillAndPasswordsFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_title))
@@ -271,7 +272,7 @@ public class AutofillAndPasswordsFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_title))
@@ -293,7 +294,7 @@ public class AutofillAndPasswordsFragmentTest {
     public void testSignInPromoDismiss() {
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_dismiss_button)).perform(click());
@@ -317,7 +318,7 @@ public class AutofillAndPasswordsFragmentTest {
     public void testSignInPromoClick() {
         signInPromoDeclined(false);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
 
         onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
@@ -341,7 +342,24 @@ public class AutofillAndPasswordsFragmentTest {
                                         .AUTOFILL_AND_PASSWORDS),
                         AutofillAndPasswordsPromoDelegate.MAX_IMPRESSIONS);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSignInPromoNotVisible_whenLaunchedFromSearch() {
+        signInPromoDeclined(false);
+
+        mSettingsTestRule.startSettingsActivity(
+                createFragmentArgs(AutofillSettingsReferrer.SETTINGS_SEARCH));
 
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
@@ -575,8 +593,26 @@ public class AutofillAndPasswordsFragmentTest {
                         "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
                         AutofillSettingsReferrer.SETTINGS_MENU);
 
-        mSettingsTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
         mSettingsTestRule.recreateActivity();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
+    public void testReportsSearchReferrerEvent() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+                        AutofillSettingsReferrer.SETTINGS_SEARCH);
+
+        mSettingsTestRule.startSettingsActivity(
+                createFragmentArgs(AutofillSettingsReferrer.SETTINGS_SEARCH));
 
         histogramWatcher.assertExpected();
     }
@@ -690,6 +726,16 @@ public class AutofillAndPasswordsFragmentTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED, value);
+    }
+
+    private static Bundle createFragmentArgs(@AutofillSettingsReferrer int referrer) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(AutofillAndPasswordsFragment.EXTRA_REFERRER, referrer);
+        return fragmentArgs;
+    }
+
+    private static Bundle createFragmentArgs() {
+        return createFragmentArgs(AutofillSettingsReferrer.SETTINGS_MENU);
     }
 
     private void testItemClick(

@@ -416,7 +416,8 @@ export enum AutofillSettingsReferrer {
   SETTINGS_MENU = 1,
   AUTOFILL_AND_PASSWORDS_PAGE = 2,
   // FILLING_FLOW_DROPDOWN = 3,
-  MAX_VALUE = 4,
+  // SETTINGS_SEARCH = 4,
+  MAX_VALUE = 5,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
 
