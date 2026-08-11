@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_FEATURE_FLAGS_H_
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_FLAGS_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
@@ -16,7 +16,7 @@ namespace extensions {
 // Returns true if the `feature_flag` with the given name is enabled. This
 // CHECKs to validate that `feature_flag` corresponds to a base::Feature of the
 // same name.
-bool IsFeatureFlagEnabled(const std::string& feature_flag);
+bool IsFeatureFlagEnabled(std::string_view feature_flag);
 
 // Used to override the set of base::Feature flags while the returned scoper is
 // alive. Clients must ensure that pointers in `features` remain valid

@@ -579,6 +579,8 @@ STATIC_SPAN_LIST_KEYS = {
                        emit_empty_setter=True),
 }
 
+STATIC_CSTRING_KEYS = {'command_line_switch', 'feature_flag'}
+
 # By default, if an error is encountered, assert to stop the compilation. This
 # can be disabled for testing.
 ENABLE_ASSERTIONS = True
@@ -603,6 +605,9 @@ def GetCodeForFeatureValues(feature_values):
       c.Append('    std::to_array<%s>(' % spec.element_type)
       c.Append('        %s);' % values)
       c.Append('feature->set_%s(StaticSpan(%s));' % (key, spec.array_name))
+    elif key in STATIC_CSTRING_KEYS:
+      c.Append('feature->set_%s(StaticCString(%s));' %
+               (key, feature_values[key]))
     else:
       c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c

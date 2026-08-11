@@ -51,7 +51,40 @@ class StaticSpan {
   constexpr base::span<const T> span() const { return span_; }
 
  private:
+  // Safe because construction requires static storage.
   RAW_PTR_EXCLUSION base::span<const T> span_;
+};
+
+// A pointer to a static NUL-terminated string. Half the size of a
+// std::string_view, which matters because a handful of features set these
+// fields but every feature pays for them; the length is recovered by scanning
+// on the cold paths that read them.
+//
+// The consteval constructor's attribute reads a character out of the array,
+// which requires the contents, not just the address, to be compile-time
+// constant. A bare const char* is the same size but would accept a mutable or
+// dynamically initialized global.
+class StaticCString {
+ public:
+  // Absent by default; nullptr is the sentinel, so no std::optional is needed.
+  constexpr StaticCString() = default;
+
+  template <size_t N>
+  explicit consteval StaticCString(const char (&string)[N])
+      ENABLE_IF_ATTR(string[N - 1u] == '\0', "requires a NUL-terminated string")
+      : data_(string) {}
+
+  constexpr bool has_value() const { return data_ != nullptr; }
+
+  // Stops at an embedded NUL. The attribute above only constrains the final
+  // byte, so a literal containing one still compiles.
+  constexpr std::string_view string_view() const {
+    return data_ ? std::string_view(data_) : std::string_view();
+  }
+
+ private:
+  // Safe because construction requires static storage.
+  RAW_PTR_EXCLUSION const char* data_ = nullptr;
 };
 
 class SimpleFeature : public Feature {
@@ -150,7 +183,7 @@ class SimpleFeature : public Feature {
   void set_blocklist(std::initializer_list<std::string_view> blocklist) =
       delete;
   void set_channel(version_info::Channel channel) { channel_ = channel; }
-  void set_command_line_switch(std::string_view command_line_switch);
+  void set_command_line_switch(StaticCString command_line_switch);
   void set_component_extensions_auto_granted(bool granted) {
     component_extensions_auto_granted_ = granted;
   }
@@ -163,7 +196,7 @@ class SimpleFeature : public Feature {
   void set_extension_types(StaticSpan<Manifest::Type> types);
   void set_extension_types(std::initializer_list<Manifest::Type> types) =
       delete;
-  void set_feature_flag(std::string_view feature_flag);
+  void set_feature_flag(StaticCString feature_flag);
   void set_session_types(StaticSpan<mojom::FeatureSessionType> types);
   void set_session_types(
       std::initializer_list<mojom::FeatureSessionType> types) = delete;
@@ -219,8 +252,10 @@ class SimpleFeature : public Feature {
   const std::optional<int> max_manifest_version() const {
     return max_manifest_version_;
   }
-  const std::optional<std::string>& command_line_switch() const {
-    return command_line_switch_;
+  std::optional<std::string_view> command_line_switch() const {
+    return command_line_switch_.has_value()
+               ? std::optional(command_line_switch_.string_view())
+               : std::nullopt;
   }
   bool component_extensions_auto_granted() const {
     return component_extensions_auto_granted_;
@@ -347,8 +382,8 @@ class SimpleFeature : public Feature {
   std::optional<Location> location_;
   std::optional<int> min_manifest_version_;
   std::optional<int> max_manifest_version_;
-  std::optional<std::string> command_line_switch_;
-  std::optional<std::string> feature_flag_;
+  StaticCString command_line_switch_;
+  StaticCString feature_flag_;
   std::optional<version_info::Channel> channel_;
   // Whether to ignore channel-based restrictions (such as because the user has
   // enabled experimental extension APIs). Note: this is lazily calculated, and

@@ -74,7 +74,7 @@ struct FeatureComparator {
   std::optional<SimpleFeature::Location> location;
   std::optional<int> min_manifest_version;
   std::optional<int> max_manifest_version;
-  std::optional<std::string> command_line_switch;
+  std::optional<std::string_view> command_line_switch;
   std::optional<version_info::Channel> channel;
 
   std::string alias;

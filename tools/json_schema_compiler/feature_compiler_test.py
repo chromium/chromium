@@ -529,8 +529,10 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
         'feature_cups': {
             'channel': 'beta',
+            'command_line_switch': 'enable-cups',
             'contexts': ['privileged_extension'],
             'extension_types': ['extension'],
+            'feature_flag': 'ApiCups',
             'matches': ['https://example.com/*'],
             'required_buildflags': ['use_cups']
         }
@@ -545,6 +547,7 @@ class FeatureCompilerTest(unittest.TestCase):
     SimpleFeature* feature = new SimpleFeature();
     feature->set_name("feature_cups");
     feature->set_channel(version_info::Channel::BETA);
+    feature->set_command_line_switch(StaticCString("enable-cups"));
     static constexpr auto kContexts =
         std::to_array<mojom::ContextType>(
             {mojom::ContextType::kPrivilegedExtension});
@@ -553,6 +556,7 @@ class FeatureCompilerTest(unittest.TestCase):
         std::to_array<Manifest::Type>(
             {Manifest::Type::kExtension});
     feature->set_extension_types(StaticSpan(kExtensionTypes));
+    feature->set_feature_flag(StaticCString("ApiCups"));
     static constexpr auto kMatches =
         std::to_array<std::string_view>(
             {"https://example.com/*"});

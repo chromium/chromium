@@ -180,11 +180,11 @@ std::string ListDisplayNames(const std::vector<EnumType>& enum_types) {
 }
 
 bool IsCommandLineSwitchEnabled(base::CommandLine* command_line,
-                                const std::string& switch_name) {
+                                std::string_view switch_name) {
   if (command_line->GetSwitchValueASCII(switch_name) == "1") {
     return true;
   }
-  if (command_line->HasSwitch(std::string("enable-") + switch_name)) {
+  if (command_line->HasSwitch(base::StrCat({"enable-", switch_name}))) {
     return true;
   }
   return false;
@@ -413,15 +413,15 @@ std::string SimpleFeature::GetAvailabilityMessage(
           name(), version_info::GetChannelString(channel).data(),
           version_info::GetChannelString(GetCurrentChannel()).data());
     case AvailabilityResult::kMissingCommandLineSwitch:
-      DCHECK(command_line_switch_);
+      DCHECK(command_line_switch_.has_value());
       return base::StringPrintf(
           "'%s' requires the '%s' command line switch to be enabled.", name(),
-          command_line_switch_->c_str());
+          command_line_switch_.string_view());
     case AvailabilityResult::kFeatureFlagDisabled:
-      DCHECK(feature_flag_);
+      DCHECK(feature_flag_.has_value());
       return base::StringPrintf(
           "'%s' requires the '%s' feature flag to be enabled.", name(),
-          *feature_flag_);
+          feature_flag_.string_view());
     case AvailabilityResult::kRequiresDeveloperMode:
       return base::StringPrintf(
           "'%s' requires the user to have developer mode enabled.", name());
@@ -597,9 +597,8 @@ void SimpleFeature::set_blocklist(StaticSpan<std::string_view> blocklist) {
   blocklist_ = blocklist.span();
 }
 
-void SimpleFeature::set_command_line_switch(
-    std::string_view command_line_switch) {
-  command_line_switch_ = std::string(command_line_switch);
+void SimpleFeature::set_command_line_switch(StaticCString command_line_switch) {
+  command_line_switch_ = command_line_switch;
 }
 
 void SimpleFeature::set_contexts(StaticSpan<mojom::ContextType> contexts) {
@@ -615,8 +614,8 @@ void SimpleFeature::set_extension_types(StaticSpan<Manifest::Type> types) {
   extension_types_ = types.span();
 }
 
-void SimpleFeature::set_feature_flag(std::string_view feature_flag) {
-  feature_flag_ = std::string(feature_flag);
+void SimpleFeature::set_feature_flag(StaticCString feature_flag) {
+  feature_flag_ = feature_flag;
 }
 
 void SimpleFeature::set_session_types(
@@ -666,13 +665,16 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
                                 *channel_);
   }
 
-  if (command_line_switch_ &&
-      !IsCommandLineSwitchEnabled(command_line, *command_line_switch_)) {
+  if (command_line_switch_.has_value() &&
+      !IsCommandLineSwitchEnabled(command_line,
+                                  command_line_switch_.string_view())) {
     return CreateAvailability(AvailabilityResult::kMissingCommandLineSwitch);
   }
 
-  if (feature_flag_ && !IsFeatureFlagEnabled(*feature_flag_))
+  if (feature_flag_.has_value() &&
+      !IsFeatureFlagEnabled(feature_flag_.string_view())) {
     return CreateAvailability(AvailabilityResult::kFeatureFlagDisabled);
+  }
 
   if (!MatchesSessionTypes(session_type))
     return CreateAvailability(AvailabilityResult::kInvalidSessionType,

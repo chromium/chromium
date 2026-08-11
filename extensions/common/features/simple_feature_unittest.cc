@@ -115,6 +115,42 @@ Feature::AvailabilityResult IsAvailableInChannel(
 
 }  // namespace
 
+// The constructor only requires the array to end in a NUL, so an embedded one
+// makes the length differ from the array bound.
+TEST(StaticCStringTest, SizeExcludesTerminator) {
+  static constexpr StaticCString kName("webRequestInternal");
+  static_assert(kName.string_view().size() == 18u);
+  EXPECT_EQ("webRequestInternal", kName.string_view());
+}
+
+TEST(StaticCStringTest, SizeStopsAtEmbeddedNul) {
+  static constexpr StaticCString kEmbedded("a\0b");
+  static_assert(kEmbedded.string_view().size() == 1u);
+  EXPECT_EQ("a", kEmbedded.string_view());
+}
+
+// Longer than std::string's 22-character inline buffer, so a copy would heap
+// allocate.
+TEST(StaticCStringTest, ReferencesLiteralWithoutCopying) {
+  static constexpr char kLongName[] = "controlledFrameInternal";
+  static constexpr StaticCString kLong(kLongName);
+  static_assert(kLong.string_view().size() == 23u);
+  static_assert(kLong.string_view().data() == kLongName);
+}
+
+TEST(StaticCStringTest, IsPointerSized) {
+  static_assert(sizeof(StaticCString) == sizeof(const char*));
+}
+
+TEST(StaticCStringTest, DefaultIsAbsent) {
+  static constexpr StaticCString kAbsent;
+  static_assert(!kAbsent.has_value());
+  static_assert(kAbsent.string_view().empty());
+
+  static constexpr StaticCString kPresent("laser-beams");
+  static_assert(kPresent.has_value());
+}
+
 class SimpleFeatureTest : public testing::Test {
  public:
   SimpleFeatureTest(const SimpleFeatureTest&) = delete;
@@ -858,7 +894,7 @@ TEST_F(SimpleFeatureTest, ManifestVersion) {
 
 TEST_F(SimpleFeatureTest, CommandLineSwitch) {
   SimpleFeature feature;
-  feature.set_command_line_switch("laser-beams");
+  feature.set_command_line_switch(StaticCString("laser-beams"));
   {
     EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
@@ -925,13 +961,13 @@ TEST_F(SimpleFeatureTest, FeatureFlags) {
       CreateScopedFeatureFlagsOverrideForTesting(kOverriddenFeatures);
 
   SimpleFeature simple_feature_1;
-  simple_feature_1.set_feature_flag(kStubFeature1.name);
+  simple_feature_1.set_feature_flag(StaticCString("StubFeature1"));
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             simple_feature_1.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 
   SimpleFeature simple_feature_2;
-  simple_feature_2.set_feature_flag(kStubFeature2.name);
+  simple_feature_2.set_feature_flag(StaticCString("StubFeature2"));
   EXPECT_EQ(Feature::AvailabilityResult::kFeatureFlagDisabled,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
@@ -1427,9 +1463,9 @@ TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
 
   {
     // Test with command-line restrictions.
-    const char kFakeSwitch[] = "some-fake-switch";
+    static constexpr char kFakeSwitch[] = "some-fake-switch";
     SimpleFeature feature;
-    feature.set_command_line_switch(kFakeSwitch);
+    feature.set_command_line_switch(StaticCString(kFakeSwitch));
 
     EXPECT_EQ(Feature::AvailabilityResult::kMissingCommandLineSwitch,
               feature.IsAvailableToEnvironment(kUnspecifiedContextId).result());
