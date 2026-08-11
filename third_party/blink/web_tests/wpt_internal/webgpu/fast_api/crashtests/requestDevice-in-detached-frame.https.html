@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Detached frame use of WebGPU</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const adapter = await iframe.contentWindow.navigator.gpu.requestAdapter();
+  assert_true(adapter !== null, 'Failed to get GPUAdapter');
+
+  iframe.remove();
+
+  // Calling requestDevice() on an adapter from a detached frame should not crash.
+  adapter.requestDevice();
+}, 'GPUAdapter.requestDevice() on detached frame should not crash');
+
+</script>
+</body>
+</html>

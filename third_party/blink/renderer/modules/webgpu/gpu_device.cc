@@ -813,6 +813,9 @@ void GPUDevice::UntrackBufferWithMailbox(GPUBuffer* buffer) {
 
 void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
   ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    return;
+  }
 
   // Set the uncaptured error callback first because its ownership will be
   // passed to the device lost callback immediately after.
