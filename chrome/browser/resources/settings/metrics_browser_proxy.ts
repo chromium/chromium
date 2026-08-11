@@ -284,7 +284,8 @@ export enum DeleteBrowsingDataAction {
   HISTORY_PAGE_ENTRIES = 5,
   QUICK_DELETE = 6,
   PAGE_INFO_RESET_PERMISSIONS = 7,
-  MAX_VALUE = 8,
+  RWS_DELETE_ALL_DATA = 8,
+  MAX_VALUE = 9,
 }
 
 /**
