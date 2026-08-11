@@ -418,11 +418,11 @@ suite('SettingsMenuElement', () => {
 
   test('menu items have correct aria-expanded attribute', async () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
-    const menuItems =
+    let menuItems =
         Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
 
     // Submenu toggles should have aria-expanded false by default.
-    const fontItem = menuItems.find(item => item.id === SettingsOption.FONT);
+    let fontItem = menuItems.find(item => item.id === SettingsOption.FONT);
     assertTrue(!!fontItem);
     assertEquals('false', fontItem.getAttribute('aria-expanded'));
 
@@ -435,6 +435,9 @@ suite('SettingsMenuElement', () => {
     fontItem.click();
     await microtasksFinished();
 
+    menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    fontItem = menuItems.find(item => item.id === SettingsOption.FONT)!;
     // The font item should now be expanded.
     assertEquals('true', fontItem.getAttribute('aria-expanded'));
     // Another submenu should still not be expanded.
