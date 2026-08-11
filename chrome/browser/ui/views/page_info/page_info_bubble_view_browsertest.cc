@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1739,3 +1740,27 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED),
       state_label->GetText());
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that opening the PageInfo bubble by clicking the location bar icon
+// while in Mac immersive fullscreen mode reveals the top container and
+// correctly parents the bubble widget to the top container (overlay_widget).
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       ImmersiveFullscreenParenting) {
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ImmersiveModeController* controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_TRUE(controller->IsEnabled());
+
+  OpenPageInfoBubble(browser());
+
+  EXPECT_TRUE(controller->IsRevealed());
+  views::BubbleDialogDelegateView* bubble =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_EQ(bubble->GetWidget()->parent(), browser_view->overlay_widget());
+
+  bubble->GetWidget()->CloseNow();
+}
+#endif
