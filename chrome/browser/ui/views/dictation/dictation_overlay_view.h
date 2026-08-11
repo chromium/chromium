@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -44,7 +45,15 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   void UpdatePosition(const gfx::Point& focus_selection_point);
   void OnStartedStream(content::GlobalDOMNodeId target_id);
 
+  void SetState(UiState state);
+  void UpdateAudioLevel(float audio_level);
+
+  UiState state_for_testing() const;
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMicButtonElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFinalizingButtonElementIdForTesting);
 
  private:
   void OnFocusSelectionBoundsChanged(
@@ -55,6 +64,7 @@ class DictationOverlayView : public views::BubbleDialogDelegate {
   content::WeakDocumentPtr last_target_document_;
 
   std::unique_ptr<views::Widget> widget_;
+  UiState state_ = UiState::kInactive;
 };
 
 }  // namespace dictation

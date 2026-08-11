@@ -54,7 +54,7 @@ class DictationToastView : public views::View {
   ~DictationToastView() override;
 
   void Init();
-  void UpdateForState(DictationBubbleUi::State state);
+  void UpdateForState(UiState state);
   void UpdateAudioLevel(float audio_level);
 
  private:
@@ -98,7 +98,8 @@ void DictationToastView::Init() {
       vector_icons::kMicIcon, ui::kColorSysOnSurface,
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
 
-  WaveformView* waveform_view = AddChildView(std::make_unique<WaveformView>());
+  WaveformView* waveform_view =
+      AddChildView(std::make_unique<WaveformView>(/*full_size=*/true));
   waveform_view_ = waveform_view;
   waveform_view->SetProperty(views::kElementIdentifierKey,
                              DictationBubbleUi::kWaveformElementIdForTesting);
@@ -155,25 +156,25 @@ void DictationToastView::Init() {
                             DictationBubbleUi::kCloseButtonElementIdForTesting);
 }
 
-void DictationToastView::UpdateForState(DictationBubbleUi::State state) {
+void DictationToastView::UpdateForState(UiState state) {
   if (waveform_view_) {
     waveform_view_->SetState(state);
   }
 
   if (toggle_button_) {
     switch (state) {
-      case DictationBubbleUi::State::kInactive:
+      case UiState::kInactive:
         // TODO(b/510738735): Finalize placeholder strings.
         toggle_button_->SetText(
             l10n_util::GetStringUTF16(IDS_DICTATION_BUTTON_START));
         toggle_button_->SetEnabled(true);
         break;
-      case DictationBubbleUi::State::kInitializing:
-      case DictationBubbleUi::State::kTranscribing:
+      case UiState::kInitializing:
+      case UiState::kTranscribing:
         toggle_button_->SetText(l10n_util::GetStringUTF16(IDS_DONE));
         toggle_button_->SetEnabled(true);
         break;
-      case DictationBubbleUi::State::kFinalizing:
+      case UiState::kFinalizing:
         toggle_button_->SetText(l10n_util::GetStringUTF16(IDS_DONE));
         toggle_button_->SetEnabled(false);
         break;
@@ -223,7 +224,7 @@ void DictationBubbleUi::Show() {
   widget_->ShowInactive();
 }
 
-void DictationBubbleUi::SetState(State state) {
+void DictationBubbleUi::SetState(UiState state) {
   if (state_ == state) {
     return;
   }
