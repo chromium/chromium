@@ -98,7 +98,7 @@ class WebState;
 // Instructs the mediator to navigate the web state to the given URL.
 // For debugging and testing only. Has no effect unless omnibox debugging
 // is enabled.
-- (void)loadURL:(const GURL&)url;
+- (void)loadDebugURL:(const GURL&)url;
 
 // Returns YES if the AIM page supports the given capability. Returns NO if
 // the handshake has not completed yet or the capability is not supported.

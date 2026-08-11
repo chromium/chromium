@@ -587,7 +587,7 @@ class AssistantAIMUIStateProvider
 - (void)debuggerURLViewController:
             (AIMSRPDebuggerURLViewController*)viewController
                      didUpdateURL:(const GURL&)URL {
-  [_mediator loadURL:URL];
+  [_mediator loadDebugURL:URL];
 }
 
 @end
