@@ -2148,6 +2148,12 @@ inline constexpr char
     kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
         "Enable using clientside model predictions to fill password forms.";
 
+inline constexpr char kApplyManagedProxyBypassListVerbatimName[] =
+    "Apply managed proxy bypass list verbatim";
+inline constexpr char kApplyManagedProxyBypassListVerbatimDescription[] =
+    "Applies policy and extension proxy bypass lists without adding implicit "
+    "bypass rules for simple hostnames.";
+
 inline constexpr char kEnableFencedFramesDeveloperModeName[] =
     "Enable the `FencedFrameConfig` constructor.";
 inline constexpr char kEnableFencedFramesDeveloperModeDescription[] =

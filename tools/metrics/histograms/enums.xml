@@ -12556,6 +12556,7 @@ from previous Chrome versions.
   <int value="-643105409" label="PickerGifs:enabled"/>
   <int value="-642973094" label="ArabicIndicDigitInput:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
+  <int value="-641884626" label="ApplyManagedProxyBypassListVerbatim:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
   <int value="-641820371" label="EnableCustomMacPaperSizes:enabled"/>
   <int value="-641777884" label="SharedHighlightingManager:enabled"/>
@@ -21231,6 +21232,7 @@ from previous Chrome versions.
   <int value="2085438501" label="ChromeHome:enabled"/>
   <int value="2086521312" label="EdgelessTopInset:enabled"/>
   <int value="2086569407" label="WebNNOnnxRuntime:enabled"/>
+  <int value="2086650107" label="ApplyManagedProxyBypassListVerbatim:disabled"/>
   <int value="2087069781" label="ui-debug-tools:enabled"/>
   <int value="2087846845" label="AIClassifierAPI:disabled"/>
   <int value="2087981979" label="CWSReviewPromptingNativeUI:enabled"/>

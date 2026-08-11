@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
@@ -14,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -37,6 +39,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
+#include "net/proxy_resolution/proxy_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -309,7 +312,10 @@ struct TestParams {
   // Expected outputs from fields of net::ProxyConfig (via IO).
   bool auto_detect;
   const char* pac_url;
+  // Expected rules when the proxy is set locally (per-network or user pref).
   net::ProxyRulesExpectation proxy_rules;
+  // Expected rules when the proxy is set by a managed pref.
+  net::ProxyRulesExpectation managed_proxy_rules;
 };
 
 base::span<const TestParams> GetTests() {
@@ -328,6 +334,7 @@ base::span<const TestParams> GetTests() {
             false,                                // auto_detect
             "",                                   // pac_url
             net::ProxyRulesExpectation::Empty(),  // proxy_rules
+            net::ProxyRulesExpectation::Empty(),  // managed_proxy_rules
         },
 
         {
@@ -343,6 +350,7 @@ base::span<const TestParams> GetTests() {
             true,                                 // auto_detect
             "",                                   // pac_url
             net::ProxyRulesExpectation::Empty(),  // proxy_rules
+            net::ProxyRulesExpectation::Empty(),  // managed_proxy_rules
         },
 
         {
@@ -359,6 +367,7 @@ base::span<const TestParams> GetTests() {
             false,                                // auto_detect
             "http://wpad/wpad.dat",               // pac_url
             net::ProxyRulesExpectation::Empty(),  // proxy_rules
+            net::ProxyRulesExpectation::Empty(),  // managed_proxy_rules
         },
 
         {
@@ -375,6 +384,7 @@ base::span<const TestParams> GetTests() {
             false,                                // auto_detect
             "",                                   // pac_url
             net::ProxyRulesExpectation::Empty(),  // proxy_rules
+            net::ProxyRulesExpectation::Empty(),  // managed_proxy_rules
         },
 
         {
@@ -394,6 +404,9 @@ base::span<const TestParams> GetTests() {
             net::ProxyRulesExpectation::Single(  // proxy_rules
                 "www.google.com:80",             // single proxy
                 "<local>"),                      // bypass rules
+            net::ProxyRulesExpectation::Single(  // managed_proxy_rules
+                "www.google.com:80",             // single proxy
+                ""),                             // bypass rules
         },
 
         {
@@ -413,6 +426,9 @@ base::span<const TestParams> GetTests() {
             net::ProxyRulesExpectation::Single(  // proxy_rules
                 "www.google.com:99",             // single
                 "<local>"),                      // bypass rules
+            net::ProxyRulesExpectation::Single(  // managed_proxy_rules
+                "www.google.com:99",             // single
+                ""),                             // bypass rules
         },
 
         {
@@ -432,6 +448,9 @@ base::span<const TestParams> GetTests() {
             net::ProxyRulesExpectation::Single(  // proxy_rules
                 "www.google.com:99",             // single proxy
                 "<local>"),                      // bypass rules
+            net::ProxyRulesExpectation::Single(  // managed_proxy_rules
+                "www.google.com:99",             // single proxy
+                ""),                             // bypass rules
         },
 
         {
@@ -455,6 +474,13 @@ base::span<const TestParams> GetTests() {
                 "ftp.foo.com:121",                           // ftp
                 "socks5://socks.com:888",                    // fallback proxy
                 "<local>"),                                  // bypass rules
+            net::ProxyRulesExpectation::
+                PerSchemeWithSocks(             // managed_proxy_rules
+                    "www.google.com:80",        // http
+                    "https://www.foo.com:110",  // https
+                    "ftp.foo.com:121",          // ftp
+                    "socks5://socks.com:888",   // fallback proxy
+                    ""),                        // bypass rules
         },
 
         {
@@ -477,6 +503,10 @@ base::span<const TestParams> GetTests() {
                 "www.google.com:80",             // single proxy
                                                  // bypass_rules
                 "<local>,*.google.com,*foo.com:99,1.2.3.4:22,127.0.0.1/8"),
+            net::ProxyRulesExpectation::Single(  // managed_proxy_rules
+                "www.google.com:80",             // single proxy
+                                                 // bypass_rules
+                "*.google.com,*foo.com:99,1.2.3.4:22,127.0.0.1/8"),
         },
     };
   }());
@@ -689,7 +719,7 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
     EXPECT_EQ(GURL(managed_params.pac_url), actual_config.value().pac_url());
-    EXPECT_TRUE(managed_params.proxy_rules.Matches(
+    EXPECT_TRUE(managed_params.managed_proxy_rules.Matches(
         actual_config.value().proxy_rules()));
 
     // Recommended proxy pref should take effect when managed proxy pref is
@@ -719,7 +749,7 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
     EXPECT_EQ(GURL(managed_params.pac_url), actual_config.value().pac_url());
-    EXPECT_TRUE(managed_params.proxy_rules.Matches(
+    EXPECT_TRUE(managed_params.managed_proxy_rules.Matches(
         actual_config.value().proxy_rules()));
 
     // Network proxy should take effect over recommended proxy pref when managed
@@ -739,6 +769,86 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     EXPECT_TRUE(network_params.proxy_rules.Matches(
         actual_config.value().proxy_rules()));
   }
+}
+
+// A fixed-servers proxy set via a managed pref must be applied verbatim: no
+// implicit bypass rule for simple hostnames is added, so single-label hosts
+// still traverse the configured proxy.
+TEST_F(ProxyConfigServiceImplWithDescriptionTest,
+       ManagedPrefFixedServersAppliedVerbatim) {
+  SetUpPrivateWiFi();
+  SetUpProxyConfigService(/*no profile prefs=*/nullptr);
+
+  pref_service_.SetManagedPref(
+      ::proxy_config::prefs::kProxy,
+      base::Value(ProxyConfigDictionary::CreateFixedServers(
+          "proxy.example.test:3128", /*bypass_list=*/std::string())));
+
+  net::ProxyConfigWithAnnotation actual_config;
+  SyncGetLatestProxyConfig(&actual_config);
+
+  const net::ProxyConfig::ProxyRules& rules =
+      actual_config.value().proxy_rules();
+  ASSERT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST, rules.type);
+  EXPECT_EQ(std::string(), rules.bypass_rules.ToString());
+
+  net::ProxyInfo proxy_info;
+  rules.Apply(GURL("http://intranet/"), &proxy_info);
+  EXPECT_FALSE(proxy_info.is_direct());
+  EXPECT_FALSE(proxy_info.did_bypass_proxy());
+}
+
+// When kApplyManagedProxyBypassListVerbatim is disabled, managed proxies still
+// receive the legacy implicit bypass rule for simple hostnames.
+TEST_F(ProxyConfigServiceImplWithDescriptionTest,
+       ManagedPrefFixedServersFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kApplyManagedProxyBypassListVerbatim);
+
+  SetUpPrivateWiFi();
+  SetUpProxyConfigService(/*no profile prefs=*/nullptr);
+
+  pref_service_.SetManagedPref(
+      ::proxy_config::prefs::kProxy,
+      base::Value(ProxyConfigDictionary::CreateFixedServers(
+          "proxy.example.test:3128", /*bypass_list=*/std::string())));
+
+  net::ProxyConfigWithAnnotation actual_config;
+  SyncGetLatestProxyConfig(&actual_config);
+
+  const net::ProxyConfig::ProxyRules& rules =
+      actual_config.value().proxy_rules();
+  ASSERT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST, rules.type);
+  EXPECT_EQ("<local>;", rules.bypass_rules.ToString());
+
+  net::ProxyInfo proxy_info;
+  rules.Apply(GURL("http://intranet/"), &proxy_info);
+  EXPECT_TRUE(proxy_info.is_direct());
+}
+
+// A fixed-servers proxy that the user set on the current network still gets an
+// implicit bypass rule for simple hostnames.
+TEST_F(ProxyConfigServiceImplWithDescriptionTest,
+       UserNetworkFixedServersBypassesSimpleHostnames) {
+  SetUpPrivateWiFi();
+  SetUpProxyConfigService(/*no profile prefs=*/nullptr);
+
+  base::DictValue user_config = ProxyConfigDictionary::CreateFixedServers(
+      "proxy.example.test:3128", /*bypass_list=*/std::string());
+  SetUserConfigInShill(&user_config);
+
+  net::ProxyConfigWithAnnotation actual_config;
+  SyncGetLatestProxyConfig(&actual_config);
+
+  const net::ProxyConfig::ProxyRules& rules =
+      actual_config.value().proxy_rules();
+  ASSERT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST, rules.type);
+  EXPECT_EQ("<local>;", rules.bypass_rules.ToString());
+
+  net::ProxyInfo proxy_info;
+  rules.Apply(GURL("http://intranet/"), &proxy_info);
+  EXPECT_TRUE(proxy_info.is_direct());
 }
 
 // Tests whether the proxy settings from user policy are used for ethernet even

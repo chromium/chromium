@@ -635,6 +635,11 @@
     "expiry_milestone": 156
   },
   {
+    "name": "apply-managed-proxy-bypass-list-verbatim",
+    "owners": [ "acostinas@google.com", "chromeos-commercial-networking@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "approximate-geolocation-permission",
     "owners": [ "antoniosartori@chromium.org", "//components/permissions/PERMISSIONS_OWNERS" ],
     "expiry_milestone": 158

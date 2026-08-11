@@ -59,6 +59,11 @@ BASE_FEATURE(kAnnotatorMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApnRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether proxy settings from policy or extensions are applied
+// verbatim without appending implicit bypass rules for simple hostnames.
+BASE_FEATURE(kApplyManagedProxyBypassListVerbatim,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether to enable ARC ADB sideloading support.
 BASE_FEATURE(kArcAdbSideloadingFeature,
              "ArcAdbSideloading",
@@ -2240,6 +2245,10 @@ bool IsApnRevampAndAllowApnModificationPolicyEnabled() {
 
 bool IsApnRevampEnabled() {
   return base::FeatureList::IsEnabled(kApnRevamp);
+}
+
+bool IsApplyManagedProxyBypassListVerbatimEnabled() {
+  return base::FeatureList::IsEnabled(kApplyManagedProxyBypassListVerbatim);
 }
 
 bool IsAutoNightLightEnabled() {
