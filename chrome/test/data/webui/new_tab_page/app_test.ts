@@ -1924,6 +1924,44 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
+      [false, true].forEach(energyEffectAnimationEnabled => {
+        test(
+            `search-animated-glow background is aligned with inset 0 when energyEffectEnabled is true and energyEffectAnimationEnabled is ${
+                energyEffectAnimationEnabled}`,
+            async () => {
+              loadTimeData.overrideValues({
+                energyEffectEnabled: true,
+                energyEffectAnimationEnabled,
+              });
+              await recreateApp();
+              await microtasksFinished();
+
+              const searchbox = $$(app, '#searchbox');
+              assertTrue(!!searchbox);
+              searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                detail: {text: '', files: []},
+              }));
+              await microtasksFinished();
+
+              const composebox =
+                  app.shadowRoot.querySelector<NtpComposeboxElement>(
+                      '#composebox');
+              assertTrue(!!composebox);
+
+              const animatedGlow = $$(composebox, 'search-animated-glow');
+              assertTrue(!!animatedGlow);
+
+              const background = $$(animatedGlow, '.background');
+              assertTrue(!!background);
+
+              const bgStyle = window.getComputedStyle(background);
+              assertEquals('0px', bgStyle.top);
+              assertEquals('0px', bgStyle.left);
+              assertEquals('0px', bgStyle.right);
+              assertEquals('0px', bgStyle.bottom);
+            });
+      });
+
       test(
           'spacing and bottom alignment when both attachments and tool chip ' +
               'are present without dropdown',

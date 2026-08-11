@@ -204,10 +204,10 @@ cr-composebox-submit::part(submit) {
 }
 
 :host-context([energy-effect-enabled_]) search-animated-glow {
-  inset: 1px;
+  inset: 0;
   z-index: -1;
 }
 
 :host-context([energy-effect-enabled_]) search-animated-glow::part(composebox-background) {
-  inset: 1px;
+  inset: 0;
 }
