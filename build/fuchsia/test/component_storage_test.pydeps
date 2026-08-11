@@ -27,6 +27,7 @@ publish_package.py
 repeating_log.py
 run_blink_test.py
 run_executable_test.py
+run_perf_gtest.py
 run_telemetry_test.py
 run_test.py
 run_webpage_test.py
