@@ -184,8 +184,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /**
-     * Attempts to open a new tab programmatically as if selecting "New Tab" from the app menu if
-     * available. If not available, attempts to open a new window.
+     * Opens a new tab programmatically as if selecting "New Tab" from the app menu, or opens a new
+     * window if we are currently in an incognito window that cannot open regular tabs.
      */
     public RegularNewTabPageStation openNewTabOrWindowFast() {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mIsIncognito) {
@@ -196,8 +196,9 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     }
 
     /**
-     * Attempts to open a new incognito tab programmatically as if selecting "New Incognito Tab"
-     * from the app menu if available. If not available, attempts to open a new incognito window.
+     * Opens a new incognito tab programmatically as if selecting "New Incognito Tab" from the app
+     * menu, or opens a new incognito window if we are currently in a regular window that cannot
+     * open incognito tabs.
      */
     public IncognitoNewTabPageStation openNewIncognitoTabOrWindowFast() {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && !mIsIncognito) {
