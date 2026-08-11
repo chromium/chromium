@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace omnibox_everywhere::prefs {
@@ -11,7 +12,11 @@ namespace omnibox_everywhere::prefs {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHotkeyEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, true);
+#else
   registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, false);
+#endif
 }
 
 }  // namespace omnibox_everywhere::prefs
