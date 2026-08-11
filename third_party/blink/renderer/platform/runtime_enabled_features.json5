@@ -5568,14 +5568,6 @@
       name: "SelectUsesFlatTree",
     },
     {
-      // Removes a hack which allows select elements to be opened with a script
-      // dispatched mousedown event on WebView, as opposed to a real user
-      // click.
-      // https://issues.chromium.org/issues/41273490
-      // Enabled in M152, safe to remove in M154
-      name: "SelectWebViewUntrustedEventRemoval",
-    },
-    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       public: true,
       status: "stable",

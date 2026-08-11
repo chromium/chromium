@@ -424,12 +424,12 @@ inline void EventDispatcher::DispatchEventPostProcess(
 
   // For Android WebView (distinguished by wideViewportQuirkEnabled)
   // enable untrusted events for mouse down on select elements because
-  // fastclick.js seems to generate these. crbug.com/642698
+  // fastclick.js and ionic js seem to generate these.
+  // http://crbug.com/642698 http://crbug.com/540916916
   // TODO(dtapuska): Change this to a target SDK quirk crbug.com/643705
   if (!is_trusted_or_click && event_->IsMouseEvent() &&
       event_->type() == event_type_names::kMousedown &&
-      IsA<HTMLSelectElement>(*node_) &&
-      !RuntimeEnabledFeatures::SelectWebViewUntrustedEventRemovalEnabled()) {
+      IsA<HTMLSelectElement>(*node_)) {
     if (Settings* settings = node_->GetDocument().GetSettings()) {
       is_trusted_or_click = settings->GetWideViewportQuirkEnabled();
     }

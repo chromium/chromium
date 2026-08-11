@@ -1373,10 +1373,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_CPP_METRICS_FILTERING,
                 "Enables WebView UMA metrics filtering in C++ instead of Java."),
         Flag.baseFeature(
-                BlinkFeatures.SELECT_WEBVIEW_UNTRUSTED_EVENT_REMOVAL,
-                "Enables the removal of a WebView-specific hack to allow select elements to be"
-                        + " opened with untrusted mousedown events."),
-        Flag.baseFeature(
                 "QuicIgnoreRedundantOnNetworkMadeDefault",
                 "When enabled, Quic will ignore redundant OnNetworkMadeDefault calls."),
         Flag.baseFeature(
