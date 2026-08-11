@@ -2452,14 +2452,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 
 # Inheritance of zoom on non-inherited properties
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/block-step-size.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/box-shadow-inset-spread.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/column-rule-width-keywords.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/outline-offset.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/perspective.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-perspective.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/translate.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/vertical-align.html [ Failure ]
 
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
@@ -3645,6 +3637,7 @@ crbug.com/383369477 [ Mac14 ] external/wpt/speculation-rules/prerender/activatio
 crbug.com/383369477 [ Mac13 ] external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac14 ] external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383200044 [ Win10.20h2 ] external/wpt/png/apng/fdAT-16bit.html [ Failure ]
+crbug.com/382988706 external/wpt/css/css-viewport/zoom/block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-embed-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-iframe-margins-affected-by-block-step-size.html [ Failure ]

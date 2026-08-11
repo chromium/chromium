@@ -94,6 +94,11 @@ class CORE_EXPORT GapDataList {
     return gap_data_list_.size() == 1 && !gap_data_list_[0].IsRepeaterData();
   }
 
+  const T GetSingleValue() const {
+    DCHECK(HasSingleValue());
+    return gap_data_list_[0].GetValue();
+  }
+
   const T GetLegacyValue() const {
     return gap_data_list_[0].GetValue();
   }

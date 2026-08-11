@@ -556,6 +556,9 @@ void StyleCascade::AddExplicitDefaults() {
   map_.Add(CSSPropertyID::kBorderLeftWidth,
            CascadePriority(CascadeOrigin::kNone));
   map_.Add(CSSPropertyID::kOutlineWidth, CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kColumnRuleWidth,
+           CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kRowRuleWidth, CascadePriority(CascadeOrigin::kNone));
 
   if (state_.GetDocument().StandardizedBrowserZoomEnabled()) {
     // These inherited properties can contain lengths:

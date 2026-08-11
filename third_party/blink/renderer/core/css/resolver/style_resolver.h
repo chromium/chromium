@@ -414,6 +414,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   MatchedPropertiesCache matched_properties_cache_;
 
+  static void SetZoomedInitialLineWidths(float zoom, ComputedStyleBuilder&);
   const ComputedStyle* CreateInitialStyle() const;
 
   // This member is on a hot-path for creating ComputedStyle objects.

@@ -2914,6 +2914,7 @@
       valid_for_permission_element: true,
       invalidate: ["paint", "visual-overflow"],
       includes_currentcolor: true,
+      affected_by_zoom: true,
     },
     {
       name: "box-sizing",
@@ -5203,6 +5204,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword", "Length"],
       invalidate: ["transform-other"],
+      affected_by_zoom: true,
     },
     {
       name: "perspective-origin",
@@ -6679,6 +6681,7 @@
       invalidate: ["has-transform", "transform-data", "transform-other"],
       percentages_depend_on_used_value: true,
       keywords: ["none"],
+      affected_by_zoom: true,
     },
     {
       name: "rotate",
@@ -6753,6 +6756,7 @@
       valid_for_permission_element: true,
       stored_on_extra_field: ["VerticalAlign", "VerticalAlignLength"],
       percentages_depend_on_used_value: false,
+      affected_by_zoom: true,
     },
     {
       name: "view-timeline-axis",
@@ -7377,7 +7381,7 @@
       include_paths: ["third_party/blink/renderer/core/style/gap_data_list.h"],
       type_name: "GapDataList<int>",
       computed_style_custom_functions: ["initial", "setter"],
-      style_builder_custom_functions: ["inherit"],
+      style_builder_custom_functions: ["initial", "inherit"],
       converter: "ConvertGapDecorationWidthDataList",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
@@ -7394,10 +7398,12 @@
       include_paths: ["third_party/blink/renderer/core/style/gap_data_list.h"],
       type_name: "GapDataList<int>",
       computed_style_custom_functions: ["initial", "setter"],
+      style_builder_custom_functions: ["initial", "inherit"],
       converter: "ConvertGapDecorationWidthDataList",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
       invalidate: ["paint"],
+      affected_by_zoom: true,
       runtime_flag: "CSSGapDecoration",
     },
     {
