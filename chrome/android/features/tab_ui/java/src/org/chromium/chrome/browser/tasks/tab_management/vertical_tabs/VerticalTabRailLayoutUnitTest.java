@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link VerticalTabRailLayout} and {@link VerticalTabListViewBinder}. */
@@ -467,5 +469,60 @@ public class VerticalTabRailLayoutUnitTest {
 
         assertEquals(32, expectedDefaultButtonSize);
         assertEquals(32, expectedDefaultNewTabHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testHeaderButtonBackgrounds_Ltr() {
+        View gridButton = mRailLayout.findViewById(R.id.grid_button);
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+
+        // Expanded
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(
+                R.drawable.vertical_tabs_left_rounded_button_background,
+                shadowOf(gridButton.getBackground()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.vertical_tabs_right_rounded_button_background,
+                shadowOf(searchButton.getBackground()).getCreatedFromResId());
+
+        // Collapsed
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                R.drawable.vertical_tabs_top_rounded_button_background,
+                shadowOf(gridButton.getBackground()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.vertical_tabs_bottom_rounded_button_background,
+                shadowOf(searchButton.getBackground()).getCreatedFromResId());
+    }
+
+    @Test
+    @SmallTest
+    public void testHeaderButtonBackgrounds_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+
+        VerticalTabRailLayout rtlLayout =
+                (VerticalTabRailLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_layout, null, false);
+        View gridButton = rtlLayout.findViewById(R.id.grid_button);
+        View searchButton = rtlLayout.findViewById(R.id.tab_search_button);
+
+        // Expanded (swapped corners in RTL)
+        assertEquals(
+                R.drawable.vertical_tabs_right_rounded_button_background,
+                shadowOf(gridButton.getBackground()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.vertical_tabs_left_rounded_button_background,
+                shadowOf(searchButton.getBackground()).getCreatedFromResId());
+
+        // Collapsed
+        rtlLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                R.drawable.vertical_tabs_top_rounded_button_background,
+                shadowOf(gridButton.getBackground()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.vertical_tabs_bottom_rounded_button_background,
+                shadowOf(searchButton.getBackground()).getCreatedFromResId());
     }
 }
