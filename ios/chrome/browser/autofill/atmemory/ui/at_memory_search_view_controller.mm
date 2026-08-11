@@ -176,7 +176,35 @@ enum class ItemIdentifier {
 }
 
 - (void)setNoticeVisible:(BOOL)noticeVisible {
+  if (_noticeIsVisible == noticeVisible) {
+    return;
+  }
   _noticeIsVisible = noticeVisible;
+  if (_dataSource) {
+    NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+    NSNumber* noticeSection =
+        @(static_cast<int>(SectionIdentifier::kNoticeSection));
+    BOOL containsNotice =
+        [snapshot.sectionIdentifiers containsObject:noticeSection];
+
+    if (noticeVisible && !containsNotice) {
+      // TODO(crbug.com/540433768): Update position of the notice section
+      // relative to other sections.
+      if (snapshot.sectionIdentifiers.count > 0) {
+        [snapshot insertSectionsWithIdentifiers:@[ noticeSection ]
+                    beforeSectionWithIdentifier:snapshot.sectionIdentifiers
+                                                    .firstObject];
+      } else {
+        [snapshot appendSectionsWithIdentifiers:@[ noticeSection ]];
+      }
+      [snapshot appendItemsWithIdentifiers:@[ @(static_cast<int>(
+                                               ItemIdentifier::kNoticeItem)) ]
+                 intoSectionWithIdentifier:noticeSection];
+    } else if (!noticeVisible && containsNotice) {
+      [snapshot deleteSectionsWithIdentifiers:@[ noticeSection ]];
+    }
+    [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+  }
 }
 
 - (void)setFetchingSubtitle {
@@ -512,11 +540,11 @@ enum class ItemIdentifier {
 #pragma mark - AtMemoryInlineNoticeViewDelegate
 
 - (void)inlineNoticeViewDidTapOK:(AtMemoryInlineNoticeView*)view {
-  // TODO(crbug.com/540433768): Forward to mutator to handle notice dismissal.
+  [self.mutator acknowledgePrivacyNotice];
 }
 
 - (void)inlineNoticeViewDidTapSettings:(AtMemoryInlineNoticeView*)view {
-  // TODO(crbug.com/540433768): Forward to mutator to handle settings redirect.
+  [self.atMemoryHandler openAutofillSettings];
 }
 
 @end

@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -748,6 +749,20 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   _atMemoryCoordinator = nil;
   [coordinator stop];
   [self.childCoordinators removeObject:coordinator];
+}
+
+- (void)openAutofillSettings {
+  [self dismissAtMemory];
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  if (IsYourSavedInfoSettingsPageIosEnabled()) {
+    // TODO(crbug.com/540433768): Present the Autofill Settings page without a
+    // back button.
+    [settingsHandler showAutofillSettings];
+  } else {
+    [settingsHandler
+        showProfileSettingsFromViewController:self.baseViewController];
+  }
 }
 
 #pragma mark - SecurityAlertCommands

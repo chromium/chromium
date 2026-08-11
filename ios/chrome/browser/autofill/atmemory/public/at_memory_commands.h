@@ -15,6 +15,9 @@
 // Commands the parent coordinator to dismiss the AtMemory UI.
 - (void)dismissAtMemory;
 
+// Commands the coordinator to open the Autofill & Passwords settings page.
+- (void)openAutofillSettings;
+
 // TODO(crbug.com/532090671): Remove this optional mark.
 @optional
 // Commands the coordinator to open a URL.
