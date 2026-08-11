@@ -24,6 +24,7 @@ try_.defaults.set(
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,
+        "luci.buildbucket.run_in_turboci": 25,
     },
     orchestrator_cores = 4,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
@@ -140,8 +141,6 @@ try_.orchestrator_builder(
     experiments = {
         # crbug.com/40617829
         "chromium.enable_cleandead": 100,
-        # TODO(https://crbug.com/521401232): Increase to 100
-        "luci.buildbucket.run_in_turboci": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
     },
