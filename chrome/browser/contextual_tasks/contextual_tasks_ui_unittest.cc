@@ -553,6 +553,57 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   observer.reset();
 }
 
+// Ensure a new task is created when switching to a thread that doesn't have
+// an existing local task.
+TEST_F(ContextualTasksUiTest,
+       TaskChanged_ThreadIdChanged_NoExistingTask_CreatesNewTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  MockTaskInfoDelegate delegate;
+  base::Uuid current_task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  base::Uuid new_task_id =
+      base::Uuid::ParseCaseInsensitive("11111111-1111-1111-1111-111111111111");
+  std::string old_thread_id = "1234";
+  std::string new_thread_id = "5678";
+
+  // Simulate starting with an existing task and thread.
+  SetupMockDelegate(&delegate, current_task_id, old_thread_id, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", "koalas");
+  url = net::AppendQueryParameter(url, "mtid", new_thread_id);
+
+  // Return nullopt to indicate this historical thread isn't known to the
+  // service.
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, new_thread_id))
+      .WillByDefault(Return(std::nullopt));
+
+  ContextualTask new_task(new_task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(new_task));
+
+  // Verify that a new task is created.
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, new_thread_id))
+      .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_,
+              OnTaskChanged(_, _, _, Optional(new_task_id), _))
+      .Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  observer.reset();
+}
+
 // A new task should be created when navigating to the zero state.
 TEST_F(ContextualTasksUiTest, TaskCreated_ZeroState) {
   MockTaskInfoDelegate delegate;
