@@ -1789,29 +1789,17 @@ void ScrollTree::CopyCompleteTreeState(const ScrollTree& other) {
 
 bool ScrollTree::CanRealizeScrollsOnActiveTree(const ScrollNode& node) const {
   return node.transform_id != kInvalidPropertyNodeId && node.is_composited &&
-         GetMainThreadRepaintReasons(node) ==
-             MainThreadScrollingReason::kNotScrollingOnMain;
+         node.main_thread_repaint_reasons.empty();
 }
 
 bool ScrollTree::CanRealizeScrollsOnPendingTree(const ScrollNode& node) const {
   return node.transform_id != kInvalidPropertyNodeId && !node.is_composited &&
-         GetMainThreadRepaintReasons(node) ==
-             MainThreadScrollingReason::kNotScrollingOnMain;
+         node.main_thread_repaint_reasons.empty();
 }
 
 bool ScrollTree::ShouldRealizeScrollsOnMain(const ScrollNode& node) const {
   return node.transform_id != kInvalidPropertyNodeId &&
-         GetMainThreadRepaintReasons(node) !=
-             MainThreadScrollingReason::kNotScrollingOnMain;
-}
-
-uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
-  uint32_t reasons = node.main_thread_repaint_reasons;
-  if (!MainThreadScrollingReason::AreRepaintReasons(reasons)) {
-    SCOPED_CRASH_KEY_NUMBER("NotRepaint", "reasons", reasons);
-    NOTREACHED();
-  }
-  return reasons;
+         !node.main_thread_repaint_reasons.empty();
 }
 
 void ScrollTree::clear() {

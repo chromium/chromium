@@ -639,10 +639,8 @@ TEST_P(LayerTreeHostImplTest, ScrollBeforeRootLayerAttached) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
   status = GetInputHandler().RootScrollBegin(
       BeginState(gfx::Point(), gfx::Vector2dF(0, 1),
@@ -650,10 +648,8 @@ TEST_P(LayerTreeHostImplTest, ScrollBeforeRootLayerAttached) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 }
 
 // Tests that receiving ScrollUpdate and ScrollEnd calls that don't have a
@@ -718,17 +714,17 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
   }
 
   // Now add a main-thread repaint reason. ScrollBegin should still succeed.
-  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kPreferNonCompositedScrolling;
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons = {
+      MainThreadRepaintReason::kPreferNonCompositedScrolling};
 
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         scroll_state.get(), ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     EXPECT_EQ(
-        MainThreadScrollingReason::kPreferNonCompositedScrolling,
+        MainThreadRepaintReasons{
+            MainThreadRepaintReason::kPreferNonCompositedScrolling},
         host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
   }
 }
@@ -743,10 +739,8 @@ TEST_P(LayerTreeHostImplTest, ScrollRootCallsCommitAndRedraw) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
   EXPECT_TRUE(host_impl_->CurrentlyScrollingNode());
   GetInputHandler().ScrollUpdate(UpdateState(
@@ -775,10 +769,8 @@ TEST_P(LayerTreeHostImplTest, ActivelyScrollingOnlyAfterScrollMovement) {
             .get(),
         ui::ScrollInputType::kTouchscreen);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     EXPECT_EQ(host_impl_->GetActivelyScrollingType(),
               ActivelyScrollingType::kNone);
 
@@ -861,10 +853,8 @@ TEST_P(LayerTreeHostImplTest, ScrollWithoutRootLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollWithoutRenderer) {
@@ -887,10 +877,8 @@ TEST_P(LayerTreeHostImplTest, ScrollWithoutRenderer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 }
 
 TEST_P(LayerTreeHostImplTest, ReplaceTreeWhileScrolling) {
@@ -950,10 +938,8 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnWheelEventHandlers) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -988,10 +974,8 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
           .get(),
       ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
   EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
@@ -1013,8 +997,8 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
 
 TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
   SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
-  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons = {
+      MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects};
   DrawFrame();
 
   InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
@@ -1023,12 +1007,15 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      status.main_thread_repaint_reasons);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 
   status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(), gfx::Vector2d(0, 10),
@@ -1036,12 +1023,15 @@ TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
           .get(),
       ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      status.main_thread_repaint_reasons);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollWithOverlappingNonScrollableLayer) {
@@ -1099,10 +1089,8 @@ TEST_P(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
   // The point hits squash2 and also scrollbar layer. Because they will scroll
@@ -1113,9 +1101,8 @@ TEST_P(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
             status.main_thread_hit_test_reasons);
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
@@ -1127,10 +1114,8 @@ TEST_P(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -1270,10 +1255,11 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionBasic) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_EQ(
+      MainThreadHitTestReasons{
+          MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+      status.main_thread_hit_test_reasons);
 
   status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(25, 25), gfx::Vector2d(0, 10),
@@ -1281,10 +1267,11 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionBasic) {
           .get(),
       ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_EQ(
+      MainThreadHitTestReasons{
+          MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+      status.main_thread_hit_test_reasons);
 
   // All scroll types outside this region should succeed.
   status = GetInputHandler().ScrollBegin(
@@ -1293,10 +1280,8 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionBasic) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(), gfx::Vector2d(0, 10),
                                              ui::ScrollInputType::kWheel));
@@ -1308,10 +1293,8 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionBasic) {
           .get(),
       ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollUpdate(UpdateState(
       gfx::Point(), gfx::Vector2d(0, 10), ui::ScrollInputType::kTouchscreen));
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
@@ -1342,10 +1325,11 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionInNonScrollingRoot) {
     layer->SetMainThreadScrollHitTestRegion(Region());
 
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
   }
 }
 
@@ -1367,10 +1351,8 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionWithOffset) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(), gfx::Vector2d(0, 1),
                                              ui::ScrollInputType::kWheel));
@@ -1383,10 +1365,11 @@ TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionWithOffset) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_EQ(
+      MainThreadHitTestReasons{
+          MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+      status.main_thread_hit_test_reasons);
 }
 
 // Tests the following tricky case:
@@ -1437,10 +1420,11 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    ASSERT_TRUE(status.main_thread_repaint_reasons.empty());
+    ASSERT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 
@@ -1466,10 +1450,8 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     ASSERT_EQ(host_impl_->CurrentlyScrollingNode(),
               host_impl_->OuterViewportScrollNode());
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
@@ -1489,10 +1471,11 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 }
@@ -1555,9 +1538,8 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    ASSERT_TRUE(status.main_thread_repaint_reasons.empty());
+    ASSERT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
@@ -1585,10 +1567,8 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     ASSERT_EQ(host_impl_->CurrentlyScrollingNode()->id,
               layer_a->scroll_tree_index());
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
@@ -1608,9 +1588,8 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
@@ -1664,10 +1643,11 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    ASSERT_TRUE(status.main_thread_repaint_reasons.empty());
+    ASSERT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 
@@ -1693,10 +1673,8 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    ASSERT_TRUE(status.main_thread_repaint_reasons.empty());
+    ASSERT_TRUE(status.main_thread_hit_test_reasons.empty());
     ASSERT_EQ(host_impl_->CurrentlyScrollingNode(),
               host_impl_->OuterViewportScrollNode());
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
@@ -1716,10 +1694,11 @@ TEST_P(LayerTreeHostImplTest,
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 }
@@ -1778,10 +1757,8 @@ TEST_P(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
             .get(),
         ui::ScrollInputType::kWheel);
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    ASSERT_TRUE(status.main_thread_repaint_reasons.empty());
+    ASSERT_TRUE(status.main_thread_hit_test_reasons.empty());
     ASSERT_EQ(host_impl_->CurrentlyScrollingNode(),
               host_impl_->OuterViewportScrollNode());
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
@@ -1806,9 +1783,8 @@ TEST_P(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
@@ -1824,10 +1800,8 @@ TEST_P(LayerTreeHostImplTest, ScrollUpdateReturnsCorrectValue) {
           .get(),
       ui::ScrollInputType::kTouchscreen);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
   // Trying to scroll to the left/top will not succeed.
   EXPECT_FALSE(
@@ -1912,7 +1886,7 @@ TEST_P(LayerTreeHostImplTest,
   DrawFrame();
 
   host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kNotScrollingOnMain;
+      MainThreadRepaintReasons{};
 
   GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
                                            ui::ScrollInputType::kTouchscreen)
@@ -1929,8 +1903,8 @@ TEST_P(LayerTreeHostImplTest,
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();
 
-  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons = {
+      MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects};
 
   GetInputHandler().ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 10),
                                            ui::ScrollInputType::kTouchscreen)
@@ -2881,13 +2855,11 @@ TEST_P(LayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
       ui::ScrollInputType::kWheel);
 
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
   // We don't have a layer for the scroller but we didn't hit a
   // MainThreadScrollHitTestRegion or fail hit testing the layer - we don't
   // need a main thread hit test in this case.
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 }
 
 TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
@@ -5059,10 +5031,8 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
             .get(),
         ui::ScrollInputType::kTouchscreen);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   }
 
   // Wheel scroll on scrollbar should process on impl thread.
@@ -5073,10 +5043,8 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
             .get(),
         ui::ScrollInputType::kWheel);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
 
@@ -5088,10 +5056,8 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
             .get(),
         ui::ScrollInputType::kTouchscreen);
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   }
 }
 
@@ -5116,10 +5082,8 @@ TEST_P(LayerTreeHostImplTest, NullScrollerLayerForScrollbarLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
   // Set the scrollbar's scroll element id to be different from the scroll
@@ -5133,10 +5097,8 @@ TEST_P(LayerTreeHostImplTest, NullScrollerLayerForScrollbarLayer) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
 
@@ -6043,10 +6005,8 @@ TEST_P(LayerTreeHostImplTest, ScrollRootIgnored) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   EXPECT_FALSE(did_request_redraw_);
   EXPECT_FALSE(did_request_commit_);
 }
@@ -6179,8 +6139,8 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
       AddScrollableLayer(root, scroll_container_size, surface_size);
   LayerImpl* content_layer =
       AddScrollableLayer(scroll_layer, scroll_container_size, surface_size);
-  GetScrollNode(content_layer)->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  GetScrollNode(content_layer)->main_thread_repaint_reasons = {
+      MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects};
   DrawFrame();
 
   InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
@@ -6189,12 +6149,15 @@ TEST_P(LayerTreeHostImplTest, ScrollLayerWithMainThreadReason) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            status.main_thread_repaint_reasons);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      host_impl_->CurrentlyScrollingNode()->main_thread_repaint_reasons);
+  EXPECT_EQ(
+      MainThreadRepaintReasons{
+          MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      status.main_thread_repaint_reasons);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollRootAndChangePageScaleOnMainThread) {
@@ -8279,8 +8242,7 @@ TEST_P(LayerTreeHostImplTest, OverscrollOnImplThread) {
   // By default, no main thread scrolling reasons should exist.
   LayerImpl* scroll_layer = InnerViewportScrollLayer();
   ScrollNode* scroll_node = GetScrollNode(scroll_layer);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            scroll_node->main_thread_repaint_reasons);
+  EXPECT_TRUE(scroll_node->main_thread_repaint_reasons.empty());
 
   DrawFrame();
 
@@ -8904,7 +8866,7 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestIsNotReliable) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
             status.main_thread_hit_test_reasons);
 }
 
@@ -8942,7 +8904,7 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestAncestorMismatch) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
             status.main_thread_hit_test_reasons);
 }
 
@@ -11855,11 +11817,11 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
             std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
                      static_cast<float>(viewport_size.height() -
                                         kMaxOverlapBetweenPages)));
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
+  EXPECT_TRUE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons.empty());
 
   // Assign a main_thread_scrolling_reason to the scroll node.
-  GetScrollNode(scroll_layer)->main_thread_repaint_reasons =
-      MainThreadScrollingReason::kPreferNonCompositedScrolling;
+  GetScrollNode(scroll_layer)->main_thread_repaint_reasons = {
+      MainThreadRepaintReason::kPreferNonCompositedScrolling};
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
@@ -13666,7 +13628,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   }
 
   void CreateScroller(
-      uint32_t main_thread_repaint_reasons,
+      MainThreadRepaintReasons main_thread_repaint_reasons = {},
       HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kOpaque) {
     // Creates a regular composited scroller that comes with a ScrollNode and
     // Layer.
@@ -13715,7 +13677,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     ScrollStatus status = GetInputHandler().ScrollBegin(
         scroll_state.get(), ui::ScrollInputType::kWheel);
 
-    if (status.main_thread_hit_test_reasons) {
+    if (!status.main_thread_hit_test_reasons.empty()) {
       to_be_continued_scroll_begin_ = std::move(scroll_state);
     }
 
@@ -13730,8 +13692,8 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
         std::move(to_be_continued_scroll_begin_);
 
     scroll_state->data()->set_current_native_scrolling_element(element_id);
-    scroll_state->data()->main_thread_hit_tested_reasons =
-        MainThreadScrollingReason::kFailedHitTest;
+    scroll_state->data()->main_thread_hit_tested_reasons = {
+        MainThreadHitTestReason::kFailedHitTest};
 
     return GetInputHandler().ScrollBegin(scroll_state.get(),
                                          ui::ScrollInputType::kWheel);
@@ -13830,8 +13792,10 @@ TEST_P(UnifiedScrollingTest, UnifiedScrollMainThreadScrollHitTestRegion) {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
 
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    EXPECT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
 
     // The scroll hasn't started yet though.
     EXPECT_FALSE(CurrentlyScrollingNode());
@@ -13844,8 +13808,7 @@ TEST_P(UnifiedScrollingTest, UnifiedScrollMainThreadScrollHitTestRegion) {
     ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
 
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
@@ -13890,8 +13853,10 @@ TEST_P(UnifiedScrollingTest, MainThreadHitTestLatchBubbling) {
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
-              status.main_thread_hit_test_reasons);
+    ASSERT_EQ(
+        MainThreadHitTestReasons{
+            MainThreadHitTestReason::kMainThreadScrollHitTestRegion},
+        status.main_thread_hit_test_reasons);
     status = ContinuedScrollBegin(ScrollerElementId());
 
     // Since the hit tested scroller in ContinuedScrollBegin was fully
@@ -13933,10 +13898,8 @@ TEST_P(UnifiedScrollingTest, MainThreadHitTestScrollNodeNotFound) {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     status = ContinuedScrollBegin(kMixed);
     EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   }
 }
 
@@ -13958,8 +13921,7 @@ TEST_P(UnifiedScrollingTest, NonCompositedScrollOnCompositor) {
 
   ScrollStatus status = ScrollBegin(gfx::Vector2d(10, 10));
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_hit_test_reasons);
+  EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
@@ -13975,7 +13937,7 @@ TEST_P(UnifiedScrollingTest,
   // a layer with mixed hit test opaqueness over top it. This simulates the
   // case where a squashing layer obscuring a scroller makes the hit test
   // unreliable.
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
   // Scrolling over a squashing-like layer that cannot be reliably hit tested
@@ -13983,7 +13945,7 @@ TEST_P(UnifiedScrollingTest,
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
   }
 
@@ -13992,8 +13954,7 @@ TEST_P(UnifiedScrollingTest,
   {
     ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
@@ -14005,7 +13966,7 @@ TEST_P(UnifiedScrollingTest,
 // These layers should not affect the unreliable hit test on the target layer.
 TEST_P(UnifiedScrollingTest,
        LayerMixedHitTestOpaquenessCausesMainThreadHitTest2) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
@@ -14013,15 +13974,14 @@ TEST_P(UnifiedScrollingTest,
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
   }
 
   {
     ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
 
     EXPECT_TRUE(CurrentlyScrollingNode());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
@@ -14031,13 +13991,12 @@ TEST_P(UnifiedScrollingTest,
 // Similar to LayerMixedHitTestOpaquenessCausesMainThreadHitTest, but the layer
 // is opaque to hit test.
 TEST_P(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kOpaque);
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     // We can start scroll the scroll parent of the layer, which is the outer
     // viewport scroll layer.
     EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
@@ -14045,15 +14004,14 @@ TEST_P(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
 }
 
 TEST_P(UnifiedScrollingTest, FixedLayerOpaqueToHitTestScrollsOnCompositor) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewport(InnerViewportScrollLayer(),
                                    HitTestOpaqueness::kOpaque);
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     // See InputHandler::GetNodeToScroll() for why the scrolling node is the
     // outer viewport scroll node instead of the inner viewport scroll node.
     EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
@@ -14062,29 +14020,28 @@ TEST_P(UnifiedScrollingTest, FixedLayerOpaqueToHitTestScrollsOnCompositor) {
 
 TEST_P(UnifiedScrollingTest,
        LayerOpaqueToHitTestEscapingScrollersWithMixedToHitTestLayers) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kOpaque);
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
   }
 }
 
 TEST_P(UnifiedScrollingTest,
        ReliableScrollHitTestWithOpaqueAndMixedToHitTestLayers) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kOpaque);
   CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
     EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
   }
 }
@@ -14094,31 +14051,28 @@ TEST_P(UnifiedScrollingTest,
 // success without needing a main thread hit test.
 TEST_P(UnifiedScrollingTest, MainThreadScrollingReasonsScrollOnCompositor) {
   CreateScroller(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
+      {MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects});
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
+    EXPECT_TRUE(status.main_thread_hit_test_reasons.empty());
   }
 }
 
 TEST_P(UnifiedScrollingTest, UnreliableHitTestOnNonOpaqueToHitTestScroller) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain,
-                 HitTestOpaqueness::kMixed);
+  CreateScroller({}, HitTestOpaqueness::kMixed);
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+    EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
               status.main_thread_hit_test_reasons);
   }
 }
 
 TEST_P(UnifiedScrollingTest, ScrollbarLayerClippedByRoundedCorner) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain,
-                 HitTestOpaqueness::kMixed);
+  CreateScroller({}, HitTestOpaqueness::kMixed);
   auto* scrollbar_layer = AddLayer<PaintedScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
   CreateEffectNode(ScrollerLayer()).node_or_ancestor_has_fast_rounded_corner =
@@ -14135,9 +14089,8 @@ TEST_P(UnifiedScrollingTest, ScrollbarLayerClippedByRoundedCorner) {
           .get(),
       ui::ScrollInputType::kWheel);
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-            status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+  EXPECT_TRUE(status.main_thread_repaint_reasons.empty());
+  EXPECT_EQ(MainThreadHitTestReasons{MainThreadHitTestReason::kFailedHitTest},
             status.main_thread_hit_test_reasons);
 }
 
@@ -14166,7 +14119,7 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
   // test parameter.
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    if (status.main_thread_hit_test_reasons) {
+    if (!status.main_thread_hit_test_reasons.empty()) {
       ContinuedScrollBegin(ScrollerElementId());
     }
 
@@ -14236,12 +14189,13 @@ void UnifiedScrollingTest::TestNonCompositedScrollingState(
 // thread reason is removed.
 TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   CreateScroller(
-      MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
+      {MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects});
 
   TestNonCompositedScrollingState(/*mutates_transform_tree=*/false);
 
   ASSERT_EQ(ScrollerNode()->main_thread_repaint_reasons,
-            MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
+            MainThreadRepaintReasons{
+                MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects});
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
   TransformNode& transform_node =
       tree.MutableNode(ScrollerNode()->transform_id);
@@ -14249,8 +14203,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   // Removing the main thread reason bit should start mutating the transform
   // tree.
   {
-    ScrollerNode()->main_thread_repaint_reasons =
-        MainThreadScrollingReason::kNotScrollingOnMain;
+    ScrollerNode()->main_thread_repaint_reasons = MainThreadRepaintReasons{};
     UpdateDrawProperties(host_impl_->active_tree());
     host_impl_->active_tree()->DidBecomeActive();
 
@@ -14302,7 +14255,7 @@ TEST_P(UnifiedScrollingTest, NonCompositedScrollerDoesntAffectTransform) {
 // When scrolling a composited scroller that just happens to have needed a main
 // thread hit test first, we should modify the transform tree as usual.
 TEST_P(UnifiedScrollingTest, CompositedWithSquashedLayerMutatesTransform) {
-  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateScroller();
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
   TestNonCompositedScrollingState(/*mutates_transform_tree=*/true);
@@ -15426,7 +15379,8 @@ INSTANTIATE_COMMIT_TO_TREE_TEST_P(ElasticOverscrollTest);
 
 class ElasticOverscrollInvalidationTest : public ElasticOverscrollTest {
  public:
-  void SetupScroll(bool is_composited, uint32_t main_thread_repaint_reasons) {
+  void SetupScroll(bool is_composited,
+                   MainThreadRepaintReasons main_thread_repaint_reasons = {}) {
     SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(100, 100));
     layer = AddScrollableLayer(OuterViewportScrollLayer(), gfx::Size(100, 100),
                                gfx::Size(200, 200));
@@ -15462,8 +15416,7 @@ class ElasticOverscrollInvalidationTest : public ElasticOverscrollTest {
 TEST_P(ElasticOverscrollInvalidationTest,
        ElasticOverscrollInvalidationComposited) {
   // Setup a composited scroller.
-  SetupScroll(true /*is_composited*/,
-              MainThreadScrollingReason::kNotScrollingOnMain);
+  SetupScroll(true /*is_composited*/);
 
   CreateElasticityHelper();
 
@@ -15478,8 +15431,7 @@ TEST_P(ElasticOverscrollInvalidationTest,
 TEST_P(ElasticOverscrollInvalidationTest,
        ElasticOverscrollInvalidationThreadedOnly) {
   // Setup a non-composited, threaded scroller. (raster inducing)
-  SetupScroll(false /*is_composited*/,
-              MainThreadScrollingReason::kNotScrollingOnMain);
+  SetupScroll(false /*is_composited*/);
 
   CreateElasticityHelper();
 
@@ -15500,7 +15452,7 @@ TEST_P(ElasticOverscrollInvalidationTest,
        ElasticOverscrollInvalidationMainOnly) {
   // Setup a main thread only scroller. (disables overscroll effect)
   SetupScroll(false /*is_composited*/,
-              MainThreadScrollingReason::kPreferNonCompositedScrolling);
+              {MainThreadRepaintReason::kPreferNonCompositedScrolling});
 
   CreateElasticityHelper();
 
@@ -15514,8 +15466,7 @@ TEST_P(ElasticOverscrollInvalidationTest,
 
 TEST_P(ElasticOverscrollInvalidationTest, ElasticOverscrollSyncsToPendingTree) {
   // Configure as a threaded, non-composited scroller.
-  SetupScroll(false /*is_composited*/,
-              MainThreadScrollingReason::kNotScrollingOnMain);
+  SetupScroll(false /*is_composited*/);
 
   ElementId id = layer->element_id();
   EXPECT_EQ(id, scroll_node->element_id);

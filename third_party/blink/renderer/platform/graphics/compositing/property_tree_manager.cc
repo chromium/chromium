@@ -271,29 +271,31 @@ void PropertyTreeManager::DropCompositorScrollDeltaNextCommit(
   host.DropActiveScrollDeltaNextCommit(element_id);
 }
 
-uint32_t PropertyTreeManager::NonCompositedMainThreadRepaintReasons(
+cc::MainThreadRepaintReasons
+PropertyTreeManager::NonCompositedMainThreadRepaintReasons(
     const TransformPaintPropertyNode& scroll_translation) const {
   if (scroll_translation.ScrollNode()->GetCompositedScrollingPreference() ==
       CompositedScrollingPreference::kNotPreferred) {
-    return cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
+    return {cc::MainThreadRepaintReason::kPreferNonCompositedScrolling};
   }
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
       !client_.ShouldForceMainThreadRepaint(scroll_translation)) {
-    return cc::MainThreadScrollingReason::kNotScrollingOnMain;
+    return {};
   }
-  return cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+  return {cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText};
 }
 
-uint32_t PropertyTreeManager::GetMainThreadRepaintReasons(
+cc::MainThreadRepaintReasons PropertyTreeManager::GetMainThreadRepaintReasons(
     const cc::LayerTreeHost& host,
     const ScrollPaintPropertyNode& scroll) {
   const auto* property_trees = host.property_trees();
   int cc_node_id = scroll.CcNodeId(property_trees->sequence_number());
-  return cc_node_id != cc::kInvalidPropertyNodeId
-             ? property_trees->scroll_tree()
-                   .Node(cc_node_id)
-                   .main_thread_repaint_reasons
-             : cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
+  if (cc_node_id != cc::kInvalidPropertyNodeId) {
+    return property_trees->scroll_tree()
+        .Node(cc_node_id)
+        .main_thread_repaint_reasons;
+  }
+  return {cc::MainThreadRepaintReason::kPreferNonCompositedScrolling};
 }
 
 bool PropertyTreeManager::UsesCompositedScrolling(
@@ -608,8 +610,8 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     compositor_scroll_node.is_composited =
         client_.NeedsCompositedScrolling(transform_node);
     if (!compositor_scroll_node.is_composited) {
-      compositor_scroll_node.main_thread_repaint_reasons |=
-          NonCompositedMainThreadRepaintReasons(transform_node);
+      compositor_scroll_node.main_thread_repaint_reasons.PutAll(
+          NonCompositedMainThreadRepaintReasons(transform_node));
     }
     if (RuntimeEnabledFeatures::
             ScrollingContentsCullRectOnScrollNodeEnabled()) {
@@ -725,8 +727,6 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
   compositor_node.is_composited = false;
   compositor_node.main_thread_repaint_reasons =
       scroll_node.GetMainThreadRepaintReasons();
-  CHECK_EQ(compositor_node.main_thread_repaint_reasons,
-           scroll_tree_.GetMainThreadRepaintReasons(compositor_node));
 
   scroll_node.SetCcNodeId(new_sequence_number_, id);
   return id;

@@ -315,8 +315,8 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
     const gfx::Size& contents_size,
     const ClipPaintPropertyNode* overflow_clip,
     CompositingReasons compositing_reasons = {},
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {
+        cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText}) {
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = container_rect;
   scroll_state.contents_rect =
@@ -360,8 +360,7 @@ inline TransformPaintPropertyNode* CreateCompositedScrollTranslation(
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
     const ClipPaintPropertyNode* overflow_clip,
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {}) {
   return CreateScrollTranslation(
       parent_transform, parent_scroll, offset_x, offset_y, container_rect,
       contents_size, overflow_clip, {CompositingReason::kOverflowScrolling},
@@ -376,8 +375,8 @@ inline PropertyTreeState CreateScrollTranslationState(
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
     CompositingReasons compositing_reasons = {},
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {
+        cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText}) {
   auto* clip = CreateClip(parent_state.Clip(), parent_state.Transform(),
                           FloatRoundedRect(container_rect));
   auto* transform =
@@ -394,8 +393,8 @@ inline PropertyTreeState CreateScrollTranslationState(
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
     CompositingReasons compositing_reasons = {},
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {
+        cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText}) {
   return CreateScrollTranslationState(
       parent_state, DefaultParentScroll(parent_state.Transform()), offset_x,
       offset_y, container_rect, contents_size, compositing_reasons,
@@ -409,8 +408,7 @@ inline PropertyTreeState CreateCompositedScrollTranslationState(
     float offset_y,
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {}) {
   return CreateScrollTranslationState(parent_state, parent_scroll, offset_x,
                                       offset_y, container_rect, contents_size,
                                       {CompositingReason::kOverflowScrolling},
@@ -423,8 +421,7 @@ inline PropertyTreeState CreateCompositedScrollTranslationState(
     float offset_y,
     const gfx::Rect& container_rect,
     const gfx::Size& contents_size,
-    MainThreadScrollingReasons main_thread_reasons =
-        cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {}) {
   return CreateScrollTranslationState(
       parent_state, DefaultParentScroll(parent_state.Transform()), offset_x,
       offset_y, container_rect, contents_size,

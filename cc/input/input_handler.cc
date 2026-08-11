@@ -189,8 +189,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   ElementId target_element_id = scroll_state->target_element_id();
   ScrollTree& scroll_tree = GetScrollTree();
 
-  if (target_element_id && (!scroll_state->main_thread_hit_tested_reasons() ||
-                            scroll_state->is_scrollbar_interaction())) {
+  if (target_element_id &&
+      (scroll_state->main_thread_hit_tested_reasons().empty() ||
+       scroll_state->is_scrollbar_interaction())) {
     TRACE_EVENT_INSTANT("cc", "Latched scroll node provided");
     // If the caller passed in an element_id we can skip all the hit-testing
     // bits and provide a node straight-away.
@@ -205,7 +206,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       // scroll in the given direction. This mode is only used when scroll
       // unification is enabled and the targeted scroller comes back from a
       // main thread hit test.
-      DCHECK(scroll_state->main_thread_hit_tested_reasons());
+      DCHECK(!scroll_state->main_thread_hit_tested_reasons().empty());
       starting_node =
           scroll_tree.MutableFindNodeFromElementId(target_element_id);
 
@@ -227,7 +228,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
 
       // The client should have discarded the scroll when the hit test came back
       // with an invalid element id.
-      CHECK(!scroll_state->main_thread_hit_tested_reasons());
+      CHECK(scroll_state->main_thread_hit_tested_reasons().empty());
 
       ScrollHitTestResult scroll_hit_test =
           HitTestScrollNode(device_viewport_point);
@@ -239,11 +240,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         // ElementId of the hit-tested scroll node.
         TRACE_EVENT_INSTANT("cc", "Request Main Thread Hit Test");
         scroll_status.thread = InputHandler::ScrollThread::kScrollOnImplThread;
-        DCHECK(scroll_hit_test.main_thread_hit_test_reasons);
+        DCHECK(!scroll_hit_test.main_thread_hit_test_reasons.empty());
         scroll_status.main_thread_hit_test_reasons =
             scroll_hit_test.main_thread_hit_test_reasons;
-        CHECK(MainThreadScrollingReason::AreHitTestReasons(
-            scroll_status.main_thread_hit_test_reasons));
         return scroll_status;
       }
 
@@ -291,9 +290,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
 
   ActiveTree().SetCurrentlyScrollingNode(scrolling_node);
   scroll_status.main_thread_repaint_reasons =
-      scroll_tree.GetMainThreadRepaintReasons(*scrolling_node);
-  CHECK(MainThreadScrollingReason::AreRepaintReasons(
-      scroll_status.main_thread_repaint_reasons));
+      scrolling_node->main_thread_repaint_reasons;
   scroll_status.raster_inducing =
       scroll_tree.CanRealizeScrollsOnPendingTree(*scrolling_node);
 
@@ -334,7 +331,7 @@ InputHandler::ScrollStatus InputHandler::RootScrollBegin(
 
   // Since we provided an ElementId, there should never be a need to perform a
   // hit test.
-  DCHECK(!scroll_status.main_thread_hit_test_reasons);
+  DCHECK(scroll_status.main_thread_hit_test_reasons.empty());
 
   return scroll_status;
 }
@@ -1646,9 +1643,7 @@ bool InputHandler::IsHandlingTouchSequence() const {
 bool InputHandler::IsCurrentScrollMainRepainted() const {
   const ScrollNode* scroll_node = CurrentlyScrollingNode();
   if (scroll_node) {
-    uint32_t repaint_reasons =
-        GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
-    if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+    if (!scroll_node->main_thread_repaint_reasons.empty()) {
       return true;
     }
   }
@@ -1663,9 +1658,7 @@ bool InputHandler::IsCurrentScrollMainRepainted() const {
     }
     if (const ScrollNode* animating_node =
             scroll_tree.FindNodeFromElementId(entry.first)) {
-      uint32_t repaint_reasons =
-          GetScrollTree().GetMainThreadRepaintReasons(*animating_node);
-      if (repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain) {
+      if (!animating_node->main_thread_repaint_reasons.empty()) {
         return true;
       }
     }
@@ -1849,8 +1842,8 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
             layer_impl, first_scrollable_or_opaque_to_hit_test_layer,
             node_to_scroll)) {
       TRACE_EVENT_INSTANT("cc", "Failed Hit Test");
-      result.main_thread_hit_test_reasons =
-          MainThreadScrollingReason::kFailedHitTest;
+      result.main_thread_hit_test_reasons = {
+          MainThreadHitTestReason::kFailedHitTest};
       return result;
     }
 
@@ -1860,8 +1853,8 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     // return failure.
     if (ActiveTree().PointHitsMainThreadScrollHitTestRegion(
             device_viewport_point, *layer_impl)) {
-      result.main_thread_hit_test_reasons =
-          MainThreadScrollingReason::kMainThreadScrollHitTestRegion;
+      result.main_thread_hit_test_reasons = {
+          MainThreadHitTestReason::kMainThreadScrollHitTestRegion};
       return result;
     }
 

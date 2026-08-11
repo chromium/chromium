@@ -467,7 +467,7 @@ class FragmentPaintPropertyTreeBuilder {
                                                  namespace_id);
   }
 
-  MainThreadScrollingReasons GetMainThreadRepaintReasonsForScroll(
+  cc::MainThreadRepaintReasons GetMainThreadRepaintReasonsForScroll(
       bool user_scrollable) const;
 
   const LayoutObject& object_;
@@ -3343,19 +3343,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
   }
 }
 
-MainThreadScrollingReasons
+cc::MainThreadRepaintReasons
 FragmentPaintPropertyTreeBuilder::GetMainThreadRepaintReasonsForScroll(
     bool user_scrollable) const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
-  MainThreadScrollingReasons reasons = 0;
+  cc::MainThreadRepaintReasons reasons;
   if (full_context_.requires_main_thread_for_background_attachment_fixed) {
-    reasons |=
-        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+    reasons.Put(
+        cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects);
   }
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
-    reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
+    reasons.Put(cc::MainThreadRepaintReason::kBackgroundNeedsRepaintOnScroll);
   }
   // Use main-thread scrolling if the scroller is not user scrollable
   // because the cull rect is not expanded (see CanExpandForScroll in
@@ -3366,9 +3366,8 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadRepaintReasonsForScroll(
   // will still time out, which will need investigating if we want to improve
   // scroll performance of non-user-scrollable scrollers.
   if (!user_scrollable) {
-    reasons |= cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
+    reasons.Put(cc::MainThreadRepaintReason::kPreferNonCompositedScrolling);
   }
-  DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(reasons));
   return reasons;
 }
 

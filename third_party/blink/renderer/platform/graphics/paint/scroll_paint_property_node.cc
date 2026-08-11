@@ -94,7 +94,7 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
             ? (state_.user_scrollable_vertical ? "both" : "horizontal")
             : "vertical");
   }
-  if (state_.main_thread_repaint_reasons) {
+  if (!state_.main_thread_repaint_reasons.empty()) {
     json->SetString("mainThreadReasons", cc::MainThreadScrollingReason::AsText(
                                              state_.main_thread_repaint_reasons)
                                              .c_str());

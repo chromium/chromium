@@ -850,8 +850,8 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
         MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
     scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());
     RecordScrollReasonsMetric(
-        event.SourceDevice(),
-        cc::MainThreadScrollingReason::kPopupNoThreadedInput);
+        event.SourceDevice(), {}, {},
+        {cc::MainThreadScrollingOtherReason::kPopupNoThreadedInput});
     return WebInputEventResult::kHandledSystem;
   }
   if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {

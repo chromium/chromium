@@ -99,7 +99,8 @@ void DebugRectHistory::SaveWebVitalsDebugRects(HeadsUpDisplayLayerImpl* hud) {
         type,
         MathUtil::MapEnclosingClippedRect(hud->ScreenSpaceTransform(),
                                           web_vital_rect.rect),
-        TouchAction::kNone, 0, DebugColors::kFadeSteps);
+        TouchAction::kNone, MainThreadRepaintReasons{},
+        DebugColors::kFadeSteps);
   }
   hud->ClearWebVitalsDebugRects();
 }
@@ -118,7 +119,8 @@ void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
       debug_rects_.emplace_back(DebugRectType::kPaint,
                                 MathUtil::MapEnclosingClippedRect(
                                     layer->ScreenSpaceTransform(), rect),
-                                TouchAction::kNone, 0, DebugColors::kFadeSteps);
+                                TouchAction::kNone, MainThreadRepaintReasons{},
+                                DebugColors::kFadeSteps);
     }
   }
 }

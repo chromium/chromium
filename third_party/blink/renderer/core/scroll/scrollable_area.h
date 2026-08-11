@@ -85,8 +85,6 @@ struct SerializedAnchor;
 class ScrollMarkerGroupPseudoElement;
 class TextOverflowPostLayoutSnapshot;
 
-using MainThreadScrollingReasons = uint32_t;
-
 enum IncludeScrollbarsInRect {
   kExcludeScrollbars,
   kIncludeScrollbars,

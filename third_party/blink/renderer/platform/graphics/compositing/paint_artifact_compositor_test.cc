@@ -248,8 +248,6 @@ class PaintArtifactCompositorTest : public testing::Test,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PaintArtifactCompositorTest);
 
-const auto kNotScrollingOnMain =
-    cc::MainThreadScrollingReason::kNotScrollingOnMain;
 
 TEST_P(PaintArtifactCompositorTest, EmptyPaintArtifact) {
   Update(*MakeGarbageCollected<PaintArtifact>());
@@ -1084,7 +1082,7 @@ static PropertyTreeState ScrollState1(
     const PropertyTreeState& parent_state = PropertyTreeState::Root(),
     CompositingReasons compositing_reasons =
         {CompositingReason::kOverflowScrolling},
-    MainThreadScrollingReasons main_thread_reasons = kNotScrollingOnMain) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {}) {
   return CreateScrollTranslationState(
       parent_state, 7, 9, gfx::Rect(3, 5, 11, 13), gfx::Size(27, 31),
       compositing_reasons, main_thread_reasons);
@@ -1096,7 +1094,7 @@ static PropertyTreeState ScrollState2(
     const PropertyTreeState& parent_state = PropertyTreeState::Root(),
     CompositingReasons compositing_reasons =
         {CompositingReason::kOverflowScrolling},
-    MainThreadScrollingReasons main_thread_reasons = kNotScrollingOnMain) {
+    cc::MainThreadRepaintReasons main_thread_reasons = {}) {
   return CreateScrollTranslationState(
       parent_state, 39, 31, gfx::Rect(0, 0, 19, 23), gfx::Size(27, 31),
       compositing_reasons, main_thread_reasons);
@@ -1140,7 +1138,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
       transform_tree.Node(scroll_node.transform_id);
   EXPECT_TRUE(transform_node.local.IsIdentity());
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node.scroll_offset());
-  EXPECT_EQ(kNotScrollingOnMain, scroll_node.main_thread_repaint_reasons);
+  EXPECT_TRUE(scroll_node.main_thread_repaint_reasons.empty());
 
   auto* layer = NonScrollHitTestLayerAt(0);
   auto transform_node_index = layer->transform_tree_index();
@@ -1361,7 +1359,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   auto& scroll_a = *scroll_state_a.Transform().ScrollNode();
   auto scroll_state_b =
       ScrollState2(scroll_state_a, CompositingReasons{},
-                   cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+                   {cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText});
   auto& scroll_b = *scroll_state_b.Transform().ScrollNode();
 
   Update(TestPaintArtifact()
@@ -1411,7 +1409,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
 TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
   auto scroll_state_a =
       ScrollState1(PropertyTreeState::Root(), {},
-                   cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+                   {cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText});
   auto& scroll_a = *scroll_state_a.Transform().ScrollNode();
   auto scroll_state_b = ScrollState2(scroll_state_a);
   auto& scroll_b = *scroll_state_b.Transform().ScrollNode();
@@ -5191,9 +5189,7 @@ TEST_P(PaintArtifactCompositorTest, NoCommitRequestForUnchangedScroll) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddIndirectlyCompositedScrollNodes) {
-  auto scroll_state =
-      ScrollState1(PropertyTreeState::Root(), {},
-                   cc::MainThreadScrollingReason::kNotScrollingOnMain);
+  auto scroll_state = ScrollState1(PropertyTreeState::Root(), {}, {});
   StackScrollTranslationVector scroll_translation_nodes = {
       &scroll_state.Transform()};
 
@@ -5208,17 +5204,14 @@ TEST_P(PaintArtifactCompositorTest, AddIndirectlyCompositedScrollNodes) {
       scroll_state.Transform().ScrollNode()->GetCompositorElementId());
   ASSERT_TRUE(scroll_node);
   EXPECT_TRUE(scroll_node->is_composited);
-  EXPECT_EQ(cc::MainThreadScrollingReason::kNotScrollingOnMain,
-            scroll_node->main_thread_repaint_reasons);
+  EXPECT_TRUE(scroll_node->main_thread_repaint_reasons.empty());
   EXPECT_TRUE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
-  auto scroll_state =
-      ScrollState1(PropertyTreeState::Root(), {},
-                   cc::MainThreadScrollingReason::kNotScrollingOnMain);
+  auto scroll_state = ScrollState1(PropertyTreeState::Root(), {}, {});
   StackScrollTranslationVector scroll_translation_nodes = {
       &scroll_state.Transform()};
 
@@ -5232,13 +5225,14 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   EXPECT_FALSE(scroll_node->is_composited);
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
-    EXPECT_EQ(cc::MainThreadScrollingReason::kNotScrollingOnMain,
-              scroll_node->main_thread_repaint_reasons);
+    EXPECT_TRUE(scroll_node->main_thread_repaint_reasons.empty());
     EXPECT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
     EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
   } else {
-    EXPECT_EQ(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText,
-              scroll_node->main_thread_repaint_reasons);
+    EXPECT_EQ(
+        cc::MainThreadRepaintReasons{
+            cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText},
+        scroll_node->main_thread_repaint_reasons);
     EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
     EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
   }
@@ -5247,7 +5241,7 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedMainThreadScrollNodes) {
   auto scroll_state = ScrollState1(
       PropertyTreeState::Root(), {},
-      cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
+      {cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects});
   StackScrollTranslationVector scroll_translation_nodes = {
       &scroll_state.Transform()};
 
@@ -5261,12 +5255,14 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedMainThreadScrollNodes) {
   EXPECT_FALSE(scroll_node->is_composited);
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_EQ(
-        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+        cc::MainThreadRepaintReasons{
+            cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
         scroll_node->main_thread_repaint_reasons);
   } else {
     EXPECT_EQ(
-        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText |
-            cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+        (cc::MainThreadRepaintReasons{
+            cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText,
+            cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects}),
         scroll_node->main_thread_repaint_reasons);
   }
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
@@ -5278,7 +5274,7 @@ TEST_P(PaintArtifactCompositorTest,
        AddIndirectlyCompositedMainThreadScrollNodes) {
   auto scroll_state = ScrollState1(
       PropertyTreeState::Root(), {},
-      cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
+      {cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects});
   StackScrollTranslationVector scroll_translation_nodes = {
       &scroll_state.Transform()};
 
@@ -5294,18 +5290,20 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_TRUE(scroll_node);
   // THe scroll node should realize on main thread despite is_composited.
   EXPECT_TRUE(scroll_node->is_composited);
-  EXPECT_EQ(cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-            scroll_node->main_thread_repaint_reasons);
+  EXPECT_EQ(
+      cc::MainThreadRepaintReasons{
+          cc::MainThreadRepaintReason::kHasBackgroundAttachmentFixedObjects},
+      scroll_node->main_thread_repaint_reasons);
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
-  const uint32_t main_thread_scrolling_reason =
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+  const cc::MainThreadRepaintReasons main_thread_repaint_reasons = {
+      cc::MainThreadRepaintReason::kNotOpaqueForTextAndLCDText};
   auto scroll_state =
-      ScrollState1(PropertyTreeState::Root(), {}, main_thread_scrolling_reason);
+      ScrollState1(PropertyTreeState::Root(), {}, main_thread_repaint_reasons);
   StackScrollTranslationVector scroll_translation_nodes = {
       &scroll_state.Transform()};
 

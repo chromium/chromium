@@ -21608,8 +21608,14 @@ from previous Chrome versions.
 </enum>
 
 <enum name="MainThreadScrollingReason2">
+<!-- LINT.IfChange(MainThreadScrollingCategory) -->
+
   <int value="0" label="Not scrolling on main (no reason)"/>
   <int value="1" label="Scrolling on main (any reason)"/>
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/widget/input/input_metrics.h:MainThreadScrollingCategory) -->
+
+<!-- LINT.IfChange(MainThreadScrollingReason) -->
+
   <int value="2" label="Background attachment fixed"/>
   <int value="4" label="Popup scrolling (no threaded input handler)"/>
   <int value="5" label="Not opaque for text"/>
@@ -21624,6 +21630,8 @@ from previous Chrome versions.
   <int value="14" label="Blocking touch event handler region"/>
   <int value="15" label="Prefer non-composited scrolling"/>
   <int value="16" label="Background needs repaint on scroll"/>
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/widget/input/input_metrics.cc:MainThreadScrollingReason) -->
+
 </enum>
 
 <!-- LINT.IfChange(ManagementAuthorityTrustworthiness) -->

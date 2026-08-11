@@ -83,13 +83,11 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     struct {
       // If set, used to target a scrollable area directly instead of performing
       // a hit-test. Should be used for gestures queued up internally within
-      // the renderer process. This is an ElementIdType instead of ElementId
-      // due to the fact that ElementId has a non-trivial constructor that
-      // can't easily participate in this union of structs. Note that while
-      // this is used in scroll unification to perform a main thread hit test,
-      // in which case |main_thread_hit_tested| is true, it is also used in
-      // other cases like scroll events reinjected for scrollbar scrolling.
-      // Using `cc::ElementId::InternalValue` because  `cc::ElementId` has a
+      // the renderer process. Note that while this is used to perform a main
+      // thread hit test, in which case `main_thread_hit_tested_reasons` is
+      // non-zero, it is also used in other cases like scroll events reinjected
+      // for scrollbar scrolling.
+      // Using `cc::ElementId::InternalValue` because `cc::ElementId` has a
       // non-trivial constructor and is not allowed in a union.
       cc::ElementId::InternalValue scrollable_area_element_id;
       // Initial motion that triggered the scroll. See deltas in ScrollUpdate
@@ -113,11 +111,12 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // If true, this event will be used for cursor control instead of
       // scrolling. the entire scroll sequence will be used for cursor control.
       bool cursor_control;
-      // If nonzero, this event has been hit tested by the main thread and the
-      // result is stored in scrollable_area_element_id. Used only in scroll
-      // unification when the event is sent back the the compositor for a
-      // second time after the main thread hit test is complete.
-      uint32_t main_thread_hit_tested_reasons;
+
+      // A non-zero value means the GestureScrollBegin was hit tested by the
+      // main thread and scrollable_area_element_id contains the result.
+      // Storing the EnumBitmask of cc::MainThreadHitTestReasons because
+      // the class has a non-trivial constructor and is not allowed in a union.
+      uint64_t main_thread_hit_tested_reasons;
     } scroll_begin;
 
     struct {

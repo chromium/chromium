@@ -2729,9 +2729,8 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
     if (const auto* properties =
             GetLayoutBox()->FirstFragment().PaintProperties()) {
       if (const auto* scroll = properties->Scroll()) {
-        return paint_artifact_compositor->GetMainThreadRepaintReasons(
-                   *scroll) !=
-               cc::MainThreadScrollingReason::kNotScrollingOnMain;
+        return !paint_artifact_compositor->GetMainThreadRepaintReasons(*scroll)
+                    .empty();
       }
     }
   }

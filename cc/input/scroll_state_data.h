@@ -76,10 +76,9 @@ class CC_EXPORT ScrollStateData {
   void set_current_native_scrolling_element(ElementId element_id);
 
   // Used in scroll unification to specify that a scroll state has been hit
-  // tested on the main thread. If this is nonzero, the hit test result will be
-  // placed in the current_native_scrolling_element_.
-  uint32_t main_thread_hit_tested_reasons =
-      MainThreadScrollingReason::kNotScrollingOnMain;
+  // tested on the main thread. If this is non-empty, the hit test result will
+  // be placed in the current_native_scrolling_element_.
+  MainThreadHitTestReasons main_thread_hit_tested_reasons;
 
  private:
   // The id of the last native element to respond to a scroll, or 0 if none

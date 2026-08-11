@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer_collections.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -180,8 +181,9 @@ class PropertyTreeManager {
   static void DropCompositorScrollDeltaNextCommit(cc::LayerTreeHost&,
                                                   CompositorElementId);
 
-  static uint32_t GetMainThreadRepaintReasons(const cc::LayerTreeHost&,
-                                              const ScrollPaintPropertyNode&);
+  static cc::MainThreadRepaintReasons GetMainThreadRepaintReasons(
+      const cc::LayerTreeHost&,
+      const ScrollPaintPropertyNode&);
   // TODO(crbug.com/40517276): Remove this function after launching
   // RasterInducingScroll.
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
@@ -370,7 +372,7 @@ class PropertyTreeManager {
 
   void UpdatePixelMovingFilterClipExpanders();
 
-  uint32_t NonCompositedMainThreadRepaintReasons(
+  cc::MainThreadRepaintReasons NonCompositedMainThreadRepaintReasons(
       const TransformPaintPropertyNode& scroll_translation) const;
 
   // The current effect state. Virtually it's the top of the effect stack if

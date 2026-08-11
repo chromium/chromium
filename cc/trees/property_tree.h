@@ -741,9 +741,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool CanRealizeScrollsOnPendingTree(const ScrollNode& node) const;
   bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
-  // Reports reasons for blocking scroll updates on main-thread repaint.
-  uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
-
   using SyncedScrollOffsetMap =
       base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 

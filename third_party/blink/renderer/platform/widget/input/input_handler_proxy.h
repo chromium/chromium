@@ -359,10 +359,11 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
     event_attribution_enabled_ = enabled;
   }
 
-  void RecordScrollBegin(blink::WebGestureDevice device,
-                         uint32_t main_thread_hit_tested_reasons,
-                         uint32_t main_thread_repaint_reasons,
-                         bool raster_inducing = false);
+  void RecordScrollBegin(
+      blink::WebGestureDevice device,
+      cc::MainThreadHitTestReasons main_thread_hit_tested_reasons,
+      cc::MainThreadRepaintReasons main_thread_repaint_reasons,
+      bool raster_inducing = false);
 
   bool HasQueuedEventsReadyForDispatch(
       bool frame_aligned,
@@ -484,8 +485,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // will come by calling ContinueScrollBeginAfterMainThreadHitTest where the
   // queue will be flushed and this bit cleared. Used only in scroll
   // unification.
-  uint32_t scroll_begin_main_thread_hit_test_reasons_ =
-      cc::MainThreadScrollingReason::kNotScrollingOnMain;
+  cc::MainThreadHitTestReasons scroll_begin_main_thread_hit_test_reasons_;
 
   // This bit can be used to disable event attribution in cases where the
   // hit test information is unnecessary (e.g. tests).

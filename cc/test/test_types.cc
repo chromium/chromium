@@ -5,6 +5,7 @@
 #include "cc/test/test_types.h"
 
 #include "cc/base/region.h"
+#include "cc/input/main_thread_scrolling_reason.h"
 
 namespace cc {
 
@@ -33,6 +34,18 @@ void PrintTo(const RasterTestConfig& config, std::ostream* os) {
 
 void PrintTo(const Region& region, std::ostream* os) {
   *os << region.ToString();
+}
+
+void PrintTo(MainThreadRepaintReasons reasons, std::ostream* os) {
+  *os << MainThreadScrollingReason::AsText(reasons);
+}
+
+void PrintTo(MainThreadHitTestReasons reasons, std::ostream* os) {
+  *os << MainThreadScrollingReason::AsText(reasons);
+}
+
+void PrintTo(MainThreadScrollingOtherReasons reasons, std::ostream* os) {
+  *os << MainThreadScrollingReason::AsText(reasons);
 }
 
 }  // namespace cc

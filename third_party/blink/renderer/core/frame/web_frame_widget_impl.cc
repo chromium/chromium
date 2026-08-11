@@ -4281,7 +4281,9 @@ void WebFrameWidgetImpl::InjectScrollbarGestureScroll(
     gesture_event->data.scroll_begin.scrollable_area_element_id =
         scrollable_area_element_id.GetInternalValue();
     gesture_event->data.scroll_begin.main_thread_hit_tested_reasons =
-        cc::MainThreadScrollingReason::kScrollbarScrolling;
+        cc::MainThreadHitTestReasons{
+            cc::MainThreadHitTestReason::kScrollbarScrolling}
+            .ToEnumBitmask();
   }
 
   // Notifies TestWebFrameWidget of the injected event. Does nothing outside
