@@ -59,6 +59,7 @@ ts_modules = [
   "background/braille/braille_translator_manager.ts",
   "background/braille/cursor_dots.ts",
   "background/braille/expanding_braille_translator.ts",
+  "background/braille/composition_candidate_provider.ts",
   "background/braille/liblouis.ts",
   "background/braille/pan_strategy.ts",
   "background/braille/spans.ts",

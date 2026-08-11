@@ -34,6 +34,8 @@ FakeEditor = class {
     this.allowDeletes_ = false;
     /** @private {string} */
     this.uncommittedText_ = '';
+    /** @private {string} */
+    this.composition_ = '';
     /** @private {?Array<number>} */
     this.extraCells_ = [];
     port.postMessage = message => this.handleMessage_(message);
@@ -129,6 +131,14 @@ FakeEditor = class {
   }
 
   /**
+   * Asserts that the current composition (preedit) text is the given text.
+   * @param {string} text
+   */
+  assertCompositionIs(text) {
+    assertEquals(text, this.composition_);
+  }
+
+  /**
    * Asserts that the input handler has added 'extra cells' for uncommitted
    * text into the braille content.
    * @param {string} cells Cells as a space-separated list of numbers.
@@ -172,8 +182,18 @@ FakeEditor = class {
    * @private
    */
   callOnDisplayContentChanged_() {
-    const content =
-        this.createValue(this.text_, this.selectionStart_, this.selectionEnd_);
+    let content;
+    if (this.composition_) {
+      // Composition (preedit) text appears in the field value at the cursor,
+      // with the cursor placed at the end of the composition.
+      const fullText = this.text_.substring(0, this.selectionStart_) +
+          this.composition_ + this.text_.substring(this.selectionEnd_);
+      const cursor = this.selectionStart_ + this.composition_.length;
+      content = this.createValue(fullText, cursor, cursor);
+    } else {
+      content = this.createValue(
+          this.text_, this.selectionStart_, this.selectionEnd_);
+    }
     const grabExtraCells = () => {
       const span = content.getSpanInstanceOf(ExtraCellsSpan);
       assertNotEquals(null, span);
@@ -239,6 +259,17 @@ FakeEditor = class {
         this.insert(this.uncommittedText_);
         this.uncommittedText_ = '';
         break;
+      case 'setComposition':
+        assertTrue(typeof msg.text === 'string');
+        this.composition_ = msg.text;
+        this.callOnDisplayContentChanged_();
+        break;
+      case 'commitComposition': {
+        const composition = this.composition_;
+        this.composition_ = '';
+        this.insert(composition);
+        break;
+      }
       default:
         throw new Error('Unexpected message to IME: ' + JSON.stringify(msg));
     }
@@ -289,6 +320,21 @@ const CONTRACTED_TABLE = [
   ['^12$', 'but'],
   ['1456', 'this'],
 ].concat(UNCONTRACTED_TABLE);
+
+/**
+ * Mapping of braille cells to Japanese hiragana, used for testing
+ * kana-to-kanji conversion. The cell patterns are arbitrary and do not
+ * reflect real Japanese braille.
+ * @const
+ */
+const TENJI_TABLE = [
+  ['0', ' '],
+  ['1', 'あ'],
+  ['12', 'い'],
+  ['145', 'て'],
+  ['1345', 'ん'],
+  ['245', 'じ'],
+];
 
 /**
  * A fake braille translator that can do back translation according
@@ -362,6 +408,77 @@ FakeTranslator = class {
   }
 };
 
+/**
+ * Regular expression that matches trailing word separators (ASCII space or
+ * ideographic space) produced by a blank braille cell, which need to be
+ * trimmed before treating the remaining text as a reading to convert.
+ */
+const MOCK_TRAILING_SEPARATOR_RE = /[ 　]+$/;
+
+/**
+ * @return {boolean} Whether `text` contains at least one hiragana character.
+ */
+function mockContainsHiragana(text) {
+  return /[ぁ-ゖ]/.test(text);
+}
+
+/** @return {string} `text` with hiragana characters converted to katakana. */
+function mockHiraganaToKatakana(text) {
+  return text.replace(
+      /[ぁ-ゖ]/g, char => String.fromCharCode(char.charCodeAt(0) + 0x60));
+}
+
+/**
+ * A small dictionary of hiragana readings to kanji candidates, ordered by
+ * (assumed) frequency. Only intended to exercise the conversion UX in tests.
+ */
+const MOCK_DICTIONARY = {
+  'あい': ['愛', '藍', '相'],
+  'あめ': ['雨', '飴'],
+  'かみ': ['紙', '神', '髪'],
+  'かわ': ['川', '革', '皮'],
+  'きょう': ['今日', '京', '強'],
+  'こうえん': ['公園', '講演', '公演', '後援'],
+  'せいかく': ['性格', '正確'],
+  'てんじ': ['点字', '展示'],
+  'にほん': ['日本', '二本'],
+  'はし': ['橋', '箸', '端'],
+  'はな': ['花', '鼻'],
+  'わたし': ['私'],
+};
+
+/**
+ * A mock CompositionCandidateProvider, used in place of a real conversion
+ * engine in these tests. Backed by MOCK_DICTIONARY; in addition to the
+ * dictionary entries, the original hiragana and its katakana form are
+ * offered as candidates, mirroring what a real IME does.
+ */
+MockKanaKanjiProvider = class {
+  /**
+   * @param {string} input
+   * @return {!Promise<!Array<string>>}
+   */
+  async getCandidates(input) {
+    const kana = input.replace(MOCK_TRAILING_SEPARATOR_RE, '');
+    if (!mockContainsHiragana(kana)) {
+      return [];
+    }
+    const kanjiCandidates = MOCK_DICTIONARY[kana];
+    if (!kanjiCandidates) {
+      return [];
+    }
+    const candidates = [...kanjiCandidates];
+    if (!candidates.includes(kana)) {
+      candidates.push(kana);
+    }
+    const katakana = mockHiraganaToKatakana(kana);
+    if (!candidates.includes(katakana)) {
+      candidates.push(katakana);
+    }
+    return candidates;
+  }
+};
+
 
 /** @extends {BrailleTranslatorManager} */
 function FakeTranslatorManager() {}
@@ -379,6 +496,11 @@ FakeTranslatorManager.prototype = {
   /** @override */
   getUncontractedTranslator() {
     return this.uncontractedTranslator;
+  },
+
+  /** @override */
+  getExpandingTranslator() {
+    return null;
   },
 
   /** @override */
@@ -443,7 +565,28 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
     this.inputHandler = new BrailleInputHandler();
     this.uncontractedTranslator = new FakeTranslator(UNCONTRACTED_TABLE);
     this.contractedTranslator = new FakeTranslator(CONTRACTED_TABLE, true);
+    this.tenjiTranslator = new FakeTranslator(TENJI_TABLE);
+    // Japanese input is entered as IME composition text so that it can go
+    // through kana-to-kanji conversion before being committed.
+    this.tenjiTranslator.usesCompositionInput = true;
+    // Use the in-memory mock dictionary so conversion assertions are stable
+    // and don't depend on any bundled resource.
+    this.tenjiTranslator.getCompositionCandidateProvider = () =>
+        new MockKanaKanjiProvider();
     this.keyEvents = [];
+  }
+
+  /**
+   * Creates an editor set up for Japanese (tenji) input.
+   * @return {FakeEditor}
+   */
+  createTenjiEditor() {
+    BrailleTranslatorManager.instance.setTranslators(
+        this.tenjiTranslator, null);
+    const editor = this.createEditor();
+    editor.setActive(true);
+    editor.focus('text');
+    return editor;
   }
 
   /**
@@ -687,3 +830,116 @@ AX_TEST_F('ChromeVoxBrailleInputHandlerTest', 'KeysImeNotActive', function() {
   assertEqualsJSON(
       [{keyCode: KeyCode.RETURN}, {keyCode: KeyCode.UP}], this.keyEvents);
 });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionCycleAndAccept',
+    async function() {
+      const editor = this.createTenjiEditor();
+
+      // Typed kana shows as composition (preedit) text, not committed text.
+      assertTrue(this.sendCells('145 1345 245'));
+      editor.assertCompositionIs('てんじ');
+      editor.assertContentIs('', 0);
+
+      // A blank cell starts conversion.
+      assertTrue(this.sendCells('0'));
+      await this.inputHandler.commitRequestForTest;
+
+      // The first candidate from the mock dictionary replaces the kana in
+      // the composition.
+      editor.assertCompositionIs('点字');
+      editor.assertContentIs('', 0);
+
+      // A blank cell cycles through the remaining candidates: the second
+      // dictionary entry, then the kana and katakana readings, then wraps
+      // around to the first candidate.
+      assertTrue(this.sendCells('0'));
+      editor.assertCompositionIs('展示');
+      assertTrue(this.sendCells('0'));
+      editor.assertCompositionIs('てんじ');
+      assertTrue(this.sendCells('0'));
+      editor.assertCompositionIs('テンジ');
+      assertTrue(this.sendCells('0'));
+      editor.assertCompositionIs('点字');
+
+      // Enter accepts the current candidate, committing the composition,
+      // without sending a key event.
+      assertTrue(this.sendKeyEvent('Enter'));
+      editor.assertCompositionIs('');
+      editor.assertContentIs('点字', '点字'.length);
+      assertEquals(0, this.keyEvents.length);
+
+      // Typing continues normally after accepting.
+      assertTrue(this.sendCells('1'));
+      editor.assertCompositionIs('あ');
+      editor.assertContentIs('点字', '点字'.length);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionTypingAccepts',
+    async function() {
+      const editor = this.createTenjiEditor();
+
+      assertTrue(this.sendCells('145 1345 245 0'));
+      await this.inputHandler.commitRequestForTest;
+      editor.assertCompositionIs('点字');
+
+      // Typing a non-blank cell accepts the current candidate and starts a
+      // new word in the composition.
+      assertTrue(this.sendCells('12'));
+      editor.assertContentIs('点字', '点字'.length);
+      editor.assertCompositionIs('い');
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionCancel',
+    async function() {
+      const editor = this.createTenjiEditor();
+
+      assertTrue(this.sendCells('145 1345 245 0'));
+      await this.inputHandler.commitRequestForTest;
+      editor.assertCompositionIs('点字');
+
+      // Backspace cancels the conversion, restoring the original kana as
+      // composition text without committing it, so editing can continue.
+      assertTrue(this.sendKeyEvent('Backspace'));
+      editor.assertCompositionIs('てんじ ');
+      editor.assertContentIs('', 0);
+      assertEquals(0, this.keyEvents.length);
+
+      // Typing continues normally in the restored composition.
+      assertTrue(this.sendCells('1'));
+      editor.assertCompositionIs('てんじ あ');
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionUnknownWord',
+    async function() {
+      const editor = this.createTenjiEditor();
+
+      // 'いあ' is not in the mock dictionary, so the input commits as-is.
+      assertTrue(this.sendCells('12 1 0'));
+      await this.inputHandler.commitRequestForTest;
+      editor.assertCompositionIs('');
+      editor.assertContentIs('いあ ', 'いあ '.length);
+
+      // No conversion is active, but the blank cell still goes through
+      // requestCommit() (any translator with a provider does), which
+      // asynchronously fetches candidates for it before committing.
+      assertTrue(this.sendCells('0'));
+      await this.inputHandler.commitRequestForTest;
+      editor.assertContentIs('いあ  ', 'いあ  '.length);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleInputHandlerTest', 'KanaKanjiConversionQueuedCycles',
+    async function() {
+      const editor = this.createTenjiEditor();
+
+      // Type 'てんじ' and two blank cells in quick succession, without
+      // waiting for the conversion to start. The second blank cell is
+      // queued and applied as a candidate cycle once candidates arrive.
+      assertTrue(this.sendCells('145 1345 245 0 0'));
+      await this.inputHandler.commitRequestForTest;
+      editor.assertCompositionIs('展示');
+    });

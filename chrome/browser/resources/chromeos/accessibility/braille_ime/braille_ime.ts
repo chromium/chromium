@@ -43,6 +43,14 @@
  * {type: 'commitUncommitted', contextID: number}
  *   Commits any uncommitted text if it matches the given context ID.
  *   See 'setUncommitted' above.
+ * {type: 'setComposition', contextID: number, text: string}
+ *   Shows {@code text} as IME composition (preedit) text in the field
+ *   identified by contextID.  The composition is rendered inline (typically
+ *   underlined) but not committed.  It is committed by a 'commitComposition'
+ *   message or by an unhandled key press event.
+ * {type: 'commitComposition', contextID: number}
+ *   Commits the current composition text if it matches the given context ID.
+ *   See 'setComposition' above.
  * {type: 'keyEventHandled', requestId: string, result: boolean}
  *   Response to a {@code backspace} message indicating whether the
  *   backspace was handled by ChromeVox or should be allowed to propagate
@@ -126,6 +134,11 @@ export class BrailleIme {
    * Uncommitted text and context ID.
    */
   private uncommitted_: UncommittedText|null = null;
+
+  /**
+   * Current composition (preedit) text and context ID.
+   */
+  private composition_: UncommittedText|null = null;
 
   /**
    * Registers event listeners in the chrome IME API.
@@ -227,6 +240,8 @@ export class BrailleIme {
   private onReset_(engineID: string): void {
     this.log_('onReset', engineID);
     this.engineID_ = engineID;
+    // Any composition was cancelled by the system.
+    this.composition_ = null;
     this.sendToChromeVox_({type: 'reset'});
   }
 
@@ -354,6 +369,14 @@ export class BrailleIme {
         message = message as {contextID: number};
         this.commitUncommitted_(message.contextID);
         break;
+      case 'setComposition':
+        message = message as {contextID: number, text: string};
+        this.setComposition_(message.contextID, message.text);
+        break;
+      case 'commitComposition':
+        message = message as {contextID: number};
+        this.commitComposition_(message.contextID);
+        break;
       default:
         console.error(
             'Unknown message from ChromeVox: ' + JSON.stringify(message));
@@ -435,9 +458,19 @@ export class BrailleIme {
    */
   private keyEventHandled_(requestId: string, type: string, response: boolean):
       void {
-    if (!response && type === 'keydown' && this.uncommitted_) {
-      this.commitUncommitted_(this.uncommitted_.contextID);
-      this.sendToChromeVox_({type: 'reset'});
+    if (!response && type === 'keydown') {
+      let committed = false;
+      if (this.uncommitted_) {
+        this.commitUncommitted_(this.uncommitted_.contextID);
+        committed = true;
+      }
+      if (this.composition_) {
+        this.commitComposition_(this.composition_.contextID);
+        committed = true;
+      }
+      if (committed) {
+        this.sendToChromeVox_({type: 'reset'});
+      }
     }
     chrome.input.ime.keyEventHandled(requestId, response);
   }
@@ -461,6 +494,36 @@ export class BrailleIme {
       chrome.input.ime.commitText(this.uncommitted_);
     }
     this.uncommitted_ = null;
+  }
+
+  /**
+   * Shows composition (preedit) text in the current text field. The
+   * composition is rendered inline but not committed until
+   * {@code commitComposition_} is called or an unhandled key press occurs.
+   * @param contextID of the current field.
+   * @param text The composition text to show.
+   */
+  private setComposition_(contextID: number, text: string): void {
+    if (text) {
+      this.composition_ = {contextID, text};
+      chrome.input.ime.setComposition(
+          {contextID, text, cursor: text.length}, () => {});
+    } else {
+      this.composition_ = null;
+      chrome.input.ime.clearComposition({contextID}, () => {});
+    }
+  }
+
+  /**
+   * Commits the current composition text if it matches the given context id.
+   * @param contextID
+   */
+  private commitComposition_(contextID: number): void {
+    if (this.composition_ && contextID === this.composition_.contextID) {
+      // commitText replaces the active composition with committed text.
+      chrome.input.ime.commitText({contextID, text: this.composition_.text});
+    }
+    this.composition_ = null;
   }
 
   /**

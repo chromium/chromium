@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CompositionCandidateProvider} from './composition_candidate_provider.js';
+
 export type TranslateCallback =
     (cells: ArrayBuffer|null, textToBraille: number[]|null,
      brailleToText: number[]|null) => void;
@@ -27,4 +29,20 @@ export interface BrailleTranslator {
    * @param callback Callback for result.
    */
   backTranslate(cells: ArrayBuffer, callback: BackTranslateCallback): void;
+
+  /**
+   * Whether input through this translator should be entered as IME
+   * composition (preedit) text instead of being committed directly, so it
+   * can go through composition conversion first (see
+   * CompositionCandidateProvider). Used for Japanese kana input, which is
+   * converted to kanji before being committed.
+   */
+  readonly usesCompositionInput?: boolean;
+
+  /**
+   * Returns the CompositionCandidateProvider to use for converting this
+   * translator's composition-input text before commit. Only meaningful (and
+   * only implemented) when `usesCompositionInput` is true.
+   */
+  getCompositionCandidateProvider?(): CompositionCandidateProvider;
 }

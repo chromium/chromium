@@ -23,6 +23,18 @@ type QueuedRequest = {
 };
 
 export class TenjiTranslator implements BrailleTranslator {
+  /**
+   * Japanese kana input is entered as IME composition text so that it can go
+   * through kana-to-kanji conversion before being committed.
+   */
+  readonly usesCompositionInput = true;
+
+  // TODO(crbug.com/510816368): Implement getCompositionCandidateProvider()
+  // with a conversion-engine-backed provider (e.g. a
+  // chrome.accessibilityPrivate.getKanaKanjiCandidates API) once available.
+  // Until then, this translator has no provider, so kana input is entered as
+  // composition text but committed as-is without conversion.
+
   private static initPromise_: Promise<boolean>|null = null;
   private static pendingRequest_ = false;
   private static requestQueue_: QueuedRequest[] = [];
