@@ -86,6 +86,10 @@ BASE_DECLARE_FEATURE(kStrictAssociatedCountriesCheck);
 // various places, we don't support rollbacks to the feature state.
 BASE_DECLARE_FEATURE(kPrepopulatedEnginesMigration);
 
+BASE_DECLARE_FEATURE(kPrepopulatedEnginesShadowVariants);
+
+bool ArePrepopulatedEnginesShadowVariantsEnabled();
+
 }  // namespace switches
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_SWITCHES_H_

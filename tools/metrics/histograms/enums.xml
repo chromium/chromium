@@ -11414,6 +11414,7 @@ from previous Chrome versions.
       label="UseFrameIntervalDeciderAdaptiveFrameRate:disabled"/>
   <int value="-1006508846" label="AutofillEnableCardBenefitsForBmo:disabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
+  <int value="-1005393020" label="PrepopulatedEnginesShadowVariants:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1004904621"
       label="ExperimentalAccessibilityColorEnhancementSettings:disabled"/>
@@ -13062,6 +13063,7 @@ from previous Chrome versions.
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
   <int value="-488228498"
       label="ContextualSuggestionsAblateOthersWhenPresent:enabled"/>
+  <int value="-488160318" label="PrepopulatedEnginesShadowVariants:disabled"/>
   <int value="-487324278" label="TpcdSupportSettings:enabled"/>
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
   <int value="-487009324" label="HttpHeadersInjection:disabled"/>

@@ -742,6 +742,11 @@ inline constexpr char kPrefetchActivationBeaconName[] =
 inline constexpr char kPrefetchActivationBeaconDescription[] =
     "If enabled, prefetch activation beacon will be sent when a prefetch is "
     "activated.";
+inline constexpr char kPrepopulatedEnginesShadowVariantsName[] =
+    "Prepopulated Engines Shadow Variants";
+inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
+    "Enables shadow variants for prepopulated engines resolution, allowing "
+    "alternative engines to be resolved in specific regions.";
 
 inline constexpr char kPrerender2Name[] = "Prerendering";
 inline constexpr char kPrerender2Description[] =

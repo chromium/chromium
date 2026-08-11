@@ -2916,6 +2916,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"web-frame-tree", flag_descriptions::kWebFrameTreeName,
      flag_descriptions::kWebFrameTreeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kWebFrameTree)},
+    {"prepopulated-engines-shadow-variants",
+     flag_descriptions::kPrepopulatedEnginesShadowVariantsName,
+     flag_descriptions::kPrepopulatedEnginesShadowVariantsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kPrepopulatedEnginesShadowVariants)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

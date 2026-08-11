@@ -42,4 +42,11 @@ BASE_FEATURE(kStrictAssociatedCountriesCheck,
 
 BASE_FEATURE(kPrepopulatedEnginesMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrepopulatedEnginesShadowVariants,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ArePrepopulatedEnginesShadowVariantsEnabled() {
+  return base::FeatureList::IsEnabled(kPrepopulatedEnginesShadowVariants);
+}
+
 }  // namespace switches

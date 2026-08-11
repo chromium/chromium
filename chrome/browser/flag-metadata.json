@@ -8243,6 +8243,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "prepopulated-engines-shadow-variants",
+    "owners": [ "dgn@chromium.org", "//components/search_engines/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "prerender-activation-beacon",
     "owners": [ "gjc@google.com", "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 155
