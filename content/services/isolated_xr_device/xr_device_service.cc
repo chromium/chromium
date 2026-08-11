@@ -4,6 +4,7 @@
 
 #include "content/services/isolated_xr_device/xr_device_service.h"
 
+#include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/services/isolated_xr_device/xr_runtime_provider.h"
@@ -39,6 +40,7 @@ void XrDeviceService::BindRuntimeProvider(
 
 void XrDeviceService::BindTestHook(
     mojo::PendingReceiver<device_test::mojom::XRServiceTestHook> receiver) {
+  CHECK_IS_TEST();
   mojo::MakeSelfOwnedReceiver(std::make_unique<XRServiceTestHook>(),
                               std::move(receiver));
 }
