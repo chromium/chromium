@@ -260,16 +260,8 @@ cr-searchbox-input::part(searchbox-input) {
   --cr-searchbox-border: 1px solid #DADCE0;
 }
 
-:host([is-dark]):host-context([energy-effect-enabled_]):host([ntp-realbox-next-enabled]) {
-  --cr-searchbox-border: 1px solid #4E5059;
-}
-
 :host-context([energy-effect-enabled_][energy-effect-variant_='pre-energy-effect-with-border']):host([ntp-realbox-next-enabled]) {
   --cr-searchbox-border: 1px solid #CCCFD9;
-}
-
-:host([is-dark]):host-context([energy-effect-enabled_][energy-effect-variant_='pre-energy-effect-with-border']):host([ntp-realbox-next-enabled]) {
-  --cr-searchbox-border: 1px solid #4D5263;
 }
 
 cr-searchbox-dropdown::part(dropdown-content) {
