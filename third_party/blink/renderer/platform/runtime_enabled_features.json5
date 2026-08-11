@@ -6864,7 +6864,7 @@
       // Off for URL/Email/Password inputs (and an `autocorrect=off` form owner).
       // https://html.spec.whatwg.org/multipage/interaction.html#autocorrection
       name: "WebAutocorrectByDefault",
-      status: "experimental",
+      status: "stable",
     },
 
     // WebBluetooth is enabled by default on Android, ChromeOS, iOS, macOS and

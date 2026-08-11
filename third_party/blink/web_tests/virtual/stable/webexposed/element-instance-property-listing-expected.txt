@@ -88,6 +88,7 @@ namespace http://www.w3.org/1999/xhtml
     property attributeStyleMap
     property attributes
     property autocapitalize
+    property autocorrect
     property autofocus
     property baseURI
     property before

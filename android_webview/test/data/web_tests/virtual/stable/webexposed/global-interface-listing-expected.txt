@@ -3460,6 +3460,7 @@ interface HTMLElement : Element
     getter accessKey
     getter attributeStyleMap
     getter autocapitalize
+    getter autocorrect
     getter autofocus
     getter contentEditable
     getter dataset
@@ -3606,6 +3607,7 @@ interface HTMLElement : Element
     method togglePopover
     setter accessKey
     setter autocapitalize
+    setter autocorrect
     setter autofocus
     setter contentEditable
     setter dir
