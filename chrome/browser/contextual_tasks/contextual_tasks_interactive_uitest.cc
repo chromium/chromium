@@ -1216,7 +1216,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 }
 
 // TODO(crbug.com/516333831): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/543925663): Re-enable this test on Linux TSAN.
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_AddAndSubmitMultipleContextsFromComposebox \
   DISABLED_AddAndSubmitMultipleContextsFromComposebox
 #else
