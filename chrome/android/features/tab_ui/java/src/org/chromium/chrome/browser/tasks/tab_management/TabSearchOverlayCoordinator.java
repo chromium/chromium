@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -88,7 +90,8 @@ import java.util.List;
  * the Vertical Tabs rail.
  */
 @NullMarked
-public class TabSearchOverlayCoordinator implements BackPressHandler {
+public class TabSearchOverlayCoordinator
+        implements BackPressHandler, DesktopWindowStateManager.AppHeaderObserver {
     private final Activity mActivity;
     private final ViewGroup mParentContainer;
     private final WindowAndroid mWindowAndroid;
@@ -101,6 +104,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     private final BackPressManager mBackPressManager;
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final PropertyModel mModel;
@@ -132,6 +136,9 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
      * @param tabModelSelectorSupplier Supplier for the tab model selector.
      * @param edgeToEdgeSystemBarColorHelper Helper for managing system bar colors in edge-to-edge.
      * @param backPressManager Manager for intercepting and handling system-level back presses.
+     * @param compositorViewHolderSupplier Supplier for the compositor view holder.
+     * @param tabGroupUiActionHandlerSupplier Supplier for the tab group UI action handler.
+     * @param desktopWindowStateManager Manager for monitoring desktop windowing state changes.
      */
     public TabSearchOverlayCoordinator(
             Activity activity,
@@ -145,7 +152,8 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BackPressManager backPressManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+            OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mActivity = activity;
         mParentContainer = parentContainer;
         mWindowAndroid = windowAndroid;
@@ -158,7 +166,12 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mBackPressManager = backPressManager;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
+
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+        }
 
         mModel = TabSearchOverlayProperties.createDefaultModel();
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
@@ -175,6 +188,9 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
+        }
         mProfileSupplier.removeObserver(mProfileObserver);
         mBackPressManager.removeHandler(this);
         if (mChangeProcessor != null) {
@@ -516,24 +532,37 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             return;
         }
 
-        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
-        if (panelView == null) return;
-
         List<Rect> rects = new ArrayList<>();
         if (mModel.get(TabSearchOverlayProperties.VISIBLE)) {
-            // Exclude the close button's interactive area to ensure it remains clickable even
-            // when under the system gesture area.
-            View closeButton = panelView.findViewById(R.id.tab_search_close_button);
+            View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+            View closeButton =
+                    panelView != null ? panelView.findViewById(R.id.tab_search_close_button) : null;
             if (closeButton != null && closeButton.getWidth() > 0) {
+                // Exclude the close button's interactive area to ensure it remains clickable even
+                // when under the system gesture area.
                 Rect rect = new Rect();
-                rect.left = closeButton.getLeft();
-                rect.top = closeButton.getTop();
-                rect.right = closeButton.getRight();
-                rect.bottom = closeButton.getBottom();
+                rect.left = closeButton.getLeft() + panelView.getLeft();
+                rect.top = closeButton.getTop() + panelView.getTop();
+                rect.right = closeButton.getRight() + panelView.getLeft();
+                rect.bottom = closeButton.getBottom() + panelView.getTop();
                 rects.add(rect);
             }
+
+            if (mDesktopWindowStateManager != null
+                    && mDesktopWindowStateManager.getAppHeaderState() != null
+                    && mDesktopWindowStateManager.getAppHeaderState().isInDesktopWindow()) {
+                AppHeaderState state = mDesktopWindowStateManager.getAppHeaderState();
+                int headerHeight = state.getAppHeaderHeight();
+                if (headerHeight > 0 && mPanelContainer.getWidth() > 0) {
+                    // Exclude the top caption/header bar area from system window dragging. While
+                    // this region is normally used to drag the window, clicks here should instead
+                    // dismiss the visible tab search panel (via the overlay scrim). Once the panel
+                    // is dismissed, dragging capability will be restored.
+                    rects.add(new Rect(0, 0, mPanelContainer.getWidth(), headerHeight));
+                }
+            }
         }
-        panelView.setSystemGestureExclusionRects(rects);
+        mPanelContainer.setSystemGestureExclusionRects(rects);
     }
 
     /**
@@ -558,19 +587,6 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
         }
-    }
-
-    // BackPressHandler implementation.
-
-    @Override
-    public @BackPressResult int handleBackPress() {
-        hide();
-        return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressStateSupplier;
     }
 
     /**
@@ -738,6 +754,31 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
                 mPendingDownEvent = null;
             }
         }
+    }
+
+    // BackPressHandler implementation.
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        hide();
+        return BackPressResult.SUCCESS;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    // DesktopWindowStateManager.AppHeaderObserver implementation.
+
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        updateExclusionRects();
+    }
+
+    @Override
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+        updateExclusionRects();
     }
 
     // Testing methods.

@@ -78,6 +78,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -123,6 +125,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private AppHeaderState mAppHeaderState;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
@@ -169,6 +173,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
         when(mLocationBarCoordinator.getSuggestionsListNonEmptySupplier())
                 .thenReturn(mSuggestionsListNonEmptySupplier);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
 
         mCoordinator =
                 new TabSearchOverlayCoordinator(
@@ -183,7 +188,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         /* edgeToEdgeSystemBarColorHelper= */ null,
                         mBackPressManager,
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
-                        mTabGroupUiActionHandlerSupplier);
+                        mTabGroupUiActionHandlerSupplier,
+                        mDesktopWindowStateManager);
         mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
 
         // Inflate the overlay and initialize member views.
@@ -745,13 +751,45 @@ public class TabSearchOverlayCoordinatorUnitTest {
         panelView.layout(0, 0, 264, 500);
 
         // Verify exclusion rect matches close button bounds.
-        List<Rect> exclusionRects = panelView.getSystemGestureExclusionRects();
+        List<Rect> exclusionRects = mPanelContainer.getSystemGestureExclusionRects();
         assertEquals(1, exclusionRects.size());
         assertEquals(new Rect(228, 4, 260, 36), exclusionRects.get(0));
 
         // Hide overlay and verify exclusion rect is cleared.
         mCoordinator.hide();
-        assertTrue(panelView.getSystemGestureExclusionRects().isEmpty());
+        assertTrue(mPanelContainer.getSystemGestureExclusionRects().isEmpty());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testSystemGestureExclusionRects_DesktopWindowing() {
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        when(mAppHeaderState.getAppHeaderHeight()).thenReturn(40);
+
+        showOverlay();
+
+        View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        View closeButton = panelView.findViewById(R.id.tab_search_close_button);
+        closeButton.setLeft(228);
+        closeButton.setTop(4);
+        closeButton.setRight(260);
+        closeButton.setBottom(36);
+
+        // Perform layout on panelView and mPanelContainer.
+        panelView.layout(0, 0, 264, 500);
+        mPanelContainer.layout(0, 0, 800, 500);
+
+        // Verify exclusion rects contain:
+        // 1. Close button rect: (228, 4, 260, 36)
+        // 2. Full header rect: (0, 0, 800, 40)
+        List<Rect> exclusionRects = mPanelContainer.getSystemGestureExclusionRects();
+        assertEquals(2, exclusionRects.size());
+        assertEquals(new Rect(228, 4, 260, 36), exclusionRects.get(0));
+        assertEquals(new Rect(0, 0, 800, 40), exclusionRects.get(1));
+
+        // Hide overlay and verify exclusion rects are cleared.
+        mCoordinator.hide();
+        assertTrue(mPanelContainer.getSystemGestureExclusionRects().isEmpty());
     }
 
     @Test
