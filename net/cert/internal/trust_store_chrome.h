@@ -160,18 +160,25 @@ struct NET_EXPORT Signer {
   Signer& operator=(const Signer&);
   Signer& operator=(Signer&&);
 
+  // Returns a Signer initialized with the provided values. Other fields will
+  // be initialized to defaults that are sufficient for the signer to be
+  // considered usable. Tests can further modify the returned object if needed.
+  static Signer CreateForTesting(chrome_root_store::SignerType type,
+                                 base::span<const uint8_t> base_id);
+
   std::string friendly_name;
   std::vector<uint8_t> base_id;
   std::vector<SignerStateChange> state_history;
   std::vector<SignerOperatorChange> operator_history;
   BsslRefcounted<CRYPTO_BUFFER> key;
-  chrome_root_store::SignerType type;
-  chrome_root_store::Realm realm;
+  chrome_root_store::SignerType type = chrome_root_store::SIGNER_TYPE_UNSET;
+  chrome_root_store::Realm realm = chrome_root_store::REALM_UNSET;
   std::optional<base::TimeDelta> max_cert_lifetime;
   std::vector<ChromeRootCertConstraints> constraints;
   std::optional<int32_t> crs_root_id;
-  int32_t min_log_number;
-  bssl::SignatureAlgorithm signature_algorithm;
+  int32_t min_log_number = 0;
+  bssl::SignatureAlgorithm signature_algorithm =
+      bssl::SignatureAlgorithm::kMldsa44;
 };
 
 class NET_EXPORT ChromeRootStoreSignerSet {
@@ -396,7 +403,7 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   // Additional data about MTC anchors that isn't represented in
   // bssl::MTCAnchor.
   struct NET_EXPORT MtcAnchorExtraData {
-    MtcAnchorExtraData();
+    explicit MtcAnchorExtraData(Signer signer_config);
     ~MtcAnchorExtraData();
     MtcAnchorExtraData(const MtcAnchorExtraData& other);
     MtcAnchorExtraData(MtcAnchorExtraData&& other);

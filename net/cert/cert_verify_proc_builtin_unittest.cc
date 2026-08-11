@@ -1221,8 +1221,11 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
-    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
-    mtc_anchor_extra_data.signer_config.min_log_number = test.min_log_number;
+    Signer signer_config = Signer::CreateForTesting(
+        chrome_root_store::SIGNER_TYPE_ISSUER, kMtcCaId);
+    signer_config.min_log_number = test.min_log_number;
+    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
+        std::move(signer_config));
     SetMockMTCAnchorData(mtc_anchor_extra_data);
     SetMockIsMtcCosignerPolicySatisfied(true);
 
@@ -1287,9 +1290,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcLogNumberLimits) {
   }
 }
 
-// TODO(crbug.com/452986180): Re-enable after fixing use-of-uninitialized-value
-// error.
-TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcMaxCertLifetime) {
+TEST_F(CertVerifyProcBuiltinTest, MtcMaxCertLifetime) {
   struct TestCase {
     std::optional<base::TimeDelta> max_cert_lifetime;
     base::TimeDelta cert_lifetime;
@@ -1359,9 +1360,11 @@ TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcMaxCertLifetime) {
     ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
     AddTrustStore(&trust_store);
 
-    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
-    mtc_anchor_extra_data.signer_config.max_cert_lifetime =
-        test.max_cert_lifetime;
+    Signer signer_config = Signer::CreateForTesting(
+        chrome_root_store::SIGNER_TYPE_ISSUER, kMtcCaId);
+    signer_config.max_cert_lifetime = test.max_cert_lifetime;
+    TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
+        std::move(signer_config));
     SetMockMTCAnchorData(mtc_anchor_extra_data);
     SetMockIsMtcCosignerPolicySatisfied(true);
 
@@ -1511,9 +1514,7 @@ TEST_F(CertVerifyProcBuiltinTest, MtcCrsAnchorUsageHistogram) {
   }
 }
 
-// TODO(crbug.com/452986180): Re-enable after fixing use-of-uninitialized-value
-// error.
-TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcRevocation) {
+TEST_F(CertVerifyProcBuiltinTest, MtcRevocation) {
   constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   constexpr uint64_t kLogNumber = 1;
 
@@ -1562,7 +1563,9 @@ TEST_F(CertVerifyProcBuiltinTest, DISABLED_MtcRevocation) {
 
   // Test with GetMTCAnchorData returning a non-null MtcAnchorExtraData, but
   // with revoked_serials empty. Nothing should be revoked.
-  TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data;
+  TrustStoreChrome::MtcAnchorExtraData mtc_anchor_extra_data(
+      Signer::CreateForTesting(chrome_root_store::SIGNER_TYPE_ISSUER,
+                               kMtcCaId));
   SetMockMTCAnchorData(mtc_anchor_extra_data);
   for (const TestCertData& data : test_cert_data) {
     SCOPED_TRACE(data.mtc_log_index);

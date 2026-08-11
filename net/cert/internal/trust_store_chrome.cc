@@ -374,7 +374,8 @@ TrustStoreChrome::AnchorExtraData& TrustStoreChrome::AnchorExtraData::operator=(
 TrustStoreChrome::AnchorExtraData& TrustStoreChrome::AnchorExtraData::operator=(
     TrustStoreChrome::AnchorExtraData&& other) = default;
 
-TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData() = default;
+TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData(Signer signer_config)
+    : signer_config(std::move(signer_config)) {}
 TrustStoreChrome::MtcAnchorExtraData::~MtcAnchorExtraData() = default;
 
 TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData(
@@ -437,8 +438,7 @@ TrustStoreChrome::TrustStoreChrome(
 
   if (root_store_data.signer_set()) {
     for (const auto& issuer : root_store_data.signer_set()->trusted_issuers()) {
-      TrustStoreChrome::MtcAnchorExtraData trust_store_anchor_data;
-      trust_store_anchor_data.signer_config = issuer;
+      TrustStoreChrome::MtcAnchorExtraData trust_store_anchor_data(issuer);
 
       std::map<uint16_t, std::vector<bssl::TrustedSubtree>> trusted_subtrees;
       if (mtc_metadata) {
@@ -460,8 +460,8 @@ TrustStoreChrome::TrustStoreChrome(
           bssl::UpRef(issuer.key.get()), std::move(trusted_subtrees));
       CHECK(trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor)));
 
-      mtc_anchor_extra_data_[issuer.base_id] =
-          std::move(trust_store_anchor_data);
+      mtc_anchor_extra_data_.emplace(issuer.base_id,
+                                     std::move(trust_store_anchor_data));
     }
 
     signer_set_timestamp_ = root_store_data.signer_set()->timestamp();
@@ -1281,6 +1281,29 @@ Signer::Signer(const Signer& other) = default;
 Signer::Signer(Signer&& other) = default;
 Signer& Signer::operator=(const Signer& other) = default;
 Signer& Signer::operator=(Signer&& other) = default;
+
+// static
+Signer Signer::CreateForTesting(chrome_root_store::SignerType type,
+                                base::span<const uint8_t> base_id) {
+  Signer signer;
+  signer.friendly_name = x509_util::RelativeOidToString(base_id);
+  signer.base_id = base::ToVector(base_id);
+  signer.state_history.emplace_back(chrome_root_store::STATE_USABLE,
+                                    base::Time::FromSecondsSinceUnixEpoch(1));
+  signer.operator_history.emplace_back(
+      x509_util::RelativeOidToString(base_id),
+      base::Time::FromSecondsSinceUnixEpoch(1));
+  // Signer will be returned with a fake key, which is good enough for most
+  // tests since the key isn't parsed until doing a signature verification.
+  // Tests that actually need to test signature verification can set the key
+  // field on the returned object to their chosen key.
+  signer.key = x509_util::CreateCryptoBuffer(std::string_view("fake key"));
+  signer.type = type;
+  signer.realm = chrome_root_store::REALM_PUBLICLY_TRUSTED;
+  signer.signature_algorithm = bssl::SignatureAlgorithm::kMldsa44;
+
+  return signer;
+}
 
 ChromeRootStoreSignerSet::ChromeRootStoreSignerSet() = default;
 ChromeRootStoreSignerSet::~ChromeRootStoreSignerSet() = default;
