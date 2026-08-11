@@ -11,6 +11,7 @@
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/desktop_to_mobile_promos/features.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
@@ -44,6 +45,8 @@ const base::TimeDelta kStorageExpiry = base::Days(28);
 void CrossPlatformPromosService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kCrossPlatformPromosActiveDays);
+  registry->RegisterStringPref(prefs::kCrossPlatformPromosConsumedTriggerId,
+                               std::string());
   registry->RegisterTimePref(prefs::kCrossPlatformPromosIOS16thActiveDay,
                              base::Time());
   registry->RegisterDictionaryPref(
@@ -126,6 +129,17 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     return;
   }
 
+  const std::string* trigger_id =
+      promo_reminder.FindString(prefs::kIOSPromoReminderTriggerId);
+  if (trigger_id) {
+    const std::string& consumed_id = profile_->GetPrefs()->GetString(
+        prefs::kCrossPlatformPromosConsumedTriggerId);
+    if (consumed_id == *trigger_id) {
+      profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
+      return;
+    }
+  }
+
   desktop_to_mobile_promos::PromoType type =
       static_cast<desktop_to_mobile_promos::PromoType>(*promo_type);
   switch (type) {
@@ -152,6 +166,11 @@ void CrossPlatformPromosService::MaybeShowPromo() {
 
   base::UmaHistogramEnumeration(
       "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground", type);
+
+  if (trigger_id) {
+    profile_->GetPrefs()->SetString(
+        prefs::kCrossPlatformPromosConsumedTriggerId, *trigger_id);
+  }
 
   // Clear the promo reminder pref after showing the promo.
   profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);

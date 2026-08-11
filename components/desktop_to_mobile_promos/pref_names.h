@@ -14,6 +14,12 @@ inline constexpr char kIOSPromoReminder[] = "promos.ios_promo_reminder";
 // Keys for the kIOSPromoReminder dictionary.
 inline constexpr char kIOSPromoReminderPromoType[] = "promo_type";
 inline constexpr char kIOSPromoReminderDeviceGUID[] = "device_guid";
+inline constexpr char kIOSPromoReminderTriggerId[] = "trigger_id";
+
+// String pref for storing a trigger ID that has already been
+// shown on iOS.
+inline constexpr char kCrossPlatformPromosConsumedTriggerId[] =
+    "cross_platform_promos.consumed_trigger_id";
 
 }  // namespace prefs
 

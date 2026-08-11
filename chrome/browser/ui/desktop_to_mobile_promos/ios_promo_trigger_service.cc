@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -146,6 +147,8 @@ void IOSPromoTriggerService::SetReminderForIOSDevice(
   promo_reminder_data.Set(prefs::kIOSPromoReminderPromoType,
                           static_cast<int>(promo_type));
   promo_reminder_data.Set(prefs::kIOSPromoReminderDeviceGUID, device_guid);
+  promo_reminder_data.Set(prefs::kIOSPromoReminderTriggerId,
+                          base::Uuid::GenerateRandomV4().AsLowercaseString());
   profile_->GetPrefs()->SetDict(prefs::kIOSPromoReminder,
                                 std::move(promo_reminder_data));
 
