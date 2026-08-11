@@ -259,13 +259,13 @@ source_set("enterprise") {
       "connectors/device_trust/signals/signals_service_impl.h",
     ]
     public_deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/device_trust",
       "//components/enterprise/device_trust/core:device_trust_connector_service",
+      "//components/enterprise/device_trust/core:metrics",
       "//components/enterprise/device_trust/core/attestation",
     ]
   }
@@ -722,7 +722,7 @@ source_set("impl") {
       "signals/user_delegate_impl.cc",
       "signals/user_permission_service_factory.cc",
     ]
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
+    deps += [ "//components/enterprise/device_trust/core:metrics" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
@@ -738,7 +738,6 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
-      "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
@@ -747,6 +746,7 @@ source_set("impl") {
       "//components/device_signals/core/common",
       "//components/enterprise/device_trust",
       "//components/enterprise/device_trust/core:device_trust_connector_service",
+      "//components/enterprise/device_trust/core:metrics",
       "//components/enterprise/device_trust/core/attestation",
       "//components/enterprise/device_trust/core/attestation:types",
     ]

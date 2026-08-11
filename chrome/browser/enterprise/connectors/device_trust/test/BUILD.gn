@@ -10,7 +10,7 @@ source_set("test_support") {
 
   sources = [ "test_constants.cc" ]
 
-  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
+  public_deps = [ "//components/enterprise/device_trust/core:metrics" ]
 
   deps = [ "//chrome/browser/enterprise/connectors/device_trust:features" ]
 

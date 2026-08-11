@@ -24,6 +24,18 @@ source_set("core") {
   ]
 }
 
+source_set("metrics") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  public = [ "metrics_utils.h" ]
+  sources = [ "metrics_utils.cc" ]
+
+  public_deps = [
+    ":core",
+    "//base",
+  ]
+}
+
 source_set("device_trust_connector_service") {
   configs += [ "//components/enterprise:extra_warnings" ]
 

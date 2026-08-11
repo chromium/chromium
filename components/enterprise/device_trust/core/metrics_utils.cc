@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "components/enterprise/device_trust/core/metrics_utils.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

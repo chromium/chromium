@@ -45,7 +45,7 @@ source_set("network") {
   ]
 
   deps = [
-    "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//components/enterprise/device_trust/core:metrics",
     "//components/policy/proto",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",

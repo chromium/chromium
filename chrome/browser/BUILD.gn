@@ -3890,12 +3890,11 @@ source_set("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos || is_android) {
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
+    deps += [ "//components/enterprise/device_trust/core:metrics" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/ui/webui/skills",
@@ -3904,6 +3903,7 @@ source_set("browser") {
       "//components/device_signals/core/common",
       "//components/enterprise/core",
       "//components/enterprise/device_trust",
+      "//components/enterprise/device_trust/core:metrics",
       "//components/enterprise/device_trust/core/attestation",
       "//components/enterprise/device_trust/core/attestation:types",
       "//components/metrics",

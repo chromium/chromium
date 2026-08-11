@@ -2878,13 +2878,13 @@ source_set("browser_tests") {
 
       deps += [
         "//chrome/browser/enterprise/connectors/device_trust:features",
-        "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
         "//chrome/browser/enterprise/network_header_injection:browser_tests",
         "//components/device_signals/core/common",
         "//components/device_signals/core/common:features",
         "//components/device_signals/test:test_support",
         "//components/enterprise/connectors/core",
+        "//components/enterprise/device_trust/core:metrics",
       ]
     }
 
