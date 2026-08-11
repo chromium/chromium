@@ -329,6 +329,13 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     }
 
                     @Override
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        if (!isAllTabs) return;
+                        cancelLoadingTabs(tabs.get(0).isIncognito());
+                    }
+
+                    @Override
                     public void tabClosureUndone(Tab tab) {
                         saveTabListAsynchronously();
                     }

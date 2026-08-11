@@ -48,6 +48,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -755,6 +756,64 @@ public class TabPersistentStoreUnitTest {
                         /* markedForSelection= */ false);
         verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseAllTabs_CancelsTabLoading() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        mTabModelObserverCaptor.getValue().willCloseAllTabs(true);
+
+        TabRestoreDetails details =
+                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+        mPersistentStore.restoreTab(details, null, true);
+
+        verifyNoMoreInteractions(mIncognitoTabCreator);
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testWillCloseAllTabs_CancelsTabLoading_WillCloseTabs() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+        mPersistentStore.onNativeLibraryReady();
+        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+
+        Tab tab = mock(Tab.class);
+        when(tab.isIncognito()).thenReturn(true);
+        mTabModelObserverCaptor
+                .getValue()
+                .willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
+
+        TabRestoreDetails details =
+                new TabRestoreDetails(1, 0, true, getOriginalNativeNtpUrl(), false);
+        mPersistentStore.restoreTab(details, null, true);
+
+        verifyNoMoreInteractions(mIncognitoTabCreator);
     }
 
     @Test
