@@ -595,6 +595,8 @@ crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gle
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 
+crbug.com/545084625 [ win10 intel-0x4680 angle-d3d11 passthrough ] conformance2/rendering/blitframebuffer-test.html [ RetryOnFailure ]
+
 
 ######################
 # Mac Metal failures #
