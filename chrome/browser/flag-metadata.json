@@ -8115,7 +8115,7 @@
   {
     "name": "pdf-use-skia-renderer",
     "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 160
   },
   {
     "name": "pdf-xfa-forms",
