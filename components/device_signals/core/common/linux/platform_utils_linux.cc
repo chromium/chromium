@@ -29,6 +29,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/power/power_policy_controller.h"
+#endif
+
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -77,7 +81,11 @@ base::FilePath GetCrowdStrikeZtaFilePath() {
 // The current implementation support Gnone and Cinnamon only.
 SettingValue GetScreenlockSecured() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS handles screen lock via user preferences, not OS-level tools.
+  if (chromeos::PowerPolicyController::IsInitialized()) {
+    base::TimeDelta delay = chromeos::PowerPolicyController::Get()
+                                ->GetMaxPolicyAutoScreenLockDelay();
+    return delay.is_zero() ? SettingValue::DISABLED : SettingValue::ENABLED;
+  }
   return SettingValue::UNKNOWN;
 #elif defined(USE_GIO)
   static constexpr char kLockScreenKey[] = "lock-enabled";
