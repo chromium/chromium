@@ -58,7 +58,7 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
       .SetBetweenChildSpacing(2)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
       .AddChildren(
-          // Row 1 (Microphone) - Top tile with 16px top corners & 4px bottom
+          // Row 1 (Sparkles) - Top tile with 16px top corners & 4px bottom
           // corners
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -72,19 +72,19 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          vector_icons::kMicIcon, ui::kColorSysPrimary, 20))
+                          data_sharing_icon, ui::kColorSysPrimary, 20))
                       .SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(2, 0, 0, 0)),
                   views::Builder<views::Label>()
                       .SetText(l10n_util::GetStringUTF16(
-                          IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE))
+                          IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING))
                       .SetTextStyle(views::style::STYLE_BODY_4)
                       .SetLineHeight(18)
                       .SetMultiLine(true)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                       .SetEnabledColor(ui::kColorSysOnSurface)
                       .SetSubpixelRenderingEnabled(false)),
-          // Row 2 (Sparkles) - Bottom tile with 0px top corners & 16px bottom
+          // Row 2 (Microphone) - Bottom tile with 0px top corners & 16px bottom
           // corners
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -98,12 +98,12 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          data_sharing_icon, ui::kColorSysPrimary, 20))
+                          vector_icons::kMicIcon, ui::kColorSysPrimary, 20))
                       .SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(2, 0, 0, 0)),
                   views::Builder<views::Label>()
                       .SetText(l10n_util::GetStringUTF16(
-                          IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING))
+                          IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE))
                       .SetTextStyle(views::style::STYLE_BODY_4)
                       .SetLineHeight(18)
                       .SetMultiLine(true)
@@ -174,7 +174,8 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
           CreateDialogModel(std::move(complete_callback)),
           ui::mojom::ModalType::kChild)
           .release();
-  model_host->set_fixed_width(512);
+  model_host->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
@@ -183,7 +184,7 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
 
   if (auto* frame = model_host->GetBubbleFrameView()) {
     if (auto* title_label = views::AsViewClass<views::Label>(frame->title())) {
-      title_label->SetTextStyle(views::style::STYLE_HEADLINE_5);
+      title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
     }
   }
 
@@ -220,7 +221,8 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
                        .SetStyle(ui::ButtonStyle::kProminent))
       .AddCancelButton(base::DoNothing(),
                        ui::DialogModel::Button::Params()
-                           .SetLabel(l10n_util::GetStringUTF16(IDS_NO_THANKS))
+                           .SetLabel(l10n_util::GetStringUTF16(
+                               IDS_DICTATION_ONBOARDING_BUTTON_CANCEL))
                            .SetId(kDictationOnboardingCancelButtonElementId)
                            .SetStyle(ui::ButtonStyle::kTonal))
       .Build();
