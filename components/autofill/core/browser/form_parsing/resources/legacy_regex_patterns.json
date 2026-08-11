@@ -3600,7 +3600,79 @@
           "INPUT_NUMBER"
         ]
       }
-    ]
+    ],
+    "es": {
+      "AutofillEnableExpandIbanRegexPattern": [
+        {
+          "positive_pattern": "(\\biban(\\b|_)|international bank account number|número de cuentas)",
+          "positive_score": 0.975,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "TEXT_AREA",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "fr": {
+      "AutofillEnableExpandIbanRegexPattern": [
+        {
+          "positive_pattern": "(\\biban(\\b|_)|international bank account number|Coordonnées bancaires|numéro de compte|n° de compte)",
+          "positive_score": 0.975,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "TEXT_AREA",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "it": {
+      "AutofillEnableExpandIbanRegexPattern": [
+        {
+          "positive_pattern": "(\\biban(\\b|_)|international bank account number|Numero di conto)",
+          "positive_score": 0.975,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "TEXT_AREA",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "pl": {
+      "AutofillEnableExpandIbanRegexPattern": [
+        {
+          "positive_pattern": "(\\biban(\\b|_)|international bank account number|numer konta bankowego|numer konta)",
+          "positive_score": 0.975,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "TEXT_AREA",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    }
   },
   "IN_DEPENDENT_LOCALITY": {
     "en": [
