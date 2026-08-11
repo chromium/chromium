@@ -103,7 +103,11 @@
       [ "Ticket number" ],
       [ "Confirmation code" ]
     ],
-    "import constraints": [],
+    "import constraints": [
+      [ "Flight number", "Departure date" ],
+      [ "Ticket number", "Departure date" ],
+      [ "Confirmation code", "Departure date" ]
+    ],
     "merge constraints": [
       [ "Confirmation code" ],
       [ "Ticket number" ]
