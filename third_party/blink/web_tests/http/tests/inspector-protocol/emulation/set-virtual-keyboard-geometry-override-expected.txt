@@ -1,0 +1,8 @@
+Tests virtual keyboard geometry emulation, validation, and clearing.
+After setting geometry: rect=10,500,380,250 events=1 event=250
+Event count after setting identical geometry: 1
+Invalid geometry error: Virtual keyboard geometry must contain finite, non-negative values within 10000000 CSS pixels
+After rejected geometry: rect=10,500,380,250 insets=500,10,50,10,380,250 events=1 event=250
+After clearing geometry: rect=0,0,0,0 insets=0,0,0,0,0,0 events=2 event=0
+After session disconnect: rect=0,0,0,0
+
