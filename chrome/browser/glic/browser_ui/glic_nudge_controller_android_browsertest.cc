@@ -7,8 +7,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,6 +127,29 @@ IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
 
   // Open and activate a new tab.
   CreateAndActivateTab(GetSimpleTestUrl());
+
+  EXPECT_FALSE(mock_delegate_.GetIsShowingGlicNudge());
+  EXPECT_EQ(future.Take(), GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNudgeControllerAndroidBrowserTest,
+                       HidesNudgeOnTabListActiveChanged) {
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+
+  EXPECT_FALSE(mock_delegate_.GetIsShowingGlicNudge());
+
+  base::test::TestFuture<GlicNudgeActivity> future;
+  nudge_controller_->UpdateNudgeLabel(web_contents, "Nudge Label",
+                                      "Prompt Suggestion", std::nullopt,
+                                      future.GetRepeatingCallback());
+
+  EXPECT_TRUE(mock_delegate_.GetIsShowingGlicNudge());
+  EXPECT_EQ(future.Take(), GlicNudgeActivity::kNudgeShown);
+
+  // Deactivate the tab list (e.g. when switching to incognito tab model).
+  static_cast<GlicNudgeControllerImpl*>(nudge_controller_.get())
+      ->OnTabListActiveChanged(*GetTabListInterface(), /*is_active=*/false);
 
   EXPECT_FALSE(mock_delegate_.GetIsShowingGlicNudge());
   EXPECT_EQ(future.Take(), GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);

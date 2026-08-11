@@ -967,6 +967,7 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/browser_ui:impl",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel/android",

@@ -64,6 +64,14 @@ public interface TabModelObserver {
     /** Called when the set of multi-selected tabs has changed. */
     default void onTabsSelectionChanged() {}
 
+    /**
+     * Called when the active status of the {@link TabModel} changes (e.g. when switching between
+     * standard and incognito tab models).
+     *
+     * @param active Whether the tab model is now active.
+     */
+    default void onActiveChanged(boolean active) {}
+
     // Tab Movement and Attributes
 
     /**

@@ -90,13 +90,7 @@ void GlicNudgeControllerImpl::UpdateNudgeLabel(
                        kNudgeIgnoredOpenedContextualTasksSidePanel ||
        activity == glic::GlicNudgeActivity::
                        kNudgeIgnoredOmniboxContextMenuInteraction)) {
-    split_button_controller_->CallOnBoth(
-        base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
-          if (delegate.GetIsShowingGlicNudge()) {
-            delegate.OnHideGlicNudgeUI();
-          }
-        }));
-    OnNudgeActivity(*activity);
+    HideNudge(*activity);
   }
 
   nudge_activity_callback_ = callback;
@@ -180,13 +174,24 @@ void GlicNudgeControllerImpl::OnActiveTabChanged(TabListInterface& tab_list,
     return;
   }
 
+  HideNudge(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+}
+
+void GlicNudgeControllerImpl::OnTabListActiveChanged(TabListInterface& tab_list,
+                                                     bool is_active) {
+  if (!is_active && nudged_tab_handle_.Get()) {
+    HideNudge(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+  }
+}
+
+void GlicNudgeControllerImpl::HideNudge(GlicNudgeActivity activity) {
   split_button_controller_->CallOnBoth(
       base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
         if (delegate.GetIsShowingGlicNudge()) {
           delegate.OnHideGlicNudgeUI();
         }
       }));
-  OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+  OnNudgeActivity(activity);
 }
 
 void GlicNudgeControllerImpl::OnTabListDestroyed(TabListInterface& tab_list) {

@@ -76,6 +76,11 @@ class TabListInterfaceObserver : public base::CheckedObserver {
 
   // Called when all tabs in the TabListInterface are closing.
   virtual void OnAllTabsAreClosing(TabListInterface& tab_list) {}
+
+  // Called when the TabList becomes active or inactive (e.g. on Android when
+  // switching between standard and incognito tab models).
+  virtual void OnTabListActiveChanged(TabListInterface& tab_list,
+                                      bool is_active) {}
 };
 
 #endif  // CHROME_BROWSER_TAB_LIST_TAB_LIST_INTERFACE_OBSERVER_H_

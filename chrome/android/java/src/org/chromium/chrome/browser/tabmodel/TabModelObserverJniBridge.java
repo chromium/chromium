@@ -187,6 +187,13 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public void onActiveChanged(boolean active) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get()
+                .onActiveChanged(mNativeTabModelObserverJniBridge, active);
+    }
+
+    @Override
     public final void allTabsClosureCommitted(boolean isIncognito) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
@@ -352,5 +359,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
 
         void onTabGroupVisualsChanged(
                 long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
+
+        void onActiveChanged(long nativeTabModelObserverJniBridge, boolean active);
     }
 }

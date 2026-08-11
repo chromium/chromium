@@ -42,6 +42,8 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
   // TabListInterfaceObserver:
   void OnActiveTabChanged(TabListInterface& tab_list,
                           tabs::TabInterface* tab) override;
+  void OnTabListActiveChanged(TabListInterface& tab_list,
+                              bool is_active) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // TODO(crbug.com/511309088): Remove and have callers do this directly on the
@@ -57,6 +59,7 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
   base::WeakPtr<GlicNudgeController> GetWeakPtr() override;
 
  private:
+  void HideNudge(GlicNudgeActivity activity);
   TabListInterface* GetTabList();
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;

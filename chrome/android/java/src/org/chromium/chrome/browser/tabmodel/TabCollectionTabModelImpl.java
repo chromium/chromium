@@ -876,7 +876,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public void setActive(boolean active) {
+        if (mActive == active) return;
         mActive = active;
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onActiveChanged(active);
+        }
     }
 
     // TabModelJniBridge overrides.
