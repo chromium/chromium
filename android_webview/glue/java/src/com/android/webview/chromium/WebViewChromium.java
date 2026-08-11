@@ -1663,6 +1663,7 @@ class WebViewChromium
         // TODO(bewise): Replace this stubbed AwContents approach with better state management
         // so that long term we can clean up the default profile when it isn't in use.
         mAwContents = mFactory.getSharedDestroyedAwContents();
+        mSharedWebViewChromium.setAwContentsForTransfer(mAwContents);
     }
 
     @Override
