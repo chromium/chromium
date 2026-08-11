@@ -29,9 +29,8 @@ class ChromiumLogger : public Logger {
     base::Time::Now().LocalExplode(&now);
 
     std::string str = base::StringPrintf(
-        "%04d/%02d/%02d-%02d:%02d:%02d.%03d %" PRIx64 " ", now.year,
-        now.month, now.day_of_month, now.hour, now.minute, now.second,
-        now.millisecond,
+        "%04d/%02d/%02d-%02d:%02d:%02d.%03d %" PRIx64 " ", now.year, now.month,
+        now.day_of_month, now.hour, now.minute, now.second, now.millisecond,
         static_cast<uint64_t>(base::PlatformThread::CurrentId()));
     base::StringAppendV(&str, format, arguments);
     if (str.back() != '\n') {
