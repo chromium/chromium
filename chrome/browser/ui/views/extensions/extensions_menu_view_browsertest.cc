@@ -149,11 +149,7 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForAnimation() {
-#if BUILDFLAG(IS_MAC)
-    // Animation is not reliable in tests on Mac or we avoid using animations.
-#else
     views::test::WaitForAnimatingLayoutManager(extensions_container());
-#endif
     LayoutContainerIfNecessary();
     LayoutMenuIfNecessary();
   }
@@ -190,14 +186,7 @@ class ExtensionsMenuViewBrowserTest : public InProcessBrowserTest {
       if (views::IsViewClass<ToolbarActionView>(child)) {
         ToolbarActionView* const action =
             static_cast<ToolbarActionView*>(child);
-#if BUILDFLAG(IS_MAC)
-        const bool is_visible =
-            extensions_container()->IsActionVisibleOnToolbar(
-                action->view_model()->GetId());
-#else
-        const bool is_visible = action->GetVisible();
-#endif
-        if (is_visible) {
+        if (action->GetVisible()) {
           result.push_back(action);
         }
       }
@@ -313,12 +302,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ASSERT_TRUE(menu_item);
   ClickPinButton(menu_item);
   WaitForAnimation();
-#if !BUILDFLAG(IS_MAC)
   views::test::WaitForAnimatingLayoutManager(
       BrowserView::GetBrowserViewForBrowser(browser2)
           ->toolbar()
           ->extensions_container());
-#endif
 
   // Window that was already open gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser2));
@@ -328,12 +315,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
       BrowserView::GetBrowserViewForBrowser(browser3)
           ->toolbar()
           ->extensions_container());
-#if !BUILDFLAG(IS_MAC)
   views::test::WaitForAnimatingLayoutManager(
       BrowserView::GetBrowserViewForBrowser(browser3)
           ->toolbar()
           ->extensions_container());
-#endif
 
   // Brand-new window also gets the pinned extension.
   EXPECT_TRUE(is_action_visible_on_toolbar(browser3));
@@ -363,13 +348,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PinnedExtensionLayout DISABLED_PinnedExtensionLayout
-#else
-#define MAYBE_PinnedExtensionLayout PinnedExtensionLayout
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
-                       MAYBE_PinnedExtensionLayout) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, PinnedExtensionLayout) {
   for (int i = 0; i < 3; i++) {
     InstallExtension(base::StringPrintf("Test %d", i));
   }
@@ -491,12 +470,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   // Verify behavior before pin, after pin, and after unpin.
   for (int i = 0; i < 3; i++) {
     EXPECT_EQ(i, user_action_tester.GetActionCount(kPinButtonUserAction));
-#if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40670141): No Mac animations in unit tests cause errors.
-#else
     EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kAlert));
     EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kTextChanged));
-#endif
     ClickPinButton(menu_item);
   }
 }
