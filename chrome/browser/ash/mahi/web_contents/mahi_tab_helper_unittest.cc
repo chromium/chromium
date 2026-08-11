@@ -35,8 +35,8 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
             &mock_mahi_web_contents_manager_);
 
     // Initialize browser.
-    const Browser::CreateParams params(profile(), /*user_gesture=*/true);
-    browser_ = CreateBrowserWithTestWindowForParams(params);
+    BrowserWindowCreateParams params(profile(), /*user_gesture=*/true);
+    browser_ = CreateBrowserWithTestWindowForParams(std::move(params));
     tab_strip_model_ = browser_->tab_strip_model();
   }
 

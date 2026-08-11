@@ -43,8 +43,8 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
             &mock_dlp_content_observer_);
 
     // Initialize browser.
-    const Browser::CreateParams params(profile(), /*user_gesture=*/true);
-    browser_ = CreateBrowserWithTestWindowForParams(params);
+    BrowserWindowCreateParams params(profile(), /*user_gesture=*/true);
+    browser_ = CreateBrowserWithTestWindowForParams(std::move(params));
     tab_strip_model_ = browser_->tab_strip_model();
   }
 
@@ -68,10 +68,10 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {
-  const Browser::CreateParams params(
+  BrowserWindowCreateParams params(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       /*user_gesture=*/true);
-  auto browser = CreateBrowserWithTestWindowForParams(params);
+  auto browser = CreateBrowserWithTestWindowForParams(std::move(params));
 
   content::WebContents* web_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(

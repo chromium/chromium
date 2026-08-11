@@ -171,9 +171,9 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
 
   // Initialize 2 browsers.
   std::unique_ptr<Browser> browser_1 = CreateBrowserWithTestWindowForParams(
-      Browser::CreateParams(profile(), /*user_gesture=*/true));
+      BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
   std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
-      Browser::CreateParams(profile(), /*user_gesture=*/true));
+      BrowserWindowCreateParams(profile(), /*user_gesture=*/true));
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
 
   // Trigger close all browsers by being idle for

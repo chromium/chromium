@@ -38,9 +38,9 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
 
   // The window sizing code only works when the window hasn't yet been created.
   std::unique_ptr<Browser> CreateWindowlessBrowser(
-      Browser::CreateParams params) {
+      BrowserWindowCreateParams params) {
     return chrome::CreateBrowserWithAuraTestWindowForParams(
-        std::unique_ptr<aura::Window>(), &params);
+        std::unique_ptr<aura::Window>(), std::move(params));
   }
 
   // Similar to WindowSizerTestUtil::GetWindowBounds() but takes an existing
@@ -131,10 +131,10 @@ const int kMaximumWindowWidth = WindowSizerChromeOS::kMaximumWindowWidth;
 const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
 
 std::unique_ptr<Browser> CreateTestBrowser(std::unique_ptr<aura::Window> window,
-                                           Browser::CreateParams* params) {
+                                           BrowserWindowCreateParams params) {
   std::unique_ptr<Browser> browser =
       chrome::CreateBrowserWithAuraTestWindowForParams(std::move(window),
-                                                       params);
+                                                       std::move(params));
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     browser->GetWindow()->GetNativeWindow()->SetProperty(
         ash::kWindowPositionManagedTypeKey, true);
@@ -392,30 +392,31 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindows) {
 
   // Create a browser to pass into the WindowSizerTestUtil::GetWindowBounds
   // function.
-  Browser::CreateParams native_params(&profile_, true);
-  auto browser = CreateWindowlessBrowser(native_params);
+  BrowserWindowCreateParams native_params(&profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(native_params));
 
   // Creating a popup handler here to make sure it does not interfere with the
   // existing windows.
-  Browser::CreateParams params2(&profile_, true);
+  BrowserWindowCreateParams params2(&profile_, true);
   std::unique_ptr<Browser> browser2 = (CreateTestBrowser(
       CreateTestWindowInShell({.bounds = {16, 32, 640, 320}, .window_id = 0}),
-      &params2));
+      std::move(params2)));
   ui::BaseWindow* browser_window = browser2->GetWindow();
 
   // Creating a popup to make sure it does not interfere with the positioning.
-  Browser::CreateParams params_popup(Browser::TYPE_POPUP, &profile_, true);
+  BrowserWindowCreateParams params_popup(BrowserWindowInterface::TYPE_POPUP,
+                                         &profile_, true);
   std::unique_ptr<Browser> browser_popup(CreateTestBrowser(
       CreateTestWindowInShell({.bounds = {16, 32, 128, 256}, .window_id = 1}),
-      &params_popup));
+      std::move(params_popup)));
 
   browser_window->Show();
 
   // Make sure that popups do not get changed.
   {
-    Browser::CreateParams params_new_popup(Browser::TYPE_POPUP, &profile_,
-                                           true);
-    auto new_popup = CreateWindowlessBrowser(params_new_popup);
+    BrowserWindowCreateParams params_new_popup(
+        BrowserWindowInterface::TYPE_POPUP, &profile_, true);
+    auto new_popup = CreateWindowlessBrowser(std::move(params_new_popup));
     gfx::Rect window_bounds;
     GetWindowBounds(new_popup.get(), gfx::Rect(), display_id,
                     gfx::Rect(50, 100, 300, 150), bottom_s1600x1200, PERSISTED,
@@ -456,8 +457,8 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindows) {
 // created browser window on an empty desktop.
 // TODO(crbug.com/445541616): Reenable the test.
 TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewBrowserWindowOnEmptyDesktop) {
-  Browser::CreateParams native_params(&profile_, true);
-  auto browser = CreateWindowlessBrowser(native_params);
+  BrowserWindowCreateParams native_params(&profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(native_params));
 
   // A common screen size for Chrome OS devices where forced-maximized
   // windows are desirable.
@@ -498,8 +499,8 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewBrowserWindowOnEmptyDesktop) {
 
 // TODO(crbug.com/445541616): Reenable the test.
 TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewBrowserWindowOnLargeDesktop) {
-  Browser::CreateParams native_params(&profile_, true);
-  auto browser = CreateWindowlessBrowser(native_params);
+  BrowserWindowCreateParams native_params(&profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(native_params));
 
   // A larger monitor should not trigger auto-maximize.
   UpdateDisplay("1600x1200");
@@ -531,28 +532,28 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_PlaceNewWindowsOnMultipleDisplays) {
   gfx::Rect secondary_bounds = second_display.bounds();
 
   // Create browser windows that are used as reference.
-  Browser::CreateParams params(&profile_, true);
+  BrowserWindowCreateParams params(&profile_, true);
   std::unique_ptr<Browser> browser(CreateTestBrowser(
       CreateTestWindowInShell({.bounds = {10, 10, 200, 200}, .window_id = 0}),
-      &params));
+      std::move(params)));
   ui::BaseWindow* browser_window = browser->GetWindow();
   gfx::NativeWindow native_window = browser_window->GetNativeWindow();
   browser_window->Show();
   EXPECT_EQ(native_window->GetRootWindow(),
             ash::Shell::GetRootWindowForNewWindows());
 
-  Browser::CreateParams another_params(&profile_, true);
+  BrowserWindowCreateParams another_params(&profile_, true);
   std::unique_ptr<Browser> another_browser(CreateTestBrowser(
       CreateTestWindowInShell({.bounds = {400, 10, 300, 300}, .window_id = 1}),
-      &another_params));
+      std::move(another_params)));
   ui::BaseWindow* another_browser_window = another_browser->GetWindow();
   gfx::NativeWindow another_native_window =
       another_browser_window->GetNativeWindow();
   another_browser_window->Show();
 
   // Creating a new window to verify the new placement.
-  Browser::CreateParams new_params(&profile_, true);
-  auto new_browser = CreateWindowlessBrowser(new_params);
+  BrowserWindowCreateParams new_params(&profile_, true);
+  auto new_browser = CreateWindowlessBrowser(std::move(new_params));
 
   // Make sure the primary root is active.
   ASSERT_EQ(ash::Shell::GetPrimaryRootWindow(),
@@ -609,12 +610,14 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_TestShowState) {
   UpdateDisplay("1600x1200");
 
   // Creating a browser & window to play with.
-  Browser::CreateParams params(Browser::TYPE_NORMAL, &profile_, true);
-  auto browser = CreateWindowlessBrowser(params);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   &profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(params));
 
   // Create also a popup browser since that behaves different.
-  Browser::CreateParams params_popup(Browser::TYPE_POPUP, &profile_, true);
-  auto browser_popup = CreateWindowlessBrowser(params_popup);
+  BrowserWindowCreateParams params_popup(BrowserWindowInterface::TYPE_POPUP,
+                                         &profile_, true);
+  auto browser_popup = CreateWindowlessBrowser(std::move(params_popup));
 
   // Tabbed windows should retrieve the saved window state - since there is a
   // top window.
@@ -663,8 +666,9 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_TestShowState) {
 
 // TODO(crbug.com/445541616): Reenable the test.
 TEST_F(WindowSizerChromeOSTest, DISABLED_TestShowStateOnTinyScreen) {
-  Browser::CreateParams params(Browser::TYPE_NORMAL, &profile_, true);
-  auto browser = CreateWindowlessBrowser(params);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   &profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(params));
 
   // In smaller screen resolutions we default to maximized if there is no other
   // window visible.
@@ -683,13 +687,15 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_TestShowStateDefaults) {
   UpdateDisplay("1600x1200");
   // Creating a browser & window to play with.
 
-  Browser::CreateParams params(Browser::TYPE_NORMAL, &profile_, true);
-  auto browser = CreateWindowlessBrowser(params);
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   &profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(params));
 
   // Create also a popup browser since that behaves slightly different for
   // defaults.
-  Browser::CreateParams params_popup(Browser::TYPE_POPUP, &profile_, true);
-  auto browser_popup = CreateWindowlessBrowser(params_popup);
+  BrowserWindowCreateParams params_popup(BrowserWindowInterface::TYPE_POPUP,
+                                         &profile_, true);
+  auto browser_popup = CreateWindowlessBrowser(std::move(params_popup));
 
   // Check that a browser creation state always get used if not given as
   // SHOW_STATE_DEFAULT.
@@ -744,8 +750,8 @@ TEST_F(WindowSizerChromeOSTest, DISABLED_TestShowStateDefaults) {
 TEST_F(WindowSizerChromeOSTest, DISABLED_DefaultStateBecomesMaximized) {
   // Create a browser to pass into the WindowSizerTestUtil::GetWindowBounds
   // function.
-  Browser::CreateParams native_params(&profile_, true);
-  auto browser = CreateWindowlessBrowser(native_params);
+  BrowserWindowCreateParams native_params(&profile_, true);
+  auto browser = CreateWindowlessBrowser(std::move(native_params));
 
   gfx::Rect display_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();

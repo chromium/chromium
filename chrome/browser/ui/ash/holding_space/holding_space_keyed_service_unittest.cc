@@ -3183,7 +3183,7 @@ class HoldingSpaceKeyedServicePrintToPdfIntegrationTest
     }
     if (!incognito_browser_) {
       incognito_browser_ =
-          CreateBrowserWithTestWindowForParams(Browser::CreateParams(
+          CreateBrowserWithTestWindowForParams(BrowserWindowCreateParams(
               profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
               /*user_gesture=*/true));
     }

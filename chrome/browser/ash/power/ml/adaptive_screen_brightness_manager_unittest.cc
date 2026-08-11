@@ -186,7 +186,7 @@ class AdaptiveScreenBrightnessManagerTest
         is_incognito
             ? original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
             : original_profile;
-    Browser::CreateParams params(used_profile, true);
+    BrowserWindowCreateParams params(used_profile, true);
 
     auto dummy_window = std::make_unique<aura::Window>(nullptr);
     dummy_window->Init(ui::LAYER_SOLID_COLOR);
@@ -200,7 +200,7 @@ class AdaptiveScreenBrightnessManagerTest
 
     std::unique_ptr<Browser> browser =
         chrome::CreateBrowserWithAuraTestWindowForParams(
-            std::move(dummy_window), &params);
+            std::move(dummy_window), std::move(params));
     if (is_focused) {
       browser->GetWindow()->Activate();
     } else {
