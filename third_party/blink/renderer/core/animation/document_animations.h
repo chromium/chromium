@@ -138,11 +138,11 @@ class CORE_EXPORT DocumentAnimations final
   // names declared in the trigger-instantiating property with the names
   // declared in the animation-trigger property.
   void UpdateAnimationTriggerAttachments();
-  void AddTriggeredAnimation(CSSAnimation* animation);
+  void AddCSSAnimationNeedingTriggerAttachment(CSSAnimation* animation);
 
-  const HeapHashSet<WeakMember<CSSAnimation>>& TriggeredAnimationsForTesting()
-      const {
-    return triggered_animations_;
+  const HeapHashSet<WeakMember<CSSAnimation>>&
+  CSSAnimationsNeedingTriggerAttachmentForTesting() const {
+    return css_animations_needing_trigger_attachment_;
   }
 
   void UpdateCompositorAnimationTriggers(
@@ -169,7 +169,8 @@ class CORE_EXPORT DocumentAnimations final
   HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
   // Animations which should be attached to triggers after style and layout
   // updates.
-  HeapHashSet<WeakMember<CSSAnimation>> triggered_animations_;
+  HeapHashSet<WeakMember<CSSAnimation>>
+      css_animations_needing_trigger_attachment_;
   // In the new timeline name scoping model, names have document-global
   // visibility by default. This is implementing by having CSSAnimations::
   // FindAncestor[Deferred]Timeline() look up names in this map

@@ -2353,8 +2353,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     css_animation.SetTriggerAttachments(entry.trigger_attachments);
     if (entry.trigger_attachments) {
-      element->GetDocument().GetDocumentAnimations().AddTriggeredAnimation(
-          &css_animation);
+      element->GetDocument()
+          .GetDocumentAnimations()
+          .AddCSSAnimationNeedingTriggerAttachment(&css_animation);
     }
     css_animation.SetTriggerActionPlayState(
         entry.play_state_list[entry.index % entry.play_state_list.size()]);
@@ -2395,8 +2396,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       // trigger. This allows the animation to show up in getAnimations.
       animation->pause();
       animation->SetPausedForTrigger(true);
-      element->GetDocument().GetDocumentAnimations().AddTriggeredAnimation(
-          animation);
+      element->GetDocument()
+          .GetDocumentAnimations()
+          .AddCSSAnimationNeedingTriggerAttachment(animation);
     } else {
       animation->play();
     }

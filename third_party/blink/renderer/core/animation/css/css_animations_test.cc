@@ -2940,14 +2940,15 @@ TEST_P(CSSAnimationsTriggerTest, NestedScopeAvoidsTriggerUpdates) {
   EXPECT_EQ(target->NamedTriggers()->size(), 1);
   EXPECT_EQ(GetDocument()
                 .GetDocumentAnimations()
-                .TriggeredAnimationsForTesting()
+                .CSSAnimationsNeedingTriggerAttachmentForTesting()
                 .size(),
             1);
-  CSSAnimation* animation = GetDocument()
-                                .GetDocumentAnimations()
-                                .TriggeredAnimationsForTesting()
-                                .begin()
-                                ->Get();
+  CSSAnimation* animation =
+      GetDocument()
+          .GetDocumentAnimations()
+          .CSSAnimationsNeedingTriggerAttachmentForTesting()
+          .begin()
+          ->Get();
   AnimationTrigger* initial_trigger =
       target->NamedTriggers()->begin()->value.Get();
 
