@@ -261,6 +261,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
       return regional_capabilities::FunnelStage::kNotInRegionalScope;
 
     case SearchEngineChoiceScreenConditions::kAlreadyCompleted:
+    case SearchEngineChoiceScreenConditions::kAlreadyCompletedImported:
       return regional_capabilities::FunnelStage::kAlreadyCompleted;
 
     // TODO(crbug.com/438717568): Do these 2 need to have a dedicated bucket?
@@ -598,6 +599,9 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
   if (status == ChoiceStatus::kValid) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
+  if (status == ChoiceStatus::kValidAndImported) {
+    return SearchEngineChoiceScreenConditions::kAlreadyCompletedImported;
+  }
 
   if (status == ChoiceStatus::kManaged) {
     return SearchEngineChoiceScreenConditions::kManaged;
@@ -670,6 +674,8 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
   switch (EvaluateSearchProviderChoice(template_url_service)) {
     case ChoiceStatus::kValid:
       return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
+    case ChoiceStatus::kValidAndImported:
+      return SearchEngineChoiceScreenConditions::kAlreadyCompletedImported;
     case ChoiceStatus::kDefaultSearchDisabled:
     case ChoiceStatus::kCurrentIsSetByPolicy:
       // It is possible that between the static checks at service creation
@@ -1128,6 +1134,12 @@ SearchEngineChoiceService::EvaluateSearchProviderChoice(
     if (renewal_reasons.empty()) {
       // The choice is not outdated and is also not made on an incompatible
       // program, so it's still valid.
+      if (IsChoiceImported(
+              *completion_metadata, CHECK_DEREF(client_.get()),
+              profile_prefs_.get(),
+              /* include_previous_just_in_time_detection= */ true)) {
+        return ChoiceStatus::kValidAndImported;
+      }
       return ChoiceStatus::kValid;
     }
   }

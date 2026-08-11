@@ -77,8 +77,10 @@ enum class SearchEngineChoiceScreenConditions {
   // Note: some flows (e.g. Desktop FRE or Profile Creation) might not emit this
   // condition.
   kUnavailableCurrentLocation = 24,
+  // The choice has already been completed on another device and imported.
+  kAlreadyCompletedImported = 25,
 
-  kMaxValue = kUnavailableCurrentLocation,
+  kMaxValue = kAlreadyCompletedImported,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceScreenConditions)
 

@@ -161,6 +161,91 @@ TEST_F(SearchEngineChoiceServiceTest,
 }
 #endif
 
+TEST_F(SearchEngineChoiceServiceTest, PreserveImportedChoice) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+       switches::kWipeChoicePrefsOnMissingDefaultSearchEngine},
+      /*disabled_features=*/{});
+
+  InitServiceArgs args = {
+      .force_reset = true,
+      .restore_detected_in_current_session = true,
+      .choice_predates_restore = true,
+  };
+
+  {
+    // 1. Get environment to set up DSE pref.
+    GetOrInitEnvironment(args);
+
+    // Set default search provider (sets DSE pref)
+    std::unique_ptr<TemplateURLData> data =
+        TemplateURLDataFromPrepopulatedEngine(
+            TemplateURLPrepopulateData::google);
+    auto template_url = std::make_unique<TemplateURL>(*data);
+    template_url_service().SetUserSelectedDefaultSearchProvider(
+        template_url.get(), ChoiceMadeLocation::kChoiceScreen);
+
+    ResetServices();
+  }
+
+  // 2. Recreate environment. Services are lazy again.
+  GetOrInitEnvironment(args);
+
+  // 3. Setup custom ProgramSettings to preserve imported choice.
+  // This must be done before search_engine_choice_service() is created.
+  regional_capabilities::ProgramSettings custom_settings{
+      .program = regional_capabilities::Program::kWaffle,
+      .choice_screen_eligibility_config =
+          regional_capabilities::ChoiceScreenEligibilityConfig{
+              .should_preserve_imported_choice = true,  // PRESERVE!
+          },
+  };
+  regional_capabilities_service().SetCacheForTesting(
+      country_codes::CountryId("BE"), custom_settings);
+
+  // 4. Set pre-existing choice metadata (predates restore)
+  // We overwrite the metadata set by SetUserSelectedDefaultSearchProvider in
+  // step 1.
+  SetChoiceCompletionMetadata(
+      *pref_service(),
+      {base::Time::Now() - base::Days(1), base::Version("1.0.0.0"),
+       regional_capabilities::SerializeProgram(
+           regional_capabilities::Program::kWaffle)});
+
+  // 5. Initialize choice service (runs Init())
+  // This will now see:
+  // - DSE pref present
+  // - Custom settings (preserve = true)
+  // - Metadata predating restore
+  search_engine_choice_service();
+
+  // 6. Verify that the choice is NOT invalidated (timestamp pref not set)
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceInvalidationTimestamp));
+
+  // 7. Verify conditions
+  SearchEngineChoiceScreenConditions expected_condition =
+#if !BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+      SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+#else
+      SearchEngineChoiceScreenConditions::kAlreadyCompletedImported;
+#endif
+
+  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
+                policy_service(), template_url_service()),
+            expected_condition);
+
+  EXPECT_EQ(
+      search_engine_choice_service().GetDynamicChoiceScreenConditions(
+          template_url_service(), {.allow_unknown_current_location = false}),
+      expected_condition);
+}
+
 TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
@@ -2127,6 +2212,14 @@ INSTANTIATE_TEST_SUITE_P(
 
         {.test_suffix = "AlreadyCompleted",
          .condition = SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+         .expected_if_static =
+             ExpectHistogramUnique(FunnelStage::kAlreadyCompleted),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kAlreadyCompleted)},
+
+        {.test_suffix = "AlreadyCompletedImported",
+         .condition =
+             SearchEngineChoiceScreenConditions::kAlreadyCompletedImported,
          .expected_if_static =
              ExpectHistogramUnique(FunnelStage::kAlreadyCompleted),
          .expected_if_dynamic =

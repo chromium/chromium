@@ -462,7 +462,11 @@ chromium-metrics-reviews@google.com.
     An extension controls the default search engine.
   </int>
   <int value="6" label="Eligible"/>
-  <int value="7" label="AlreadyCompleted"/>
+  <int value="7" label="AlreadyCompleted">
+    A choice has already been made, so not eligible anymore for a choice screen.
+    Note: Choices imported through Backup &amp; Restore or carry-over mechanisms
+    are reported as AlreadyCompletedImported.
+  </int>
   <int value="8" label="UnsupportedBrowserType">
     The browser type is unsupported: PWA, Kiosk, unsupported platform, etc.
   </int>
@@ -528,6 +532,10 @@ chromium-metrics-reviews@google.com.
     by the client state (e.g. Desktop first run), leading to not emitting this
     condition.
   </int>
+  <int value="25" label="AlreadyCompletedImported">
+    A choice has already been made **on another device** and applied to this
+    profile, so this one is not eligible anymore for a choice screen.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/enums.h:SearchEngineChoiceScreenConditions) -->
@@ -581,6 +589,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="AccountNotEligible"/>
   <int value="11" label="Managed"/>
   <int value="12" label="CurrentCannotBeHighlighted"/>
+  <int value="13" label="ValidAndImported"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_service.h:ChoiceStatus) -->
