@@ -2228,6 +2228,13 @@ public class LocationBarMediatorUnitTest {
         verifyMicButtonVisibilityWhenFocusChanges(false);
     }
 
+    @Test
+    public void testMicButtonVisibility_toolbarMicEnabled_tablet_aimRequest() {
+        mIsToolbarMicEnabled = true;
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        verifyMicButtonVisibilityWhenFocusChanges(true);
+    }
+
     // Sets up and executes a test for visibility of a mic button on a tablet.
     // The mic button should not be visible if toolbar mic is visible as well.
     private void verifyMicButtonVisibilityWhenFocusChanges(boolean shouldBeVisible) {
@@ -2236,6 +2243,7 @@ public class LocationBarMediatorUnitTest {
         mTabletMediator.onFinishNativeInitialization();
         mTabletMediator.setShouldShowButtonsWhenUnfocusedForTablet(true);
         mTabletMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+        mTabletMediator.beginOrResumeInput(/* activateNewSession= */ true);
         mTabletMediator.onUrlFocusChange(true);
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
@@ -3055,6 +3063,26 @@ public class LocationBarMediatorUnitTest {
         mTabletMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mTabletMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarTablet);
+        updateTabletWidthConsumers(mTabletMediator);
+        verify(mLocationBarTablet).setMicButtonVisibility(/* shouldShow= */ true);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_suggestionsPopover_toolbarMicEnabled() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mProfileSupplier.set(mProfile);
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+        mIsToolbarMicEnabled = true;
 
         mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();

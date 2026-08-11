@@ -2481,11 +2481,13 @@ class LocationBarMediator
                 || !mEmbedderUiOverrides.isVoiceEntrypointAllowed()) {
             return false;
         }
-        boolean isToolbarMicEnabled = mIsToolbarMicEnabledSupplier.getAsBoolean();
+        boolean isAimRequest =
+                mCurrentInput != null && ToolModeUtils.isAimRequest(mCurrentInput.getRequestType());
+        boolean disableForToolbarMic = !isAimRequest && mIsToolbarMicEnabledSupplier.getAsBoolean();
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return !isToolbarMicEnabled && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+            return !disableForToolbarMic && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
         } else {
-            boolean canShowMicButton = !mIsTablet || !isToolbarMicEnabled;
+            boolean canShowMicButton = !mIsTablet || !disableForToolbarMic;
             return canShowMicButton
                     && (mUrlHasFocus
                             || mIsUrlFocusChangeInProgress
