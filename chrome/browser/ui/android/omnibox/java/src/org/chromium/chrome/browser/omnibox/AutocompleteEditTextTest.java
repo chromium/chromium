@@ -1575,4 +1575,29 @@ public class AutocompleteEditTextTest {
         assertEquals("www.e", mAutocomplete.getText().toString());
         assertTrue(mAutocomplete.shouldAutocomplete());
     }
+
+    @Test
+    public void testUndo_bypassesAutocomplete() {
+        assertTrue(mInputConnection.commitText("google.c", 1));
+        assertTexts("google.c", "", "");
+
+        mAutocomplete.setAutocompleteText("google.c", "om", null, null);
+        assertTexts("google.c", "om", "");
+
+        assertTrue(mAutocomplete.onTextContextMenuItem(android.R.id.undo));
+        assertTexts("", "", "");
+    }
+
+    @Test
+    public void testUndo_afterBackspaceBypassingAutocomplete() {
+        assertTrue(mInputConnection.commitText("google.c", 1));
+        mAutocomplete.setAutocompleteText("google.c", "om", null, null);
+        assertTexts("google.c", "om", "");
+
+        assertTrue(mInputConnection.deleteSurroundingText(1, 0));
+        assertTexts("google.c", "", "");
+
+        assertTrue(mAutocomplete.onTextContextMenuItem(android.R.id.undo));
+        assertTexts("", "", "");
+    }
 }
