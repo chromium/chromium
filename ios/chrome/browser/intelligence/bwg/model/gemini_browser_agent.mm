@@ -613,9 +613,7 @@ void GeminiBrowserAgent::OnPrimaryAccountChanged(
   if (event_type != signin::PrimaryAccountChangeEvent::Type::kNone) {
     browser_->GetProfile()->GetPrefs()->ClearPref(prefs::kGeminiConversationId);
 
-    if (is_floaty_invoked_) {
-      ForceDismissFloaty();
-    }
+    ForceDismissFloaty();
   }
 }
 
@@ -624,9 +622,7 @@ void GeminiBrowserAgent::OnIdentityManagerShutdown(
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
-    if (is_floaty_invoked_) {
-      ForceDismissFloaty();
-    }
+    ForceDismissFloaty();
   }
 }
 
@@ -1432,6 +1428,9 @@ void GeminiBrowserAgent::DismissFloaty() {
 }
 
 void GeminiBrowserAgent::ForceDismissFloaty() {
+  if (!is_floaty_invoked_) {
+    return;
+  }
   is_floaty_temporarily_hidden_ = false;
   DismissFloaty();
 }
