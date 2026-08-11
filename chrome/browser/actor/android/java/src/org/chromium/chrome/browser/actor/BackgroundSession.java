@@ -23,6 +23,7 @@ public class BackgroundSession {
         private final Tab mTab;
         private @Nullable @TabId Integer mPlaceholderTabId;
         private int mOriginalTabIndex = TabModel.INVALID_TAB_INDEX;
+        private int mTabWindowId = -1;
 
         public BackgroundTabData(Tab tab) {
             mTab = tab;
@@ -33,6 +34,17 @@ public class BackgroundSession {
             mTab = tab;
             mPlaceholderTabId = placeholderTabId;
             mOriginalTabIndex = originalTabIndex;
+        }
+
+        public BackgroundTabData(
+                Tab tab,
+                @Nullable @TabId Integer placeholderTabId,
+                int originalTabIndex,
+                int tabWindowId) {
+            mTab = tab;
+            mPlaceholderTabId = placeholderTabId;
+            mOriginalTabIndex = originalTabIndex;
+            mTabWindowId = tabWindowId;
         }
 
         /** Returns the tab associated with this data. */
@@ -58,6 +70,16 @@ public class BackgroundSession {
         /** Sets the original index of the tab in the tab model before transition. */
         public void setOriginalTabIndex(int originalTabIndex) {
             mOriginalTabIndex = originalTabIndex;
+        }
+
+        /** Returns the window ID associated with this tab. */
+        public int getTabWindowId() {
+            return mTabWindowId;
+        }
+
+        /** Sets the window ID associated with this tab. */
+        public void setTabWindowId(int tabWindowId) {
+            mTabWindowId = tabWindowId;
         }
     }
 

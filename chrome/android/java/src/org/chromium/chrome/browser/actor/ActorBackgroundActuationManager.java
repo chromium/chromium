@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -98,8 +99,9 @@ public class ActorBackgroundActuationManager {
      */
     public void transitionActiveTasksToBackground(TabModelSelector selector) {
         ThreadUtils.assertOnUiThread();
+        int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(selector);
+                ActorTabStateHelper.detachActiveBackgroundSessions(selector, windowId);
         for (BackgroundSession session : sessions) {
             Tab tab = session.getLastActiveTab();
             if (tab != null) {

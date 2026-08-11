@@ -33,13 +33,14 @@ public class ActorTabStateHelper {
 
     /**
      * Identifies, detaches, and returns tabs running active tasks from the given selector as
-     * background sessions.
+     * background sessions with a specified window ID.
      *
      * @param selector The TabModelSelector of the stopping activity.
+     * @param windowId The window ID where the selector is located.
      * @return A list of prepared BackgroundSession objects.
      */
     public static List<BackgroundSession> detachActiveBackgroundSessions(
-            TabModelSelector selector) {
+            TabModelSelector selector, int windowId) {
         ThreadUtils.assertOnUiThread();
         TabModel regularModel = selector.getModel(/* incognito= */ false);
         ActorKeyedService service = getActorKeyedService(regularModel);
@@ -48,7 +49,7 @@ public class ActorTabStateHelper {
             return Collections.emptyList();
         }
 
-        return findAndDetachActiveSessions(regularModel, service);
+        return findAndDetachActiveSessions(regularModel, service, windowId);
     }
 
     /**
@@ -56,7 +57,7 @@ public class ActorTabStateHelper {
      * Only creates and populates sessions for tabs whose placeholders were inserted correctly.
      */
     private static List<BackgroundSession> findAndDetachActiveSessions(
-            TabModel model, ActorKeyedService service) {
+            TabModel model, ActorKeyedService service, int windowId) {
         List<BackgroundSession> sessions = new ArrayList<>();
 
         for (Tab originalTab : model) {
@@ -73,7 +74,7 @@ public class ActorTabStateHelper {
 
             BackgroundSession.BackgroundTabData tabData =
                     new BackgroundSession.BackgroundTabData(
-                            originalTab, placeholderTab.getId(), originalIndex);
+                            originalTab, placeholderTab.getId(), originalIndex, windowId);
             BackgroundSession session = getSessionForTask(sessions, taskId);
             if (session != null) {
                 session.addTabData(tabData);

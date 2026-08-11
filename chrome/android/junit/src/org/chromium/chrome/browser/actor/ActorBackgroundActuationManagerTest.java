@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -63,6 +65,7 @@ public class ActorBackgroundActuationManagerTest {
     @Mock private TabRemover mTabRemover;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mPlaceholderTab;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private ActorBackgroundActuationManager mManager;
 
@@ -71,6 +74,7 @@ public class ActorBackgroundActuationManagerTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         when(mOffscreenRenderingManager.getOffscreenWindow()).thenReturn(mWindowAndroid);
         TabBuilder.setTabForTesting(mTab);
@@ -80,6 +84,7 @@ public class ActorBackgroundActuationManagerTest {
         when(mTabModel.indexOf(mTab)).thenReturn(0);
         when(mPlaceholderTab.getId()).thenReturn(101);
         when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mPlaceholderTab);
+        when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector)).thenReturn(42);
 
         mManager = new ActorBackgroundActuationManager();
     }
@@ -90,6 +95,7 @@ public class ActorBackgroundActuationManagerTest {
         ActorKeyedServiceFactory.setForTesting(null);
         OffscreenRenderingManager.setInstanceForTesting(null);
         TabBuilder.setTabForTesting(null);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
     }
 
     @Test

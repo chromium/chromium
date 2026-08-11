@@ -102,7 +102,7 @@ public class ActorTabStateHelperTest {
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector);
+                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 42);
 
         assertEquals(1, sessions.size());
         assertEquals(mTab, sessions.get(0).getLastActiveTab());
@@ -112,6 +112,7 @@ public class ActorTabStateHelperTest {
                 Integer.valueOf(101),
                 sessions.get(0).getTabDataList().get(0).getPlaceholderTabId());
         assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
+        assertEquals(42, sessions.get(0).getTabDataList().get(0).getTabWindowId());
 
         verify(mTabRemover).removeTab(mTab, false);
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
@@ -124,7 +125,7 @@ public class ActorTabStateHelperTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID, false)).thenReturn(null);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector);
+                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 0);
 
         assertTrue(sessions.isEmpty());
         verify(mTabRemover, never()).removeTab(any(), eq(false));
@@ -147,7 +148,7 @@ public class ActorTabStateHelperTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(102, false)).thenReturn(500);
 
         List<BackgroundSession> sessions =
-                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector);
+                ActorTabStateHelper.detachActiveBackgroundSessions(mTabModelSelector, 0);
 
         assertEquals(1, sessions.size());
         assertEquals(2, sessions.get(0).getTabs().size());
@@ -211,11 +212,12 @@ public class ActorTabStateHelperTest {
 
         Tab otherTab = mock(Tab.class);
         when(otherTab.getId()).thenReturn(200);
-        session.addTabData(new BackgroundSession.BackgroundTabData(otherTab, 102, 3));
+        session.addTabData(new BackgroundSession.BackgroundTabData(otherTab, 102, 3, 42));
 
         assertEquals(2, session.getTabDataList().size());
         assertEquals(otherTab, session.getTabDataList().get(1).getTab());
         assertEquals(Integer.valueOf(102), session.getTabDataList().get(1).getPlaceholderTabId());
         assertEquals(3, session.getTabDataList().get(1).getOriginalTabIndex());
+        assertEquals(42, session.getTabDataList().get(1).getTabWindowId());
     }
 }
