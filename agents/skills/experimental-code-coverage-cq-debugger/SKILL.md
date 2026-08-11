@@ -120,10 +120,13 @@ ______________________________________________________________________
 ### Step 5: Map Source Files to Test Suites
 
 - **Action**: Identify which test suites (e.g. `unit_tests`, `browser_tests`)
-  compile the modified files.
-- **Skill**: Use the
-  [experimental-test-suite-mapper](../experimental-test-suite-mapper/SKILL.md)
-  skill.
+  compile the modified target files by calling `test_suite_mapper.py` directly.
+- **Command**:
+  ```bash
+  vpython3 tools/code_coverage/test_suite_mapper.py <target_file>
+  ```
+  *(For additional flags such as `--build-dir` or historical `--revision`
+  mapping, see `vpython3 tools/code_coverage/test_suite_mapper.py --help`).*
 - **Required Outputs**: The list of mapped `test_suites` for the target files.
   Update `test_suites` in `scratch/triage_state.json`.
 
@@ -148,11 +151,13 @@ ______________________________________________________________________
       developers), `android-cronet-x64-dbg-14-tests`
 - **Note on Android Desktop Configurations**:
   - The public `android-desktop-x64-rel` CQ bot and its internal equivalent
-    `android-internal-desktop-x64-rel` both inherit their base build configuration
-    from `infra/config/subprojects/chromium/try/tryserver.chromium.android.desktop.star`
+    `android-internal-desktop-x64-rel` both inherit their base build
+    configuration from
+    `infra/config/subprojects/chromium/try/tryserver.chromium.android.desktop.star`
     (via the `equivalent_builder` property).
   - For specific test suite configurations on internal Clank bots, check the
-    `*.pyl` files inside `https://chrome-internal.googlesource.com/clank/internal/apps/+/HEAD/build/bot`.
+    `*.pyl` files inside
+    `https://chrome-internal.googlesource.com/clank/internal/apps/+/HEAD/build/bot`.
 - **Required Outputs**: The initial list of `builders_of_concern`. Update
   `builders_of_concern` in `scratch/triage_state.json`.
 

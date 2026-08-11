@@ -881,8 +881,28 @@ def _execute_heavyweight_resolution(src_root, revision, build_dir, file_path,
 
 
 def main():
+  epilog = """Examples:
+  # Map a source file in HEAD to test suites using default build directory (out/Default):
+  vpython3 tools/code_coverage/test_suite_mapper.py chrome/browser/ui/color/color_mixer.cc
+
+  # Map a source file using a custom build directory:
+  vpython3 tools/code_coverage/test_suite_mapper.py --build-dir out/Coverage chrome/browser/ui/color/color_mixer.cc
+
+  # Map a source file at a historical git revision with an isolate map file:
+  vpython3 tools/code_coverage/test_suite_mapper.py -r 7916168 --isolate-map-file scratch/gn_isolate_map.pyl chrome/browser/ui/color/color_mixer.cc
+
+  # Force heavyweight GN graph resolution at a historical revision:
+  vpython3 tools/code_coverage/test_suite_mapper.py -r 7916168 --force-heavyweight chrome/browser/ui/color/color_mixer.cc
+
+Output Format:
+  Returns a JSON array of covering test suite names (e.g., ["unit_tests", "browser_tests"]).
+"""
   parser = argparse.ArgumentParser(
-      description='Maps a Chromium file path to its covering test suites.')
+      description=
+      'Maps a Chromium source file path to its covering target test suites.',
+      epilog=epilog,
+      formatter_class=argparse.RawDescriptionHelpFormatter,
+  )
   parser.add_argument(
       'file_path',
       type=pathlib.Path,
@@ -904,7 +924,7 @@ def main():
       '--force-heavyweight',
       action='store_true',
       help=('Force rebuilding the GN build graph at the revision '
-            '(slower but 100% accurate).'),
+            '(slower but 100%% accurate).'),
   )
   parser.add_argument(
       '--isolate-map-file',
