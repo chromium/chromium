@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Ill
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
@@ -461,7 +462,7 @@ public class AtMemoryBottomSheetMediatorTest {
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        AtMemoryBottomSheetMediator.NoticeInteraction.SHOWN);
+                        PopupNoticeInteractions.SHOWN);
 
         mMediator.show(List.of(noticeSuggestion));
         assertEquals(1, mModelList.size());
@@ -471,7 +472,7 @@ public class AtMemoryBottomSheetMediatorTest {
         HistogramWatcher acknowledgedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        AtMemoryBottomSheetMediator.NoticeInteraction.ACKNOWLEDGED);
+                        PopupNoticeInteractions.ACKNOWLEDGED);
 
         Runnable okClickListener =
                 mModelList
@@ -576,7 +577,7 @@ public class AtMemoryBottomSheetMediatorTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 AtMemoryBottomSheetMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                                AtMemoryBottomSheetMediator.NoticeInteraction.SHOWN)
+                                PopupNoticeInteractions.SHOWN)
                         .build();
 
         mMediator.show(List.of(noticeSuggestion));

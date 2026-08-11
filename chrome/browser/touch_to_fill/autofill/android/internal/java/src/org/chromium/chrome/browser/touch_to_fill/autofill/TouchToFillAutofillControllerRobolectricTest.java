@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.R;
+import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -61,7 +62,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.SHOWN);
+                        PopupNoticeInteractions.SHOWN);
 
         mCoordinator.show();
 
@@ -75,7 +76,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.SHOWN);
+                        PopupNoticeInteractions.SHOWN);
         mCoordinator.show();
         shownWatcher.assertExpected();
 
@@ -89,7 +90,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher ackWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.ACKNOWLEDGED);
+                        PopupNoticeInteractions.ACKNOWLEDGED);
         okButton.performClick();
         ackWatcher.assertExpected();
 
@@ -102,7 +103,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.SHOWN);
+                        PopupNoticeInteractions.SHOWN);
         mCoordinator.show();
         shownWatcher.assertExpected();
 
@@ -116,7 +117,7 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher settingsWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.LINK_BUTTON_CLICKED);
+                        PopupNoticeInteractions.LINK_BUTTON_CLICKED);
         settingsLink.performClick();
         settingsWatcher.assertExpected();
 
@@ -129,14 +130,14 @@ public class TouchToFillAutofillControllerRobolectricTest {
         HistogramWatcher shownWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.SHOWN);
+                        PopupNoticeInteractions.SHOWN);
         mCoordinator.show();
         shownWatcher.assertExpected();
 
         HistogramWatcher dismissedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         TouchToFillAutofillMediator.NOTICE_INTERACTIONS_HISTOGRAM,
-                        TouchToFillAutofillMediator.NoticeInteraction.DISMISSED);
+                        PopupNoticeInteractions.DISMISSED);
         mCoordinator.hide();
         dismissedWatcher.assertExpected();
 

@@ -153,8 +153,9 @@ PopupNoticeView::PopupNoticeView(
   layout_manager->SetFlexForView(description_, 1);
 
   if (controller_) {
-    base::UmaHistogramEnumeration(notice_interaction_histogram_name_,
-                                  PopupNoticeInteractions::kShown);
+    base::UmaHistogramEnumeration(
+        notice_interaction_histogram_name_,
+        AutofillMetrics::PopupNoticeInteractions::kShown);
   }
 
   // TODO(crbug.com/534738804): Use offset markers for string assembly to
@@ -261,8 +262,9 @@ bool PopupNoticeView::IsSelectable() const {
 
 void PopupNoticeView::OnAcceptButtonClicked() {
   if (controller_) {
-    base::UmaHistogramEnumeration(notice_interaction_histogram_name_,
-                                  PopupNoticeInteractions::kAcknowledged);
+    base::UmaHistogramEnumeration(
+        notice_interaction_histogram_name_,
+        AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
     controller_->RemoveSuggestion(
         line_number_,
         AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked);
@@ -271,8 +273,9 @@ void PopupNoticeView::OnAcceptButtonClicked() {
 
 void PopupNoticeView::OnLinkClicked() {
   if (controller_) {
-    base::UmaHistogramEnumeration(notice_interaction_histogram_name_,
-                                  PopupNoticeInteractions::kLinkButtonClicked);
+    base::UmaHistogramEnumeration(
+        notice_interaction_histogram_name_,
+        AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
   }
   if (on_link_clicked_) {
     on_link_clicked_.Run();

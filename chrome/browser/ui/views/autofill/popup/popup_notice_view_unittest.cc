@@ -233,8 +233,8 @@ TEST_F(PopupNoticeViewTest, InitialStateAndHistogramShown) {
   base::HistogramTester histogram_tester;
   ShowView();
 
-  histogram_tester.ExpectUniqueSample(kTestHistogram,
-                                      PopupNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kShown, 1);
   EXPECT_TRUE(VerifyDescription(kTestTitle, kTestContext, kTestLink));
   EXPECT_TRUE(VerifyLink(kTestLink));
   EXPECT_TRUE(VerifyAcceptButton(kTestAcceptButton));
@@ -259,10 +259,11 @@ TEST_F(PopupNoticeViewTest, AcceptButtonTriggersRemoveSuggestionAndMetric) {
   generator().MoveMouseTo(accept_button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
 
-  histogram_tester.ExpectBucketCount(kTestHistogram,
-                                     PopupNoticeInteractions::kShown, 1);
-  histogram_tester.ExpectBucketCount(kTestHistogram,
-                                     PopupNoticeInteractions::kAcknowledged, 1);
+  histogram_tester.ExpectBucketCount(
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kAcknowledged,
+      1);
   histogram_tester.ExpectTotalCount(kTestHistogram, 2);
 }
 
@@ -283,10 +284,11 @@ TEST_F(PopupNoticeViewTest, ClickLinkTriggersCallbackAndMetric) {
   generator().MoveMouseTo(link->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
 
-  histogram_tester.ExpectBucketCount(kTestHistogram,
-                                     PopupNoticeInteractions::kShown, 1);
   histogram_tester.ExpectBucketCount(
-      kTestHistogram, PopupNoticeInteractions::kLinkButtonClicked, 1);
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kTestHistogram,
+      AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked, 1);
   histogram_tester.ExpectTotalCount(kTestHistogram, 2);
 }
 
@@ -486,10 +488,11 @@ TEST_F(PopupNoticeViewTest, PressReturnOnAcceptButtonFocused) {
   return_event.windows_key_code = ui::VKEY_RETURN;
   EXPECT_TRUE(view().HandleKeyPressEvent(return_event));
 
-  histogram_tester.ExpectBucketCount(kTestHistogram,
-                                     PopupNoticeInteractions::kShown, 1);
-  histogram_tester.ExpectBucketCount(kTestHistogram,
-                                     PopupNoticeInteractions::kAcknowledged, 1);
+  histogram_tester.ExpectBucketCount(
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kTestHistogram, AutofillMetrics::PopupNoticeInteractions::kAcknowledged,
+      1);
   histogram_tester.ExpectTotalCount(kTestHistogram, 2);
 }
 
@@ -574,7 +577,7 @@ TEST_F(PopupNoticeViewTest, CreatePersonalContextNoticeViewAmbientAutofill) {
   ASSERT_TRUE(view);
   histogram_tester.ExpectUniqueSample(
       "PersonalContext.AmbientAutofill.NoticeInteractions",
-      PopupNoticeInteractions::kShown, 1);
+      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
 
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
@@ -602,7 +605,7 @@ TEST_F(PopupNoticeViewTest,
   ASSERT_TRUE(view);
   histogram_tester.ExpectUniqueSample(
       "PersonalContext.AtMemory.NoticeInteractions",
-      PopupNoticeInteractions::kShown, 1);
+      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
   EXPECT_NE(
       view->description_for_testing()->GetText().find(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING)),
@@ -645,7 +648,7 @@ TEST_F(PopupNoticeViewTest, CreateAutofillAiPrivateInferenceNoticeViewCreated) {
   ASSERT_TRUE(view);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PrivateInferenceNoticeInteractions",
-      PopupNoticeInteractions::kShown, 1);
+      AutofillMetrics::PopupNoticeInteractions::kShown, 1);
 
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);

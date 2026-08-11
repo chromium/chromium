@@ -29,19 +29,6 @@ namespace autofill {
 
 class AutofillPopupController;
 
-// Outcomes of interaction with an Autofill popup notice.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(PopupNoticeInteractions)
-enum class PopupNoticeInteractions {
-  kShown = 0,
-  kAcknowledged = 1,
-  kDismissed = 2,
-  kLinkButtonClicked = 3,
-  kMaxValue = kLinkButtonClicked,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PopupNoticeInteractions)
-
 // The view that displays an informational notice (such as for Personal Context
 // or Ambient Autofill) at the bottom of the Autofill popup.
 class PopupNoticeView : public PopupInteractiveRowView {

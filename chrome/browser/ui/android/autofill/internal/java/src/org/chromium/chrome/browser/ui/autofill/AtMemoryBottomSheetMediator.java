@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import android.content.Context;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Sug
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.PopupNoticeInteractions;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -35,8 +35,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Contains the business logic for the AtMemoryBottomSheet. */
@@ -56,26 +54,6 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     private static final int ALLOW_LOGGING = 0;
 
     // LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_prefs.h:ModelExecutionEnterprisePolicyValue)
-
-    // Interactions with the AtMemory notice.
-    // LINT.IfChange(NoticeInteraction)
-    @IntDef({
-        NoticeInteraction.SHOWN,
-        NoticeInteraction.ACKNOWLEDGED,
-        NoticeInteraction.DISMISSED,
-        NoticeInteraction.LINK_BUTTON_CLICKED,
-        NoticeInteraction.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface NoticeInteraction {
-        int SHOWN = 0;
-        int ACKNOWLEDGED = 1;
-        int DISMISSED = 2;
-        int LINK_BUTTON_CLICKED = 3;
-        int COUNT = 4;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PopupNoticeInteractions)
 
     private final Context mContext;
     private final PropertyModel mModel;
@@ -214,8 +192,8 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (!mWasNoticeShownRecorded) {
             RecordHistogram.recordEnumeratedHistogram(
                     NOTICE_INTERACTIONS_HISTOGRAM,
-                    NoticeInteraction.SHOWN,
-                    NoticeInteraction.COUNT);
+                    PopupNoticeInteractions.SHOWN,
+                    PopupNoticeInteractions.MAX_VALUE);
             mWasNoticeShownRecorded = true;
         }
     }
@@ -223,8 +201,8 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     private void onNoticeAcknowledged(int position) {
         RecordHistogram.recordEnumeratedHistogram(
                 NOTICE_INTERACTIONS_HISTOGRAM,
-                NoticeInteraction.ACKNOWLEDGED,
-                NoticeInteraction.COUNT);
+                PopupNoticeInteractions.ACKNOWLEDGED,
+                PopupNoticeInteractions.MAX_VALUE);
         mDelegate.onSuggestionDismissed(position);
     }
 
