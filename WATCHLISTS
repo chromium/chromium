@@ -1095,7 +1095,8 @@
                   'components/custom_handlers/',
     },
     'custom_highlights': {
-      'filepath': 'third_party/blink/renderer/core/highlight/',
+      'filepath': 'third_party/blink/renderer/core/highlight/|'\
+                  'third_party/blink/web_tests/external/wpt/css/css-highlight-api/',
     },
     'custom_proxy': {
       'filepath': 'services/network/network_service_proxy_delegate',
