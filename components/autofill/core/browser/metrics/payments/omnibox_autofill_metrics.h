@@ -42,8 +42,8 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // The form or client context was not secure, such as being HTTP.
   kFormOrClientContextNotSecure = 5,
 
-  // The form contained more than one relevant CREDIT_CARD_NUMBER field.
-  kFoundMultipleCreditCardNumberFields = 6,
+  // The form contained more than one visible CREDIT_CARD_NUMBER field.
+  kFoundMultipleVisibleCreditCardNumberFields = 6,
 
   // The OptimizationGuideDecider was not present.
   kMissingOptimizationGuideDecider = 7,
@@ -55,7 +55,10 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // be started.
   kSuccess = 9,
 
-  kMaxValue = kSuccess,
+  // The form did not contain any visible CREDIT_CARD_NUMBER fields.
+  kNoVisibleCreditCardNumberFields = 10,
+
+  kMaxValue = kNoVisibleCreditCardNumberFields,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:OmniboxAutofillShowChipDecisionPart1)
 

@@ -459,12 +459,12 @@ TEST_F(OmniboxAutofillDelegateTest,
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
-       OnFieldTypesDetermined_MultipleCreditCardNumberFields_Aborts) {
+       OnFieldTypesDetermined_MultipleVisibleCreditCardNumberFields_Aborts) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(autofill_driver(), ObserveFieldVisibility).Times(0);
 
-  // Create a credit card form, but include multiple card number fields.
+  // Create a credit card form, but include multiple visible card number fields.
   FormData form;
   form.set_name(u"MyForm");
   form.set_url(GURL("https://myform.com/form.html"));
@@ -472,10 +472,14 @@ TEST_F(OmniboxAutofillDelegateTest,
   autofill_client().set_last_committed_primary_main_frame_url(form.url());
   test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
                                             FormControlType::kInputText));
-  test_api(form).Append(CreateTestFormField("Card Number 1", "cardnumber1", "",
-                                            FormControlType::kInputText));
-  test_api(form).Append(CreateTestFormField("Card Number 2", "cardnumber2", "",
-                                            FormControlType::kInputText));
+  FormFieldData card_number_field_1 = CreateTestFormField(
+      "Card Number 1", "cardnumber1", "", FormControlType::kInputText);
+  FormFieldData card_number_field_2 = CreateTestFormField(
+      "Card Number 2", "cardnumber2", "", FormControlType::kInputText);
+  card_number_field_1.set_is_visible(true);
+  card_number_field_2.set_is_visible(true);
+  test_api(form).Append(card_number_field_1);
+  test_api(form).Append(card_number_field_2);
   test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
                                             FormControlType::kInputText));
   test_api(form).Append(
@@ -489,7 +493,41 @@ TEST_F(OmniboxAutofillDelegateTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
       OmniboxAutofillShowChipDecisionPart1::
-          kFoundMultipleCreditCardNumberFields,
+          kFoundMultipleVisibleCreditCardNumberFields,
+      1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_NoVisibleCreditCardNumberFields_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(autofill_driver(), ObserveFieldVisibility).Times(0);
+
+  // Create a credit card form, but all card number fields are not visible.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                            FormControlType::kInputText));
+  FormFieldData card_number_field = CreateTestFormField(
+      "Card Number", "cardnumber", "", FormControlType::kInputText);
+  card_number_field.set_is_visible(false);
+  test_api(form).Append(card_number_field);
+  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
+  form = CreateFormDataForFrame(form, autofill_driver().GetFrameToken());
+
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNoVisibleCreditCardNumberFields,
       1);
 }
 

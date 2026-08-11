@@ -81,6 +81,14 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // functionality only wants to run on the outermost, main frame, active BAM.
   bool IsOutermostMainFrameActiveAutofillManager(AutofillManager& manager);
 
+  // Returns `true` if `field` is a credit card number field and is considered
+  // visible in the DOM.
+  //
+  // Note: This refers to static DOM visibility and should not be confused with
+  // viewport visibility, which is tracked asynchronously by
+  // `ObserveFieldVisibility()` and reported via `OnFieldBecameVisible()`.
+  bool IsVisibleCreditCardNumberField(const AutofillField& field) const;
+
   // Checks if the given `field` is in the main frame.
   bool IsFieldInMainFrame(AutofillManager& manager,
                           const AutofillField& field) const;
