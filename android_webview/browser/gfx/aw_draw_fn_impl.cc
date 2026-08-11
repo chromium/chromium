@@ -289,13 +289,14 @@ void AwDrawFnImpl::OnSync(AwDrawFn_OnSyncParams* params) {
 }
 
 void AwDrawFnImpl::OnContextDestroyed() {
+  scoped_secondary_cb_draw_.reset();
+
   {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
     render_thread_manager_.DestroyHardwareRendererOnRT();
   }
 
-  scoped_secondary_cb_draw_.reset();
   vulkan_context_provider_.reset();
 }
 
