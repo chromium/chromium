@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <array>
+#include <utility>
+
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "crypto/ecdsa_utils.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
+#include "crypto/tpm_parser.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
@@ -35,8 +42,6 @@ void WriteTpm2b(base::SpanWriter<uint8_t>& writer,
 std::vector<uint8_t> CreateTpm2bAttestationStatement(
     const UnexportableSigningKey& signing_key,
     base::span<const uint8_t> challenge) {
-  static constexpr uint32_t kTpmGeneratedValue = 0xFF544347;
-  static constexpr uint16_t kTpmStAttestCertify = 0x8017;
   // TPM_ALG_SHA256 + hash
   static constexpr size_t kNameBufSize = 2 + hash::kSha256Size;
 
@@ -56,8 +61,9 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   std::vector<uint8_t> attestation_statement(kAttestationStatementFixedSize +
                                              challenge.size());
   base::SpanWriter<uint8_t> attest_writer(attestation_statement);
-  attest_writer.WriteU32BigEndian(kTpmGeneratedValue);
-  attest_writer.WriteU16BigEndian(kTpmStAttestCertify);
+  attest_writer.WriteU32BigEndian(std::to_underlying(tpm::TPM_GENERATED_VALUE));
+  attest_writer.WriteU16BigEndian(
+      std::to_underlying(tpm::TPM_ST_ATTEST_CERTIFY));
   // qualifiedSigner (empty)
   attest_writer.WriteU16BigEndian(0);
 
@@ -77,7 +83,7 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   // name: TPM2B_NAME
   std::array<uint8_t, kNameBufSize> name_buf;
   base::SpanWriter<uint8_t> name_writer(name_buf);
-  name_writer.WriteU16BigEndian(0x000B);  // TPM_ALG_SHA256
+  name_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
   name_writer.Write(hash::Sha256(signing_key.GetSubjectPublicKeyInfo()));
   CHECK_EQ(name_writer.remaining(), 0u);
 
@@ -113,8 +119,8 @@ std::vector<uint8_t> CreateTpmEcdsaSignature(
 
   std::vector<uint8_t> signature(kEcdsaTpmSigSize);
   base::SpanWriter<uint8_t> sig_writer(signature);
-  sig_writer.WriteU16BigEndian(0x0018);  // TPM_ALG_ECDSA
-  sig_writer.WriteU16BigEndian(0x000B);  // TPM_ALG_SHA256
+  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_ECDSA));
+  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
 
   WriteTpm2b(sig_writer, r_bytes);
   WriteTpm2b(sig_writer, s_bytes);
@@ -134,8 +140,8 @@ std::vector<uint8_t> CreateTpmRsaSignature(
   CHECK_EQ(der_signature.size(), kRsa2048SigSize);
   std::vector<uint8_t> signature(2 + 2 + 2 + kRsa2048SigSize);
   base::SpanWriter<uint8_t> sig_writer(signature);
-  sig_writer.WriteU16BigEndian(0x0014);  // TPM_ALG_RSASSA
-  sig_writer.WriteU16BigEndian(0x000B);  // TPM_ALG_SHA256
+  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_RSASSA));
+  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
   WriteTpm2b(sig_writer, der_signature);
   CHECK_EQ(sig_writer.remaining(), 0u);
   return signature;
@@ -207,15 +213,32 @@ class SoftwareKeyImpl : public BaseInterface {
 
 class SoftwareSigningKey : public SoftwareKeyImpl<UnexportableSigningKey> {
  public:
+  using Base = SoftwareKeyImpl<UnexportableSigningKey>;
+
   explicit SoftwareSigningKey(crypto::keypair::PrivateKey key)
-      : SoftwareKeyImpl<UnexportableSigningKey>(std::move(key)) {}
+      : Base(std::move(key)) {}
 };
 
 class SoftwareAttestationKey
     : public SoftwareKeyImpl<UnexportableAttestationKey> {
  public:
+  using Base = SoftwareKeyImpl<UnexportableAttestationKey>;
+
   explicit SoftwareAttestationKey(crypto::keypair::PrivateKey key)
-      : SoftwareKeyImpl<UnexportableAttestationKey>(std::move(key)) {}
+      : Base(std::move(key)) {}
+
+  std::optional<std::vector<uint8_t>> SignSlowly(
+      base::span<const uint8_t> data) override {
+    // Emulate TPM 2.0 restricted signing key behavior: hardware TPMs refuse to
+    // sign external data starting with `TPM_GENERATED_VALUE` (0xFF544347) via
+    // TPM2_Hash/TPM2_Sign to prevent forging TPM-generated attestation
+    // structures (e.g., TPMS_ATTEST).
+    return std::ranges::starts_with(
+               data, base::U32ToBigEndian(
+                         std::to_underlying(tpm::TPM_GENERATED_VALUE)))
+               ? std::nullopt
+               : Base::SignSlowly(data);
+  }
 
   // Certifies the signing key by generating a fake TPM 2.0 certification
   // output. This emulates the behavior of a TPM-backed key provider for

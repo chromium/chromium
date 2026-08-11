@@ -14,7 +14,9 @@
 #include "base/containers/span_reader.h"
 #include "base/containers/span_rust.h"
 #include "base/containers/span_writer.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -129,6 +131,36 @@ class UnexportableKeyTest
     const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
         algorithm()};
     return provider->SelectAlgorithm(algorithms) == algorithm();
+  }
+
+  crypto::sign::SignatureKind signature_kind() {
+#if BUILDFLAG(IS_WIN)
+    // On Windows, Platform Crypto Provider (PCP) attestation keys restrict
+    // ECDSA signature hashing to SHA-1 even for P-256 keys (see
+    // AttestationKeyWin::SignSlowly). Therefore, when verifying ECDSA
+    // attestation key signatures on Windows, we must verify against SHA-1
+    // (SignatureKind::ECDSA_SHA1) rather than SHA-256.
+    //
+    // TODO(crbug.com/531590259): Actually support ECDSA_SHA256 keys by
+    // implementing key creation in the TPM. If TPM-native key creation is ever
+    // extended to general signing keys, a Finch experiment will be mandatory to
+    // avoid breaking active keys.
+    if (provider_type() == Provider::kTPM &&
+        algorithm() ==
+            crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
+      return crypto::sign::SignatureKind::ECDSA_SHA1;
+    }
+#endif
+    switch (algorithm()) {
+      case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+        return crypto::sign::SignatureKind::ECDSA_SHA256;
+      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+        return crypto::sign::SignatureKind::RSA_PKCS1_SHA256;
+      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
+        return crypto::sign::SignatureKind::RSA_PKCS1_SHA1;
+      case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
+        return crypto::sign::SignatureKind::RSA_PSS_SHA256;
+    }
   }
 
  private:
@@ -498,6 +530,40 @@ TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
       provider->FromWrappedSigningKeySlowly(attestation_wrapped);
   EXPECT_FALSE(loaded_signing_key);
 }
+
+TEST_P(UnexportableKeyTest, AttestationKeyCanSignSlowly) {
+  if (provider_type() != Provider::kTPM && provider_type() != Provider::kFake) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM or Fake.";
+  }
+
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider> fake;
+  if (provider_type() == Provider::kFake) {
+    fake.emplace();
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP()
+        << "Provider does not support the requested attestation algorithm.";
+  }
+
+  const uint8_t msg[] = {1, 2, 3, 4};
+  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> sig,
+                       attestation_key->SignSlowly(msg));
+
+  ASSERT_OK_AND_ASSIGN(auto public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           attestation_key->GetSubjectPublicKeyInfo()));
+
+  EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
+}
 #endif
 
 TEST_P(UnexportableKeyTest, AttestationKeyMock) {
@@ -582,6 +648,40 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
       provider->FromWrappedAttestationKeySlowly(wrapped_attestation);
   ASSERT_TRUE(loaded_attestation_key);
   EXPECT_EQ(loaded_attestation_key->Algorithm(), algorithm());
+}
+
+TEST_P(UnexportableKeyTest, AttestationKeySignFailsForTpmGeneratedValue) {
+  if (provider_type() != Provider::kTPM && provider_type() != Provider::kFake) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM or Fake.";
+  }
+
+#if BUILDFLAG(IS_APPLE)
+  if (provider_type() == Provider::kTPM) {
+    GTEST_SKIP() << "Secure Enclave does not have TPM-style restrictions.";
+  }
+#endif
+
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider> fake;
+  if (provider_type() == Provider::kFake) {
+    fake.emplace();
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of provider support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP() << "Skipping test because of lack of attestation key support.";
+  }
+
+  auto payload = base::ToVector(base::U32ToBigEndian(
+      std::to_underlying(crypto::tpm::TPM_GENERATED_VALUE)));
+  payload.insert(payload.end(), {0x01, 0x02, 0x03, 0x04});
+  EXPECT_EQ(attestation_key->SignSlowly(payload), std::nullopt);
 }
 
 }  // namespace

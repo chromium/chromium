@@ -132,7 +132,7 @@ pub mod ffi {
         /// attestation.
         ChallengeMismatch = 6,
     }
-    // LINT.ThenChange(//crypto/tpm_parser.h:TpmCertifyParseResult)
+    // LINT.ThenChange(//crypto/tpm_parser.h:TpmParseResult)
 
     /// Response from parsing a TPM2_Certify command.
     #[cxx_name = "RawCertifyResponse"]

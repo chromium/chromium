@@ -334,6 +334,8 @@ std::string OperationToString(TPMOperation operation) {
       return "WrappedAttestationKeyCreation";
     case TPMOperation::kWrappedAttestationKeyExport:
       return "WrappedAttestationKeyExport";
+    case TPMOperation::kMessageHashing:
+      return "MessageHashing";
   }
 }
 

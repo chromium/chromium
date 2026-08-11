@@ -29,6 +29,32 @@ using enum TpmConstant;
 using enum TpmRh;
 using enum TpmSt;
 
+// LINT.IfChange(TpmCommand)
+// Enumerates the TPM 2.0 commands implemented by this module.
+enum class TpmCommand {
+  kCertify,  // TPM2_Certify
+  kHash,     // TPM2_Hash
+  kSign,     // TPM2_Sign
+};
+
+template <typename Sink>
+void AbslStringify(Sink& sink, TpmCommand command) {
+  switch (command) {
+    case TpmCommand::kCertify:
+      sink.Append("Certify");
+      return;
+    case TpmCommand::kHash:
+      sink.Append("Hash");
+      return;
+    case TpmCommand::kSign:
+      sink.Append("Sign");
+      return;
+  }
+
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:TpmCommand)
+
 // Various errors returned during TPM response parsing.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -36,7 +62,7 @@ using enum TpmSt;
 // this is a strict subset of the enum defined in tpm.rs. We purposefully drop
 // the kOk option, so that it's a true error enum.
 struct CRYPTO_EXPORT TpmParseError {
-  // LINT.IfChange(TpmCertifyParseResult)
+  // LINT.IfChange(TpmParseResult)
   enum class Type : uint8_t {
     kBufferTooSmall = 1,
     kTrailingBytes = 2,
@@ -46,7 +72,7 @@ struct CRYPTO_EXPORT TpmParseError {
     kChallengeMismatch = 6,
     kMaxValue = kChallengeMismatch
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TpmCertifyParseResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TpmParseResult)
 
   const Type type = Type::kBufferTooSmall;
   // Only populated if `type` is `Type::kTpmErrorResponse`.
@@ -93,6 +119,8 @@ inline constexpr auto kNoSignatureErrorForMetrics =
 
 // Response components extracted from a parsed TPM2_Certify response.
 struct CRYPTO_EXPORT CertifyResponse {
+  static constexpr auto kCommand = TpmCommand::kCertify;
+
   std::vector<uint8_t> statement;
   std::vector<uint8_t> signature;
 
@@ -102,6 +130,8 @@ struct CRYPTO_EXPORT CertifyResponse {
 
 // Response components extracted from a parsed TPM2_Hash response.
 struct CRYPTO_EXPORT HashResponse {
+  static constexpr auto kCommand = TpmCommand::kHash;
+
   std::vector<uint8_t> digest;
   std::vector<uint8_t> validation_ticket;
 
@@ -110,6 +140,8 @@ struct CRYPTO_EXPORT HashResponse {
 
 // Response components extracted from a parsed TPM2_Sign response.
 struct CRYPTO_EXPORT SignResponse {
+  static constexpr auto kCommand = TpmCommand::kSign;
+
   std::vector<uint8_t> signature;
 
   friend bool operator==(const SignResponse&, const SignResponse&) = default;

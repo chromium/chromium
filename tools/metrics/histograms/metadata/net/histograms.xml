@@ -245,6 +245,16 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Google servers (https) only when QUIC is used."/>
 </variants>
 
+<!-- LINT.IfChange(TpmCommand) -->
+
+<variants name="TpmCommand">
+  <variant name="Certify" summary="TPM2_Certify"/>
+  <variant name="Hash" summary="TPM2_Hash"/>
+  <variant name="Sign" summary="TPM2_Sign"/>
+</variants>
+
+<!-- LINT.ThenChange(//crypto/tpm_parser.h:TpmCommand) -->
+
 <!-- LINT.IfChange(TpmOperation) -->
 
 <!-- Only operations that are defined for all platforms should be added here. -->
@@ -252,6 +262,7 @@ chromium-metrics-reviews@google.com.
 <!-- Platform-specific operations should be added to specific histograms directly. -->
 
 <variants name="TpmOperation">
+  <variant name="MessageHashing" summary="message hashing"/>
   <variant name="MessageSigning" summary="message signing"/>
   <variant name="NewAttestationKeyCreation"
       summary="new attestation key creation"/>
@@ -523,38 +534,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyExtractProperty.Result"
-    enum="Win32TpmErrorCodes" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows to record the result of property extraction before
-    submitting a TPM2_Certify command. Represents the SECURITY_STATUS returned
-    by the API.
-  </summary>
-</histogram>
-
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyParse.Result"
-    enum="TpmCertifyParseResult" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows to record the result of parsing the response of a
-    TPM2_Certify command. Represents the ParseResult, which is Ok on success or
-    the specific ParseError that occurred.
-  </summary>
-</histogram>
-
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyResponse.TpmResponseCode"
-    enum="TPMResponseCode" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows to record the result of a TPM2_Certify command at the
-    TPM level. Represents the TPM 2.0 response code returned by the TPM.
-  </summary>
-</histogram>
-
 <histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm"
     enum="TpmAlgorithm" expires_after="2027-01-24">
   <owner>jdoerrie@chromium.org</owner>
@@ -583,6 +562,41 @@ chromium-metrics-reviews@google.com.
     Collected on Windows during TPM2_Certify verification. Records the
     TPM_ALG_ID of the signature algorithm unconditionally for all operations.
   </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.Tpm{Command}ExtractProperty.Result"
+    enum="Win32TpmErrorCodes" expires_after="2027-08-10">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of property extraction before
+    submitting a {Command} command. Represents the SECURITY_STATUS returned by
+    the API.
+  </summary>
+  <token key="Command" variants="TpmCommand"/>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.Tpm{Command}Parse.Result"
+    enum="TpmParseResult" expires_after="2027-08-10">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of parsing the response of a
+    {Command} command. Represents the ParseResult, which is Ok on success or the
+    specific ParseError that occurred.
+  </summary>
+  <token key="Command" variants="TpmCommand"/>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.Tpm{Command}Response.TpmResponseCode"
+    enum="TPMResponseCode" expires_after="2027-08-10">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of a {Command} command at the TPM
+    level. Represents the TPM 2.0 response code returned by the TPM.
+  </summary>
+  <token key="Command" variants="TpmCommand"/>
 </histogram>
 
 <histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"

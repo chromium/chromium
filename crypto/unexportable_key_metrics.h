@@ -38,6 +38,8 @@ enum class TPMOperation {
   kWrappedAttestationKeyCreation,
   // An operation to export a wrapped attestation key.
   kWrappedAttestationKeyExport,
+  // An operation to hash data using the TPM.
+  kMessageHashing,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:TpmOperation)
 
