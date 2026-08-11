@@ -1051,9 +1051,9 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     }
   }
 
-  if (!rounded_corner_bounds_.IsEmpty()) {
-    if (!old_layer_ ||
-        old_layer_->rounded_corner_bounds_ != rounded_corner_bounds_) {
+  if (!old_layer_ ||
+      old_layer_->rounded_corner_bounds_ != rounded_corner_bounds_) {
+    if (!rounded_corner_bounds_.IsEmpty()) {
       gfx::RectF dip_rounded_corner_bounds =
           gfx::RectF(rounded_corner_bounds_.rect());
       dip_rounded_corner_bounds.Scale(1 / tree()->scale_factor_);
@@ -1070,13 +1070,13 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
 
       SetCALayerRadii(rounded_corner_ca_layer_, rounded_corner_bounds_,
                       tree()->scale_factor_);
+    } else {
+      rounded_corner_ca_layer_.masksToBounds = false;
+      rounded_corner_ca_layer_.position = CGPointZero;
+      rounded_corner_ca_layer_.bounds = CGRectZero;
+      rounded_corner_ca_layer_.sublayerTransform = CATransform3DIdentity;
+      rounded_corner_ca_layer_.cornerRadius = 0;
     }
-  } else {
-    rounded_corner_ca_layer_.masksToBounds = false;
-    rounded_corner_ca_layer_.position = CGPointZero;
-    rounded_corner_ca_layer_.bounds = CGRectZero;
-    rounded_corner_ca_layer_.sublayerTransform = CATransform3DIdentity;
-    rounded_corner_ca_layer_.cornerRadius = 0;
   }
 
   DCHECK_EQ(clipping_ca_layer_.superlayer, superlayer)
