@@ -93,11 +93,6 @@ id<GREYMatcher> ImageViewWithImage(UIImage* image);
 // bundle.
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName);
 
-// Returns a matcher for an element with a custom symbol defined by its name and
-// point size in the main bundle.
-id<GREYMatcher> ImageViewWithCustomSymbolNameAndPointSize(NSString* symbolName,
-                                                          CGFloat pointSize);
-
 // Returns a matcher for an element with a symbol defined by `symbol` and
 // `pointSize`.
 id<GREYMatcher> ImageViewWithSymbolAndPointSize(Symbol symbol,

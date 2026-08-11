@@ -400,7 +400,7 @@ enum class ItemIdentifier {
   ColorfulSymbolContentConfiguration* symbolConfiguration =
       [[ColorfulSymbolContentConfiguration alloc] init];
   symbolConfiguration.symbolImage =
-      DefaultSymbolWithPointSize(kErrorCircleSymbol, kIconPointSize);
+      SymbolWithPointSize(SymbolErrorCircle, kIconPointSize);
   symbolConfiguration.symbolTintColor =
       [UIColor colorNamed:kTextSecondaryColor];
   configuration.leadingConfiguration = symbolConfiguration;
@@ -428,7 +428,7 @@ enum class ItemIdentifier {
   ColorfulSymbolContentConfiguration* symbolConfiguration =
       [[ColorfulSymbolContentConfiguration alloc] init];
   symbolConfiguration.symbolImage =
-      DefaultSymbolWithPointSize(kErrorCircleSymbol, kIconPointSize);
+      SymbolWithPointSize(SymbolErrorCircle, kIconPointSize);
   symbolConfiguration.symbolTintColor =
       [UIColor colorNamed:kTextSecondaryColor];
   configuration.leadingConfiguration = symbolConfiguration;
@@ -458,10 +458,10 @@ enum class ItemIdentifier {
       [[ColorfulSymbolContentConfiguration alloc] init];
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   symbolConfiguration.symbolImage =
-      CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol, kIconPointSize);
+      SymbolWithPointSize(SymbolGeminiBrandedLogo, kIconPointSize);
 #else
   symbolConfiguration.symbolImage =
-      DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol, kIconPointSize);
+      SymbolWithPointSize(SymbolGeminiNonBrandedLogo, kIconPointSize);
 #endif
   symbolConfiguration.symbolTintColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.leadingConfiguration = symbolConfiguration;
