@@ -670,6 +670,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "searchSettingsUpdate",
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
+  html_source->AddString(
+      "settingsRefresh2026",
+      base::FeatureList::IsEnabled(features::kSettingsRefresh2026)
+          ? "settings-refresh-2026"
+          : "");
+
   personal_context::PersonalContextEligibilityService* eligibility_service =
       PersonalContextEligibilityServiceFactory::GetForProfile(profile);
   html_source->AddBoolean("showSuggestionsFromGeminiSettings",

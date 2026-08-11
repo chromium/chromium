@@ -49,6 +49,8 @@ BASE_DECLARE_FEATURE(kMenuSimplification);
 BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 BASE_DECLARE_FEATURE(kWebuiRefresh2026);
 BASE_DECLARE_FEATURE(kAppMenuGlowUp);
+// Enables the redesigned Settings 2026 refresh features and search UX.
+BASE_DECLARE_FEATURE(kSettingsRefresh2026);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();

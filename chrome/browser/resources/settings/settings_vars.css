@@ -30,3 +30,9 @@ html {
     --settings-error-color: var(--google-red-300);
   }
 }
+
+html[settings-refresh-2026] {
+  --search-highlight-hit-background-color: transparent;
+  --search-highlight-hit-color: inherit;
+  --search-highlight-hit-font-weight: bold;
+}

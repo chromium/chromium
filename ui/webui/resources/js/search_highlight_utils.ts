@@ -100,6 +100,7 @@ export function highlight(node: Node, ranges: Range[]): HTMLElement {
           'var(--search-highlight-hit-background-color, #ffeb3b)';
       // Defaults to the color associated with --google-grey-900.
       hitSpan.style.color = 'var(--search-highlight-hit-color, #202124)';
+      hitSpan.style.fontWeight = 'var(--search-highlight-hit-font-weight)';
       hitSpan.textContent = tokens[i]!;
       wrapper.appendChild(hitSpan);
     }
