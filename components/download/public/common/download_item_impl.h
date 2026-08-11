@@ -287,6 +287,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   int32_t GetAutoResumeCount() const override;
   const GURL& GetURL() const override;
   const std::vector<GURL>& GetUrlChain() const override;
+  bool IsUrlTruncated() const override;
   void SetURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
@@ -920,6 +921,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Whether user has confirmed dialog.
   bool is_user_confirmed_ = false;
+
+  // Whether the URL was truncated to save memory.
+  bool url_truncated_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;

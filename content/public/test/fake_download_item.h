@@ -46,6 +46,7 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetGuid() const override;
   const GURL& GetURL() const override;
   const std::vector<GURL>& GetUrlChain() const override;
+  bool IsUrlTruncated() const override;
   const base::FilePath& GetTargetFilePath() const override;
   bool GetFileExternallyRemoved() const override;
   base::Time GetStartTime() const override;

@@ -381,9 +381,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_name = base::i18n::GetDisplayStringInLTRDirectionality(file_name);
 
   file_value->file_name = base::UTF16ToUTF8(file_name);
-  // Include URL unless it is too long.
+  // Include URL unless it is too long or has been truncated.
   if (download_item->GetURL().is_valid() &&
-      download_item->GetURL().spec().length() <= url::kMaxURLChars) {
+      download_item->GetURL().spec().length() <= url::kMaxURLChars &&
+      !download_item->IsUrlTruncated()) {
     file_value->url = std::make_optional<GURL>(download_item->GetURL());
   }
   file_value->display_initiator_origin =
@@ -443,14 +444,14 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       last_reason_text = download_model.GetHistoryPageStatusText();
       if (download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
               download_item->GetLastReason() &&
-          !download_item->CanResume()) {
+          !download_item->CanResume() && !download_item->IsUrlTruncated()) {
         retry = true;
       }
       break;
 
     case download::DownloadItem::CANCELLED:
       state = downloads::mojom::State::kCancelled;
-      retry = true;
+      retry = !download_item->IsUrlTruncated();
       break;
 
     case download::DownloadItem::COMPLETE:

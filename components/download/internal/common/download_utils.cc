@@ -181,14 +181,14 @@ void OnInterMediateUriCreated(LocalPathCallback callback,
 
 const uint32_t DownloadItem::kInvalidId = 0;
 
-void TruncateDataUrlAtTheEndIfNeeded(GURL& url) {
+bool TruncateDataUrlAtTheEndIfNeeded(GURL& url) {
   constexpr std::string_view kBase64Substr = "base64,";
   if (!url.SchemeIs(url::kDataScheme)) {
-    return;
+    return false;
   }
   const std::string& data_url = url.spec();
   if (data_url.size() <= kMaxDataURLSize) {
-    return;
+    return false;
   }
   size_t data_url_end = kMaxDataURLSize;
   // If there is a base64 substr, trim the following data only if it is within
@@ -205,12 +205,15 @@ void TruncateDataUrlAtTheEndIfNeeded(GURL& url) {
 
   GURL truncated_url(data_url.substr(0, data_url_end));
   url.Swap(&truncated_url);
+  return true;
 }
 
-void TruncateDataUrlAtTheEndIfNeeded(std::vector<GURL>* url_chain) {
+bool TruncateDataUrlAtTheEndIfNeeded(std::vector<GURL>* url_chain) {
+  bool truncated = false;
   for (GURL& url : *url_chain) {
-    TruncateDataUrlAtTheEndIfNeeded(url);
+    truncated |= TruncateDataUrlAtTheEndIfNeeded(url);
   }
+  return truncated;
 }
 
 DownloadInterruptReason HandleRequestCompletionStatus(

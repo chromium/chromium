@@ -294,6 +294,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // URL at index i+1.
   virtual const std::vector<GURL>& GetUrlChain() const = 0;
 
+  // Returns true if the download URL was truncated to save memory.
+  virtual bool IsUrlTruncated() const = 0;
+
   virtual void SetURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 

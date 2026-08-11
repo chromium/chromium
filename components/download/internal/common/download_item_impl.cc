@@ -939,6 +939,10 @@ const std::vector<GURL>& DownloadItemImpl::GetUrlChain() const {
   return request_info_.url_chain;
 }
 
+bool DownloadItemImpl::IsUrlTruncated() const {
+  return url_truncated_;
+}
+
 void DownloadItemImpl::SetURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = std::move(url_loader_factory);
@@ -2436,7 +2440,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   if (IsDownloadDone(GetURL(), InternalToExternalState(new_state),
                      last_reason_)) {
-    TruncateDataUrlAtTheEndIfNeeded(&request_info_.url_chain);
+    url_truncated_ |= TruncateDataUrlAtTheEndIfNeeded(&request_info_.url_chain);
   }
   DCHECK(IsSavePackageDownload()
              ? IsValidSavePackageStateTransition(old_state, new_state)

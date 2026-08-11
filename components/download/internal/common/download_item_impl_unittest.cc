@@ -2621,12 +2621,14 @@ TEST_F(DownloadItemTest, TruncateDataUrlAfterComplete) {
 
   ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
   EXPECT_EQ(large_data_url, item->GetURL().spec());
+  EXPECT_FALSE(item->IsUrlTruncated());
 
   DoDestinationComplete(item, download_file);
 
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
   EXPECT_EQ(8192u, item->GetURL().spec().length());
   EXPECT_EQ(large_data_url.substr(0, 8192), item->GetURL().spec());
+  EXPECT_TRUE(item->IsUrlTruncated());
 }
 
 TEST_F(DownloadItemTest, TruncateDataUrlAfterCancel) {
@@ -2641,12 +2643,14 @@ TEST_F(DownloadItemTest, TruncateDataUrlAfterCancel) {
       CallDownloadItemStart(item, &target_callback);
 
   EXPECT_CALL(*download_file, Cancel());
+  EXPECT_FALSE(item->IsUrlTruncated());
 
   item->Cancel(true);
 
   EXPECT_EQ(DownloadItem::CANCELLED, item->GetState());
   EXPECT_EQ(8192u, item->GetURL().spec().length());
   EXPECT_EQ(large_data_url.substr(0, 8192), item->GetURL().spec());
+  EXPECT_TRUE(item->IsUrlTruncated());
 }
 
 TEST_F(DownloadItemTest, TruncateBase64DataUrlToValidUrl) {
@@ -2687,6 +2691,7 @@ TEST_F(DownloadItemTest, SmallDataUrlNotTruncatedAfterComplete) {
 
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
   EXPECT_EQ(small_data_url, item->GetURL().spec());
+  EXPECT_FALSE(item->IsUrlTruncated());
 }
 
 TEST_F(DownloadItemTest, LargeHttpUrlNotTruncatedAfterComplete) {
@@ -2703,6 +2708,7 @@ TEST_F(DownloadItemTest, LargeHttpUrlNotTruncatedAfterComplete) {
 
   EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
   EXPECT_EQ(large_http_url, item->GetURL().spec());
+  EXPECT_FALSE(item->IsUrlTruncated());
 }
 
 // On resume of a network-fetched download, the params handed to the delegate
