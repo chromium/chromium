@@ -29087,6 +29087,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileHubExitViaButton">
+  <owner>polardz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User exited the Hub (Grid Tab Switcher) by clicking the tab switcher button.
+  </description>
+</action>
+
 <action name="MobileIdentityDocsSettingsBack">
   <owner>jsobiech@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>

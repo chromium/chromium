@@ -46,6 +46,7 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit_tests") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/util/BrowserUiUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProviderTest.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtilTest.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtilTest.java",

@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -94,6 +95,23 @@ public class BrowserUiUtils {
     public static void recordIdentityDiscClicked(boolean isTabNtp) {
         if (isTabNtp) {
             recordModuleClickHistogram(ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
+        }
+    }
+
+    /**
+     * Records metrics when the tab switcher button is clicked.
+     *
+     * @param isExit Whether the click is exiting the tab switcher.
+     * @param isCurrentTabRegularNtp Whether the current tab is a regular new tab page.
+     */
+    public static void recordTabSwitcherButtonClicked(
+            boolean isExit, boolean isCurrentTabRegularNtp) {
+        if (isExit) {
+            RecordUserAction.record("MobileHubExitViaButton");
+        } else {
+            if (isCurrentTabRegularNtp) {
+                recordModuleClickHistogram(ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
+            }
         }
     }
 

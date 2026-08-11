@@ -367,6 +367,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.xr.scenecore.XrModule;
@@ -1455,9 +1456,26 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return;
         }
 
-        ReturnToChromeUtil.recordClickTabSwitcher(getTabModelSelector().getCurrentTab());
+        boolean isBottomBarEnabledOnGts =
+                BottomBarConfigUtils.shouldShowOnGts()
+                        && BottomBarConfigUtils.isBottomBarEnabled(this);
+        if (isBottomBarEnabledOnGts) {
+            if (mLayoutManager != null
+                    && (mLayoutManager.isLayoutStartingToHide(LayoutType.HUB)
+                            || mLayoutManager.isLayoutStartingToShow(LayoutType.HUB))) {
+                return;
+            }
+        }
 
-        showOverview();
+        boolean isExit = isBottomBarEnabledOnGts && isInOverviewMode();
+        BrowserUiUtils.recordTabSwitcherButtonClicked(
+                isExit, isTabRegularNtp(getTabModelSelector().getCurrentTab()));
+
+        if (isExit) {
+            hideOverview(/* animate= */ true);
+        } else {
+            showOverview();
+        }
     }
 
     private void initializeToolbarManager() {

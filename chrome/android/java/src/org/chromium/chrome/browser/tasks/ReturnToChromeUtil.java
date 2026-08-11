@@ -38,8 +38,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -291,19 +289,6 @@ public final class ReturnToChromeUtil {
         recordHomeSurfaceShownAtStartup();
         recordHomeSurfaceShown();
         return true;
-    }
-
-    /**
-     * Records user clicks on the tab switcher button in New tab page.
-     *
-     * @param currentTab Current tab or null if none exists.
-     */
-    public static void recordClickTabSwitcher(@Nullable Tab currentTab) {
-        if (currentTab != null
-                && !currentTab.isIncognito()
-                && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
-            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
-        }
     }
 
     /** Recorded when the home surface NTP is shown at startup. */
