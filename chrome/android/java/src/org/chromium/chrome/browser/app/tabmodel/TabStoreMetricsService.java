@@ -409,7 +409,7 @@ public class TabStoreMetricsService {
             Set<String> shadowUrls = new HashSet<>();
             for (CreateFrozenTabArguments arg : shadowFrozenData) {
                 shadowTabIds.add(arg.id);
-                if (arg.state != null && arg.state.url != null) {
+                if (arg.state.url != null) {
                     String spec = arg.state.url.getSpec();
                     if (spec.isEmpty()) {
                         spec = arg.state.url.getPossiblyInvalidSpec();
@@ -420,9 +420,7 @@ public class TabStoreMetricsService {
                 }
             }
             for (CreateNewTabArguments arg : shadowNewTabData) {
-                if (arg.loadUrlParams != null && arg.loadUrlParams.getUrl() != null) {
-                    shadowUrls.add(arg.loadUrlParams.getUrl());
-                }
+                shadowUrls.add(arg.loadUrlParams.getUrl());
             }
 
             int filteredFallbackTabCount = 0;

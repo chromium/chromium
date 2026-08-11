@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -28,10 +27,12 @@ import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.MetricsBu
 import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.WindowMetricsTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateNewTabArguments;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -144,8 +145,14 @@ public class TabStoreMetricsServiceUnitTest {
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();
 
-        CreateNewTabArguments mockArgs = mock(CreateNewTabArguments.class);
-        shadowNew.add(mockArgs);
+        CreateNewTabArguments realArgs =
+                new CreateNewTabArguments(
+                        new LoadUrlParams("http://example.com"),
+                        "Title",
+                        TabLaunchType.FROM_LINK,
+                        null,
+                        0);
+        shadowNew.add(realArgs);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
