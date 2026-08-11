@@ -20,12 +20,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/hints/hints_fetcher.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOptimizationGuideServiceGetHintsURL[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOptimizationGuideLanguageOverride[];
-
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/optimization_guide_permissions_util.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kDisableCheckingUserPermissionsForTesting[];

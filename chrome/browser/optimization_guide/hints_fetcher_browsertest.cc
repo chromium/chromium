@@ -197,7 +197,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     // Set up OptimizationGuideServiceURL, this does not enable HintsFetching,
     // only provides the URL.
     cmd->AppendSwitchASCII(
-        optimization_guide::switches::kOptimizationGuideServiceGetHintsURL,
+        optimization_guide::kOptimizationGuideServiceGetHintsURLSwitch,
         hints_server_
             ->GetURL(GURL(optimization_guide::
                               kOptimizationGuideServiceGetHintsDefaultURL)

@@ -12,11 +12,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// Overrides the Optimization Guide Service URL that the HintsFetcher will
-// request remote hints from.
-const char kOptimizationGuideServiceGetHintsURL[] =
-    "optimization-guide-service-get-hints-url";
-
 // Overrides the Optimization Guide Service URL that the PredictionModelFetcher
 // will request remote models and host features from.
 const char kOptimizationGuideServiceGetModelsURL[] =
@@ -101,10 +96,6 @@ const char kEnableModelQualityDogfoodLogging[] =
 
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
-
-// Allows sending an language code to the backend.
-const char kOptimizationGuideLanguageOverride[] =
-    "optimization-guide-language-override";
 
 // Enables overriding Google API key configuration check for permissions.
 const char kGoogleApiKeyConfigurationCheckOverride[] =

@@ -13,9 +13,9 @@
 #import "components/optimization_guide/core/filters/hints_component_util.h"
 #import "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/filters/test_hints_component_creator.h"
+#import "components/optimization_guide/core/hints/hints_fetcher.h"
 #import "components/optimization_guide/core/hints/hints_fetcher_factory.h"
 #import "components/optimization_guide/core/hints/hints_manager.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -28,7 +28,7 @@ void OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(
           chrome_test_util::GetOriginalProfile());
   GURL gurl(base::SysNSStringToUTF8(url));
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      optimization_guide::switches::kOptimizationGuideServiceGetHintsURL,
+      optimization_guide::kOptimizationGuideServiceGetHintsURLSwitch,
       gurl.spec());
   service->GetHintsManager()
       ->GetHintsFetcherFactory()

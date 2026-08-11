@@ -30,6 +30,15 @@ class SimpleURLLoader;
 
 namespace optimization_guide {
 
+// Overrides the Optimization Guide Service URL that the HintsFetcher will
+// request remote hints from.
+inline constexpr char kOptimizationGuideServiceGetHintsURLSwitch[] =
+    "optimization-guide-service-get-hints-url";
+
+// Allows sending a language code to the backend.
+inline constexpr char kOptimizationGuideLanguageOverrideSwitch[] =
+    "optimization-guide-language-override";
+
 // The name of the language override request header.
 extern const char kOptimizationGuideLanguageOverrideHeaderKey[];
 
