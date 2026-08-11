@@ -229,11 +229,8 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
       ReauthenticationServiceFactory::GetForProfile(self.profile)
           ->GetReauthModule();
 
-  // There is no personal data manager in OTR (incognito). Get the original
-  // one for manual fallback.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          self.profile->GetOriginalProfile());
+      autofill::PersonalDataManagerFactory::GetForProfile(self.profile);
 
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);

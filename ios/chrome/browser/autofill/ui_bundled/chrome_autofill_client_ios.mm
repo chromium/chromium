@@ -116,8 +116,8 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     : AutofillClientIOS(web_state, bridge),
       pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
-      personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
-          profile->GetOriginalProfile())),
+      personal_data_manager_(
+          PersonalDataManagerFactory::GetForProfile(profile)),
       autocomplete_history_manager_(
           AutocompleteHistoryManagerFactory::GetForProfile(profile)),
       profile_(profile),

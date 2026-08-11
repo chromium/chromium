@@ -80,10 +80,8 @@
     _cardViewController = [[CardViewController alloc] init];
     _reauthenticationModule = reauthenticationModule;
 
-    // Service must use regular profile, even if the Browser has an
-    // OTR profile.
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
-        super.browser->GetProfile()->GetOriginalProfile());
+        super.browser->GetProfile());
     CHECK(_personalDataManager);
 
     _cardMediator = [[ManualFillCardMediator alloc]

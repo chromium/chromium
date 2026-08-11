@@ -42,7 +42,8 @@ PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
 }
 
 PersonalDataManagerFactory::PersonalDataManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("PersonalDataManager") {
+    : ProfileKeyedServiceFactoryIOS("PersonalDataManager",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());

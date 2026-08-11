@@ -526,10 +526,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                               delegate
                                     creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode {
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          profile->GetOriginalProfile());
+          browser->GetProfile());
 
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
@@ -1387,10 +1386,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          profile->GetOriginalProfile());
+          self.browser->GetProfile());
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:creditCard

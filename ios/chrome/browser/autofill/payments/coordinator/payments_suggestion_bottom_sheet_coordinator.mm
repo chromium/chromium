@@ -55,11 +55,9 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
     _params = params;
     _dismissing = NO;
 
-    ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
-
     self.personalDataManager =
         autofill::PersonalDataManagerFactory::GetForProfile(
-            profile->GetOriginalProfile());
+            browser->GetProfile());
   }
   return self;
 }
