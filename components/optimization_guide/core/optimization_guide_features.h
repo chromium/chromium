@@ -370,6 +370,17 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
     base::ByteSize free_disk_space_bytes);
 
+// Whether on-device model session creation is gated on sufficient disk space to
+// build execution caches.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck);
+
+// Whether there is too little disk space to build caches for the
+// on-device model installed.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
+    base::ByteSize free_disk_space_bytes);
+
 // Whether there is enough free disk space to allow on-device model
 // installation proactively in background.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

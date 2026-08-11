@@ -184,9 +184,12 @@ enum class OnDeviceModelEligibilityReason {
   // There was no on-device feature usage so the model has not been
   // downloaded yet.
   kNoOnDeviceFeatureUsed = 18,
+  // The device does not have enough disk space to build caches for the
+  // on-device model.
+  kInsufficientDiskSpaceForCaches = 19,
 
   // Insert new values before this line.
-  kMaxValue = kNoOnDeviceFeatureUsed,
+  kMaxValue = kInsufficientDiskSpaceForCaches,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OptimizationGuideOnDeviceModelEligibilityReason)
 

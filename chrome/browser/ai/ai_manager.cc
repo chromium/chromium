@@ -160,6 +160,8 @@ ConvertModelNotSupportedReasonToModelAvailabilityCheckResult(
           kUnavailableModelNotEligible;
     case optimization_guide::mojom::ModelNotSupportedDetailedReason::
         kInsufficientDiskSpace:
+    case optimization_guide::mojom::ModelNotSupportedDetailedReason::
+        kInsufficientDiskSpaceForCaches:
       return blink::mojom::ModelAvailabilityCheckResult::
           kUnavailableInsufficientDiskSpace;
     case optimization_guide::mojom::ModelNotSupportedDetailedReason::

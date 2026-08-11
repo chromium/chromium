@@ -76,12 +76,14 @@ enum class OnDeviceModelStatus {
   // Criteria to install are met, but model is not downloaded because there was
   // no on-device feature usage.
   kNoOnDeviceFeatureUsed = 7,
+  // The device doesn't have enough disk space to build model caches.
+  kInsufficientDiskSpaceForCaches = 8,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelStatus in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kNoOnDeviceFeatureUsed,
+  kMaxValue = kInsufficientDiskSpaceForCaches,
 };
 
 std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status);
@@ -126,6 +128,9 @@ class OnDeviceModelComponentState {
   }
   const OnDeviceBaseModelSpec& GetBaseModelSpec() const { return model_spec_; }
 
+  bool has_caches() const { return has_caches_; }
+  void set_has_caches(bool has_caches) { has_caches_ = has_caches; }
+
  private:
   friend class OnDeviceModelAdaptationLoaderTest;
 
@@ -134,6 +139,7 @@ class OnDeviceModelComponentState {
   base::FilePath install_dir_;
   base::Version component_version_;
   OnDeviceBaseModelSpec model_spec_;
+  bool has_caches_ = false;
 };
 
 enum class ModelInstallMode {
@@ -268,6 +274,16 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
         return false;
       }
       return features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+          *disk_space_free);
+    }
+
+    bool is_disk_space_too_low_for_caches() const {
+      if (!disk_space_free) {
+        // TODO(https://crbug.com/438265416): Handle failure to get free disk
+        // space.
+        return true;
+      }
+      return features::IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
           *disk_space_free);
     }
 
@@ -446,6 +462,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
+
+  static bool CheckCachesExist(const base::FilePath& install_dir);
+  void OnCachesExistChecked(bool caches_exist);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::SafeRef<PerformanceClassifier> performance_classifier_
