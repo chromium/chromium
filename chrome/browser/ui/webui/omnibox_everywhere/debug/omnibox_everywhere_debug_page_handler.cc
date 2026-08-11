@@ -32,6 +32,10 @@ OmniboxEverywhereDebugPageHandler::OmniboxEverywhereDebugPageHandler(
         omnibox_everywhere::prefs::kHotkeyEnabled,
         base::BindRepeating(&OmniboxEverywhereDebugPageHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel,
+        base::BindRepeating(&OmniboxEverywhereDebugPageHandler::OnPrefChanged,
+                            base::Unretained(this)));
   }
 }
 
@@ -74,6 +78,25 @@ void OmniboxEverywhereDebugPageHandler::GetHotkeyEnabled(
   std::move(callback).Run(enabled);
 }
 
+void OmniboxEverywhereDebugPageHandler::SetEphemeralModelEnabled(bool enabled) {
+  PrefService* local_state = g_browser_process->local_state();
+  if (local_state) {
+    local_state->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, enabled);
+  }
+}
+
+void OmniboxEverywhereDebugPageHandler::GetEphemeralModelEnabled(
+    GetEphemeralModelEnabledCallback callback) {
+  PrefService* local_state = g_browser_process->local_state();
+  bool enabled =
+      local_state
+          ? local_state->GetBoolean(
+                omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel)
+          : false;
+  std::move(callback).Run(enabled);
+}
+
 void OmniboxEverywhereDebugPageHandler::InvokeOmniboxEverywhere(
     mojom::InvocationSource source) {
   if (g_browser_process && g_browser_process->GetFeatures()) {
@@ -108,6 +131,10 @@ void OmniboxEverywhereDebugPageHandler::OnPrefChanged(
   } else if (pref_name == omnibox_everywhere::prefs::kHotkeyEnabled) {
     page_->OnHotkeyChanged(
         local_state->GetBoolean(omnibox_everywhere::prefs::kHotkeyEnabled));
+  } else if (pref_name ==
+             omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel) {
+    page_->OnEphemeralModelChanged(local_state->GetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel));
   }
 }
 

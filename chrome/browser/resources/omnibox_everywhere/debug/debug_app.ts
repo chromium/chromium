@@ -18,6 +18,7 @@ export interface OmniboxEverywhereDebugAppElement {
   $: {
     bgModeToggle: HTMLInputElement,
     hotkeyToggle: HTMLInputElement,
+    ephemeralModelToggle: HTMLInputElement,
     sourceSelect: HTMLSelectElement,
   };
 }
@@ -39,12 +40,14 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
     return {
       bgModeEnabled: {type: Boolean},
       hotkeyEnabled: {type: Boolean},
+      ephemeralModelEnabled: {type: Boolean},
       selectedInvocationSource: {type: Number},
     };
   }
 
   protected accessor bgModeEnabled: boolean = false;
   protected accessor hotkeyEnabled: boolean = true;
+  protected accessor ephemeralModelEnabled: boolean = false;
   protected accessor selectedInvocationSource: InvocationSource =
       InvocationSource.kGlobalHotkey;
 
@@ -66,12 +69,22 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
           this.hotkeyEnabled = enabled;
         }));
 
+    this.listenerIds_.push(
+        proxy.callbackRouter.onEphemeralModelChanged.addListener(
+            (enabled: boolean) => {
+              this.ephemeralModelEnabled = enabled;
+            }));
+
     proxy.handler.getBackgroundModeEnabled().then(res => {
       this.bgModeEnabled = res.enabled;
     });
 
     proxy.handler.getHotkeyEnabled().then(res => {
       this.hotkeyEnabled = res.enabled;
+    });
+
+    proxy.handler.getEphemeralModelEnabled().then(res => {
+      this.ephemeralModelEnabled = res.enabled;
     });
   }
 
@@ -105,6 +118,11 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   protected onHotkeyToggleChange() {
     browserProxyFactory.getInstance().handler.setHotkeyEnabled(
         this.$.hotkeyToggle.checked);
+  }
+
+  protected onEphemeralModelToggleChange() {
+    browserProxyFactory.getInstance().handler.setEphemeralModelEnabled(
+        this.$.ephemeralModelToggle.checked);
   }
 
   protected onInvocationSourceChange() {

@@ -22,6 +22,10 @@ interface Page {
 
   // Called when the Omnibox Everywhere global hotkey preference state changes.
   OnHotkeyChanged(bool enabled);
+
+  // Called when the Omnibox Everywhere ephemeral model preference state
+  // changes.
+  OnEphemeralModelChanged(bool enabled);
 };
 
 // Interface for controlling Omnibox Everywhere features and preferences from
@@ -38,6 +42,12 @@ interface PageHandler {
 
   // Retrieves the current state of the global system hotkey preference.
   GetHotkeyEnabled() => (bool enabled);
+
+  // Enables or disables the Omnibox Everywhere ephemeral model preference.
+  SetEphemeralModelEnabled(bool enabled);
+
+  // Retrieves the current state of the ephemeral model preference.
+  GetEphemeralModelEnabled() => (bool enabled);
 
   // Directly invokes the Omnibox Everywhere widget with the specified
   // invocation source.

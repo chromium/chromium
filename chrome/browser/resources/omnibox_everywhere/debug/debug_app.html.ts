@@ -25,6 +25,15 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
   </label>
   <span class="toggle-label">Enable Global Hotkey</span>
 </div>
+<div class="toggle-container">
+  <label class="switch">
+    <input id="ephemeralModelToggle" type="checkbox"
+        .checked="${this.ephemeralModelEnabled}"
+        @change="${this.onEphemeralModelToggleChange}">
+    <span class="slider"></span>
+  </label>
+  <span class="toggle-label">Enable Ephemeral Model</span>
+</div>
 <div class="invoke-container">
   <label for="sourceSelect" class="invoke-label">Invocation Source:</label>
   <select id="sourceSelect" class="invoke-select"

@@ -37,6 +37,10 @@ class OmniboxEverywhereDebugPageHandler : public mojom::PageHandler {
   void SetHotkeyEnabled(bool enabled) override;
   void GetHotkeyEnabled(GetHotkeyEnabledCallback callback) override;
 
+  void SetEphemeralModelEnabled(bool enabled) override;
+  void GetEphemeralModelEnabled(
+      GetEphemeralModelEnabledCallback callback) override;
+
   void InvokeOmniboxEverywhere(mojom::InvocationSource source) override;
 
  private:
