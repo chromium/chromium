@@ -6,7 +6,6 @@
 import './banner_promo.js';
 import './info_tooltip.js';
 import {TooltipState} from './info_tooltip.js';
-import {WindowManager} from './window_manager.js';
 import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualTasksInfoTooltipElement} from './info_tooltip.js';
@@ -29,6 +28,7 @@ import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
 import './top_toolbar.js';
+import {WindowManager} from './window_manager.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -36,9 +36,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
-import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -686,7 +684,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
 
-    this.configureNewWindowEventHandler();
+    // Handle newwindow events with mock webviews.
+    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
+      new WindowManager(this.$.threadFrame);
+    }
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.
@@ -1613,25 +1614,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.updateBackgroundColor_();
     this.commonSearchParams_ = params;
     this.maybeLoadPendingUrl_();
-  }
-
-  private configureNewWindowEventHandler() {
-    // <if expr="not is_android">
-    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
-      // Handle newwindow events with mock webviews.
-      new WindowManager(this.$.threadFrame);
-      return;
-    }
-    // </if>
-
-    // On platforms without window tracking, register a fallback listener that
-    // routes the URL to the browser process via `openUrl`.
-    this.eventTracker_.add(this.$.threadFrame, 'newwindow', (e: Event) => {
-      const newWindowEvent = e as NewWindowEvent;
-      newWindowEvent.preventDefault();
-      this.browserProxy_.handler.openUrl(
-          newWindowEvent.targetUrl, WindowOpenDisposition.NEW_FOREGROUND_TAB);
-    });
   }
 
   private setupWebviewRequestOverrides() {

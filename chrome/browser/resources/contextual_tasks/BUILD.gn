@@ -61,6 +61,7 @@ build_webui("build") {
     "utils.ts",
     "utils/clip_path.ts",
     "web_view_type.ts",
+    "window_manager.ts",
   ]
   if (!is_android) {
     ts_files += [
@@ -79,7 +80,6 @@ build_webui("build") {
       "info_tooltip.ts",
       "onboarding_tooltip.html.ts",
       "onboarding_tooltip.ts",
-      "window_manager.ts",
     ]
   }
 

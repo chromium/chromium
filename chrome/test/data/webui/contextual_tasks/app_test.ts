@@ -6,7 +6,6 @@ import 'chrome://contextual-tasks/app.js';
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -1206,30 +1205,6 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(wrapper.hasAttribute('hidden'));
   });
   // </if> not is_android or enable_webui_contextual_tasks_composebox
-
-  test(
-      'handles newwindow event via openUrl when windowTrackingEnabled is false',
-      async () => {
-        loadTimeData.overrideValues({
-          windowTrackingEnabled: false,
-        });
-
-        const {appElement, proxy} =
-            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
-
-        const targetUrl = 'http://example.com/share';
-        const newWindowEvent = new CustomEvent('newwindow', {
-                                 cancelable: true,
-                               }) as any;
-        newWindowEvent.targetUrl = targetUrl;
-
-        appElement.$.threadFrame.dispatchEvent(newWindowEvent);
-
-        assertTrue(newWindowEvent.defaultPrevented);
-        const [url, disposition] = await proxy.handler.whenCalled('openUrl');
-        assertEquals(targetUrl, url);
-        assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
-      });
 
   // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
   test('side panel zero state plays animations immediately', async () => {
