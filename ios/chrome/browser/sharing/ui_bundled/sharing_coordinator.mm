@@ -13,16 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/enterprise/common/proto/connectors.pb.h"
-#import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/cloud_content_scanning_helper.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -401,7 +394,7 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
       stringByAppendingPathComponent:base::SysUTF16ToNSString(
                                          helper->GetFileNameSuggestion())];
   self.fileNSURL = [NSURL fileURLWithPath:self.filePath];
-  [self initializeContentAnalysisInfoForWebState:webState];
+  _downloadGURL = webState->GetLastCommittedURL();
 
   __weak SharingCoordinator* weakSelf = self;
   webState->DownloadCurrentPage(self.filePath, self,
@@ -474,51 +467,22 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 // 3. WARN: Warning dialog will show and let the user choose to proceed or
 //          dismiss.
 - (void)processCompleteDownload {
-  ProfileIOS* profile = self.browser->GetProfile();
-
-  __weak SharingCoordinator* weakSelf = self;
-  auto files_request_handler_delegate =
-      std::make_unique<enterprise_connectors::FilesRequestHandlerIOS>(
-          profile, base::apple::NSStringToFilePath(self.filePath),
-          base::BindOnce(&enterprise_connectors::HandleScanDecision,
-                         _originatingWebState,
-                         enterprise_connectors::TriggerType::kShareSheet,
-                         base::BindOnce(&DownloadShouldProceed, weakSelf)));
-
-  _filesRequestHandler = std::make_unique<
-      enterprise_connectors::FilesRequestHandlerBase>(
-      _contentAnalysisInfo.get(),
-      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
-          profile),
-      _downloadGURL, /*content_transfer_method=*/"",
-      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-      std::move(files_request_handler_delegate));
-  _filesRequestHandler->UploadData();
-}
-
-- (void)initializeContentAnalysisInfoForWebState:(web::WebState*)webState {
-  CHECK(webState);
-
-  ProfileIOS* profile = self.browser->GetProfile();
-  _downloadGURL = webState->GetLastCommittedURL();
-  std::optional<enterprise_connectors::AnalysisSettings> settings =
-      std::nullopt;
-
-  enterprise_connectors::ConnectorsService* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
-  if (connectors_service) {
-    settings = connectors_service->GetAnalysisSettings(
-        _downloadGURL,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  if (!_originatingWebState) {
+    return;
   }
 
-  _contentAnalysisInfo =
-      std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
-          _downloadGURL,
-          settings.has_value() ? std::move(settings.value())
-                               : enterprise_connectors::AnalysisSettings(),
-          enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
-          *webState);
+  __weak SharingCoordinator* weakSelf = self;
+  enterprise_connectors::FileDownloadScanningResources resources =
+      enterprise_connectors::PrepareCloudContentScanning(
+          _originatingWebState.get(), _downloadGURL,
+          base::apple::NSStringToFilePath(self.filePath),
+          enterprise_connectors::TriggerType::kShareSheet,
+          base::BindOnce(&DownloadShouldProceed, weakSelf));
+
+  _filesRequestHandler = std::move(resources.files_request_handler);
+  _contentAnalysisInfo = std::move(resources.content_analysis_info);
+
+  _filesRequestHandler->UploadData();
 }
 
 - (void)cleanUpAnalysisResources {
