@@ -47,3 +47,17 @@ source_set("promo_code_label_button") {
     "//ui/base",
   ]
 }
+
+source_set("bnpl_dialog_footnote") {
+  public = [ "bnpl_dialog_footnote.h" ]
+  sources = [ "bnpl_dialog_footnote.cc" ]
+  public_deps = [
+    "//ui/base",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//base",
+    "//chrome/browser/ui/views:layout_provider",
+  ]
+}
