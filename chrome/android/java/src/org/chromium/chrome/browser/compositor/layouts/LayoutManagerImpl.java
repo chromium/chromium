@@ -265,6 +265,14 @@ public class LayoutManagerImpl
         }
 
         @Override
+        public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+            if (!isAllTabs) return;
+            assert !tabs.isEmpty();
+            boolean isIncognito = tabs.get(0).isIncognito();
+            tabsAllClosing(isIncognito);
+        }
+
+        @Override
         public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
             tabClosed(tab.getId(), tab.isIncognito(), false);
         }
