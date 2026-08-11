@@ -333,6 +333,22 @@
   border-inline-start: none;
 }
 
+/* Ensure text in <pre> preformatted tags (which can be distilled with
+ * Readability) wraps to fill the reading mode panel, instead of extending
+ * through a horizontal scrollbar. Also extend the font-family to ensure
+ * the reading mode preferred font is honored, even if the text
+ * was preformatted.
+ * The use of <pre> tags in this way is technically invalid HTML, but it does
+ * exist on some sites where people might want to use reading mode (such as
+ * Wattpad).
+ * In the future, this may need to be adjusted to support both incorrect <pre>
+ * tag usage and code blocks / math. */
+#appFlexParent pre {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-family: inherit;
+}
+
 #docs-load-more-button {
   background: var(--color-sys-tonal-container);
   margin: 0 auto;
