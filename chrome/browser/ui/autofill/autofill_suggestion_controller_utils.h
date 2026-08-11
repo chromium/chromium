@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace content {
 class RenderFrameHost;
@@ -48,6 +49,11 @@ bool IsStandaloneSuggestionType(SuggestionType type);
 // Returns whether `suggestion` should be displayed with deactivated visual
 // styling (e.g. disabled text style and grayed-out icons).
 bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion);
+
+// When suggestions update in an open popup, a 500ms lockout against accidental
+// clicks is normally restarted. Returns whether `trigger_source` restarts this
+// lockout.
+bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source);
 
 // Will be removed together with kAutofillSimplifyFocusCheck.
 // Returns the `RenderFrameHost` corresponding to an

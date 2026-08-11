@@ -148,7 +148,7 @@ class AutofillKeyboardAccessoryControllerImpl
   // suggestions. It is used to safeguard against accepting suggestions too
   // quickly after a the popup view was shown (see the `show_threshold`
   // parameter of `AcceptSuggestion`).
-  NextIdleBarrier barrier_for_accepting_;
+  std::optional<NextIdleBarrier> barrier_for_accepting_;
 
   // An override to suppress minimum show thresholds. It should only be set
   // during tests that cannot mock time (e.g. the autofill interactive

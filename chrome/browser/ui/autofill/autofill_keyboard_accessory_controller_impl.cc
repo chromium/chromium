@@ -399,7 +399,8 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
     AutofillMetrics::SuggestionAcceptedMethod accept_method) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/40058217).
-  if (!barrier_for_accepting_.value() && !disable_threshold_for_testing_) {
+  if ((!barrier_for_accepting_ || !barrier_for_accepting_->value()) &&
+      !disable_threshold_for_testing_) {
     return;
   }
 
@@ -669,8 +670,10 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     }
   }
 
-  barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
-      kIgnoreEarlyClicksOnSuggestionsDuration);
+  if (!barrier_for_accepting_ || ShouldResetIdleBarrier(trigger_source_)) {
+    barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
+        kIgnoreEarlyClicksOnSuggestionsDuration);
+  }
   // TODO(crbug.com/364165357): Use actually shown suggestions.
   delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
 }
