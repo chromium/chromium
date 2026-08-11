@@ -12,15 +12,15 @@
  * #css_wrapper_metadata_end */
 
 :host {
-    --cr-tooltip-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
+  --cr-tooltip-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
   --icon-button-color-active: var(--google-grey-700);
   --icon-button-color: var(--google-grey-600);
-  --icon-size: 48px;
-    --managed-tile-background-color: var(--cr-fallback-color-neutral-container);
+  --icon-size: var(--most-visited-icon-size, 48px);
+  --managed-tile-background-color: var(--cr-fallback-color-neutral-container);
   --tile-background-color: rgb(229, 231, 232);
   --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
-  --tile-size: 112px;
-  --title-height: 32px;
+  --tile-size: var(--most-visited-tile-size, 112px);
+  --title-height: var(--most-visited-title-height, 32px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -192,7 +192,7 @@
   flex-shrink: 0;
   height: var(--icon-size);
   justify-content: center;
-  margin-top: 16px;
+  margin-top: var(--most-visited-icon-margin-top, 16px);
   width: var(--icon-size);
 }
 
@@ -228,7 +228,7 @@ cr-policy-indicator {
   line-height: calc(var(--title-height) / 2);
   margin-top: 6px;
   padding: 2px 8px;
-  max-width: 102px;
+  max-width: calc(var(--tile-size) - 10px);
 }
 
 .tile-title span {

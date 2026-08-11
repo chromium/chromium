@@ -6,6 +6,7 @@ import './omnibox.js';
 import './composebox.js';
 import '/strings.m.js';
 import '//resources/cr_components/composebox/composebox_voice_search.js';
+import '//resources/cr_components/most_visited/most_visited.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
@@ -61,6 +62,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       voiceIdleTimeoutMs_: {type: Number},
       voiceQueryLengthLimit_: {type: Number},
       callbackRouter_: {type: Object},
+      mostVisitedEnabled_: {type: Boolean},
     };
   }
 
@@ -89,6 +91,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   protected accessor voiceQueryLengthLimit_: number = VOICE_QUERY_LENGTH_LIMIT;
   protected accessor callbackRouter_: PageCallbackRouter =
       SearchboxBrowserProxy.getInstance().callbackRouter;
+  protected accessor mostVisitedEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
 
   private eventTracker_ = new EventTracker();
 

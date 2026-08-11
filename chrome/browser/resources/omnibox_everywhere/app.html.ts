@@ -34,6 +34,11 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
                                    this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-omnibox>
   `}
+  ${this.mostVisitedEnabled_ ? html`
+    <div id="mostVisitedContainer">
+      <cr-most-visited id="mostVisited" single-row reflow-on-overflow></cr-most-visited>
+    </div>
+  ` : ''}
 </div>
 <div id="dialogAnchor"></div>
 ${this.showVoiceSearchOverlay_ ? html`

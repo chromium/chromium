@@ -92,6 +92,8 @@ extern const base::FeatureParam<bool> kShowComposeboxZps;
 // Whether to show the + entrypoint and contextual input menu in the realbox and
 // composebox.
 extern const base::FeatureParam<bool> kShowContextMenu;
+// Controls showing most visited tiles in OmniboxEverywhere.
+extern const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
 // TODO (crbug.com/509939902): Remove this when finch experiment reference

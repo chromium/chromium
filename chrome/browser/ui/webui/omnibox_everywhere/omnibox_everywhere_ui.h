@@ -18,12 +18,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 
 namespace omnibox_everywhere_debug {
 class OmniboxEverywhereDebugPageHandler;
 }
 
 class ComposeboxEverywhereHandler;
+class MostVisitedHandler;
 class OmniboxEverywhereHandler;
 class Profile;
 
@@ -48,7 +50,8 @@ class OmniboxEverywhereUI
     : public TopChromeWebUIController,
       public composebox::mojom::PageHandlerFactory,
       public searchbox::mojom::PageHandlerFactory,
-      public omnibox_everywhere_debug::mojom::PageHandlerFactory {
+      public omnibox_everywhere_debug::mojom::PageHandlerFactory,
+      public most_visited::mojom::MostVisitedPageHandlerFactory {
  public:
   explicit OmniboxEverywhereUI(content::WebUI* web_ui);
   OmniboxEverywhereUI(const OmniboxEverywhereUI&) = delete;
@@ -58,6 +61,15 @@ class OmniboxEverywhereUI
   static constexpr std::string_view GetWebUIName() {
     return "OmniboxEverywhere";
   }
+
+  // most_visited::mojom::MostVisitedPageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandlerFactory>
+          receiver);
+  void CreatePageHandler(
+      mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
+      mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
+          pending_page_handler) override;
 
   // composebox::mojom::PageHandlerFactory:
   void BindInterface(
@@ -100,6 +112,7 @@ class OmniboxEverywhereUI
 
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
   std::unique_ptr<OmniboxEverywhereHandler> omnibox_handler_;
+  std::unique_ptr<MostVisitedHandler> most_visited_handler_;
 
   std::unique_ptr<omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>
       debug_page_handler_;
@@ -109,6 +122,8 @@ class OmniboxEverywhereUI
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};
+  mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
+      most_visited_page_factory_receiver_{this};
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
   mojo::Receiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>

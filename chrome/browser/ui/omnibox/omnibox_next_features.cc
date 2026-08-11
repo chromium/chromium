@@ -87,6 +87,9 @@ BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{
     &kOmniboxEverywhere, "ProfilePicker", false};
+// Controls showing most visited tiles in OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam{
+    &kOmniboxEverywhere, "MostVisited", true};
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.

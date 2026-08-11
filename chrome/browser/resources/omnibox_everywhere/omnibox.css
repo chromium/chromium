@@ -34,7 +34,8 @@
 
   border-radius: var(--cr-searchbox-border-radius);
   font-size: var(--cr-searchbox-font-size, 16px);
-  height: var(--cr-searchbox-height);
+  height: auto;
+  min-height: var(--cr-searchbox-height);
   width: var(--cr-searchbox-width);
   z-index: 99;
 }

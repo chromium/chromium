@@ -18,6 +18,8 @@
 #endif
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -505,6 +507,18 @@ void OmniboxEverywhereUIManager::OnBrowserClosed(
       webui::SetBrowserWindowInterface(web_contents(), active_bwi);
     }
   }
+}
+
+content::WebContents* OmniboxEverywhereUIManager::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->OpenUrl(params.url, params.disposition, params.transition);
+  }
+  return nullptr;
 }
 
 void OmniboxEverywhereUIManager::RunFileChooser(

@@ -22,6 +22,7 @@ source_set("omnibox_everywhere") {
     "//base",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
+    "//chrome/browser/new_tab_page",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/omnibox_everywhere:resources",
     "//chrome/browser/ui/browser_window",
@@ -32,6 +33,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/composebox",
+    "//chrome/browser/ui/webui/cr_components/most_visited",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
@@ -42,8 +44,12 @@ source_set("omnibox_everywhere") {
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/common:features",
+    "//components/search",
+    "//components/strings:components_strings",
     "//content/public/browser",
     "//ui/base",
+    "//ui/strings:ui_strings",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
   ]
 }

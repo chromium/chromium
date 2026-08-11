@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -270,8 +271,14 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   content::RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
+#if BUILDFLAG(IS_ANDROID)
   content::RegisterWebUIControllerInterfaceBinder<
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI>(map);
+#else
+  content::RegisterWebUIControllerInterfaceBinder<
+      most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
+      OmniboxEverywhereUI>(map);
+#endif  // BUILDFLAG(IS_ANDROID)
   content::RegisterWebUIControllerInterfaceBinder<
       customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
       map);
