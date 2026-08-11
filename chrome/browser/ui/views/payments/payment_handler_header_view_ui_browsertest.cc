@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -10,6 +11,7 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/content/icon/icon_size.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,10 @@ class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
     NavigateTo("/payment_handler.html");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
@@ -41,9 +47,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ(
       "success",
@@ -100,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
 
   // The pay button should be enabled now.
   ASSERT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+  ResetEventWaiterForSequence({DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
@@ -143,9 +149,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
 
   // The pay button should be enabled now.
   ASSERT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+  ResetEventWaiterForSequence({DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
@@ -168,9 +174,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ(
       "success",
@@ -194,9 +200,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN});
   ASSERT_EQ("success",
             content::EvalJs(
                 GetActiveWebContents(),
@@ -228,9 +234,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ(
       "success",

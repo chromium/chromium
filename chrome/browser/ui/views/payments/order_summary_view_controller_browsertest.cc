@@ -4,10 +4,12 @@
 
 #include <list>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,6 +21,10 @@ class PaymentRequestOrderSummaryViewControllerTest
   PaymentRequestOrderSummaryViewControllerTest() {
     SetBypassUserInteractionForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
@@ -65,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,
   views::View* summary_sheet = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::ORDER_SUMMARY_SHEET));
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   EXPECT_TRUE(summary_sheet->AcceleratorPressed(
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
   ASSERT_TRUE(WaitForObservedEvent());

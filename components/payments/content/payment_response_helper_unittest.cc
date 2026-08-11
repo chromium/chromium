@@ -114,10 +114,12 @@ class PaymentResponseHelperTest : public testing::Test,
     test_app_ = std::move(test_app);
   }
 
-  bool was_payment_handler_window_interacted_with_ = false;
+  bool was_payment_handler_window_interacted_with_ = true;
   JourneyLogger journey_logger_{ukm::kInvalidSourceId};
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
   std::unique_ptr<PaymentRequestSpec> spec_;
   mojom::PaymentResponsePtr payment_response_;
   autofill::TestPersonalDataManager test_personal_data_manager_;

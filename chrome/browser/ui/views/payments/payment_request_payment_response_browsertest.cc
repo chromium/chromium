@@ -4,11 +4,13 @@
 
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -17,6 +19,10 @@ namespace payments {
 class PaymentRequestPaymentResponseTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestPaymentResponseTest() { SetBypassUserInteractionForTesting(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 using PaymentRequestPaymentResponseShippingAddressTest =
@@ -46,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
   InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
                                payment_method_name + "'}]);");
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   ASSERT_TRUE(WaitForObservedEvent());
 
@@ -81,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAllContactDetailsTest,
   InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
                                payment_method_name + "'}]);");
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   ASSERT_TRUE(WaitForObservedEvent());
 
@@ -119,9 +125,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click on pay.
   EXPECT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+  ResetEventWaiterForSequence({DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
@@ -143,9 +149,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click on pay again to complete the retried payment.
   EXPECT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+  ResetEventWaiterForSequence({DialogEvent::LOADING_VIEW_SHOWN,
                                DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
@@ -175,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseOneContactDetailTest,
   InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
                                payment_method_name + "'}]);");
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   ASSERT_TRUE(WaitForObservedEvent());
 

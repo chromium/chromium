@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +55,10 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
   }
 
   const gfx::Size expected_payment_request_dialog_size_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
@@ -86,9 +92,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
 
   // Click on Pay and check dialog size when payment handler view is shown.
   EXPECT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED});
+  ResetEventWaiterForSequence({DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   EXPECT_EQ(expected_payment_handler_dialog_size, DialogViewSize());
 

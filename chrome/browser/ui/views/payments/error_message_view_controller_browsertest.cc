@@ -24,6 +24,10 @@ constexpr std::string_view kMerchantOrigin = "merchant.com";
 class PaymentRequestErrorMessageTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestErrorMessageTest() { SetBypassUserInteractionForTesting(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 // Testing the use of the complete('fail') JS API and the error message.
@@ -37,16 +41,15 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
   // sheet UI is skipped and the payment handler window opens automatically.
   // When the app confirms and the merchant calls complete('fail'), the error
   // message should be shown.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::LOADING_VIEW_HIDDEN, DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN,
+       DialogEvent::ERROR_MESSAGE_SHOWN});
   ASSERT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("buyWithMethods([{supportedMethods:$1}]);",
@@ -72,16 +75,15 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   // sheet UI is skipped and the payment handler window opens automatically.
   // When the app confirms and the merchant calls complete('fail'), the error
   // message should be shown.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::LOADING_VIEW_HIDDEN, DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN,
+       DialogEvent::ERROR_MESSAGE_SHOWN});
   ASSERT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("buyWithMethods([{supportedMethods:$1}]);",
@@ -109,16 +111,15 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   // sheet UI is skipped and the payment handler window opens automatically.
   // When the app confirms and the merchant calls complete('fail'), the error
   // message should be shown.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
+       DialogEvent::LOADING_VIEW_SHOWN,
+       DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       DialogEvent::LOADING_VIEW_HIDDEN, DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       DialogEvent::PROCESSING_SPINNER_SHOWN,
+       DialogEvent::PROCESSING_SPINNER_HIDDEN,
+       DialogEvent::ERROR_MESSAGE_SHOWN});
   ASSERT_TRUE(content::ExecJs(
       GetActiveWebContents(),
       content::JsReplace("buyWithMethods([{supportedMethods:$1}]);",
@@ -144,13 +145,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
 class PaymentRequestErrorMessageMandatoryUiEnabledTest
     : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentRequestErrorMessageMandatoryUiEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPaymentRequestMandatoryPaymentAppUi);
-  }
+  PaymentRequestErrorMessageMandatoryUiEnabledTest() = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageMandatoryUiEnabledTest,

@@ -32,6 +32,16 @@ class AndroidPaymentAppFactoryTest
  public:
   AndroidPaymentAppFactoryTest() {
     feature_list_.InitAndEnableFeature(features::kAppStoreBilling);
+#if !BUILDFLAG(IS_CHROMEOS)
+    // On non-ChromeOS platforms, AndroidAppCommunicationStub is used and
+    // AndroidPaymentAppFactory discovers zero Android payment apps. Tests that
+    // request both Play Billing and a Web payment method (such as
+    // IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) fall back to the
+    // installed service worker payment app. Because the test service worker
+    // completes without opening a window or capturing user interaction,
+    // bypassing user interaction is needed for a headless service worker.
+    SetBypassUserInteractionForTesting();
+#endif
   }
 
   ~AndroidPaymentAppFactoryTest() override = default;

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +17,10 @@ namespace payments {
 class PaymentRequestNoUpdateWithTest : public PaymentRequestBrowserTestBase {
  protected:
   PaymentRequestNoUpdateWithTest() { SetBypassUserInteractionForTesting(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 // A merchant that does not listen to shipping address update events will not
@@ -59,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoUpdateWithTest, BuyWithoutListeners) {
   // Click on pay.
   EXPECT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
   ExpectBodyContains({"freeShipping"});
@@ -108,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoUpdateWithTest,
   // Click on pay.
   EXPECT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
   ExpectBodyContains({"freeShipping"});
@@ -166,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoUpdateWithTest, BuyWithoutPromises) {
   // Click on pay.
   EXPECT_TRUE(IsPayButtonEnabled());
   ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+      {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
   ExpectBodyContains({"updatedShipping"});

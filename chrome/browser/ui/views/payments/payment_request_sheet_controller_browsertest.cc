@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +19,10 @@ class PaymentRequestSheetControllerTest : public PaymentRequestBrowserTestBase {
  public:
   PaymentRequestSheetControllerTest() = default;
   ~PaymentRequestSheetControllerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
@@ -29,19 +35,19 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   InstallPaymentApp("b.com", "/payment_request_success_responder.js",
                     &b_method_name);
 
-  NavigateTo("/payment_request_retry_with_payer_errors.html");
-  autofill::AutofillProfile contact = autofill::test::GetFullProfile();
-  AddAutofillProfile(contact);
+  NavigateTo("/payment_request_no_shipping_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
 
-  InvokePaymentRequestUIWithJs(
-      content::JsReplace("buyWithMethods([{supportedMethods:$1}"
-                         ", {supportedMethods:$2}]);",
-                         a_method_name, b_method_name));
+  EXPECT_EQ(1U, GetPaymentRequests().size());
+  EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
+  EXPECT_EQ(nullptr, test_api(dialog_view()).loading_view_overlay());
 
-  // Click on pay.
-  EXPECT_TRUE(IsPayButtonEnabled());
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
-  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+  ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_SHOWN);
+  dialog_view()->ShowProcessingSpinner();
+
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(test_api(dialog_view()).throbber_overlay()->GetVisible());
   EXPECT_FALSE(test_api(dialog_view())
@@ -53,26 +59,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
                    ->GetViewAccessibility()
                    .IsLeaf());
 
-  // Wait for the response to settle.
-  ASSERT_TRUE(
-      content::ExecJs(GetActiveWebContents(), "processShowResponse();"));
-
-  // Call retry to finish the dialog loading state and hide the spinner.
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::SPEC_DONE_UPDATING,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION,
-                               DialogEvent::CONTACT_INFO_EDITOR_OPENED});
-  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              "retry({"
-                              "  payer: {"
-                              "    email: 'EMAIL ERROR',"
-                              "    name: 'NAME ERROR',"
-                              "    phone: 'PHONE ERROR'"
-                              "  }"
-                              "});"));
+  ResetEventWaiter(DialogEvent::PROCESSING_SPINNER_HIDDEN);
+  dialog_view()->HideProcessingSpinner();
   ASSERT_TRUE(WaitForObservedEvent());
-
   EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
   EXPECT_TRUE(test_api(dialog_view())
                   .throbber_overlay()

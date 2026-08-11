@@ -472,6 +472,7 @@ class PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip
   PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip() {
     feature_list_.InitWithFeatures(
         {
+            payments::features::kPaymentRequestMandatoryPaymentAppUi,
             payments::features::kWebPaymentsSingleAppUiSkip,
             ::features::kServiceWorkerPaymentApps,
         },
@@ -498,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     ResetEventWaiterForSequence(
         {DialogEvent::PROCESSING_SPINNER_SHOWN,
          DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-         DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+         DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
     ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "buy()"));
     ASSERT_TRUE(WaitForObservedEvent());
 
@@ -546,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     // Click on pay.
     EXPECT_TRUE(IsPayButtonEnabled());
     ResetEventWaiterForSequence(
-        {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+        {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
     ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
     // Depending on which installation completes first the preselected app can
@@ -579,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     ResetEventWaiterForSequence(
         {DialogEvent::PROCESSING_SPINNER_SHOWN,
          DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-         DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+         DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
     ASSERT_TRUE(content::ExecJs(
         GetActiveWebContents(),
         "testPaymentMethods([{supportedMethods: 'https://bobpay.test'}, "
@@ -616,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
     EXPECT_TRUE(IsPayButtonEnabled());
 
     ResetEventWaiterForSequence(
-        {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+        {DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::DIALOG_CLOSED});
     ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
     ExpectBodyContains({"bobpay.test"});
