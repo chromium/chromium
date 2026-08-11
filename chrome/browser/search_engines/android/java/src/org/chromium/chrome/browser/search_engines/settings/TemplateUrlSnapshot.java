@@ -11,9 +11,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.url.GURL;
 
-import java.util.Locale;
-import java.util.Objects;
-
 /**
  * An immutable snapshot of a {@link TemplateUrl}'s properties, stashed on the Java heap to avoid
  * unsafe JNI calls to potentially stale native objects.
@@ -69,42 +66,5 @@ class TemplateUrlSnapshot {
 
     public @Nullable Bitmap getBuiltInIcon() {
         return mBuiltInIcon;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TemplateUrlSnapshot)) return false;
-        TemplateUrlSnapshot that = (TemplateUrlSnapshot) o;
-        return mIsPrepopulated == that.mIsPrepopulated
-                && mLastVisitedTime == that.mLastVisitedTime
-                && mId == that.mId
-                && Objects.equals(mKeyword, that.mKeyword)
-                && Objects.equals(mShortName, that.mShortName)
-                && Objects.equals(mFaviconUrl, that.mFaviconUrl)
-                && Objects.equals(mBuiltInIcon, that.mBuiltInIcon);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                mKeyword,
-                mShortName,
-                mIsPrepopulated,
-                mLastVisitedTime,
-                mId,
-                mFaviconUrl,
-                mBuiltInIcon);
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                Locale.US,
-                "TemplateUrlSnapshot { name: %s, keyword: %s, prepopulated: %b, id: %d }",
-                mShortName,
-                mKeyword,
-                mIsPrepopulated,
-                mId);
     }
 }
