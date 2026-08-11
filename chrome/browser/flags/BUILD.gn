@@ -105,7 +105,6 @@ static_library("flags_android_impl") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/permissions:permissions_common",
-    "//components/plus_addresses/core/common:features",
     "//components/policy/core/common",
     "//components/privacy_sandbox:features",
     "//components/push_messaging",

@@ -22,8 +22,6 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/profiles",
     "//components/autofill/core/browser",
-    "//components/plus_addresses/core/browser",
-    "//components/plus_addresses/core/browser/webdata",
     "//components/prefs",
     "//components/search_engines",
     "//components/signin/public/base",

@@ -47,8 +47,7 @@ import java.util.List;
     ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
     ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
     ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
-    ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS,
-    ChromeFeatureList.PLUS_ADDRESSES_ENABLED
+    ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
 public class SearchIndexProviderRegistryTest {
 

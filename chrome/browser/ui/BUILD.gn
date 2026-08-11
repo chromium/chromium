@@ -681,7 +681,6 @@ static_library("ui") {
     "//chrome/browser/personal_context",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
-    "//chrome/browser/plus_addresses",
     "//chrome/browser/policy",
     "//chrome/browser/policy:impl",
     "//chrome/browser/predictors",
@@ -1096,13 +1095,6 @@ static_library("ui") {
   # Desktop-Android-only dependencies.
   if (is_desktop_android) {
     deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
-  }
-
-  # TODO(crbug.com/413572035): Move into build files of the actual
-  # modules depending on this. eg: autofill, user_education.
-  if (is_chrome_branded) {
-    deps +=
-        [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
   }
 
   if (enable_captive_portal_detection) {

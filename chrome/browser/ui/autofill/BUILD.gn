@@ -206,7 +206,6 @@ source_set("impl") {
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/personal_context",
     "//chrome/browser/personal_context/first_run",
-    "//chrome/browser/plus_addresses",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/signin",
@@ -320,11 +319,6 @@ source_set("impl") {
       "//components/password_manager/core/browser/features:password_features",
       "//extensions/browser",
     ]
-
-    if (is_chrome_branded) {
-      deps +=
-          [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
-    }
   }
 
   if (is_mac) {
@@ -623,7 +617,6 @@ if (!is_android) {
       "//chrome/browser/password_manager",
       "//chrome/browser/password_manager:test_support",
       "//chrome/browser/password_manager/factories",
-      "//chrome/browser/plus_addresses",
       "//chrome/browser/signin",
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
@@ -648,7 +641,6 @@ if (!is_android) {
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/common",
       "//components/personal_context/core:test_support",
-      "//components/plus_addresses/core/browser:test_support",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings:components_strings",

@@ -24,10 +24,6 @@ namespace autofill {
 class AutofillWebDataService;
 }
 
-namespace plus_addresses {
-class PlusAddressWebDataService;
-}
-
 // Singleton that owns all WebDataServiceWrappers and associates them with
 // Profiles.
 class WebDataServiceFactory
@@ -57,11 +53,6 @@ class WebDataServiceFactory
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForProfile(
       Profile* profile,
       ServiceAccessType access_type);
-
-  // Returns the PlusAddressWebDataService associated with the `profile`.
-  static scoped_refptr<plus_addresses::PlusAddressWebDataService>
-  GetPlusAddressWebDataForProfile(Profile* profile,
-                                  ServiceAccessType access_type);
 
   // Returns the TokenWebData associated with the |profile|.
   static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(

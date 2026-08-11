@@ -3,7 +3,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/profiles",
   "+components/autofill/core/browser",
-  "+components/plus_addresses/core/browser",
   "+components/prefs",
   "+components/search_engines",
   "+components/signin/public",

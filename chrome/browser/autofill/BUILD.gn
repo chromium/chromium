@@ -167,7 +167,6 @@ static_library("autofill") {
       "//components/password_manager/core/browser",
       "//components/personal_context/core",
       "//components/personal_context/core:features",
-      "//components/plus_addresses/core/common:features",
       "//components/wallet/core/common:features",
       "//third_party/jni_zero",
       "//third_party/libaddressinput",

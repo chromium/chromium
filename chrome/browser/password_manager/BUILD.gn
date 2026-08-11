@@ -227,7 +227,6 @@ source_set("impl") {
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/password_manager/android:password_manager_android",
-      "//chrome/browser/plus_addresses",
       "//chrome/browser/touch_to_fill/password_manager:public",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
@@ -238,7 +237,6 @@ source_set("impl") {
       "//components/password_manager/core/browser/affiliation:affiliation_fetching",
       "//components/password_manager/core/browser/form_parsing",
       "//components/password_manager/core/browser/leak_detection",
-      "//components/plus_addresses/core/browser",
       "//components/webauthn/android",
     ]
   } else {
