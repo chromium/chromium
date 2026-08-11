@@ -5,6 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {AnimationTracker, ToolbarActionContainerMixin} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -46,15 +47,8 @@ class TestContainerElement extends TestContainerBase {
   override render() {
     return html`
       <div id="container">
-        ${
-        this.keyedStates.map(
-            s => html`
-          <div class="item ${s.exiting ? 'exiting' : ''} ${
-                s.animateIn ? 'animate-in' : ''}"
-               style="${
-                s.exiting && this.forceZeroWidthExiting ?
-                    'width: 0px; display: inline-block;' :
-                    'width: 100px; display: inline-block;'}"
+        ${this.keyedStates.map(s => html`
+          <div class="item ${s.exiting ? 'exiting' : ''}"
                data-key="${s.key}">
             ${s.state.name}
           </div>
@@ -66,8 +60,36 @@ class TestContainerElement extends TestContainerBase {
   static override get properties() {
     return {
       customIsInitial: {type: Boolean},
-      forceZeroWidthExiting: {type: Boolean},
+      disableTransitions: {type: Boolean},
     };
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Mock getBoundingClientRect to simulate transition state.
+    for (const el of this.shadowRoot.querySelectorAll<HTMLElement>('.item')) {
+      if (!el.hasOwnProperty('getBoundingClientRect')) {
+        const original = el.getBoundingClientRect.bind(el);
+        el.getBoundingClientRect = () => {
+          if (el.classList.contains('exiting')) {
+            // If transitions are disabled, it snaps to 0 width immediately.
+            // Otherwise, it simulates a running transition by returning >0
+            // width.
+            return {
+              width: this.disableTransitions ? 0 : 100,
+              x: 0,
+              y: 0,
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              toJSON: () => {},
+            } as DOMRect;
+          }
+          return original();
+        };
+      }
+    }
   }
 
   // When true, modifies isInitialUpdate() to only return true when the incoming
@@ -75,10 +97,8 @@ class TestContainerElement extends TestContainerBase {
   // behavior.
   accessor customIsInitial: boolean = false;
 
-  // When true, renders exiting items with a width of 0px so that
-  // reconcileKeys() immediately removes them without waiting for CSS
-  // transitions to finish.
-  accessor forceZeroWidthExiting: boolean = false;
+  // When true, simulates that CSS transitions are disabled (width snaps to 0).
+  accessor disableTransitions: boolean = false;
 
   override getKey(state: TestState): string {
     return state.id;
@@ -153,6 +173,7 @@ suite('ToolbarActionContainerMixinTest', function() {
 
     assertTrue(element.hidden);
     assertTrue(element.isInitialUpdate(element.states));
+    assertTrue(element.classList.contains('initial-load'));
 
     element.states = [
       {id: 'a', name: 'Item A'},
@@ -162,54 +183,35 @@ suite('ToolbarActionContainerMixinTest', function() {
 
     assertFalse(element.hidden);
     assertEquals(2, element.keyedStates.length);
-    assertEquals(false, element.keyedStates[0]!.animateIn);
-    assertEquals(false, element.keyedStates[1]!.animateIn);
+    assertTrue(element.classList.contains('initial-load'));
     assertFalse(element.allExiting());
-    assertFalse(element.animateInDivider());
   });
 
-  test('AnimateInForNewItems', async function() {
+  test('InitialLoadClassRemovedOnNonInitialUpdate', async function() {
+    // First update (initial)
     element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
+    assertTrue(element.classList.contains('initial-load'));
 
+    // Second update (non-initial)
     element.states = [
       {id: 'a', name: 'Item A'},
       {id: 'b', name: 'Item B'},
     ];
     await microtasksFinished();
-
-    assertEquals(2, element.keyedStates.length);
-    assertEquals(false, element.keyedStates[0]!.animateIn);
-    assertEquals(true, element.keyedStates[1]!.animateIn);
-    assertFalse(element.animateInDivider());
-
-    element.states = [{id: 'c', name: 'Item C'}];
-    await microtasksFinished();
-    const activeStates = element.keyedStates.filter(s => !s.exiting);
-    assertEquals(1, activeStates.length);
-    assertEquals('c', activeStates[0]!.key);
-    assertEquals(true, activeStates[0]!.animateIn);
+    assertFalse(element.classList.contains('initial-load'));
   });
 
-  test('AnimateInDividerAndAllExiting', async function() {
-    AnimationTracker.showAnimations = false;
+  test('AllExiting', async function() {
     element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
 
-    element.states = [{id: 'b', name: 'Item B'}];
-    await microtasksFinished();
 
-    assertEquals(1, element.keyedStates.length);
-    assertEquals('b', element.keyedStates[0]!.key);
-    assertFalse(element.animateInDivider());
-    assertFalse(element.allExiting());
-
-    AnimationTracker.showAnimations = true;
     element.states = [];
     await microtasksFinished();
 
     assertEquals(1, element.keyedStates.length);
-    assertEquals('b', element.keyedStates[0]!.key);
+    assertEquals('a', element.keyedStates[0]!.key);
     assertEquals(true, element.keyedStates[0]!.exiting);
     assertTrue(element.allExiting());
   });
@@ -258,6 +260,9 @@ suite('ToolbarActionContainerMixinTest', function() {
         'transitionend', {propertyName: 'width', bubbles: true}));
     assertEquals(2, element.keyedStates.length);
 
+    // Simulate that transition finished and width is now 0.
+    element.disableTransitions = true;
+
     domItem.dispatchEvent(new TransitionEvent(
         'transitionend', {propertyName: 'width', bubbles: true}));
     assertEquals(1, element.keyedStates.length);
@@ -278,6 +283,9 @@ suite('ToolbarActionContainerMixinTest', function() {
     const domItem = element.shadowRoot.querySelector('[data-key="b"]');
     assertTrue(!!domItem);
 
+    // Simulate that transitions are now disabled/cancelled and it snapped to 0.
+    element.disableTransitions = true;
+
     domItem.dispatchEvent(new TransitionEvent(
         'transitioncancel', {propertyName: 'width', bubbles: true}));
     assertEquals(1, element.keyedStates.length);
@@ -285,7 +293,7 @@ suite('ToolbarActionContainerMixinTest', function() {
   });
 
   test('ExitingItemsWithZeroWidthRemovedImmediately', async function() {
-    element.forceZeroWidthExiting = true;
+    element.disableTransitions = true;
 
     // Add two actions.
     element.states = [
@@ -295,7 +303,8 @@ suite('ToolbarActionContainerMixinTest', function() {
     await microtasksFinished();
     assertEquals(2, element.keyedStates.length);
 
-    // Get rid of 'b' action, `forceZeroWidthExiting` should make it 0 width.
+    // Get rid of 'b' action. Since disableTransitions is true, it should snap
+    // to 0.
     element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
 
@@ -313,73 +322,45 @@ suite('ToolbarActionContainerMixinTest', function() {
     assertFalse(element.isInitialUpdate(element.states));
     assertEquals(1, element.keyedStates.length);
     assertEquals('a', element.keyedStates[0]!.key);
-    assertEquals(true, element.keyedStates[0]!.animateIn);
+    assertFalse(element.classList.contains('initial-load'));
   });
 
-  test('AnimateInResetAfterAnimation', async function() {
-    element.states = [
-      {id: 'a', name: 'Item A'},
-    ];
+  test('ExitingItemsRemovedOnTransitionDoneMidSlideIn', async function() {
+    // Add 'a' as initial.
+    element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
 
-    // Initial update doesn't animate.
-    assertFalse(element.keyedStates[0]!.animateIn === true);
-
-    // Add new item.
+    // Add 'b'. It should start sliding in.
     element.states = [
       {id: 'a', name: 'Item A'},
       {id: 'b', name: 'Item B'},
     ];
     await microtasksFinished();
 
-    // New item should have animateIn = true.
-    assertTrue(element.keyedStates[1]!.animateIn === true);
-
-    // Simulate animationend event.
-    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
-    assertTrue(!!childElB);
-    childElB.dispatchEvent(new AnimationEvent('animationend', {
-      animationName: 'slide-in',
-      bubbles: true,
-      composed: true,
-    }));
+    // Remove 'b' immediately (mid-slide-in).
+    element.states = [{id: 'a', name: 'Item A'}];
     await microtasksFinished();
 
-    // animateIn should be reset to false.
-    assertFalse(element.keyedStates[1]!.animateIn === true);
-  });
+    // 'b' should now be exiting, but NOT removed yet because its width in test
+    // is 100px (disableTransitions is false), so it simulates transitioning.
+    assertEquals(2, element.keyedStates.length);
+    const itemB = element.keyedStates[1]!;
+    assertEquals('b', itemB.key);
+    assertEquals(true, itemB.exiting);
 
-  test('AnimateInResetAfterAnimationCancel', async function() {
-    element.states = [
-      {id: 'a', name: 'Item A'},
-    ];
-    await microtasksFinished();
+    const domItem = element.shadowRoot.querySelector('[data-key="b"]');
+    assertTrue(!!domItem);
+    assertTrue(domItem.classList.contains('exiting'));
 
-    // Initial update doesn't animate.
-    assertFalse(element.keyedStates[0]!.animateIn === true);
+    // Simulate that transition finished and width is now 0.
+    element.disableTransitions = true;
 
-    // Add new item.
-    element.states = [
-      {id: 'a', name: 'Item A'},
-      {id: 'b', name: 'Item B'},
-    ];
-    await microtasksFinished();
+    // Trigger transitionend to remove it.
+    domItem.dispatchEvent(new TransitionEvent(
+        'transitionend', {propertyName: 'width', bubbles: true}));
 
-    // New item should have animateIn = true.
-    assertTrue(element.keyedStates[1]!.animateIn === true);
-
-    // Simulate animationcancel event.
-    const childElB = element.shadowRoot.querySelector('[data-key="b"]');
-    assertTrue(!!childElB);
-    childElB.dispatchEvent(new AnimationEvent('animationcancel', {
-      animationName: 'slide-in',
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-
-    // animateIn should be reset to false.
-    assertFalse(element.keyedStates[1]!.animateIn === true);
+    assertEquals(1, element.keyedStates.length);
+    assertEquals('a', element.keyedStates[0]!.key);
   });
 
   test('DragLeaveGuardedByRelatedTarget', async function() {

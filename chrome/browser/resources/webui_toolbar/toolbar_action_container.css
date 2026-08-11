@@ -16,6 +16,14 @@
   --fast-out-slow-in-3-cubic-bezier: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* Disable transitions during the initial load of the container. This prevents
+ * all existing items from animating in when the page is first rendered. */
+:host(.initial-load) pinned-toolbar-action,
+:host(.initial-load) webui-toolbar-extension,
+:host(.initial-load) toolbar-divider {
+  transition: none;
+}
+
 /* Transitions handle exit animations (collapsing to 0) and reversing exit
  * animations mid-flight (expanding back to normal). They are not used for
  * initial entry. */
@@ -30,12 +38,15 @@ toolbar-divider {
   margin-inline-end: var(--toolbar-icon-default-margin);
 }
 
-/* Animation is used only for the initial entry of brand-new elements to
- * avoid JS coordination complexity of triggering transitions on insert. */
-pinned-toolbar-action.animate-in,
-webui-toolbar-extension.animate-in,
-toolbar-divider.animate-in {
-  animation: slide-in 300ms var(--fast-out-slow-in-3-cubic-bezier);
+@starting-style {
+  pinned-toolbar-action,
+  webui-toolbar-extension,
+  toolbar-divider {
+    width: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    opacity: 0;
+  }
 }
 
 toolbar-divider {
@@ -59,18 +70,10 @@ pinned-toolbar-action.drag-placeholder,
 webui-toolbar-extension.drag-placeholder {
   opacity: 0 !important;
 }
-
-@keyframes slide-in {
-  from {
-    width: 0;
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   pinned-toolbar-action,
+  webui-toolbar-extension,
   toolbar-divider {
-    animation: none !important;
     transition: none !important;
   }
 }

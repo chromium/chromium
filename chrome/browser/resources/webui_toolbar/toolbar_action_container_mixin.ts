@@ -17,8 +17,6 @@ export interface KeyedActionState<T> {
   // If true, this instance will be deleted from `keyedStates` when the
   // slide-out animation completes by `onTransitionDone_()`.
   exiting?: boolean;
-  // Should this element animate in (i.e. slide in)?
-  animateIn?: boolean;
   // Is this element currently being dragged (rendering as gap/placeholder)?
   dragPlaceholder?: boolean;
 }
@@ -31,7 +29,6 @@ export interface ToolbarActionContainerMixinInterface<T> {
   getKey(state: T): string;
   isInitialUpdate(newStates: T[]): boolean;
   allExiting(): boolean;
-  animateInDivider(): boolean;
   reconcileKeys(): void;
   isDraggable(state: T, index: number): boolean;
   onActionDragover(e: DragEvent): void;
@@ -49,9 +46,8 @@ export interface ToolbarActionContainerMixinInterface<T> {
  * and slide-out animations.
  *
  * It reconciles new state arrays (`states`) against internal keyed items
- * (`keyedStates`), automatically setting animation flags (`animateIn` for
- * newly added items, and `exiting` for removed items) while keeping exiting
- * items in the DOM until their CSS transitions complete.
+ * (`keyedStates`), automatically setting the `exiting` flag for removed items
+ * while keeping exiting items in the DOM until their CSS transitions complete.
  *
  * Usage:
  * 1. Mix in `ToolbarActionContainerMixin<T>` where `T` is your item state type.
@@ -152,6 +148,9 @@ export const ToolbarActionContainerMixin =
 
         override connectedCallback() {
           super.connectedCallback();
+          // Disable transitions initially to prevent entry animations on first
+          // render.
+          this.classList.add('initial-load');
           // Initialize the BroadcastChannel for cross-window drag sync.
           this.dragChannel_ =
               new BroadcastChannel(this.getBroadcastChannelName());
@@ -208,14 +207,6 @@ export const ToolbarActionContainerMixin =
           this.shadowRoot.addEventListener(
               'transitioncancel',
               e => this.onTransitionDone_(e as TransitionEvent));
-
-          // Clean up the `animateIn` state after new items finish animating
-          // so they don't re-animate on subsequent updates.
-          this.shadowRoot.addEventListener(
-              'animationend', e => this.onAnimationDone_(e as AnimationEvent));
-          this.shadowRoot.addEventListener(
-              'animationcancel',
-              e => this.onAnimationDone_(e as AnimationEvent));
 
           // When a child action initiates dragging, we mark it locally as a
           // placeholder (making it invisible to act as a visual gap) and
@@ -294,11 +285,6 @@ export const ToolbarActionContainerMixin =
               this.keyedStates.every(s => s.exiting);
         }
 
-        animateInDivider(): boolean {
-          return this.keyedStates.length > 0 &&
-              this.keyedStates.every(s => s.animateIn);
-        }
-
         private get isDragging_(): boolean {
           return this.draggedItemId_ !== null ||
               this.externallyDraggedItemId_ !== null;
@@ -317,31 +303,26 @@ export const ToolbarActionContainerMixin =
         }
 
         private mapStates_(
-            states: T[], isInitial: boolean,
-            currentKeyedStates: Array<KeyedActionState<T>>):
+            states: T[], currentKeyedStates: Array<KeyedActionState<T>>):
             Array<KeyedActionState<T>> {
           return states.map(
               state => {
                 const key = this.getKey(state);
-                // Animate in if this is not the initial load and the item is
-                // either not in `keyedStates` or already animating. If it was
-                // already in `keyedStates` we use the transition to smoothly
-                // change to its desired width.
-                const animateIn = !isInitial &&
-                    AnimationTracker.showAnimations &&
-                    !this.keyedStates.some(
-                        old => old.key === key && !old.animateIn);
                 const oldKeyedState =
                     currentKeyedStates.find(old => old.key === key);
                 const dragPlaceholder =
                     oldKeyedState ? oldKeyedState.dragPlaceholder : undefined;
-                return {key, state, animateIn, dragPlaceholder};
+                return {key, state, dragPlaceholder};
               });
         }
 
         reconcileKeys() {
           // 1. Map new mojo states to KeyedActionState (all active).
           const isInitial = this.isInitialUpdate(this.states);
+          if (!isInitial) {
+            // Enable transitions for subsequent updates after the initial load.
+            this.classList.remove('initial-load');
+          }
           const currentKeyedStates = this.keyedStates || [];
 
           let newKeyedStates: Array<KeyedActionState<T>>;
@@ -366,18 +347,16 @@ export const ToolbarActionContainerMixin =
               const statesWithoutDragged =
                   this.states.filter(s => this.getKey(s) !== draggedId);
 
-              newKeyedStates = this.mapStates_(
-                  statesWithoutDragged, isInitial, currentKeyedStates);
+              newKeyedStates =
+                  this.mapStates_(statesWithoutDragged, currentKeyedStates);
 
               const insertIndex = Math.min(localIndex, newKeyedStates.length);
               newKeyedStates.splice(insertIndex, 0, draggedKeyedState);
             } else {
-              newKeyedStates =
-                  this.mapStates_(this.states, isInitial, currentKeyedStates);
+              newKeyedStates = this.mapStates_(this.states, currentKeyedStates);
             }
           } else {
-            newKeyedStates =
-                this.mapStates_(this.states, isInitial, currentKeyedStates);
+            newKeyedStates = this.mapStates_(this.states, currentKeyedStates);
           }
 
           // 2. Find which keys were in the old `keyedStates` but are not in
@@ -399,13 +378,9 @@ export const ToolbarActionContainerMixin =
 
             // Insert them back with `exiting` set to true.
             for (const missing of missingOldStates) {
-              // Explicitly set `animateIn` to false for exiting items. This
-              // ensures the transition is used to smoothly adjust width instead
-              // of applying the animation (which starts with a snap to 0).
               const exitingState = {
                 ...missing,
                 exiting: true,
-                animateIn: false,
               };
               const originalIndex =
                   this.keyedStates.findIndex(s => s.key === missing.key);
@@ -418,14 +393,17 @@ export const ToolbarActionContainerMixin =
           this.keyedStates = newKeyedStates;
           this.updateVisibility_();
 
-          // If the layout engine has already forced the exiting elements to 0
-          // width (preempting the transition), or if animations are disabled,
-          // remove them immediately.
+          // If CSS forces the exiting elements to 0 width immediately (e.g. if
+          // animations are disabled), remove them synchronously once the update
+          // completes. getBoundingClientRect() forces layout so we get the
+          // transitioning width if a transition is running.
           this.updateComplete.then(() => {
-            for (const el of this.shadowRoot.querySelectorAll<HTMLElement>(
-                     '.exiting')) {
-              // If it's already 0px wide, it won't transition.
-              if (el.getBoundingClientRect().width === 0) {
+            const exitingElements =
+                this.shadowRoot.querySelectorAll<HTMLElement>('.exiting');
+            for (const el of exitingElements) {
+              const width = el.getBoundingClientRect().width;
+              // If it's already 0px wide, it won't have a transitionend event.
+              if (width === 0) {
                 const key = el.dataset['key'];
                 if (key) {
                   // Extensions can only be unpinned one-at-a-time, so
@@ -439,15 +417,18 @@ export const ToolbarActionContainerMixin =
           });
         }
 
-        // When an element finishes "sliding-out", remove it from
-        // `keyedStates`.
+        // Handler for transition events. This is called for all transition
+        // events bubbled up to the container. It filters for width transitions
+        // on exiting elements and removes them once they have collapsed.
         private onTransitionDone_(e: TransitionEvent) {
-          // We only care about the width transition to trigger removal
+          // We only care about the width transition to trigger removal.
           if (e.propertyName !== 'width') {
             return;
           }
 
           const target = e.target as HTMLElement;
+          // Only perform cleanup for exiting items. Entering items also
+          // transition width but should not be removed.
           if (!target.classList.contains('exiting')) {
             return;
           }
@@ -457,33 +438,16 @@ export const ToolbarActionContainerMixin =
             return;
           }
 
+          // If the transition was cancelled, or even if it ended, only remove
+          // the element if it reached 0 width. If cancelled because a new
+          // transition started (e.g. reversing), width will be non-zero.
+          if (target.getBoundingClientRect().width !== 0) {
+            return;
+          }
+
           // Remove the finished item (automatically triggers update)
           this.keyedStates = this.keyedStates.filter(s => s.key !== key);
           this.updateVisibility_();
-        }
-
-        private onAnimationDone_(e: AnimationEvent) {
-          if (e.animationName !== 'slide-in') {
-            return;
-          }
-
-          const target = e.target as HTMLElement;
-          const key = target.dataset['key'];
-          if (!key) {
-            return;
-          }
-
-          const stateToUpdate = this.keyedStates.find(s => s.key === key);
-          if (!stateToUpdate || !stateToUpdate.animateIn) {
-            return;
-          }
-
-          this.keyedStates = this.keyedStates.map(s => {
-            if (s.key === key) {
-              return {...s, animateIn: false};
-            }
-            return s;
-          });
         }
 
         private updateVisibility_() {
