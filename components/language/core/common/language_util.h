@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_UTIL_H_
 #define COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_UTIL_H_
 
-#include <string>
-
 namespace language {
 
 enum class OverrideLanguageModel {

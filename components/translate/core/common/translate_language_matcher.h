@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_LANGUAGE_MATCHER_H_
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_LANGUAGE_MATCHER_H_
 
-#include <string>
-
 #include "base/containers/span.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
