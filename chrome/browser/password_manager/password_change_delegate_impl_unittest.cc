@@ -312,7 +312,7 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
 
   FastForwardBy(base::Milliseconds(1234));
   delegate()->OnActuationStateChanged(
-      PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+      PasswordChangeActuator::State::kChangePasswordFormNotFound);
 
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
@@ -461,18 +461,23 @@ TEST_F(PasswordChangeDelegateImplTest,
   MockPasswordChangeDelegateObserver observer;
   delegate()->AddObserver(&observer);
 
-  const PasswordChangeDelegate::State kTestStates[] = {
-      PasswordChangeDelegate::State::kChangingPassword,
-      PasswordChangeDelegate::State::kOtpDetected,
-      PasswordChangeDelegate::State::kLoginFormDetected,
-      PasswordChangeDelegate::State::kChangePasswordFormNotFound,
-      PasswordChangeDelegate::State::kPasswordChangeFailed,
-  };
+  const std::vector<
+      std::pair<PasswordChangeActuator::State, PasswordChangeDelegate::State>>
+      kTestStates = {
+          {PasswordChangeActuator::State::kChangingPassword,
+           PasswordChangeDelegate::State::kChangingPassword},
+          {PasswordChangeActuator::State::kOtpDetected,
+           PasswordChangeDelegate::State::kOtpDetected},
+          {PasswordChangeActuator::State::kChangePasswordFormNotFound,
+           PasswordChangeDelegate::State::kChangePasswordFormNotFound},
+          {PasswordChangeActuator::State::kPasswordChangeFailed,
+           PasswordChangeDelegate::State::kPasswordChangeFailed},
+      };
 
-  for (const auto state : kTestStates) {
-    EXPECT_CALL(*mock_ui_controller(), UpdateState(state));
-    delegate()->OnActuationStateChanged(state);
-    EXPECT_EQ(delegate()->GetCurrentState(), state);
+  for (const auto& [actuator_state, delegate_state] : kTestStates) {
+    EXPECT_CALL(*mock_ui_controller(), UpdateState(delegate_state));
+    delegate()->OnActuationStateChanged(actuator_state);
+    EXPECT_EQ(delegate()->GetCurrentState(), delegate_state);
   }
 
   delegate()->RemoveObserver(&observer);
@@ -491,7 +496,7 @@ TEST_F(PasswordChangeDelegateImplTest,
               OnPasswordChangeFinishedSuccessfully());
 
   delegate()->OnActuationStateChanged(
-      PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+      PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
 
@@ -603,7 +608,7 @@ TEST_F(PasswordChangeDelegateImplTest, StopCalledAfterTimeout_OnSuccess) {
 
   EXPECT_CALL(observer, OnPasswordChangeStopped).Times(0);
   delegate()->OnActuationStateChanged(
-      PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+      PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
 
   EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   FastForwardBy(base::Seconds(8));

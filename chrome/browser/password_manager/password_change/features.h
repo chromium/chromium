@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kCheckFieldEnabledInChangePasswordFormWaiter);
 // field is focusable (visible).
 BASE_DECLARE_FEATURE(kCheckPasswordFieldFocusableBeforeOffering);
 
+// Controls whether PasswordChangeDelegateImpl uses Glic for password change.
+BASE_DECLARE_FEATURE(kPasswordChangeWithGlic);
+
 // Controls whether LOGIN_CHECK is executed before offering APC using Private
 // Inference.
 BASE_DECLARE_FEATURE(kPasswordChangeWithPrivateInferenceLoginCheck);

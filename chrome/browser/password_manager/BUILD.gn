@@ -115,6 +115,7 @@ source_set("password_manager") {
     public += [
       # TODO(crbug.com/485620841): Make delegate not dependent on client and
       # move this back to /password_change.
+      "password_change/password_change_actuator.h",
       "password_change/password_change_from_checkup_delegate.h",
       "remote_actor/remote_actor_credential_sharing_impl.h",
       "web_app_profile_switcher.h",
@@ -243,7 +244,8 @@ source_set("impl") {
     sources += [
       "generated_password_leak_detection_pref.cc",
       "generated_password_leak_detection_pref.h",
-      "password_change/password_change_actuator.h",
+      "password_change/glic_password_change_actuator.cc",
+      "password_change/glic_password_change_actuator.h",
       "password_change/password_change_from_checkup_delegate.cc",
       "password_change/script_password_change_actuator.cc",
       "password_change/script_password_change_actuator.h",
@@ -253,6 +255,7 @@ source_set("impl") {
       "web_app_profile_switcher.cc",
     ]
     deps += [
+      "//chrome/browser/glic/actor",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/ui/passwords",
@@ -491,6 +494,7 @@ source_set("unit_tests") {
   } else {
     sources += [
       "generated_password_leak_detection_pref_unittest.cc",
+      "password_change/password_change_from_checkup_delegate_unittest.cc",
       "password_change/script_password_change_actuator_unittest.cc",
       "password_change_delegate_impl_unittest.cc",
       "remote_actor/remote_actor_credential_sharing_impl_unittest.cc",

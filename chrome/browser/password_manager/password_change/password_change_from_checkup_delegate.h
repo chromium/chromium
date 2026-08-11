@@ -8,37 +8,25 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/tools/tool_delegate.h"
-#include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
+#include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
-#include "url/gurl.h"
-
-class ChangePasswordFormWaiter;
 
 namespace content {
 class WebContents;
 }
 
 namespace password_manager {
-class PasswordFormManager;
-class PasswordManagerClient;
+struct StoredCredential;
 }  // namespace password_manager
-
-namespace glic {
-class GlicInstance;
-class GlicKeyedService;
-}  // namespace glic
 
 // Handles a password change flow leveraging Gemini in Chrome.
 // This flow is initiated for a specific credential from the Password Checkup
 // page.
-class PasswordChangeFromCheckupDelegate {
+class PasswordChangeFromCheckupDelegate
+    : public PasswordChangeActuator::Observer {
  public:
   // Enumerates possible states the automatic change flow could be in
   enum class PasswordAutomaticChangeState {
@@ -53,9 +41,8 @@ class PasswordChangeFromCheckupDelegate {
   using StateChangeCallback =
       base::RepeatingCallback<void(PasswordAutomaticChangeState)>;
 
-  explicit PasswordChangeFromCheckupDelegate(
-      password_manager::PasswordManagerClient* client);
-  ~PasswordChangeFromCheckupDelegate();
+  PasswordChangeFromCheckupDelegate();
+  ~PasswordChangeFromCheckupDelegate() override;
 
   void StartPasswordChangeFlow(
       password_manager::StoredCredential credential,
@@ -64,63 +51,23 @@ class PasswordChangeFromCheckupDelegate {
 
   void Stop(actor::ActorTask::StoppedReason stop_reason);
 
+  // PasswordChangeActuator::Observer:
+  void OnActuationStateChanged(
+      PasswordChangeActuator::State new_state) override;
+
+  std::u16string generated_password() const;
+
 #if defined(UNIT_TEST)
-  std::optional<actor::ActorTask::State> GetFindFormTaskState() const {
-    return find_form_task_state_;
+  void set_actuator_for_testing(
+      std::unique_ptr<PasswordChangeActuator> actuator) {
+    actuator_ = std::move(actuator);
+    actuator_->AddObserver(this);
   }
-  std::optional<actor::TaskId> GetVerificationTaskId() const {
-    return verification_task_id_;
-  }
-  std::optional<actor::TaskId> GetDummyTaskId() const { return dummy_task_id_; }
-  std::u16string generated_password() const { return generated_password_; }
-  bool has_saved_form_manager() const { return saved_form_manager_ != nullptr; }
 #endif
 
  private:
-  glic::GlicKeyedService* GetGlicService();
-
-  void OnFindFormTaskStateChanged(actor::ActorTask& task);
-
-  void OnChangePasswordFormManagerFound(
-      password_manager::PasswordFormManager* form_manager);
-  void OnChangePasswordFormFilled(
-      ChangePasswordFormFiller::FillingResult result);
-
-  void OnVerificationTaskStateChanged(actor::ActorTask& task);
-  void OnVerificationTimeout();
-  void HandleMaybeSuccessfulPasswordChange();
-  void InvokeVerificationFlow(std::string post_submission_prompt);
-  void StopDummyTask();
-  void CloseGlicSessionAndStopDummyTask();
-
-  base::WeakPtr<content::WebContents> originator_;
-  raw_ptr<password_manager::PasswordManagerClient> client_;
-  base::WeakPtr<content::WebContents> actuation_web_contents_;
-
-  base::WeakPtr<glic::GlicInstance> glic_instance_;
-
-  password_manager::StoredCredential credential_;
-  std::u16string generated_password_;
-
-  std::optional<actor::TaskId> find_form_task_id_;
-
-  base::CallbackListSubscription actor_task_state_subscription_;
-
-  std::unique_ptr<ChangePasswordFormFiller> form_filler_;
-  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
-
-  std::optional<actor::ActorTask::State> find_form_task_state_;
-
-  std::optional<actor::TaskId> verification_task_id_;
-  std::optional<actor::TaskId> dummy_task_id_;
-  std::unique_ptr<password_manager::PasswordFormManager> saved_form_manager_;
-  bool verification_task_created_ = false;
-  base::OneShotTimer verification_timer_;
-
+  std::unique_ptr<PasswordChangeActuator> actuator_;
   StateChangeCallback state_change_callback_;
-
-  base::WeakPtrFactory<PasswordChangeFromCheckupDelegate> weak_ptr_factory_{
-      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_FROM_CHECKUP_DELEGATE_H_

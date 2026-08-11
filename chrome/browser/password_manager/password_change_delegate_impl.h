@@ -82,7 +82,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 #endif
 
   // PasswordChangeActuator::Observer impl
-  void OnActuationStateChanged(State new_state) override;
+  void OnActuationStateChanged(
+      PasswordChangeActuator::State new_state) override;
 
   // PasswordChangeDelegate Impl
   void StartPasswordChangeFlow() override;

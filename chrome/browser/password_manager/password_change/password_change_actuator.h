@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "chrome/browser/password_manager/password_change_delegate.h"
 
 namespace content {
 class WebContents;
@@ -20,11 +19,31 @@ class WebContents;
 // actuation mechanism (DOM/Script-based vs Glic/Actor-based).
 class PasswordChangeActuator {
  public:
+  enum class State {
+    // Actuator is waiting for change password form to appear.
+    kWaitingForChangePasswordForm,
+
+    // Change password form wasn't found.
+    kChangePasswordFormNotFound,
+
+    // Change password form is detected. Generating and filling password fields.
+    // Actuator waits for submission confirmation.
+    kChangingPassword,
+
+    // Password is successfully updated.
+    kPasswordSuccessfullyChanged,
+
+    // Password change failed.
+    kPasswordChangeFailed,
+
+    // One time password (OTP) was detected on a page. User input is required.
+    kOtpDetected,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that the actuation state has changed.
-    virtual void OnActuationStateChanged(
-        PasswordChangeDelegate::State new_state) = 0;
+    virtual void OnActuationStateChanged(State new_state) = 0;
   };
 
   virtual ~PasswordChangeActuator() = default;

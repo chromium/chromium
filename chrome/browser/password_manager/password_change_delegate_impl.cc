@@ -19,6 +19,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/features.h"
+#include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 #include "chrome/browser/password_manager/password_change/script_password_change_actuator.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
@@ -44,6 +45,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
@@ -127,6 +129,24 @@ PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
 void OnLeakDialogHidden(base::WeakPtr<PasswordsModelDelegate> model_delegate) {
   if (model_delegate) {
     model_delegate->GetPasswordsLeakDialogDelegate()->OnLeakDialogHidden();
+  }
+}
+
+PasswordChangeDelegate::State ToDelegateState(
+    PasswordChangeActuator::State state) {
+  switch (state) {
+    case PasswordChangeActuator::State::kWaitingForChangePasswordForm:
+      return PasswordChangeDelegate::State::kWaitingForChangePasswordForm;
+    case PasswordChangeActuator::State::kChangePasswordFormNotFound:
+      return PasswordChangeDelegate::State::kChangePasswordFormNotFound;
+    case PasswordChangeActuator::State::kChangingPassword:
+      return PasswordChangeDelegate::State::kChangingPassword;
+    case PasswordChangeActuator::State::kPasswordSuccessfullyChanged:
+      return PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+    case PasswordChangeActuator::State::kPasswordChangeFailed:
+      return PasswordChangeDelegate::State::kPasswordChangeFailed;
+    case PasswordChangeActuator::State::kOtpDetected:
+      return PasswordChangeDelegate::State::kOtpDetected;
   }
 }
 
@@ -287,9 +307,16 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   logs_uploader_->SetLoginPasswordFormInfo(password_form_info_);
 
   if (!actuator_) {
-    actuator_ = std::make_unique<ScriptPasswordChangeActuator>(
-        change_password_url_, password_form_info_, profile_,
-        logs_uploader_.get());
+    if (base::FeatureList::IsEnabled(
+            password_change::features::kPasswordChangeWithGlic)) {
+      actuator_ = std::make_unique<GlicPasswordChangeActuator>(
+          password_manager::FromPasswordForm(password_form_info_), originator_,
+          profile_, change_password_url_);
+    } else {
+      actuator_ = std::make_unique<ScriptPasswordChangeActuator>(
+          change_password_url_, password_form_info_, profile_,
+          logs_uploader_.get());
+    }
     actuator_->AddObserver(this);
   }
 
@@ -399,11 +426,12 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
 }
 
 void PasswordChangeDelegateImpl::OnActuationStateChanged(
-    PasswordChangeDelegate::State new_state) {
-  if (new_state == State::kPasswordSuccessfullyChanged) {
+    PasswordChangeActuator::State new_state) {
+  if (new_state ==
+      PasswordChangeActuator::State::kPasswordSuccessfullyChanged) {
     NotifyPasswordChangeFinishedSuccessfully(originator_);
   }
-  UpdateState(new_state);
+  UpdateState(ToDelegateState(new_state));
 }
 
 void PasswordChangeDelegateImpl::OnTabWillDetach(

@@ -232,8 +232,7 @@ void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
 
   if (!password_change_from_checkup_delegate_) {
     password_change_from_checkup_delegate_ =
-        std::make_unique<PasswordChangeFromCheckupDelegate>(
-            ChromePasswordManagerClient::FromWebContents(web_contents));
+        std::make_unique<PasswordChangeFromCheckupDelegate>();
   }
 
   password_change_from_checkup_delegate_->StartPasswordChangeFlow(

@@ -37,7 +37,7 @@ class MockPasswordChangeActuatorObserver
  public:
   MOCK_METHOD(void,
               OnActuationStateChanged,
-              (PasswordChangeDelegate::State),
+              (PasswordChangeActuator::State),
               (override));
 };
 
@@ -145,8 +145,6 @@ TEST_F(ScriptPasswordChangeActuatorTest, CancelNotifiesObserverAndResetsState) {
   actuator.Start();
   EXPECT_TRUE(actuator.GetFormFinderForTesting());
 
-  EXPECT_CALL(observer, OnActuationStateChanged(
-                            PasswordChangeDelegate::State::kCanceled));
   actuator.Cancel();
 
   EXPECT_FALSE(actuator.GetFormFinderForTesting());
@@ -169,8 +167,6 @@ TEST_F(ScriptPasswordChangeActuatorTest, CancelWithoutActiveStepResetsState) {
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnActuationStateChanged(
-                            PasswordChangeDelegate::State::kCanceled));
   actuator.Cancel();
 
   actuator.RemoveObserver(&observer);
@@ -202,7 +198,7 @@ TEST_F(ScriptPasswordChangeActuatorTest,
   actuator.Start();
   EXPECT_CALL(observer,
               OnActuationStateChanged(
-                  PasswordChangeDelegate::State::kChangePasswordFormNotFound));
+                  PasswordChangeActuator::State::kChangePasswordFormNotFound));
 
   actuator.GetFormFinderForTesting()->RespondWithFormNotFound();
 
@@ -223,7 +219,7 @@ TEST_F(ScriptPasswordChangeActuatorTest,
 
   EXPECT_CALL(observer,
               OnActuationStateChanged(
-                  PasswordChangeDelegate::State::kChangePasswordFormNotFound));
+                  PasswordChangeActuator::State::kChangePasswordFormNotFound));
 
   actuator.GetNavigationObserverForTesting()
       ->TriggerCrossOriginNavigationForTesting();

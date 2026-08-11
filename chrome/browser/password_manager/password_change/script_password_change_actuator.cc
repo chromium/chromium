@@ -155,7 +155,7 @@ void ScriptPasswordChangeActuator::Start() {
           &ScriptPasswordChangeActuator::OnPasswordChangeFormNotFound,
           weak_ptr_factory_.GetWeakPtr()));
   NotifyStateChanged(
-      PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+      PasswordChangeActuator::State::kWaitingForChangePasswordForm);
 }
 
 void ScriptPasswordChangeActuator::Cancel() {
@@ -163,7 +163,6 @@ void ScriptPasswordChangeActuator::Cancel() {
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
   ResetInternalState();
-  NotifyStateChanged(PasswordChangeDelegate::State::kCanceled);
 }
 
 content::WebContents* ScriptPasswordChangeActuator::GetExecutorWebContents()
@@ -232,7 +231,7 @@ void ScriptPasswordChangeActuator::OnPasswordChangeFormFound(
                          weak_ptr_factory_.GetWeakPtr()));
   form_submission_helper_->FillChangePasswordForm(
       form_manager, username_, original_password_, generated_password_);
-  NotifyStateChanged(PasswordChangeDelegate::State::kChangingPassword);
+  NotifyStateChanged(PasswordChangeActuator::State::kChangingPassword);
 }
 
 void ScriptPasswordChangeActuator::OnPasswordChangeFormNotFound(
@@ -241,7 +240,7 @@ void ScriptPasswordChangeActuator::OnPasswordChangeFormNotFound(
 
   switch (error_case) {
     case ChangePasswordFormFinder::ErrorCase::kInterruptionDetected:
-      NotifyStateChanged(PasswordChangeDelegate::State::kOtpDetected);
+      NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
       break;
     case ChangePasswordFormFinder::ErrorCase::kFailedToCapturePageContent:
     case ChangePasswordFormFinder::ErrorCase::kFailedToParseResponse:
@@ -249,7 +248,7 @@ void ScriptPasswordChangeActuator::OnPasswordChangeFormNotFound(
     case ChangePasswordFormFinder::ErrorCase::kFailedToClickButton:
     case ChangePasswordFormFinder::ErrorCase::kFormNotFound:
       NotifyStateChanged(
-          PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+          PasswordChangeActuator::State::kChangePasswordFormNotFound);
       break;
   }
 }
@@ -276,10 +275,10 @@ void ScriptPasswordChangeActuator::OnChangeFormSubmitted(
     case SubmissionError::kFailedToParseResponse:
     case SubmissionError::kSubmitButtonNotFound:
     case SubmissionError::kFailedToClickSubmit:
-      NotifyStateChanged(PasswordChangeDelegate::State::kPasswordChangeFailed);
+      NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
       break;
     case SubmissionError::kInterventionDetected:
-      NotifyStateChanged(PasswordChangeDelegate::State::kOtpDetected);
+      NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
       break;
   }
 }
@@ -295,7 +294,7 @@ void ScriptPasswordChangeActuator::OnChangeFormSubmissionVerified(
                 STRING_AUTOMATED_PASSWORD_CHANGE_USER_INTERVENTION_AFTER_SUBMISSION,
             /*truth_value=*/true);
       }
-      NotifyStateChanged(PasswordChangeDelegate::State::kOtpDetected);
+      NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
       break;
     case SubmissionVerificationResult::kFailure:
       form_manager_.reset();
@@ -305,7 +304,7 @@ void ScriptPasswordChangeActuator::OnChangeFormSubmissionVerified(
                 STRING_AUTOMATED_PASSWORD_CHANGE_SUBMISSION_VERIFIED,
             /*truth_value=*/false);
       }
-      NotifyStateChanged(PasswordChangeDelegate::State::kPasswordChangeFailed);
+      NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
       break;
     case SubmissionVerificationResult::kSuccess:
       if (auto logger = GetLoggerIfAvailable(GetExecutorWebContents())) {
@@ -319,7 +318,7 @@ void ScriptPasswordChangeActuator::OnChangeFormSubmissionVerified(
       form_manager_->Save();
       form_manager_.reset();
       NotifyStateChanged(
-          PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
+          PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
       break;
   }
 }
@@ -338,9 +337,9 @@ void ScriptPasswordChangeActuator::OnCrossOriginNavigationDetected() {
 
   if (form_finder_) {
     NotifyStateChanged(
-        PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+        PasswordChangeActuator::State::kChangePasswordFormNotFound);
   } else if (form_submission_helper_ || submission_verifier_) {
-    NotifyStateChanged(PasswordChangeDelegate::State::kPasswordChangeFailed);
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
   }
 
   ResetInternalState();
@@ -379,7 +378,7 @@ void ScriptPasswordChangeActuator::ReportFlowInterruption(
 }
 
 void ScriptPasswordChangeActuator::NotifyStateChanged(
-    PasswordChangeDelegate::State new_state) {
+    PasswordChangeActuator::State new_state) {
   observers_.Notify(&PasswordChangeActuator::Observer::OnActuationStateChanged,
                     new_state);
 }

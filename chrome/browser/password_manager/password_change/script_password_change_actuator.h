@@ -76,7 +76,7 @@ class ScriptPasswordChangeActuator : public PasswordChangeActuator {
       PasswordChangeSubmissionVerifier::SubmissionVerificationResult result);
   void OnCrossOriginNavigationDetected();
   void ReportFlowInterruption(ModelQualityLogsUploader::QualityStatus status);
-  void NotifyStateChanged(PasswordChangeDelegate::State new_state);
+  void NotifyStateChanged(PasswordChangeActuator::State new_state);
   void ResetInternalState();
 
   const GURL change_password_url_;
