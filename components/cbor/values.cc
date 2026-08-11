@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -100,21 +101,19 @@ Value::Value(std::string_view in_string, Type type) : type_(type) {
   }
 }
 
-Value::Value(const ArrayValue& in_array) : type_(Type::ARRAY), array_value_() {
-  array_value_.reserve(in_array.size());
-  for (const auto& val : in_array)
-    array_value_.emplace_back(val.Clone());
-}
+Value::Value(const ArrayValue& in_array)
+    : type_(Type::ARRAY),
+      array_value_(base::ToVector(in_array, &Value::Clone)) {}
 
 Value::Value(ArrayValue&& in_array) noexcept
     : type_(Type::ARRAY), array_value_(std::move(in_array)) {}
 
-Value::Value(const MapValue& in_map) : type_(Type::MAP), map_value_() {
-  map_value_.reserve(in_map.size());
-  for (const auto& it : in_map)
-    map_value_.emplace_hint(map_value_.end(), it.first.Clone(),
-                            it.second.Clone());
-}
+Value::Value(const MapValue& in_map)
+    : type_(Type::MAP),
+      map_value_(base::sorted_unique,
+                 base::ToVector(in_map, [](const auto& it) {
+                   return std::make_pair(it.first.Clone(), it.second.Clone());
+                 })) {}
 
 Value::Value(MapValue&& in_map) noexcept
     : type_(Type::MAP), map_value_(std::move(in_map)) {}
