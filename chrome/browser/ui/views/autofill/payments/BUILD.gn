@@ -34,3 +34,16 @@ source_set("payments_view_util") {
     "//ui/native_theme",
   ]
 }
+
+source_set("promo_code_label_button") {
+  public = [ "promo_code_label_button.h" ]
+  sources = [ "promo_code_label_button.cc" ]
+  public_deps = [ "//ui/views" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/vector_icons",
+    "//ui/base",
+  ]
+}
