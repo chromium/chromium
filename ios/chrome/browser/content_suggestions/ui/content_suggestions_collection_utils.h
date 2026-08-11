@@ -20,24 +20,24 @@ extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 // Tight Padding Arm.
 extern const CGFloat kLogoTopPaddingTight;
 extern const CGFloat kLogoToFakeboxPaddingTight;
-extern const CGFloat kFakeboxToQuickActionsPaddingTight;
-extern const CGFloat kQuickActionsToMostVisitedPaddingTight;
+extern const CGFloat kQuickActionsTopPaddingTight;
+extern const CGFloat kMostVisitedTopPaddingTight;
 
 // Medium Padding Arm.
 extern const CGFloat kLogoTopPaddingMedium;
 extern const CGFloat kLogoToFakeboxPaddingMedium;
-extern const CGFloat kFakeboxToQuickActionsPaddingMedium;
-extern const CGFloat kQuickActionsToMostVisitedPaddingMedium;
+extern const CGFloat kQuickActionsTopPaddingMedium;
+extern const CGFloat kMostVisitedTopPaddingMedium;
 
 // Preferred Padding Arm.
 extern const CGFloat kLogoTopPaddingPreferred;
 extern const CGFloat kLogoToFakeboxPaddingPreferred;
-extern const CGFloat kFakeboxToQuickActionsPaddingPreferred;
-extern const CGFloat kQuickActionsToMostVisitedPaddingPreferred;
+extern const CGFloat kQuickActionsTopPaddingPreferred;
+extern const CGFloat kMostVisitedTopPaddingPreferred;
 
 // Control Padding.
-extern const CGFloat kFakeboxToQuickActionsPaddingControl;
-extern const CGFloat kQuickActionsToMostVisitedPaddingControl;
+extern const CGFloat kQuickActionsTopPaddingControl;
+extern const CGFloat kMostVisitedTopPaddingControl;
 extern const CGFloat kReducedModuleSpacingControl;
 
 // Shared spacing constants.
@@ -87,11 +87,11 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
 // Returns padding between the Google logo/doodle and fakebox based on the
 // enabled arm.
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state);
-// Returns padding between fakebox and Quick Actions based on the enabled arm.
-CGFloat FakeboxToQuickActionsPadding();
-// Returns padding between Quick Actions and Most Visited Tiles based on the
+// Returns top padding for Quick Actions based on the enabled arm.
+CGFloat QuickActionsTopPadding();
+// Returns top padding for Most Visited Tiles based on the
 // enabled arm.
-CGFloat QuickActionsToMostVisitedPadding();
+CGFloat MostVisitedTopPadding();
 // Returns reduced spacing used between the MVT, Magic Stack, and Discover Feed.
 // Padding is based on the size class.
 CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection = nil);

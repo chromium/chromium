@@ -44,18 +44,6 @@ namespace {
 // Animation duration for wallpaper transition.
 constexpr CGFloat kBackgroundImageAnimationDuration = 0.25;
 
-// Spacing between fake omnibox and most visited tiles (MVTs) container.
-constexpr CGFloat kOmniboxToMVTSpacing = 16.0;
-
-// Spacing between fake omnibox and quick actions row.
-constexpr CGFloat kQuickActionSpacingTop = 3.0;
-
-// Spacing between quick actions row and the content below it.
-constexpr CGFloat kQuickActionSpacingBottom = 19.0;
-
-// Spacing between the Google logo and the fake location bar.
-constexpr CGFloat kLogoToOmniboxSpacing = 24.0;
-
 // Spacing from the top of the bottom sheet to the omnibox when expanded.
 constexpr CGFloat kExpandedSheetOmniboxTopMargin = 16.0;
 
@@ -285,7 +273,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   if (IsAimEnabledInNtp()) {
     _qaTopConstraint = [_quickActionsViewController.view.topAnchor
         constraintEqualToAnchor:_fakeLocationBar.bottomAnchor
-                       constant:kQuickActionSpacingTop];
+                       constant:content_suggestions::QuickActionsTopPadding()];
 
     [NSLayoutConstraint activateConstraints:@[
       _qaTopConstraint,
@@ -300,8 +288,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
     UIView* anchorView = self.quickActionsVisible
                              ? _quickActionsViewController.view
                              : _fakeLocationBar;
-    CGFloat constant = self.quickActionsVisible ? kQuickActionSpacingBottom
-                                                : kOmniboxToMVTSpacing;
+    CGFloat constant = content_suggestions::MostVisitedTopPadding();
 
     _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
         constraintEqualToAnchor:anchorView.bottomAnchor
@@ -679,7 +666,8 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
         constraintEqualToAnchor:self.view.centerXAnchor],
     [_searchEngineLogoView.bottomAnchor
         constraintEqualToAnchor:_fakeLocationBar.topAnchor
-                       constant:-kLogoToOmniboxSpacing],
+                       constant:-content_suggestions::LogoToFakeboxPadding(
+                                    _logoState)],
     [_searchEngineLogoView.widthAnchor constraintEqualToConstant:width],
     [_searchEngineLogoView.heightAnchor constraintEqualToConstant:height]
   ];
@@ -690,11 +678,11 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   CGFloat height = content_suggestions::FakeOmniboxHeight();
 
   if (self.quickActionsVisible && _quickActionsViewController) {
-    height += kQuickActionSpacingTop;
+    height += content_suggestions::QuickActionsTopPadding();
     height += _quickActionsViewController.preferredContentSize.height;
-    height += kQuickActionSpacingBottom;
+    height += content_suggestions::MostVisitedTopPadding();
   } else {
-    height += kOmniboxToMVTSpacing;
+    height += content_suggestions::MostVisitedTopPadding();
   }
 
   if (!IsMVTInBottomSheetEnabled()) {
@@ -710,18 +698,18 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   return height;
 }
 - (CGFloat)centeredFakeOmniboxTop {
-  CGFloat screenHeight = self.view.bounds.size.height;
-  // During the initial view loading sequence (e.g. before initial layout pass
-  // occurs), screen height bounds will be 0. We fallback to the dynamic
-  // top-down logo offset to avoid negative constraint values during early
-  // configuration.
-  if (screenHeight <= 0) {
     CGFloat safeAreaTop = self.view.safeAreaInsets.top;
     CGFloat logoHeight =
         content_suggestions::DoodleHeight(_logoState, self.traitCollection);
-    return safeAreaTop + kLogoTopMargin + logoHeight + kLogoToOmniboxSpacing;
-  }
-  return screenHeight * 0.25;
+    CGFloat logoTopMargin;
+    if (base::FeatureList::IsEnabled(kNewTabPagePaddingUpdate)) {
+      logoTopMargin =
+          content_suggestions::LogoTopPadding(_logoState, self.traitCollection);
+    } else {
+      logoTopMargin = kLogoTopMargin;
+    }
+    return safeAreaTop + logoTopMargin + logoHeight +
+           content_suggestions::LogoToFakeboxPadding(_logoState);
 }
 
 
@@ -731,6 +719,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 - (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
   _logoState = logoState;
   [self updateLogoConstraints];
+  _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
   if (_bottomSheetViewController) {
     CGFloat currentTopOffset = _bottomSheetViewController.view.frame.origin.y;
     [self bottomSheetViewController:_bottomSheetViewController
@@ -823,8 +812,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
 
       UIView* anchorView =
           isVisible ? _quickActionsViewController.view : _fakeLocationBar;
-      CGFloat constant =
-          isVisible ? kQuickActionSpacingBottom : kOmniboxToMVTSpacing;
+      CGFloat constant = content_suggestions::MostVisitedTopPadding();
 
       _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
           constraintEqualToAnchor:anchorView.bottomAnchor

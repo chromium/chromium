@@ -166,24 +166,24 @@ const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 // Tight Padding Arm.
 const CGFloat kLogoTopPaddingTight = 24.0;
 const CGFloat kLogoToFakeboxPaddingTight = 32.0;
-const CGFloat kFakeboxToQuickActionsPaddingTight = 12.0;
-const CGFloat kQuickActionsToMostVisitedPaddingTight = 32.0;
+const CGFloat kQuickActionsTopPaddingTight = 12.0;
+const CGFloat kMostVisitedTopPaddingTight = 32.0;
 
 // Medium Padding Arm.
 const CGFloat kLogoTopPaddingMedium = 36.0;
 const CGFloat kLogoToFakeboxPaddingMedium = 36.0;
-const CGFloat kFakeboxToQuickActionsPaddingMedium = 12.0;
-const CGFloat kQuickActionsToMostVisitedPaddingMedium = 36.0;
+const CGFloat kQuickActionsTopPaddingMedium = 12.0;
+const CGFloat kMostVisitedTopPaddingMedium = 36.0;
 
 // Preferred Padding Arm.
 const CGFloat kLogoTopPaddingPreferred = 48.0;
 const CGFloat kLogoToFakeboxPaddingPreferred = 36.0;
-const CGFloat kFakeboxToQuickActionsPaddingPreferred = 12.0;
-const CGFloat kQuickActionsToMostVisitedPaddingPreferred = 36.0;
+const CGFloat kQuickActionsTopPaddingPreferred = 12.0;
+const CGFloat kMostVisitedTopPaddingPreferred = 36.0;
 
 // Control Padding.
-const CGFloat kFakeboxToQuickActionsPaddingControl = 8.0;
-const CGFloat kQuickActionsToMostVisitedPaddingControl = 20.0;
+const CGFloat kQuickActionsTopPaddingControl = 8.0;
+const CGFloat kMostVisitedTopPaddingControl = 20.0;
 const CGFloat kReducedModuleSpacingControl = 14.0;
 
 // Shared spacing constants.
@@ -359,29 +359,29 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
   }
 }
 
-CGFloat FakeboxToQuickActionsPadding() {
+CGFloat QuickActionsTopPadding() {
   switch (GetNTPPaddingUpdateVariation()) {
     case NTPPaddingUpdateVariation::kTightPadding:
-      return kFakeboxToQuickActionsPaddingTight;
+      return kQuickActionsTopPaddingTight;
     case NTPPaddingUpdateVariation::kMediumPadding:
-      return kFakeboxToQuickActionsPaddingMedium;
+      return kQuickActionsTopPaddingMedium;
     case NTPPaddingUpdateVariation::kPreferredPadding:
-      return kFakeboxToQuickActionsPaddingPreferred;
+      return kQuickActionsTopPaddingPreferred;
     case NTPPaddingUpdateVariation::kDisabled:
-      return kFakeboxToQuickActionsPaddingControl;
+      return kQuickActionsTopPaddingControl;
   }
 }
 
-CGFloat QuickActionsToMostVisitedPadding() {
+CGFloat MostVisitedTopPadding() {
   switch (GetNTPPaddingUpdateVariation()) {
     case NTPPaddingUpdateVariation::kTightPadding:
-      return kQuickActionsToMostVisitedPaddingTight;
+      return kMostVisitedTopPaddingTight;
     case NTPPaddingUpdateVariation::kMediumPadding:
-      return kQuickActionsToMostVisitedPaddingMedium;
+      return kMostVisitedTopPaddingMedium;
     case NTPPaddingUpdateVariation::kPreferredPadding:
-      return kQuickActionsToMostVisitedPaddingPreferred;
+      return kMostVisitedTopPaddingPreferred;
     case NTPPaddingUpdateVariation::kDisabled:
-      return kQuickActionsToMostVisitedPaddingControl;
+      return kMostVisitedTopPaddingControl;
   }
 }
 

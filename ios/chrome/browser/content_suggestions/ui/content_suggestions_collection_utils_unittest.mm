@@ -289,10 +289,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                            IPhonePortraitTraitCollection()));
   EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
             LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-  EXPECT_EQ(kFakeboxToQuickActionsPaddingControl,
-            FakeboxToQuickActionsPadding());
-  EXPECT_EQ(kQuickActionsToMostVisitedPaddingControl,
-            QuickActionsToMostVisitedPadding());
+  EXPECT_EQ(kQuickActionsTopPaddingControl, QuickActionsTopPadding());
+  EXPECT_EQ(kMostVisitedTopPaddingControl, MostVisitedTopPadding());
   EXPECT_EQ(kReducedModuleSpacingControl, ReducedModuleSpacing());
 
   // Tight Padding (Arm 1).
@@ -305,10 +303,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingTight,
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(kFakeboxToQuickActionsPaddingTight,
-              FakeboxToQuickActionsPadding());
-    EXPECT_EQ(kQuickActionsToMostVisitedPaddingTight,
-              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kQuickActionsTopPaddingTight, QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingTight, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }
 
@@ -322,10 +318,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingMedium,
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(kFakeboxToQuickActionsPaddingMedium,
-              FakeboxToQuickActionsPadding());
-    EXPECT_EQ(kQuickActionsToMostVisitedPaddingMedium,
-              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kQuickActionsTopPaddingMedium, QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingMedium, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }
 
@@ -339,10 +333,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                              IPhonePortraitTraitCollection()));
     EXPECT_EQ(kLogoToFakeboxPaddingPreferred,
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
-    EXPECT_EQ(kFakeboxToQuickActionsPaddingPreferred,
-              FakeboxToQuickActionsPadding());
-    EXPECT_EQ(kQuickActionsToMostVisitedPaddingPreferred,
-              QuickActionsToMostVisitedPadding());
+    EXPECT_EQ(kQuickActionsTopPaddingPreferred, QuickActionsTopPadding());
+    EXPECT_EQ(kMostVisitedTopPaddingPreferred, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }
 

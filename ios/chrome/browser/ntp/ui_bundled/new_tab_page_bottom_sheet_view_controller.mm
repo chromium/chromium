@@ -23,7 +23,6 @@ typedef NS_ENUM(NSInteger, BottomSheetSnappingState) {
 
 // Spacing/margin constants for content container.
 constexpr CGFloat kContentContainerTopMargin = 16.0;
-constexpr CGFloat kSpaceBetweenModules = 14.0;
 constexpr CGFloat kMagicStackToFeedSpacing = 16.0;
 
 // Minimum drag velocity required to trigger a state transition.
@@ -548,7 +547,10 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
     CGFloat expandedMagicStackTop = content_suggestions::FakeOmniboxHeight();
     CGFloat restingMagicStackTop =
-        (mvtHeight > 0) ? (mvtHeight + kSpaceBetweenModules) : 0.0;
+        (mvtHeight > 0)
+            ? (mvtHeight +
+               content_suggestions::ReducedModuleSpacing(self.traitCollection))
+            : 0.0;
 
     _magicStackTopConstraint.constant =
         progress * restingMagicStackTop +
