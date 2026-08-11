@@ -1090,6 +1090,12 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CELL_SUBTITLE" desc="Subtitle of the passive Default Browser cell settings row. [iOS only]">
+        Open links faster when you set Chromium as default
+      </message>
+      <message name="IDS_IOS_SETTINGS_DEFAULT_BROWSER_PASSIVE_CELL_TITLE" desc="Title of the passive Default Browser cell settings row. [iOS only]">
+        Set Chromium as default
+      </message>
       <message name="IDS_IOS_SETTINGS_IN_OVERFLOW_MENU_IPH_TEXT" desc="An in product help message to inform the user that they can find Settings in the overflow menu.">
         You can find Chromium settings and more here
       </message>

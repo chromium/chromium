@@ -10,6 +10,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -23,7 +25,9 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -68,6 +72,11 @@
 
 using web::WebTaskEnvironment;
 
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    ProfileIOS* profile) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
 class SettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
@@ -78,6 +87,9 @@ class SettingsTableViewControllerTest
         "us");
 
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(&BuildFeatureEngagementMockTracker));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
@@ -265,6 +277,145 @@ TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedIn) {
   EXPECT_NSEQ(nil, google_services_item.detailText);
 }
 
+// Verifies the correct relative section placement of the Default Passive
+// section when the user is signed in.
+TEST_F(SettingsTableViewControllerTest,
+       DefaultPassiveSectionPlacementWhenSignedIn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSSettingsDefaultBrowserPromoV2,
+      {{kIOSSettingsDefaultBrowserPromoTypeParam, "1"}});
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_));
+  EXPECT_CALL(
+      *tracker,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(
+      *tracker,
+      Dismissed(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .Times(testing::AnyNumber());
+
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::kStartPage);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  CreateController();
+  CheckController();
+
+  TableViewModel<TableViewItem*>* model = controller().tableViewModel;
+
+  ASSERT_TRUE(
+      [model hasSectionForSectionIdentifier:
+                 SettingsSectionIdentifier::SettingsSectionIdentifierAccount]);
+  ASSERT_TRUE([model hasSectionForSectionIdentifier:
+                         SettingsSectionIdentifier::
+                             SettingsSectionIdentifierDefaultPassiveCell]);
+
+  NSInteger account_index =
+      [model sectionForSectionIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierAccount];
+  NSInteger default_passive_index =
+      [model sectionForSectionIdentifier:
+                 SettingsSectionIdentifier::
+                     SettingsSectionIdentifierDefaultPassiveCell];
+
+  EXPECT_EQ(default_passive_index, account_index + 1);
+}
+
+// Verifies the correct relative section placement of the Default Passive
+// section when the user is signed out.
+TEST_F(SettingsTableViewControllerTest,
+       DefaultPassiveSectionPlacementWhenSignedOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSSettingsDefaultBrowserPromoV2,
+      {{kIOSSettingsDefaultBrowserPromoTypeParam, "1"}});
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_));
+  EXPECT_CALL(
+      *tracker,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(
+      *tracker,
+      Dismissed(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .Times(testing::AnyNumber());
+
+  auth_service_->SignOut(signin_metrics::ProfileSignout::kTest, nil);
+  ASSERT_FALSE(auth_service_->HasPrimaryIdentity());
+
+  CreateController();
+  CheckController();
+
+  TableViewModel<TableViewItem*>* model = controller().tableViewModel;
+
+  ASSERT_TRUE(
+      [model hasSectionForSectionIdentifier:
+                 SettingsSectionIdentifier::SettingsSectionIdentifierSignIn]);
+  ASSERT_TRUE(
+      [model hasSectionForSectionIdentifier:
+                 SettingsSectionIdentifier::SettingsSectionIdentifierAccount]);
+  ASSERT_TRUE([model hasSectionForSectionIdentifier:
+                         SettingsSectionIdentifier::
+                             SettingsSectionIdentifierDefaultPassiveCell]);
+
+  NSInteger signin_index =
+      [model sectionForSectionIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierSignIn];
+  NSInteger account_index =
+      [model sectionForSectionIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierAccount];
+  NSInteger default_passive_index =
+      [model sectionForSectionIdentifier:
+                 SettingsSectionIdentifier::
+                     SettingsSectionIdentifierDefaultPassiveCell];
+
+  EXPECT_EQ(account_index, signin_index + 1);
+  EXPECT_EQ(default_passive_index, account_index + 1);
+}
+
+// Verifies that the FET feature is properly dismissed (Dismissed(...)) when
+// closing/dismissing settings.
+TEST_F(SettingsTableViewControllerTest,
+       DefaultBrowserPassivePromoDismissedWhenSettingsClosed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSSettingsDefaultBrowserPromoV2,
+      {{kIOSSettingsDefaultBrowserPromoTypeParam, "1"}});
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_));
+  EXPECT_CALL(
+      *tracker,
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .WillRepeatedly(testing::Return(true));
+
+  // Expect that Dismissed is called exactly once when settings is dismissed.
+  EXPECT_CALL(
+      *tracker,
+      Dismissed(testing::Ref(
+          feature_engagement::kIPHiOSPromoSettingsCellDefaultBrowserFeature)))
+      .Times(1);
+
+  CreateController();
+  CheckController();
+
+  // Dismiss settings.
+  [static_cast<SettingsTableViewController*>(controller())
+      settingsWillBeDismissed];
+}
+
 // Verifies that the sign-in setting item is replaced by the managed sign-in
 // item if sign-in is disabled by policy.
 TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
@@ -440,9 +591,15 @@ TEST_F(SettingsTableViewControllerTest,
 
   OCMExpect([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
+  TableViewModel<TableViewItem*>* model = controller().tableViewModel;
+  NSInteger defaults_section =
+      [model sectionForSectionIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierDefaults];
+
   // Tap on the default browser settings.
   [controller() tableView:controller().tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0
+                                                  inSection:defaults_section]];
 
   EXPECT_OCMOCK_VERIFY((id)mock_popup_menu_handler_);
 }
@@ -457,9 +614,15 @@ TEST_F(SettingsTableViewControllerTest,
 
   OCMReject([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
+  TableViewModel<TableViewItem*>* model = controller().tableViewModel;
+  NSInteger defaults_section =
+      [model sectionForSectionIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierDefaults];
+
   // Tap on the default browser settings.
   [controller() tableView:controller().tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0
+                                                  inSection:defaults_section]];
 
   EXPECT_OCMOCK_VERIFY((id)mock_popup_menu_handler_);
 }

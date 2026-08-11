@@ -637,8 +637,9 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
-    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config.storage_type = StorageType::DEVICE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
     config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     // Promo cannot be shown again once dismissed.
     config.used = EventConfig(
@@ -666,7 +667,8 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config.session_rate = Comparator(ANY, 0);
     config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config.storage_type = StorageType::DEVICE;
-    config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
     config.used = EventConfig(
         feature_engagement::events::kDefaultBrowserSettingsCellPromoUsed,
         Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,

@@ -18,7 +18,8 @@ typedef NS_ENUM(NSInteger, SettingsSectionIdentifier) {
   SettingsSectionIdentifierInfo,
   SettingsSectionIdentifierDebug,
   SettingsSectionIdentifierDefaults,
-  SettingsSectionIdentifierESBPromo
+  SettingsSectionIdentifierESBPromo,
+  SettingsSectionIdentifierDefaultPassiveCell
 };
 
 // Item types used per Setting section.
@@ -62,7 +63,8 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeTabs,
   SettingsItemTypeESBPromo,
   SettingsItemTypeBWGSettings,
-  SettingsItemTypeBackendPromoDebugTools
+  SettingsItemTypeBackendPromoDebugTools,
+  SettingsItemTypeDefaultBrowserPassiveCell
 };
 
 // The accessibility identifier of the settings TableView.
@@ -238,5 +240,8 @@ extern NSString* const kSettingsAutomaticallyOpenTabGroupsCellId;
 
 // The accessibility identifier of the Detect Units cell.
 extern NSString* const kSettingsDetectUnitsCellId;
+
+// The accessibility identifier of the default browser passive promo cell.
+extern NSString* const kSettingsDefaultBrowserPassiveCellId;
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

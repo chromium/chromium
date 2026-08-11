@@ -43334,6 +43334,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.OpenDefaultBrowserFromPassiveCell">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when user opens the Default Browser Settings page from the Default
+    Browser Passive cell promo.
+  </description>
+</action>
+
 <action name="Settings.Privacy">
   <owner>thgreenfrog@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

@@ -85,3 +85,5 @@ NSString* const kSettingsAutomaticallyOpenTabGroupsCellId =
     @"kSettingsAutomaticallyOpenTabGroupsCellId";
 NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
 NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";
+NSString* const kSettingsDefaultBrowserPassiveCellId =
+    @"kSettingsDefaultBrowserPassiveCellId";
