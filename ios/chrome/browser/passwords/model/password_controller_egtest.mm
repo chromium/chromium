@@ -803,8 +803,8 @@ void LoginOnUff() {
 // Tests that the typed credentials are correctly saved in the sign-in UFF flow.
 - (void)testSaveTypedCredentialInUff {
   // TODO(crbug.com/453627553): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  if (@available(iOS 18.5, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 18.5.");
   }
 
   NSString* usernameValue = @"test-username";
