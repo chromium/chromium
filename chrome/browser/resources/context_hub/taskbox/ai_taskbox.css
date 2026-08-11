@@ -62,6 +62,31 @@ h2 {
   gap: 12px;
 }
 
+.completed-section {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.completed-expand-button {
+  min-height: 36px;
+  padding: 0;
+  --cr-section-min-height: 36px;
+  --cr-section-vertical-padding: 0;
+  --cr-section-padding: 0;
+}
+
+.completed-expand-button h2 {
+  color: var(--cr-primary-text-color);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.completed-todo-list {
+  padding-top: 20px;
+}
+
 .placeholder-card {
   padding: 32px 20px;
   border-radius: var(--cr-card-border-radius, 16px);

@@ -68,6 +68,39 @@ export function getHtml(this: AiTaskboxElement) {
                       </div>
                     `}
                 </div>
+
+                <!-- Completed Workspace Todos Section -->
+                <div class="completed-section">
+                    <cr-expand-button
+                        class="completed-expand-button"
+                        ?disabled="${(this.completedTodos?.length || 0) === 0}"
+                        ?expanded="${this.isCompletedExpanded_ && (this.completedTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onCompletedExpandedChanged_}"
+                        no-hover>
+                        <h2>Completed Workspace Todos (${this.completedTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isCompletedExpanded_ && (this.completedTodos?.length || 0) > 0}">
+                        <div class="todo-list completed-todo-list">
+                            ${
+      this.completedTodos &&
+      this.completedTodos.length > 0 ? repeat(this.completedTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .status="${todo.status}"
+                                  .actionableUrl="${
+                          todo.data.firstParty?.actionableUrl || ''}"
+                                  .sourceReferences="${
+                          todo.data.firstParty?.sourceReferences || []}"
+                                  .score="${todo.score}"
+                                  .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                              </todo-item>
+                            `) : ''}
+                        </div>
+                    </cr-collapse>
+                </div>
             </section>
 
             <!-- Tab-based Todos Section -->
@@ -109,6 +142,35 @@ export function getHtml(this: AiTaskboxElement) {
                         <p class="placeholder-text">No Browser Todos yet.</p>
                       </div>
                     `}
+                </div>
+
+                <!-- Completed Browser Todos Section -->
+                <div class="completed-section">
+                    <cr-expand-button
+                        class="completed-expand-button"
+                        ?disabled="${(this.completedTabTodos?.length || 0) === 0}"
+                        ?expanded="${this.isCompletedTabExpanded_ && (this.completedTabTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onCompletedTabExpandedChanged_}"
+                        no-hover>
+                        <h2>Completed Browser Todos (${this.completedTabTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isCompletedTabExpanded_ && (this.completedTabTodos?.length || 0) > 0}">
+                        <div class="todo-list completed-todo-list">
+                            ${
+      this.completedTabTodos &&
+      this.completedTabTodos.length > 0 ? repeat(this.completedTabTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .status="${todo.status}"
+                                  .variant="${TodoItemVariant.TAB}"
+                                  .disable_state_mgmt="${this.isGeneratingTabTodos_}">
+                              </todo-item>
+                            `) : ''}
+                        </div>
+                    </cr-collapse>
                 </div>
             </section>
         </div>
