@@ -24,8 +24,17 @@
   return self;
 }
 
+- (instancetype)initWithRawImageData:(NSData*)rawImageData {
+  self = [super init];
+  if (self) {
+    _rawImageData = rawImageData;
+  }
+
+  return self;
+}
+
 - (BOOL)isValid {
-  return _snapshot != nil || _imageMetadata != nil;
+  return _snapshot != nil || _imageMetadata != nil || _rawImageData != nil;
 }
 
 @end
