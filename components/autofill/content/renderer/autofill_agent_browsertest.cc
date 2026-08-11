@@ -1100,11 +1100,10 @@ TEST_F(AutofillAgentTest,
   }));
 
   ASSERT_EQ(num_extracted_forms(), 1u);
-  ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
   // The JS changes to the ID are not reflected in the cache, meaning that the
   // cache was not updated as a result of executing the prior JS script.
-  EXPECT_EQ(extracted_forms.rbegin()->second->fields().front().id_attribute(),
-            u"name");
+  EXPECT_THAT(extracted_forms.rbegin()->second->fields(),
+              ElementsAre(Property(&FormFieldData::id_attribute, u"name")));
 }
 
 // Tests that when JS adds an autofillable element to the DOM, we trigger a DOM
