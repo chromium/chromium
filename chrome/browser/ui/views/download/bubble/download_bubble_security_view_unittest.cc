@@ -14,6 +14,8 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/mock_download_core_service.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
@@ -31,6 +33,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -166,14 +169,16 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     bubble_delegate_ = bubble_delegate.get();
     bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>(
         *security_view_info_);
-    views::BubbleDialogDelegate::CreateBubbleDeprecated(
-        std::move(bubble_delegate),
-        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-    bubble_delegate_->GetWidget()->Show();
+
     security_view_ = bubble_delegate_->SetContentsView(
         std::make_unique<DownloadBubbleSecurityView>(
             security_view_delegate_.get(), *security_view_info_,
             bubble_navigator_->GetWeakPtr(), bubble_delegate_));
+
+    views::BubbleDialogDelegate::CreateBubbleDeprecated(
+        std::move(bubble_delegate),
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+    bubble_delegate_->GetWidget()->Show();
 
     DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&BuildMockDownloadCoreService));
@@ -313,6 +318,46 @@ TEST_F(DownloadBubbleSecurityViewTest,
             static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(),
             static_cast<int>(ui::mojom::DialogButton::kNone));
+}
+
+TEST_F(DownloadBubbleSecurityViewTest,
+       DialogButtonsDisabledWhenOccludedByPictureInPicture) {
+  security_view_info_->InitializeForDownload(*row1_model_);
+  security_view_info_->SetSubpageButtonsForTesting(
+      {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
+                     /*is_prominent=*/true),
+       SubpageButton(DownloadCommands::Command::KEEP, std::u16string(),
+                     /*is_prominent=*/false, ui::kColorAlertHighSeverity)});
+
+  ASSERT_NE(nullptr, bubble_delegate_->GetOkButton());
+  ASSERT_NE(nullptr, bubble_delegate_->GetCancelButton());
+  EXPECT_TRUE(bubble_delegate_->GetOkButton()->GetEnabled());
+  EXPECT_TRUE(bubble_delegate_->GetCancelButton()->GetEnabled());
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  ASSERT_NE(nullptr, tracker);
+  tracker->SetWidgetOcclusionStateForTesting(bubble_delegate_->GetWidget(),
+                                             /*occluded=*/true);
+
+  EXPECT_FALSE(bubble_delegate_->GetOkButton()->GetEnabled());
+  EXPECT_FALSE(bubble_delegate_->GetCancelButton()->GetEnabled());
+
+  // Re-initializing the view while occluded must not re-enable the buttons.
+  security_view_info_->InitializeForDownload(*row1_model_);
+  security_view_info_->SetSubpageButtonsForTesting(
+      {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
+                     /*is_prominent=*/true),
+       SubpageButton(DownloadCommands::Command::KEEP, std::u16string(),
+                     /*is_prominent=*/false, ui::kColorAlertHighSeverity)});
+  EXPECT_FALSE(bubble_delegate_->GetOkButton()->GetEnabled());
+  EXPECT_FALSE(bubble_delegate_->GetCancelButton()->GetEnabled());
+
+  tracker->SetWidgetOcclusionStateForTesting(bubble_delegate_->GetWidget(),
+                                             /*occluded=*/false);
+
+  EXPECT_TRUE(bubble_delegate_->GetOkButton()->GetEnabled());
+  EXPECT_TRUE(bubble_delegate_->GetCancelButton()->GetEnabled());
 }
 
 TEST_F(DownloadBubbleSecurityViewTest, VerifyLogWarningActions) {
@@ -501,7 +546,8 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting({SubpageButton(
       DownloadCommands::Command::DISCARD,
-      std::u16string(u"really really really really really really long "
+      std::u16string(u"really really really really really really really "
+                     u"really really really really really really long "
                      u"button text"),
       /*is_prominent=*/true)});
   UpdateView();

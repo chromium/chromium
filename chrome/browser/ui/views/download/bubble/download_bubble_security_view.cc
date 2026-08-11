@@ -537,9 +537,10 @@ void DownloadBubbleSecurityView::UpdateButton(
       &HandleButtonClickWithDefaultClose, weak_factory_.GetWeakPtr(),
       button_info.command, is_secondary_button));
 
+  bubble_delegate_->SetButtonEnabled(button_type, !occluded_);
+
   if (button_type == ui::mojom::DialogButton::kCancel) {
     bubble_delegate_->SetCancelCallbackWithClose(callback);
-    bubble_delegate_->SetButtonEnabled(button_type, true);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
     if (button_info.text_color) {
       button->SetEnabledTextColors(*button_info.text_color);
@@ -687,6 +688,25 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
 }
 
 DownloadBubbleSecurityView::~DownloadBubbleSecurityView() = default;
+
+void DownloadBubbleSecurityView::AddedToWidget() {
+  views::Widget* widget = GetWidget();
+  pip_occlusion_observation_.Observe(widget);
+}
+
+void DownloadBubbleSecurityView::OnOcclusionStateChanged(bool occluded) {
+  if (occluded_ == occluded) {
+    return;
+  }
+
+  // If transitioning from occluded to un-occluded, restart the input protection
+  // timer to prevent clickjacking/unintended clicks.
+  if (occluded_ && !occluded && bubble_delegate_) {
+    bubble_delegate_->TriggerInputProtection();
+  }
+  occluded_ = occluded;
+  UpdateButtons();
+}
 
 int DownloadBubbleSecurityView::GetMinimumBubbleWidth() const {
   return ChromeLayoutProvider::Get()->GetSnappedDialogWidth(

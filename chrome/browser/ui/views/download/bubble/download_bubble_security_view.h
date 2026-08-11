@@ -14,6 +14,8 @@
 #include "base/types/optional_ref.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -34,6 +36,7 @@ class DownloadBubblePasswordPromptView;
 
 class DownloadBubbleSecurityView
     : public views::View,
+      public PictureInPictureOcclusionObserver,
       public DownloadBubbleSecurityViewInfoObserver {
   METADATA_HEADER(DownloadBubbleSecurityView, views::View)
 
@@ -89,6 +92,12 @@ class DownloadBubbleSecurityView
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
       delete;
   ~DownloadBubbleSecurityView() override;
+
+  // views::View:
+  void AddedToWidget() override;
+
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
 
   // Whether this view is properly associated with a download. The rest of the
   // public method calls on this view do not make sense if not initialized.
@@ -183,6 +192,12 @@ class DownloadBubbleSecurityView
   // Tracks whether metrics were logged for this impression, to avoid
   // double-logging.
   bool did_log_action_ = false;
+
+  // Whether the bubble widget is currently occluded by a picture-in-picture
+  // window. The dialog buttons are disabled while occluded.
+  bool occluded_ = false;
+
+  ScopedPictureInPictureOcclusionObservation pip_occlusion_observation_{this};
 
   base::WeakPtrFactory<DownloadBubbleSecurityView> weak_factory_{this};
 };
