@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createAutocompleteMatch, createKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {createAutocompleteMatch, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {SearchboxSelectionMixin, selectionIsNativelySupported, selectionsEqual, selectionToString} from 'chrome://resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {PageHandlerRemote, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -185,7 +185,7 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
   test('getNextSelection All SelectionLineState types', () => {
     const match = createAutocompleteMatch();
     match.keywordModel =
-        createKeywordModelForTesting({chipHint: 'Search keyword'});
+        createMatchKeywordModelForTesting({chipHint: 'Search keyword'});
     match.actions = [{} as any, {} as any];
     match.supportsDeletion = true;
 

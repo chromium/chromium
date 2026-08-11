@@ -12,7 +12,7 @@
  * these Mojo-based searchbox types.
  */
 
-import type {AutocompleteMatch, AutocompleteResult, KeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, MatchKeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 export function createAutocompleteMatch(
@@ -82,8 +82,8 @@ export function createSearchMatchForTesting(
   return Object.assign(base, modifiers);
 }
 
-export function createKeywordModelForTesting(
-    modifiers: Partial<KeywordModel> = {}): KeywordModel {
+export function createMatchKeywordModelForTesting(
+    modifiers: Partial<MatchKeywordModel> = {}): MatchKeywordModel {
   const base = {
     type: KeywordType.kChip,
     chipHint: '',

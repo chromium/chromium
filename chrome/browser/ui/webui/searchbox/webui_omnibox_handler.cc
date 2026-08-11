@@ -398,7 +398,7 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
 
     // Populate `keyword_model`.
     if (has_keyword) {
-      auto keyword_model = searchbox::mojom::KeywordModel::New();
+      auto keyword_model = searchbox::mojom::MatchKeywordModel::New();
       keyword_model->type = keyword_type;
       keyword_model->keyword = base::UTF16ToUTF8(keyword);
       keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
