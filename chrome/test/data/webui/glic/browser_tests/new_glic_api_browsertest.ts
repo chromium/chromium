@@ -1471,6 +1471,16 @@ class ApiTests extends ApiTestFixtureBase {
     lastJournalSize = snapshot.data.byteLength;
     journalHost.stop();
   }
+
+  async testStopMicrophone() {
+    const stopMicrophonePromise = Promise.withResolvers<void>();
+    this.client.onStopMicrophone = () => {
+      stopMicrophonePromise.resolve();
+    };
+
+    await this.advanceToNextStep();
+    await waitFor(stopMicrophonePromise.promise);
+  }
 }
 
 class FaviconTest extends ApiTests {

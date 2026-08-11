@@ -3529,6 +3529,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testJournal) {
   histogram_tester.ExpectTotalCount("Glic.Actor.JournalEvent.async_event", 1);
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testStopMicrophone) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  base::test::TestFuture<void> microphone_stopped;
+  GetOnlyGlicInstance()->host().StopMicrophone(
+      microphone_stopped.GetCallback());
+  EXPECT_TRUE(microphone_stopped.Wait());
+  ContinueJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
