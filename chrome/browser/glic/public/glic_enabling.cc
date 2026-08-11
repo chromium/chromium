@@ -1194,7 +1194,8 @@ ParseGeminiEnterpriseSettings(const base::DictValue& dict) {
   const std::string* project_id = dict.FindString("project_id");
   const std::string* app_id = dict.FindString("app_id");
   const std::string* location = dict.FindString("location");
-  if (project_id && app_id && location) {
+  auto is_valid = [](const std::string* s) { return s && !s->empty(); };
+  if (is_valid(project_id) && is_valid(app_id) && is_valid(location)) {
     glic::mojom::GeminiEnterpriseSettings settings;
     settings.project_id = *project_id;
     settings.app_id = *app_id;
@@ -1225,14 +1226,14 @@ GlicEnabling::GetGeminiEnterpriseSettings(Profile* profile) {
       if (auto settings = ParseGeminiEnterpriseSettings(parsed_json->GetDict());
           settings.has_value()) {
         return settings;
-      } else {
-        LOG(ERROR) << "Gemini Enterprise settings override is missing "
-                      "required fields.";
       }
-    } else {
-      LOG(ERROR) << "Gemini Enterprise settings override is not a valid "
-                    "JSON dictionary.";
+      LOG(ERROR) << "Gemini Enterprise settings override is missing required "
+                    "fields or contains empty values.";
+      return std::nullopt;
     }
+    LOG(ERROR) << "Gemini Enterprise settings override is not a valid "
+                  "JSON dictionary.";
+    return std::nullopt;
   }
 
   if (!IsEnterpriseAccount(profile)) {
