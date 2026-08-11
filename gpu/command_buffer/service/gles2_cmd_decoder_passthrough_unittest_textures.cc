@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
+#include "ui/gl/scoped_gl_framebuffer.h"
 
 namespace gpu {
 namespace gles2 {
@@ -278,9 +279,9 @@ TEST_F(GLES2DecoderPassthroughTest,
   glColorMask(color_mask[0], color_mask[1], color_mask[2], color_mask[3]);
   GLfloat clear_color[4] = {0.5f, 0.7f, 0.3f, 0.8f};
   glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
-  GLuint dummy_fbo;
-  glGenFramebuffersEXT(1, &dummy_fbo);
-  glBindFramebufferEXT(GL_FRAMEBUFFER, dummy_fbo);
+  gl::ScopedGLFramebuffer dummy_fbo =
+      gl::CreateScopedGLFramebuffer(gl::g_current_gl_context);
+  glBindFramebufferEXT(GL_FRAMEBUFFER, dummy_fbo.get());
   GLuint dummy_texture;
   glGenTextures(1, &dummy_texture);
   glBindTexture(GL_TEXTURE_2D, dummy_texture);
@@ -314,7 +315,7 @@ TEST_F(GLES2DecoderPassthroughTest,
       0 == memcmp(test_clear_color, clear_color, sizeof(test_clear_color))));
   GLint test_fbo;
   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &test_fbo);
-  EXPECT_EQ(test_fbo, static_cast<GLint>(dummy_fbo));
+  EXPECT_EQ(test_fbo, static_cast<GLint>(dummy_fbo.get()));
   GLint test_texture;
   glGetIntegerv(GL_TEXTURE_BINDING_2D, &test_texture);
   EXPECT_EQ(test_texture, static_cast<GLint>(dummy_texture));
@@ -331,7 +332,6 @@ TEST_F(GLES2DecoderPassthroughTest,
   }
 
   // Cleanup
-  glDeleteFramebuffersEXT(1, &dummy_fbo);
   glDeleteTextures(1, &dummy_texture);
   DoDeleteTexture(kNewClientId);
   shared_image.reset();

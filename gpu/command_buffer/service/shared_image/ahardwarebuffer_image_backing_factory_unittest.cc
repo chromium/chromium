@@ -36,6 +36,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/scoped_gl_framebuffer.h"
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include <dawn/native/DawnNative.h>
@@ -177,10 +178,9 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, GLWriteSkiaRead) {
   EXPECT_EQ(expected_target, gl_representation->GetTexture()->target());
 
   // Create an FBO.
-  GLuint fbo = 0;
   gl::GLApi* api = gl::g_current_gl_context;
-  api->glGenFramebuffersEXTFn(1, &fbo);
-  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
+  gl::ScopedGLFramebuffer fbo = gl::CreateScopedGLFramebuffer(api);
+  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo.get());
 
   // Attach the texture to FBO.
   api->glFramebufferTexture2DEXTFn(

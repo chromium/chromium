@@ -46,6 +46,7 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/scoped_gl_framebuffer.h"
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include <dawn/dawn_proc.h>
@@ -344,10 +345,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   DCHECK(writer_scoped_access);
 
   // Create an FBO.
-  GLuint fbo = 0;
   gl::GLApi* api = gl::g_current_gl_context;
-  api->glGenFramebuffersEXTFn(1, &fbo);
-  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
+  gl::ScopedGLFramebuffer fbo = gl::CreateScopedGLFramebuffer(api);
+  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo.get());
 
   // Attach the texture to FBO.
   api->glFramebufferTexture2DEXTFn(
