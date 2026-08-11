@@ -4,10 +4,11 @@
 """Helpers to parse content of xml files."""
 
 from collections.abc import Iterator
+import copy
 import html
 import typing
 from xml.dom import minidom
-
+import xml.etree.ElementTree as ET
 
 # A minidom tree is represented by a Document or an Element. A generic Node is
 # not used because these functions are designed to traverse element containers.
@@ -19,20 +20,39 @@ DomTree = typing.Union[minidom.Element, minidom.Document]
 _ELEMENT_NODE = minidom.Node.ELEMENT_NODE
 
 
-def GetTagSubTree(tree: DomTree, tag: str, depth: int) -> DomTree:
-  """Returns sub tree with tag element as a root.
+# TODO(crbug.com/531790306): Deprecated. All callers of GetTagSubTree
+# should be migrated to ElementTree, and this legacy DOM path will be removed.
+def _GetTagSubTreeLegacyMinidom(tree: DomTree, tag: str, depth: int) -> DomTree:
+  entries = list(IterElementsWithTag(tree, tag, depth))
+  if len(entries) == 1:
+    tree = entries[0]
+  return tree
 
-  When no element with tag name is found or there are many of them
-  original tree is returned.
+
+@typing.overload
+def GetTagSubTree(tree: ET.Element, tag: str, depth: int) -> ET.Element:
+  ...
+
+
+@typing.overload
+def GetTagSubTree(tree: DomTree, tag: str, depth: int) -> DomTree:
+  ...
+
+
+def GetTagSubTree(tree: typing.Union[DomTree, ET.Element], tag: str,
+                  depth: int) -> typing.Union[DomTree, ET.Element]:
+  """Returns ElementTree sub tree with tag element as a root.
 
   Args:
-    tree: XML dom tree.
-    tag: Element's tag name.
-    depth: Defines how deep in the tree function should search for a match.
+    tree: XML DOM or ET tree root.
+    tag: Name of the tag which will be new root.
+    depth: Depth from the current root.
 
   Returns:
     Sub tree (matching criteria) or original one.
   """
+  if not isinstance(tree, ET.Element):
+    return _GetTagSubTreeLegacyMinidom(tree, tag, depth)
   entries = list(IterElementsWithTag(tree, tag, depth))
   if len(entries) == 1:
     tree = entries[0]
@@ -57,40 +77,63 @@ def NormalizeString(text: str) -> str:
   return html.unescape(line)
 
 
-def NormalizeAllAttributeValues(node: minidom.Node) -> minidom.Node:
-  """Recursively normalizes all tag attribute values in the given tree.
+def NormalizeParagraphs(text: str) -> str:
+  """Splits text by paragraph breaks, normalizes, and joins back."""
+  paragraph_break = '\n\n'
+  raw_paragraphs = text.split(paragraph_break)
+  processed_paragraphs = [
+      NormalizeString(p) for p in raw_paragraphs if NormalizeString(p)
+  ]
+  return paragraph_break.join(processed_paragraphs)
 
-  Args:
-    node: The minidom node to be normalized.
 
-  Returns:
-    The normalized minidom node.
-  """
-  # Casting because only Element nodes have attributes.
+# TODO(crbug.com/531790306): Deprecated. All callers of NormalizeAllAttributeValues
+# should be migrated to ElementTree, and this legacy DOM path will be removed.
+def _NormalizeAllAttributeValuesLegacyMinidom(
+    node: minidom.Node) -> minidom.Node:
   elem = typing.cast(minidom.Element, node)
   if elem.nodeType == _ELEMENT_NODE:
     for a in elem.attributes.keys():
       elem.attributes[a].value = NormalizeString(elem.attributes[a].value)
 
   for c in node.childNodes:
-    NormalizeAllAttributeValues(c)
+    _NormalizeAllAttributeValuesLegacyMinidom(c)
   return node
 
 
-def GetTextFromChildNodes(node: DomTree) -> str:
-  """Returns a string concatenation of the text of the given node's children.
+@typing.overload
+def NormalizeAllAttributeValues(root: ET.Element) -> ET.Element:
+  ...
 
-  Comments are ignored, consecutive lines of text are joined with a single
-  space, and paragraphs are maintained so that long text is more readable on
-  dashboards.
+
+@typing.overload
+def NormalizeAllAttributeValues(root: minidom.Node) -> minidom.Node:
+  ...
+
+
+def NormalizeAllAttributeValues(
+    root: typing.Union[minidom.Node, ET.Element]
+) -> typing.Union[minidom.Node, ET.Element]:
+  """Recursively normalizes all tag attribute values in the given tree.
 
   Args:
-    node: The DOM Element whose children's text is to be extracted, processed,
-      and returned.
+    root: The XML DOM or ET tree root.
 
   Returns:
-    A string concatenation of the text of the given node's children.
+    The normalized tree root.
   """
+  if not isinstance(root, ET.Element):
+    return _NormalizeAllAttributeValuesLegacyMinidom(root)
+  for elem in root.iter():
+    for a in elem.attrib:
+      elem.attrib[a] = NormalizeString(elem.attrib[a])
+  return root
+
+
+# TODO(crbug.com/531790306): Deprecated. All callers of GetTextFromChildNodes
+# should be migrated to ElementTree, and this legacy DOM path will be removed.
+def _GetTextFromChildNodesLegacyMinidom(node: DomTree) -> str:
+  """Legacy minidom DOM implementation of GetTextFromChildNodes."""
   paragraph_break = '\n\n'
   text_parts = []
 
@@ -127,34 +170,102 @@ def GetTextFromChildNodes(node: DomTree) -> str:
   return ''.join(text_parts).strip()
 
 
-def IterElementsWithTag(root: minidom.Node,
-                        tag: str,
-                        depth: int = -1) -> Iterator[minidom.Element]:
-  """Iterates over DOM tree and yields elements matching tag name.
+def ToStringWithoutTail(element: ET.Element) -> str:
+  """Serializes an ElementTree Element to a string without its tail text."""
+  # xml.etree.ElementTree.tostring() serializes both the element and its tail
+  # text. To serialize only the element itself, we copy it and set its tail to
+  # None so that the tail text does not get appended.
+  element_copy = copy.copy(element)
+  element_copy.tail = None
+  return ET.tostring(element_copy, encoding='unicode')
 
-  It's meant to be replacement for `getElementsByTagName`,
-  (which does recursive search) but without recursive search
-  (nested tags are not supported in histograms files).
 
-  Note: This generator stops going deeper in the tree when it detects
-  that there are elements with given tag.
+def _GetTextFromChild(child: ET.Element) -> list[str]:
+  """Extracts processed text parts from a single child element."""
+  text_parts: list[str] = []
+
+  if callable(child.tag) or child.tag == ET.Comment:
+    if not child.tail:
+      return text_parts
+    norm_tail = NormalizeParagraphs(child.tail)
+    if not norm_tail:
+      return text_parts
+    text_parts.append(norm_tail)
+    return text_parts
+
+  tail = child.tail
+  child_text = ToStringWithoutTail(child)
+
+  norm_child = NormalizeParagraphs(child_text)
+  if norm_child:
+    text_parts.append(norm_child)
+
+  if not tail:
+    return text_parts
+
+  norm_tail = NormalizeParagraphs(tail)
+  if not norm_tail:
+    return text_parts
+
+  text_parts.append(norm_tail)
+  return text_parts
+
+
+def GetTextFromChildNodes(node: typing.Union[DomTree, ET.Element]) -> str:
+  """Returns a string concatenation of the text of the given node's children.
+
+  Comments are ignored, consecutive lines of text are joined with a single
+  space, and paragraphs are maintained so that long text is more readable on
+  dashboards.
+
+  For example, if the given node has the below XML representation, then the text
+  returned is 'Some words.\n\nWords.':
+    <tag>
+      Some
+      words.
+
+      <!--Child comment node.-->
+
+      Words.
+    </tag>
 
   Args:
-    root: XML dom tree.
-    tag: Element's tag name.
-    depth: Defines how deep in the tree function should search for a match.
+    node: The DOM or ET Element whose children's text is to be extracted,
+      processed, and returned.
 
-  Yields:
-    xml.dom.minidom.Node: Element matching criteria.
+  Returns:
+    A string concatenation of the text of the given node's children.
   """
-  # Casting because only Element nodes have attributes.
+  if not isinstance(node, ET.Element):
+    return _GetTextFromChildNodesLegacyMinidom(node)
+
+  paragraph_break = '\n\n'
+  text_parts = []
+
+  if node.text:
+    norm = NormalizeParagraphs(node.text)
+    if norm:
+      text_parts.append(norm)
+
+  for child in node:
+    text_parts.extend(_GetTextFromChild(child))
+
+  return ''.join(text_parts).strip()
+
+
+# TODO(crbug.com/531790306): Deprecated. All callers of IterElementsWithTag
+# should be migrated to ElementTree, and this legacy DOM path will be removed.
+def _IterElementsWithTagLegacyMinidom(root: minidom.Node,
+                                      tag: str,
+                                      depth: int = -1
+                                      ) -> Iterator[minidom.Element]:
+  """Legacy minidom DOM implementation of IterElementsWithTag."""
   elem = typing.cast(minidom.Element, root)
   if depth == 0 and elem.nodeType == _ELEMENT_NODE and elem.tagName == tag:
     yield elem
     return
 
   had_tag = False
-
   skipped = 0
 
   for child in root.childNodes:
@@ -166,8 +277,78 @@ def IterElementsWithTag(root: minidom.Node,
       skipped += 1
 
   depth -= 1
-
   if not had_tag and depth != 0:
     for child in root.childNodes:
-      for match in IterElementsWithTag(child, tag, depth):
+      for match in _IterElementsWithTagLegacyMinidom(child, tag, depth):
         yield match
+
+
+@typing.overload
+def IterElementsWithTag(root: ET.Element,
+                        tag: str,
+                        depth: int = -1) -> Iterator[ET.Element]:
+  ...
+
+
+@typing.overload
+def IterElementsWithTag(root: minidom.Node,
+                        tag: str,
+                        depth: int = -1) -> Iterator[minidom.Element]:
+  ...
+
+
+def IterElementsWithTag(
+    root: typing.Union[minidom.Node, ET.Element],
+    tag: str,
+    depth: int = -1) -> Iterator[typing.Union[minidom.Element, ET.Element]]:
+  """Iterates over tree and yields elements matching tag name.
+
+  This generator stops going deeper in the tree when it detects
+  that there are elements with the given tag. Nested tags of the same
+  name are not supported.
+
+  Args:
+    root: XML DOM or ET tree root.
+    tag: Element's tag name.
+    depth: Defines how deep in the tree function should search for a match.
+
+  Yields:
+    Element matching criteria.
+  """
+  if not isinstance(root, ET.Element):
+    yield from _IterElementsWithTagLegacyMinidom(root, tag, depth)
+    return
+
+  if isinstance(root.tag, str) and root.tag == tag:
+    yield root
+    return
+
+  if depth == 0:
+    return
+
+  had_tag = False
+  for child in root:
+    if not isinstance(child.tag, str) or child.tag != tag:
+      continue
+    had_tag = True
+    yield child
+
+  depth -= 1
+  if had_tag or depth == 0:
+    return
+
+  for child in root:
+    if isinstance(child.tag, str):
+      yield from IterElementsWithTag(child, tag, depth)
+
+
+def ParseXMLFiles(files) -> list[ET.Element]:
+  """Parses a list of XML filenames or file-like objects into ElementTree Elements.
+
+  Args:
+    files: A list of XML filenames or file-like objects.
+
+  Returns:
+    A list of ElementTree root Elements.
+  """
+  return [ET.parse(f).getroot() for f in files]
