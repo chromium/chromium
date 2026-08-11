@@ -6479,7 +6479,12 @@
     },
     {
       // The Unbounded Element API. See crbug.com/508672616.
+      // Note that this flag is enabled by default, to enable WebUI and other
+      // privileged UI to depend on this feature. The flag is here as a kill
+      // switch. Importantly, open web content still requires
+      // UnboundedElementOnTheOpenWeb to be enabled.
       name: "UnboundedElement",
+      status: "stable",
       implied_by: ["UnboundedElementOnTheOpenWeb"],
     },
     {
