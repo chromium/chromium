@@ -428,6 +428,17 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     features_h = os.path.join(install_root, "usr", "include", "features.h")
     replace_in_file(features_h, r"(#define\s+__GLIBC_MINOR__)", r"\1 26 //")
 
+    # glibc >= 2.33 marks mallinfo as deprecated, which fails warning-as-error
+    # build as mallinfo is still used by process_metrics_posix.cc and partition
+    # allocator unit tests. Remove the attribute from mallinfo only.
+    malloc_h = os.path.join(install_root, "usr", "include", "malloc.h")
+    replace_in_file(
+        malloc_h,
+        r"(extern\s+struct\s+mallinfo\s+mallinfo\s+\(void\)\s+__THROW) "
+        r"__MALLOC_DEPRECATED;",
+        r"\1;",
+    )
+
     # C23 STRTOL requires glibc >= 2.38
     replace_in_file(
         features_h, r"(#\s?define\s+__GLIBC_USE_C23_STRTOL)", r"\1 0 //"
