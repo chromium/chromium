@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 // These values are persisted to logs. Entries should not be renumbered and
@@ -27,21 +28,21 @@ enum class Availability {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:Availability)
 
-V8Availability AvailabilityToV8(Availability availability);
+MODULES_EXPORT V8Availability AvailabilityToV8(Availability availability);
 
-Availability ConvertModelAvailabilityCheckResult(
+MODULES_EXPORT Availability ConvertModelAvailabilityCheckResult(
     mojom::blink::ModelAvailabilityCheckResult result);
 
-Availability HandleModelAvailabilityCheckResult(
+MODULES_EXPORT Availability HandleModelAvailabilityCheckResult(
     ExecutionContext* execution_context,
     AIMetrics::AISessionType session_type,
     mojom::blink::ModelAvailabilityCheckResult result);
 
-Availability HandleTranslatorAvailabilityCheckResult(
+MODULES_EXPORT Availability HandleTranslatorAvailabilityCheckResult(
     ExecutionContext* execution_context,
     mojom::blink::CanCreateTranslatorResult result);
 
-Availability HandleLanguageDetectionModelCheckResult(
+MODULES_EXPORT Availability HandleLanguageDetectionModelCheckResult(
     ExecutionContext* execution_context,
     language_detection::mojom::blink::LanguageDetectionModelStatus result);
 
