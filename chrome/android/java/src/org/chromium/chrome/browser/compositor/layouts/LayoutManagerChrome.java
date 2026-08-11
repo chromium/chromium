@@ -12,6 +12,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -66,7 +67,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
      * A {@link Layout} that should be used when the user is in the tab switcher when the hub flag
      * is enabled.
      */
-    protected @Nullable Layout mHubLayout;
+    protected @Nullable HubLayout mHubLayout;
 
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
@@ -88,6 +89,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     protected @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+
+    /** Offset from the left side of the screen. */
+    private @Px int mContentOffsetX;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -136,6 +140,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         hubLayoutDependencyHolder,
                         mTabModelSelectorSupplier,
                         mDesktopWindowStateManager);
+        mHubLayout.setContentOffsetX(mContentOffsetX);
         TabContentManager content = mTabContentManagerSupplier.get();
         if (content != null) {
             mHubLayout.setTabContentManager(content);
@@ -304,6 +309,19 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         }
 
         super.doneHiding();
+    }
+
+    @Override
+    public void setContentOffsetX(@Px int contentOffsetX) {
+        super.setContentOffsetX(contentOffsetX);
+        mContentOffsetX = contentOffsetX;
+        if (mHubLayout != null) {
+            mHubLayout.setContentOffsetX(contentOffsetX);
+        }
+    }
+
+    public int getContentOffsetXForTesting() {
+        return mContentOffsetX;
     }
 
     @Override

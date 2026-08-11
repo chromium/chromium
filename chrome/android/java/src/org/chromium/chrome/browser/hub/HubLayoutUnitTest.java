@@ -930,6 +930,7 @@ public class HubLayoutUnitTest {
         mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
         verify(mUpdateHost, never()).requestUpdate();
 
+        mHubLayout.setContentOffsetX(50);
         startAnimationRunnable.run();
 
         assertThat(mHubLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);
@@ -939,17 +940,21 @@ public class HubLayoutUnitTest {
         verify(mTabContentManager)
                 .updateVisibleIds(eq(Collections.singletonList(tabId)), eq(Tab.INVALID_TAB_ID));
 
+        assertEquals(50f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_X), FLOAT_ERROR);
         assertEquals(0f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_Y), FLOAT_ERROR);
 
         float contentOffset = 100f;
         when(mBrowserControlsStateProvider.getContentOffset())
                 .thenReturn(Math.round(contentOffset));
+        mHubLayout.setContentOffsetX(80);
+        assertEquals(80f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_X), FLOAT_ERROR);
         mHubLayout.updateSceneLayer(
                 new RectF(),
                 new RectF(),
                 mTabContentManager,
                 mResourceManager,
                 mBrowserControlsStateProvider);
+        assertEquals(80f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_X), FLOAT_ERROR);
         assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET_Y), FLOAT_ERROR);
 
         // Change this so updateSnap() returns true.

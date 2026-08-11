@@ -31,6 +31,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,6 +57,7 @@ public class LayoutManagerChromeUnitTest {
     private @Mock ToolbarSwipeLayout mToolbarSwipeLayout;
     private @Mock Tab mTab;
     private @Mock StaticLayout mStaticLayout;
+    private @Mock HubLayout mHubLayout;
 
     private final SettableNullableObservableSupplier<TabSwitcher> mTabSwitcherSupplier =
             ObservableSuppliers.createNullable();
@@ -171,6 +173,44 @@ public class LayoutManagerChromeUnitTest {
         layoutManagerChrome.tabsAllClosing(false);
 
         verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testSetContentOffsetX_UpdatesStaticLayoutAndHubLayout() {
+        LayoutManagerChrome layoutManagerChrome =
+                new LayoutManagerChrome(
+                        mHost,
+                        mContentContainer,
+                        mTabSwitcherSupplier,
+                        mTabModelSelectorSupplier,
+                        mTabContentManagerSupplier,
+                        mToolbarThemeColorProvider,
+                        mHubLayoutDependencyHolder);
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        layoutManagerChrome.mHubLayout = mHubLayout;
+
+        layoutManagerChrome.setContentOffsetX(120);
+
+        verify(mStaticLayout).setContentOffsetX(120);
+        verify(mHubLayout).setContentOffsetX(120);
+        Assert.assertEquals(120, layoutManagerChrome.getContentOffsetXForTesting());
+    }
+
+    @Test
+    public void testSetContentOffsetX_BeforeLayoutsInitialized() {
+        LayoutManagerChrome layoutManagerChrome =
+                new LayoutManagerChrome(
+                        mHost,
+                        mContentContainer,
+                        mTabSwitcherSupplier,
+                        mTabModelSelectorSupplier,
+                        mTabContentManagerSupplier,
+                        mToolbarThemeColorProvider,
+                        mHubLayoutDependencyHolder);
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        layoutManagerChrome.setContentOffsetX(75);
+
+        Assert.assertEquals(75, layoutManagerChrome.getContentOffsetXForTesting());
     }
 
     private LayoutManagerChrome createLayoutManagerChromeSpy() {

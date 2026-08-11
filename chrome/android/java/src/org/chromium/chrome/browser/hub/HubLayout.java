@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Function;
@@ -154,6 +155,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private @Nullable SolidColorSceneLayer mEmptySceneLayer;
 
     private @Nullable HubLayoutAnimationRunner mCurrentAnimationRunner;
+
+    private @Px int mContentOffsetX;
 
     /**
      * Create the {@link Layout} to show the Hub on.
@@ -676,6 +679,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         LayoutTab layoutTab = getLayoutTab();
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT, isActive());
+        layoutTab.set(LayoutTab.CONTENT_OFFSET_X, mContentOffsetX);
         layoutTab.set(LayoutTab.CONTENT_OFFSET_Y, browserControls.getContentOffset());
         mTabSceneLayer.update(layoutTab);
     }
@@ -830,9 +834,18 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         return mLayoutTabs[0];
     }
 
+    /** Sets the {@link LayoutTab#CONTENT_OFFSET_X} for this layout. */
+    public void setContentOffsetX(@Px int contentOffsetX) {
+        mContentOffsetX = contentOffsetX;
+        if (hasLayoutTab()) {
+            getLayoutTab().set(LayoutTab.CONTENT_OFFSET_X, contentOffsetX);
+        }
+    }
+
     private void createLayoutTabForTabId(@TabId int tabId) {
         assumeNonNull(mTabModelSelector);
         LayoutTab layoutTab = createLayoutTab(tabId, mTabModelSelector.isIncognitoSelected());
+        layoutTab.set(LayoutTab.CONTENT_OFFSET_X, mContentOffsetX);
         mLayoutTabs = new LayoutTab[] {layoutTab};
         updateCacheVisibleIds(Collections.singletonList(tabId));
     }
