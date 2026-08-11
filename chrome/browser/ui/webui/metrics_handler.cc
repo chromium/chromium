@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -56,23 +55,16 @@ void MetricsHandler::HandleRecordAction(const base::ListValue& args) {
 void MetricsHandler::HandleRecordInHistogram(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   int int_value = static_cast<int>(args[1].GetDouble());
-  int int_boundary_value = static_cast<int>(args[2].GetDouble());
+  int int_exclusive_max = static_cast<int>(args[2].GetDouble());
 
   DCHECK_GE(int_value, 0);
-  DCHECK_LE(int_value, int_boundary_value);
-  DCHECK_LT(int_boundary_value, 4000);
-
-  int bucket_count = int_boundary_value;
-  while (bucket_count >= 100) {
-    bucket_count /= 10;
-  }
+  // Note: int_exclusive_max must be strictly greater than all logged values,
+  // i.e. MAX_VALUE + 1 or COUNT for enum histograms.
+  DCHECK_LT(int_value, int_exclusive_max);
 
   // As |histogram_name| may change between calls, the UMA_HISTOGRAM_ENUMERATION
   // macro cannot be used here.
-  base::HistogramBase* counter = base::LinearHistogram::FactoryGet(
-      histogram_name, 1, int_boundary_value, bucket_count + 1,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->Add(int_value);
+  base::UmaHistogramExactLinear(histogram_name, int_value, int_exclusive_max);
 }
 
 void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue& args) {
@@ -82,9 +74,7 @@ void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue& args) {
   const std::string histogram_name = args[0].GetString();
   const bool value = args[1].GetBool();
 
-  base::HistogramBase* counter = base::BooleanHistogram::FactoryGet(
-      histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->AddBoolean(value);
+  base::UmaHistogramBoolean(histogram_name, value);
 }
 
 void MetricsHandler::HandleRecordTime(const base::ListValue& args) {
@@ -93,12 +83,7 @@ void MetricsHandler::HandleRecordTime(const base::ListValue& args) {
 
   DCHECK_GE(value, 0);
 
-  base::TimeDelta time_value = base::Milliseconds(value);
-
-  base::HistogramBase* counter = base::Histogram::FactoryTimeGet(
-      histogram_name, base::Milliseconds(1), base::Seconds(10), 50,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  counter->AddTime(time_value);
+  base::UmaHistogramTimes(histogram_name, base::Milliseconds(value));
 }
 
 void MetricsHandler::HandleRecordMediumTime(const base::ListValue& args) {
