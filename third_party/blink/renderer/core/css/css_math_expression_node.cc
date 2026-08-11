@@ -2353,6 +2353,35 @@ bool IsClampKeywordLiteral(const CSSMathExpressionNode& exp_node) {
 }  // namespace
 
 // static
+const CSSMathExpressionNode* CSSMathExpressionNode::SimplifyCalculationTree(
+    const CSSMathExpressionNode* node) {
+  const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
+  if (!operation ||
+      !(operation->IsAddOrSubtract() || operation->IsMultiplyOrDivide())) {
+    return node;
+  }
+  // Rebuild the sum/product bottom-up, simplifying each binary operation with
+  // its (already-simplified) operands. CreateArithmeticOperationSimplified
+  // combines same-category terms across units (e.g. 0rad + 0deg -> 0deg).
+  const auto& operands = operation->GetOperands();
+  CHECK_EQ(operands.size(), 2u);
+  const CSSMathExpressionNode* left = SimplifyCalculationTree(operands[0]);
+  const CSSMathExpressionNode* right = SimplifyCalculationTree(operands[1]);
+  CSSMathExpressionNode* result =
+      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+          left, right, operation->OperatorType());
+  if (!result) {
+    return node;
+  }
+  // If the operation collapsed to a single value, keep the calc() wrapper so
+  // the value reifies back as a CSSMathSum, matching the parser's behavior.
+  if (!result->IsOperation()) {
+    result->SetIsNestedCalc();
+  }
+  return result;
+}
+
+// static
 CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     const CSSMathExpressionNode* left_side,

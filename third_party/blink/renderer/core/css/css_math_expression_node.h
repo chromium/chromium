@@ -186,6 +186,13 @@ class CORE_EXPORT CSSMathExpressionNode
   static CSSMathExpressionNode* Create(PixelsAndPercent pixels_and_percent);
   static CSSMathExpressionNode* Create(const CalculationExpressionNode& node);
 
+  // Returns |node| with its sum/product operations simplified, per
+  // "simplify a calculation tree". Used when building the internal
+  // representation of a CSSMathValue (which is otherwise unsimplified),
+  // per the resolution of csswg-drafts#9451.
+  static const CSSMathExpressionNode* SimplifyCalculationTree(
+      const CSSMathExpressionNode* node);
+
   enum class Flag : uint8_t {
     AllowPercent,
     AllowCalcSize,

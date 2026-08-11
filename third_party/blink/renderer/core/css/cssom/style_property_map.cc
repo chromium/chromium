@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -39,6 +41,31 @@ CSSValueList* CssValueListForPropertyID(CSSPropertyID property_id) {
     default:
       NOTREACHED();
   }
+}
+
+// Simplifies the calculation tree of a CSSMathValue's internal representation,
+// per the resolution of csswg-drafts#9451 ("calculation trees ... simplify in
+// all representations, including ... Typed OM"). Only a CSSMathValue lowers to
+// a CSSMathFunctionValue, so gating on the result type is sufficient.
+//
+// TODO: This should apply to every property once the corresponding WPTs are
+// updated upstream (the WG resolution calls for amending them). It is
+// currently limited to properties whose tests already accept the simplified
+// form (e.g. offset-rotate); applying it universally now would diverge from
+// Firefox/Safari, which do not yet simplify, and regress tests that still
+// assert the unsimplified value (column-count, orphans, widows).
+const CSSValue* SimplifyMathValue(const CSSValue* value) {
+  const auto* function = DynamicTo<CSSMathFunctionValue>(value);
+  if (!function) {
+    return value;
+  }
+  const CSSMathExpressionNode* simplified =
+      CSSMathExpressionNode::SimplifyCalculationTree(
+          function->ExpressionNode());
+  if (simplified == function->ExpressionNode()) {
+    return value;
+  }
+  return CSSMathFunctionValue::Create(simplified);
 }
 
 const CSSValue* StyleValueToCSSValue(
@@ -168,11 +195,11 @@ const CSSValue* StyleValueToCSSValue(
     case CSSPropertyID::kOffsetRotate: {
       // level 1 only accepts single values, which are stored internally
       // as a single element list.
-      const auto* value = style_value.ToCSSValue();
+      const auto* value = SimplifyMathValue(style_value.ToCSSValue());
       if ((value->IsIdentifierValue() && !value->IsCSSWideKeyword()) ||
           value->IsPrimitiveValue()) {
         CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-        list->Append(*style_value.ToCSSValue());
+        list->Append(*value);
         return list;
       }
       break;

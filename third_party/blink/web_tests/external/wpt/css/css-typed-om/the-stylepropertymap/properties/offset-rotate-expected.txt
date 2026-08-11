@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Can set 'offset-rotate' to an angle: calc(0rad + 0deg)
-  assert_equals: expected 1 but got 2
-Harness: the test ran to completion.
-
