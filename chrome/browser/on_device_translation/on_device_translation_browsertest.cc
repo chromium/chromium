@@ -808,6 +808,33 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   WaitForConsoleObserver(*console_observer);
 }
 
+// Tests that a relative library path causes a crash/failure (reproducing the
+// bug/crash in PreLockdownSandboxHook on Windows).
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorErrorLibraryPathRelative) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+
+  // Set the TranslateKit binary path to a relative path.
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kTranslateKitBinaryPath,
+      base::FilePath(FILE_PATH_LITERAL("relative/path/to/fakefile")));
+
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+            const translator = await Translator.create({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+      )"),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+}
+
 // Tests the behavior of failing to load the library as a result of the
 // incompatibility of the library.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,

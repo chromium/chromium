@@ -4,6 +4,7 @@
 
 #include "components/on_device_translation/service/service_launcher.h"
 
+#include "base/logging.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
@@ -76,12 +77,16 @@ class OnDeviceTranslationServiceLauncherImpl
       std::string_view service_display_name_suffix,
       OnDeviceTranslationInstaller* installer) override {
     mojo::PendingRemote<mojom::OnDeviceTranslationService> remote;
-    auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
     CHECK(installer);
     const base::FilePath binary_path = installer->GetLibraryPath();
-    CHECK(!binary_path.empty())
-        << "Got an empty path to TranslateKit binary on the device.";
+    if (binary_path.empty() || !binary_path.IsAbsolute()) {
+      DLOG(ERROR) << "TranslateKit binary path is empty or relative: "
+                  << binary_path;
+      return remote;
+    }
+
+    auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
     std::vector<std::string> extra_switches;
     extra_switches.push_back(
