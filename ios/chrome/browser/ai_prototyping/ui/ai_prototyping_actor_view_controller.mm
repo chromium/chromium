@@ -28,6 +28,7 @@ NSString* const kToolSelect = @"Select";
 NSString* const kToolCloseTab = @"Close Tab";
 NSString* const kToolAttemptLogin = @"Attempt Login";
 NSString* const kToolCreateTab = @"Create Tab";
+NSString* const kToolActivateTab = @"Activate Tab";
 
 // Placeholder macro for tab ID.
 NSString* const kTabIdMacro = @"{{tab_id}}";
@@ -544,6 +545,10 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolActivateTab : @{
+      @"ui" : @[ _tabIdContainer, _jsonContainer ],
+      @"template" : @{@"activate_tab" : @{@"tab_id" : kTabIdMacro}}
+    },
   };
 
   _toolPickerButton.menu = [self createToolPickerMenu];
@@ -799,7 +804,7 @@ bool IsWebActuationTool(NSString* tool) {
   NSArray<NSString*>* orderedTools = @[
     kToolMultiTool, kToolNavigate, kToolClick, kToolType, kToolHistoryBack,
     kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo, kToolSelect,
-    kToolCloseTab, kToolAttemptLogin, kToolCreateTab
+    kToolCloseTab, kToolAttemptLogin, kToolCreateTab, kToolActivateTab
   ];
 
   for (NSString* toolName in orderedTools) {
