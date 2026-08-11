@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/test/fake_installer.h"
 #include "components/on_device_translation/test/fake_translator.h"
@@ -107,6 +108,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
 }
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   auto mock_service_controller =
       std::make_unique<MockOnDeviceTranslationServiceController>();
@@ -135,9 +137,13 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(translated_text_.empty());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.ErrorReason",
+      OnDeviceTranslationErrorReason::kCreateTranslatorFailedToInitialize, 1);
 }
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   auto mock_service_controller =
       std::make_unique<MockOnDeviceTranslationServiceController>();
@@ -160,6 +166,9 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(translated_text_.empty());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.ErrorReason",
+      OnDeviceTranslationErrorReason::kCanTranslateServiceCrashed, 1);
 }
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationChineseHantPreserved) {

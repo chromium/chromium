@@ -2145,6 +2145,28 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:OCRClientType) -->
 
+<!-- LINT.IfChange(OnDeviceTranslationErrorReason) -->
+
+<enum name="OnDeviceTranslationErrorReason">
+  <int value="0" label="CanTranslate: Language not supported"/>
+  <int value="1" label="CanTranslate: Service crashed"/>
+  <int value="2" label="CanTranslate: Exceeded service count limitation"/>
+  <int value="3" label="CreateTranslator: Invalid binary"/>
+  <int value="4" label="CreateTranslator: Invalid function pointer"/>
+  <int value="5" label="CreateTranslator: Failed to initialize"/>
+  <int value="6" label="CreateTranslator: Failed to create translator"/>
+  <int value="7" label="CreateTranslator: Invalid version"/>
+  <int value="8" label="CreateTranslator: Service crashed"/>
+  <int value="9" label="CreateTranslator: Language not supported"/>
+  <int value="10" label="CreateTranslator: Exceeded service count limitation"/>
+  <int value="11"
+      label="CreateTranslator: Exceeded pending task count limitation"/>
+  <int value="12" label="CreateTranslator: Unknown error"/>
+  <int value="13" label="Translate RPC: Execution failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->
+
 <!-- LINT.IfChange(ReadAnythingColor) -->
 
 <enum name="ReadAnythingColor">
