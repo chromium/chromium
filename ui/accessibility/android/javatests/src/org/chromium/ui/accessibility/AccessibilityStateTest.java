@@ -8,9 +8,10 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -495,8 +496,6 @@ public class AccessibilityStateTest {
     public void testApplicationStateChange() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        Application application = (Application) mContext.getApplicationContext();
-
         // App starts out in foreground.
         simulateActivityStateChange(
                 mockActivity, ActivityState.STARTED, ApplicationState.HAS_RUNNING_ACTIVITIES);
@@ -531,6 +530,48 @@ public class AccessibilityStateTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Mockito.verify(mAccessibilityStateNatives, Mockito.times(3))
                 .onAnimatorDurationScaleChanged();
+
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
+        ApplicationStatus.destroyForJUnitTests();
+    }
+
+    /**
+     * Test that Chromium updates the font weight setting when it is changed by the user when
+     * Chromium is running. The font weight setting is special in that an observer is not registered
+     * to observe changes.
+     */
+    @Config(sdk = Build.VERSION_CODES.S)
+    @Test
+    @SmallTest
+    public void testApplicationStateChangeFontWeightAdjustment() {
+        Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        Configuration config = mContext.getResources().getConfiguration();
+
+        // Set the initial state.
+        Configuration configDelta = new Configuration();
+        configDelta.fontWeightAdjustment = 0;
+        config.updateFrom(configDelta);
+        mDelegate.updateAccessibilityServices();
+
+        AccessibilityState.initializeOnStartup();
+        AccessibilityState.registerObservers();
+        simulateActivityStateChange(
+                mockActivity, ActivityState.STARTED, ApplicationState.HAS_RUNNING_ACTIVITIES);
+
+        // Check initial font weight.
+        assertThat(AccessibilityState.getFontWeightAdjustment()).isEqualTo(0);
+
+        // Simulate updating the font weight in Android settings while the app is in the background.
+        simulateActivityStateChange(
+                mockActivity, ActivityState.STOPPED, ApplicationState.HAS_STOPPED_ACTIVITIES);
+        configDelta = new Configuration();
+        configDelta.fontWeightAdjustment = 300;
+        config.updateFrom(configDelta);
+
+        // Move app to foreground.
+        simulateActivityStateChange(
+                mockActivity, ActivityState.RESUMED, ApplicationState.HAS_RUNNING_ACTIVITIES);
+        assertThat(AccessibilityState.getFontWeightAdjustment()).isEqualTo(300);
 
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
         ApplicationStatus.destroyForJUnitTests();
