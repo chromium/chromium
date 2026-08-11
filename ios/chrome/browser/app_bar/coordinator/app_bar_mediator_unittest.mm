@@ -1638,10 +1638,22 @@ TEST_F(AppBarMediatorTest, TestSetButtonsEnabledByPolicy) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that the Gemini button is dimmed (disabled) when the user is signed out
+// Tests that the Gemini button is enabled when the user is signed out
 // but the GeminiSettings policy allows it.
 TEST_F(AppBarMediatorTest,
-       TestAssistantButtonStateAsk_DimmedByPolicyWhenSignedOut) {
+       TestAssistantButtonStateAsk_EnabledByPolicyWhenSignedOut) {
+  // Add active WebState with GeminiTabHelper.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+  web_state->SetContentsMimeType("text/html");
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->WasShown();
+
+  regular_web_state_list_->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
   SetLocationEligible(true);
 
   // Ensure GeminiSettings enterprise policy allows Gemini.
@@ -1651,7 +1663,7 @@ TEST_F(AppBarMediatorTest,
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
                                    highlighted:NO
-                                       enabled:NO
+                                       enabled:YES
                                         avatar:nil
                                       signedIn:NO]);
   [mediator_ updateAssistantButton];

@@ -171,20 +171,39 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
 - (void)presentSignIn {
   signin_metrics::AccessPoint accessPoint =
       AccessPointFromGeminiEntryPoint(_startupState.entryPoint);
-  _signinCoordinator = [SigninCoordinator
-      signinAndHistorySyncCoordinatorWithBaseViewController:
-          self.baseViewController
-                                                    browser:self.browser
-                                               contextStyle:SigninContextStyle::
-                                                                kDefault
-                                                accessPoint:accessPoint
-                                                promoAction:
-                                                    signin_metrics::PromoAction::
-                                                        PROMO_ACTION_NO_SIGNIN_PROMO
-                                        optionalHistorySync:YES
-                                            fullscreenPromo:NO
-                                       continuationProvider:
-                                           DoNothingContinuationProvider()];
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  if (authService && authService->HasPrimaryIdentity()) {
+    _signinCoordinator = [SigninCoordinator
+        primaryAccountReauthCoordinatorWithBaseViewController:
+            self.baseViewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:accessPoint
+                                                  promoAction:promoAction
+                                         continuationProvider:
+                                             DoNothingContinuationProvider()];
+  } else {
+    _signinCoordinator = [SigninCoordinator
+        signinAndHistorySyncCoordinatorWithBaseViewController:
+            self.baseViewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:accessPoint
+                                                  promoAction:promoAction
+                                          optionalHistorySync:YES
+                                              fullscreenPromo:NO
+                                         continuationProvider:
+                                             DoNothingContinuationProvider()];
+  }
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
