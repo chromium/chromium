@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static androidx.core.view.WindowInsetsCompat.Type.ime;
 import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
 import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
 
@@ -57,6 +58,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.lang.ref.WeakReference;
 
@@ -328,6 +330,9 @@ public class DisplayCutoutControllerTest {
         when(zeroInsets.getInsetsIgnoringVisibility(statusBars())).thenReturn(Insets.NONE);
         when(zeroInsets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(Insets.NONE);
 
+        // A real soft keyboard is far taller than the navigation bar.
+        when(updatedInsets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, 392));
+
         when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
@@ -366,11 +371,106 @@ public class DisplayCutoutControllerTest {
         Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
 
         clearInvocations(mWebContents);
+        when(updatedInsets.isVisible(ime())).thenReturn(true);
+        when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_VISUAL);
+        controller.onInsetChanged();
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
+        when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_CONTENT);
+        controller.onInsetChanged();
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
+        when(mWebContents.getVirtualKeyboardMode())
+                .thenReturn(VirtualKeyboardMode.OVERLAYS_CONTENT);
+        controller.onInsetChanged();
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        clearInvocations(mWebContents);
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(zeroInsets);
         controller.setViewportFit(ViewportFit.COVER);
 
         verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
         Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+    }
+
+    /**
+     * Builds a controller whose window insets report the given navigation bar and IME bottoms with
+     * a visible, resizes-content keyboard.
+     */
+    private DisplayCutoutController createControllerForImeTest(int navBarBottom, int imeBottom) {
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(insets.getInsetsIgnoringVisibility(statusBars()))
+                .thenReturn(UPDATED_STATUS_BAR_INSETS);
+        when(insets.getInsetsIgnoringVisibility(navigationBars()))
+                .thenReturn(Insets.of(0, 0, 0, navBarBottom));
+        when(insets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, imeBottom));
+        when(insets.isVisible(ime())).thenReturn(true);
+
+        when(mDelegate.getAttachedActivity()).thenReturn(mChromeActivity);
+        when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mWebContents.getVirtualKeyboardMode()).thenReturn(VirtualKeyboardMode.RESIZES_CONTENT);
+        when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        DisplayCutoutController controller =
+                new DisplayCutoutController(mDelegate) {
+                    @Override
+                    protected float getDipScale() {
+                        return 1f;
+                    }
+                };
+        // Browser edge-to-edge, and therefore the browser safe area merge, only applies to a
+        // page that asked for viewport-fit=cover.
+        controller.setViewportFit(ViewportFit.COVER);
+        return controller;
+    }
+
+    @Test
+    @SmallTest
+    public void testResizesContentImeTallerThanNavBarClearsBottom() {
+        // The common case: the keyboard fully covers the navigation bar, so the resized content
+        // no longer has anything obstructing its bottom edge.
+        DisplayCutoutController controller =
+                createControllerForImeTest(/* navBarBottom= */ 16, /* imeBottom= */ 392);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 0), safeAreaCaptor.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testResizesContentShortImeKeepsUncoveredNavigationBar() {
+        // Defensive case, e.g. a floating or split keyboard, or a hardware keyboard showing only
+        // a suggestion strip: the IME is shorter than the navigation bar, so the part of the bar
+        // it does not cover must stay in the safe area.
+        DisplayCutoutController controller =
+                createControllerForImeTest(/* navBarBottom= */ 16, /* imeBottom= */ 4);
+
+        clearInvocations(mWebContents);
+        controller.onInsetChanged();
+
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(
+                new Rect(0, UPDATED_STATUS_BAR_INSETS.top, 0, 12), safeAreaCaptor.getValue());
     }
 
     @Test
