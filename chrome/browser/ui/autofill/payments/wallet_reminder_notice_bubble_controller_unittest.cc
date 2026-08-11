@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,6 +89,17 @@ TEST_F(WalletReminderNoticeBubbleControllerTest, From) {
             controller_.get());
 }
 
+TEST_F(WalletReminderNoticeBubbleControllerTest, Show_ShowsBubble) {
+  EXPECT_CALL(test_browser_window_.mock_autofill_bubble_handler(),
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/false))
+      .WillOnce(testing::Return(&test_bubble_));
+
+  EXPECT_EQ(controller_->GetBubbleView(), nullptr);
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  EXPECT_EQ(controller_->GetBubbleView(), &test_bubble_);
+}
+
 TEST_F(WalletReminderNoticeBubbleControllerTest, ReshowBubble_ShowsBubble) {
   EXPECT_CALL(test_browser_window_.mock_autofill_bubble_handler(),
               ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
@@ -105,29 +117,13 @@ TEST_F(WalletReminderNoticeBubbleControllerTest, GetWindowTitle) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_WALLET_REMINDER_NOTICE_TITLE));
 }
 
-// TODO(crbug.com/543949088): Update test after removing hardcoded legal message
-// lines.
 TEST_F(WalletReminderNoticeBubbleControllerTest, GetLegalMessageLines) {
-  const LegalMessageLines& lines = controller_->GetLegalMessageLines();
-  ASSERT_EQ(lines.size(), 2u);
+  LegalMessageLines legal_message_lines = {TestLegalMessageLine("Line 1."),
+                                           TestLegalMessageLine("Line 2.")};
 
-  // First line has no links.
-  EXPECT_EQ(lines[0].text(),
-            u"Payment methods, loyalty cards, and other passes that you add in "
-            u"Chrome are saved in Google Wallet.");
-  EXPECT_TRUE(lines[0].links().empty());
-
-  // Second line has 2 links.
-  EXPECT_EQ(lines[1].text(),
-            u"Depending on your Wallet settings, some of this info can be used "
-            u"to personalize ads and other experiences, as well as improve "
-            u"services through analytics and measurement. Learn more about how "
-            u"your saved info is used");
-  ASSERT_EQ(lines[1].links().size(), 2u);
-  EXPECT_EQ(lines[1].links()[0].url.spec(),
-            "https://wallet.google.com/wallet/settings");
-  EXPECT_EQ(lines[1].links()[1].url.spec(),
-            "https://support.google.com/wallet");
+  EXPECT_TRUE(controller_->GetLegalMessageLines().empty());
+  controller_->Show(legal_message_lines);
+  EXPECT_EQ(controller_->GetLegalMessageLines(), legal_message_lines);
 }
 
 TEST_F(WalletReminderNoticeBubbleControllerTest, GetBubbleType) {

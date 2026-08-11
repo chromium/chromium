@@ -41,6 +41,9 @@ class WalletReminderNoticeBubbleController
   static WalletReminderNoticeBubbleController* From(
       tabs::TabInterface& tab_interface);
 
+  // Shows the bubble when it first opens automatically (e.g. without a user
+  // gesture).
+  void Show(LegalMessageLines legal_message_lines);
   // Re-opens the bubble when the user clicks the page action icon (e.g. after
   // the bubble was dismissed by clicking outside the bubble).
   void ReshowBubble();

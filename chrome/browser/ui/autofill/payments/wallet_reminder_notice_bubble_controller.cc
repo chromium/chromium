@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 
-#include "base/json/json_reader.h"
-#include "base/values.h"
+#include <utility>
+
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -24,32 +24,6 @@ WalletReminderNoticeBubbleController::WalletReminderNoticeBubbleController(
     : AutofillBubbleControllerBase(web_contents),
       tab_interface_(tab_interface),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-  // TODO(crbug.com/543949088): Remove hardcoded legal message lines.
-  auto value = base::JSONReader::ReadDict(
-      R"({
-        "line": [
-          {
-            "template": "Payment methods, loyalty cards, and other passes that you add in Chrome are saved in Google Wallet."
-          },
-          {
-            "template": "Depending on your {0}, some of this info can be used to personalize ads and other experiences, as well as improve services through analytics and measurement. {1}",
-            "template_parameter": [
-              {
-                "display_text": "Wallet settings",
-                "url": "https://wallet.google.com/wallet/settings"
-              },
-              {
-                "display_text": "Learn more about how your saved info is used",
-                "url": "https://support.google.com/wallet"
-              }
-            ]
-          }
-        ]
-      })",
-      base::JSON_PARSE_RFC);
-  if (value) {
-    LegalMessageLine::Parse(*value, &legal_message_lines_);
-  }
 }
 
 WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() =
@@ -59,6 +33,17 @@ WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() =
 WalletReminderNoticeBubbleController*
 WalletReminderNoticeBubbleController::From(tabs::TabInterface& tab_interface) {
   return Get(tab_interface.GetUnownedUserDataHost());
+}
+
+void WalletReminderNoticeBubbleController::Show(
+    LegalMessageLines legal_message_lines) {
+  // Don't show the bubble if it's already visible or not set up.
+  if (GetBubbleView() || !MaySetUpBubble()) {
+    return;
+  }
+  legal_message_lines_ = std::move(legal_message_lines);
+  is_reshow_ = false;
+  QueueOrShowBubble();
 }
 
 void WalletReminderNoticeBubbleController::ReshowBubble() {
