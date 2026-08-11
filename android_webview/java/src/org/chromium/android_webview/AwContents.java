@@ -1401,6 +1401,9 @@ public class AwContents implements SmartClipProvider {
 
     public void adopt(ViewGroup newContainerView, InternalAccessDelegate internalAccessAdapter) {
         ThreadUtils.assertOnUiThread();
+        if (isDestroyed(NO_WARN)) {
+            throw new IllegalStateException("AwContents is destroyed.");
+        }
         if (mContainerView != null && mContainerView.isAttachedToWindow()) {
             throw new IllegalStateException(
                     "AwContents must be detached from the window before adopting.");
