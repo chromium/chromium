@@ -1257,7 +1257,7 @@ source_set("core") {
 
   if (!is_android) {
     public_deps = [
-      "//chrome/browser/ui/omnibox/omnibox_everywhere",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere:impl",
       "//chrome/browser/ui/webui/omnibox_everywhere",
       "//chrome/browser/ui/webui/omnibox_popup",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
