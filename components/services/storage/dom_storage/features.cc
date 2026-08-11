@@ -11,7 +11,7 @@ namespace storage {
 
 BASE_FEATURE(kDomStorageSqlite, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDomStorageSqliteInMemory, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDomStorageSqliteInMemory, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDomStorageSqliteNewDatabases, base::FEATURE_DISABLED_BY_DEFAULT);
 
