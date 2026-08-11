@@ -160,6 +160,8 @@ TabDragWindowAdapterImpl::DetachToNewWindow(
                                      "Failed to create new browser window"));
   }
 
+  new_window->GetWindow()->SetBounds(initial_bounds);
+
   CHECK(registry_);
   gfx::NativeWindow native_window = new_window->GetWindow()->GetNativeWindow();
   tabs_api::TabDragWindowId new_window_id =

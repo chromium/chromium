@@ -30,8 +30,6 @@ TabDragSession::TabDragSession(TabDragSessionParams params,
   CHECK(dragged_window_);
   TabDragWindowAdapter* source_window = registry()->Get(dragged_window_);
   CHECK(source_window);
-  start_window_offset_ =
-      params.start_point - source_window->GetBoundsInScreen().origin();
 }
 
 base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
@@ -97,7 +95,6 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
   if (event.type == TabDragInputEvent::Type::kMoved ||
       event.type == TabDragInputEvent::Type::kDropped) {
     last_mouse_screen_point_ = event.screen_point;
-    delta_ = event.screen_point - start_point_in_screen_;
   }
 
   switch (event.type) {
@@ -239,8 +236,11 @@ void TabDragSession::StartWindowDrag(TabDragWindowId window_id,
 
   base::WeakPtr<TabDragSession> weak_this = weak_factory_.GetWeakPtr();
 
+  gfx::Vector2d window_drag_offset =
+      screen_point - window->GetBoundsInScreen().origin();
+
   DragMoveLoopResult loop_result = window->RunWindowMoveLoop(
-      screen_point, start_window_offset_,
+      screen_point, window_drag_offset,
       base::BindRepeating(&TabDragSession::OnWindowMoved, weak_this));
 
   if (!weak_this) {
@@ -301,8 +301,13 @@ void TabDragSession::DetachAndStartWindowDrag(const gfx::Point& screen_point) {
 
   TabDragWindowAdapter* source_window = registry()->Get(dragged_window_);
   CHECK(source_window);
+
+  gfx::Vector2d detach_window_offset(
+      screen_point.x() - source_window->GetBoundsInScreen().x(),
+      start_point_in_screen_.y() - source_window->GetBoundsInScreen().y());
+
   auto detach_result = source_window->DetachToNewWindow(
-      dragged_tabs_, screen_point, start_window_offset_);
+      dragged_tabs_, screen_point, detach_window_offset);
   if (!detach_result.has_value()) {
     drag_mode_ = DragMode::kAttachedToWindow;
     injector_->GetSessionListener().OnSessionCancelled();

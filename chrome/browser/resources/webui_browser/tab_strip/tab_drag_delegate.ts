@@ -195,6 +195,11 @@ export class TabDragDelegate {
         element.style.transform = '';
       }
     }
+    const newTabButton =
+        this.host_.shadowRoot?.querySelector<HTMLElement>('#newTabButton');
+    if (newTabButton) {
+      newTabButton.style.transform = '';
+    }
     this.draggedTabId_ = '';
     this.mouseXOffset_ = 0;
     this.dragInProgress_ = false;
@@ -213,6 +218,22 @@ export class TabDragDelegate {
     const originalViewportLeft = tabElement.getBoundingClientRect().left;
     const deltaX = localX - originalViewportLeft - this.mouseXOffset_;
     tabElement.style.transform = `translateX(${deltaX}px)`;
+
+    const newTabButton =
+        this.host_.shadowRoot?.querySelector<HTMLElement>('#newTabButton');
+    if (newTabButton) {
+      newTabButton.style.transform = '';
+      const buttonLeft = newTabButton.getBoundingClientRect().left;
+      const marginLeft =
+          parseFloat(window.getComputedStyle(newTabButton).marginLeft) || 0;
+      const buttonMarginLeft = buttonLeft - marginLeft;
+      const draggedRight =
+          originalViewportLeft + deltaX + tabElement.offsetWidth;
+      if (draggedRight > buttonMarginLeft) {
+        const offset = draggedRight - buttonMarginLeft;
+        newTabButton.style.transform = `translateX(${offset}px)`;
+      }
+    }
   }
 
   private tryMoveLeft_(

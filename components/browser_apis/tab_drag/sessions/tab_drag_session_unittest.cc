@@ -139,14 +139,12 @@ TEST_F(TabDragSessionTest, CoordinateTracking) {
 
   EXPECT_EQ(session.start_point_in_screen(), start_point);
   EXPECT_EQ(session.last_mouse_screen_point(), start_point);
-  EXPECT_EQ(session.delta(), gfx::Vector2d(0, 0));
 
   // Move mouse
   gfx::Point move_point(15, 20);
   toy_adapter.SendToyEvent(TabDragInputEvent::Type::kMoved, move_point);
 
   EXPECT_EQ(session.last_mouse_screen_point(), move_point);
-  EXPECT_EQ(session.delta(), gfx::Vector2d(5, 10));
 
   // Drop mouse
   gfx::Point drop_point(25, 30);
@@ -154,7 +152,6 @@ TEST_F(TabDragSessionTest, CoordinateTracking) {
   toy_adapter.SendToyEvent(TabDragInputEvent::Type::kDropped, drop_point);
 
   EXPECT_EQ(session.last_mouse_screen_point(), drop_point);
-  EXPECT_EQ(session.delta(), gfx::Vector2d(15, 20));
 }
 
 TEST_F(TabDragSessionTest, ListenerNotification) {
@@ -205,12 +202,12 @@ TEST_F(TabDragSessionTest, ListenerNotification) {
   // Verify that the detachment and move loop were called on the windows.
   EXPECT_TRUE(dummy_window_.detach_to_new_window_called());
   EXPECT_EQ(dummy_window_.last_detach_tab_ids(), tab_ids);
-  EXPECT_EQ(dummy_window_.last_detach_drag_offset(), gfx::Vector2d(0, 0));
+  EXPECT_EQ(dummy_window_.last_detach_drag_offset(), gfx::Vector2d(120, 0));
   EXPECT_TRUE(dummy_detached_window_.run_window_move_loop_called());
   EXPECT_FALSE(dummy_detached_window_.had_capture_on_move_loop());
   EXPECT_EQ(dummy_detached_window_.last_move_loop_point(), tear_point);
   EXPECT_EQ(dummy_detached_window_.last_move_loop_offset(),
-            gfx::Vector2d(0, 0));
+            gfx::Vector2d(120, 120));
 }
 
 TEST_F(TabDragSessionTest, CaptureLostExternally) {

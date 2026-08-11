@@ -63,7 +63,6 @@ class TabDragSession {
   const gfx::Point& last_mouse_screen_point() const {
     return last_mouse_screen_point_;
   }
-  const gfx::Vector2d& delta() const { return delta_; }
   const std::vector<tabs_api::NodeId>& dragged_tabs() const {
     return dragged_tabs_;
   }
@@ -112,11 +111,9 @@ class TabDragSession {
 
   const gfx::Point start_point_in_screen_;
   gfx::Point last_mouse_screen_point_;
-  gfx::Vector2d delta_;
   TabDragWindowId dragged_window_;
   TabDragWindowRegistry* registry() const;
   DragMode drag_mode_ = DragMode::kAttachedToWindow;
-  gfx::Vector2d start_window_offset_;
   int32_t tab_original_offset_x_ = 0;
   std::optional<PendingReattachment> pending_reattachment_;
 
