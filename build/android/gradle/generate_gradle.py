@@ -768,7 +768,6 @@ def _GenerateModuleAll(
         'android_manifest': Relativize(_DEFAULT_ANDROID_MANIFEST_PATH),
         'java_dirs': Relativize(java_dirs),
         'prebuilts': Relativize(prebuilts),
-        'java_excludes': ['**/*.java', '**/*.kt'],
         'res_dirs': Relativize(res_dirs),
     }
     if native_targets:
