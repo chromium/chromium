@@ -68,7 +68,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "interactive_ui_tests": {
-                "shards": 14,
+                "shards": 16,
                 "try_builder": "linux-chromeos-rel"
             },
             "sync_integration_tests": {
@@ -168,11 +168,11 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 23,
+                "shards": 27,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
-                "shards": 9,
+                "shards": 10,
                 "try_builder": "linux_chromium_asan_rel_ng"
             }
         },
@@ -210,7 +210,7 @@
     "chromium.win": {
         "Win10 Tests x64": {
             "browser_tests": {
-                "shards": 108,
+                "shards": 129,
                 "try_builder": "win-rel"
             },
             "content_browsertests": {
@@ -222,7 +222,7 @@
                 "try_builder": "win-rel"
             },
             "interactive_ui_tests": {
-                "shards": 30,
+                "shards": 34,
                 "try_builder": "win-rel"
             },
             "pixel_browser_tests": {
