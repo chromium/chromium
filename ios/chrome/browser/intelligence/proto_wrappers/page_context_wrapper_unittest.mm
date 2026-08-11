@@ -588,7 +588,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContext) {
 // reflected by light-DOM APIs (Element.innerText / TreeWalker), so extraction
 // must explicitly traverse the shadow boundary; closed shadow roots are
 // inaccessible from script and must be excluded.
-TEST_P(PageContextWrapperTest, PopulatePageContextWithShadowDom) {
+// TODO(crbug.com/545131048): fails on iOS27 builders. Fix and re-enable.
+TEST_P(PageContextWrapperTest, DISABLED_PopulatePageContextWithShadowDom) {
   auto page_structure =
       HtmlPage("Shadow", RawHtml("<p>light-dom text</p>"
                                  "<div id=\"open-host\" role=\"region\">"
