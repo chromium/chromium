@@ -48,6 +48,8 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback cb) override;
 
+  bool IsIdleForTesting() const override;
+
  private:
   trusted_vault_pb::LocalTrustedVaultPerUser* GetPrimaryAccountVault();
 
@@ -95,6 +97,8 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   // Destroying this will cancel the ongoing request.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_registration_request_;
+
+  int ongoing_keychain_tasks_count_ = 0;
 
   base::WeakPtrFactory<ICloudKeychainRecoveryFactor> weak_ptr_factory_{this};
 };

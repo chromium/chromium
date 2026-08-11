@@ -68,55 +68,6 @@ constexpr int kDefaultExpectedMemberCount = 2;
 constexpr int kDefaultExpectedMemberCount = 1;
 #endif
 
-class FakeSecurityDomainsServerMemberStatusChecker
-    : public FakeSecurityDomainsServer::Observer {
- public:
-  FakeSecurityDomainsServerMemberStatusChecker(
-      FakeSecurityDomainsServer* server,
-      int expected_member_count,
-      std::optional<std::vector<uint8_t>> expected_trusted_vault_key =
-          std::nullopt)
-      : server_(server),
-        expected_member_count_(expected_member_count),
-        expected_trusted_vault_key_(expected_trusted_vault_key) {
-    server_->AddObserver(this);
-  }
-
-  ~FakeSecurityDomainsServerMemberStatusChecker() override {
-    server_->RemoveObserver(this);
-  }
-
-  void OnRequestHandled() override {
-    if (CheckCondition()) {
-      run_loop_.Quit();
-    }
-  }
-
-  void Wait() {
-    if (CheckCondition()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  bool CheckCondition() const {
-    if (server_->GetMemberCount() != expected_member_count_) {
-      return false;
-    }
-    if (expected_trusted_vault_key_.has_value() &&
-        !server_->AllMembersHaveKey(*expected_trusted_vault_key_)) {
-      return false;
-    }
-    return true;
-  }
-
-  const raw_ptr<FakeSecurityDomainsServer> server_;
-  const int expected_member_count_;
-  const std::optional<std::vector<uint8_t>> expected_trusted_vault_key_;
-  base::RunLoop run_loop_;
-};
-
 class MockTrustedVaultClientObserver : public TrustedVaultClient::Observer {
  public:
   MockTrustedVaultClientObserver() = default;
@@ -204,24 +155,10 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
         email, signin::ConsentLevel::kSignin);
   }
 
-  void WaitForFlush(StandaloneTrustedVaultClient* client) {
+  void WaitForIdle(StandaloneTrustedVaultClient* client) {
     base::test::TestFuture<void> future;
-    client->WaitForFlushForTesting(future.GetCallback());
+    client->WaitForIdleForTesting(future.GetCallback());
     ASSERT_TRUE(future.Wait());
-    // Required on MacOS to wait for asynchronous interactions with the fake
-    // Keychain.
-    task_environment_.RunUntilIdle();
-  }
-
-  void WaitForServerMembers(StandaloneTrustedVaultClient* client,
-                            int expected_member_count,
-                            const std::optional<std::vector<uint8_t>>&
-                                expected_trusted_vault_key = std::nullopt) {
-    WaitForFlush(client);
-    FakeSecurityDomainsServerMemberStatusChecker checker(
-        fake_security_domains_server_.get(), expected_member_count,
-        expected_trusted_vault_key);
-    checker.Wait();
   }
 
   std::vector<std::vector<uint8_t>> FetchKeys(
@@ -281,8 +218,10 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldPreEnrollOnStartup) {
   // During pre-enrollment (when only constant keys exist), iCloud Keychain
   // recovery factor registration is not supported, so only physical device
   // recovery factor is registered.
-  WaitForServerMembers(client.get(), /*expected_member_count=*/1,
-                       GetConstantTrustedVaultKey());
+  WaitForIdle(client.get());
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
+      GetConstantTrustedVaultKey()));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info), IsEmpty());
   EXPECT_GT(fake_security_domains_server_->GetCurrentEpoch(), 0);
@@ -298,7 +237,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
-  WaitForFlush(client.get());
+  WaitForIdle(client.get());
 
   // Background pre-enrollment registration was rejected with
   // kLocalDataObsolete.
@@ -311,7 +250,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
   StoreKeys(client.get(), account_info.gaia, {kServerKey}, kServerEpoch);
-  WaitForServerMembers(client.get(), kDefaultExpectedMemberCount, kServerKey);
+  WaitForIdle(client.get());
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+            kDefaultExpectedMemberCount);
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
 }
@@ -320,8 +262,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
        ShouldFollowKeyRotationOnUserEnrolment) {
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
-  WaitForServerMembers(client.get(), /*expected_member_count=*/1,
-                       GetConstantTrustedVaultKey());
+  WaitForIdle(client.get());
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
+      GetConstantTrustedVaultKey()));
 
   // FetchKeys() returns empty when no non-constant keys exist on the server.
   // Because the server responds with kNoNewKeys, the connection records a
@@ -347,8 +291,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // factors if applicable.
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(new_epoch_key));
-  WaitForServerMembers(client.get(), kDefaultExpectedMemberCount,
-                       new_epoch_key);
+  WaitForIdle(client.get());
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+            kDefaultExpectedMemberCount);
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(new_epoch_key));
 }
 
@@ -364,14 +309,14 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
-  WaitForFlush(client.get());
+  WaitForIdle(client.get());
 
   MockTrustedVaultClientObserver observer;
   client->AddObserver(&observer);
 
   EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1}, kLocalEpochV1);
-  WaitForFlush(client.get());
+  WaitForIdle(client.get());
   ASSERT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kLocalKeyV1));
 
   // Attempting to add a recovery method with stale local key fails with
@@ -388,7 +333,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2},
             kRemoteEpochV2);
-  WaitForServerMembers(client.get(), kDefaultExpectedMemberCount, kRemoteKeyV2);
+  WaitForIdle(client.get());
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+            kDefaultExpectedMemberCount);
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(kLocalKeyV1, kRemoteKeyV2));
@@ -403,7 +351,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   {
     std::unique_ptr<StandaloneTrustedVaultClient> client_a = CreateClient();
     StoreKeys(client_a.get(), account_info.gaia, {kKey}, kServerEpoch);
-    WaitForFlush(client_a.get());
+    WaitForIdle(client_a.get());
   }
 
   {

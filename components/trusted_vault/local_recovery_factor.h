@@ -76,6 +76,10 @@ class LocalRecoveryFactor {
   // recording.
   virtual TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback cb) = 0;
+
+  // Returns true if there are no ongoing requests or background tasks for this
+  // factor.
+  virtual bool IsIdleForTesting() const = 0;
 };
 
 }  // namespace trusted_vault

@@ -450,6 +450,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
 
   MaybeRegisterLocalRecoveryFactors();
   MaybeProcessPendingTrustedRecoveryMethod();
+  NotifyIdleForTestingIfNecessary();
 }
 
 void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
@@ -602,6 +603,7 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
   // mode. Trigger recovery factor registration attempt immediately as it can
   // succeed in these cases.
   MaybeRegisterLocalRecoveryFactors();
+  NotifyIdleForTestingIfNecessary();
 }
 
 std::optional<CoreAccountInfo>
@@ -733,11 +735,12 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
         kPrimaryAccountChangeAccessTokenFetchError:
     case TrustedVaultRegistrationStatus::kNetworkError:
       // Request wasn't sent to the server, so there is no need for throttling.
-      return;
+      break;
     case TrustedVaultRegistrationStatus::kOtherError:
       connection_->RecordFailedRequestForThrottling(*primary_account_);
-      return;
+      break;
   }
+  NotifyIdleForTestingIfNecessary();
 }
 
 void StandaloneTrustedVaultBackend::OnKeysRecovered(
@@ -804,6 +807,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
   degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
       TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
           kRecoveryMethodAdded);
+  NotifyIdleForTestingIfNecessary();
 }
 
 void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
@@ -844,6 +848,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
   }
 
   std::move(callback).Run(vault_keys);
+  NotifyIdleForTestingIfNecessary();
 }
 
 void StandaloneTrustedVaultBackend::
@@ -858,6 +863,36 @@ void StandaloneTrustedVaultBackend::
 
   storage_->RemoveUserVaults(should_remove_user_data);
   storage_->WriteDataToDisk();
+}
+
+void StandaloneTrustedVaultBackend::WaitForIdleForTesting(
+    base::OnceClosure cb) {
+  idle_callbacks_for_testing_.push_back(std::move(cb));
+  NotifyIdleForTestingIfNecessary();
+}
+
+void StandaloneTrustedVaultBackend::NotifyIdleForTestingIfNecessary() {
+  if (idle_callbacks_for_testing_.empty()) {
+    return;
+  }
+
+  if (ongoing_fetch_keys_.has_value() ||
+      ongoing_add_recovery_method_request_ != nullptr ||
+      pending_trusted_recovery_method_.has_value() ||
+      pending_get_is_recoverability_degraded_.has_value()) {
+    return;
+  }
+  for (const auto& factor : local_recovery_factors_) {
+    if (!factor->IsIdleForTesting()) {
+      return;
+    }
+  }
+
+  std::vector<base::OnceClosure> callbacks =
+      std::exchange(idle_callbacks_for_testing_, {});
+  for (auto& cb : callbacks) {
+    std::move(cb).Run();
+  }
 }
 
 }  // namespace trusted_vault

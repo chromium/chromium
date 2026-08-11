@@ -390,11 +390,15 @@ void StandaloneTrustedVaultClient::ClearLocalDataForAccount(
                      backend_, account_info));
 }
 
-void StandaloneTrustedVaultClient::WaitForFlushForTesting(
+void StandaloneTrustedVaultClient::WaitForIdleForTesting(
     base::OnceClosure cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                                         std::move(cb));
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::WaitForIdleForTesting,
+                     backend_,
+                     base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
 void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(

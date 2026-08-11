@@ -127,7 +127,6 @@ MATCHER_P(IsDataEncryptedWith, key_params, "") {
   return encrypted_data.key_name() == nigori->GetKeyName();
 }
 
-
 syncer::CrossUserSharingKeys GenerateNewKeyPair() {
   syncer::CrossUserSharingKeys cross_user_sharing_keys =
       syncer::CrossUserSharingKeys::CreateEmpty();
@@ -429,7 +428,6 @@ INSTANTIATE_TEST_SUITE_P(
     SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     GetSyncTestModes(),
     testing::PrintToStringParamName());
-
 
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
                        ShouldCommitKeystoreNigoriWhenReceivedDefault) {
@@ -1593,7 +1591,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
   base::RunLoop run_loop;
   static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
       GetSyncTrustedVaultClient())
-      ->WaitForFlushForTesting(run_loop.QuitClosure());
+      ->WaitForIdleForTesting(run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -1628,7 +1626,7 @@ IN_PROC_BROWSER_TEST_P(
     PRE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
   // TODO(crbug.com/40276245): TrustedVaultKeysChangedStateChecker may be not
   // sufficient and redundant in this test, consider rewriting it using
-  // StandaloneTrustedVaultClient::WaitForFlushForTesting().
+  // StandaloneTrustedVaultClient::WaitForIdleForTesting().
   ASSERT_TRUE(SetupClients());
 
   // Explicitly add signin cookie (normally it would be done during the keys
@@ -1887,7 +1885,7 @@ IN_PROC_BROWSER_TEST_P(
   base::RunLoop run_loop;
   static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
       GetSyncTrustedVaultClient())
-      ->WaitForFlushForTesting(run_loop.QuitClosure());
+      ->WaitForIdleForTesting(run_loop.QuitClosure());
   run_loop.Run();
 }
 

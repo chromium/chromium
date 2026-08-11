@@ -200,6 +200,10 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     }
   }
 
+  bool IsIdleForTesting() const override {
+    return recovery_callback_.is_null() && register_callback_.is_null();
+  }
+
   bool AttemptRecoveryWasCalled() const { return attempt_recovery_was_called_; }
 
   bool MaybeRegisterWasCalled() const { return maybe_register_was_called_; }
@@ -276,6 +280,9 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       RegisterCallback callback) override {
     return delegate_->MaybeRegister(std::move(callback));
+  }
+  bool IsIdleForTesting() const override {
+    return delegate_->IsIdleForTesting();
   }
 
  private:

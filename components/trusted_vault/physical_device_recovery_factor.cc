@@ -200,6 +200,10 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
                    kAttemptingRegistrationWithNewKeyPair;
 }
 
+bool PhysicalDeviceRecoveryFactor::IsIdleForTesting() const {
+  return !ongoing_request_ && !ongoing_registration_request_;
+}
+
 trusted_vault_pb::LocalTrustedVaultPerUser*
 PhysicalDeviceRecoveryFactor::GetPrimaryAccountVault() {
   auto* per_user_vault = storage_->FindUserVault(primary_account_.gaia);

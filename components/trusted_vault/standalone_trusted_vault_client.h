@@ -78,8 +78,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
                                 base::OnceClosure cb) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
-  // Runs |cb| when all requests have completed.
-  void WaitForFlushForTesting(base::OnceClosure cb) const;
+  // Runs |cb| when the backend becomes idle.
+  void WaitForIdleForTesting(base::OnceClosure cb) const;
   void FetchBackendPrimaryAccountForTesting(
       base::OnceCallback<void(const std::optional<CoreAccountInfo>&)> callback)
       const;

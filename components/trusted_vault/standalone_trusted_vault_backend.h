@@ -159,6 +159,9 @@ class StandaloneTrustedVaultBackend
 
   bool HasPendingTrustedRecoveryMethodForTesting() const;
 
+  // Runs |cb| when the backend becomes idle.
+  void WaitForIdleForTesting(base::OnceClosure cb);
+
   static scoped_refptr<StandaloneTrustedVaultBackend> CreateForTesting(
       SecurityDomainId security_domain_id,
       std::unique_ptr<StandaloneTrustedVaultStorage> storage,
@@ -227,6 +230,8 @@ class StandaloneTrustedVaultBackend
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
+
+  void NotifyIdleForTestingIfNecessary();
 
   const SecurityDomainId security_domain_id_;
 
@@ -333,6 +338,8 @@ class StandaloneTrustedVaultBackend
   };
   std::optional<PendingGetIsRecoverabilityDegraded>
       pending_get_is_recoverability_degraded_;
+
+  std::vector<base::OnceClosure> idle_callbacks_for_testing_;
 };
 
 }  // namespace trusted_vault
