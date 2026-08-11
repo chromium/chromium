@@ -236,8 +236,7 @@ void LocalFileStreamReader::DidGetFileInfoForGetLength(
     std::move(callback).Run(base::unexpected(net::ERR_FILE_NOT_FOUND));
     return;
   }
-  if (!expected_modification_time_.is_null() &&
-      !VerifySnapshotTime(expected_modification_time_, file_info)) {
+  if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
     std::move(callback).Run(base::unexpected(net::ERR_UPLOAD_FILE_CHANGED));
     return;
   }
