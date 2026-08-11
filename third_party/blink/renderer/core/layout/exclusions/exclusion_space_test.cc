@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -113,6 +114,53 @@ TEST(ExclusionSpaceTest, Empty) {
   EXPECT_EQ(1u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], BfcOffset(LayoutUnit(30), LayoutUnit(100)),
                    BfcOffset(LayoutUnit(80), LayoutUnit::Max()));
+}
+
+TEST(ExclusionSpaceTest, LineLayoutOpportunityClampsNonDominantSide) {
+  test::TaskEnvironment task_environment;
+
+  auto create_space = [](TextDirection direction) {
+    ConstraintSpaceBuilder builder(WritingMode::kHorizontalTb,
+                                   {WritingMode::kHorizontalTb, direction},
+                                   /* is_new_formatting_context */ false);
+    builder.SetAvailableSize({LayoutUnit(100), LayoutUnit(100)});
+    builder.SetBfcOffset({LayoutUnit(10), LayoutUnit()});
+    return builder.ToConstraintSpace();
+  };
+
+  const ConstraintSpace ltr_space = create_space(TextDirection::kLtr);
+  const LayoutOpportunity ltr_opportunity(BfcRect(
+      {LayoutUnit(20), LayoutUnit()}, {LayoutUnit(150), LayoutUnit(100)}));
+  const LineLayoutOpportunity ltr_line =
+      ltr_opportunity.ComputeLineLayoutOpportunity(ltr_space, LayoutUnit(10),
+                                                   LayoutUnit());
+  EXPECT_EQ(LayoutUnit(20), ltr_line.line_left_offset);
+  EXPECT_EQ(LayoutUnit(110), ltr_line.line_right_offset);
+
+  const LayoutOpportunity ltr_opportunity_past_available_space(BfcRect(
+      {LayoutUnit(120), LayoutUnit()}, {LayoutUnit(150), LayoutUnit(100)}));
+  const LineLayoutOpportunity ltr_line_past_available_space =
+      ltr_opportunity_past_available_space.ComputeLineLayoutOpportunity(
+          ltr_space, LayoutUnit(10), LayoutUnit());
+  EXPECT_EQ(LayoutUnit(120), ltr_line_past_available_space.line_left_offset);
+  EXPECT_EQ(LayoutUnit(120), ltr_line_past_available_space.line_right_offset);
+
+  const ConstraintSpace rtl_space = create_space(TextDirection::kRtl);
+  const LayoutOpportunity rtl_opportunity(BfcRect(
+      {LayoutUnit(-50), LayoutUnit()}, {LayoutUnit(100), LayoutUnit(100)}));
+  const LineLayoutOpportunity rtl_line =
+      rtl_opportunity.ComputeLineLayoutOpportunity(rtl_space, LayoutUnit(10),
+                                                   LayoutUnit());
+  EXPECT_EQ(LayoutUnit(10), rtl_line.line_left_offset);
+  EXPECT_EQ(LayoutUnit(100), rtl_line.line_right_offset);
+
+  const LayoutOpportunity rtl_opportunity_past_available_space(BfcRect(
+      {LayoutUnit(-50), LayoutUnit()}, {LayoutUnit(), LayoutUnit(100)}));
+  const LineLayoutOpportunity rtl_line_past_available_space =
+      rtl_opportunity_past_available_space.ComputeLineLayoutOpportunity(
+          rtl_space, LayoutUnit(10), LayoutUnit());
+  EXPECT_EQ(LayoutUnit(), rtl_line_past_available_space.line_left_offset);
+  EXPECT_EQ(LayoutUnit(), rtl_line_past_available_space.line_right_offset);
 }
 
 TEST(ExclusionSpaceTest, SingleExclusion) {

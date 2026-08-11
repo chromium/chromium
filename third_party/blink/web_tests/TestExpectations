@@ -2457,8 +2457,6 @@ crbug.com/420443621 external/wpt/css/css-viewport/zoom/box-shadow-inset-spread.h
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/column-rule-width-keywords.html [ Failure ]
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/outline-offset.html [ Failure ]
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/perspective.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/shape-outside-circle.html [ Failure ]
-crbug.com/420443621 external/wpt/css/css-viewport/zoom/shape-outside-ellipse.html [ Failure ]
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-perspective.html [ Failure ]
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/translate.html [ Failure ]
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/vertical-align.html [ Failure ]

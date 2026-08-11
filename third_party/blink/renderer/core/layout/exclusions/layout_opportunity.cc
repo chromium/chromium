@@ -161,6 +161,33 @@ LayoutUnit LayoutOpportunity::ComputeLineRightOffset(
   return std::max(line_right, rect.LineStartOffset());
 }
 
+LineLayoutOpportunity LayoutOpportunity::ComputeLineLayoutOpportunity(
+    const ConstraintSpace& space,
+    LayoutUnit line_block_size,
+    LayoutUnit block_delta) const {
+  LayoutUnit line_left =
+      ComputeLineLeftOffset(space, line_block_size, block_delta);
+  LayoutUnit line_right =
+      ComputeLineRightOffset(space, line_block_size, block_delta);
+
+  // Clamp the non-dominant side to the available space, then clamp using the
+  // other side to ensure we don't have a negative size (this may end up
+  // pushing the opportunity outside the available space again).
+  if (space.Direction() == TextDirection::kLtr) {
+    const LayoutUnit available_line_right =
+        space.GetBfcOffset().line_offset + space.AvailableSize().inline_size;
+    line_right =
+        std::max(std::min(line_right, available_line_right), line_left);
+  } else {
+    const LayoutUnit available_line_left = space.GetBfcOffset().line_offset;
+    line_left = std::min(std::max(line_left, available_line_left), line_right);
+  }
+
+  return LineLayoutOpportunity(
+      line_left, line_right, rect.LineStartOffset(), rect.LineEndOffset(),
+      rect.BlockStartOffset() + block_delta, line_block_size);
+}
+
 bool LayoutOpportunity::operator==(const LayoutOpportunity& other) const {
   return rect == other.rect && shape_exclusions == other.shape_exclusions;
 }

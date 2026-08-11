@@ -53,13 +53,7 @@ struct CORE_EXPORT LayoutOpportunity final {
   LineLayoutOpportunity ComputeLineLayoutOpportunity(
       const ConstraintSpace& space,
       LayoutUnit line_block_size,
-      LayoutUnit block_delta) const {
-    return LineLayoutOpportunity(
-        ComputeLineLeftOffset(space, line_block_size, block_delta),
-        ComputeLineRightOffset(space, line_block_size, block_delta),
-        rect.LineStartOffset(), rect.LineEndOffset(),
-        rect.BlockStartOffset() + block_delta, line_block_size);
-  }
+      LayoutUnit block_delta) const;
 
   bool operator==(const LayoutOpportunity& other) const;
 
