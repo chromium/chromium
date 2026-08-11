@@ -43,7 +43,7 @@ build_webui_tests("build") {
 
   if (!is_android) {
     files += [
-      "lens_search_tooltip_test.ts",
+      "info_tooltip_test.ts",
       "unbounded_menu_test.ts",
     ]
   }
