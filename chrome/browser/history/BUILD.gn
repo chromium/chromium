@@ -46,6 +46,7 @@ source_set("impl") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/actor",
     "//chrome/browser/bookmarks",
     "//chrome/browser/complex_tasks",
     "//chrome/browser/engagement",
@@ -201,6 +202,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/history/core/browser",
     "//content/public/browser",

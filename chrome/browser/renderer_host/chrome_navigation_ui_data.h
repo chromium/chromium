@@ -92,7 +92,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   }
 #endif
 
-  actor::TaskId actor_task_id() { return actor_task_id_; }
+  actor::TaskId actor_task_id() const { return actor_task_id_; }
 
   bool navigation_initiated_from_sync() {
     return navigation_initiated_from_sync_;
