@@ -1762,7 +1762,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineChangedSnackbar.SettingsTapped"
-    enum="Boolean" expires_after="2026-08-19">
+    enum="Boolean" expires_after="2027-08-19">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -1781,7 +1781,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Connection{Result}Time"
-    units="ms" expires_after="2026-08-19">
+    units="ms" expires_after="2027-08-19">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1800,7 +1800,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.Fetch{Result}Time"
-    units="ms" expires_after="2026-08-19">
+    units="ms" expires_after="2027-08-19">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1820,7 +1820,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchEngineCountryDelegate.ServiceBindStatus"
-    enum="BooleanStartedCompleted" expires_after="2026-08-19">
+    enum="BooleanStartedCompleted" expires_after="2027-08-19">
   <owner>triploblastic@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1836,7 +1836,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 
 <histogram
     name="Search.SearchEngineListedInPromoDialog{SearchEnginePromoDeviceAndOrdering}"
-    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+    enum="OmniboxSearchEngineType" expires_after="2027-08-19">
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
@@ -1852,7 +1852,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 
 <histogram
     name="Search.SearchEngineSelectionInPromoDialog{SearchEnginePromoDeviceType}"
-    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+    enum="OmniboxSearchEngineType" expires_after="2027-08-19">
   <owner>yusufo@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <summary>
