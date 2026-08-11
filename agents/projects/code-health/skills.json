@@ -14,6 +14,9 @@
     },
     {
       "path": "agents/projects/code-health/histogram-extension"
+    },
+    {
+      "path": "agents/projects/code-health/keep-sorted"
     }
   ]
 }
