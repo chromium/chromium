@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.Gravity;
@@ -20,6 +21,7 @@ import android.widget.FrameLayout;
 import androidx.activity.ComponentDialog;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -159,6 +161,13 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             Window window = mDialog.getWindow();
             if (window != null) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
+        } else if (ModalDialogFeatureMap.isLargeFormFactorUiEnabled(mContext)) {
+            Window window = mDialog.getWindow();
+            if (window != null) {
+                int scrimColor =
+                        ContextCompat.getColor(mContext, R.color.modal_dialog_scrim_color_lff);
+                window.setDimAmount(Color.alpha(scrimColor) / 255.0f);
             }
         }
 
@@ -324,7 +333,12 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                             .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
         }
         int horizontalMargin = mFixedMargin;
-        int verticalMargin = mFixedMargin;
+        int verticalMargin =
+                ModalDialogFeatureMap.isLargeFormFactorUiEnabled(mContext)
+                        ? mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.modal_dialog_view_vertical_margin_lff)
+                        : mFixedMargin;
 
         // Recalculate the margins to account for system insets if applicable.
         if (mInsetObserver != null && isEdgeToEdgeActive()) {
@@ -332,9 +346,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             if (windowInsets != null) {
                 var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
                 horizontalMargin =
-                        Math.max(Math.max(systemInsets.left, systemInsets.right), mFixedMargin);
+                        Math.max(Math.max(systemInsets.left, systemInsets.right), horizontalMargin);
                 verticalMargin =
-                        Math.max(Math.max(systemInsets.top, systemInsets.bottom), mFixedMargin);
+                        Math.max(Math.max(systemInsets.top, systemInsets.bottom), verticalMargin);
             }
         }
 
@@ -412,6 +426,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     public @Nullable ModalDialogView getDialogViewForTesting() {
         return mDialogView;
+    }
+
+    public @Nullable ComponentDialog getDialogForTesting() {
+        return mDialog;
     }
 
     @Nullable OnApplyWindowInsetsListener getWindowInsetsListenerForTesting() {

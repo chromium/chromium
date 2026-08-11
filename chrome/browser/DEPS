@@ -81,6 +81,7 @@ include_rules = [
   "+components/browser_ui/accessibility",
   "+components/browser_ui/contacts_picker",
   "+components/browser_ui/desktop_windowing/android",
+  "+components/browser_ui/modaldialog",
   "+components/browser_ui/photo_picker",
   "+components/browser_ui/share/android",
   "+components/browser_ui/styles",

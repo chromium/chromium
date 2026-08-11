@@ -120,22 +120,57 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             // TODO (crbug/369842880): Remove the check when this attr is added for phones.
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(widthMeasureSpec, MeasureSpec.EXACTLY);
         }
-        if (mHorizontalMargin <= 0 && mVerticalMargin <= 0) {
+
+        boolean isLargeFormFactorUiEnabled =
+                ModalDialogFeatureMap.isLargeFormFactorUiEnabled(getContext());
+
+        // If neither margin is set and the large form factor UI update is disabled, use the default
+        // measurement. When large form factor UI is enabled, fall through to apply default minimum
+        // margins and width caps even if mHorizontalMargin/mVerticalMargin were not explicitly set.
+        if (mHorizontalMargin <= 0 && mVerticalMargin <= 0 && !isLargeFormFactorUiEnabled) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        if (mHorizontalMargin > 0) {
+        int horizontalMargin = mHorizontalMargin;
+        int verticalMargin = mVerticalMargin;
+        // On large form factors (tablets/desktops), enforce minimum external margins
+        // (16dp horizontal, 24dp vertical) to prevent dialogs from touching the window
+        // boundaries on narrow or short window configurations (e.g. desktop windowing / split
+        // screen).
+        if (isLargeFormFactorUiEnabled) {
+            int minHorizontalMargin =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.modal_dialog_view_horizontal_margin_lff);
+            int minVerticalMargin =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.modal_dialog_view_vertical_margin_lff);
+            horizontalMargin = Math.max(horizontalMargin, minHorizontalMargin);
+            verticalMargin = Math.max(verticalMargin, minVerticalMargin);
+        }
+
+        if (horizontalMargin > 0) {
             int dialogWidth = MeasureSpec.getSize(widthMeasureSpec);
-            int maxWidth = metrics.widthPixels - 2 * mHorizontalMargin;
+            int maxWidth = metrics.widthPixels - 2 * horizontalMargin;
+            // On large form factors, cap dialog width at 480dp, but allow it to shrink
+            // further if the window width minus horizontal margins is narrower than 480dp.
+            if (isLargeFormFactorUiEnabled) {
+                int maxWidthLargeFormFactor =
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.modal_dialog_max_width_lff);
+                maxWidth = Math.min(maxWidth, maxWidthLargeFormFactor);
+            }
             int width = Math.min(dialogWidth, maxWidth);
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
         }
 
-        if (mVerticalMargin > 0) {
+        if (verticalMargin > 0) {
             int dialogHeight = MeasureSpec.getSize(heightMeasureSpec);
-            int maxHeight = metrics.heightPixels - 2 * mVerticalMargin;
+            int maxHeight = metrics.heightPixels - 2 * verticalMargin;
             int height = Math.min(dialogHeight, maxHeight);
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
         }

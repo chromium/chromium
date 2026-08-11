@@ -18,6 +18,7 @@ namespace {
 // components/browser_ui/modaldialog/android/features.h or in other
 // locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &kDialogsOnLargeFormFactors,
     &kModalDialogLayoutWithSystemInsets,
 };
 

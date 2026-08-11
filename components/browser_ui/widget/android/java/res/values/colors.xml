@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="modal_dialog_scrim_color">@color/black_alpha_65</color>
+    <color name="modal_dialog_scrim_color_lff">@color/black_alpha_40</color>
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
     <macro name="search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
     <macro name="ntp_search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color</macro>

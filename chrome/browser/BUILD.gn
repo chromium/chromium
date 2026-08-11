@@ -1671,6 +1671,7 @@ source_set("core") {
       "//components/android_autofill/browser:features",
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/contacts_picker/android",
+      "//components/browser_ui/modaldialog/android",
       "//components/commerce/core:shopping_service",
       "//components/crash/content/browser",
       "//components/credential_management/android:features",

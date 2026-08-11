@@ -96,6 +96,7 @@
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/contacts_picker/android/features.h"
+#include "components/browser_ui/modaldialog/android/features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/collaboration/public/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -10227,7 +10228,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"dialogs-on-large-form-factors",
      flag_descriptions::kDialogsOnLargeFormFactorsName,
      flag_descriptions::kDialogsOnLargeFormFactorsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDialogsOnLargeFormFactors)},
+     FEATURE_VALUE_TYPE(browser_ui::kDialogsOnLargeFormFactors)},
 
     {"tab-android-graceful-shutdown",
      flag_descriptions::kTabAndroidGracefulShutdownName,

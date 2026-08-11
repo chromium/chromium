@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -638,5 +639,54 @@ public class AppModalPresenterUnitTest {
                 "Dialog bottom padding is incorrect.",
                 expectedPaddingBottom,
                 dialogView.getPaddingBottom());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
+    public void addDialogView_LargeFormFactorUi_Tablet_VerticalMargin24dpAndDimAmount() {
+        mAppModalPresenter.setInsetObserver(null);
+
+        mDisplayMetrics.heightPixels = WINDOW_HEIGHT;
+        mDisplayMetrics.widthPixels = WINDOW_WIDTH;
+
+        addDialogView();
+
+        // On tablet with large form factor UI enabled, vertical margin is 24dp, horizontal margin
+        // is 16dp.
+        verifyDialogMargins(16, 24);
+
+        var dialog = mAppModalPresenter.getDialogForTesting();
+        var window = dialog != null ? dialog.getWindow() : null;
+        assertEquals(
+                "Dialog dim amount is incorrect.",
+                0.40f,
+                window != null ? window.getAttributes().dimAmount : 0f,
+                0.01f);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ModalDialogFeatureList.DIALOGS_ON_LARGE_FORM_FACTORS)
+    public void addDialogView_LargeFormFactorUi_Desktop_VerticalMargin24dpAndDimAmount() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mAppModalPresenter.setInsetObserver(null);
+
+        mDisplayMetrics.heightPixels = WINDOW_HEIGHT;
+        mDisplayMetrics.widthPixels = WINDOW_WIDTH;
+
+        addDialogView();
+
+        // On desktop with large form factor UI enabled, vertical margin is 24dp, horizontal margin
+        // is 16dp.
+        verifyDialogMargins(16, 24);
+
+        var dialog = mAppModalPresenter.getDialogForTesting();
+        var window = dialog != null ? dialog.getWindow() : null;
+        assertEquals(
+                "Dialog dim amount is incorrect.",
+                0.40f,
+                window != null ? window.getAttributes().dimAmount : 0f,
+                0.01f);
     }
 }

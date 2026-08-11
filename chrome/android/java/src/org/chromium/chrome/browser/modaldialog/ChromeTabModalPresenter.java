@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
+import androidx.core.content.ContextCompat;
+
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -212,7 +215,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         int bottomMargin =
                 affectsNavBar ? 0 : mBrowserControlsVisibilityManager.getBottomControlsHeight();
 
-        mScrimModel =
+        var scrimModelBuilder =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, affectsNavBar)
@@ -222,8 +225,15 @@ public class ChromeTabModalPresenter extends TabModalPresenter
                         .with(
                                 ScrimProperties.TOP_MARGIN,
                                 mBrowserControlsVisibilityManager.getTopControlsHeight())
-                        .with(ScrimProperties.BOTTOM_MARGIN, bottomMargin)
-                        .build();
+                        .with(ScrimProperties.BOTTOM_MARGIN, bottomMargin);
+
+        if (ModalDialogFeatureMap.isLargeFormFactorUiEnabled(mActivity)) {
+            scrimModelBuilder.with(
+                    ScrimProperties.BACKGROUND_COLOR,
+                    ContextCompat.getColor(mActivity, R.color.modal_dialog_scrim_color_lff));
+        }
+
+        mScrimModel = scrimModelBuilder.build();
 
         mScrimManager.showScrim(mScrimModel);
     }
