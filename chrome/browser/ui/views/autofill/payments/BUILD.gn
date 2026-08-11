@@ -119,3 +119,22 @@ source_set("autofill_error_dialog_view_native_views") {
     "//ui/gfx",
   ]
 }
+
+source_set("autofill_progress_dialog_views") {
+  public = [ "autofill_progress_dialog_views.h" ]
+  sources = [ "autofill_progress_dialog_views.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/tabs:public",
+    "//ui/base",
+  ]
+}
