@@ -11,7 +11,7 @@ export function getHtml(this: OrganizerPanelAppElement) {
 <cr-toolbar-search-field id="searchField"
     label="$i18n{searchTabs}"
     clear-label="$i18n{clearSearch}">
-  <div id="shortcut" slot="suffixElement">$i18n{shortcutText}</div>
+  <div id="shortcut" slot="suffixElement">${this.shortcut_}</div>
 </cr-toolbar-search-field>
 <!--_html_template_end_-->`;
 }
