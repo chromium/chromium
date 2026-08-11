@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/containers/to_vector.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {

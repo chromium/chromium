@@ -19,7 +19,6 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/util.h"

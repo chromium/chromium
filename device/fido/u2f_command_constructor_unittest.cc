@@ -9,7 +9,6 @@
 #include "base/containers/to_vector.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"

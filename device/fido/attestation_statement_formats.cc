@@ -8,7 +8,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace device {

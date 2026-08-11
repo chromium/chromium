@@ -26,7 +26,6 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/json_request.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_transport_protocol.h"

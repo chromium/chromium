@@ -1,21 +1,18 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/fido_parsing_utils.h"
+#include "device/fido/cbor_util.h"
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/containers/to_vector.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/containers/span.h"
+#include "components/cbor/values.h"
 
-namespace device::fido_parsing_utils {
+namespace fido_cbor_util::fido_cbor_util_internal {
 
 namespace {
 
-// Redacts `path` from `cbor` using the semantics described for `RedactCbor`.
-// Mutates `cbor` in place.
+// Redacts `path` from `cbor` using the semantics described for
+// `RedactValueAtPaths`. Mutates `cbor` in place.
 void RedactPath(cbor::Value* cbor, base::span<const cbor::Value> path) {
   if (cbor->is_array()) {
     // Mutate all the elements in the array.
@@ -26,13 +23,13 @@ void RedactPath(cbor::Value* cbor, base::span<const cbor::Value> path) {
     }
     return;
   }
-  if (!cbor->is_map()) {
+  if (path.empty() || !cbor->is_map()) {
     // Only maps and arrays are supported.
     return;
   }
+  base::span<const cbor::Value> field = path.take_first<1>();
   cbor::Value::MapValue& map =
       const_cast<cbor::Value::MapValue&>(cbor->GetMap());
-  base::span<const cbor::Value> field = path.take_first<1>();
   const auto it = map.find(field.front());
   if (it == map.end()) {
     // Could not find some part of the path, bail out.
@@ -48,9 +45,9 @@ void RedactPath(cbor::Value* cbor, base::span<const cbor::Value> path) {
 
 }  // namespace
 
-cbor::Value RedactCbor(
+cbor::Value RedactValueAtPathsImpl(
     const cbor::Value& cbor,
-    base::span<const std::vector<cbor::Value>> paths_to_redact) {
+    base::span<const base::span<const cbor::Value>> paths_to_redact) {
   cbor::Value response = cbor.Clone();
   for (base::span<const cbor::Value> field_to_redact : paths_to_redact) {
     RedactPath(&response, field_to_redact);
@@ -58,4 +55,4 @@ cbor::Value RedactCbor(
   return response;
 }
 
-}  // namespace device::fido_parsing_utils
+}  // namespace fido_cbor_util::fido_cbor_util_internal

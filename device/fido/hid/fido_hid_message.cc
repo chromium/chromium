@@ -13,7 +13,6 @@
 #include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "device/fido/fido_parsing_utils.h"
 
 namespace device {
 

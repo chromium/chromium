@@ -33,7 +33,6 @@
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/get_assertion_request_handler.h"

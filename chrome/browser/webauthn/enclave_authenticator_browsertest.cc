@@ -97,7 +97,6 @@
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_transport_protocol.h"

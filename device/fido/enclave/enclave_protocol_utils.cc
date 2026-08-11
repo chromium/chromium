@@ -31,9 +31,9 @@
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_make_credential_response.h"
+#include "device/fido/cbor_util.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/json_request.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public/features.h"
@@ -791,21 +791,17 @@ void BuildCommandRequestBody(
 }
 
 cbor::Value RedactEnclaveRequest(const cbor::Value& cbor) {
-  return fido_parsing_utils::RedactCbor(
-      cbor,
-      std::array{fido_parsing_utils::ToCborVector(kRequestSecretKey),
-                 fido_parsing_utils::ToCborVector(kWrappingKeyToWrap),
-                 fido_parsing_utils::ToCborVector(kClaimKey),
-                 fido_parsing_utils::ToCborVector(kRequestCmtgDeviceKeys),
-                 fido_parsing_utils::ToCborVector(kRequestCmtgDeviceKey)});
+  using fido_cbor_util::Path;
+  return fido_cbor_util::RedactValueAtPaths(
+      cbor, Path(kRequestSecretKey), Path(kWrappingKeyToWrap), Path(kClaimKey),
+      Path(kRequestCmtgDeviceKeys), Path(kRequestCmtgDeviceKey));
 }
 
 cbor::Value RedactEnclaveResponse(const cbor::Value& cbor) {
-  return fido_parsing_utils::RedactCbor(
-      cbor,
-      std::array{fido_parsing_utils::ToCborVector("ok", "ok", "largeBlob"),
-                 fido_parsing_utils::ToCborVector("ok", "ok", "prf"),
-                 fido_parsing_utils::ToCborVector("ok", "ok", "wrapped", "certs_in_path")});
+  using fido_cbor_util::Path;
+  return fido_cbor_util::RedactValueAtPaths(
+      cbor, Path("ok", "ok", "largeBlob"), Path("ok", "ok", "prf"),
+      Path("ok", "ok", "wrapped", "certs_in_path"));
 }
 
 }  // namespace device::enclave

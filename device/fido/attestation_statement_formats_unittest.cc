@@ -9,7 +9,6 @@
 #include "base/containers/to_vector.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/public/fido_constants.h"

@@ -22,8 +22,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
+#include "device/fido/cbor_util.h"
 #include "device/fido/cmtg_key_response.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
@@ -1055,14 +1055,14 @@ std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
 }
 
 cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor) {
-  using fido_parsing_utils::ToCborVector;
+  using fido_cbor_util::Path;
   constexpr int kSignature = 0x03;
   constexpr int kLargeBlobKey = 0x07;
   constexpr int kExtension = 0x08;
-  return fido_parsing_utils::RedactCbor(
-      cbor, std::array{ToCborVector(kSignature), ToCborVector(kLargeBlobKey),
-                       ToCborVector(kExtension, kExtensionPRF, "results"),
-                       ToCborVector(kExtension, kExtensionLargeBlob)});
+  return fido_cbor_util::RedactValueAtPaths(
+      cbor, Path(kSignature), Path(kLargeBlobKey),
+      Path(kExtension, kExtensionPRF, "results"),
+      Path(kExtension, kExtensionLargeBlob));
 }
 
 }  // namespace device
