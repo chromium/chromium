@@ -94,7 +94,6 @@ static float CalculateNormalizationScale(AudioBus* response) {
 Reverb::Reverb(AudioBus* impulse_response,
                unsigned render_slice_size,
                unsigned max_fft_size,
-               bool use_background_threads,
                bool normalize) {
   float scale = 1;
 
@@ -102,14 +101,12 @@ Reverb::Reverb(AudioBus* impulse_response,
     scale = CalculateNormalizationScale(impulse_response);
   }
 
-  Initialize(impulse_response, render_slice_size, max_fft_size,
-             use_background_threads, scale);
+  Initialize(impulse_response, render_slice_size, max_fft_size, scale);
 }
 
 void Reverb::Initialize(AudioBus* impulse_response_buffer,
                         unsigned render_slice_size,
                         unsigned max_fft_size,
-                        bool use_background_threads,
                         float scale) {
   impulse_response_length_ = impulse_response_buffer->length();
   number_of_response_channels_ = impulse_response_buffer->NumberOfChannels();
@@ -127,7 +124,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
     std::unique_ptr<ReverbConvolver> convolver =
         std::make_unique<ReverbConvolver>(channel, render_slice_size,
                                           max_fft_size, convolver_render_phase,
-                                          use_background_threads, scale);
+                                          scale);
     convolvers_.push_back(std::move(convolver));
 
     convolver_render_phase += render_slice_size;
