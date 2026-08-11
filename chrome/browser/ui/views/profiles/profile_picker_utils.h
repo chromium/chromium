@@ -18,6 +18,14 @@ class WebContents;
 class GURL;
 class Profile;
 
+enum class FirstRunDevicePolicyEffect {
+  // The First Run experience can proceed unaffected.
+  kNone,
+
+  // The First Run experience should not run.
+  kDisabled,
+};
+
 // Opens the given `contents` as a 'Learn more' popup window with the given
 // `target_url` and `window_features`.
 //
@@ -27,5 +35,8 @@ void OpenLearnMorePopup(Profile* profile,
                         std::unique_ptr<content::WebContents> contents,
                         const GURL& target_url,
                         const blink::mojom::WindowFeatures& window_features);
+
+// Computes the effect of device policies on the First Run experience.
+FirstRunDevicePolicyEffect ComputeFirstRunDevicePolicyEffect(Profile& profile);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_UTILS_H_

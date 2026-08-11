@@ -19,15 +19,14 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -59,43 +58,6 @@ bool IsFirstRunEligibleProcess() {
   // affected tests to handle correctly the FRE opening instead of a tab.
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kNoFirstRun);
-}
-
-enum class PolicyEffect {
-  // The First Run experience can proceed unaffected.
-  kNone,
-
-  // The First Run experience should not run.
-  kDisabled,
-};
-
-PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
-  const PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state->GetBoolean(prefs::kPromotionsEnabled)) {
-    // Corresponding policy: PromotionsEnabled=false
-    return PolicyEffect::kDisabled;
-  }
-
-  if (!SyncServiceFactory::IsSyncAllowed(&profile)) {
-    // Corresponding policy: SyncDisabled=true
-    return PolicyEffect::kDisabled;
-  }
-
-  if (signin_util::IsForceSigninEnabled()) {
-    // Corresponding policy: BrowserSignin=2
-    // Debugging note: On Linux this policy is not supported and does not get
-    // translated to the prefs (see crbug.com/41455343), but we still respond to
-    // `prefs::kForceBrowserSignin` being set (e.g. if manually edited).
-    return PolicyEffect::kDisabled;
-  }
-
-  if (!profile.GetPrefs()->GetBoolean(prefs::kSigninAllowed) ||
-      !profile.GetPrefs()->GetBoolean(prefs::kSigninAllowedOnNextStartup)) {
-    // Corresponding policy: BrowserSignin=0
-    return PolicyEffect::kDisabled;
-  }
-
-  return PolicyEffect::kNone;
 }
 
 void SetFirstRunFinished(FirstRunService::FinishedReason reason) {
@@ -155,12 +117,12 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
-  auto policy_effect = ComputeDevicePolicyEffect(*profile_);
+  auto policy_effect = ComputeFirstRunDevicePolicyEffect(*profile_);
   // This check should be done prior to the profile already set up check below,
   // to include the case where the feature `kForceSigninFlowInProfilePicker` is
   // enabled which would cause the profile to be signed in already at this
   // point.
-  if (policy_effect != PolicyEffect::kNone &&
+  if (policy_effect != FirstRunDevicePolicyEffect::kNone &&
       signin_util::IsForceSigninEnabled()) {
     // When ForceSignin is enabled and the flows are going through the profile
     // picker, the final profile setup should not yet be reached. The
@@ -182,7 +144,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
     return;
   }
 
-  if (policy_effect != PolicyEffect::kNone) {
+  if (policy_effect != FirstRunDevicePolicyEffect::kNone) {
     FinishFirstRun(FinishedReason::kSkippedByPolicies);
     return;
   }
