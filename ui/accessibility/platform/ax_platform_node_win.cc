@@ -5175,13 +5175,15 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
     } break;
 
     case NavigateDirection_FirstChild:
-      if (GetChildCount() > 0)
-        neighbor = GetFirstChild()->GetNativeViewAccessible();
+      if (AXPlatformNodeBase* child = GetFirstChild()) {
+        neighbor = child->GetNativeViewAccessible();
+      }
       break;
 
     case NavigateDirection_LastChild:
-      if (GetChildCount() > 0)
-        neighbor = GetLastChild()->GetNativeViewAccessible();
+      if (AXPlatformNodeBase* child = GetLastChild()) {
+        neighbor = child->GetNativeViewAccessible();
+      }
       break;
 
     case NavigateDirection_NextSibling:
