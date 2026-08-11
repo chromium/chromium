@@ -23961,6 +23961,24 @@
             ]
         }
     ],
+    "SuspiciousSiteWarningSurvey": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "SuspiciousSiteWarningSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuspiciousSiteWarnings": [
         {
             "platforms": [
