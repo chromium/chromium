@@ -12,7 +12,7 @@ export function getHtml(this: TodoItemElement) {
       html`
       <div class="todo-content tab-todo-content">
         <cr-icon-button id="check-circle"
-            disabled=true
+            ?disabled="${this.disable_state_mgmt}"
             iron-icon="cr:check-circle"
             @click="${this.onCheckCircleClick_}">
         </cr-icon-button>
@@ -21,16 +21,16 @@ export function getHtml(this: TodoItemElement) {
           <p class="description">${this.description}</p>
         </div>
         <div class="todo-actions" @click="${this.onActionsClick_}">
-          <cr-button class="tonal-button" disabled=true
+          <cr-button class="tonal-button"
               @click="${this.onOpenTabClick_}">Open tab</cr-button>
           <div class="thumb-group">
-            <cr-icon-button id="thumbsUp" disabled=true
+            <cr-icon-button id="thumbsUp"
                 iron-icon="${this.getThumbsUpIcon_()}"
                 title="Like"
                 aria-pressed="${this.liked === true}"
                 @click="${this.onThumbsUpClick_}">
             </cr-icon-button>
-            <cr-icon-button id="thumbsDown" disabled=true
+            <cr-icon-button id="thumbsDown"
                 iron-icon="${this.getThumbsDownIcon_()}"
                 title="Dislike"
                 aria-pressed="${this.liked === false}"

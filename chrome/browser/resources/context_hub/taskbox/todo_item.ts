@@ -11,9 +11,10 @@ import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
-import type {AutoTodoItem, SourceReference} from '../context_hub.mojom-webui.js';
+import {AutoTodoGroup, AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
+import type {AutoTodoData, AutoTodoItem, SourceReference} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './todo_item.css.js';
 import {getHtml} from './todo_item.html.js';
@@ -58,6 +59,8 @@ export class TodoItemElement extends CrLitElement {
       actionableUrl: {type: String},
       sourceReferences: {type: Array},
       score: {type: Number},
+      lastActiveTimestamp: {type: Object},
+      groupType: {type: Number},
       expanded_: {type: Boolean},
       liked: {type: Boolean},
       variant: {type: String},
@@ -72,6 +75,9 @@ export class TodoItemElement extends CrLitElement {
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
   accessor score: number|null = null;
+  tabId: bigint|null = null;
+  accessor lastActiveTimestamp: Time|null = null;
+  accessor groupType: AutoTodoGroup = AutoTodoGroup.kNoMatch;
   protected accessor expanded_: boolean = false;
   accessor liked: boolean|null = null;
   accessor variant: TodoItemVariant = TodoItemVariant.DEFAULT;
@@ -123,19 +129,34 @@ export class TodoItemElement extends CrLitElement {
     if (this.disable_state_mgmt) {
       return;
     }
-    // TODO(crbug.com/543981198): Add support for tab todos.
+
+    if (this.variant === TodoItemVariant.TAB && this.tabId === null) {
+      return;
+    }
+
+    const data: AutoTodoData = this.variant === TodoItemVariant.TAB ?
+        {
+          thirdParty: {
+            tabId: this.tabId!,
+            lastActiveTimestamp:
+                this.lastActiveTimestamp ?? {internalValue: 0n},
+            groupType: this.groupType,
+          },
+        } :
+        {
+          firstParty: {
+            actionableUrl: this.actionableUrl,
+            sourceReferences: this.sourceReferences,
+          },
+        };
+
     const todo: AutoTodoItem = {
       id: this.id,
       title: this.heading,
       description: this.description,
       status,
       score: this.score ?? 0,
-      data: {
-        firstParty: {
-          actionableUrl: this.actionableUrl,
-          sourceReferences: this.sourceReferences,
-        },
-      },
+      data,
     };
     try {
       await browserProxyFactory.getInstance().handler.updateAutoTodo(todo);
@@ -164,6 +185,13 @@ export class TodoItemElement extends CrLitElement {
 
   protected onOpenTabClick_(e: Event) {
     e.stopPropagation();
+    if (this.variant === TodoItemVariant.TAB) {
+      if (this.tabId !== null) {
+        browserProxyFactory.getInstance().handler.switchToTab(this.tabId);
+      }
+      return;
+    }
+
     if (this.actionableUrl) {
       window.open(this.actionableUrl, '_blank');
     }

@@ -620,6 +620,41 @@ TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_Success) {
   EXPECT_EQ(stored_fp_data.source_references[0].subject, "ABC Subject");
 }
 
+TEST_F(ContextHubPageHandlerTest, UpdateAutoTodo_ThirdParty_Success) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  AutoTodoEntry todo;
+  todo.id = "tp_todo_1";
+  todo.title = "Updated Tab Title";
+  todo.description = "Updated Tab Description";
+  todo.importance_score = 0.85f;
+  ThirdPartyData tp_data;
+  tp_data.tab_id = 999;
+  tp_data.last_active_timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  tp_data.group_type = ThirdPartyData::GroupType::kUnfinishedAction;
+  todo.data = std::move(tp_data);
+
+  base::test::TestFuture<bool> update_future;
+  handler_->UpdateAutoTodo(std::move(todo), update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service->GetAutoTodos(get_future.GetCallback());
+  auto entries = get_future.Get();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].id, "tp_todo_1");
+  EXPECT_EQ(entries[0].title, "Updated Tab Title");
+  EXPECT_EQ(entries[0].description, "Updated Tab Description");
+  EXPECT_EQ(entries[0].importance_score, 0.85f);
+  EXPECT_TRUE(entries[0].is_third_party());
+  EXPECT_EQ(entries[0].tab_id(), 999);
+  EXPECT_EQ(entries[0].group_type(),
+            ThirdPartyData::GroupType::kUnfinishedAction);
+}
+
 TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);

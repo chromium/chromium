@@ -123,6 +123,10 @@ export function getHtml(this: AiTaskboxElement) {
                           .heading="${todo.title}"
                           .description="${todo.description}"
                           .status="${todo.status}"
+                          .tabId="${todo.data.thirdParty!.tabId}"
+                          .lastActiveTimestamp="${
+                 todo.data.thirdParty!.lastActiveTimestamp}"
+                          .groupType="${todo.data.thirdParty!.groupType}"
                           .variant="${TodoItemVariant.TAB}"
                           .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                       </todo-item>
@@ -164,6 +168,10 @@ export function getHtml(this: AiTaskboxElement) {
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
                                   .description="${todo.description}"
+                                  .tabId="${todo.data.thirdParty!.tabId}"
+                                  .lastActiveTimestamp="${
+                          todo.data.thirdParty!.lastActiveTimestamp}"
+                                  .groupType="${todo.data.thirdParty!.groupType}"
                                   .status="${todo.status}"
                                   .variant="${TodoItemVariant.TAB}"
                                   .disable_state_mgmt="${this.isGeneratingTabTodos_}">
