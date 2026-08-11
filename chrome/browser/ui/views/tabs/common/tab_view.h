@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_VIEW_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -35,6 +36,8 @@ class TabCloseButton;
 class TabCollectionNode;
 class TabIcon;
 class TabTitle;
+class TabStyleViews;
+class TabStyleViewDelegate;
 
 namespace base {
 class TimeDelta;
@@ -57,6 +60,7 @@ class TabView : public views::View,
                 public HoverCardAnchorTarget,
                 public views::ViewObserver {
   METADATA_HEADER(TabView, views::View)
+  friend class TabStyleViewDelegateImpl;
 
  public:
   static constexpr base::TimeDelta kGlowHoverAnimationDuration =
@@ -77,15 +81,24 @@ class TabView : public views::View,
   bool IsHoverAnimationActive() const;
 
   std::optional<SkColor> GetBackgroundColor();
-  SkColor GetCurrentTabBackgroundColor(
-      TabStyle::TabSelectionState selection_state) const;
   SkPath GetPath() const;
 
   const TabCollectionNode* collection_node() const { return collection_node_; }
-  const TabStyle* tab_style() const { return tab_style_; }
+  TabStyleViews* tab_styling() { return tab_styling_.get(); }
+  const TabStyleViews* tab_styling() const { return tab_styling_.get(); }
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
   const tabs::TabData& data() const { return tab_data_; }
   bool IsActive() const { return active_; }
+  bool IsClosing() const;
+  bool split() const { return split_; }
+  const tabs::TabInterface* GetTabInterface() const;
+
+  const TabView* GetAdjacentTab(bool leading) const;
+  std::optional<SkColor> GetGroupColor() const;
+
+  GlowHoverController* GetHoverControllerForTesting() {
+    return hover_controller_.get();
+  }
 
   TabCloseButton* close_button_for_testing() { return close_button_; }
   TabIcon* GetTabIconForTesting() { return icon_; }
@@ -122,20 +135,6 @@ class TabView : public views::View,
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
-
-  // Tab Painting Helpers
-  void PaintTabBackgroundWithImages(gfx::Canvas* canvas,
-                                    std::optional<int> active_tab_fill_id,
-                                    std::optional<int> inactive_tab_fill_id);
-  float GetCurrentActiveOpacity() const;
-  void PaintTabBackgroundFill(gfx::Canvas* canvas,
-                              TabStyle::TabSelectionState selection_state,
-                              bool hovered,
-                              std::optional<int> fill_id);
-  bool ShouldPaintTabBackgroundColor(
-      TabStyle::TabSelectionState selection_state,
-      bool has_custom_background,
-      bool hovered) const;
 
   struct TabChildConfig {
     raw_ptr<views::View> view;
@@ -189,7 +188,6 @@ class TabView : public views::View,
 
   void UpdateTitle(std::u16string title, bool should_render_loading_title);
   void UpdateBorder();
-  void UpdateThemeColors();
   void UpdateColors();
   void UpdateContrastRatioValues();
 
@@ -212,18 +210,19 @@ class TabView : public views::View,
 
   bool IsInExpandOnHover(int width) const;
 
-  const tabs::TabInterface* GetTabInterface() const;
-
   SkScalar GetCornerRadius() const;
 
   // Applies rounded corners to the view's layer.
   void UpdateLayerRoundedCorners();
 
+  static std::unique_ptr<TabStyleViewDelegate> CreateStyleDelegate(
+      const TabView* tab_view);
+
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
   std::vector<TabChildConfig> tab_children_configs_;
 
-  const raw_ptr<const TabStyle> tab_style_;
+  std::unique_ptr<TabStyleViews> tab_styling_;
 
   const raw_ptr<TabIcon> icon_;
   const raw_ptr<TabTitle> title_;
@@ -246,15 +245,12 @@ class TabView : public views::View,
   bool collapsed_ = false;
   bool pinned_ = false;
   bool shift_pressed_on_mouse_down_ = false;
+  bool should_fill_background_tab_color_ = false;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
   float hover_opacity_min_;
   float hover_opacity_max_;
   float radial_highlight_opacity_;
-
-  std::optional<int> active_tab_fill_id_;
-  std::optional<int> inactive_tab_fill_id_;
-  bool should_fill_background_tab_color_ = false;
 
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 

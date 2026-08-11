@@ -25,10 +25,14 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
+#include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical_tab_style_views.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -768,8 +772,7 @@ bool TabStyleViewsImpl::ShouldPaintTabBackgroundColor(
     return false;
   }
 
-  return delegate_->GetView()->GetThemeProvider()->GetDisplayProperty(
-      ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
+  return delegate_->ShouldPaintTabBackgroundColor();
 }
 
 SkColor TabStyleViewsImpl::GetTabSeparatorColor() const {
@@ -1035,8 +1038,13 @@ ui::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
 // TabStyleViews ---------------------------------------------------------------
 
 // static
-std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
-  return std::make_unique<TabStyleViewsImpl>(Tab::CreateStyleDelegate(tab));
+std::unique_ptr<TabStyleViews> TabStyleViews::Create(
+    std::unique_ptr<TabStyleViewDelegate> delegate,
+    TabStripOrientation orientation) {
+  if (orientation == TabStripOrientation::kVertical) {
+    return std::make_unique<VerticalTabStyleViews>(std::move(delegate));
+  }
+  return std::make_unique<TabStyleViewsImpl>(std::move(delegate));
 }
 
 TabStyleViews::TabStyleViews() : tab_style_(TabStyle::Get()) {}

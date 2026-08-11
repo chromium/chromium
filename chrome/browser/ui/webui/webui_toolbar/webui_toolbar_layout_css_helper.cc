@@ -115,6 +115,10 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--tab-separator-height";
     case kTabPreTitlePadding:
       return "--tab-pre-title-padding";
+    case kTabVerticalPadding:
+      return "--tab-vertical-padding";
+    case kTabHorizontalPadding:
+      return "--tab-horizontal-padding";
     case kTabStackDistance:
       return "--tab-stack-distance";
     case kTabstripToolbarOverlap:

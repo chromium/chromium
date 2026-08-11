@@ -171,6 +171,12 @@ enum class LayoutConstant {
   // Padding before the tab title.
   kTabPreTitlePadding,
 
+  // The vertical padding inside a tab.
+  kTabVerticalPadding,
+
+  // The horizontal padding inside a tab.
+  kTabHorizontalPadding,
+
   // The distance between the edge of one tab to the corresponding edge or the
   // subsequent tab when tabs are stacked.
   kTabStackDistance,

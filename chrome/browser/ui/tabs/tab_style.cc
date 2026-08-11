@@ -23,9 +23,6 @@ constexpr int kSeparatorThickness = 2;
 constexpr int kSeparatorHorizontalMargin = 2;
 constexpr int kSeparatorHeight = 16;
 
-// The padding from the top of the tab to the content area.
-constexpr int kTabVerticalPadding = 6;
-constexpr int kTabHorizontalPadding = 8;
 
 // The standard tab width is 232 DIP, excluding separators and overlap.
 constexpr int kTabWidth = 232;
@@ -82,7 +79,8 @@ int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
 
   if (is_split) {
     // Only have one set of horizontal padding between tabs in an active split.
-    return min_active_width - kTabHorizontalPadding / 2;
+    return min_active_width -
+           GetLayoutConstant(LayoutConstant::kTabHorizontalPadding) / 2;
   }
 
   return min_active_width;
@@ -315,10 +313,14 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
 
 gfx::Insets TabStyle::GetContentsInsets() const {
   return gfx::Insets::TLBR(
-      kTabVerticalPadding + GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() + kTabHorizontalPadding,
-      kTabVerticalPadding + GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() + kTabHorizontalPadding);
+      GetLayoutConstant(LayoutConstant::kTabVerticalPadding) +
+          GetLayoutConstant(LayoutConstant::kTabStripPadding),
+      GetBottomCornerRadius() +
+          GetLayoutConstant(LayoutConstant::kTabHorizontalPadding),
+      GetLayoutConstant(LayoutConstant::kTabVerticalPadding) +
+          GetLayoutConstant(LayoutConstant::kTabStripPadding),
+      GetBottomCornerRadius() +
+          GetLayoutConstant(LayoutConstant::kTabHorizontalPadding));
 }
 
 float TabStyle::GetSelectedTabOpacity() const {

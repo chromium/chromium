@@ -3900,6 +3900,8 @@ static_library("ui") {
       "views/tabs/tab_style_views.h",
       "views/tabs/tab_width_constraints.cc",
       "views/tabs/tab_width_constraints.h",
+      "views/tabs/vertical_tab_style_views.cc",
+      "views/tabs/vertical_tab_style_views.h",
       "views/tabs/z_orderable_tab_container_element.cc",
       "views/tabs/z_orderable_tab_container_element.h",
       "views/task_manager_search_bar_view.cc",

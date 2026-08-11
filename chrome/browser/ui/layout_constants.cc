@@ -110,6 +110,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 24 : 20;
     case LayoutConstant::kTabPreTitlePadding:
       return 8;
+    case LayoutConstant::kTabVerticalPadding:
+      return 6;
+    case LayoutConstant::kTabHorizontalPadding:
+      return 8;
     case LayoutConstant::kTabStackDistance:
       return touch_ui ? 4 : 6;
     case LayoutConstant::kTabstripToolbarOverlap:

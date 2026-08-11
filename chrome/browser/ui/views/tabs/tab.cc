@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -65,6 +66,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/theme_provider.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/tween.h"
@@ -235,6 +237,10 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     return tab_->controller()->IsGlassFrame();
   }
 
+  bool ShouldPaintTabBackgroundColor() const override {
+    return tab_->should_fill_background_tab_color();
+  }
+
   int GetStrokeThickness() const override {
     return tab_->controller()->GetStrokeThickness();
   }
@@ -333,7 +339,8 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
       title_animation_(this) {
   DCHECK(controller);
 
-  tab_style_views_ = TabStyleViews::CreateForTab(this);
+  tab_style_views_ = TabStyleViews::Create(CreateStyleDelegate(this),
+                                           TabStripOrientation::kHorizontal);
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
@@ -926,6 +933,10 @@ void Tab::OnBlur() {
 
 void Tab::OnThemeChanged() {
   TabSlotView::OnThemeChanged();
+  if (auto* theme_provider = GetThemeProvider()) {
+    should_fill_background_tab_color_ = theme_provider->GetDisplayProperty(
+        ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
+  }
   UpdateForegroundColors();
 }
 

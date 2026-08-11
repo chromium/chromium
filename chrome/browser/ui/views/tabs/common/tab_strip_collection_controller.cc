@@ -724,3 +724,11 @@ void TabStripCollectionController::OnGlassFrameEligibilityChanged(
   is_glass_ = is_eligible;
   browser_view_->tab_strip_view()->OnGlassFrameEligibilityChanged(is_eligible);
 }
+
+int TabStripCollectionController::GetTabCount() const {
+  return model_->count();
+}
+
+int TabStripCollectionController::GetStrokeThickness() const {
+  return browser_view_ && browser_view_->ShouldDrawTabStrokes() ? 1 : 0;
+}

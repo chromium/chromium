@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -72,6 +73,7 @@ class TabStyleViewDelegate {
   virtual BrowserFrameView* GetBrowserFrameView() const = 0;
   virtual BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
   virtual bool IsGlassFrame() const = 0;
+  virtual bool ShouldPaintTabBackgroundColor() const = 0;
   virtual int GetStrokeThickness() const = 0;
 
   virtual GlowHoverController* GetHoverControllerForTesting() = 0;
@@ -91,7 +93,9 @@ class TabStyleViews {
  public:
   // Factory function allows to experiment with different variations on tab
   // style at runtime or via flag.
-  static std::unique_ptr<TabStyleViews> CreateForTab(Tab* tab);
+  static std::unique_ptr<TabStyleViews> Create(
+      std::unique_ptr<TabStyleViewDelegate> delegate,
+      TabStripOrientation orientation);
 
   TabStyleViews();
   virtual ~TabStyleViews();

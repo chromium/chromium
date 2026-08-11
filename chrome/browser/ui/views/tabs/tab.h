@@ -199,15 +199,15 @@ class Tab : public gfx::AnimationDelegate,
     return hover_controller_.get();
   }
 
-  static std::unique_ptr<TabStyleViewDelegate> CreateStyleDelegate(
-      const Tab* tab);
-
   // Returns the TabStyle associated with this tab.
   TabStyleViews* tab_style_views() { return tab_style_views_.get(); }
   const TabStyleViews* tab_style_views() const {
     return tab_style_views_.get();
   }
   const TabStyle* tab_style() const { return tab_style_views_->tab_style(); }
+  bool should_fill_background_tab_color() const {
+    return should_fill_background_tab_color_;
+  }
 
   // Returns the text to show in a tab's tooltip: The contents `title`, followed
   // by a break, followed by a localized string describing the `alert_state`.
@@ -290,6 +290,9 @@ class Tab : public gfx::AnimationDelegate,
   void OnTabDataChanged(TabChangeType tab_change_type,
                         const tabs::TabData& tab_data);
 
+  static std::unique_ptr<TabStyleViewDelegate> CreateStyleDelegate(
+      const Tab* tab);
+
   // The tab handle associated with the view.
   const tabs::TabHandle tab_handle_;
 
@@ -350,6 +353,7 @@ class Tab : public gfx::AnimationDelegate,
   // Whether the shift key was pressed at the start of the click. Used on mouse
   // up.
   bool shift_pressed_on_mouse_down_ = false;
+  bool should_fill_background_tab_color_ = false;
 
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 

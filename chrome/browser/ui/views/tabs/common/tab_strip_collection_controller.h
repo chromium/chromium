@@ -56,6 +56,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
                               const gfx::Point& point,
                               ui::mojom::MenuSourceType source_type);
 
+  int GetTabCount() const;
   void ShiftTabNext(const tabs::TabInterface* tab_interface);
   void ShiftTabPrevious(const tabs::TabInterface* tab_interface);
   void ShiftGroupUp(const tab_groups::TabGroupId& group);
@@ -87,9 +88,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   }
 
   BrowserView* GetBrowserView() const { return browser_view_; }
-
   bool IsGlassFrame() const { return is_glass_; }
   void OnGlassFrameEligibilityChanged(bool is_eligible);
+  int GetStrokeThickness() const;
 
   TabDragHandler& GetDragHandler() { return drag_handler_.get(); }
   const TabDragHandler& GetDragHandler() const { return drag_handler_.get(); }
