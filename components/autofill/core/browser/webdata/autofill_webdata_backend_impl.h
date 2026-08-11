@@ -314,6 +314,11 @@ class AutofillWebDataBackendImpl final
       const CreditCard& credit_card,
       WebDatabase* db);
 
+  // Copies data from the legacy `autofill` table to the `autocomplete` table.
+  // Returns a boolean `WDResult` with true on success or if the legacy table
+  // does not exist, and false on database failure.
+  std::unique_ptr<WDTypedResult> MigrateDataFromLegacyTable(WebDatabase* db);
+
  protected:
   ~AutofillWebDataBackendImpl() override;
 

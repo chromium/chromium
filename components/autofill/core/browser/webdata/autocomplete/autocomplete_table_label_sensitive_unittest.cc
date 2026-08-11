@@ -18,7 +18,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
@@ -116,8 +118,10 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
+    legacy_table_ = std::make_unique<AutocompleteTable>();
     table_ = std::make_unique<AutocompleteTableLabelSensitive>();
     db_ = std::make_unique<WebDatabase>();
+    db_->AddTable(legacy_table_.get());
     db_->AddTable(table_.get());
     ASSERT_EQ(db_->Init(file_), sql::INIT_OK);
   }
@@ -221,6 +225,7 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
   }
 
   WebDatabase& db() { return *db_; }
+  AutocompleteTable& legacy_table() { return *legacy_table_; }
   AutocompleteTableLabelSensitive& table() { return *table_; }
 
  private:
@@ -228,8 +233,9 @@ class AutocompleteTableLabelSensitiveTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<AutocompleteTableLabelSensitive> table_;
-  std::unique_ptr<WebDatabase> db_;
+  std::unique_ptr<AutocompleteTable> legacy_table_ = nullptr;
+  std::unique_ptr<AutocompleteTableLabelSensitive> table_ = nullptr;
+  std::unique_ptr<WebDatabase> db_ = nullptr;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -1288,6 +1294,59 @@ TEST_F(AutocompleteTableLabelSensitiveTest,
   // Simulates the submission of a form.
   FormFieldData field = CreateDefaultField();
   EXPECT_FALSE(table().AddFormFieldValues({field}));
+}
+
+using MigrateDataFromLegacyTableTest = AutocompleteTableLabelSensitiveTest;
+
+// When the legacy "autofill" table does not exist in the database,
+// MigrateDataFromLegacyTable should return true without performing migration.
+TEST_F(MigrateDataFromLegacyTableTest, ReturnTrueIfLegacyTableDoesNotExist) {
+  ASSERT_TRUE(db().GetSQLConnection()->Execute("DROP TABLE autofill"));
+  EXPECT_TRUE(table().MigrateDataFromLegacyTable());
+}
+
+// MigrateDataFromLegacyTable copies historical entries from the legacy
+// "autofill" table into the new label-sensitive "autocomplete" table.
+TEST_F(MigrateDataFromLegacyTableTest, CopiesLegacyEntries) {
+  base::Time now = base::Time::Now();
+  AutocompleteEntry legacy_entry(AutocompleteKey(kDefaultName, kDefaultValue),
+                                 now, now);
+  ASSERT_TRUE(legacy_table().UpdateAutocompleteEntries({legacy_entry}));
+
+  EXPECT_FALSE(DoesAutocompleteEntryExist(kDefaultName, u"", kDefaultValue));
+
+  ASSERT_TRUE(table().MigrateDataFromLegacyTable());
+
+  EXPECT_TRUE(DoesAutocompleteEntryExist(kDefaultName, u"", kDefaultValue));
+  EXPECT_EQ(
+      GetAutocompleteEntryLabelSensitiveCount(kDefaultName, u"", kDefaultValue),
+      1);
+}
+
+// MigrateDataFromLegacyTable wipes existing entries in the label-sensitive
+// table before copying from the legacy table.
+TEST_F(MigrateDataFromLegacyTableTest, WipesExistingEntriesBeforeMigration) {
+  // Add a pre-existing entry to the new label-sensitive table.
+  ASSERT_TRUE(CreateAndSubmitDefaultField().has_value());
+  ASSERT_TRUE(
+      DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
+
+  // Add a legacy entry to the legacy "autofill" table.
+  std::u16string legacy_name = u"legacy_name";
+  std::u16string legacy_value = u"legacy_val";
+  base::Time now = base::Time::Now();
+  AutocompleteEntry legacy_entry(AutocompleteKey(legacy_name, legacy_value),
+                                 now, now);
+  ASSERT_TRUE(legacy_table().UpdateAutocompleteEntries({legacy_entry}));
+
+  ASSERT_TRUE(table().MigrateDataFromLegacyTable());
+
+  // The pre-existing label-sensitive entry should be wiped.
+  EXPECT_FALSE(
+      DoesAutocompleteEntryExist(kDefaultName, kDefaultLabel, kDefaultValue));
+
+  // The migrated legacy entry should exist with empty label.
+  EXPECT_TRUE(DoesAutocompleteEntryExist(legacy_name, u"", legacy_value));
 }
 
 }  // namespace

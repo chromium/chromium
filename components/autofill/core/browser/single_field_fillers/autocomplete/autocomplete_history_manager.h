@@ -93,6 +93,12 @@ class AutocompleteHistoryManager : public KeyedService {
   void OnAutofillCleanupReturned(WebDataServiceBase::Handle current_handle,
       std::unique_ptr<WDTypedResult> result);
 
+  // Handles WebDataService responses for legacy table data migration.
+  void OnLegacyTableDataMigrationReturned(
+      int new_migration_generation,
+      WebDataServiceBase::Handle current_handle,
+      std::unique_ptr<WDTypedResult> migration_result);
+
   scoped_refptr<AutofillWebDataService> GetProfileDatabase() {
     return profile_database_;
   }

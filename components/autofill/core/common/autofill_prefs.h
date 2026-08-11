@@ -268,6 +268,13 @@ inline constexpr char kAutofillSilentUpdatesToHomeAddress[] =
 inline constexpr char kAutofillSilentUpdatesToWorkAddress[] =
     "autofill.silent_updates.work";
 
+// The generation of the label-sensitive Autocomplete table migration.
+// If this is less than the expected migration generation
+// (features::kAutofillLabelSensitiveAutocompleteMigrationGeneration), the
+// migration logic should be run.
+inline constexpr char kAutofillAutocompleteLabelSensitiveMigrationGeneration[] =
+    "autofill.autocomplete.label_sensitive_migration_generation";
+
 // The maximum value for the
 // `kAutofillPaymentMethodsMandatoryReauthPromoShownCounter` pref. If this
 // value is reached, we should not show a mandatory re-auth promo.

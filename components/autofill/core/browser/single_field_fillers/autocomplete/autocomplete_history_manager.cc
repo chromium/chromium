@@ -321,6 +321,25 @@ AutocompleteHistoryManager::AutocompleteHistoryManager(
         base::BindOnce(&AutocompleteHistoryManager::OnAutofillCleanupReturned,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // TODO(crbug.com/346507576): After full launch, migrate unconditionally from
+  // the legacy `autofill` table and remove generation checks. Keep that logic
+  // for `kAutocompleteRetentionPolicyPeriod` days, then remove migration logic
+  // completely.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    int current_migration_generation = pref_service_->GetInteger(
+        prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration);
+    int expected_migration_generation =
+        features::kAutofillLabelSensitiveAutocompleteMigrationGeneration.Get();
+
+    if (current_migration_generation < expected_migration_generation) {
+      profile_database_->MigrateDataFromLegacyTable(base::BindOnce(
+          &AutocompleteHistoryManager::OnLegacyTableDataMigrationReturned,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*new_migration_generation=*/expected_migration_generation));
+    }
+  }
 }
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() = default;
@@ -442,6 +461,21 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
   // Cleanup was successful, update the latest run milestone.
   pref_service_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                             version_info::GetMajorVersionNumberAsInt());
+}
+
+void AutocompleteHistoryManager::OnLegacyTableDataMigrationReturned(
+    int new_migration_generation,
+    WebDataServiceBase::Handle current_handle,
+    std::unique_ptr<WDTypedResult> migration_result) {
+  DCHECK(migration_result);
+  DCHECK_EQ(BOOL_RESULT, migration_result->GetType());
+  const WDResult<bool>* bool_result =
+      static_cast<const WDResult<bool>*>(migration_result.get());
+  if (bool_result->GetValue()) {
+    pref_service_->SetInteger(
+        prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration,
+        new_migration_generation);
+  }
 }
 
 }  // namespace autofill

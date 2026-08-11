@@ -188,6 +188,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
   registry->RegisterIntegerPref(kAutofillSilentUpdatesToHomeAddress, 0);
   registry->RegisterIntegerPref(kAutofillSilentUpdatesToWorkAddress, 0);
+  registry->RegisterIntegerPref(
+      kAutofillAutocompleteLabelSensitiveMigrationGeneration, 0);
 
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillEnabledDeprecated, true);

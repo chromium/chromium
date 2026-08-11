@@ -1301,4 +1301,18 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCreditCardForTesting(
   return WebDatabase::COMMIT_NEEDED;
 }
 
+// TODO(crbug.com/346507576): after full launch, change return type to
+// WebDatabase::State.
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::MigrateDataFromLegacyTable(WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (!AutocompleteTableLabelSensitive::FromWebDatabase(db)
+           ->MigrateDataFromLegacyTable()) {
+    // TODO(crbug.com/346507576): Report failure via UMA metrics.
+    return std::make_unique<WDResult<bool>>(BOOL_RESULT, false);
+  }
+  // TODO(crbug.com/346507576): Report success via UMA metrics.
+  return std::make_unique<WDResult<bool>>(BOOL_RESULT, true);
+}
+
 }  // namespace autofill

@@ -198,6 +198,13 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
                                      const std::u16string_view label,
                                      const std::u16string_view value);
 
+  // Copies data from the legacy `autofill` table to the `autocomplete` table.
+  // Returns true if migration succeeded or if the legacy `autofill` table does
+  // not exist. Returns false if the database operation failed.
+  // Note: The caller on the UI thread must check if migration is needed before
+  // calling this method.
+  bool MigrateDataFromLegacyTable();
+
  private:
   bool AddFormFieldValueTime(const FormFieldData& element, base::Time time);
 
