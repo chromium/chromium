@@ -99,6 +99,8 @@ ChromeWebUIDialog::ChromeWebUIDialog(
   SetModalType(spec_.modal_type);
   SetShowCloseButton(spec_.show_close_button);
   SetHasWindowSizeControls(true);
+  set_esc_should_cancel_dialog_override(
+      spec_.esc_should_cancel_dialog_override);
 
   set_margins(gfx::Insets());
 

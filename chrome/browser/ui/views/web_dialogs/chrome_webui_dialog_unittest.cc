@@ -284,6 +284,32 @@ TEST_F(ChromeWebUIDialogTest, ShowCloseButton) {
   EXPECT_TRUE(widget->widget_delegate()->ShouldShowCloseButton());
 }
 
+TEST_F(ChromeWebUIDialogTest, EscShouldCancelDialogOverride) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.esc_should_cancel_dialog_override = false;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  // Without the override a buttonless dialog would report a cancel.
+  EXPECT_FALSE(
+      widget->widget_delegate()->AsDialogDelegate()->EscShouldCancelDialog());
+}
+
+TEST_F(ChromeWebUIDialogTest, EscShouldCancelDialogDefaultsToDialogDelegate) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+
+  EXPECT_TRUE(
+      widget->widget_delegate()->AsDialogDelegate()->EscShouldCancelDialog());
+}
+
 TEST_F(ChromeWebUIDialogTest, ElementIdentifierSet) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 
