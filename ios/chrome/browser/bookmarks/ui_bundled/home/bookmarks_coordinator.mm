@@ -132,6 +132,11 @@ enum class PresentedState {
   // Coordinator to display the "Set a reminder" UI for the user's selected
   // bookmark.
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
+
+  // The last committed URL of the active `WebState` when the bookmarks UI
+  // was presented. Used to prevent Universal Cross-Site Scripting (UXSS)
+  // if the underlying tab navigates while bookmarks UI is open.
+  GURL _lastCommittedURLBeforePresentation;
 }
 
 @synthesize sceneHandler = _sceneHandler;
@@ -185,6 +190,7 @@ enum class PresentedState {
   _currentProfile = nullptr;
   _bookmarkModel = nullptr;
   _mediator = nil;
+  _lastCommittedURLBeforePresentation = GURL();
   CHECK_EQ(PresentedState::NONE, self.currentPresentedState,
            base::NotFatalUntil::M152);
   CHECK(!self.bookmarkEditorCoordinator, base::NotFatalUntil::M152)
@@ -331,14 +337,7 @@ enum class PresentedState {
             _currentProfile.get()));
   }
 
-  GURL urlBeforeDismissal;
-  if (self.browser && self.browser->GetWebStateList()) {
-    web::WebState* activeWebState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    if (activeWebState) {
-      urlBeforeDismissal = activeWebState->GetLastCommittedURL();
-    }
-  }
+  GURL urlBeforePresentation = _lastCommittedURLBeforePresentation;
 
   // First the bookmark view should be dismissed to have the animation, and
   // the URLs should be opened.
@@ -346,13 +345,13 @@ enum class PresentedState {
   // bookmark view without animation.
   ProceduralBlock dismissCompletion = base::CallbackToBlock(base::BindOnce(
       [](__weak __typeof(self) weakSelf, std::vector<GURL> urls_to_open,
-         BOOL in_incognito, BOOL new_tab, GURL url_before_dismissal) {
+         BOOL in_incognito, BOOL new_tab, GURL url_before_presentation) {
         [weakSelf openUrls:urls_to_open
-                   inIncognito:in_incognito
-                        newTab:new_tab
-            urlBeforeDismissal:url_before_dismissal];
+                      inIncognito:in_incognito
+                           newTab:new_tab
+            urlBeforePresentation:url_before_presentation];
       },
-      self, urlsToOpen, inIncognito, newTab, urlBeforeDismissal));
+      self, urlsToOpen, inIncognito, newTab, urlBeforePresentation));
 
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:animated
@@ -388,6 +387,7 @@ enum class PresentedState {
   self.bookmarkNavigationController.presentationController.delegate = nil;
   self.bookmarkNavigationController.delegate = nil;
   self.bookmarkNavigationController = nil;
+  _lastCommittedURLBeforePresentation = GURL();
   self.currentPresentedState = PresentedState::NONE;
 }
 
@@ -495,13 +495,12 @@ enum class PresentedState {
 //   foreground, others are opened in background tabs.
 // `inIncognito`: Whether the URLs should be opened in an incognito tab.
 // `newTab`: Whether the URLs should be forced to open in a new tab.
-// `urlBeforeDismissal`: The GURL of the active web state before the bookmarks
-//   UI dismissal animation started. Used to prevent Universal Cross-Site
-//   Scripting (UXSS).
+// `urlBeforePresentation`: The GURL of the active `WebState` when the bookmarks
+//   UI was presented. Used to prevent Universal Cross-Site Scripting (UXSS).
 - (void)openUrls:(const std::vector<GURL>&)urls
-           inIncognito:(BOOL)inIncognito
-                newTab:(BOOL)newTab
-    urlBeforeDismissal:(const GURL&)urlBeforeDismissal {
+              inIncognito:(BOOL)inIncognito
+                   newTab:(BOOL)newTab
+    urlBeforePresentation:(const GURL&)urlBeforePresentation {
   if (!_currentProfile || !self.browser) {
     return;
   }
@@ -536,7 +535,8 @@ enum class PresentedState {
         [self openURLInNewTab:url inIncognito:inIncognito inBackground:NO];
       } else {
         // Open in current tab otherwise.
-        [self openURLInCurrentTab:url urlBeforeDismissal:urlBeforeDismissal];
+        [self openURLInCurrentTab:url
+            urlBeforePresentation:urlBeforePresentation];
       }
     } else {
       // Open other URLs (if any) in background tabs.
@@ -702,18 +702,19 @@ enum class PresentedState {
 }
 
 - (void)openURLInCurrentTab:(const GURL&)url
-         urlBeforeDismissal:(const GURL&)urlBeforeDismissal {
+      urlBeforePresentation:(const GURL&)urlBeforePresentation {
   Browser* browser = self.browser;
   WebStateList* webStateList = browser->GetWebStateList();
   if (url.SchemeIs(url::kJavaScriptScheme) && webStateList) {  // bookmarklet
     web::WebState* activeWebState = webStateList->GetActiveWebState();
-    // Both the last committed URL and visible URL of the active WebState must
-    // be equal to the URL before dismissal in order to avoid UXSS (Universal
-    // Cross-Site Scripting) caused by background/pending navigations during
-    // Bookmarks UI dismissal animation.
+    // Both the last committed URL and visible URL of the active `WebState` must
+    // be equal to the URL when the Bookmarks UI was presented in order to
+    // avoid UXSS (Universal Cross-Site Scripting) caused by background/pending
+    // navigations while the Bookmarks UI was open or during its dismissal
+    // animation.
     if (activeWebState &&
-        activeWebState->GetLastCommittedURL() == urlBeforeDismissal &&
-        activeWebState->GetVisibleURL() == urlBeforeDismissal) {
+        activeWebState->GetLastCommittedURL() == urlBeforePresentation &&
+        activeWebState->GetVisibleURL() == urlBeforePresentation) {
       LoadJavaScriptURL(url, browser, activeWebState);
     }
     return;
@@ -753,6 +754,16 @@ enum class PresentedState {
   }
   DUMP_WILL_BE_CHECK_EQ(PresentedState::NONE, self.currentPresentedState);
   DUMP_WILL_BE_CHECK(!self.bookmarkNavigationController) << [self description];
+
+  _lastCommittedURLBeforePresentation = GURL();
+  if (self.browser && self.browser->GetWebStateList()) {
+    web::WebState* activeWebState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    if (activeWebState) {
+      _lastCommittedURLBeforePresentation =
+          activeWebState->GetLastCommittedURL();
+    }
+  }
 
   self.bookmarkBrowser =
       [[BookmarksHomeViewController alloc] initWithBrowser:self.browser];

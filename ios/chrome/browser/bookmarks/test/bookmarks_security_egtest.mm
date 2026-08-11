@@ -67,12 +67,53 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Trigger background navigation programmatically immediately after tapping
   // the bookmarklet.
   GURL sensitiveURL = self.testServer->GetURL("/toctou_sensitive.html");
-  [ChromeEarlGrey loadURL:sensitiveURL];
+  [ChromeEarlGrey loadURL:sensitiveURL waitForCompletion:NO];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Tapping the bookmarklet should close the bookmarks UI.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeTableViewIdentifier)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
+
+  // Verify that the bookmarklet was NOT executed on the sensitive page.
+  [ChromeEarlGrey waitForWebStateContainingText:"Not executed"];
+}
+
+// Tests that a bookmarklet is blocked if the active tab navigated to a
+// different origin in the background while the Bookmarks UI was open, before
+// the bookmarklet was tapped.
+- (void)testBookmarkletTOCTOUMitigationWhileBookmarksOpen {
+  // Add the bookmarklet programmatically.
+  NSString* bookmarkletURL =
+      @"javascript:document.getElementById('result').innerText='EXECUTED';";
+  [BookmarkEarlGrey addBookmarkWithTitle:@"TOCTOU_Bookmarklet"
+                                     URL:bookmarkletURL
+                               inStorage:BookmarkStorageType::kLocalOrSyncable];
+
+  // Start the test server.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Load the attacker page.
+  GURL attackerURL = self.testServer->GetURL("/toctou_attacker.html");
+  [ChromeEarlGrey loadURL:attackerURL];
+
+  // Open Bookmarks UI using the real UI helper.
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Trigger background navigation while the Bookmarks UI is open, BEFORE
+  // tapping the bookmarklet.
+  GURL sensitiveURL = self.testServer->GetURL("/toctou_sensitive.html");
+  [ChromeEarlGrey loadURL:sensitiveURL waitForCompletion:NO];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Tap the bookmarklet in the UI.
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          @"TOCTOU_Bookmarklet")]
+      performAction:grey_tap()];
+
+  // Tapping the bookmarklet should close the bookmarks UI.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
 
   // Verify that the bookmarklet was NOT executed on the sensitive page.
   [ChromeEarlGrey waitForWebStateContainingText:"Not executed"];
@@ -105,9 +146,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Tapping the bookmarklet should close the bookmarks UI.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeTableViewIdentifier)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
 
   // Verify that the bookmarklet WAS executed successfully on the page.
   [ChromeEarlGrey waitForWebStateContainingText:"EXECUTED"];
@@ -136,9 +176,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Tapping the bookmarklet should close the bookmarks UI successfully.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeTableViewIdentifier)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
 }
 
 // Tests that opening a bookmark when there are no active tabs (e.g. all tabs
@@ -165,9 +204,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Tapping the bookmark should close the bookmarks UI.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarksHomeTableViewIdentifier)]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kBookmarksHomeTableViewIdentifier)];
 
   // Verify that a tab was opened with the bookmark's URL.
   [ChromeEarlGrey waitForMainTabCount:1];
