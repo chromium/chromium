@@ -26,7 +26,8 @@ component("language_tag_no_icu") {
   deps = [ "//base/i18n/internal:canonical_language_tags" ]
 }
 
-source_set("language_tag") {
+component("language_tag") {
+  output_name = "language_tag"
   sources = [
     "language_tag_matcher.cc",
     "language_tag_matcher.h",
@@ -36,10 +37,9 @@ source_set("language_tag") {
     "tag_converters.h",
   ]
 
-  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+  defines = [ "IS_LANGUAGE_TAG_WITH_ICU_IMPL" ]
 
   public_deps = [
-    ":base_i18n_export",
     ":language_tag_no_icu",
     "//third_party/icu",
   ]
@@ -48,11 +48,6 @@ source_set("language_tag") {
     "//base/i18n/internal:canonical_language_tags",
     "//third_party/abseil-cpp:absl",
     "//third_party/rust/icu_capi/v2:lib",
-  ]
-  visibility = [
-    ":*",
-    "//base:*",
-    "//base/i18n/*",
   ]
 }
 

@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "base/i18n/base_i18n_export.h"
+#include "base/component_export.h"
 #include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -19,7 +19,7 @@ namespace base::i18n {
 // ThreadSafeLocaleHolder is a thread-safe container for a single LanguageTag
 // (locale). It allows any thread to safely read and write the active locale
 // concurrently under an internal lock. This class is final and non-virtual.
-class BASE_I18N_EXPORT ThreadSafeLocaleHolder final {
+class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU) ThreadSafeLocaleHolder final {
  public:
   // Constructs a holder initialized with the specified `initial_locale`.
   explicit ThreadSafeLocaleHolder(LanguageTag initial_locale);
@@ -44,7 +44,8 @@ class BASE_I18N_EXPORT ThreadSafeLocaleHolder final {
 // operations (calls to SetLocale) to a single sequence (via SEQUENCE_CHECKER).
 // However, it supports thread-safe GetLocale(), allowing multiple threads
 // and sequences to safely and concurrently read the active locale.
-class BASE_I18N_EXPORT SequenceCheckedLocaleHolder final {
+class COMPONENT_EXPORT(LANGUAGE_TAG_WITH_ICU)
+    SequenceCheckedLocaleHolder final {
  public:
   explicit SequenceCheckedLocaleHolder(LanguageTag initial_locale);
   ~SequenceCheckedLocaleHolder();
