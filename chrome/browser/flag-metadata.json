@@ -4822,8 +4822,8 @@
   },
   {
     "name": "extensions-menu-access-control",
-    "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 152
+    "owners": [ "evasu@chromium.org" ],
+    "expiry_milestone": 160
   },
   {
     "name": "extensions-on-chrome-urls",
