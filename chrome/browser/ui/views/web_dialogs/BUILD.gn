@@ -11,6 +11,7 @@ source_set("web_dialogs") {
     "//chrome/browser/ui/webui/top_chrome",
     "//ui/base",
     "//ui/views",
+    "//ui/views/controls/webview",
   ]
 
   deps = [
@@ -19,7 +20,6 @@ source_set("web_dialogs") {
     "//content/public/browser",
     "//ui/base/mojom:ui_base_types",
     "//ui/display",
-    "//ui/views/controls/webview",
   ]
 }
 

@@ -216,6 +216,18 @@ void ChromeWebUIDialog::ResizeDueToAutoResize(content::WebContents* source,
   GetWidget()->CenterWindow(GetWidget()->non_client_view()->GetPreferredSize());
 }
 
+bool ChromeWebUIDialog::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return false;
+  }
+
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, widget->GetFocusManager());
+}
+
 void ChromeWebUIDialog::OnViewAddedToWidget(views::View* observed_view) {
   if (observed_view != web_view_) {
     return;

@@ -16,6 +16,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -123,6 +124,8 @@ class ChromeWebUIDialog : public views::DialogDelegate,
   void CloseUI() override;
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -139,6 +142,10 @@ class ChromeWebUIDialog : public views::DialogDelegate,
 
   // The WebView that hosts the WebUI content.
   raw_ptr<views::WebView> web_view_ = nullptr;
+
+  // Keeps renderer-declined keys to the focus manager so browser
+  // accelerators keep working from inside the dialog.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
