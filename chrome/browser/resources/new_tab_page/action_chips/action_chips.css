@@ -50,14 +50,26 @@
 }
 
 .icon-type-sub-arrow-right {
-  -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
+  -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion_old.svg);
 }
 
 .icon-type-globe-with-search-loop {
-  -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
+  -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search_old.svg);
 }
 
 .icon-type-draft-spark {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/canvas_old.svg);
+}
+
+:host-context([webui-rounded-icons]) .icon-type-sub-arrow-right {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
+}
+
+:host-context([webui-rounded-icons]) .icon-type-globe-with-search-loop {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
+}
+
+:host-context([webui-rounded-icons]) .icon-type-draft-spark {
   -webkit-mask-image: url(chrome://new-tab-page/icons/canvas.svg);
 }
 

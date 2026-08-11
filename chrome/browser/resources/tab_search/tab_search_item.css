@@ -162,12 +162,12 @@ cr-icon-button {
 }
 
 #mediaAlert[class = 'audio-playing'] {
-  -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_rounded_old.svg);
   background-color:  var(--audio-icon-color);
 }
 
 #mediaAlert[class = 'audio-muting'] {
-  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded_old.svg);
   background-color:  var(--audio-icon-color);
 }
 
@@ -202,4 +202,14 @@ cr-icon-button {
 
 cr-tooltip {
   white-space: nowrap;
+}
+
+:host-context([webui-rounded-icons]) {
+  #mediaAlert[class = 'audio-muting'] {
+    -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  }
+
+  #mediaAlert[class = 'audio-playing'] {
+    -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  }
 }

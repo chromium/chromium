@@ -80,13 +80,13 @@
 }
 
 #showMoreIcon {
-  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/expand_content.svg);
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/expand_content_old.svg);
   background-color:
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
 
 #showLessIcon {
-  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content.svg);
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content_old.svg);
   background-color:
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
@@ -319,4 +319,12 @@ cr-toast-manager {
 
 :host-context([webui-rounded-icons]) #addShortcutIcon {
   -webkit-mask-image: url(chrome://resources/images/add.svg);
+}
+
+:host-context([webui-rounded-icons]) #showMoreIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/expand_content.svg);
+}
+
+:host-context([webui-rounded-icons]) #showLessIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content.svg);
 }

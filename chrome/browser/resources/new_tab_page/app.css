@@ -271,7 +271,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
 }
 
 #linkIcon {
-  -webkit-mask-image: url(icons/link.svg);
+  -webkit-mask-image: url(icons/link_old.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(--color-new-tab-page-attribution-foreground);
@@ -495,4 +495,10 @@ ntp-lens-upload-dialog {
     ~ #voiceSearchGlow::part(full-container-overlay) {
   min-block-size: 0;
   position: absolute;
+}
+
+:host-context([webui-rounded-icons]) {
+  #linkIcon {
+    -webkit-mask-image: url(icons/link.svg);
+  }
 }

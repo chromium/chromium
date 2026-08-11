@@ -54,6 +54,12 @@
 }
 
 #copyButton {
-  --cr-icon-image: url(icons/copy.svg);
+  --cr-icon-image: url(icons/copy_old.svg);
   margin-inline-start: 2px;
+}
+
+:host-context([webui-rounded-icons]) {
+  #copyButton {
+    --cr-icon-image: url(icons/copy.svg);
+  }
 }

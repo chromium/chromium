@@ -25,8 +25,11 @@ build_webui("build") {
 
   static_files = [
     "dark_mode.svg",
+    "dark_mode_old.svg",
     "light_mode.svg",
+    "light_mode_old.svg",
     "system_mode.svg",
+    "system_mode_old.svg",
   ]
 
   ts_files = [

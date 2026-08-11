@@ -87,7 +87,7 @@ customize-chrome-appearance {
 }
 
 #couponsButton .cr-icon {
-  --cr-icon-image: url(icons/coupons.svg);
+  --cr-icon-image: url(icons/coupons_old.svg);
 }
 
 #writingButton .cr-icon {
@@ -95,5 +95,15 @@ customize-chrome-appearance {
 }
 
 #productivityButton .cr-icon {
-  --cr-icon-image: url(icons/productivity.svg);
+  --cr-icon-image: url(icons/productivity_old.svg);
+}
+
+:host-context([webui-rounded-icons]) {
+  #couponsButton .cr-icon {
+    --cr-icon-image: url(icons/coupons.svg);
+  }
+
+  #productivityButton .cr-icon {
+    --cr-icon-image: url(icons/productivity.svg);
+  }
 }

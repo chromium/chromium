@@ -47,14 +47,14 @@
 }
 
 #editThemeIcon {
-  --cr-icon-image: url(icons/image.svg);
+  --cr-icon-image: url(icons/image_old.svg);
   --cr-icon-size: 12px;
   height: 12px;
   width: 12px;
 }
 
 #wallpaperSearchIcon {
-  --cr-icon-image: url(icons/sparkle.svg);
+  --cr-icon-image: url(icons/sparkle_old.svg);
   --cr-icon-size: 20px;
   height: 20px;
   width: 20px;
@@ -65,11 +65,11 @@
 }
 
 #uploadedImageButton {
-  --cr-icon-image: url(icons/upload.svg);
+  --cr-icon-image: url(icons/upload_old.svg);
 }
 
 #searchedImageButton {
-  --cr-icon-image: url(icons/generated_image.svg);
+  --cr-icon-image: url(icons/generated_image_old.svg);
 }
 
 managed-dialog {
@@ -122,4 +122,22 @@ cr-theme-color-picker {
 #followThemeToggleTitle {
   font-size: inherit;
   line-height: inherit;
+}
+
+:host-context([webui-rounded-icons]) {
+  #editThemeIcon {
+    --cr-icon-image: url(icons/image.svg);
+  }
+
+  #searchedImageButton {
+    --cr-icon-image: url(icons/generated_image.svg);
+  }
+
+  #uploadedImageButton {
+    --cr-icon-image: url(icons/upload.svg);
+  }
+
+  #wallpaperSearchIcon {
+    --cr-icon-image: url(icons/sparkle.svg);
+  }
 }

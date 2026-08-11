@@ -168,15 +168,25 @@ cr-tooltip {
 }
 
 .media-alert.audio-playing {
-  -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_rounded_old.svg);
   background-color: var(
       --audio-icon-color,
       var(--color-tab-search-media-icon));
 }
 
 .media-alert.audio-muting {
-  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded_old.svg);
   background-color: var(
       --audio-icon-color,
       var(--color-tab-search-media-icon));
+}
+
+:host-context([webui-rounded-icons]) {
+  .media-alert.audio-muting {
+    -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  }
+
+  .media-alert.audio-playing {
+    -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  }
 }

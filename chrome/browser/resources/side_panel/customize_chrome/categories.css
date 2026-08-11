@@ -134,7 +134,7 @@ cr-grid {
 }
 
 #uploadIcon {
-  --cr-icon-image: url(icons/upload.svg);
+  --cr-icon-image: url(icons/upload_old.svg);
   --cr-icon-size: 21px;
   height: 21px;
   left: 50%;
@@ -152,7 +152,7 @@ customize-chrome-wallpaper-search-tile {
 }
 
 #wallpaperSearchIcon {
-  --cr-icon-image: url(icons/generated_image.svg);
+  --cr-icon-image: url(icons/generated_image_old.svg);
   --cr-icon-size: 24px;
   height: 24px;
   left: 50%;
@@ -216,5 +216,15 @@ customize-chrome-check-mark-wrapper[checked] .image-container {
 
   #uploadIcon {
     background-color: ButtonText;
+  }
+}
+
+:host-context([webui-rounded-icons]) {
+  #uploadIcon {
+    --cr-icon-image: url(icons/upload.svg);
+  }
+
+  #wallpaperSearchIcon {
+    --cr-icon-image: url(icons/generated_image.svg);
   }
 }

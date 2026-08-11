@@ -12,8 +12,14 @@ generate_grd("build_grdp") {
   grd_prefix = "new_tab_page"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
+    "banana.svg",
+    "canvas.svg",
+    "canvas_old.svg",
     "chevron.svg",
     "copy.svg",
+    "copy_old.svg",
+    "deep_search.svg",
+    "deep_search_old.svg",
     "drag_drop_illustration.svg",
     "drive_logo.svg",
     "facebook.svg",
@@ -21,17 +27,17 @@ generate_grd("build_grdp") {
     "google_logo.svg",
     "info.svg",
     "link.svg",
+    "link_old.svg",
     "mail.svg",
     "mic.svg",
     "mic_old.svg",
     "offline_dialog.svg",
-    "share_unfilled.svg",
-    "twitter.svg",
-    "banana.svg",
-    "deep_search.svg",
-    "suggestion.svg",
-    "canvas.svg",
     "search_spark.svg",
+    "share_unfilled.svg",
+    "share_unfilled_old.svg",
+    "suggestion.svg",
+    "suggestion_old.svg",
+    "twitter.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "icons"

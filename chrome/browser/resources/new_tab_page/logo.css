@@ -138,6 +138,10 @@
   height: 18px;
   margin: 7px;
   vertical-align: bottom;
-  mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
+  mask-image: url(chrome://new-tab-page/icons/share_unfilled_old.svg);
   background-color: var(--color-new-tab-page-doodle-share-button-icon, none);
+}
+
+:host-context([webui-rounded-icons]) #shareButtonIcon {
+  mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
 }
