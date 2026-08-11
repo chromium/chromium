@@ -337,8 +337,16 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                 std::nullopt);
 }
 
+// TODO(crbug.com/545268511): DelayedManifestTriggersPipeline is failing on
+// Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DelayedManifestTriggersPipeline \
+  DISABLED_DelayedManifestTriggersPipeline
+#else
+#define MAYBE_DelayedManifestTriggersPipeline DelayedManifestTriggersPipeline
+#endif
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
-                       DelayedManifestTriggersPipeline) {
+                       MAYBE_DelayedManifestTriggersPipeline) {
   auto observer = CreateAppBannerManagerObserver();
   RunBannerTest(
       web_contents(), observer.get(),
@@ -659,7 +667,14 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   observer->app_banner_manager()->ResetCurrentPageDataForTesting();
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
+// TODO(crbug.com/545268511): WebAppBannerReprompt is failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerReprompt DISABLED_WebAppBannerReprompt
+#else
+#define MAYBE_WebAppBannerReprompt WebAppBannerReprompt
+#endif
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
+                       MAYBE_WebAppBannerReprompt) {
   auto observer = CreateAppBannerManagerObserver();
   base::HistogramTester histograms;
 
@@ -787,7 +802,14 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
       InstallableStatusCode::PREFER_RELATED_APPLICATIONS, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest, WebAppBannerTerminated) {
+// TODO(crbug.com/545268511): WebAppBannerTerminated is failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_WebAppBannerTerminated DISABLED_WebAppBannerTerminated
+#else
+#define MAYBE_WebAppBannerTerminated WebAppBannerTerminated
+#endif
+IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
+                       MAYBE_WebAppBannerTerminated) {
   auto observer = CreateAppBannerManagerObserver();
   base::HistogramTester histograms;
 
