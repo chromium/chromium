@@ -267,10 +267,9 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
     return;
   }
 
-  gfx::Rect tab_bounds = web_contents->GetContainerBounds();
-  gfx::Rect crop_rect_logical(x, y, width, height);
-  crop_rect_logical.Intersect(
-      gfx::Rect(0, 0, tab_bounds.width(), tab_bounds.height()));
+  gfx::Rect crop_rect_logical =
+      gfx::IntersectRects(gfx::Rect(web_contents->GetContainerBounds().size()),
+                          gfx::Rect(x, y, width, height));
 
   float scale = view->GetDeviceScaleFactor();
 
