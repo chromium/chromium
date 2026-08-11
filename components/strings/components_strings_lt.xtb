@@ -326,6 +326,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1549470594296187301">Norint naudoti šią funkciją, reikia įgalinti „JavaScript“.</translation>
 <translation id="1550906923175308360">Sukurk man šiandienos užduočių sąrašą, kad galėčiau laikytis plano</translation>
 <translation id="1553358976309200471">Atnaujinti „Chrome“</translation>
+<translation id="1555014818414775661">Pridėti vaizdų</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1555191101192706055">Svetainės, kurioje bandėte apsilankyti, atakos vykdytojai gali apgaule priversti jus įdiegti žalingą programinę įrangą, paveikiančią naršymo būdą, pvz., pakeitus pagrindinį puslapį ar rodant papildomus skelbimus svetainėse, kuriose lankotės.</translation>
 <translation id="1559231233244409191">Kartonas (trigubos sienos)</translation>
@@ -542,7 +543,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="192020519938775529">{COUNT,plural, =0{Nėra}=1{1 svetainė}one{# svetainė}few{# svetainės}many{# svetainės}other{# svetainių}}</translation>
 <translation id="192095259937375524">Mygtukas „Bendrinti šį skirtuką“; suaktyvinkite, jei norite bendrinti šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami turinį ir kt.</translation>
 <translation id="1924727005275031552">Naujas</translation>
-<translation id="1925757445192941004">Paieškos variklį galite bet kada pakeisti „Chrome“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Teikėjas bus rodomas kaip neseniai aplankytas paieškos teikėjas „Chrome“ nustatymuose ir galėsite nustatyti jį kaip numatytąjį.</translation>
 <translation id="1927930548546198515">„Chrome“ registruoja, kaip naudojate šią funkciją, pvz., užklausas ir elgseną, kai priimate ar ignoruojate pasiūlymus</translation>
 <translation id="1932098463447129402">Nuo</translation>
 <translation id="1935353813610900265">Siųsti atsiliepimus apie DI teikiamą istorijos paiešką</translation>
@@ -2945,6 +2945,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Nepavyko išsaugoti vaizdo įrašo sistemoje „OneDrive“</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinchronizuota)</translation>
+<translation id="6025471531651464742">Pridėti failų</translation>
 <translation id="6028591542479806248">Tvarkykite pranešimus mobiliuosiuose ir el. pašte</translation>
 <translation id="603068602130820122">Dvi sankabėlės dešinėje</translation>
 <translation id="6031824805267965302">Naudokite judesio jutiklius</translation>
@@ -4073,7 +4074,6 @@ Papildoma išsami informacija:
 <translation id="7952327717479677595">Mygtukas „Valdyti paieškos variklius“; suaktyvinkite, jei norite valdyti numatytąjį paieškos variklį ir svetainių paiešką</translation>
 <translation id="7953236668995583915">Įkelkite šį puslapį iš naujo, kad pritaikytumėte atnaujintus nustatymus šioje svetainėje</translation>
 <translation id="7953569069500808819">Kraštų sukabinimas viršuje</translation>
-<translation id="7953610917406434396">Paieškos variklį galite bet kada pakeisti „Chromium“ nustatymuose. Jei nematote pageidaujamo paieškos variklio, galite atlikti paiešką jo svetainėje. Teikėjas bus rodomas kaip neseniai aplankytas paieškos teikėjas „Chromium“ nustatymuose ir galėsite jį nustatyti kaip numatytąjį.</translation>
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
 <translation id="7956713633345437162">Žymės mobiliesiems</translation>
 <translation id="7961015016161918242">Niekada</translation>

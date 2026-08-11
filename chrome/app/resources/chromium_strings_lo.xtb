@@ -685,6 +685,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ຈະເຕືອນທ່ານ<ph name="END_LINK" /> ກ່ຽວກັບເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ບໍ່ປອດໄພ</translation>
 <translation id="8295827201165805317">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງ <ph name="PERMISSION" /> ອອກແລ້ວ.</translation>
 <translation id="8296236834352487533">ເລືອກຊື້, ແປພາສາ ແລະ ລະບຸສິ່ງທີ່ທ່ານເຫັນດ້ວຍກ້ອງຂອງທ່ານຢູ່ແອັບ Chromium iOS</translation>
+<translation id="8310603974518734211">ລະຫັດ QR ເພື່ອເຂົ້າສູ່ລະບົບ Chromium ໃນຊື່ <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">ຂໍ້ຜິດພາດໃນການເລີ່ມຕົ້ນ: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">ອົງກອນຂອງທ່ານປິດ Chromium ໄວ້ເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">ບັນທຶກເປັນຮູບ</translation>

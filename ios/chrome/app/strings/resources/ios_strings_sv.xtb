@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Det här kontot fungerar inte med Gemini. Logga in med ett annat Google-konto.</translation>
 <translation id="3265736395246760288">Logga in snabbare från alla dina synkroniserade enheter.</translation>
 <translation id="3272527697863656322">Avbryt</translation>
+<translation id="3272955648592358996">Din data förbättrar Google AI</translation>
 <translation id="3273510436356991673">Anpassa startskärmen</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
 <translation id="3280562213547448728">Röstsökning</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Detta används för att visa möjliga användare att bjuda in till händelser.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Du hittar historiken här</translation>
+<translation id="3892695492576181257">När den är aktiverad sparas din aktivitet i Gemini-appaktivitet i 18 månader. Du kan ändra detta till 3 eller 36 månader. Google använder din aktivitet för att utveckla och förbättra sina tjänster (inklusive Gemini-modeller), samt för att skydda Google, Googles användare och allmänheten med hjälp av mänskliga granskare. Data som granskas av tjänsteleverantörer kopplas bort från ditt konto och sparas i tre år.</translation>
 <translation id="3893858854379998374">Radera oanvända bokmärken om du vill spara bokmärken i kontot</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3904270275864974753">Redigera snurra</translation>
@@ -1494,6 +1496,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5971459446352190251">Sök bland QR-koder</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmärke har raderats}other{{count} bokmärken har raderats}}</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
+<translation id="597482816780655631">Gemini är AI och den kan göra misstag, inklusive om personer. Visst innehåll kanske inte är lämpligt för alla. Chattar granskas och används för att förbättra Google AI. <ph name="BEGIN_LINK" />Läs mer om dina val<ph name="END_LINK" />. Våra <ph name="BEGIN_LINK" />villkor<ph name="END_LINK" /> och vårt <ph name="BEGIN_LINK" />integritetsmeddelande<ph name="END_LINK" /> gäller.</translation>
 <translation id="5976160379964388480">Övriga</translation>
 <translation id="5977976211062815271">På den här enheten</translation>
 <translation id="5986043348928676121">Nästa</translation>
@@ -1860,6 +1863,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7108338896283013870">Dölj</translation>
+<translation id="7119533351103192286">Använd Gemini</translation>
 <translation id="7127922377013221748">Dölj verktygsfält</translation>
 <translation id="7128693485119315539">Organisationen behöver kanske se och hantera webbinformation som är kopplad till ditt hanterade konto, till exempel webbhistorik och lösenord.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8796634520835503150">Läsläget är tillgängligt</translation>
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
 <translation id="8803639129939845298">Säkert</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />-medlemskap</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8814308045751067027">Om du vill använda Live måste du ge Chrome åtkomst till mikrofonen i inställningarna</translation>
 <translation id="8814719628147284151">Fortsätt</translation>
@@ -2397,6 +2402,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="882557203579758546">Sök på sidan …</translation>
 <translation id="8829809207373502270">Den här nyckeln fungerar inte längre. Den har raderats från <ph name="WEBSITE" /> och raderas snart härifrån. <ph name="BEGIN_LINK" />Om nycklar<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Stäng alla inaktiva</translation>
+<translation id="8831871601813227635">Våra <ph name="BEGIN_LINK" />villkor<ph name="END_LINK" />, <ph name="BEGIN_LINK" />villkor för platstjänster i Sydkorea<ph name="END_LINK" /> och vårt <ph name="BEGIN_LINK" />integritetsmeddelande<ph name="END_LINK" /> gäller. Chattar granskas och används för att förbättra Google AI. Gemini är AI och den kan göra misstag, inklusive om personer. Visst innehåll kanske inte är lämpligt för alla. Du kan <ph name="BEGIN_LINK" />hantera din aktivitet<ph name="END_LINK" />, inklusive information om din plats. <ph name="BEGIN_LINK" />Läs mer om dina val<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Sortera efter utgivare</translation>
 <translation id="884351711508006491">Dina uppgifter sparas på enheten.</translation>
 <translation id="8844136307393039959">Prissänkning på din bevakade produkt</translation>

@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Denne konto fungerer ikke med Gemini. Log ind med en anden Google-konto.</translation>
 <translation id="3265736395246760288">Log hurtigere ind fra en hvilken som helst af dine synkroniserede enheder.</translation>
 <translation id="3272527697863656322">Annuller</translation>
+<translation id="3272955648592358996">Dine data forbedrer Google AI</translation>
 <translation id="3273510436356991673">Tilpas din startskærm</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
+<translation id="3892695492576181257">Når den er aktiveret, gemmes din aktivitet i Gemini-appaktivitet i 18 måneder, men du kan ændre det til 3 eller 36 måneder. Google bruger din aktivitet til at udvikle og forbedre sine tjenester (herunder Gemini-modeller) samt til at beskytte Google, Googles brugere og offentligheden med hjælp fra menneskelige kontrollanter. Data, der gennemgås af vores tjenesteudbydere, gemmes i 3 år, og tilknytningen til din konto fjernes.</translation>
 <translation id="3893858854379998374">Hvis du vil gemme bogmærker på din konto, skal du slette dine ubrugte bogmærker</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Rediger karrusel</translation>
@@ -1494,6 +1496,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5971459446352190251">Søgning efter QR-kode</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
+<translation id="597482816780655631">Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Chatsamtaler gennemgås og bruges til at forbedre Google AI. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder.<ph name="END_LINK" /> Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende.</translation>
 <translation id="5976160379964388480">Andre</translation>
 <translation id="5977976211062815271">På denne enhed</translation>
 <translation id="5986043348928676121">Næste</translation>
@@ -1860,6 +1863,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7102005569666697658">Downloader… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Indstillinger → Betalingsmetoder</translation>
 <translation id="7108338896283013870">Skjul</translation>
+<translation id="7119533351103192286">Brug Gemini</translation>
 <translation id="7127922377013221748">Skjul værktøjslinje</translation>
 <translation id="7128693485119315539">Din organisation skal muligvis se og administrere browserdata, der er knyttet til din administrerede konto, f.eks. din browserhistorik og dine adgangskoder.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8796634520835503150">Læsetilstand er tilgængelig</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8803639129939845298">Sikker</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />-medlemskab</translation>
 <translation id="8813277370772331957">Påmind mig senere</translation>
 <translation id="8814308045751067027">Hvis du vil bruge Live, skal du give Chrome adgang til din mikrofon i indstillingerne</translation>
 <translation id="8814719628147284151">Fortsæt</translation>
@@ -2397,6 +2402,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="882557203579758546">Find på siden…</translation>
 <translation id="8829809207373502270">Denne adgangsnøgle virker ikke længere. Den er slettet fra <ph name="WEBSITE" /> og slettes snart herfra også. <ph name="BEGIN_LINK" />Om adgangsnøgler<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Luk alle inaktive faner</translation>
+<translation id="8831871601813227635">Vores <ph name="BEGIN_LINK" />vilkår<ph name="END_LINK" />, <ph name="BEGIN_LINK" />koreanske servicevilkår for lokation<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelse<ph name="END_LINK" /> er gældende. Chatsamtaler gennemgås og bruges til at forbedre Google AI. Gemini er en AI-assistent og kan begå fejl, herunder om personer. Noget indhold er muligvis ikke egnet for alle. Du kan <ph name="BEGIN_LINK" />administrere din aktivitet<ph name="END_LINK" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK" />Få flere oplysninger om dine valgmuligheder<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Sortér efter udgiver</translation>
 <translation id="884351711508006491">Dine oplysninger gemmes på din enhed.</translation>
 <translation id="8844136307393039959">Prisfald på det produkt, du holder øje med</translation>

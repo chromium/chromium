@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{បាននាំចូល​ពាក្យសម្ងាត់ 1 ទៅក្នុង<ph name="BRAND" />នៅលើ​ឧបករណ៍នេះ}other{បាននាំចូល​ពាក្យសម្ងាត់ {NUM_PASSWORDS} ទៅក្នុង<ph name="BRAND" />នៅលើ​ឧបករណ៍នេះ}}</translation>
 <translation id="1046572983040892965">បានផ្លាស់ទីវិនដូឡើងលើ និងទៅខាងឆ្វេង</translation>
 <translation id="1047431265488717055">ចម្លងអត្ថបទតំណ</translation>
-<translation id="1048350929895890054">គេហទំព័រដែលម៉ឺនុយអណ្ដែតត្រូវបានទប់ស្កាត់</translation>
 <translation id="1048986595386481879">បែងចែក​ជានិច្ច</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{កំពុងទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}other{កំពុងទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">អនាមិក</translation>
@@ -5780,6 +5779,7 @@
 <translation id="5444281205834970653">លុប រួចបន្ត</translation>
 <translation id="5444452275167152925">បាននាំចូលពី ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">រិះរកគំនិត</translation>
 <translation id="5449551289610225147">ពាក្យ​សម្ងាត់​មិន​ត្រឹមត្រូវ</translation>
 <translation id="5449588825071916739">ចំណាំផ្ទាំងទាំងអស់</translation>
@@ -5913,7 +5913,6 @@
 <translation id="5546865291508181392">ស្វែងរក</translation>
 <translation id="5547868626772433490">សួរ Gemini</translation>
 <translation id="5548075230008247516">បានដក​ការជ្រើសរើស​ធាតុទាំងអស់ បានចាកចេញពី​មុខងារជ្រើសរើស។</translation>
-<translation id="554810465530189549">កុំបង្ហាញម៉ឺនុយអណ្ដែត នៅពេលជ្រើសរើសអក្សរ</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" និងផ្ទាំង 1 ទៀត}other{"<ph name="TAB_TITLE" />" និងផ្ទាំង # ទៀត}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">ក្ដារចុច និង​ការបញ្ចូល​អត្ថបទ</translation>
@@ -6072,7 +6071,6 @@
 <translation id="5678955352098267522">អានទិន្នន័យរបស់អ្នកនៅលើ <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">លុប "<ph name="ESIM_PROFILE_NAME" />" ឬ?</translation>
 <translation id="5681586175480958839">កំពុងបើក​ឯកសារ​ស្រាប់​ហើយ</translation>
-<translation id="5682950763196110705">បង្ហាញម៉ឺនុយអណ្ដែត នៅពេលជ្រើសរើសអក្សរ</translation>
 <translation id="5684110242705861346">កម្មវិធីបន្ថែម "<ph name="NAME" />" ត្រូវបាន​បញ្ចូល​ដោយ​គោលការណ៍​របស់​ស្ថាប័នអ្នក និង​កំពុង​គ្រប់គ្រង​ការកំណត់នេះ។ <ph name="BEGIN_LINK" />មើលព័ត៌មានលម្អិត<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">ព័ត៌មានលម្អិត​អំពី Wi-Fi</translation>
 <translation id="5687340364605915800">គេហទំព័រ​ប្រើ​ឆន្ទានុសិទ្ធិរបស់ខ្លួន​នៅ​ពេល​ឆ្លើយតប​នឹងសំណើ​នេះ</translation>
@@ -7361,6 +7359,7 @@
 <translation id="6702859741546259407">ដើម្បីប្រើ<ph name="FEATURE_NAME" /> សូមបើកប៊្លូធូស និង Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">ការផ្ដោត​ខ្នាតតូច</translation>
+<translation id="6706210727756204531">ដែនកំណត់</translation>
 <translation id="6707122714992751648">ដំណើរការ​តេស្តវិភាគ ChromeOS</translation>
 <translation id="6707389671160270963">វិញ្ញាបនប័ត្រអតិថិជន SSL</translation>
 <translation id="6707671917294473995">មិនអនុញ្ញាតឱ្យគេហទំព័រប្រើកាមេរ៉ារបស់អ្នកទេ</translation>
@@ -8144,6 +8143,7 @@
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
 <translation id="7312040805247765153">មិនអាច​ដំឡើង​កម្មវិធី​បានទេ</translation>
 <translation id="7312210124139670355">អ្នកគ្រប់គ្រងរបស់អ្នកកំពុងកំណត់ eSIM របស់អ្នកឡើងវិញ។ ការកំណត់ឡើងវិញនេះ​អាចចំណាយមួយភ្លែត។</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">ពណ៌ពន្លឺក្រោយក្ដារចុច</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{មិនបង្ហាញ និង​មិនអាច​កំណត់​កាលបរិច្ឆេទ​ព្រឹត្តិការណ៍ 1 បានទេ}other{មិនបង្ហាញ និង​មិនអាច​កំណត់​កាលបរិច្ឆេទ​ព្រឹត្តិការណ៍ # បានទេ}}</translation>
 <translation id="7314865262803554456">អ្នក​នឹងមិន​ទទួលបាន​ការជូនដំណឹងទេ នៅពេល​ការថត​ចាប់ផ្ដើម។</translation>

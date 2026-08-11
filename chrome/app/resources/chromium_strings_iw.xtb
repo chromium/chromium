@@ -681,6 +681,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8286943863733751221">‏<ph name="BEGIN_LINK" />ב-Chromium מוצגות אזהרות<ph name="END_LINK" /> מפני הורדות ואתרים לא בטוחים</translation>
 <translation id="8295827201165805317">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאה "<ph name="PERMISSION" />" הוסרה על ידי Chromium.</translation>
 <translation id="8296236834352487533">‏אפשר לקנות, לתרגם ולזהות את מה שרואים במצלמה באפליקציית Chromium ל-iOS</translation>
+<translation id="8310603974518734211">‏קוד QR לכניסה אל Chromium בתור <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">שגיאת הפעלה: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">שמירה כתמונה</translation>

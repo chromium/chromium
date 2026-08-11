@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">See konto ei tööta Geminiga. Logige sisse mõne teise Google'i kontoga.</translation>
 <translation id="3265736395246760288">Logige kiiremini sisse mis tahes sünkroonitud seadmest</translation>
 <translation id="3272527697863656322">Loobu</translation>
+<translation id="3272955648592358996">Teie andmed täiustavad Google'i AI-d</translation>
 <translation id="3273510436356991673">Avakuva kohandamine</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
 <translation id="3280562213547448728">Häälotsing</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Seda kasutatakse teile nende kontaktide näitamiseks, keda soovite võib-olla sündmusele kutsuda.</translation>
 <translation id="3891414008432200754">Hind</translation>
 <translation id="3892144330757387737">Leiate oma ajaloo siit</translation>
+<translation id="3892695492576181257">Kui see seade on sisse lülitatud, salvestatakse teie tegevus Gemini rakenduste tegevusse 18 kuuks, kuid saate selle muuta kolmeks või 36 kuuks. Google kasutab teie tegevust selleks, et arendada ja täiustada oma teenuseid (sh Gemini mudeleid), samuti selleks, et kaitsta ülevaatajate abiga Google’it, selle kasutajaid ja avalikkust. Andmeid, mille teenusepakkujad on üle vaadanud, ei seostata teie kontoga ja need salvestatakse kolmeks aastaks.</translation>
 <translation id="3893858854379998374">Järjehoidjate salvestamiseksoma kontole kustutage kasutamata järjehoidjad.</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3904270275864974753">Karusselli muutmine</translation>
@@ -1494,6 +1496,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5971459446352190251">QR-koodi otsing</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 järjehoidja kustutati}other{{count} järjehoidjat kustutati}}</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
+<translation id="597482816780655631">Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. <ph name="BEGIN_LINK" />Lugege lisateavet oma valikute kohta<ph name="END_LINK" />. Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Muud</translation>
 <translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5986043348928676121">Järgmine</translation>
@@ -1860,6 +1863,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="7102005569666697658">Allalaadimine … <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menüü → Seaded → Makseviisid</translation>
 <translation id="7108338896283013870">Peida</translation>
+<translation id="7119533351103192286">Kasuta Geminit</translation>
 <translation id="7127922377013221748">Peida tööriistariba</translation>
 <translation id="7128693485119315539">Teie organisatsioonil võib olla vaja näha ja hallata teie hallatud kontoga seotud sirvimisandmeid (nt sirvimisajalugu ja paroole).</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="8796634520835503150">Lugemisrežiim on saadaval</translation>
 <translation id="8803526663383843427">Kui on sisse lülitatud</translation>
 <translation id="8803639129939845298">Turvaline</translation>
+<translation id="8809212245338455710">Tellimuse <ph name="AI_TIER_NAME" /> liikmesus</translation>
 <translation id="8813277370772331957">Tuleta mulle hiljem meelde</translation>
 <translation id="8814308045751067027">Live'i kasutamiseks andke Chrome'ile seadetes juurdepääs oma mikrofonile.</translation>
 <translation id="8814719628147284151">Jätka</translation>
@@ -2397,6 +2402,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="882557203579758546">Lehelt otsimine …</translation>
 <translation id="8829809207373502270">See pääsuvõti ei toimi enam. See on veebisaidilt <ph name="WEBSITE" /> kustutatud ja kustutatakse varsti ka siit. <ph name="BEGIN_LINK" />Teave pääsuvõtmete kohta<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Sulge kõik inaktiivsed</translation>
+<translation id="8831871601813227635">Kehtivad meie <ph name="BEGIN_LINK" />tingimused<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korea asukohatingimused<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />privaatsusteatis<ph name="END_LINK" />. Vestlused vaadatakse üle ja neid kasutatakse Google’i AI täiustamiseks. Gemini on tehisintellekt ja võib teha vigu, sh inimestega seotud vigu. Osa sisust ei pruugi kõigile sobida. Saate <ph name="BEGIN_LINK" />hallata oma tegevusi<ph name="END_LINK" />, sh teavet oma asukoha kohta. <ph name="BEGIN_LINK" />Lugege lisateavet oma valikute kohta<ph name="END_LINK" />.</translation>
 <translation id="8837654851594567190">Sordi väljaandja järgi</translation>
 <translation id="884351711508006491">Teie teave salvestatakse teie seadmesse.</translation>
 <translation id="8844136307393039959">Teie jälgitava toote hind langes</translation>

@@ -193,6 +193,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="132301787627749051">Klipborddagi rasmni qidirish</translation>
 <translation id="1323433172918577554">Yana</translation>
 <translation id="1330449323196174374">Chap tomonni darvozasimon taxlash</translation>
+<translation id="1330952240988133220">Redress raqamini Google Walletga xavfsiz saqlang</translation>
 <translation id="133173645041092770">Veb-saytni yopish</translation>
 <translation id="1333745675627230582">Chrome Dino oʻyinini boshlash</translation>
 <translation id="1333989956347591814">Faoliyatingizni quyidagilar <ph name="BEGIN_EMPHASIS" />kuzatishi mumkin<ph name="END_EMPHASIS" />:
@@ -324,6 +325,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1549470594296187301">Bu xususiyatdan foydalanish uchun JavaScript yoqilgan bo‘lishi lozim.</translation>
 <translation id="1550906923175308360">Ishlarimni rejalashtirishimga yordam berish uchun bugungi qilinadigan ishlar roʻyxatini tuzib ber</translation>
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
+<translation id="1555014818414775661">Rasmlarni kiritish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1555191101192706055">Siz ochayotgan saytda firibgarlar — bosh sahifani oʻzgartirish yoki saytlarda qoʻshimcha reklama chiqarish orqali sizni aldab, sahifalarni kezishingizga taʼsir qiluvchi xavfli dasturni oʻrnatishi mumkin.</translation>
 <translation id="1559231233244409191">Karton (uch qatlamli)</translation>
@@ -340,6 +342,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1569487616857761740">Amal qilish muddatini kiriting</translation>
 <translation id="1569694109004336106">Google Chrome parollarni kiritishda Windows Hello himoyasini yoqishga urinmoqda.</translation>
 <translation id="1569905000953679183">Kengaytma oʻrnatish qoidalarini olish</translation>
+<translation id="1572383686781055412">KTN raqamini xavfsiz yangilang</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="1574714699824202614">Toʻlov usulini tasdiqlash</translation>
 <translation id="1576277203042721907">Shopping statistikasi</translation>
@@ -396,6 +399,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1658918301167915956">bluetooth qurilmalar</translation>
 <translation id="1662550410081243962">To‘lov usullarini saqlash va avtomatik kiritish</translation>
 <translation id="1662980953334786797">Bir xil tartibda</translation>
+<translation id="1663578299724791827">KTN raqamini xavfsiz saqlang</translation>
 <translation id="1663943134801823270">Chrome brauzerida saqlangan karta va manzillar. Siz ularni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali boshqarishingiz mumkin.</translation>
 <translation id="1664389769577564606">Flekso bosib chiqarish uchun fotopolimer</translation>
 <translation id="1667730174533834274">soʻzlamalarni oʻzgartirish uchun shaxsingizni tasdiqlash</translation>
@@ -403,6 +407,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1670861525135254448">Transportni saqlash</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Avval eniga</translation>
+<translation id="1683083957814090281">Transportni xavfsiz yangilang</translation>
 <translation id="168693727862418163">Bu parametr oʻz andozasiga mos tushmagani uchun inkor etiladi.</translation>
 <translation id="168841957122794586">Server sertifikati ishonchsiz kriptografik kalitga ega.</translation>
 <translation id="1688718429648938412">Sodiq mijoz kartasini Wallet ilovasiga saqlash</translation>
@@ -867,6 +872,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2469153820345007638">1 dan N gacha tartibda</translation>
 <translation id="24699311393038040">Qogʻoz (qoplamali)</translation>
 <translation id="2471632709106952369">Taqqoslash jadvallari</translation>
+<translation id="2472396075297339227">Ishonchli sayohatchi raqamini Google Walletga xavfsiz saqlang</translation>
 <translation id="2477607419416067650">Boshqa Google maʼlumotlari</translation>
 <translation id="247903268499247848">Harakat va yorugʻlik sensorlaridan foydalanish ruxsati berilmagan</translation>
 <translation id="2479148705183875116">Sozlamalarni ochish</translation>
@@ -925,6 +931,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2553352788023127673">Qidiruv tarixi va parollarni ularning boshqaruv sozlamalari orqali oʻchirish mumkin.</translation>
 <translation id="2553853292994445426">DNS sozlamalar himoyasini tekshiring. Siz sozlagan DNS serverga ulanilmayotgan boʻlishi mumkin.</translation>
 <translation id="2555855727505718984">Avtomatik kiritish axboroti bu qurilmada saqlanmaydi</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Tahrirni bekor qilish</translation>
 <translation id="2559566667529177711">Koʻp qatlamli</translation>
 <translation id="2570734079541893434">Sozlamalarni boshqarish</translation>
@@ -1097,6 +1104,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2905107382358353958">Yangi toʻlov sozlamasi haqida ogohlantirish</translation>
 <translation id="2909946352844186028">Tarmoqda o‘zgarish yuz berdi.</translation>
 <translation id="2910062169995917863">Seans vaqti tugadi</translation>
+<translation id="2911224142899421774">Google Wallet sozlamalari Chrome orqali saqlangan maʼlumotlarga tatbiq etiladi</translation>
 <translation id="2911973620368911614">Vazifa hisobidagi foydalanuvchi identifikatori</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> sayti maʼlumotlaringizni himoyalash uchun shifrlashdan foydalanadi, lekin hozir Chromium <ph name="SITE" /> saytiga ulanish uchun uringanda, ushbu sayt shubhali va xato tasdiqlash maʼlumotlarini qaytarmoqda. Bunday holat zararli sayt oʻzini <ph name="SITE" /> oʻrnida koʻrsatayotganda yoki Wi-Fi ulanishi uzilib qolganda yuz berishi mumkin. Shaxsiy maʼlumotlaringiz hali ham xavfsiz, chunki Chrome aloqani maʼlumotlar almashinuvidan oldin uzib qoʻydi.</translation>
 <translation id="2915068235268646559">Ishdan chiqdi: <ph name="CRASH_TIME" /></translation>
@@ -1322,6 +1330,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3273738040255912340">Administrator profil va brauzer sozlamalarini masofadan oʻzgartirishi, brauzer maʼlumotlaridan iborat hisobotlarni tahlil qilishi hamda boshqa vazifalarni bajarishi mumkin. Bu qurilmadagi amallar Chromium tashqarisidan boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">IBAN saqlash paneli toʻliq hajmda ochildi</translation>
 <translation id="327455571215090823">Yanada qulay avtomatik kiritish — maxfiylik kafolatlangan</translation>
+<translation id="3280440382387335343">Google Walletda pasportni xavfsiz yangilang</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />da ochishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />da ochishni tavsiya qilmaydi}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> tashkilotingiz quyidagi saytlarga sozlamalar va qoidalar kabi ayrim axborotlarni yubordi.</translation>
 <translation id="3286372614333682499">tik</translation>
@@ -1461,6 +1470,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3543597750097719865">SHA-512 algoritmli X9.62 ECDSA imzosi</translation>
 <translation id="3543935938072367282">Avtomatik kiritish bilan yana tez toʻlov qiling</translation>
 <translation id="3547442767634383572">Ish profili umumiy haqida umumiy maʼlumot</translation>
+<translation id="3547673868874844776">ID kartani xavfsiz saqlang</translation>
 <translation id="3547746132308051926">20 x 24 in</translation>
 <translation id="3549904448933807997">Brauzerlar va profillar haqida axborot (jumladan, shaxsiy va ish profillari)</translation>
 <translation id="3552155506104542239">Ogohlantirish: Bu qoida <ph name="POLICY_NAME" /> bilan ziddiyatda va Android ilovalarida samarasiz. Bunday boʻlmasa, bu siyosat maqsadga muvofiq ishlaydi.</translation>
@@ -1668,6 +1678,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="388632593194507180">Kuzatuv aniqlandi</translation>
 <translation id="3886948180919384617">Taxlovchi 3</translation>
 <translation id="3890664840433101773">Email manzilini kiriting</translation>
+<translation id="3892626428170730309">Pasportni xavfsiz saqlang</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Bu kartadan foydalanish muddati tugadi</translation>
 <translation id="390391808978419508">Ochish vaqti tugadi</translation>
@@ -1823,6 +1834,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4153858337812834972">Eng oxirgi varaqlar</translation>
 <translation id="4154277373259957087">Chrome toʻlov usulini kiritishdan oldin shaxsingizni tasdiqlaydi Buni istalgan vaqtda <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> orqali yangilash mumkin.</translation>
 <translation id="4157273919218514718">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. <ph name="BEGIN_LINK" />Sozlamalarni boshqarish<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Haydovchilik guvohnomasini xavfsiz yangilang</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4165422751765527461">Yangi varaqda Yordam markazi maqolasi ochiladi</translation>
 <translation id="4165986682804962316">Sayt sozlamalari</translation>
@@ -1837,6 +1849,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
 <translation id="4178863275556660738">Kartasiz toʻlov usullari bilan toʻlash</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Redress raqamini xavfsiz yangilang</translation>
 <translation id="4186035307311647330">Narxni kuzatmaslik</translation>
 <translation id="4190446002599583608">AI yordamida brauzer tarixidan qidirish</translation>
 <translation id="4191334393248735295">Uzunlik</translation>
@@ -1878,6 +1891,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4231448684371260244">8 x 13 duym</translation>
 <translation id="4234996384188431444">Google Chromeda ilovalarni almashtirmasdan Pix bilan toʻlang</translation>
 <translation id="4238607350028440048">Oʻzingni ishga qabul qilish menejeridek tutib, menga savollar ber va suhbatga tayyorlanishimga yordam ber</translation>
+<translation id="4239215166147486528">Haydovchilik guvohnomasini Google Walletga xavfsiz saqlang</translation>
 <translation id="4239799716689808527">Yorliqlar</translation>
 <translation id="424063167283213501">Tanish sayohatchi raqamini (KTN) saqlash</translation>
 <translation id="4241830393007970744">Siz ochayotgan saytda firibgarlar sizni aldab, parollaringiz, telefon yoki kredit karta raqamlaringizni oʻgʻirlashi yoki oʻchirishi mumkin zararli dasurni oʻrnatishi mumkin.</translation>
@@ -1990,6 +2004,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4407758156081352648">Xavfsizlik maqsadlarida tashkilotingiz Chromeda parollarni takroriy ishlatishni taqiqlagan. Foydalanuvchilar maxfiyligini himoyalash uchun parollarni shifrlaymiz.</translation>
 <translation id="4409271659088619928">Qidiruv tizimingiz: <ph name="DSE" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="4409556632583862731">Yangi yozishma</translation>
+<translation id="4410614037742891410">Google Walletda ID kartani yangilash</translation>
 <translation id="4412074349188076601">Bu konfiguratsiya oʻrnatilishi mumkin deb belgilangan lekin bu arxitektura uchun tasvir taqdim etilmagani uchun oʻrnatilmaydi.</translation>
 <translation id="4412377069090572315">Odamlarning fikri qanday</translation>
 <translation id="4414515549596849729">cookie fayllari va sayt maʼlumotlari</translation>
@@ -2203,9 +2218,11 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4800132727771399293">Kartangiz orqasidagi CVC-kod muddatini tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="4800546479758254481">AR ishlatishga ruxsat berildi</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">ID kartani xavfsiz yangilang</translation>
 <translation id="4807098396393229769">Karta egasining ismi</translation>
 <translation id="4809079943450490359">Administrator korsatmalari:</translation>
 <translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
+<translation id="4811696127853690432">Transportni Google Walletga xavfsiz saqlang</translation>
 <translation id="4811918461974803225">Google Pay, Affirm logotipi</translation>
 <translation id="4813512666221746211">Tarmoq xatoligi</translation>
 <translation id="4814114628197290459">IBAN raqamini oʻchirish</translation>
@@ -2335,11 +2352,13 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5020862932518041900">Takliflarni tanlashingiz yoki rad etishingiz asosida Chrome faqat sizga mos va foydali maʼlumotlarni chiqarish uchun moslashib boradi</translation>
 <translation id="5021500396464456616">Bu havolani yuborgan shaxsga murojaat qiling</translation>
 <translation id="5021557570875267742">Chrome bilan narxlarni kuzatish</translation>
+<translation id="502229363433123770">Redress raqamini xavfsiz saqlang</translation>
 <translation id="5023310440958281426">Administrator tomonidan o‘rnatilgan qoidalarni tekshiring</translation>
 <translation id="5024171724744627792">Karta saqlanganda xaridlar uchun tezkor toʻlang. Karta maʼlumotlari Google hisobingizda shifrlangan shaklda saqlanadi.</translation>
 <translation id="5026121202864677765">Kirish xatini yozib ber</translation>
 <translation id="5030338702439866405">Berilgan vaqt:</translation>
 <translation id="503069730517007720">“<ph name="SOFTWARE_NAME" />” uchun negiz sertifikati zarur, lekin o‘rnatilmagan. Tarmoq administratori bu muammoning yechimini “<ph name="SOFTWARE_NAME" />” konfiguratsiyasi ko‘rsatmalaridan izlashi zarur. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">KTN raqamini Google Walletga xavfsiz saqlang</translation>
 <translation id="503498442187459473"><ph name="HOST" /> kamera va mikrofoningizdan foydalanishni istaydi</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Shrift hajmi</translation>
@@ -2716,6 +2735,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5648166631817621825">Oxirgi 7 kun</translation>
 <translation id="5649053991847567735">Avtomatik yuklamalar</translation>
 <translation id="5651323159439184939">Avtomatik uzatiladigan qogʻoz</translation>
+<translation id="5653681867130739344">Google Walletda ID kartani xavfsiz yangilang</translation>
 <translation id="5654927323611874862">Yuklangan ishdan chiqish hisoboti identifikatori:</translation>
 <translation id="5654965123204121933">URL manzilda <ph name="SEARCH_TERMS_REPLACEMENT" /> almashtiriladigan qator boʻlmaydi: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -2828,6 +2848,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5866898949289125849">Dasturchi vositalari sahifasidasiz</translation>
 <translation id="5869405914158311789">Bu saytga ulana olmadik</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
+<translation id="5872115357279348603">KTN raqamini Google Walletda xavfsiz yangilang</translation>
 <translation id="5872215789867188990">“<ph name="GROUP_TITLE" />” varaqlar guruhi endi mavjud emas</translation>
 <translation id="5872692522325383488">IBAN saqlandi</translation>
 <translation id="5879989559903563723">Mehmon rejimida ruxsat berilmagan</translation>
@@ -2851,6 +2872,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5914185423510719251">KTN raqamini Google Walletga saqlang</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> bu varaqni kiritdi</translation>
 <translation id="59174027418879706">Yoqilgan</translation>
+<translation id="5917538780499455803">ID kartani xavfsiz saqlang</translation>
 <translation id="5918847752193018339">Saqlangan CVC kodlar yordamida tezkor toʻlang. <ph name="LINK_BEGIN" />Saqlangan xavfsizlik kodlarini oʻchirish<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Yoniq</translation>
@@ -2913,6 +2935,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Video OneDrive omboriga saqlanmadi</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinxronlandi)</translation>
+<translation id="6025471531651464742">Fayl kiritish</translation>
 <translation id="6028591542479806248">Mobil va email orqali bildirishnomalarini boshqarish</translation>
 <translation id="603068602130820122">Oʻngdan ikki marta steplerlash</translation>
 <translation id="6031824805267965302">Harakat sensorlaridan foydalaning</translation>
@@ -3156,6 +3179,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6415778972515849510">Chromium Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Muhim boʻlgan biznesga oid yoki shaxsiy fayllarni tashqi xotirada saqlang.</translation>
+<translation id="6422648598133086441">Google Walletda transportni xavfsiz yangilang</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Darvozasimon taxlash</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3329,6 +3353,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="674375294223700098">Sertifikat serverida noma’lum xato</translation>
 <translation id="6743841972744298686">Sinxronizatsiya sozlamalari</translation>
 <translation id="6745212570062463886">Google hisobingizdagi ismingiz va email manzilingizni avtomatik kiritish</translation>
+<translation id="674580074662200768">Pasportni xavfsiz yangilang</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Siyosatdagi qiymat</translation>
 <translation id="6753434778807740853">Qyadni (<ph name="ENTRY_VOICEOVER" />) oʻchirish</translation>
@@ -3488,6 +3513,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7023765275461720661">Hisob ulanib, <ph name="BNPL_ISSUER_NAME" /> bilan toʻlasinmi?</translation>
 <translation id="7030164307377592766">toʻlov usuli kiritilishi sozlamalarini oʻzgartirish</translation>
 <translation id="7031110846419387930">Brauzer, OT, qurilma, oʻrnatilgan dasturlar, fayllar va IP manzillar haqidagi axborot</translation>
+<translation id="7031356333130415891">ID kartani xavfsiz yangilang</translation>
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
 <translation id="7035705295266423040">Bankingiz shaxsingizni tasdiqlamoqchi</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobi maxfiylik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -3611,6 +3637,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 Batafsil axborot:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Bu axborotni oʻchirish uchun uning boshqaruv sozlamalarini oching</translation>
+<translation id="7253051586755429279">Google Walletda redress raqamini xavfsiz yangilang</translation>
 <translation id="7255540419660272073">Salbiy baho tugmasi, nima yoqmagani haqida batafsil fikr-mulohaza yuborish shaklini ochish uchun Enter tugmasini bosing, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Orqa tarnov</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>
@@ -3975,6 +4002,7 @@ Batafsil axborot:
 <translation id="7860345425589240791">Kartaning <ph name="SIDE_OF_CARD" /> tomonidagi yangi muddati va CVC kodni kiriting</translation>
 <translation id="7862185352068345852">Sayt tark etilsinmi?</translation>
 <translation id="7862306158978555061">maxfiy axborotni chiqarish</translation>
+<translation id="7863122976993412643">Haydovchilik guvohnomasini xavfsiz saqlang</translation>
 <translation id="7865448901209910068">Eng tez</translation>
 <translation id="7865482168955081228">Hozir olib, keyin toʻlash xatoligi ekrani yopildi.</translation>
 <translation id="7869655448736341731">Har qanday</translation>
@@ -4023,6 +4051,7 @@ Batafsil axborot:
 <translation id="7943893128817522649">Birdaniga bir nechta fayl yuklab olish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="7947285636476623132">Kartangiz muddatining tugash yilini tekshiring va yana urinib ko‘ring</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome funksiyalari bilan tanishish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7947964969544524438">Tanish sayohatchi raqamini (KTN) xavfsiz saqlang</translation>
 <translation id="7948579849190819732">Joriy varaq</translation>
 <translation id="7950027195171824198">Chrome sozlamalari orqali cookie parametrlarini boshqarish</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
@@ -4221,6 +4250,7 @@ Batafsil axborot:
 <translation id="8297545700510100061">Saytga kirish uchun yoki reklamani moslashtirish uchun ishlatiladigan cookie fayllari va boshqa sayt maʼlumotlari. Barcha saytlar uchun cookie fayllarini boshqarish uchun <ph name="SETTINGS" /> sahifasini oching.</translation>
 <translation id="8298115750975731693">Siz ulangan Wi-Fi (<ph name="WIFI_NAME" />) tarmog‘idan foydalanish uchun <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tish talab qilinishi mumkin.</translation>
 <translation id="8298399736867690281">Karta faqat qurilmada saqlangan</translation>
+<translation id="8300302621078931927">ID kartani Google Walletga xavfsiz saqlang</translation>
 <translation id="8301894345671534559">Kodni kiriting</translation>
 <translation id="830498451218851433">Yarim taxlash</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -4430,6 +4460,8 @@ Batafsil axborot:
 <translation id="8710842507289500830">Shrift uslubi</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8715198179991802709">Chrome siz ochishga uringan saytni shubhali deb belgiladi. Ushbu ogohlantirishlarni yanada yaxshilashimiz uchun 1 daqiqalik soʻrovnomada qatnashing.</translation>
+<translation id="8716983145825913456">Transportni xavfsiz saqlang</translation>
+<translation id="8717177139469452440">Pasportni Google Walletga xavfsiz saqlang</translation>
 <translation id="8718314106902482036">To‘lov amalga oshirilmagan</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, qidiruv taklifi</translation>
 <translation id="8719528812645237045">Yuqoridan bir nechta teshik ochish</translation>
@@ -4531,6 +4563,7 @@ Batafsil axborot:
 <translation id="888169490072887292">Bolalar menyusiga ega oilaviy restoranlarni topib ber</translation>
 <translation id="8883863364960302898">Google Drive jildi</translation>
 <translation id="8884537526797090108">Maxfiy kontent yozib olinmadi</translation>
+<translation id="8889525327610245418">Google Walletda haydovchilik guvohnomasini yangilang</translation>
 <translation id="8891031436559779793">Istalgan saytda narx tushganda xabar olasiz.</translation>
 <translation id="8891727572606052622">Yaroqsiz proksi-server rejimi.</translation>
 <translation id="8894794286471754040">Avval uzunasiga</translation>
@@ -4767,6 +4800,7 @@ Batafsil axborot:
 <translation id="978750072783101994">Bu karta Google Wallet hamyoniga saqlanganidan keyin uning maʼlumotlarini Chromium xaridlarida avtomatik kiritish mumkin</translation>
 <translation id="979107176848483472">Brauzer va profilingiz <ph name="DOMAIN" /> domenida boshqariladi</translation>
 <translation id="981121421437150478">Oflayn</translation>
+<translation id="98237783946365638">ID kartani Google Walletga saqlang</translation>
 <translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> tugmasi, Ask <ph name="AI_ENGINE_NAME" /> yordamini olish uchun Enter tugmasini bosing</translation>
 <translation id="984275831282074731">To‘lov usullari</translation>
 <translation id="985199708454569384">&lt;p&gt;Kompyuter yoki mobil qurilmangizning soati xato bo‘lsa, bu xabar sizga bildiriladi.&lt;/p&gt;

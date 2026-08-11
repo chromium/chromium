@@ -478,6 +478,7 @@
 <translation id="2496180316473517155">Kezish tarixi</translation>
 <translation id="2496626742194544812">Birinchi varaqni ochish</translation>
 <translation id="2499505845365628575">Brauzer tarixini koʻrish uchun <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />ni tanlang.</translation>
+<translation id="251033673027346551"><ph name="BEGIN_LINK" />Maʼlumotlar va maxfiylik sozlamalarini<ph name="END_LINK" /> boshqarish uchun Google Walletga kiring.</translation>
 <translation id="2511117522375201202">Xavfli holatga qoʻyishi mumkin boʻlgan <ph name="NUMBER_OF_PASSWORDS" /> ta oshkor etilgan parol bor.</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />-daraja</translation>
 <translation id="2513103768503127042">Varaqlar guruhini shu yerdan topasiz</translation>
@@ -692,6 +693,7 @@
 <translation id="3259451381796379533">Bu hisobda Gemini ishlamaydi. Boshqa Google hisobidan kiring.</translation>
 <translation id="3265736395246760288">Istalgan sinxronlangan qurilmangizda hisobga tezroq kiring.</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
+<translation id="3272955648592358996">Maʼlumotlaringiz Google AI xizmatlarini yaxshilaydi</translation>
 <translation id="3273510436356991673">Bosh ekranni moslashtiring</translation>
 <translation id="3277021493514034324">Sayt manzilidan nusxa olindi</translation>
 <translation id="3280562213547448728">Ovozli qidiruv</translation>
@@ -859,6 +861,7 @@
 <translation id="3888863481921783344">Bu sizga tadbiringizga ehtimoliy takliflarni koʻrsatish uchun ishlatiladi.</translation>
 <translation id="3891414008432200754">Narxi</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
+<translation id="3892695492576181257">Sozlama yoniq boʻlsa, faoliyatingiz Gemini ilovalaridagi faoliyat tarixida 18 oy saqlanadi, bu muddatni 3 yoki 36 oyga oʻzgartirish mumkin. Google oʻz xizmatlarini (jumladan, Gemini modellarini) ishlab chiqish va takomillashtirish, shuningdek, Google, uning foydalanuvchilari va jamoatchilikni odam muharrirlari yordamida himoya qilish maqsadida faollik tarixingizdan foydalanadi. Xizmat provayderlari tekshirgan maʼlumotlar hisobingizdan uzilib, 3 yil saqlanadi.</translation>
 <translation id="3893858854379998374">Hisobingizga bukmarklarni saqlash uchun ishlatilmaydigan bukmarklarni oʻchirib tashlang</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3904270275864974753">Karuselni tahrirlash</translation>
@@ -1494,6 +1497,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5971459446352190251">QR kod asosida qidirish</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ta bukmark oʻchirildi}other{{count} ta bukmark oʻchirildi}}</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
+<translation id="597482816780655631">Gemini – bu AI va u xato qilishi mumkin, jumladan, odamlar haqida ham. Ayrim kontentlar hamma uchun mos kelmasligi mumkin. Chatlar tekshiriladi va Google AIʼni yaxshilash uchun foydalaniladi. <ph name="BEGIN_LINK" />Tanlovlar haqida batafsil<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Shartlarimiz<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />Maxfiylik eslatmasi<ph name="END_LINK" /> amal qiladi.</translation>
 <translation id="5976160379964388480">Boshqa</translation>
 <translation id="5977976211062815271">Shu qurilmada</translation>
 <translation id="5986043348928676121">Keyingisi</translation>
@@ -1860,6 +1864,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7102005569666697658">Yuklab olinmoqda… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyu → Sozlamalar → Toʻlov usullari</translation>
 <translation id="7108338896283013870">Berkitish</translation>
+<translation id="7119533351103192286">Gemini ishlatish</translation>
 <translation id="7127922377013221748">Asboblar panelini berkitish</translation>
 <translation id="7128693485119315539">Tashkilotingiz boshqariluvchi hisobingizga biriktirilgan brauzer tarixi va parollar kabi brauzer maʼlumotlariga kirish va boshqarishni talab qilishi mumkin.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2391,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8796634520835503150">Mutolaa rejimi mavjud</translation>
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
 <translation id="8803639129939845298">Xavfsiz</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> obunasi bor</translation>
 <translation id="8813277370772331957">Keyinroq eslatilsin</translation>
 <translation id="8814308045751067027">Live rejimidan foydalanish uchun sozlamalar orqali Chrome mikrofondan foydalanishiga ruxsat bering</translation>
 <translation id="8814719628147284151">Davom etish</translation>
@@ -2397,6 +2403,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="882557203579758546">Sahifa ichidan qidirish…</translation>
 <translation id="8829809207373502270">Bu kalit endi ishlamaydi. U <ph name="WEBSITE" /> saytidan oʻchirib tashlangan va shu yerdan ham tez orada oʻchirib tashlanadi. <ph name="BEGIN_LINK" />Kalitlar haqida<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Barcha nofaol varaqlarni yopish</translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Shartlarimiz<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreya uchun Joylashuv xizmati shartlari<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />Maxfiylik eslatmasi<ph name="END_LINK" /> amal qiladi. Chatlar tekshiriladi va Google AIʼni yaxshilash uchun foydalaniladi. Gemini – bu AI va u xato qilishi mumkin, jumladan, odamlar haqida ham. Ayrim kontentlar hamma uchun mos kelmasligi mumkin. Joylashuvingiz axborotidan iborat <ph name="BEGIN_LINK" />faollikni boshqarishingiz<ph name="END_LINK" /> mumkin. <ph name="BEGIN_LINK" />Tanlovlar haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Noshir asosida saralash</translation>
 <translation id="884351711508006491">Maʼlumotlaringiz qurilmangizga saqlandi.</translation>
 <translation id="8844136307393039959">Kuzatuvdagi mahsulot narxi pasaydi</translation>

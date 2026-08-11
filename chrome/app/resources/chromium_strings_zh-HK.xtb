@@ -684,6 +684,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION" />權限。</translation>
 <translation id="8296236834352487533">在 iOS 版 Chromium 應用程式中使用相機購物、翻譯及識別所見內容</translation>
+<translation id="8310603974518734211">用嚟以 <ph name="USER_NAME" /> 登入 Chromium 嘅二維碼</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
 <translation id="8321888067342493336">儲存為圖片</translation>

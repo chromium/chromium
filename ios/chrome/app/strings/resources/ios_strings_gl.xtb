@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Esta conta non funciona con Gemini. Inicia sesión con outra Conta de Google.</translation>
 <translation id="3265736395246760288">Inicia sesión máis rápido desde calquera dos teus dispositivos sincronizados.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
+<translation id="3272955648592358996">Os teus datos melloran a IA de Google</translation>
 <translation id="3273510436356991673">Personalizar a pantalla de inicio</translation>
 <translation id="3277021493514034324">Copiouse o enderezo do sitio</translation>
 <translation id="3280562213547448728">Busca por voz</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Usarase para mostrarche posibles invitados ao teu evento.</translation>
 <translation id="3891414008432200754">Prezo</translation>
 <translation id="3892144330757387737">Aquí atoparás o teu historial</translation>
+<translation id="3892695492576181257">Nese estado, o que fagas gardarase na actividade nas aplicacións Gemini durante 18 meses, aínda que tes a posibilidade de cambiar a duración a 3 ou 36 meses. Google utiliza a túa actividade para desenvolver e mellorar os seus servizos (por exemplo, os modelos de Gemini), así como para protexer a plataforma, as persoas que a utilizan e o público en xeral, coa axuda dun equipo de revisión. Os datos revisados por fornecedores de servizos desvincúlanse da túa conta e gárdanse durante 3 anos.</translation>
 <translation id="3893858854379998374">Para gardar marcadores na túa conta, elimina os que non uses</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3904270275864974753">Editar carrusel</translation>
@@ -1494,6 +1496,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5971459446352190251">Busca de códigos QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5972844218283131174">Anular toda a selección</translation>
+<translation id="597482816780655631">Gemini é unha IA e pode cometer erros (mesmo no referente á información sobre persoas). É posible que algúns contidos non sexan adecuados para todo o mundo. Os chats revísanse e úsanse para mellorar a IA de Google. <ph name="BEGIN_LINK" />Máis información sobre as opcións que tes ao teu dispor<ph name="END_LINK" />. Aplícanse as nosas <ph name="BEGIN_LINK" />Condicións<ph name="END_LINK" /> e o noso <ph name="BEGIN_LINK" />Aviso de privacidade<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5986043348928676121">Seguinte</translation>
@@ -1860,6 +1863,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
+<translation id="7119533351103192286">Usar Gemini</translation>
 <translation id="7127922377013221748">Ocultar barra de ferramentas</translation>
 <translation id="7128693485119315539">É posible que a túa organización necesite consultar e administrar os datos de navegación asociados á túa conta xestionada, como o teu historial de navegación e os contrasinais.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8796634520835503150">Modo de lectura dispoñible</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
 <translation id="8803639129939845298">Seguro</translation>
+<translation id="8809212245338455710">Subscrición a <ph name="AI_TIER_NAME" /></translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8814308045751067027">Para usar Live, permite que Chrome acceda ao teu micrófono na configuración</translation>
 <translation id="8814719628147284151">Continuar</translation>
@@ -2397,6 +2402,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="882557203579758546">Buscar o contido na páxina…</translation>
 <translation id="8829809207373502270">Esta clave de acceso xa non funciona. Eliminouse de <ph name="WEBSITE" /> e dentro de pouco tamén se eliminará desta sección. <ph name="BEGIN_LINK" />Claves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Pechar todas as pestanas inactivas</translation>
+<translation id="8831871601813227635">Aplícanse as nosas <ph name="BEGIN_LINK" />Condicións<ph name="END_LINK" />, as <ph name="BEGIN_LINK" />Condicións de localización de Corea<ph name="END_LINK" /> e o <ph name="BEGIN_LINK" />Aviso de privacidade<ph name="END_LINK" />. Os chats revísanse e úsanse para mellorar a IA de Google. Gemini é unha IA e pode cometer erros (mesmo no referente á información sobre persoas). É posible que algúns contidos non sexan adecuados para todo o mundo. Podes <ph name="BEGIN_LINK" />xestionar a túa actividade<ph name="END_LINK" />, incluída a información sobre a túa localización. <ph name="BEGIN_LINK" />Máis información acerca das túas escollas<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
 <translation id="884351711508006491">A túa información gárdase no teu dispositivo.</translation>
 <translation id="8844136307393039959">Baixada de prezo do produto seguido</translation>

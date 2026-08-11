@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">這個帳戶無法使用 Gemini，請登入其他 Google 帳戶。</translation>
 <translation id="3265736395246760288">在已同步的任一裝置上快速登入。</translation>
 <translation id="3272527697863656322">取消</translation>
+<translation id="3272955648592358996">你的資料有助於提升 Google AI 品質</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
 <translation id="3280562213547448728">語音搜尋</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
+<translation id="3892695492576181257">這項設定開啟時，你的活動記錄會保存在 Gemini 系列應用程式活動記錄 18 個月，你可視需要將保留期限變更為 3 或 36 個月。Google 會在人工審查員的協助下，使用你的活動記錄開發及改良服務 (包括 Gemini 模型)，以及保護 Google、使用者和一般大眾。服務供應商審查的資料會與你的帳戶解除連結，並保留 3 年。</translation>
 <translation id="3893858854379998374">如要將書籤儲存到帳戶，請刪除未使用的書籤</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪轉介面</translation>
@@ -1494,6 +1496,7 @@
 <translation id="5971459446352190251">QR code 搜尋</translation>
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
+<translation id="597482816780655631">Gemini 是 AI，有時可能會出錯，包括提供錯誤的人物資訊。部分內容可能不適合所有人。我們會查看及使用對話內容來改良 Google AI。<ph name="BEGIN_LINK" />瞭解可用選項<ph name="END_LINK" />。適用《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />隱私權聲明<ph name="END_LINK" />》。</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5977976211062815271">在這部裝置上</translation>
 <translation id="5986043348928676121">繼續</translation>
@@ -1860,6 +1863,7 @@
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
+<translation id="7119533351103192286">使用 Gemini</translation>
 <translation id="7127922377013221748">隱藏工具列</translation>
 <translation id="7128693485119315539">貴機構可能需要查看及管理與代管帳戶相關聯的瀏覽資料，例如瀏覽記錄和密碼。</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@
 <translation id="8796634520835503150">可使用閱讀模式</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8803639129939845298">安全</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />會員</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8814308045751067027">如要使用 Live，請前往「設定」授予 Chrome 麥克風存取權</translation>
 <translation id="8814719628147284151">繼續</translation>
@@ -2397,6 +2402,7 @@
 <translation id="882557203579758546">在網頁中搜尋…</translation>
 <translation id="8829809207373502270">這個密碼金鑰已失效，目前已從 <ph name="WEBSITE" /> 刪除，很快就會從密碼管理工具中刪除。<ph name="BEGIN_LINK" />關於密碼金鑰<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>
+<translation id="8831871601813227635">適用《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》、《<ph name="BEGIN_LINK" />韓國定位條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />隱私權聲明<ph name="END_LINK" />》。我們會查看及使用對話內容來改良 Google AI。Gemini 是 AI，有時可能會出錯，包括提供錯誤的人物資訊。部分內容可能不適合所有人。你可以<ph name="BEGIN_LINK" />管理活動記錄<ph name="END_LINK" />，包括位置資訊。<ph name="BEGIN_LINK" />進一步瞭解你的選擇<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">依發布者排序</translation>
 <translation id="884351711508006491">資訊已儲存在裝置上。</translation>
 <translation id="8844136307393039959">你追蹤的產品降價了</translation>

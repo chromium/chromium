@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{इस डिवाइस पर, <ph name="BRAND" /> में एक पासवर्ड इंपोर्ट किया गया}one{इस डिवाइस पर, <ph name="BRAND" /> में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{इस डिवाइस पर, <ph name="BRAND" /> में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="1046572983040892965">विंडो को ऊपर की ओर बाईं तरफ़ ले जाया गया</translation>
 <translation id="1047431265488717055">लिंक ले&amp;ख को कॉपी करें</translation>
-<translation id="1048350929895890054">ऐसी साइटें जहां फ़्लोटिंग मेन्यू ब्लॉक किया गया है</translation>
 <translation id="1048986595386481879">डाइनैमिक रूप से दिया गया साइज़</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहा है}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहा है}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहे हैं}}</translation>
 <translation id="1049743911850919806">गुप्त</translation>
@@ -5781,6 +5780,7 @@
 <translation id="5444281205834970653">मिटाएं और जारी रखें</translation>
 <translation id="5444452275167152925">ChromeOS से इंपोर्ट किए गए सर्टिफ़िकेट</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">मिलकर सोच-विचार करें</translation>
 <translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5449588825071916739">सभी टैब बुकमार्क करें</translation>
@@ -5914,7 +5914,6 @@
 <translation id="5546865291508181392">ढूंढें</translation>
 <translation id="5547868626772433490">Gemini से कहें</translation>
 <translation id="5548075230008247516">सभी आइटम से 'चुना गया' का निशान हटा दिया गया है और चुनने का मोड बंद कर दिया गया है.</translation>
-<translation id="554810465530189549">टेक्स्ट चुनने पर फ़्लोटिंग मेन्यू न दिखाएं</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" और 1 अन्य टैब}one{"<ph name="TAB_TITLE" />" और # अन्य टैब}other{"<ph name="TAB_TITLE" />" और # अन्य टैब}}</translation>
 <translation id="554903022911579950">केर्बेरोस</translation>
 <translation id="5551573675707792127">कीबोर्ड और लेख इनपुट</translation>
@@ -6072,7 +6071,6 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> पर अपना डेटा पढ़ें</translation>
 <translation id="5680050361008726776">क्या आप "<ph name="ESIM_PROFILE_NAME" />" को हटाना चाहते हैं?</translation>
 <translation id="5681586175480958839">फ़ाइल पहले ही खोली जा चुकी है</translation>
-<translation id="5682950763196110705">टेक्स्ट चुनने पर फ़्लोटिंग मेन्यू दिखाएं</translation>
 <translation id="5684110242705861346">"<ph name="NAME" />" एक्सटेंशन को आपके संगठन की नीति के तहत जोड़ा गया था. यह एक्सटेंशन इस सेटिंग को कंट्रोल कर रहा है. <ph name="BEGIN_LINK" />जानकारी देखें<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">वाई-फ़ाई की जानकारी</translation>
 <translation id="5687340364605915800">यह साइटों पर निर्भर करता है कि वे इस अनुरोध को स्वीकार करेंगी या नहीं</translation>
@@ -7363,6 +7361,7 @@
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> का इस्तेमाल करने के लिए, ब्लूटूथ और वाई-फ़ाई चालू करें</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">स्मॉल फ़ोकस</translation>
+<translation id="6706210727756204531">दायरा</translation>
 <translation id="6707122714992751648">ChromeOS में गड़बड़ी की जानकारी देने वाले टेस्ट करता है</translation>
 <translation id="6707389671160270963">SSL क्लाइंट प्रमाणपत्र</translation>
 <translation id="6707671917294473995">किसी भी वेबसाइट के पास डिवाइस का कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -8147,6 +8146,7 @@
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
 <translation id="7312040805247765153">ऐप्लिकेशन इंस्टॉल नहीं किया जा सकता</translation>
 <translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">कीबोर्ड की बैकलाइट के रंग</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 इवेंट की तारीख नहीं डाली जा सकी. उसे नहीं दिखाया गया है}one{# इवेंट की तारीख नहीं डाली जा सकी. उसे नहीं दिखाया गया है}other{# इवेंट की तारीख नहीं डाली जा सकी. उन्हें नहीं दिखाया गया है}}</translation>
 <translation id="7314865262803554456">रिकॉर्डिंग शुरू होने पर, आपको इसकी सूचना नहीं मिलेगी.</translation>

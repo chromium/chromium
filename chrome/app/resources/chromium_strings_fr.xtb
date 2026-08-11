@@ -683,6 +683,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vous avertit<ph name="END_LINK" /> en cas de sites et de téléchargements dangereux</translation>
 <translation id="8295827201165805317">Vous n'avez pas consulté le site récemment. Chromium a supprimé "<ph name="PERMISSION" />".</translation>
 <translation id="8296236834352487533">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo dans l'appli iOS Chromium</translation>
+<translation id="8310603974518734211">QR code pour se connecter à Chromium en tant que <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Erreur au démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>

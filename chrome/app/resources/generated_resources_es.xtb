@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 contraseña importada al <ph name="BRAND" /> de este dispositivo}other{{NUM_PASSWORDS} contraseñas importadas al <ph name="BRAND" /> de este dispositivo}}</translation>
 <translation id="1046572983040892965">Ventana movida hacia arriba y hacia la izquierda</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto de enlace</translation>
-<translation id="1048350929895890054">Sitios en los que el menú flotante está bloqueado</translation>
 <translation id="1048986595386481879">Asignado dinámicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -857,6 +856,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1657406563541664238">Ayudar a mejorar <ph name="PRODUCT_NAME" /> enviando estadísticas de uso e informes sobre fallos a Google</translation>
 <translation id="1657937299377480641">Para iniciar sesión de nuevo para acceder a recursos educativos, pídele permiso a tu padre o madre</translation>
 <translation id="1658424621194652532">Esta página está accediendo al micrófono</translation>
+<translation id="1660405268563702784">Actualización disponible para <ph name="APP_NAME" /></translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Arregla la pestaña que ralentiza tu navegador}other{Arregla las pestañas que ralentizan tu navegador}}</translation>
 <translation id="16620462294541761">La contraseña no se ha podido verificar. Vuelve a intentarlo.</translation>
 <translation id="1662572015199460525">Chatea con la voz o con texto para obtener respuestas, ideas clave y mucho más mientras navegas</translation>
@@ -2533,6 +2533,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2948287943780377675">{FILE_COUNT,plural, =1{Suelta el archivo aquí}other{Suelta los archivos aquí}}</translation>
 <translation id="2948300991547862301">Ir a <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Un navegador web rápido, seguro y fácil de usar creado para la Web actual.</translation>
+<translation id="2952552057375331929">Abrir enlace en una ventana ai&amp;slada</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> no tiene permiso para enviar notificaciones. Se te volverá a preguntar la próxima vez que visites el sitio.</translation>
 <translation id="2954777802959138493">No se ha podido consultar el estado de la herramienta de actualización.</translation>
 <translation id="2955048943983973430">Servicios de Google relacionados</translation>
@@ -3198,6 +3199,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3454213325559396544">Esta es la última actualización automática de software y seguridad que recibirá este <ph name="DEVICE_TYPE" />. Para recibir las actualizaciones posteriores, cambia este modelo por otro más reciente.</translation>
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Sube 1 archivo .pdf para usarlo con tu pregunta}other{Sube hasta # archivos .pdf para usarlos con tu pregunta}}</translation>
 <translation id="3454818737556063691">¿Mover 1 archivo a <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
+<translation id="3456750372063895499">Abrir enlace en una ventana ai&amp;slada</translation>
 <translation id="345693547134384690">Abrir &amp;imagen en una pestaña nueva</translation>
 <translation id="3458794975359644386">No se ha podido dejar de compartir</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Mantener grupo}other{Mantener grupos}}</translation>
@@ -3266,6 +3268,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3513563267917474897">Control deslizante del tono de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Estás usando la protección de seguridad estándar. Para aumentar la protección contra las descargas, las extensiones y los sitios web peligrosos, activa Navegación segura mejorada en la configuración de Chrome.</translation>
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar malware</translation>
+<translation id="3515783508789430906">Hay una nueva versión (<ph name="VERSION" />) lista. Reinicia la aplicación para aplicar la actualización. Los datos no guardados podrían perderse.</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
 <translation id="3518866566087677312">Añade a marcadores lo que quieras volver a ver más adelante</translation>
 <translation id="3519014757432845220">Ayuda a mejorar la protección contra el spam compartiendo con Google el contenido de la notificación y la URL del sitio. Es posible que el contenido lo revisen personas.</translation>
@@ -3420,6 +3423,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3627671146180677314">Tiempo de renovación de certificado de Netscape</translation>
 <translation id="3628275722731025472">Desactivar Bluetooth</translation>
 <translation id="3629630597033136279">Desactivada • Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos</translation>
+<translation id="3629657562876345602">Revisa la información importante</translation>
 <translation id="3629664892718440872">Recordar esta opción</translation>
 <translation id="3630132874740063857">Tu teléfono</translation>
 <translation id="3630995161997703415">Añade este sitio web a tu estantería para usarlo en cualquier momento</translation>
@@ -5897,7 +5901,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5546865291508181392">Buscar</translation>
 <translation id="5547868626772433490">Pregunta a Gemini</translation>
 <translation id="5548075230008247516">Todos los elementos deseleccionados, se ha salido del modo de selección.</translation>
-<translation id="554810465530189549">No mostrar el menú flotante cuando se seleccione texto</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Teclado e introducción de texto</translation>
@@ -6041,6 +6044,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5663653125349867535">&amp;Lista de lectura</translation>
 <translation id="5663918299073387939">Los sitios suelen solicitar el control y la reprogramación de dispositivos MIDI para crear música, editarla o actualizar el firmware del dispositivo</translation>
 <translation id="5666911576871845853">&amp;Añadir nuevo perfil</translation>
+<translation id="566956875537427204">Abrir chat</translation>
 <translation id="5669863904928111203">ChromeOS no está actualizado</translation>
 <translation id="5671641761787789573">Imágenes bloqueadas</translation>
 <translation id="567210741546439261">&amp;Marcadores y listas</translation>
@@ -6054,7 +6058,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5678955352098267522">Leer tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">¿Eliminar <ph name="ESIM_PROFILE_NAME" />?</translation>
 <translation id="5681586175480958839">El archivo ya se está abriendo</translation>
-<translation id="5682950763196110705">Mostrar el menú flotante cuando se seleccione texto</translation>
 <translation id="5684110242705861346">La extensión "<ph name="NAME" />" se ha añadido mediante la política de tu organización y controla este ajuste. <ph name="BEGIN_LINK" />Ver detalles<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Detalles de la red Wi‑Fi</translation>
 <translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
@@ -7227,6 +7230,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6613231539539868591">Datos conservados</translation>
 <translation id="6613267708691765962">Buscando malware...</translation>
 <translation id="6615455863669487791">Ver</translation>
+<translation id="6616000047939888167">Ofrecer el Traductor de Google en el caso de sitios web y PDFs que estén en otros idiomas</translation>
 <translation id="6618013221808317456">No permitir que los sitios usen la optimización de JavaScript</translation>
 <translation id="6618154741503063152">No se puede subir. No se admiten archivos adjuntos.</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7342,6 +7346,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa el Bluetooth y la conexión Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">Enfoque pequeño</translation>
+<translation id="6706210727756204531">Ámbito</translation>
 <translation id="6707122714992751648">Ejecutar las pruebas de diagnóstico de ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Los sitios web no tienen permiso para usar tu cámara</translation>
@@ -7579,6 +7584,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6871644448911473373">Respuesta de OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas...</translation>
 <translation id="6873156759937047811">PIN:</translation>
+<translation id="6873499199714317035">Si esta opción está activada, el Traductor de Google te ofrecerá la opción de traducir sitios y PDFs al idioma que prefieras. También puede traducir sitios automáticamente.</translation>
 <translation id="6873571253135628430">Cambiar permisos de sitios</translation>
 <translation id="6874986444867497677">No se ha podido completar la instalación. Vuelve a intentarlo o cierra esta ventana.</translation>
 <translation id="6876155724392614295">Bici</translation>
@@ -8825,6 +8831,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7855258394151767387">Usa "w" para pulsar un botón del ratón</translation>
 <translation id="7855678561139483478">Mover pestaña a una nueva ventana</translation>
 <translation id="7858120906780498731">Dispositivos de entrada conectados de ChromeOS</translation>
+<translation id="7859486605922206511">Reiniciar aplicación</translation>
 <translation id="7859560813397128941">Quitar extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="786073089922909430">Servicio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
@@ -9787,6 +9794,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8602867356511778172">Google usa más datos (por ejemplo, URLs, muestras de contenido de páginas o información del sistema) para detectar amenazas de forma más rápida y precisa</translation>
 <translation id="860399903490378651">Cerrar esta vista</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>
+<translation id="8606857385325125054"><ph name="PARENT_APP_NAME" /> ha instalado esta aplicación. Desinstalar <ph name="APP_NAME" /> no afecta a <ph name="PARENT_APP_NAME" /> ni a ninguna otra aplicación que haya instalado.</translation>
 <translation id="8607171490667464784">Mientras está inactivo y usando la batería</translation>
 <translation id="8607661817136110841">Tus grupos de pestañas</translation>
 <translation id="8607828412110648570">Comprueba que tu dispositivo Bluetooth esté cerca y en modo Emparejamiento. Emparéjalo solo con dispositivos de confianza. Todas las cuentas de este Chromebook pueden ver los dispositivos emparejados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10071,6 +10079,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">Tu preferencia de idioma determina qué idiomas están disponibles para el corrector ortográfico</translation>
 <translation id="8814644416678422095">Unidad de disco duro</translation>
+<translation id="8815742860876889867">Abrir enlace en una ventana ai&amp;slada</translation>
 <translation id="881782782501875829">Añadir número de puerto</translation>
 <translation id="881799181680267069">Ocultar otras</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>

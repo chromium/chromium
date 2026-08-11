@@ -683,6 +683,7 @@ Chromium හට ඔබගේ සැකසුම් ප්‍රතිසාධ�
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ඔබට අනාරක්ෂිත අඩවි සහ බාගැනීම් ගැන අනතුරු අඟවයි<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">ඔබ මෑත පැමිණ නැත. Chromium <ph name="PERMISSION" /> ඉවත් කළා.</translation>
 <translation id="8296236834352487533">Chromium iOS යෙදුම මත ඔබේ කැමරාව සමග ඔබ දකින දේ සාප්පු යන්න, පරිවර්තනය කරන්න සහ හඳුනා ගන්න</translation>
+<translation id="8310603974518734211"><ph name="USER_NAME" /> ලෙස Chromium වෙත පුරනය වීමට QR කේතය</translation>
 <translation id="8313851650939857356">ආරම්භක දෝෂය: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">ඔබේ සංවිධානය Chromium <ph name="TIMEOUT_DURATION" /> සඳහා භාවිතා නොකරන විට එය වසා දමයි.</translation>
 <translation id="8321888067342493336">රූපයක් ලෙස සුරකින්න</translation>

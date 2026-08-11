@@ -682,6 +682,7 @@ Chromium ले तपाइँका सेटिङहरू पुनर्�
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ले तपाईंलाई<ph name="END_LINK" /> असुरक्षित साइट तथा डाउनलोडका बारेमा चेतावनी दिन्छ</translation>
 <translation id="8295827201165805317">तपाईंले हालसालै कुनै पनि साइट खोल्नुभएको छैन। Chromium ले <ph name="PERMISSION" /> सम्बन्धी अनुमति सम्बन्धी अनुमति रद्द गरेको छ।</translation>
 <translation id="8296236834352487533">Chromium iOS एपमार्फत क्यामेरामा देखिएका कुराहरू किनमेल, अनुवाद तथा पहिचान गर्नुहोस्</translation>
+<translation id="8310603974518734211"><ph name="USER_NAME" /> का रूपमा Chromium मा साइन इन गर्न QR कोड</translation>
 <translation id="8313851650939857356">स्टार्टअप गर्ने क्रममा निम्न त्रुटि भयो: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122">तपाईंको सङ्गठनले तोकेको नियमअनुसार तपाईंले <ph name="TIMEOUT_DURATION" /> सम्म Chromium प्रयोग गर्नुभएन भने त्यो स्वतः बन्द हुन्छ।</translation>
 <translation id="8321888067342493336">फोटोका रूपमा सेभ गर्नुहोस्</translation>

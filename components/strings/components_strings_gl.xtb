@@ -193,6 +193,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="132301787627749051">Buscar imaxe do portapapeis</translation>
 <translation id="1323433172918577554">Mostrar máis</translation>
 <translation id="1330449323196174374">Dobrez en ventá na parte esquerda</translation>
+<translation id="1330952240988133220">Garda o número Redress de forma segura en Google Wallet</translation>
 <translation id="133173645041092770">Pechar o sitio web</translation>
 <translation id="1333745675627230582">Xogar a xogo do dinosauro de Chrome</translation>
 <translation id="1333989956347591814">É posible que a túa actividade <ph name="BEGIN_EMPHASIS" />siga sendo visible<ph name="END_EMPHASIS" /> para:
@@ -324,6 +325,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1549470594296187301">JavaScript debe estar activado para usar esta función.</translation>
 <translation id="1550906923175308360">Crea unha lista de tarefas pendentes para hoxe que me axude a non desviarme do camiño</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
+<translation id="1555014818414775661">Engadir imaxes</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1555191101192706055">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software daniño que afecte á túa navegación (por exemplo, que cambie a túa páxina de inicio ou mostre máis anuncios nos sitios aos que accedas).</translation>
 <translation id="1559231233244409191">Cartón triplo</translation>
@@ -341,6 +343,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1569487616857761740">Introduce unha data de vencemento</translation>
 <translation id="1569694109004336106">Google Chrome está tentando activar Windows Hello para completar contrasinais.</translation>
 <translation id="1569905000953679183">Recuperación da política de instalación de extensións</translation>
+<translation id="1572383686781055412">Actualiza o número KTN de forma segura</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Verificando método de pago</translation>
 <translation id="1576277203042721907">Estatísticas de compras</translation>
@@ -397,6 +400,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Gardar e autocompletar métodos de pago</translation>
 <translation id="1662980953334786797">Mesma orde</translation>
+<translation id="1663578299724791827">Garda o KTN de forma segura</translation>
 <translation id="1663943134801823270">As tarxetas e enderezos proceden de Chrome. Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
 <translation id="1667730174533834274">verificar a túa identidade antes de cambiar a configuración</translation>
@@ -404,6 +408,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1670861525135254448">Garda o vehículo</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
+<translation id="1683083957814090281">Actualiza o vehículo de forma segura</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
 <translation id="1688718429648938412">Garda a tarxeta de fidelidade en Wallet</translation>
@@ -868,6 +873,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2469153820345007638">Orde de 1 a N</translation>
 <translation id="24699311393038040">Papel (revestido)</translation>
 <translation id="2471632709106952369">Táboas de comparación</translation>
+<translation id="2472396075297339227">Garda o número de viaxeiro coñecido (KTN) de forma segura en Google Wallet</translation>
 <translation id="2477607419416067650">Outros datos de Google</translation>
 <translation id="247903268499247848">Permiso non concedido para usar os sensores de movemento e de luz</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
@@ -926,6 +932,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2553352788023127673">O historial de busca e os contrasinais poden eliminarse na súa configuración de xestión</translation>
 <translation id="2553853292994445426">Comproba a configuración do DNS seguro. Poden producirse erros ao conectar co DNS seguro que configurases.</translation>
 <translation id="2555855727505718984">A función de autocompletar non terá esta información neste dispositivo para axudarche a encher formularios</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Desfacer modificación</translation>
 <translation id="2559566667529177711">Varias capas</translation>
 <translation id="2570734079541893434">Xestionar configuración</translation>
@@ -1325,6 +1332,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3273738040255912340">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Opción de gardar o IBAN aberta a altura completa.</translation>
 <translation id="327455571215090823">Función Autocompletar máis intelixente, mantendo a privacidade</translation>
+<translation id="3280440382387335343">Actualiza o pasaporte de forma segura en Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador non recomenda abrir este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda abrir estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A túa organización, <ph name="ENROLLMENT_DOMAIN" />, enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -1465,6 +1473,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3543935938072367282">Paga de xeito máis rápido coa función de autocompletar</translation>
 <translation id="3547442767634383572">A vista xeral do perfil de traballo</translation>
+<translation id="3547673868874844776">Garda o documento de identidade de forma segura</translation>
 <translation id="3547746132308051926">20 x 24 polgadas</translation>
 <translation id="3549904448933807997">Información dos navegadores e perfís (incluídos os persoais e de traballo)</translation>
 <translation id="3552155506104542239">Advertencia: Esta política está en conflito con <ph name="POLICY_NAME" />, polo que non terá ningún efecto nas aplicacións para Android. Polo resto, funciona do xeito previsto.</translation>
@@ -1673,6 +1682,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="388632593194507180">Detectouse a supervisión</translation>
 <translation id="3886948180919384617">Amontoador 3</translation>
 <translation id="3890664840433101773">Engadir correo electrónico</translation>
+<translation id="3892626428170730309">Garda o pasaporte de forma segura</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">A tarxeta caducou</translation>
 <translation id="390391808978419508">Esgotouse o tempo de espera para a apertura</translation>
@@ -1828,6 +1838,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4153858337812834972">Pestanas máis recentes</translation>
 <translation id="4154277373259957087">Chrome agora verificará a túa identidade antes de completar os métodos de pago. Podes actualizar esta opción en calquera momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">Con tecnoloxía de Intelixencia personalizada de Gemini. <ph name="BEGIN_LINK" />Xestionar a configuración<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Actualiza o permiso de conducir de forma segura</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165422751765527461">Abrir un artigo do Centro de axuda nunha nova pestana</translation>
 <translation id="4165986682804962316">Configuración do sitio</translation>
@@ -1842,6 +1853,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4176463684765177261">Desactivado</translation>
 <translation id="4178863275556660738">Pagar con métodos de pago sen tarxeta</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Actualiza o número Redress de forma segura</translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
 <translation id="4190446002599583608">Buscas no historial con tecnoloxía de IA</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
@@ -1883,6 +1895,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4231448684371260244">8x13 in</translation>
 <translation id="4234996384188431444">Paga con Pix sen cambiar de aplicación en Google Chrome</translation>
 <translation id="4238607350028440048">Axúdame a practicar para a entrevista facendo preguntas como se foses a persoa encargada da contratación</translation>
+<translation id="4239215166147486528">Garda o permiso de conducir de forma segura en Google Wallet</translation>
 <translation id="4239799716689808527">Etiquetas</translation>
 <translation id="424063167283213501">Garda o número de viaxeiro coñecido (KTN)</translation>
 <translation id="4241830393007970744">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito.</translation>
@@ -1995,6 +2008,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4407758156081352648">Para manter a seguranza, a túa organización non permite que se reutilicen contrasinais en Chrome. Os contrasinais de Chrome están encriptados para protexer a privacidade do usuario.</translation>
 <translation id="4409271659088619928">O teu motor de busca é <ph name="DSE" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
 <translation id="4409556632583862731">Novo fío de mensaxes</translation>
+<translation id="4410614037742891410">Actualiza o carné de identidade de forma segura en Google Wallet</translation>
 <translation id="4412074349188076601">Esta configuración está marcada como instalable, pero como non hai ningunha imaxe dispoñible para esta arquitectura, non se pode instalar.</translation>
 <translation id="4412377069090572315">O que di a xente</translation>
 <translation id="4414515549596849729">cookies e datos dos sitios</translation>
@@ -2208,9 +2222,11 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4800132727771399293">Comproba a túa data de caducidade e o CVC e téntao de novo</translation>
 <translation id="4800546479758254481">Realidade aumentada permitida</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4805128460707321168">Actualiza o document de identidade de forma segura</translation>
 <translation id="4807098396393229769">Nome que aparece na tarxeta</translation>
 <translation id="4809079943450490359">Instrucións do administrador do teu dispositivo:</translation>
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
+<translation id="4811696127853690432">Garda o vehículo de forma segura en Google Wallet</translation>
 <translation id="4811918461974803225">Logotipos de Google Pay e Affirm</translation>
 <translation id="4813512666221746211">Erro de rede</translation>
 <translation id="4814114628197290459">Eliminar o IBAN</translation>
@@ -2340,11 +2356,13 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5020862932518041900">Se seleccionas ou ignoras unha suxestión, Chrome adaptarase para garantir que só vexas o que che interesa</translation>
 <translation id="5021500396464456616">Ponte en contacto coa persoa que che enviou esta ligazón</translation>
 <translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
+<translation id="502229363433123770">Garda o número Redress de forma segura</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
 <translation id="5024171724744627792">Garda a tarxeta para pagar máis rápido. Os detalles da tarxeta encríptanse na túa Conta de Google.</translation>
 <translation id="5026121202864677765">Escribe a miña carta de presentación</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Precísase un certificado raíz para <ph name="SOFTWARE_NAME" />, pero non está instalado. O teu administrador de TI debe comprobar as instrucións de configuración de <ph name="SOFTWARE_NAME" /> para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Garda o KTN de forma segura en Google Wallet</translation>
 <translation id="503498442187459473">O host <ph name="HOST" /> quere utilizar a túa cámara e o micrófono</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Tamaño do tipo de letra</translation>
@@ -2721,6 +2739,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Avance por tracción</translation>
+<translation id="5653681867130739344">Actualiza o documento de identidade en Google Wallet</translation>
 <translation id="5654927323611874862">Código do informe de fallos cargado:</translation>
 <translation id="5654965123204121933">O URL non inclúe a cadea de substitución necesaria <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
@@ -2833,6 +2852,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5866898949289125849">Estás vendo unha páxina de ferramentas de programador</translation>
 <translation id="5869405914158311789">Non se pode acceder a este sitio</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
+<translation id="5872115357279348603">Actualiza o KTN de forma segura en Google Wallet</translation>
 <translation id="5872215789867188990">O grupo de pestanas "<ph name="GROUP_TITLE" />" xa non está dispoñible</translation>
 <translation id="5872692522325383488">Gardouse o IBAN</translation>
 <translation id="5879989559903563723">Non se permite no modo Convidados</translation>
@@ -2856,6 +2876,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5914185423510719251">Garda o KTN en Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> engadiu esta pestana</translation>
 <translation id="59174027418879706">Activado</translation>
+<translation id="5917538780499455803">Garda o carné de identidade de forma segura</translation>
 <translation id="5918847752193018339">Poderás tramitar as compras máis rápido se tes os CVC gardados. <ph name="LINK_BEGIN" />Eliminar os códigos de seguranza gardados<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activado</translation>
@@ -2918,6 +2939,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Non se puido gardar o vídeo en OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> e <ph name="TYPE_3" /> (sincronizado)</translation>
+<translation id="6025471531651464742">Engadir ficheiros</translation>
 <translation id="6028591542479806248">Xestiona as notificacións por correo electrónico e para móbiles</translation>
 <translation id="603068602130820122">Dúas grampas na parte dereita</translation>
 <translation id="6031824805267965302">Usar os sensores por agora</translation>
@@ -3162,6 +3184,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6415778972515849510">Chromium pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Se tes algún dato persoal ou empresarial importante, asegúrate de gardalo externamente.</translation>
+<translation id="6422648598133086441">Actualiza o vehículo de forma segura en Google Wallet</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Dobrez en ventá</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3335,6 +3358,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="674375294223700098">Erro de certificado de servidor descoñecido.</translation>
 <translation id="6743841972744298686">Configuración de sincronización</translation>
 <translation id="6745212570062463886">Autocompleta o teu nome e enderezo de correo electrónico a partir da información da túa Conta de Google</translation>
+<translation id="674580074662200768">Actualiza o pasaporte de forma segura</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valor de política</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3494,6 +3518,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7023765275461720661">Queres vincular a conta e pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">modificar a configuración para completar os métodos de pago</translation>
 <translation id="7031110846419387930">Información sobre o navegador, o sistema operativo, o dispositivo, o software instalado, os ficheiros e os enderezos IP</translation>
+<translation id="7031356333130415891">Actualiza o carné de identidade de forma segura</translation>
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7035705295266423040">O teu banco quere verificar a túa identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de privacidade da túa Conta de Google, preme Tabulador e, a continuación, Introducir</translation>
@@ -3617,6 +3642,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 Detalles adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Para borrar esta información, vai á súa configuración de xestión</translation>
+<translation id="7253051586755429279">Actualiza o número Redress de forma segura en Google Wallet</translation>
 <translation id="7255540419660272073">Botón Non me gusta. Preme Introducir para abrir un formulario e enviar comentarios detallados sobre o motivo polo que non che gusta o seguinte: <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bandexa traseira</translation>
 <translation id="725866823122871198">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do ordenador (<ph name="DATE_AND_TIME" />) non son correctas.</translation>
@@ -3981,6 +4007,7 @@ Detalles adicionais:
 <translation id="7860345425589240791">Introduce a nova data de vencemento e o CVC do <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Queres saír do sitio?</translation>
 <translation id="7862306158978555061">mostrar información confidencial</translation>
+<translation id="7863122976993412643">Garda o permiso de conducir de forma segura</translation>
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7865482168955081228">A pantalla de erro de pago aprazado está pechada.</translation>
 <translation id="7869655448736341731">Calquera</translation>
@@ -4029,6 +4056,7 @@ Detalles adicionais:
 <translation id="7943893128817522649">Pode pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="7947285636476623132">Comproba o ano de caducidade e téntao de novo</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para obter máis información sobre as funcións de Chrome</translation>
+<translation id="7947964969544524438">Garda o número de viaxeiro coñecido (KTN) de forma segura</translation>
 <translation id="7948579849190819732">Pestana actual</translation>
 <translation id="7950027195171824198">Xestionar as túas preferencias relativas ás cookies na configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
@@ -4227,6 +4255,7 @@ Detalles adicionais:
 <translation id="8297545700510100061">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">A tarxeta está gardada só no dispositivo</translation>
+<translation id="8300302621078931927">Garda o carné de identidade en Google Wallet</translation>
 <translation id="8301894345671534559">Introducir código</translation>
 <translation id="830498451218851433">Dobrez á metade</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -4436,6 +4465,8 @@ Detalles adicionais:
 <translation id="8710842507289500830">Estilo do tipo de letra</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8715198179991802709">Chrome acaba de marcar un sitio web que estabas tentando visitar. Dedica un minutiño a cubrir esta enquisa para axudarnos a mellorar estas advertencias.</translation>
+<translation id="8716983145825913456">Garda o vehículo de forma segura</translation>
+<translation id="8717177139469452440">Garda o pasaporte de forma segura en Google Wallet</translation>
 <translation id="8718314106902482036">Non se completou o pago</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suxestión de busca</translation>
 <translation id="8719528812645237045">Varias perforacións na parte superior</translation>
@@ -4537,6 +4568,7 @@ Detalles adicionais:
 <translation id="888169490072887292">Atopa restaurantes ideais para familias con menú infantil</translation>
 <translation id="8883863364960302898">Cartafol de Google Drive</translation>
 <translation id="8884537526797090108">Non se pode gravar contido confidencial</translation>
+<translation id="8889525327610245418">Actualiza o permiso de conducir de forma segura en Google Wallet</translation>
 <translation id="8891031436559779793">Recibirás unha notificación se baixa o prezo en calquera sitio.</translation>
 <translation id="8891727572606052622">Modo de proxy non válido.</translation>
 <translation id="8894794286471754040">Co bordo longo primeiro</translation>
@@ -4773,6 +4805,7 @@ Detalles adicionais:
 <translation id="978750072783101994">Autocompleta esta tarxeta para as compras que fagas en Chromium cando estea gardada en Google Wallet</translation>
 <translation id="979107176848483472">O teu navegador e o teu perfil están xestionados por <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">Sen conexión</translation>
+<translation id="98237783946365638">Garda o documento de identidade de forma segura en Google Wallet</translation>
 <translation id="983587187183716432">Botón <ph name="AI_ENGINE_NAME" />. Preme Introducir para facerlle unha pregunta a <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985199708454569384">&lt;p&gt;Verás este erro se a data e a hora do ordenador ou do dispositivo móbil son incorrectas.&lt;/p&gt;

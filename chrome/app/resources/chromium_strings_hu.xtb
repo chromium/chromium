@@ -681,6 +681,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />A Chromium figyelmezteti<ph name="END_LINK" /> a nem biztonságos webhelyekre és letöltésekre</translation>
 <translation id="8295827201165805317">Nem látogatta meg mostanában. A Chromium eltávolította a következőt: <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Vásárolhat, fordíthat, és azonosíthatja a látott dolgokat a kamera segítségével a Chromium iOS-alkalmazásban</translation>
+<translation id="8310603974518734211">QR-kód a Chromiumba való bejelentkezéshez a következő fiókkal: <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Indítási hiba: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Szervezete bezárja a Chromiumot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Mentés képként</translation>

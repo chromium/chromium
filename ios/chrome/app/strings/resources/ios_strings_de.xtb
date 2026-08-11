@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Dieses Konto funktioniert nicht mit Gemini. Melde dich mit einem anderen Google-Konto an.</translation>
 <translation id="3265736395246760288">Du kannst dich auf allen deinen synchronisierten Geräten schneller anmelden.</translation>
 <translation id="3272527697863656322">Abbrechen</translation>
+<translation id="3272955648592358996">Deine Daten verbessern Google AI</translation>
 <translation id="3273510436356991673">Startbildschirm personalisieren</translation>
 <translation id="3277021493514034324">Websiteadresse kopiert</translation>
 <translation id="3280562213547448728">Sprachsuche</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Dadurch werden dir Personen angezeigt, die du zu deinem Termin einladen kannst.</translation>
 <translation id="3891414008432200754">Preis</translation>
 <translation id="3892144330757387737">Hier wird dein Verlauf angezeigt</translation>
+<translation id="3892695492576181257">Wenn sie aktiviert ist, werden deine Aktivitäten im Aktivitätsverlauf in Gemini-Apps 18 Monate lang gespeichert. Du kannst den Zeitraum auf 3 oder 36 Monate ändern. Google nutzt deine Aktivitäten, um Google-Dienste (einschließlich Gemini-Modelle) zu entwickeln und zu verbessern, und um Google, seine Nutzer und die Öffentlichkeit mithilfe von Prüfern zu schützen. Von Dienstanbietern überprüfte Daten werden von deinem Konto getrennt und 3 Jahre lang gespeichert.</translation>
 <translation id="3893858854379998374">Wenn du neue Lesezeichen in deinem Konto speichern möchtest, lösche deine nicht verwendeten Lesezeichen</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3904270275864974753">Karussell bearbeiten</translation>
@@ -1494,6 +1496,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5971459446352190251">QR‑Code-Suche</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 Lesezeichen gelöscht}other{{count} Lesezeichen gelöscht}}</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
+<translation id="597482816780655631">Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Chats werden geprüft und zur Verbesserung von Google AI verwendet. <ph name="BEGIN_LINK" />Hier findest du weitere Informationen zu möglichen Einstellungen.<ph name="END_LINK" /> Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Sonstige</translation>
 <translation id="5977976211062815271">Auf diesem Gerät</translation>
 <translation id="5986043348928676121">Weiter</translation>
@@ -1860,6 +1863,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">„Menü“ → Einstellungen → „Zahlungsmethoden“</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
+<translation id="7119533351103192286">Gemini verwenden</translation>
 <translation id="7127922377013221748">Symbolleiste ausblenden</translation>
 <translation id="7128693485119315539">Deine Organisation muss möglicherweise Browserdaten, die mit deinem verwalteten Konto verknüpft sind, sehen und verwalten – beispielsweise deinen Browserverlauf und deine Passwörter.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8796634520835503150">Lesemodus verfügbar</translation>
 <translation id="8803526663383843427">Wenn aktiviert</translation>
 <translation id="8803639129939845298">Sicher</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />-Mitgliedschaft</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814308045751067027">Wenn du Gemini Live verwenden möchtest, musst du Chrome in den Einstellungen Zugriff auf dein Mikrofon gewähren</translation>
 <translation id="8814719628147284151">Weiter</translation>
@@ -2397,6 +2402,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="882557203579758546">Auf Seite suchen…</translation>
 <translation id="8829809207373502270">Dieser Passkey funktioniert nicht mehr. Er wurde von <ph name="WEBSITE" /> gelöscht und wird demnächst auch von hier entfernt. <ph name="BEGIN_LINK" />Info zu Passkeys<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Alle inaktiven Tabs schließen</translation>
+<translation id="8831871601813227635">Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />, die <ph name="BEGIN_LINK" />Standortnutzungsbedingungen für Korea<ph name="END_LINK" /> und unsere <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />. Chats werden geprüft und zur Verbesserung von Google AI verwendet. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deine <ph name="BEGIN_LINK" />Aktivitäten verwalten<ph name="END_LINK" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Nach Publisher sortieren</translation>
 <translation id="884351711508006491">Deine Informationen werden auf deinem Gerät gespeichert.</translation>
 <translation id="8844136307393039959">Preissenkung bei deinem beobachteten Produkt</translation>

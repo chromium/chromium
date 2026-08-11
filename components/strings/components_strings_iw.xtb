@@ -25,6 +25,7 @@
 <translation id="1039767473048604223"><ph name="DEVICE_NAME" /> ‏<ph name="MODEL" /></translation>
 <translation id="1041998700806130099">הודעה לגבי גיליון עבודות</translation>
 <translation id="1044897699341250361">מה זה אומר?</translation>
+<translation id="1049837829250301306">אי אפשר להדביק את התוכן בגלל מדיניות הארגון</translation>
 <translation id="1050038467049342496">סגירת אפליקציות אחרות</translation>
 <translation id="1050765387089990494">תנסח תשובה קצרה ומנומסת לדחיית ההזמנה</translation>
 <translation id="1055184225775184556">&amp;ביטול הוספה</translation>
@@ -192,6 +193,7 @@
 <translation id="132301787627749051">חיפוש תמונה בלוח</translation>
 <translation id="1323433172918577554">הצגת פריטים נוספים</translation>
 <translation id="1330449323196174374">כנף שמאלית בקיפול</translation>
+<translation id="1330952240988133220">‏שמירת מספר ה-Redress באופן מאובטח ב-Google Wallet</translation>
 <translation id="133173645041092770">סגירת האתר</translation>
 <translation id="1333745675627230582">‏הפעלת המשחק Chrome Dino</translation>
 <translation id="1333989956347591814">הפעילות שלך <ph name="BEGIN_EMPHASIS" />עדיין עשויה להיות מוצגת<ph name="END_EMPHASIS" /> בפני:
@@ -323,6 +325,7 @@
 <translation id="1549470594296187301">‏JavaScript צריך להיות מופעל כדי להשתמש בתכונה זו.</translation>
 <translation id="1550906923175308360">תיצור לי רשימת משימות להיום כדי לעזור לי לעמוד ביעדים</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
+<translation id="1555014818414775661">הוספת תמונות</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1555191101192706055">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם.</translation>
 <translation id="1559231233244409191">Cardboard (Triple Wall)</translation>
@@ -340,6 +343,7 @@
 <translation id="1569487616857761740">יש להזין תאריך תפוגה</translation>
 <translation id="1569694109004336106">‏Google Chrome מנסה להפעיל את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="1569905000953679183">אחזור מדיניות ההתקנה של התוסף</translation>
+<translation id="1572383686781055412">‏עדכון מספר ה-KTN באופן מאובטח</translation>
 <translation id="1572765991610098222">‏<ph name="WIDTH" />x<ph name="HEIGHT" /> אינץ'</translation>
 <translation id="1574714699824202614">מתבצע אימות של אמצעי התשלום</translation>
 <translation id="1576277203042721907">תובנות בנושא קניות</translation>
@@ -396,6 +400,7 @@
 <translation id="1658918301167915956">‏מכשירי Bluetooth</translation>
 <translation id="1662550410081243962">שמירה ומילוי של אמצעי תשלום</translation>
 <translation id="1662980953334786797">באותו סדר</translation>
+<translation id="1663578299724791827">‏שמירת מספר ה-KTN באופן מאובטח</translation>
 <translation id="1663943134801823270">‏הכרטיסים והכתובות נלקחים מ-Chrome. אפשר לנהל אותם ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Flexo Photopolymer</translation>
 <translation id="1667730174533834274">אימות הזהות שלך לפני שינוי ההגדרות</translation>
@@ -403,6 +408,7 @@
 <translation id="1670861525135254448">לשמור את פרטי הרכב?</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">הקצה הקצר ראשון</translation>
+<translation id="1683083957814090281">עדכון פרטי הרכב באופן מאובטח</translation>
 <translation id="168693727862418163">אימות ערך המדיניות הזה נכשל בבדיקה מול הסכימה והמערכת תתעלם ממנו.</translation>
 <translation id="168841957122794586">אישור השרת מכיל מפתח הצפנה חלש.</translation>
 <translation id="1688718429648938412">‏שמירת כרטיס מועדון הלקוחות ב-Wallet</translation>
@@ -867,6 +873,7 @@
 <translation id="2469153820345007638">‏סדר מ-1 עד N</translation>
 <translation id="24699311393038040">Paper (Coated)</translation>
 <translation id="2471632709106952369">טבלאות השוואה</translation>
+<translation id="2472396075297339227">‏שמירת מספר ה-KTN באופן מאובטח ב-Google Wallet</translation>
 <translation id="2477607419416067650">‏נתונים אחרים של Google</translation>
 <translation id="247903268499247848">אין הרשאה להשתמש בחיישני התנועה והאור</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -925,6 +932,7 @@
 <translation id="2553352788023127673">אפשר למחוק את היסטוריית החיפושים ואת הסיסמאות בהגדרות הניהול שלהן</translation>
 <translation id="2553853292994445426">‏יש לבדוק את הגדרות ה-DNS המאובטח. ייתכן שהגדרת שרת DNS מאובטח שההתחברות אליו נכשלת.</translation>
 <translation id="2555855727505718984">המידע הזה לא יהיה זמין יותר למילוי האוטומטי במכשיר כדי לעזור לך למלא טפסים</translation>
+<translation id="2556173336856001120">‫<ph name="USER_GIVEN_NAME" />‏ • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;ביטול עריכה</translation>
 <translation id="2559566667529177711">Multi-Layer</translation>
 <translation id="2570734079541893434">ניהול ההגדרות</translation>
@@ -1324,6 +1332,7 @@
 <translation id="3273738040255912340">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">‏הודעת שמירת מספר ה-IBAN נפתחה בגובה מלא.</translation>
 <translation id="327455571215090823">מילוי אוטומטי חכם יותר, עם שמירה על הפרטיות</translation>
+<translation id="3280440382387335343">‏עדכון הדרכון באופן מאובטח ב-Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקובץ הזה ב<ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">הארגון שלך, <ph name="ENROLLMENT_DOMAIN" />, שלח מספר פרטים, כמו הגדרות ומדיניות, לאתרים הבאים.</translation>
 <translation id="3286372614333682499">לאורך</translation>
@@ -1464,6 +1473,7 @@
 <translation id="3543597750097719865">‏חתימת X9.62 ECDSA עם SHA-512</translation>
 <translation id="3543935938072367282">תשלום מהיר יותר בעזרת מילוי אוטומטי</translation>
 <translation id="3547442767634383572">סקירה כללית של פרופיל העבודה</translation>
+<translation id="3547673868874844776">שמירת התעודה המזהה באופן מאובטח</translation>
 <translation id="3547746132308051926">‏20x24 אינץ'</translation>
 <translation id="3549904448933807997">פרטים על הדפדפנים והפרופילים (כולל פרופילים אישיים ולצורכי עבודה)</translation>
 <translation id="3552155506104542239">‏אזהרה: המדיניות הזו מתנגשת עם <ph name="POLICY_NAME" /> ולא תהיה לה השפעה על אפליקציות ל-Android. פרט לכך, המדיניות הזו פועלת כצפוי.</translation>
@@ -1672,6 +1682,7 @@
 <translation id="388632593194507180">זוהה מעקב</translation>
 <translation id="3886948180919384617">מערים 3</translation>
 <translation id="3890664840433101773">הוספת כתובת אימייל</translation>
+<translation id="3892626428170730309">שמירת הדרכון באופן מאובטח</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3901925938762663762">תוקף הכרטיס פג</translation>
 <translation id="390391808978419508">פג הזמן הקצוב לפתיחה</translation>
@@ -1827,6 +1838,7 @@
 <translation id="4153858337812834972">הכרטיסיות האחרונות</translation>
 <translation id="4154277373259957087">‏Chrome יאמת עכשיו את הזהות שלך לפני מילוי אמצעי התשלום. תמיד אפשר לעדכן את האפשרות הזו ב<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">‏מבוסס על AI מותאם אישית עם Gemini. <ph name="BEGIN_LINK" />ניהול ההגדרות<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">עדכון רישיון הנהיגה באופן מאובטח</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165422751765527461">פתיחת מאמר במרכז העזרה בכרטיסייה חדשה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
@@ -1841,6 +1853,7 @@
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4178863275556660738">תשלום באמצעות אמצעי תשלום שהם לא כרטיסים</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">‏עדכון מספר ה-Redress באופן מאובטח</translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
 <translation id="4190446002599583608">‏חיפוש בהיסטוריה, באמצעות AI</translation>
 <translation id="4191334393248735295">אורך</translation>
@@ -1882,6 +1895,7 @@
 <translation id="4231448684371260244">‏8x13 אינץ'</translation>
 <translation id="4234996384188431444">‏לא צריך יותר לעבור בין אפליקציות ב-Google Chrome, פשוט משלמים דרך Pix</translation>
 <translation id="4238607350028440048">אני רוצה להתכונן לריאיון עבודה. תעזור לי להתאמן ותשאל אותי שאלות כמו מנהל גיוס עובדים.</translation>
+<translation id="4239215166147486528">‏שמירת רישיון הנהיגה באופן מאובטח ב-Google Wallet</translation>
 <translation id="4239799716689808527">Labels</translation>
 <translation id="424063167283213501">‏לשמור את מספר ה-KTN?</translation>
 <translation id="4241830393007970744">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך.</translation>
@@ -1994,6 +2008,7 @@
 <translation id="4407758156081352648">‏מטעמי אבטחה, הארגון שלך לא מאפשר שימוש חוזר בסיסמאות ב-Chrome. הסיסמאות ב-Chrome מוצפנות כדי להגן על פרטיות המשתמשים.</translation>
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4409556632583862731">שרשור חדש</translation>
+<translation id="4410614037742891410">‏עדכון התעודה המזהה באופן מאובטח ב-Google Wallet</translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
 <translation id="4412377069090572315">מה אנשים אומרים</translation>
 <translation id="4414515549596849729">‏קובצי Cookie ונתונים מאתרים</translation>
@@ -2075,6 +2090,7 @@
 <translation id="4569155249847375786">מאומת</translation>
 <translation id="4570008401337135432">יישור הטקסט</translation>
 <translation id="457875822857220463">משלוח</translation>
+<translation id="4579084373690089522">לפי מדיניות הארגון שלך, יכול להיות שהתוכן הזה מכיל מידע רגיש</translation>
 <translation id="4582595824823167856">קבלה של הודעת טקסט</translation>
 <translation id="4584094413232466841">‏להסיר את הפרטים האלה מהמילוי האוטומטי של Chrome?</translation>
 <translation id="4586607503179159908">אמצעי התשלום אומת</translation>
@@ -2210,9 +2226,11 @@ Del</translation>
 <translation id="4800132727771399293">‏יש לבדוק את תאריך התפוגה ואת ה-CVC ולנסות שוב</translation>
 <translation id="4800546479758254481">‏יש הרשאה לשימוש ב-AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">עדכון התעודה המזהה באופן מאובטח</translation>
 <translation id="4807098396393229769">שם על הכרטיס</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>
+<translation id="4811696127853690432">‏שמירת פרטי הרכב באופן מאובטח ב-Google Wallet</translation>
 <translation id="4811918461974803225">‏הלוגו של Google Pay ו-Affirm</translation>
 <translation id="4813512666221746211">שגיאת רשת</translation>
 <translation id="4814114628197290459">‏מחיקת מספר IBAN</translation>
@@ -2227,6 +2245,7 @@ Del</translation>
 <translation id="4831993743164297314">Image Setter Paper</translation>
 <translation id="4832388034239846146">‏כדי לשתף קבוצות של כרטיסיות, צריך לעדכן את Chrome</translation>
 <translation id="483241715238664915">הפעלת האזהרות</translation>
+<translation id="4833567658337394628">לא מומלץ להדביק את התוכן</translation>
 <translation id="4840250757394056958">‏הצגת ההיסטוריה ב-Chrome</translation>
 <translation id="4842365697443353018">כדי לשלם אחר כך, צריך למחוק את הנתונים בטופס</translation>
 <translation id="484462545196658690">אוטומטי</translation>
@@ -2341,11 +2360,13 @@ Del</translation>
 <translation id="5020862932518041900">‏אם בחרת בהצעה או התעלמת ממנה, Chrome יתאים את עצמו כדי לוודא שהתוכן שהוא מציג רלוונטי לך</translation>
 <translation id="5021500396464456616">עליך ליצור קשר עם המשתמש ששלח את הקישור</translation>
 <translation id="5021557570875267742">‏מעקב אחר מחירים באמצעות Chrome</translation>
+<translation id="502229363433123770">‏שמירת מספר ה-Redress באופן מאובטח</translation>
 <translation id="5023310440958281426">יש לבדוק את תקנון מנהל המערכת שלך</translation>
 <translation id="5024171724744627792">‏אפשר לשלם מהר יותר עם כרטיס שנשמר. פרטי הכרטיס מוצפנים בחשבון שלך ב-Google.</translation>
 <translation id="5026121202864677765">תכתוב לי מכתב מקדים</translation>
 <translation id="5030338702439866405">הונפק על ידי</translation>
 <translation id="503069730517007720">‏יש צורך באישור שורש בשביל "<ph name="SOFTWARE_NAME" />", אבל לא מותקן אישור כזה. על מנהל ה-IT לבדוק את הוראות התצורה של "<ph name="SOFTWARE_NAME" />" כדי לפתור את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">‏שמירת מספר ה-KTN באופן מאובטח ב-Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> רוצה להשתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">גודל גופן</translation>
@@ -2723,6 +2744,7 @@ Del</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5649053991847567735">הורדות אוטומטיות</translation>
 <translation id="5651323159439184939">Tractor Feed</translation>
+<translation id="5653681867130739344">‏עדכון התעודה המזהה באופן מאובטח ב-Google Wallet</translation>
 <translation id="5654927323611874862">מזהה דוח הקריסה שהועלה:</translation>
 <translation id="5654965123204121933">‏כתובת ה-URL לא כוללת את מחרוזת ההחלפה הנדרשת <ph name="SEARCH_TERMS_REPLACEMENT" />:‏ <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">אימייל</translation>
@@ -2835,6 +2857,7 @@ Del</translation>
 <translation id="5866898949289125849">הדף המוצג הוא של הכלים למפתחים</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
+<translation id="5872115357279348603">‏עדכון מספר ה-KTN באופן מאובטח ב-Google Wallet</translation>
 <translation id="5872215789867188990">קבוצת הכרטיסיות "<ph name="GROUP_TITLE" />" לא זמינה יותר</translation>
 <translation id="5872692522325383488">‏מספר IBAN נשמר</translation>
 <translation id="5879989559903563723">אין הרשאה במצב אורח</translation>
@@ -2858,6 +2881,7 @@ Del</translation>
 <translation id="5914185423510719251">‏שמירת מספר ה-KTN ב-Google Wallet</translation>
 <translation id="5914465277418006379">הכרטיסייה הזו נוספה על ידי <ph name="MEMBER_FIRST_NAME" /></translation>
 <translation id="59174027418879706">מופעל</translation>
+<translation id="5917538780499455803">שמירת התעודה המזהה באופן מאובטח</translation>
 <translation id="5918847752193018339">‏התשלום מהיר יותר כשקודי האימות (CVC) שמורים. <ph name="LINK_BEGIN" />מחיקת קודי האבטחה שנשמרו<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">מופעל</translation>
@@ -2920,6 +2944,7 @@ Del</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">‏לא ניתן לשמור את הסרטון ב-OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (מסונכרנים)</translation>
+<translation id="6025471531651464742">הוספת קבצים</translation>
 <translation id="6028591542479806248">ניהול של ההתראות בנייד ובאימייל</translation>
 <translation id="603068602130820122">שתי סיכות הידוק בצד ימין</translation>
 <translation id="6031824805267965302">להשתמש בחיישני התנועה</translation>
@@ -3164,6 +3189,7 @@ Del</translation>
 <translation id="6415778972515849510">‏בעזרת Chromium אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
 <translation id="6416877227920300343">‏11x14 אינץ' (EDP)</translation>
 <translation id="6418199314628742460">חשוב לוודא שכל הנתונים העסקיים או האישיים הקריטיים נשמרים באופן חיצוני.</translation>
+<translation id="6422648598133086441">‏עדכון פרטי הרכב באופן מאובטח ב-Google Wallet</translation>
 <translation id="6425092077175753609">עיצוב חדשני תלת-ממדי</translation>
 <translation id="6427730057873428458">כנף בקיפול</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3337,6 +3363,7 @@ Del</translation>
 <translation id="674375294223700098">שגיאת אישור שרת לא ידוע.</translation>
 <translation id="6743841972744298686">הגדרות סנכרון</translation>
 <translation id="6745212570062463886">‏מילוי אוטומטי של השם ושל כתובת האימייל מחשבון Google</translation>
+<translation id="674580074662200768">עדכון הדרכון באופן מאובטח</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ערך מדיניות</translation>
 <translation id="6753434778807740853">מחיקת הרשומה <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3496,6 +3523,7 @@ Del</translation>
 <translation id="7023765275461720661">לקשר את החשבון ולשלם עם <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7030164307377592766">לשנות את ההגדרות למילוי אמצעי התשלום</translation>
 <translation id="7031110846419387930">‏מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו, הקבצים וכתובות ה-IP</translation>
+<translation id="7031356333130415891">עדכון התעודה המזהה באופן מאובטח</translation>
 <translation id="7031646650991750659">‏אילו אפליקציות התקנת מ-Google Play.</translation>
 <translation id="7035705295266423040">הבנק מבקש לאמת את הזהות שלך</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל את הגדרות הפרטיות בחשבון Google.</translation>
@@ -3620,6 +3648,7 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">כדי למחוק את הנתונים האלה, צריך לעבור להגדרות הניהול שלהם</translation>
+<translation id="7253051586755429279">‏עדכון מספר ה-Redress באופן מאובטח ב-Google Wallet</translation>
 <translation id="7255540419660272073">‏כפתור 'לא אהבתי', לוחצים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">המגש האחורי</translation>
 <translation id="725866823122871198">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במחשב שלך שגויים.</translation>
@@ -3984,6 +4013,7 @@ Del</translation>
 <translation id="7860345425589240791">‏יש להזין את תאריך התפוגה הנכון ואת קוד האימות (CVC) שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">לצאת מהאתר?</translation>
 <translation id="7862306158978555061">הצגת מידע רגיש</translation>
+<translation id="7863122976993412643">שמירת רישיון הנהיגה באופן מאובטח</translation>
 <translation id="7865448901209910068">המהירות הטובה ביותר</translation>
 <translation id="7865482168955081228">‏מסך השגיאה של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>
 <translation id="7869655448736341731">הכול</translation>
@@ -4032,6 +4062,7 @@ Del</translation>
 <translation id="7943893128817522649">האתר יכול לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לקבל מידע על התכונות של Chrome</translation>
+<translation id="7947964969544524438">‏שמירת מספר ה-KTN באופן מאובטח</translation>
 <translation id="7948579849190819732">הכרטיסייה הנוכחית</translation>
 <translation id="7950027195171824198">‏ניתן לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
 <translation id="7951415247503192394">(32 סיביות)</translation>
@@ -4230,6 +4261,7 @@ Del</translation>
 <translation id="8297545700510100061">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. ב<ph name="SETTINGS" /> אפשר לנהל את קובצי ה-cookie מכל האתרים.</translation>
 <translation id="8298115750975731693">‏ייתכן שרשת ה-Wi-Fi שנעשה בה שימוש (<ph name="WIFI_NAME" />) תחייב כניסה ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">הכרטיס נשמר רק במכשיר</translation>
+<translation id="8300302621078931927">‏שמירת התעודה המזהה באופן מאובטח ב-Google Wallet</translation>
 <translation id="8301894345671534559">הזנת הקוד</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="830868413617744215">ביטא</translation>
@@ -4439,6 +4471,8 @@ Del</translation>
 <translation id="8710842507289500830">סגנון גופן</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715198179991802709">‏‫Chrome התריע על אתר שניסית להיכנס אליו. הסקר הקצר הזה יעזור לנו לשפר את האזהרות האלה.</translation>
+<translation id="8716983145825913456">שמירת פרטי הרכב באופן מאובטח</translation>
+<translation id="8717177139469452440">‏שמירת הדרכון באופן מאובטח ב-Google Wallet</translation>
 <translation id="8718314106902482036">התשלום לא הושלם</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, הצעת חיפוש</translation>
 <translation id="8719528812645237045">ניקובים מרובים בחלק העליון</translation>
@@ -4540,6 +4574,7 @@ Del</translation>
 <translation id="888169490072887292">תחפש מסעדות שמתאימות לכל המשפחה עם תפריטים לילדים</translation>
 <translation id="8883863364960302898">‏תיקיית Google Drive</translation>
 <translation id="8884537526797090108">אי אפשר להקליט תוכן סודי</translation>
+<translation id="8889525327610245418">‏עדכון רישיון הנהיגה באופן מאובטח ב-Google Wallet</translation>
 <translation id="8891031436559779793">תישלח אליך התראה אם תהיה ירידה במחיר באתר כלשהו.</translation>
 <translation id="8891727572606052622">‏מצב שרת Proxy לא חוקי.</translation>
 <translation id="8894794286471754040">הקצה הארוך ראשון</translation>
@@ -4776,6 +4811,7 @@ Del</translation>
 <translation id="978750072783101994">‏אם שומרים את הכרטיס הזה ב-Google Wallet, אפשר למלא באופן אוטומטי את הפרטים שלו כדי לבצע רכישות ב-Chromium</translation>
 <translation id="979107176848483472">הדפדפן והפרופיל שלך מנוהלים על ידי <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">לא מקוון</translation>
+<translation id="98237783946365638">‏שמירת התעודה המזהה באופן מאובטח ב-Google Wallet</translation>
 <translation id="983587187183716432">‏כפתור <ph name="AI_ENGINE_NAME" />, כדי לשאול את <ph name="AI_ENGINE_NAME" /> צריך להקיש על Enter</translation>
 <translation id="984275831282074731">אמצעי תשלום</translation>
 <translation id="985199708454569384">‏&lt;p&gt;השגיאה הזו תוצג אם התאריך והשעה במחשב או בנייד אינם מדויקים.&lt;/p&gt;

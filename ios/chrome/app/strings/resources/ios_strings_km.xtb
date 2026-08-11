@@ -38,6 +38,7 @@
 <translation id="1097807529207545420">{count,plural, =1{បាន​ផ្ទៀងផ្ទាត់​ពាក្យសម្ងាត់ 1 ភ្លាមៗ}other{បាន​ផ្ទៀងផ្ទាត់​ពាក្យសម្ងាត់ # ភ្លាមៗ}}</translation>
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="1110772719190051587">ដោះសោ​ដោយប្រើ Face ID</translation>
+<translation id="1111776967764068277">នឿយណាយនឹងការចម្លងតំណមែនទេ?</translation>
 <translation id="1112015203684611006">បានបរាជ័យក្នុងការបោះពុម្ព</translation>
 <translation id="1118569444314402022">សូមស្វាគមន៍​សម្រាប់ការវិលត្រឡប់មកវិញ <ph name="USER_NAME" /></translation>
 <translation id="1121850836842642159">រូបថត និង​រូបភាព</translation>
@@ -478,6 +479,7 @@
 <translation id="2496180316473517155">ប្រវត្តិរុករក</translation>
 <translation id="2496626742194544812">ចូលទៅ​ផ្ទាំង​ដំបូង</translation>
 <translation id="2499505845365628575">អ្នកអាច​រកឃើញ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​ទាំងអស់​របស់អ្នក​បានពី<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />។</translation>
+<translation id="251033673027346551">ចូលទៅកាន់ Google Wallet ដើម្បីគ្រប់គ្រង<ph name="BEGIN_LINK" />ចំណូលចិត្តទិន្នន័យ និងឯកជនភាព<ph name="END_LINK" />។</translation>
 <translation id="2511117522375201202">អ្នកមាន​ពាក្យសម្ងាត់ដែល​រងការលុកលុយ <ph name="NUMBER_OF_PASSWORDS" /> ដែលអាច​ធ្វើឱ្យសុវត្ថិភាព​របស់អ្នក​ប្រឈមនឹង​ហានិភ័យ។</translation>
 <translation id="2512709994717613803">កម្រិតទី <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">អ្នក​នឹងឃើញ​ក្រុមផ្ទាំង​របស់អ្នក​នៅទីនេះ</translation>
@@ -527,6 +529,7 @@
 <translation id="2666092431469916601">ខាងលើ</translation>
 <translation id="2669454659051515572">អ្នក​ដែល​ប្រើប្រាស់​ឧបករណ៍​នេះ​អាច​មើលឃើញ​ឯកសារ​ដែលបានទាញយក</translation>
 <translation id="2671423594960767771">ចែករំលែកក្រុម</translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">បង់ប្រាក់​ជាបណ្ដើរៗ​ទៅតាម​ពេលវេលា</translation>
 <translation id="2673508731173059946">ចូល​ទៅកាន់តំណ​ដែល​បានចម្លង</translation>
 <translation id="2679659833697380">ព័ត៌មាន​របស់អ្នក​ត្រូវបាន​រក្សាទុក​ទៅក្នុង​ឧបករណ៍​របស់អ្នក</translation>
@@ -543,6 +546,7 @@
 <translation id="271033894570825754">ថ្មី</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2713106313042589954">បិទកាមេរ៉ា</translation>
+<translation id="2715440913764382254">បើកដំណើរការតំណដោយផ្ទាល់នៅទីនេះ</translation>
 <translation id="2718352093833049315">នៅលើ Wi-Fi តែប៉ុណ្ណោះ</translation>
 <translation id="2721190673959776287">ជំនួយដ៏សម្បូរបែបគំរូក្នុងផលិតផលសម្រាប់ផ្ទាំងបរិបទ ដែលគួរតែបង្ហាញច្រើនដងក្នុងមួយថ្ងៃ។</translation>
 <translation id="2739887572830526131">រក្សា​ក្រុមនេះ ដើម្បី​បញ្ចូលផ្ទាំង​នៅពេលក្រោយ ឬ​លុបវា ប្រសិនបើ​អ្នកលែង​ត្រូវការ​វាទៀតហើយ។</translation>
@@ -1004,6 +1008,7 @@
 <translation id="4338258232580025606">មិនអាចចូលគណនីបានទេ</translation>
 <translation id="4338650699862464074">ផ្ញើ URL នៃ​ទំព័រ​ដែលអ្នក​ចូល​មើលទៅ Google ។</translation>
 <translation id="4342946437867096381">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​​សម្រាប់គេហទំព័រ​នេះ​នៅ​ក្នុង​គណនី Google របស់​អ្នក​រួច​ហើយ។ Google អាច​ជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មី​បំផុត​សម្រាប់​អ្នក។</translation>
+<translation id="4355702523442402731">ការរុករកឆ្លងកម្មវិធីរលូន</translation>
 <translation id="4365121137632832185">ក្រុមផ្ទាំង។ បាន​ពង្រីក។</translation>
 <translation id="4365685757967464989">អនុញ្ញាតឱ្យ Gemini ប្រើ​កាមេរ៉ា​របស់អ្នក​ដើម្បីថតរូប</translation>
 <translation id="4367971618859387374">ឈ្មោះ​បង្ហាញ</translation>
@@ -1281,6 +1286,7 @@
 <translation id="5233111790346066304">រក្សាទុក​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក និង​ចូលប្រើ​ឯកសារ​ទាំងនោះ​នៅពេលណា​ក៏បាន។</translation>
 <translation id="5233638681132016545">ផ្ទាំងថ្មី</translation>
 <translation id="5234094073825090254">{count,plural, =1{បានរក្សាទុកចំណាំនៅក្នុង​គណនី Google {email} របស់អ្នក។}other{បានរក្សាទុកចំណាំនៅក្នុង​គណនី Google {email} របស់អ្នក។}}</translation>
+<translation id="5234162151438379838">{COUNT,plural, =1{អាចបង្ហាញបានតែ 1 ផ្ទាំងប៉ុណ្ណោះ។}other{អាចបង្ហាញបានតែ {COUNT} ផ្ទាំងប៉ុណ្ណោះ។}}</translation>
 <translation id="5234764350956374838">ច្រានចោល</translation>
 <translation id="5238596603078743134">ឥឡូវនេះ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> អាចប្រើ​ឈ្មោះអ្នកប្រើប្រាស់ និង​ពាក្យសម្ងាត់​របស់អ្នក នៅពេល​គាត់ប្រើ​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់​ដើម្បីចូល <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />។</translation>
 <translation id="5241106044372754566">បច្ចុប្បន្ននេះ បានជ្រើសរើស <ph name="NAME" /> (<ph name="EMAIL" />) ដែលស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។ ជ្រើសរើស​គណនី។</translation>
@@ -1313,6 +1319,7 @@
 <translation id="5351613737248079168">អ្នកត្រូវតែចូលគណនី ដើម្បីប្រើ Level Up</translation>
 <translation id="5352128922772839949">រក្សាទុកឯកសារ</translation>
 <translation id="5355191726083956201">ការការពារបន្ថែម​ត្រូវបានបើក</translation>
+<translation id="5359436665022446585">ការបើកតំណកាន់តែប្រសើរ</translation>
 <translation id="536067926684072644">បង្ហាញចំណាំ</translation>
 <translation id="5364647308446127983">{count,plural, =1{មិនអាច​នាំចូល​កូដសម្ងាត់ {count} បានទេ}other{មិនអាច​នាំចូល​កូដសម្ងាត់ {count} បានទេ}}</translation>
 <translation id="5371112366564891538">បង្កើន​ទំហំ​អក្សរ</translation>
@@ -1491,6 +1498,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5952641243319721872">តើអ្នកប្រាកដថាចង់លុបចោលការជ្រើសរើសរបស់អ្នកមែនឬ?</translation>
 <translation id="5956112131836209882">ផ្ទាំង​ក្រុមផ្ទាំង។ <ph name="TAB_INDEX_IN_GROUP" /> នៃ <ph name="NUMBER_OF_TABS_IN_GROUP" />។</translation>
 <translation id="595769230373966252">ស្វែងរក​តាមរយៈ <ph name="SEARCH_PROVIDER" /></translation>
+<translation id="5963694076845073027">បើកតំណនៅទីនេះនៅពេលក្រោយ</translation>
 <translation id="5963939892571022323">មិនអាចបង្កើត​តំណទៅកាន់អត្ថបទ​ដែលបានរំលេចបានទេ។</translation>
 <translation id="5968400720580217226">មុខងារ AI</translation>
 <translation id="5971459446352190251">ស្វែងរក​កូដ QR</translation>
@@ -1820,6 +1828,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6932739965694346873"><ph name="USER_NAME" />, <ph name="EMAIL" />។ <ph name="MANAGED_STATUS" />។</translation>
 <translation id="6937083164784433305">{count,plural, =1{អ្នកបានប្រើរូបថត 1 សន្លឹក ដើម្បីស្វែងរក}other{អ្នកបានប្រើរូបថត # សន្លឹក ដើម្បីស្វែងរក}}</translation>
 <translation id="693761253105515415">កំណត់​លេខ​កូដ​សម្ងាត់</translation>
+<translation id="6938212956536472404">មិនអាច​បង្ហាញ​ផ្ទាំងនេះ​បានទេ</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6946722113367118030">កំពុងគិត</translation>
 <translation id="6950522403736391608">លាក់</translation>
@@ -1995,6 +2004,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7561982940498449837">បិទ​ម៉ឺនុយ</translation>
 <translation id="7566349809380613217">បើក <ph name="GROUP_TITLE" />, ក្រុម <ph name="NUMBER_OF_TABS" /> ដែលបាន​ចែករំលែក, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">ចំណាំ​ត្រូវបាន​លាក់</translation>
+<translation id="7575664680938145959">ការបើកដោយចុចម្ដង</translation>
 <translation id="7577900504646297215">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
 <translation id="7582666837709186351">បកប្រែ​អក្សរ​នៅក្នុង​រូបថត ឬ​មជ្ឈដ្ឋានជុំវិញ​របស់អ្នក​ដោយប្រើ​កាមេរ៉ា​របស់អ្នក។</translation>
 <translation id="7582857256643797524">ការកំណត់នេះត្រូវបានបើកនៅលើឧបករណ៍របស់អ្នក</translation>
@@ -2018,6 +2028,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7646263789464975852">ម៉ឺនុយ → ការកំណត់ → ការពិនិត្យសុវត្ថិភាព</translation>
 <translation id="7646772052135772216">សមកាល​កម្ម​ពាក្យសម្ងាត់​មិន​ដំណើរការ​ទេ</translation>
 <translation id="764827086632467055">ចុច​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​លំនាំដើម</translation>
+<translation id="7648666127045672239">មកទីនេះដោយចុចតែម្ដង</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="765555660695722850">ការធ្វើបែបនេះ​នឹងលុប​អាសយដ្ឋាន​ដែលបាន​រក្សាទុក​នៅលើ​ឧបករណ៍នេះ។ ការធ្វើបែបនេះ​ក៏លុប​ព័ត៌មាន​មួយចំនួន​ចេញពី​គណនី Google របស់អ្នក​ផងដែរ ប៉ុន្តែ​មិនលុប​ព័ត៌មាន​មូលដ្ឋាន ដូចជា​ឈ្មោះ ឬ​អាសយដ្ឋានផ្ទះ​របស់អ្នក​ទេ។</translation>
 <translation id="765631330137769217">ចុច "រក្សាទុក" ដើម្បី​ងាយស្រួល​ចូលប្រើ​ពាក្យ​សម្ងាត់នេះ​នៅពេល​អ្នកចូលគណនី​លើកក្រោយ</translation>
@@ -2035,6 +2046,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7701040980221191251">គ្មាន</translation>
 <translation id="7702428539671224160">បំពេញព័ត៌មាននៃការទូទាត់ប្រាក់ដោយស្វ័យប្រវត្តិនៅលើ <ph name="URL" /></translation>
 <translation id="7708994397325774423">យក​ពាក្យសម្ងាត់​ទាំងអស់​របស់អ្នក</translation>
+<translation id="7710096647785049958">ចំណេញពេលវេលាលើរាល់តំណ</translation>
 <translation id="7711440461521638739">អ្នកមិនកំពុងប្រើពាក្យសម្ងាត់​ណា​មួយ​​ឡើងវិញទេ</translation>
 <translation id="7712361583414030698">កំពុង​មើល​កំណែ​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="7719038820139380048">ចូលគណនី ដើម្បី​ទទួល​បាន​ខ្លឹមសារ​ផ្អែកតាម​ចំណាប់​អារម្មណ៍​របស់អ្នក។</translation>
@@ -2360,6 +2372,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8706806585855470492">អ្នកនឹងអាចចែករំលែក ចូលរួម និងសហការនៅក្នុងក្រុមផ្ទាំង</translation>
 <translation id="8709409604518538305">ផ្ទាំងត្រូវបានបិទ</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
+<translation id="8717519179050551968">ដាក់ចូលកាន់តែតិច រុករកកាន់តែច្រើន</translation>
 <translation id="8717864919010420084">ចម្លងតំណ</translation>
 <translation id="8722229818691036192">គណនីនៅលើឧបករណ៍នេះ</translation>
 <translation id="8722649775263832315">ចុច ឬរំលេច ដើម្បីស្វែងរកអ្វីៗដោយប្រើ Google Lens</translation>
@@ -2499,6 +2512,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="9148126808321036104">ចូលម្តងទៀត</translation>
 <translation id="9149866541089851383">កែប្រែ...</translation>
 <translation id="9152637745605628097">ជ្រើសរើសពី​ទម្រង់រចនា ពណ៌ ឬ​បង្ហោះ​រូបភាព</translation>
+<translation id="9153159728062222866">រំលងការចម្លង និងការដាក់ចូល</translation>
 <translation id="9159628751968616911">បញ្ជូនទំព័របណ្ដាញ</translation>
 <translation id="9162412286847966593">ខ្លឹមសារថត និងទិន្នន័យរបស់ស្ថាប័នអ្នកនឹងមិនត្រូវបានប្រើ ដើម្បីកែលម្អគំរូ AI ដែលមានសមត្ថភាពបង្កើតទេ។ <ph name="BEGIN_LINK" />ឯកជនភាពរបស់អ្នក និង Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">បើក "បំពេញ​ពាក្យ​សម្ងាត់​ដោយ​ស្វ័យប្រវត្តិ"</translation>

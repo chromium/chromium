@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Tento účet nebude s Gemini fungovat. Přihlaste se pomocí jiného účtu Google.</translation>
 <translation id="3265736395246760288">Přihlašujte se ze svých synchronizovaných zařízení rychleji.</translation>
 <translation id="3272527697863656322">Zrušit</translation>
+<translation id="3272955648592358996">Vaše data pomáhají Google AI zlepšovat</translation>
 <translation id="3273510436356991673">Přizpůsobení plochy</translation>
 <translation id="3277021493514034324">Adresa webu byla zkopírována</translation>
 <translation id="3280562213547448728">Hlasové vyhledávání</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Tento údaj slouží k zobrazení možných hostů k pozvání na událost.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Zde najdete svou historii</translation>
+<translation id="3892695492576181257">Když je zapnuté, ukládá se vaše aktivita do Aktivity v aplikacích s Gemini na 18 měsíců, což můžete změnit na 3 nebo 36 měsíců. Google využívá vaši aktivitu k vývoji a vylepšování svých služeb (včetně modelů Gemini) a taky k ochraně Googlu, uživatelů a veřejnosti (s pomocí kontrolorů). Data kontrolovaná poskytovateli služeb se odpojují od vašeho účtu a ukládají na 3 roky.</translation>
 <translation id="3893858854379998374">Pokud chcete záložky ukládat do svého účtu, smažte nepoužívané záložky</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3904270275864974753">Úprava pásu</translation>
@@ -1494,6 +1496,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5971459446352190251">Vyhledávání QR kódů</translation>
 <translation id="5971872012779224351">{count,plural, =1{Byla smazána 1 záložka}few{Byly smazány {count} záložky}many{Bylo smazáno {count} záložky}other{Bylo smazáno {count} záložek}}</translation>
 <translation id="5972844218283131174">Zrušit výběr všech</translation>
+<translation id="597482816780655631">Gemini je AI a může dělat chyby (i co se týče lidí). Některý obsah nemusí být vhodný pro každého. Chaty se kontrolují a slouží k vylepšování umělé inteligence od Googlu. <ph name="BEGIN_LINK" />Přečtěte si, jaké máte možnosti<ph name="END_LINK" />. Platí naše <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />upozornění ve věci ochrany soukromí<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Ostatní</translation>
 <translation id="5977976211062815271">V tomto zařízení</translation>
 <translation id="5986043348928676121">Další</translation>
@@ -1860,6 +1863,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="7102005569666697658">Stahování… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Nabídka → Nastavení → Platební metody</translation>
 <translation id="7108338896283013870">Skrýt</translation>
+<translation id="7119533351103192286">Používat Gemini</translation>
 <translation id="7127922377013221748">Skrýt lištu</translation>
 <translation id="7128693485119315539">Vaše organizace může potřebovat vidět a spravovat údaje o prohlížení spojené s vaším spravovaným účtem, jako jsou historie prohlížení a hesla.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="8796634520835503150">Je k dispozici režim čtení</translation>
 <translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8803639129939845298">Zabezpečeno</translation>
+<translation id="8809212245338455710">Členství <ph name="AI_TIER_NAME" /></translation>
 <translation id="8813277370772331957">Připomenout později</translation>
 <translation id="8814308045751067027">Pokud chcete používat režim Live, udělte Chromu v nastavení přístup k mikrofonu</translation>
 <translation id="8814719628147284151">Pokračovat</translation>
@@ -2397,6 +2402,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="882557203579758546">Najít na stránce…</translation>
 <translation id="8829809207373502270">Tenhle přístupový klíč už nefunguje. Byl z webu <ph name="WEBSITE" /> smazán a brzy bude smazán i odtud. <ph name="BEGIN_LINK" />O přístupových klíčích<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Zavřít všechny neaktivní</translation>
+<translation id="8831871601813227635">Platí naše <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" />, <ph name="BEGIN_LINK" />smluvní podmínky služeb určování polohy v Koreji<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />upozornění ve věci ochrany soukromí<ph name="END_LINK" />. Chaty se kontrolují a slouží k vylepšování umělé inteligence od Googlu. Gemini je AI a může dělat chyby (i co se týče lidí). Některý obsah nemusí být vhodný pro každého. Můžete <ph name="BEGIN_LINK" />spravovat svou aktivitu<ph name="END_LINK" />, včetně informací o poloze. <ph name="BEGIN_LINK" />Další informace o tom, jaké máte možnosti<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Seřadit podle vydavatele</translation>
 <translation id="884351711508006491">Vaše údaje se ukládají do zařízení.</translation>
 <translation id="8844136307393039959">Snížení ceny u sledovaného produktu</translation>

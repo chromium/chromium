@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 senha importada para o <ph name="BRAND" /> deste dispositivo}one{{NUM_PASSWORDS} senha importada para o <ph name="BRAND" /> deste dispositivo}other{{NUM_PASSWORDS} senhas importadas para o <ph name="BRAND" /> deste dispositivo}}</translation>
 <translation id="1046572983040892965">Janela movida para cima e para a esquerda</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto do link</translation>
-<translation id="1048350929895890054">Sites em que o menu flutuante está bloqueado</translation>
 <translation id="1048986595386481879">Alocado dinamicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}one{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}other{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
@@ -5784,6 +5783,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5444281205834970653">Excluir e continuar</translation>
 <translation id="5444452275167152925">Importado do ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Discutir ideias</translation>
 <translation id="5449551289610225147">Senha inválida</translation>
 <translation id="5449588825071916739">Adicionar todas as guias aos favoritos</translation>
@@ -5917,7 +5917,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5546865291508181392">Buscar</translation>
 <translation id="5547868626772433490">Peça ao Gemini</translation>
 <translation id="5548075230008247516">Todos os itens foram desmarcados e o modo de seleção foi fechado.</translation>
-<translation id="554810465530189549">Não mostrar o menu flutuante quando o texto é selecionado</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 guia}one{"<ph name="TAB_TITLE" />" e mais # guia}other{"<ph name="TAB_TITLE" />" e mais # guias}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Teclado e entrada de texto</translation>
@@ -6076,7 +6075,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5678955352098267522">Leia seus dados em <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Remover "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">O arquivo já está sendo aberto</translation>
-<translation id="5682950763196110705">Mostrar o menu flutuante quando o texto é selecionado</translation>
 <translation id="5684110242705861346">A extensão "<ph name="NAME" />" foi adicionada pela política da sua organização e está controlando esta configuração. <ph name="BEGIN_LINK" />Ver detalhes<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Detalhes do Wi-Fi</translation>
 <translation id="5687340364605915800">Os sites usam os próprios critérios ao responder a esse pedido</translation>
@@ -7367,6 +7365,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6702859741546259407">Para usar o <ph name="FEATURE_NAME" />, ative o Bluetooth e o Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">Foco pequeno</translation>
+<translation id="6706210727756204531">Escopo</translation>
 <translation id="6707122714992751648">Executar testes de diagnóstico no ChromeOS</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
 <translation id="6707671917294473995">Os sites não têm permissão para usar sua câmera</translation>
@@ -8151,6 +8150,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7312040805247765153">Não foi possível instalar o app</translation>
 <translation id="7312210124139670355">O administrador está redefinindo o eSIM. Pode levar alguns minutos..</translation>
+<translation id="731239254927333251">Alt+L</translation>
 <translation id="7313539585802573958">Cores da luz de fundo do teclado</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Não foi possível datar 1 evento, que não está sendo mostrado}one{Não foi possível datar # evento, que não está sendo mostrado}other{Não foi possível datar # eventos, que não estão sendo mostrados}}</translation>
 <translation id="7314865262803554456">Você não vai receber uma notificação quando a gravação começar.</translation>

@@ -193,6 +193,7 @@
 <translation id="132301787627749051">搜索剪贴板上的图片</translation>
 <translation id="1323433172918577554">展开</translation>
 <translation id="1330449323196174374">关门折（左侧）</translation>
+<translation id="1330952240988133220">将身份纠正识别号安全地保存到 Google 钱包</translation>
 <translation id="133173645041092770">关闭网站</translation>
 <translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1333989956347591814">以下各方<ph name="BEGIN_EMPHASIS" />可能仍会看到<ph name="END_EMPHASIS" />您的活动：
@@ -324,6 +325,7 @@
 <translation id="1549470594296187301">必须启用 JavaScript 才能使用此功能。</translation>
 <translation id="1550906923175308360">帮我列一份今天的待办事项清单，让我能按计划推进任务</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1555014818414775661">添加图片</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1555191101192706055">您尝试访问的网站上的攻击者可能会诱使您安装影响浏览体验的有害软件，例如，更改您的主页或在您访问的网站上展示额外的广告。</translation>
 <translation id="1559231233244409191">纸板（三层）</translation>
@@ -341,6 +343,7 @@
 <translation id="1569487616857761740">输入失效日期</translation>
 <translation id="1569694109004336106">Google Chrome 正在尝试开启 Windows Hello 来填充密码。</translation>
 <translation id="1569905000953679183">扩展程序安装政策提取</translation>
+<translation id="1572383686781055412">安全地更新 KTN</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸</translation>
 <translation id="1574714699824202614">正在验证支付方式</translation>
 <translation id="1576277203042721907">购物数据洞见</translation>
@@ -397,6 +400,7 @@
 <translation id="1658918301167915956">蓝牙设备</translation>
 <translation id="1662550410081243962">保存并自动填充支付方式</translation>
 <translation id="1662980953334786797">相同排序</translation>
+<translation id="1663578299724791827">安全地保存 KTN</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1664389769577564606">柔印光敏聚合物</translation>
 <translation id="1667730174533834274">先验证您的身份，然后再更改设置</translation>
@@ -404,6 +408,7 @@
 <translation id="1670861525135254448">保存车辆信息</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">短边先入</translation>
+<translation id="1683083957814090281">安全地更新车辆信息</translation>
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
 <translation id="1688718429648938412">将会员卡保存到 Google 钱包</translation>
@@ -868,6 +873,7 @@
 <translation id="2469153820345007638">从 1 到 N 的顺序</translation>
 <translation id="24699311393038040">纸（涂布纸）</translation>
 <translation id="2471632709106952369">比较表格</translation>
+<translation id="2472396075297339227">将已知旅客编号安全地保存到 Google 钱包</translation>
 <translation id="2477607419416067650">其他 Google 数据</translation>
 <translation id="247903268499247848">不允许使用移动传感器和光传感器</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
@@ -926,6 +932,7 @@
 <translation id="2553352788023127673">搜索记录和密码可在相应管理设置中删除</translation>
 <translation id="2553853292994445426">请检查您的安全 DNS 设置。您可能已配置了安全 DNS 服务器但无法连接到它。</translation>
 <translation id="2555855727505718984">自动填充功能将无法在此设备上使用此信息来帮助您填写表单</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
 <translation id="2559566667529177711">多层</translation>
 <translation id="2570734079541893434">管理设置</translation>
@@ -1323,6 +1330,7 @@
 <translation id="3273738040255912340">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">保存 IBAN 的底部动作条已全屏打开。</translation>
 <translation id="327455571215090823">更智能的自动填充，私密安全有保障</translation>
+<translation id="3280440382387335343">安全地更新 Google 钱包中的护照信息</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这个文件}other{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这些文件}}</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="3286372614333682499">纵向</translation>
@@ -1462,6 +1470,7 @@
 <translation id="3543597750097719865">采用 SHA-512 算法的 X9.62 ECDSA 签名</translation>
 <translation id="3543935938072367282">利用自动填充功能更快结账</translation>
 <translation id="3547442767634383572">工作资料概览</translation>
+<translation id="3547673868874844776">安全地保存身份证件信息</translation>
 <translation id="3547746132308051926">20 x 24 英寸</translation>
 <translation id="3549904448933807997">浏览器和资料信息（包括个人资料和工作资料）</translation>
 <translation id="3552155506104542239">警告：此政策与 <ph name="POLICY_NAME" /> 冲突，不会影响 Android 应用。否则，此政策将会按预期运行。</translation>
@@ -1669,6 +1678,7 @@
 <translation id="388632593194507180">检测到正被监控</translation>
 <translation id="3886948180919384617">堆叠出纸器 3</translation>
 <translation id="3890664840433101773">添加电子邮件地址</translation>
+<translation id="3892626428170730309">安全地保存护照信息</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3901925938762663762">此信用卡已过期</translation>
 <translation id="390391808978419508">打开超时</translation>
@@ -1824,6 +1834,7 @@
 <translation id="4153858337812834972">最近打开的标签页</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
 <translation id="4157273919218514718">由 Gemini 中的个性化智能服务提供支持。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">安全地更新驾照信息</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">在新标签页中打开帮助中心文章</translation>
 <translation id="4165986682804962316">网站设置</translation>
@@ -1838,6 +1849,7 @@
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4178863275556660738">使用非银行卡支付方式付款</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">安全地更新身份纠正识别号</translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
 <translation id="4190446002599583608">利用 AI 搜索历史记录</translation>
 <translation id="4191334393248735295">长度</translation>
@@ -1879,6 +1891,7 @@
 <translation id="4231448684371260244">8 x 13 英寸</translation>
 <translation id="4234996384188431444">在 Google Chrome 中使用 Pix 支付，无需切换应用</translation>
 <translation id="4238607350028440048">扮演招聘经理向我提问，帮我练习面试</translation>
+<translation id="4239215166147486528">将驾照信息安全地保存到 Google 钱包</translation>
 <translation id="4239799716689808527">标签</translation>
 <translation id="424063167283213501">保存已知旅客编号</translation>
 <translation id="4241830393007970744">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
@@ -1991,6 +2004,7 @@
 <translation id="4407758156081352648">为确保安全，您的组织不允许在 Chrome 中重复使用密码。Chrome 中的密码会加密，以保护用户隐私。</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4409556632583862731">新建会话</translation>
+<translation id="4410614037742891410">安全地更新 Google 钱包中的身份证信息</translation>
 <translation id="4412074349188076601">该配置已被标记为可安装，但系统未为此架构提供任何映像，所以无法安装该配置。</translation>
 <translation id="4412377069090572315">其他用户的评价</translation>
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
@@ -2204,9 +2218,11 @@
 <translation id="4800132727771399293">请检查您的到期日期和银行卡验证码 (CVC)，然后重试</translation>
 <translation id="4800546479758254481">允许使用 AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">安全地更新身份证件信息</translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
+<translation id="4811696127853690432">将车辆信息安全地保存到 Google 钱包</translation>
 <translation id="4811918461974803225">Google Pay、Affirm 徽标</translation>
 <translation id="4813512666221746211">网络错误</translation>
 <translation id="4814114628197290459">删除 IBAN</translation>
@@ -2336,11 +2352,13 @@
 <translation id="5020862932518041900">无论您是采纳还是忽略建议，Chrome 都会不断学习，确保只为您呈现与您相关的内容</translation>
 <translation id="5021500396464456616">请与发送此链接的人联系</translation>
 <translation id="5021557570875267742">使用 Chrome 跟踪价格</translation>
+<translation id="502229363433123770">安全地保存身份纠正识别号</translation>
 <translation id="5023310440958281426">请查看管理员制定的政策</translation>
 <translation id="5024171724744627792">保存卡信息后，付款会更快捷。卡详细信息会加密保存在您的 Google 账号中。</translation>
 <translation id="5026121202864677765">撰写求职信</translation>
 <translation id="5030338702439866405">颁发者</translation>
 <translation id="503069730517007720">必须为“<ph name="SOFTWARE_NAME" />”安装根证书，但您尚未安装该证书。您的 IT 管理员应仔细查看“<ph name="SOFTWARE_NAME" />”的配置说明，以解决此问题。<ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">将 KTN 安全地保存到 Google 钱包</translation>
 <translation id="503498442187459473"><ph name="HOST" /> 想使用您的摄像头和麦克风</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">字号</translation>
@@ -2717,6 +2735,7 @@
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5651323159439184939">牵引送纸</translation>
+<translation id="5653681867130739344">更新 Google 钱包中的身份证件信息</translation>
 <translation id="5654927323611874862">已上传的崩溃报告 ID：</translation>
 <translation id="5654965123204121933">下述网址未包含必需的替换字符串“<ph name="SEARCH_TERMS_REPLACEMENT" />”：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">邮箱</translation>
@@ -2829,6 +2848,7 @@
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5872115357279348603">安全地更新 Google 钱包中的 KTN</translation>
 <translation id="5872215789867188990">“<ph name="GROUP_TITLE" />”标签页分组已不可用</translation>
 <translation id="5872692522325383488">已保存 IBAN</translation>
 <translation id="5879989559903563723">在访客模式下不支持</translation>
@@ -2852,6 +2872,7 @@
 <translation id="5914185423510719251">将 KTN 保存到 Google 钱包</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />添加了此标签页</translation>
 <translation id="59174027418879706">已启用</translation>
+<translation id="5917538780499455803">安全地保存身份证信息</translation>
 <translation id="5918847752193018339">保存银行卡验证码 (CVC) 后，结账速度更快。<ph name="LINK_BEGIN" />删除已保存的安全码<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">已开启</translation>
@@ -2914,6 +2935,7 @@
 <translation id="6019118530636932154">Google Apps 脚本</translation>
 <translation id="6023960830218262456">无法将视频保存到 OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
+<translation id="6025471531651464742">添加文件</translation>
 <translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="603068602130820122">双钉（右侧）</translation>
 <translation id="6031824805267965302">使用您的移动传感器</translation>
@@ -3157,6 +3179,7 @@
 <translation id="6415778972515849510">Chromium 可以帮助您保护您的 Google 账号和更改密码。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">请确保将所有关键业务数据或个人数据均存储在外部。</translation>
+<translation id="6422648598133086441">安全地更新 Google 钱包中的车辆信息</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">关门折</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3330,6 +3353,7 @@
 <translation id="674375294223700098">未知的服务器证书错误。</translation>
 <translation id="6743841972744298686">同步设置</translation>
 <translation id="6745212570062463886">自动填充 Google 账号中的姓名和邮箱</translation>
+<translation id="674580074662200768">安全地更新护照信息</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6753434778807740853">删除条目“<ph name="ENTRY_VOICEOVER" />”</translation>
@@ -3489,6 +3513,7 @@
 <translation id="7023765275461720661">要关联账号并使用<ph name="BNPL_ISSUER_NAME" />付款吗？</translation>
 <translation id="7030164307377592766">修改用于填充付款方式的设置</translation>
 <translation id="7031110846419387930">您的浏览器、操作系统、设备、已安装的软件、文件和 IP 地址的相关信息</translation>
+<translation id="7031356333130415891">安全地更新身份证信息</translation>
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
 <translation id="7035705295266423040">银行想要验证您的身份</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Google 账号隐私设置</translation>
@@ -3613,6 +3638,7 @@
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">如需删除这些数据，请前往相应的管理设置</translation>
+<translation id="7253051586755429279">安全地更新 Google 钱包中的身份纠正识别号</translation>
 <translation id="7255540419660272073">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />的原因</translation>
 <translation id="7256634549594854023">后端纸匣</translation>
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
@@ -3977,6 +4003,7 @@
 <translation id="7860345425589240791">请重新输入<ph name="SIDE_OF_CARD" />的失效日期和 CVC</translation>
 <translation id="7862185352068345852">离开此网站？</translation>
 <translation id="7862306158978555061">显示敏感信息</translation>
+<translation id="7863122976993412643">安全地保存驾照信息</translation>
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7865482168955081228">“先买后付”错误界面已关闭。</translation>
 <translation id="7869655448736341731">不限</translation>
@@ -4025,6 +4052,7 @@
 <translation id="7943893128817522649">可以询问能否自动下载多个文件</translation>
 <translation id="7947285636476623132">请检查您的信用卡到期年份，然后重试</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可了解各项 Chrome 功能</translation>
+<translation id="7947964969544524438">安全地保存已知旅客编号</translation>
 <translation id="7948579849190819732">当前标签页</translation>
 <translation id="7950027195171824198">在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
 <translation id="7951415247503192394">（32 位）</translation>
@@ -4223,6 +4251,7 @@
 <translation id="8297545700510100061">网站会使用 Cookie 和其他数据来记住您，以便帮您登录或向您展示个性化广告等。如需管理所有网站的 Cookie，请前往<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8298399736867690281">卡仅保存在设备上</translation>
+<translation id="8300302621078931927">将身份证信息安全地保存到 Google 钱包</translation>
 <translation id="8301894345671534559">输入验证码</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="830868413617744215">测试版</translation>
@@ -4433,6 +4462,8 @@
 <translation id="8710842507289500830">字体样式</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715198179991802709">Chrome 刚刚标记了您尝试访问的一个网站。请花 1 分钟时间填写调查问卷，帮助我们改进这些警告。</translation>
+<translation id="8716983145825913456">安全地保存车辆信息</translation>
+<translation id="8717177139469452440">将护照信息安全地保存到 Google 钱包</translation>
 <translation id="8718314106902482036">未能完成付款</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />，<ph name="DESCRIPTION" />，搜索建议</translation>
 <translation id="8719528812645237045">多孔（顶部）</translation>
@@ -4534,6 +4565,7 @@
 <translation id="888169490072887292">寻找提供儿童菜单的亲子餐厅</translation>
 <translation id="8883863364960302898">Google 云端硬盘文件夹</translation>
 <translation id="8884537526797090108">无法录制机密内容</translation>
+<translation id="8889525327610245418">安全地更新 Google 钱包中的驾照信息</translation>
 <translation id="8891031436559779793">任一网站上的商品降价时，您都会收到通知。</translation>
 <translation id="8891727572606052622">代理模式无效。</translation>
 <translation id="8894794286471754040">长边先入</translation>
@@ -4769,6 +4801,7 @@
 <translation id="978750072783101994">将此卡保存到 Google 钱包后，在 Chromium 中购物时即可自动填充相关信息。</translation>
 <translation id="979107176848483472">您的浏览器和个人资料由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="981121421437150478">离线</translation>
+<translation id="98237783946365638">将身份证件信息安全地保存到 Google 钱包</translation>
 <translation id="983587187183716432"><ph name="AI_ENGINE_NAME" />按钮，按 Enter 键即可询问<ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">支付方式</translation>
 <translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条错误消息。&lt;/p&gt;

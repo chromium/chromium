@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ଏହି ଡିଭାଇସରେ <ph name="BRAND" />କୁ 1ଟି ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇଛି}other{ଏହି ଡିଭାଇସରେ <ph name="BRAND" />କୁ {NUM_PASSWORDS}ଟି ପାସୱାର୍ଡ ଇମ୍ପୋର୍ଟ କରାଯାଇଛି}}</translation>
 <translation id="1046572983040892965">ୱିଣ୍ଡୋକୁ ଉପର ଆଡ଼କୁ ଏବଂ ବାମପଟକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="1047431265488717055">ଟେ&amp;କ୍ସଟ୍ ଲିଙ୍କ୍ କପି କରନ୍ତୁ</translation>
-<translation id="1048350929895890054">ଫ୍ଲୋଟିଂ ମେନୁକୁ ବ୍ଲକ କରାଯାଇଥିବା ସାଇଟ</translation>
 <translation id="1048986595386481879">ଗତିଶୀଳ ଭାବେ ଦିଆଯାଇଛି</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳୁଛି}other{<ph name="DEVICE_NAME" />ରୁ <ph name="ATTACHMENTS" /> ମିଳୁଛି}}</translation>
 <translation id="1049743911850919806">ଇନ୍‌କଗ୍ନିଟୋ</translation>
@@ -858,6 +857,7 @@
 <translation id="1657406563541664238">Googleକୁ ବ୍ୟବହାରର ସାଂଖ୍ୟିକ ତଥ୍ୟ ଓ କ୍ରାସ୍ ରିପୋର୍ଟ ସ୍ୱଚାଳିତ ଭାବେ ପଠାଇ <ph name="PRODUCT_NAME" />କୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="1657937299377480641">ଶିକ୍ଷା ସମ୍ବନ୍ଧିତ ରିସୋର୍ସଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ, ଜଣେ ବାପା କିମ୍ବା ମା'ଙ୍କୁ ଆପଣଙ୍କୁ ଅନୁମତି ଦେବାକୁ କୁହନ୍ତୁ</translation>
 <translation id="1658424621194652532">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରୁଛି।</translation>
+<translation id="1660405268563702784"><ph name="APP_NAME" /> ପାଇଁ ଅପଡେଟ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବକୁ ଠିକ କରନ୍ତୁ}other{ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବଗୁଡ଼ିକୁ ଠିକ କରନ୍ତୁ}}</translation>
 <translation id="16620462294541761">କ୍ଷମା କରିବେ, ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଯାଞ୍ଚ ହୋ‍ଇପାରିବ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1662572015199460525">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଉତ୍ତର, ପ୍ରମୁଖ ଟେକଆୱେ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ ଭଏସ କିମ୍ବା ଟେକ୍ସଟ ମାଧ୍ୟମରେ ଚାଟ କରନ୍ତୁ</translation>
@@ -2534,6 +2534,7 @@
 <translation id="2948287943780377675">{FILE_COUNT,plural, =1{ଏଠାରେ ଫାଇଲକୁ ଡ୍ରପ କରନ୍ତୁ}other{ଏଠାରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ କରନ୍ତୁ}}</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="29488703364906173">ଆଧୁନିକ ୱେବ୍ ପାଇଁ ତିଆରି କରାଯାଇଥିବା ଏକ ଦ୍ରୁତ, ସରଳ ଏବଂ ସୁରକ୍ଷିତ ୱେବ୍ ବ୍ରାଉଜର୍।</translation>
+<translation id="2952552057375331929">ଆଇ&amp;ସୋଲେଟେଡ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> ପାଇଁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ। ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭିଜିଟ ସମୟରେ ଆପଣଙ୍କୁ ପୁଣି ପଚରାଯିବ।</translation>
 <translation id="2954777802959138493">ଅପଡେଟର ସ୍ଥିତିକୁ କ୍ୱେରୀ କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2955048943983973430">ସମ୍ବନ୍ଧିତ Google ସର୍ଭିସେସ</translation>
@@ -3199,6 +3200,7 @@
 <translation id="3454213325559396544">ଏହି <ph name="DEVICE_TYPE" /> ପାଇଁ ଏହା ଶେଷ ସ୍ୱଚାଳିତ ସଫ୍ଟୱେୟାର୍ ଏବଂ ସୁରକ୍ଷା ଅପ୍‌ଡେଟ୍ ଅଟେ ଭବିଷ୍ୟତର ଅପ୍‌ଡେଟ୍‍ଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଗୋଟିଏ ନୂଆ ମଡେଲ୍‍କୁ ଅପ୍‌ଗ୍ରେଡ୍ କରନ୍ତୁ।</translation>
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ 1 .pdf ଫାଇଲ ଅପଲୋଡ କରନ୍ତୁ}other{ଆପଣଙ୍କ ପ୍ରଶ୍ନ ସହ ବ୍ୟବହାର କରିବାକୁ # .pdf ଫାଇଲ ପର୍ଯ୍ୟନ୍ତ ଅପଲୋଡ କରନ୍ତୁ}}</translation>
 <translation id="3454818737556063691">1ଟି ଫାଇଲ ଖୋଲିବା ପାଇଁ ଏହାକୁ <ph name="CLOUD_PROVIDER" />କୁ ମୁଭ କରିବେ?</translation>
+<translation id="3456750372063895499">ଆଇ&amp;ସୋଲେଟେଡ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="345693547134384690">ନୂତନ ଟ୍ୟାବରେ &amp;ପ୍ରତିଛବି ଖୋଲନ୍ତୁ</translation>
 <translation id="3458794975359644386">ଅନସେୟାର୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{ଗ୍ରୁପ ରଖନ୍ତୁ}other{ଗ୍ରୁପ ରଖନ୍ତୁ}}</translation>
@@ -3267,6 +3269,7 @@
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />ରୁ <ph name="MAX_VALUE" /> ପର୍ଯ୍ୟନ୍ତ ହ୍ୟୁ ସ୍ଲାଇଡର</translation>
 <translation id="3514647716686280777">ଆପଣ ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା ପାଉଛନ୍ତି। ବିପଦଜନକ ୱେବସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକଠାରୁ ଅଧିକ ସୁରକ୍ଷା ପାଇବା ପାଇଁ Chrome ସେଟିଂସରେ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="3514681096978190000">ଏହି ଆର୍କାଇଭ ଫାଇଲରେ ମାଲୱେର ଲୁଚାଇପାରୁଥିବା ଅନ୍ୟ ଫାଇଲଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
+<translation id="3515783508789430906">ଏକ ନୂଆ ଭର୍ସନ (<ph name="VERSION" />) ପ୍ରସ୍ତୁତ ଅଛି। ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ଆପକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ। ଅନସେଭ ଥିବା ଡାଟା ଉପଲବ୍ଧ ହୋଇନପାରେ।</translation>
 <translation id="3515983984924808886">ରିସେଟ୍ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'କୁ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ। ସୁରକ୍ଷା କୀ’ର PIN ସମେତ ଏଥିରେ ଷ୍ଟୋର୍ ହୋଇଥିବା ସମସ୍ତ ସୂଚନା ଡିଲିଟ୍ ହୋଇଯିବ।</translation>
 <translation id="3518866566087677312">ଆପଣ ପରେ ଫେରିବାକୁ ଚାହୁଁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ବୁକମାର୍କ କରନ୍ତୁ</translation>
 <translation id="3519014757432845220">Google ସହ ବିଜ୍ଞପ୍ତି ବିଷୟବସ୍ତୁ ଏବଂ ସାଇଟର URL ସେୟାର କରି ସ୍ପାମ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ। ବିଷୟବସ୍ତୁକୁ ମାନବଙ୍କ ଦ୍ୱାରା ସମୀକ୍ଷା କରାଯାଇପାରେ।</translation>
@@ -3421,6 +3424,7 @@
 <translation id="3627671146180677314">Netscape ସାର୍ଟିଫିକେଟ୍ ନବୀକରଣ ସମୟ</translation>
 <translation id="3628275722731025472">ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3629630597033136279">ବନ୍ଦ ଅଛି • ଏହି ଏକ୍ସଟେନସନ ଏହା କିପରି ଡାଟା ସଂଗ୍ରହ ଏବଂ ବ୍ୟବହାର କରେ ପରି ଗୋପନୀୟତା କାର୍ଯ୍ୟଗୁଡ଼ିକ ପବ୍ଲିସ କରିନାହିଁ</translation>
+<translation id="3629657562876345602">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ସୂଚନାର ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="3629664892718440872">ଏହି ପସନ୍ଦ ମନେରଖନ୍ତୁ</translation>
 <translation id="3630132874740063857">ଆପଣଙ୍କର ଫୋନ୍</translation>
 <translation id="3630995161997703415">ଯେକୌଣସି ସମୟରେ ଏହାକୁ ବ୍ୟବହାର କରିବାପାଇଁ ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କ ସେଲ୍ଫରେ ଯୋଗ କରନ୍ତୁ</translation>
@@ -5899,7 +5903,6 @@
 <translation id="5546865291508181392">ଖୋଜନ୍ତୁ</translation>
 <translation id="5547868626772433490">Geminiକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="5548075230008247516">ସମସ୍ତ ଆଇଟମକୁ ଅଚୟନ କରାଯାଇଛି, ଚୟନ ମୋଡରୁ ପ୍ରସ୍ଥାନ କରାଯାଇଛି।</translation>
-<translation id="554810465530189549">ଟେକ୍ସଟ ଚୟନ କରାଗଲେ ଫ୍ଲୋଟିଂ ମେନୁ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ଏବଂ ଅନ୍ୟ 1ଟି ଟାବ୍}other{"<ph name="TAB_TITLE" />" ଏବଂ ଅନ୍ୟ #ଟି ଟାବ୍}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">କୀବୋର୍ଡ ଏବଂ ଟେକ୍ସଟ୍ ଇନ୍‌ପୁଟ୍</translation>
@@ -6041,6 +6044,7 @@
 <translation id="5663653125349867535">&amp;ପଢ଼ିବା ତାଲିକା</translation>
 <translation id="5663918299073387939">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ମ୍ୟୁଜିକ ତିଆରି କରିବା, ମ୍ୟୁଜିକ ଏଡିଟ କରିବା କିମ୍ବା ଡିଭାଇସ ଫାର୍ମୱେରଗୁଡ଼ିକୁ ଅପଡେଟ କରିବା ପାଇଁ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବାକୁ କହିଥାଏ</translation>
 <translation id="5666911576871845853">&amp;ନୂଆ ପ୍ରୋଫାଇଲ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="566956875537427204">ଚାଟ ଖୋଲନ୍ତୁ</translation>
 <translation id="5669863904928111203">ChromeOS ପୁରୁଣା ଅଟେ</translation>
 <translation id="5671641761787789573">ଛବିଗୁଡ଼ିକ ଅବରୋଧ କରାଯାଇଛି</translation>
 <translation id="567210741546439261">&amp;ବୁକମାର୍କ ଏବଂ ତାଲିକାଗୁଡ଼ିକ</translation>
@@ -6054,7 +6058,6 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />ରେ ଆପଣଙ୍କର ଡାଟା ପଢ଼ନ୍ତୁ</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />"କୁ କାଢ଼ିବେ?</translation>
 <translation id="5681586175480958839">ଫାଇଲ ପୂର୍ବରୁ ଖୋଲା ଯାଇଛି</translation>
-<translation id="5682950763196110705">ଟେକ୍ସଟ ଚୟନ କରାଗଲେ ଫ୍ଲୋଟିଂ ମେନୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="5684110242705861346">"<ph name="NAME" />" ଏକ୍ସଟେନସନକୁ ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତି ଅନୁସାରେ ଯୋଗ କରାଯାଇଛି ଏବଂ ଏହା ଏହି ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି। <ph name="BEGIN_LINK" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi ବିବରଣୀ</translation>
 <translation id="5687340364605915800">ଏହି ଅନୁରୋଧର ଉତ୍ତର ଦେବା ସମୟରେ ସାଇଟଗୁଡ଼ିକ ନିଜର ବିଚାର ବ୍ୟବହାର କରନ୍ତି</translation>
@@ -7227,6 +7230,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6613231539539868591">ସ୍ଥାୟୀ ଡାଟା</translation>
 <translation id="6613267708691765962">ମାଲୱେର ପାଇଁ ସ୍କାନ କରାଯାଉଛି...</translation>
 <translation id="6615455863669487791">ମୋତେ ଦେଖାନ୍ତୁ</translation>
+<translation id="6616000047939888167">ଅନ୍ୟ ଭାଷାରେ ଥିବା ୱେବସାଇଟ ଏବଂ PDFଗୁଡ଼ିକ ପାଇଁ Google Translate ଅଫର କରନ୍ତୁ</translation>
 <translation id="6618013221808317456">JavaScript ଅପ୍ଟିମାଇଜେସନ ବ୍ୟବହାର କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="6618154741503063152">ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ।</translation>
 <translation id="6619058681307408113">ଲାଇନ୍‌ ପ୍ରିଣ୍ଟର୍‌ ଡେମନ୍‌ (LPD)</translation>
@@ -7343,6 +7347,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> ବ୍ୟବହାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ଏବଂ ୱାଇ-ଫାଇ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">ଛୋଟ ଫୋକସ</translation>
+<translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6707122714992751648">ChromeOS ଡାଏଗ୍ନୋଷ୍ଟିକ ଟେଷ୍ଟଗୁଡ଼ିକ ଚଲାନ୍ତୁ</translation>
 <translation id="6707389671160270963">SSL କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="6707671917294473995">ଆପଣଙ୍କ କେମେରାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ୱେବସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -7580,6 +7585,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6871644448911473373">OCSP ପ୍ରତିକ୍ରିୟାଦାତା: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">ଭାଷାଗୁଡ଼ିକ…</translation>
 <translation id="6873156759937047811">PIN:</translation>
+<translation id="6873499199714317035">Google Translate ଚାଲୁ ଥିବା ବେଳେ, ଏହା ଆପଣଙ୍କ ପସନ୍ଦର ଭାଷାରେ ସାଇଟ ଏବଂ PDFଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବାକୁ ଅଫର କରିବ। ଏହା ସ୍ୱତଃ ସାଇଟଗୁଡ଼ିକୁ ଅନୁବାଦ ମଧ୍ୟ କରିପାରିବ।</translation>
 <translation id="6873571253135628430">ସାଇଟର ଅନୁମତି ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6874986444867497677">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିଲା ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="6876155724392614295">ବାଇକ୍</translation>
@@ -8825,6 +8831,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7855258394151767387">ଏକ ମାଉସ ବଟନକୁ ଦବାଇବା ପାଇଁ “w”କୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7855678561139483478">ଟାବ୍‍କୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="7858120906780498731">ChromeOS ସହ କନେକ୍ଟ ହୋଇଥିବା ଇନପୁଟ ଡିଭାଇସଗୁଡ଼ିକ</translation>
+<translation id="7859486605922206511">ଆପକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ଏକ୍ସଟେନସନକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="786073089922909430">ସେବା: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ଡାଉନଲୋଡସମୂହ</translation>
@@ -9786,6 +9793,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8602867356511778172">ଶୀଘ୍ର ଏବଂ ଅଧିକ ସଠିକ ଭାବେ ବିପଦଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବା ପାଇଁ Google ଅଧିକ ଡାଟା (ଉଦାହରଣ ସ୍ୱରୂପ, URL, ପୃଷ୍ଠା ବିଷୟବସ୍ତୁର ସାମ୍ପଲ, ସିଷ୍ଟମ ସୂଚନା) ବ୍ୟବହାର କରେ</translation>
 <translation id="860399903490378651">ଏହି ଭ୍ୟୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8605428685123651449">SQLite ମେମୋରୀ</translation>
+<translation id="8606857385325125054">ଏହି ଆପକୁ <ph name="PARENT_APP_NAME" /> ଦ୍ୱାରା ଇନଷ୍ଟଲ କରାଯାଇଛି। <ph name="APP_NAME" />କୁ ଅନଇନଷ୍ଟଲ କରିବା ଫଳରେ ଏହା ଇନଷ୍ଟଲ କରିଥିବା <ph name="PARENT_APP_NAME" /> କିମ୍ବା ଅନ୍ୟ କୌଣସି ଆପ୍ସ ପ୍ରଭାବିତ ହୁଏ ନାହିଁ।</translation>
 <translation id="8607171490667464784">ଯେତେବେଳେ ନିଷ୍କ୍ରିୟ ଏବଂ ବେଟେରୀରେ ଥାଏ</translation>
 <translation id="8607661817136110841">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପ</translation>
 <translation id="8607828412110648570">ଆପଣଙ୍କ ବ୍ଲୁଟୁଥ ଡିଭାଇସ ପେୟାରିଂ ମୋଡରେ ଏବଂ ଆଖପାଖରେ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। କେବଳ ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଡିଭାଇସଗୁଡ଼ିକ ସହ ପେୟାର କରନ୍ତୁ। ଏହି Chromebookରେ ସବୁ ଆକାଉଣ୍ଟ ପାଇଁ ପେୟାର କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକ ଉପଲବ୍ଧ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10070,6 +10078,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="8814319344131658221">ଆପଣଙ୍କ ଭାଷାଗୁଡ଼ିକର ପସନ୍ଦ ଆଧାରରେ ବନାନ ଯାଞ୍ଚ ପାଇଁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="8814644416678422095">ହାର୍ଡ ଡ୍ରାଇଭ୍</translation>
+<translation id="8815742860876889867">ଆଇ&amp;ସୋଲେଟେଡ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="881782782501875829">ପୋର୍ଟ ନମ୍ବର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="881799181680267069">ଅନ୍ୟସବୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8818152010000655963">ୱାଲପେପର୍</translation>

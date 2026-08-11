@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 парола бе импортирана в(ъв) <ph name="BRAND" /> на това устройство}other{{NUM_PASSWORDS} пароли бяха импортирани в(ъв) <ph name="BRAND" /> на това устройство}}</translation>
 <translation id="1046572983040892965">Прозорецът бе преместен нагоре и наляво</translation>
 <translation id="1047431265488717055">Копиране на тек&amp;ста на връзката</translation>
-<translation id="1048350929895890054">Сайтове, на които плаващото меню е блокирано</translation>
 <translation id="1048986595386481879">Динамично заделен</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
@@ -5783,6 +5782,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5444281205834970653">Изтриване и продължаване</translation>
 <translation id="5444452275167152925">Импортирани от ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Генериране на идеи</translation>
 <translation id="5449551289610225147">Паролата е невалидна</translation>
 <translation id="5449588825071916739">Запазване на отметки към всички раздели</translation>
@@ -5916,7 +5916,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5546865291508181392">Търсене</translation>
 <translation id="5547868626772433490">Попитайте Gemini</translation>
 <translation id="5548075230008247516">Изборът бе премахнат от всички елементи. Излязохте от режима за избиране.</translation>
-<translation id="554810465530189549">Без показване на плаващото меню при избиране на текст</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и още 1 раздел}other{„<ph name="TAB_TITLE" />“ и още # раздела}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Клавиатура и въвеждане на текст</translation>
@@ -6075,7 +6074,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5678955352098267522">Четене на данните ви от <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Да се премахне ли „<ph name="ESIM_PROFILE_NAME" />“?</translation>
 <translation id="5681586175480958839">Файлът вече се отваря.</translation>
-<translation id="5682950763196110705">Показване на плаващото меню при избиране на текст</translation>
 <translation id="5684110242705861346">Разширението „<ph name="NAME" />“ бе добавено чрез правилата на организацията ви и контролира тази настройка. <ph name="BEGIN_LINK" />Преглед на подробностите<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Подробности за Wi-Fi мрежата</translation>
 <translation id="5687340364605915800">Сайтовете отговарят на тази заявка по свое усмотрение</translation>
@@ -7364,6 +7362,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6702859741546259407">За да използвате „<ph name="FEATURE_NAME" />“, включете Bluetooth и Wi-Fi.</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">Малък фокус</translation>
+<translation id="6706210727756204531">Обхват</translation>
 <translation id="6707122714992751648">Провеждане на диагностични тестове на ChromeOS</translation>
 <translation id="6707389671160270963">SSL сертификат на клиент</translation>
 <translation id="6707671917294473995">На уебсайтовете е забранено да използват камерата ви</translation>
@@ -8148,6 +8147,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7312040805247765153">Приложението не може да бъде инсталирано</translation>
 <translation id="7312210124139670355">Администраторът ви нулира електронната ви SIM карта. Това може да отнеме няколко минути.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Цветове на подсветката на клавиатурата</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{1 събитие не бе датирано и не се показва}other{# събития не бяха датирани и не се показват}}</translation>
 <translation id="7314865262803554456">Няма да получите известие, когато записът започне.</translation>

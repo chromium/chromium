@@ -680,6 +680,7 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="8286943863733751221">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে <ph name="BEGIN_LINK" />Chromium আপনাকে সতর্ক করে দেয়<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">আপনি সম্প্রতি ভিজিট করেননি। Chromium <ph name="PERMISSION" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="8296236834352487533">Chromium iOS অ্যাপে আপনার ক্যামেরা ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
+<translation id="8310603974518734211"><ph name="USER_NAME" /> হিসেবে Chromium-এ সাইন-ইন করার QR কোড</translation>
 <translation id="8313851650939857356">স্টার্টআপ সম্পর্কিত এরর: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chromium বন্ধ করে দেয়।</translation>
 <translation id="8321888067342493336">ছবি হিসেবে সেভ করুন</translation>

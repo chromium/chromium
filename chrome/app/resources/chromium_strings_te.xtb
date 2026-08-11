@@ -679,6 +679,7 @@
 <translation id="8286943863733751221">సురక్షితం కాని సైట్‌లు, డౌన్‌లోడ్‌ల గురించి <ph name="BEGIN_LINK" />Chromium మిమ్మల్ని హెచ్చరిస్తుంది<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">మీరు ఇటీవల వెళ్లలేదు. Chromium <ph name="PERMISSION" />‌ను తీసివేసింది.</translation>
 <translation id="8296236834352487533">Chromium iOS యాప్‌లో మీ కెమెరాతో మీరు చూసే వాటిని షాపింగ్ చేయండి, అనువదించండి, అలాగే గుర్తించండి</translation>
+<translation id="8310603974518734211">Chromiumకు <ph name="USER_NAME" />‌గా సైన్ ఇన్ చేయడానికి QR కోడ్</translation>
 <translation id="8313851650939857356">స్టార్టప్ ఎర్రర్: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Chromiumను <ph name="TIMEOUT_DURATION" /> సమయం పాటు వినియోగించకపోతే, మీ సంస్థ దానిని మూసివేస్తుంది.</translation>
 <translation id="8321888067342493336">ఇమేజ్‌గా సేవ్ చేయండి</translation>

@@ -304,6 +304,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1504042622576912555">Onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, clique em &lt;strong&gt;Conectar&lt;/strong&gt; na página que você está tentando abrir.&lt;/p&gt;</translation>
+<translation id="1507635939006264930">Ativando o preenchimento automático</translation>
 <translation id="1508605873202255562">Crie um rastreador personalizado para eu ficar em dia com as minhas metas</translation>
 <translation id="1513706915089223971">Lista de entradas no histórico</translation>
 <translation id="1515436033764190215">h atrás</translation>
@@ -325,6 +326,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1549470594296187301">O JavaScript deve ser ativado para usar este recurso.</translation>
 <translation id="1550906923175308360">Crie uma lista de tarefas para hoje para me ajudar a manter o foco</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
+<translation id="1555014818414775661">Adicionar imagens</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1555191101192706055">Invasores no site que você tentou acessar podem induzir você a instalar softwares nocivos que afetam a navegação, por exemplo, ao mudar sua página inicial ou mostrar mais anúncios nos sites que você visita.</translation>
 <translation id="1559231233244409191">Papelão (triplo)</translation>
@@ -630,6 +632,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2093982008204312032">O Google Chrome está tentando desativar o Windows Hello para preencher senhas.</translation>
 <translation id="2094505752054353250">Incompatibilidade de domínio</translation>
 <translation id="2094704029599359040">Informações da versão</translation>
+<translation id="2096183846792489672">O conteúdo e os URLs das páginas que você visita podem ser processados em um espaço privado na nuvem</translation>
 <translation id="209961642949927292">Quer finalizar compras mais rápido?</translation>
 <translation id="2099652385553570808">Três grampos no lado esquerdo</translation>
 <translation id="2101225219012730419">Versão:</translation>
@@ -1104,6 +1107,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2905107382358353958">Alerta sobre a nova configuração de pagamento</translation>
 <translation id="2909946352844186028">Foi detectada uma alteração na rede.</translation>
 <translation id="2910062169995917863">A sessão expirou</translation>
+<translation id="2911224142899421774">As configurações da Carteira do Google são válidas para as informações salvas do Chrome</translation>
 <translation id="2911973620368911614">ID do usuário de conta de trabalho</translation>
 <translation id="2914160345369867329">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Chrome tentou se conectar ao <ph name="SITE" /> desta vez, ele retornou credenciais incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser o <ph name="SITE" /> ou quando uma tela de login do Wi-Fi interrompe a conexão. Suas informações ainda estão protegidas, porque o Chrome interrompeu a conexão antes que os dados fossem trocados.</translation>
 <translation id="2915068235268646559">Falha a partir de <ph name="CRASH_TIME" /></translation>
@@ -1590,6 +1594,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3738166223076830879">Seu navegador é gerenciado pelo administrador.</translation>
 <translation id="3739842843727261045">O botão "Gostei" envia feedback informando que você gostou desses resultados</translation>
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
+<translation id="3742104862808477448">Ajude o Chromium a melhorar a compreensão e o preenchimento de formulários complexos por meio do processamento seguro de dados nos servidores do Google. Suas informações permanecem privadas e não são revisadas por ninguém.</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3744212718085287312">Que tal proteção extra para suas compras?</translation>
 <translation id="3744899669254331632">Você não pode visitar <ph name="SITE" /> agora porque o website enviou credenciais embaralhadas que o Chromium não consegue processar. Erros de rede e ataques são geralmente temporários, de modo que esta página provavelmente funcionará mais tarde.</translation>
@@ -1613,6 +1618,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3769584711865378220">O <ph name="URL" /> quer mudar o acesso de local aproximado para exato</translation>
 <translation id="3772211998634047851">Papel sulfite</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente uma nova nota no Google Keep</translation>
+<translation id="3778045607993018262">A conta Pix será vinculada a <ph name="ACCOUNT_EMAIL" />. Para desativar a detecção de código Pix, acesse as <ph name="BEGIN_LINK1" />configurações do Chrome<ph name="END_LINK1" /></translation>
 <translation id="3780694243617746492">Bandeja de saída</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Dispositivos Bluetooth</translation>
@@ -1632,6 +1638,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803481123869276674">Mostrar a carteira digital como opção para pagamento ao fazer compras no Chrome</translation>
 <translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
+<translation id="3804112825000113857">Veja as configurações do preenchimento automático</translation>
 <translation id="380666903981445943">Salve uma forma de pagamento na sua Conta do Google para que ela seja preenchida automaticamente em compras feitas no Chrome</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
@@ -1896,7 +1903,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4238607350028440048">Me ajude na preparação para uma entrevista fazendo perguntas como se você fosse o gerente de contratação</translation>
 <translation id="4239215166147486528">Salvar carteira de habilitação com segurança na Carteira do Google</translation>
 <translation id="4239799716689808527">Rótulos</translation>
-<translation id="424063167283213501">Salvar número do programa de passageiro conhecido (KTN)</translation>
+<translation id="424063167283213501">Salvar número de viajante conhecido (KTN)</translation>
 <translation id="4241830393007970744">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito.</translation>
 <translation id="4242380780309416996">Envelope (grosso)</translation>
 <translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
@@ -2204,7 +2211,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4766713847338118463">Dois grampos na parte inferior</translation>
 <translation id="4768816584204270288">Quando você faz pagamentos parcelados, um número de cartão virtual de uso único é preenchido. Clique para copiar e colar os detalhes do cartão para esta compra.</translation>
 <translation id="4768864802656530630">Registros detalhados do sistema. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="4770909831299304090">Atualize o KTN na Carteira do Google</translation>
+<translation id="4770909831299304090">Atualize o número de viajante conhecido (KTN) na Carteira do Google</translation>
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
 <translation id="4775456404799771098">Você vai perder o arquivo permanentemente</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
@@ -2938,6 +2945,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Não foi possível salvar o vídeo no OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
+<translation id="6025471531651464742">Adicionar arquivos</translation>
 <translation id="6028591542479806248">Gerenciar notificações recebidas por e-mail e no dispositivo móvel</translation>
 <translation id="603068602130820122">Dois grampos no lado direito</translation>
 <translation id="6031824805267965302">Usar sensores de movimento</translation>
@@ -3309,6 +3317,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="666259744093848177">(x86_64 com tradução)</translation>
 <translation id="6665553082534466207">Perfuração tripla no lado direito</translation>
 <translation id="6668389483194953109">O nome do tamanho do papel foi encontrado como "custom", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
+<translation id="667044980437620424">Preenchimento automático ativado</translation>
 <translation id="6670729408462528018">Galeria</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6675846980676550611">RA não permitida</translation>
@@ -3538,6 +3547,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="7064851114919012435">Dados de contato</translation>
 <translation id="7070144569727915108">configurações do sistema</translation>
 <translation id="70705239631109039">Sua conexão não é totalmente segura</translation>
+<translation id="7074595960655571061">Agora você pode salvar formas de pagamento e usar o preenchimento automático na finalização de compras no Chrome. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">A solicitação é muito grande</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 com criptografia RSA</translation>
 <translation id="7075896597860500885">Não é recomendado copiar o conteúdo desse site</translation>
@@ -4401,6 +4411,7 @@ Mais detalhes:
 <translation id="8564182942834072828">Documentos separados/Cópias não reunidas</translation>
 <translation id="8564466070529550495">O cartão virtual não está disponível no momento. Tente de novo mais tarde.</translation>
 <translation id="8564985650692024650">O Chromium recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
+<translation id="8568406155558596128">Ajude o Chrome a melhorar a compreensão e o preenchimento de formulários complexos por meio do processamento seguro de dados nos servidores do Google. Suas informações permanecem privadas e não são revisadas por ninguém.</translation>
 <translation id="8574570240981266561">Item excluído</translation>
 <translation id="8577192028579836704">Todas as opções normalmente <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Cartão virtual indisponível</translation>

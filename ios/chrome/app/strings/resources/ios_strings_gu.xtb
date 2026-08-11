@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">આ એકાઉન્ટ Gemini સાથે કામ કરશે નહીં. કોઈ અલગ Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="3265736395246760288">તમારા સિંક કરેલા કોઈપણ ડિવાઇસમાંથી વધુ ઝડપથી સાઇન ઇન કરો.</translation>
 <translation id="3272527697863656322">રદ કરો</translation>
+<translation id="3272955648592358996">તમારો ડેટા Google AIને બહેતર બનાવે છે</translation>
 <translation id="3273510436356991673">તમારી હોમ સ્ક્રીન કસ્ટમાઇઝ કરો</translation>
 <translation id="3277021493514034324">સાઇટનું ઍડ્રેસ કૉપિ કર્યું</translation>
 <translation id="3280562213547448728">વૉઇસ શોધ</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">તમારી ઇવેન્ટ માટે તમને સંભવિત આમંત્રિતો બતાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="3891414008432200754">કિંમત</translation>
 <translation id="3892144330757387737">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
+<translation id="3892695492576181257">જ્યારે તે ચાલુ હોય, ત્યારે Gemini ઍપ ઍક્ટિવિટીમાં તમારી ઍક્ટિવિટીને 18 મહિના સુધી સાચવવામાં આવે છે, જેને તમે બદલીને 3 કે 36 મહિના કરી શકો છો. Google તમારી ઍક્ટિવિટીનો ઉપયોગ તેની સેવાઓ (Gemini મૉડલ સહિત) ડેવલપ કરવા અને તેમને બહેતર બનાવવા માટે તેમજ માનવ રિવ્યૂઅરની મદદ વડે Google, તેના વપરાશકર્તાઓ અને જનતાને સુરક્ષિત રાખવા માટે કરે છે. સેવા પ્રદાતાઓ દ્વારા રિવ્યૂ કરવામાં આવેલો ડેટા તમારા એકાઉન્ટમાંથી ડિસ્કનેક્ટ કરવામાં આવે છે અને 3 વર્ષ સુધી સાચવવામાં આવે છે.</translation>
 <translation id="3893858854379998374">તમારા એકાઉન્ટમાં બુકમાર્ક સાચવવા માટે, તમારા બિનઉપયોગી બુકમાર્ક ડિલીટ કરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
 <translation id="3904270275864974753">કરાઉઝલમાં ફેરફાર કરો</translation>
@@ -1494,6 +1496,7 @@
 <translation id="5971459446352190251">QR કોડની શોધ</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>
+<translation id="597482816780655631">Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. Google AIને બહેતર બનાવવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે જાણો<ph name="END_LINK" />. અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે.</translation>
 <translation id="5976160379964388480">અન્ય લોકો</translation>
 <translation id="5977976211062815271">આ ડિવાઇસ પર</translation>
 <translation id="5986043348928676121">આગળ</translation>
@@ -1860,6 +1863,7 @@
 <translation id="7102005569666697658">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">મેનૂ → સેટિંગ → ચુકવણી પદ્ધતિઓ</translation>
 <translation id="7108338896283013870">છુપાવો</translation>
+<translation id="7119533351103192286">Geminiનો ઉપયોગ કરો</translation>
 <translation id="7127922377013221748">ટૂલબાર છુપાવો</translation>
 <translation id="7128693485119315539">તમારી સંસ્થાને તમારા મેનેજ કરેલા એકાઉન્ટ સાથે જોડાયેલો તમારો બ્રાઉઝિંગ ઇતિહાસ અને પાસવર્ડ જેવો બ્રાઉઝિંગ ડેટા જોવાની અને તેને મેનેજ કરવાની કદાચ જરૂર પડી શકે છે.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@
 <translation id="8796634520835503150">વાંચન મોડ ઉપલબ્ધ છે</translation>
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />ની મેમ્બરશિપ</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
 <translation id="8814308045751067027">લાઇવનો ઉપયોગ કરવા માટે, સેટિંગમાં જઈને Chromeને તમારા માઇક્રોફોનનો ઍક્સેસ આપો</translation>
 <translation id="8814719628147284151">ચાલુ રાખો</translation>
@@ -2397,6 +2402,7 @@
 <translation id="882557203579758546">પેજમાં શોધો…</translation>
 <translation id="8829809207373502270">આ પાસકી હવે કામ કરતી નથી. તેને <ph name="WEBSITE" />માંથી ડિલીટ કરવામાં આવી હતી અને ટૂંક સમયમાં અહીંથી પણ ડિલીટ કરવામાં આવશે. <ph name="BEGIN_LINK" />પાસકી વિશે<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
+<translation id="8831871601813227635">અમારી <ph name="BEGIN_LINK" />શરતો<ph name="END_LINK" />, <ph name="BEGIN_LINK" />કોરિયન લોકેશન સેવાની શરતો<ph name="END_LINK" /> અને <ph name="BEGIN_LINK" />પ્રાઇવસી નોટિસ<ph name="END_LINK" /> લાગુ થાય છે. Google AIને બહેતર બનાવવા માટે ચૅટનો રિવ્યૂ અને ઉપયોગ કરવામાં આવે છે. Gemini એ AI છે અને તે ભૂલો કરી શકે છે, જેમાં લોકો વિશેની ભૂલો શામેલ છે. અમુક કન્ટેન્ટ દરેક જણ માટે યોગ્ય ન હોય એમ બની શકે છે. તમે તમારા લોકેશન વિશેની માહિતી સહિત <ph name="BEGIN_LINK" />તમારી ઍક્ટિવિટી મેનેજ<ph name="END_LINK" /> કરી શકો છો. <ph name="BEGIN_LINK" />તમારી પસંદગીઓ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">પબ્લિશર મુજબ સૉર્ટ કરો</translation>
 <translation id="884351711508006491">તમારી માહિતી તમારા ડિવાઇસમાં સાચવવામાં આવી છે.</translation>
 <translation id="8844136307393039959">તમે ટ્રૅક કરેલી પ્રોડક્ટની કિંમતમાં ઘટાડો</translation>

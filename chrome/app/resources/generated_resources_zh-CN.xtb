@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{已将 1 个密码导入到此设备上的 <ph name="BRAND" />}other{已将 {NUM_PASSWORDS} 个密码导入到此设备上的 <ph name="BRAND" />}}</translation>
 <translation id="1046572983040892965">窗口已向上左移</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
-<translation id="1048350929895890054">已屏蔽悬浮菜单的网站</translation>
 <translation id="1048986595386481879">动态分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">无痕模式</translation>
@@ -857,6 +856,7 @@
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
 <translation id="1658424621194652532">此网页正在使用您的麦克风。</translation>
+<translation id="1660405268563702784">“<ph name="APP_NAME" />”有可用更新</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{修复导致浏览器运行缓慢的标签页}other{修复导致浏览器运行缓慢的标签页}}</translation>
 <translation id="16620462294541761">抱歉，无法验证您的密码，请重试。</translation>
 <translation id="1662572015199460525">边浏览边用语音或文字对话，轻松获取答案、要点总结等</translation>
@@ -2532,6 +2532,7 @@
 <translation id="2948287943780377675">{FILE_COUNT,plural, =1{将文件拖放到此处}other{将文件拖放到此处}}</translation>
 <translation id="2948300991547862301">转到“<ph name="PAGE_TITLE" />”</translation>
 <translation id="29488703364906173">一款快速、简单且安全的网络浏览器，能很好满足现代网络对浏览器的要求。</translation>
+<translation id="2952552057375331929">在隔离窗口中打开链接(&amp;S)</translation>
 <translation id="2953218713108551165">不允许 <ph name="SITE" /> 传送通知。当您下次访问时，系统会再次询问您。</translation>
 <translation id="2954777802959138493">未能查询更新程序状态。</translation>
 <translation id="2955048943983973430">相关 Google 服务</translation>
@@ -3195,6 +3196,7 @@
 <translation id="3454213325559396544">这是最后一次为此 <ph name="DEVICE_TYPE" /> 提供自动的软件和安全更新。要想接收以后的更新，请升级至较新的型号。</translation>
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{提问时可上传 1 个 pdf 文件}other{提问时最多可上传 # 个 pdf 文件}}</translation>
 <translation id="3454818737556063691">将 1 个文件移到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
+<translation id="3456750372063895499">在隔离窗口中打开链接(&amp;S)</translation>
 <translation id="345693547134384690">在新标签页中打开图片(&amp;I)</translation>
 <translation id="3458794975359644386">未能停止共享</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{保留分组}other{保留分组}}</translation>
@@ -3263,6 +3265,7 @@
 <translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
+<translation id="3515783508789430906">新版本 (<ph name="VERSION" />) 已准备就绪。请重启该应用以应用更新。未保存的数据可能会丢失。</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
 <translation id="3518866566087677312">为您暂不需要的内容添加书签以备后用</translation>
 <translation id="3519014757432845220">与 Google 分享通知内容和网站网址，帮助我们改进垃圾信息防范功能。您分享的内容可能会经过人工审核。</translation>
@@ -3417,6 +3420,7 @@
 <translation id="3627671146180677314">Netscape 证书续订时间</translation>
 <translation id="3628275722731025472">关闭蓝牙</translation>
 <translation id="3629630597033136279">已关闭 • 此扩展程序尚未发布隐私权规范，例如如何收集和使用数据</translation>
+<translation id="3629657562876345602">查看重要信息</translation>
 <translation id="3629664892718440872">记住此选择</translation>
 <translation id="3630132874740063857">您的手机</translation>
 <translation id="3630995161997703415">请将此网站添加到您的任务栏中，以便随时使用</translation>
@@ -5894,7 +5898,6 @@
 <translation id="5546865291508181392">查找</translation>
 <translation id="5547868626772433490">问问 Gemini</translation>
 <translation id="5548075230008247516">已取消选择所有内容，已退出选择模式。</translation>
-<translation id="554810465530189549">选中文本时不显示悬浮菜单</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />”和另外 1 个标签页}other{“<ph name="TAB_TITLE" />”和另外 # 个标签页}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">键盘和文字输入</translation>
@@ -6036,6 +6039,7 @@
 <translation id="5663653125349867535">阅读清单(&amp;R)</translation>
 <translation id="5663918299073387939">网站通常会请求控制 MIDI 设备以及为其重新编程，以便创作音乐、编辑音乐或更新设备固件</translation>
 <translation id="5666911576871845853">添加新个人资料(&amp;A)</translation>
+<translation id="566956875537427204">打开对话</translation>
 <translation id="5669863904928111203">ChromeOS 版本太旧</translation>
 <translation id="5671641761787789573">已拦截图片</translation>
 <translation id="567210741546439261">书签和清单(&amp;B)</translation>
@@ -6049,7 +6053,6 @@
 <translation id="5678955352098267522">读取您在 <ph name="WEBSITE_1" /> 上的数据</translation>
 <translation id="5680050361008726776">移除“<ph name="ESIM_PROFILE_NAME" />”？</translation>
 <translation id="5681586175480958839">已经正在打开此文件</translation>
-<translation id="5682950763196110705">选中文本时显示悬浮菜单</translation>
 <translation id="5684110242705861346">“<ph name="NAME" />”扩展程序是根据您的组织政策添加的，并正在控制此设置。<ph name="BEGIN_LINK" />查看详情<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
@@ -7221,6 +7224,7 @@
 <translation id="6613231539539868591">持久性数据</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6615455863669487791">演示一下</translation>
+<translation id="6616000047939888167">针对其他语言的网站和 PDF 提供谷歌翻译选项</translation>
 <translation id="6618013221808317456">不允许网站使用 JavaScript 优化功能</translation>
 <translation id="6618154741503063152">无法上传，不允许添加附件。</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7336,6 +7340,7 @@
 <translation id="6702859741546259407">若要使用“<ph name="FEATURE_NAME" />”功能，请开启蓝牙和 Wi-Fi</translation>
 <translation id="6703109186846420472">、</translation>
 <translation id="670431355064244920">小焦点</translation>
+<translation id="6706210727756204531">范围</translation>
 <translation id="6707122714992751648">运行 ChromeOS 诊断测试</translation>
 <translation id="6707389671160270963">SSL 客户端证书</translation>
 <translation id="6707671917294473995">不允许网站使用您的摄像头</translation>
@@ -7573,6 +7578,7 @@
 <translation id="6871644448911473373">OCSP 响应程序：<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">语言…</translation>
 <translation id="6873156759937047811">PIN 码：</translation>
+<translation id="6873499199714317035">开启此功能后，谷歌翻译会询问您是否要将网站和 PDF 翻译成您的首选语言。这项服务还能自动翻译网站。</translation>
 <translation id="6873571253135628430">更改网站权限</translation>
 <translation id="6874986444867497677">无法完成安装。请重试或关闭此窗口。</translation>
 <translation id="6876155724392614295">自行车</translation>
@@ -8819,6 +8825,7 @@
 <translation id="7855258394151767387">按下“w”键表示按下鼠标按键</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7858120906780498731">ChromeOS 连接的输入设备</translation>
+<translation id="7859486605922206511">重启应用</translation>
 <translation id="7859560813397128941">移除“<ph name="EXTENSION_NAME" />”扩展程序</translation>
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
@@ -9781,6 +9788,7 @@
 <translation id="8602867356511778172">Google 采用更多数据（例如网址、网页内容样本、系统信息），以便更快、更准确地检测威胁</translation>
 <translation id="860399903490378651">关闭此视图</translation>
 <translation id="8605428685123651449">SQLite 内存</translation>
+<translation id="8606857385325125054">此应用是由“<ph name="PARENT_APP_NAME" />”安装的。卸载“<ph name="APP_NAME" />”不会影响“<ph name="PARENT_APP_NAME" />”或其已安装的任何其他应用。</translation>
 <translation id="8607171490667464784">处于闲置状态且使用电池时</translation>
 <translation id="8607661817136110841">您的标签页分组</translation>
 <translation id="8607828412110648570">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。此 Chromebook 上的所有账号都可以看到已配对的设备。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -10065,6 +10073,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">支持“拼写检查”功能的语言取决于您的语言偏好设置</translation>
 <translation id="8814644416678422095">硬盘</translation>
+<translation id="8815742860876889867">在隔离窗口中打开链接(&amp;S)</translation>
 <translation id="881782782501875829">添加端口号</translation>
 <translation id="881799181680267069">隐藏其他应用</translation>
 <translation id="8818152010000655963">壁纸</translation>

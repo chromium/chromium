@@ -683,6 +683,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium hoiatab teid<ph name="END_LINK" /> ebaturvaliste saitide ja allalaadimiste eest</translation>
 <translation id="8295827201165805317">Te pole hiljuti külastanud. Chromium eemaldas loa <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">Ostke, tõlkige ja tuvastage, mida näete, kasutades Chromiumi iOS-i rakenduses oma kaamerat.</translation>
+<translation id="8310603974518734211">QR-kood Chromiumisse kasutajana <ph name="USER_NAME" /> sisselogimiseks</translation>
 <translation id="8313851650939857356">Käivitamisel ilmnes viga: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Teie organisatsioon suleb Chromiumi, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul.</translation>
 <translation id="8321888067342493336">Salvesta pildina</translation>

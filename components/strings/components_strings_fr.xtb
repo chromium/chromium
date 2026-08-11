@@ -193,6 +193,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="132301787627749051">Rechercher l'image du presse-papier</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
 <translation id="1330449323196174374">Pli du volet gauche</translation>
+<translation id="1330952240988133220">Enregistrez votre numéro de recours de manière sécurisée dans Google Wallet</translation>
 <translation id="133173645041092770">Fermer le site Web</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
 <translation id="1333989956347591814">Pourront <ph name="BEGIN_EMPHASIS" />encore voir<ph name="END_EMPHASIS" /> votre activité :
@@ -324,6 +325,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1549470594296187301">Vous devez activer JavaScript pour utiliser cette fonctionnalité.</translation>
 <translation id="1550906923175308360">Crée une liste de tâches pour aujourd'hui afin de m'aider à rester sur la bonne voie</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
+<translation id="1555014818414775661">Ajouter des images</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1555191101192706055">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels malveillants affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez.</translation>
 <translation id="1559231233244409191">Carton (triple paroi)</translation>
@@ -341,6 +343,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1569487616857761740">Saisir la date d'expiration</translation>
 <translation id="1569694109004336106">Google Chrome tente d'activer Windows Hello pour saisir les mots de passe.</translation>
 <translation id="1569905000953679183">Extraction de la règle d'installation d'extension</translation>
+<translation id="1572383686781055412">Mettez à jour votre KTN de manière sécurisée</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces</translation>
 <translation id="1574714699824202614">Validation du mode de paiement</translation>
 <translation id="1576277203042721907">Informations d'achat</translation>
@@ -397,6 +400,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1658918301167915956">Appareils Bluetooth</translation>
 <translation id="1662550410081243962">Enregistrer et préremplir les modes de paiement</translation>
 <translation id="1662980953334786797">Même ordre</translation>
+<translation id="1663578299724791827">Enregistrez votre KTN de manière sécurisée</translation>
 <translation id="1663943134801823270">Les cartes et les adresses proviennent de Chrome. Vous pouvez les gérer dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Photopolymère pour flexographie</translation>
 <translation id="1667730174533834274">valider votre identité avant que ne vous ne modifiiez les paramètres</translation>
@@ -404,6 +408,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1670861525135254448">Enregistrer le véhicule</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
+<translation id="1683083957814090281">Mettez à jour votre véhicule de manière sécurisée</translation>
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1688718429648938412">Enregistrez la carte de fidélité dans Wallet</translation>
@@ -868,6 +873,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2469153820345007638">Ordre 1 à N</translation>
 <translation id="24699311393038040">Papier couché</translation>
 <translation id="2471632709106952369">Tableaux comparatifs</translation>
+<translation id="2472396075297339227">Enregistrez votre numéro d'autorisation KTN de manière sécurisée dans Google Wallet</translation>
 <translation id="2477607419416067650">Autres données Google</translation>
 <translation id="247903268499247848">Capteurs de mouvement et de luminosité non autorisés</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
@@ -926,6 +932,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2553352788023127673">L'historique des recherches et les mots de passe peuvent être supprimés dans leurs paramètres de gestion</translation>
 <translation id="2553853292994445426">Vérifiez les paramètres du DNS sécurisé. L'échec de connexion est peut-être dû à un serveur DNS sécurisé que vous avez configuré.</translation>
 <translation id="2555855727505718984">Ces informations ne seront pas proposées en saisie automatique pour vous aider à remplir des formulaires sur cet appareil</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Annuler la modification</translation>
 <translation id="2559566667529177711">Multicouche</translation>
 <translation id="2570734079541893434">Gérer les paramètres</translation>
@@ -1325,6 +1332,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3273738040255912340">Votre administrateur peut modifier à distance votre profil et votre navigateur, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. Il est aussi possible que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">Invite "Enregistrer l'IBAN" ouverte à pleine hauteur.</translation>
 <translation id="327455571215090823">Saisie automatique plus intelligente, confidentialité préservée</translation>
+<translation id="3280440382387335343">Mettez à jour votre passeport de manière sécurisée dans Google Wallet</translation>
 <translation id="3281350579597955952">{0,plural, =1{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé des infos, comme des paramètres ou des règles, aux sites Web suivants.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -1465,6 +1473,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3543597750097719865">Signature X9.62 ECDSA avec SHA-512</translation>
 <translation id="3543935938072367282">Réglez vos achats plus rapidement grâce à la saisie automatique</translation>
 <translation id="3547442767634383572">Aperçu du profil professionnel</translation>
+<translation id="3547673868874844776">Enregistrez votre pièce d'identité de manière sécurisée</translation>
 <translation id="3547746132308051926">20 x 24 pouces</translation>
 <translation id="3549904448933807997">Informations sur les navigateurs et les profils (y compris les profils personnels et professionnels)</translation>
 <translation id="3552155506104542239">Avertissement : Cette règle est en conflit avec <ph name="POLICY_NAME" /> et n'aura aucune incidence sur les applis Android. En absence de conflit, cette règle fonctionne comme prévu.</translation>
@@ -1673,6 +1682,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="388632593194507180">Activité de surveillance détectée</translation>
 <translation id="3886948180919384617">Empileur 3</translation>
 <translation id="3890664840433101773">Ajouter une adresse e-mail</translation>
+<translation id="3892626428170730309">Enregistrez votre passeport de manière sécurisée</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="390391808978419508">Délai d'ouverture dépassé</translation>
@@ -1828,6 +1838,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4153858337812834972">Onglets les plus récents</translation>
 <translation id="4154277373259957087">Chrome va maintenant valider votre identité avant de renseigner les modes de paiement. Vous pouvez modifier cela à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4157273919218514718">Optimisé par l'Intelligence personnalisée avec Gemini. <ph name="BEGIN_LINK" />Gérer les paramètres<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">Mettez à jour votre permis de conduire de manière sécurisée</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
@@ -1842,6 +1853,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4178863275556660738">Payer avec des modes de paiement autres que des cartes</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">Mettez à jour votre numéro de recours de manière sécurisée</translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
 <translation id="4190446002599583608">Recherche dans l'historique optimisée par l'IA</translation>
 <translation id="4191334393248735295">Longueur</translation>
@@ -1883,6 +1895,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4231448684371260244">8 x 13 pouces</translation>
 <translation id="4234996384188431444">Payez avec Pix sans changer d'appli dans Google Chrome</translation>
 <translation id="4238607350028440048">Aide-moi à préparer mon entretien en me posant des questions comme si tu étais le recruteur</translation>
+<translation id="4239215166147486528">Enregistrez votre permis de conduire de manière sécurisée dans Google Wallet</translation>
 <translation id="4239799716689808527">Étiquettes</translation>
 <translation id="424063167283213501">Enregistrer le Known Traveler Number</translation>
 <translation id="4241830393007970744">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit.</translation>
@@ -1995,6 +2008,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4407758156081352648">Pour des raisons de sécurité, votre organisation n'autorise pas la réutilisation de mots de passe dans Chrome. Ils sont chiffrés pour protéger la confidentialité des utilisateurs.</translation>
 <translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez ses instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="4409556632583862731">Nouveau fil de discussion</translation>
+<translation id="4410614037742891410">Mettez à jour votre carte d'identité de manière sécurisée dans Google Wallet</translation>
 <translation id="4412074349188076601">Cette configuration est marquée comme installable, mais aucune image n'est fournie pour cette architecture. Vous ne pouvez donc pas l'installer.</translation>
 <translation id="4412377069090572315">Avis des internautes</translation>
 <translation id="4414515549596849729">cookies et infos liées aux sites</translation>
@@ -2208,9 +2222,11 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4800132727771399293">Veuillez vérifier la date d'expiration et le code CVC, puis réessayez.</translation>
 <translation id="4800546479758254481">RA autorisée</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4805128460707321168">Mettez à jour votre pièce d'identité de manière sécurisée</translation>
 <translation id="4807098396393229769">Titulaire de la carte</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son thème</translation>
+<translation id="4811696127853690432">Enregistrez votre véhicule de manière sécurisée dans Google Wallet</translation>
 <translation id="4811918461974803225">Logos Google Pay, Affirm</translation>
 <translation id="4813512666221746211">Erreur réseau.</translation>
 <translation id="4814114628197290459">Supprimer l'IBAN</translation>
@@ -2340,11 +2356,13 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5020862932518041900">Si vous sélectionnez ou ignorez une suggestion, Chrome s'adaptera pour vous proposer uniquement des contenus pertinents</translation>
 <translation id="5021500396464456616">Contactez la personne qui vous a envoyé ce lien</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
+<translation id="502229363433123770">Enregistrez votre numéro de recours de manière sécurisée</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
 <translation id="5024171724744627792">Payez plus vite quand votre carte est enregistrée. Les informations relatives à la carte sont chiffrées dans votre compte Google.</translation>
 <translation id="5026121202864677765">Rédige ma lettre de motivation</translation>
 <translation id="5030338702439866405">Émis par</translation>
 <translation id="503069730517007720">Veuillez installer un certificat racine pour "<ph name="SOFTWARE_NAME" />". Nous recommandons à votre administrateur informatique de lire les instructions de configuration du logiciel "<ph name="SOFTWARE_NAME" />" afin de remédier à la situation. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">Enregistrez votre KTN de manière sécurisée dans Google Wallet</translation>
 <translation id="503498442187459473"><ph name="HOST" /> souhaite utiliser votre appareil photo et votre micro</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Taille de police</translation>
@@ -2721,6 +2739,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5651323159439184939">Continu sans pli</translation>
+<translation id="5653681867130739344">Mettez à jour votre pièce d'identité de manière sécurisée dans Google Wallet</translation>
 <translation id="5654927323611874862">ID du rapport d'erreur importé :</translation>
 <translation id="5654965123204121933">L'URL n'inclut pas la chaîne de remplacement obligatoire <ph name="SEARCH_TERMS_REPLACEMENT" /> : <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -2833,6 +2852,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5866898949289125849">Vous consultez une page d'outils pour les développeurs</translation>
 <translation id="5869405914158311789">Ce site est inaccessible</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
+<translation id="5872115357279348603">Mettez à jour votre KTN de manière sécurisée dans Google Wallet</translation>
 <translation id="5872215789867188990">Le groupe d'onglets "<ph name="GROUP_TITLE" />" n'est plus disponible</translation>
 <translation id="5872692522325383488">IBAN enregistré</translation>
 <translation id="5879989559903563723">Non accordée en mode Invité</translation>
@@ -2856,6 +2876,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5914185423510719251">Enregistrer votre KTN dans Google Wallet</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> a ajouté cet onglet</translation>
 <translation id="59174027418879706">Activé</translation>
+<translation id="5917538780499455803">Enregistrez votre pièce d'identité de manière sécurisée</translation>
 <translation id="5918847752193018339">Payez plus rapidement quand vos codes CVC sont enregistrés. <ph name="LINK_BEGIN" />Supprimer les codes de sécurité enregistrés<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Activé</translation>
@@ -2918,6 +2939,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">Impossible d'enregistrer la vidéo dans OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisés)</translation>
+<translation id="6025471531651464742">Ajouter des fichiers</translation>
 <translation id="6028591542479806248">Gérer les notifications mobiles et par e-mail</translation>
 <translation id="603068602130820122">Double agrafe en haut</translation>
 <translation id="6031824805267965302">Utiliser vos capteurs de mouvement</translation>
@@ -3162,6 +3184,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à modifier votre mot de passe.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Assurez-vous que toutes les données à caractère personnel ou professionnel critiques sont stockées en externe.</translation>
+<translation id="6422648598133086441">Mettez à jour votre véhicule de manière sécurisée dans Google Wallet</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Pli en volets</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3335,6 +3358,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="674375294223700098">Erreur inconnue liée au certificat du serveur.</translation>
 <translation id="6743841972744298686">Paramètres de synchronisation</translation>
 <translation id="6745212570062463886">Saisissez automatiquement votre nom et votre adresse e-mail à partir de votre compte Google</translation>
+<translation id="674580074662200768">Mettez à jour votre passeport de manière sécurisée</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valeur de la règle</translation>
 <translation id="6753434778807740853">Supprimer l'entrée <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3494,6 +3518,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7023765275461720661">Associer votre compte et payer avec <ph name="BNPL_ISSUER_NAME" /> ?</translation>
 <translation id="7030164307377592766">modifier les paramètres de saisie des modes de paiement</translation>
 <translation id="7031110846419387930">Informations sur vos navigateur, système d'exploitation, appareil, logiciels installés, fichiers et adresses IP</translation>
+<translation id="7031356333130415891">Mettez à jour votre pièce d'identité de manière sécurisée</translation>
 <translation id="7031646650991750659">Les applications Google Play que vous avez installées</translation>
 <translation id="7035705295266423040">Votre banque souhaite valider votre identité</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les paramètres de confidentialité de votre compte Google</translation>
@@ -3619,6 +3644,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">Pour supprimer ces données, accédez à leurs paramètres de gestion</translation>
+<translation id="7253051586755429279">Mettez à jour votre numéro de recours de manière sécurisée dans Google Wallet</translation>
 <translation id="7255540419660272073">Bouton "Je n'aime pas", appuyer sur Entrée pour ouvrir un formulaire où indiquer précisément pourquoi vous n'aimez pas <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bac arrière</translation>
 <translation id="725866823122871198">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> : la date et l'heure de votre ordinateur (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
@@ -3983,6 +4009,7 @@ Informations supplémentaires :
 <translation id="7860345425589240791">Saisissez la nouvelle date d'expiration et le nouveau code CVC au <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Quitter le site Web ?</translation>
 <translation id="7862306158978555061">afficher des informations sensibles</translation>
+<translation id="7863122976993412643">Enregistrez votre permis de conduire de manière sécurisée</translation>
 <translation id="7865448901209910068">Vitesse optimale</translation>
 <translation id="7865482168955081228">L'écran d'erreur Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="7869655448736341731">Tout</translation>
@@ -4031,6 +4058,7 @@ Informations supplémentaires :
 <translation id="7943893128817522649">Peut demander à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7947285636476623132">Veuillez vérifier l'année d'expiration, puis réessayer</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour en savoir plus sur les fonctionnalités de Chrome</translation>
+<translation id="7947964969544524438">Enregistrez votre numéro d'autorisation KTN de manière sécurisée</translation>
 <translation id="7948579849190819732">Onglet actif</translation>
 <translation id="7950027195171824198">Gérez vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
@@ -4229,6 +4257,7 @@ Informations supplémentaires :
 <translation id="8297545700510100061">Les cookies et les autres données des sites servent à se souvenir de vous (par exemple, pour vous permettre de vous connecter ou pour personnaliser les annonces). Pour gérer les cookies pour l'ensemble des sites, accédez aux <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Pour utiliser ce réseau Wi-Fi (<ph name="WIFI_NAME" />), il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">Carte enregistrée sur l'appareil uniquement</translation>
+<translation id="8300302621078931927">Enregistrez votre pièce d'identité de manière sécurisée dans Google Wallet</translation>
 <translation id="8301894345671534559">Saisissez le code</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="830868413617744215">Bêta</translation>
@@ -4438,6 +4467,8 @@ Informations supplémentaires :
 <translation id="8710842507289500830">Style de police</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715198179991802709">Chrome vient de signaler un site Web que vous essayiez de consulter. Aidez-nous à améliorer ces avertissements en répondant à une enquête d'une minute.</translation>
+<translation id="8716983145825913456">Enregistrez votre véhicule de manière sécurisée</translation>
+<translation id="8717177139469452440">Enregistrez votre passeport de manière sécurisée dans Google Wallet</translation>
 <translation id="8718314106902482036">Paiement non finalisé</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, suggestion de recherche</translation>
 <translation id="8719528812645237045">Multiple perforation en haut</translation>
@@ -4539,6 +4570,7 @@ Informations supplémentaires :
 <translation id="888169490072887292">Trouve des restaurants adaptés aux familles avec des menus pour enfants</translation>
 <translation id="8883863364960302898">Dossier Google Drive</translation>
 <translation id="8884537526797090108">Impossible d'enregistrer un contenu confidentiel</translation>
+<translation id="8889525327610245418">Mettez à jour votre permis de conduire de manière sécurisée dans Google Wallet</translation>
 <translation id="8891031436559779793">Vous recevrez une notification si le prix baisse sur un site.</translation>
 <translation id="8891727572606052622">Mode proxy non valide.</translation>
 <translation id="8894794286471754040">Bord long en premier</translation>
@@ -4774,6 +4806,7 @@ Informations supplémentaires :
 <translation id="978750072783101994">Saisir automatiquement cette carte pour les achats effectués dans Chromium lorsqu'elle est enregistrée dans Google Wallet</translation>
 <translation id="979107176848483472">Votre navigateur et votre profil sont gérés par <ph name="DOMAIN" /></translation>
 <translation id="981121421437150478">Hors connexion</translation>
+<translation id="98237783946365638">Enregistrez votre pièce d'identité de manière sécurisée dans Google Wallet</translation>
 <translation id="983587187183716432">Bouton <ph name="AI_ENGINE_NAME" />, appuyer sur Entrée pour demander au <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985199708454569384">&lt;p&gt;Ce message s'affiche si la date et l'heure de votre ordinateur ou de votre appareil mobile sont incorrectes.&lt;/p&gt;

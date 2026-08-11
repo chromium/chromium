@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Do služby <ph name="BRAND" /> v tomto zariadení bolo importované 1 heslo}few{Do služby <ph name="BRAND" /> v tomto zariadení boli importované {NUM_PASSWORDS} heslá}many{{NUM_PASSWORDS} passwords imported to <ph name="BRAND" /> on this device}other{Do služby <ph name="BRAND" /> v tomto zariadení bolo importovaných {NUM_PASSWORDS} hesiel}}</translation>
 <translation id="1046572983040892965">Okno bolo presunuté nahor a doľava</translation>
 <translation id="1047431265488717055">Kopírovať te&amp;xt odkazu</translation>
-<translation id="1048350929895890054">Weby, na ktorých je plávajúca ponuka blokovaná</translation>
 <translation id="1048986595386481879">Dynamicky priradené</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}few{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}many{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}other{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -5897,7 +5896,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5546865291508181392">Nájsť</translation>
 <translation id="5547868626772433490">Opýtať sa Gemini</translation>
 <translation id="5548075230008247516">Bol zrušený výber všetkých položiek a ukončený režim výberu.</translation>
-<translation id="554810465530189549">Nezobrazovať plávajúcu ponuku pri výbere textu</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # Other Tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Klávesnica a textový vstup</translation>
@@ -6054,7 +6052,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5678955352098267522">Čítať vaše údaje na: <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Chcete odstrániť profil <ph name="ESIM_PROFILE_NAME" />?</translation>
 <translation id="5681586175480958839">Súbor sa už otvára</translation>
-<translation id="5682950763196110705">Zobrazovať plávajúcu ponuku pri výbere textu</translation>
 <translation id="5684110242705861346">Rozšírenie <ph name="NAME" /> bolo pridané na základe pravidiel vašej organizácie a ovláda toto nastavenie. <ph name="BEGIN_LINK" />Zobraziť podrobnosti<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Podrobnosti o sieti Wi‑Fi</translation>
 <translation id="5687340364605915800">Pri reagovaní na túto žiadosť postupujú weby podľa svojho uváženia</translation>
@@ -7346,6 +7343,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6702859741546259407">Ak chcete používať funkciu <ph name="FEATURE_NAME" />, zapnite Bluetooth a Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">Malé zameranie</translation>
+<translation id="6706210727756204531">Rozsah</translation>
 <translation id="6707122714992751648">Spúšťať diagnostické testy systému ChromeOS</translation>
 <translation id="6707389671160270963">Klientsky certifikát SSL</translation>
 <translation id="6707671917294473995">Weby nemôžu používať vašu kameru</translation>

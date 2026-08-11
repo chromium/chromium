@@ -683,6 +683,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer deg<ph name="END_LINK" /> om utrygge nettsteder og nedlastinger</translation>
 <translation id="8295827201165805317">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION" /></translation>
 <translation id="8296236834352487533">Handle, oversett og identifiser det du ser, med kameraet i Chromium-iOS-appen</translation>
+<translation id="8310603974518734211">QR-kode for å logge på Chromium som <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Oppstartsfeil: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Lagre som bilde</translation>

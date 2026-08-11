@@ -478,6 +478,7 @@
 <translation id="2496180316473517155">Историја прегледања</translation>
 <translation id="2496626742194544812">Иде на прву картицу</translation>
 <translation id="2499505845365628575">Комплетну историју прегледања можете да прегледате помоћу дугмета <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="251033673027346551">Отворите Google новчаник да бисте управљали <ph name="BEGIN_LINK" />подешавањима података и приватности<ph name="END_LINK" />.</translation>
 <translation id="2511117522375201202">Број угрожених лозинки које могу да угрозе безбедност је <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" />. ниво</translation>
 <translation id="2513103768503127042">Овде ћете пронаћи групе картица</translation>
@@ -692,6 +693,7 @@
 <translation id="3259451381796379533">Овај налог неће радити са Gemini-јем. Пријавите се помоћу другог Google налога.</translation>
 <translation id="3265736395246760288">Брже се пријављујте са било ког синхронизованог уређаја.</translation>
 <translation id="3272527697863656322">Откажи</translation>
+<translation id="3272955648592358996">Ваши подаци побољшавају Google вештачку интелигенцију</translation>
 <translation id="3273510436356991673">Прилагодите почетни екран</translation>
 <translation id="3277021493514034324">Адреса сајта је копирана</translation>
 <translation id="3280562213547448728">Гласовна претрага</translation>
@@ -859,6 +861,7 @@
 <translation id="3888863481921783344">То ће се користити да би вам се приказивале особе које можете да позовете на догађај.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Овде ћете пронаћи историју</translation>
+<translation id="3892695492576181257">Када је укључено, активности се чувају у Активностима у Gemini апликацијама 18 месеци, што можете да промените на 3 или 36 месеци. Google користи ваше активности да би развијао и побољшавао услуге (укључујући Gemini моделе), као и да би штитио себе, своје кориснике и јавност уз помоћ особа које прегледају. Подаци које прегледају добављачи услуга одвојени су од налога и чувају се 3 године.</translation>
 <translation id="3893858854379998374">Да бисте сачували обележиваче на налогу, избришите обележиваче које не користите</translation>
 <translation id="3897092660631435901">Мени</translation>
 <translation id="3904270275864974753">Измените вртешку</translation>
@@ -1494,6 +1497,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5971459446352190251">Претрага QR кодова</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 обележивач је избрисан}one{{count} обележивач је избрисан}few{{count} обележивача су избрисана}other{{count} обележивача је избрисано}}</translation>
 <translation id="5972844218283131174">Опозови све</translation>
+<translation id="597482816780655631">Gemini је вештачка интелигенција и може да погреши, укључујући и у вези са људима. Неки садржај можда није прикладан за свакога. Четови се прегледају и користе за побољшавање Google вештачке интелигенције. <ph name="BEGIN_LINK" />Сазнајте више о доступним изборима.<ph name="END_LINK" /> Примењују се <ph name="BEGIN_LINK" />услови<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Обавештење о приватности<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Други</translation>
 <translation id="5977976211062815271">На овом уређају</translation>
 <translation id="5986043348928676121">Даље</translation>
@@ -1860,6 +1864,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>
 <translation id="7104701424653979232">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7108338896283013870">Сакриј</translation>
+<translation id="7119533351103192286">Користи Gemini</translation>
 <translation id="7127922377013221748">Сакриј траку с алаткама</translation>
 <translation id="7128693485119315539">Организација може да има потребу да види податке прегледања повезане са вашим управљаним налогом, попут историје прегледања и лозинки, као и да управља њима.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2391,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8796634520835503150">Режим читања је доступан</translation>
 <translation id="8803526663383843427">Када је укључено</translation>
 <translation id="8803639129939845298">Безбедан</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> претплата</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8814308045751067027">Да бисте користили Live, одобрите Chrome-у приступ микрофону у подешавањима</translation>
 <translation id="8814719628147284151">Настави</translation>
@@ -2397,6 +2403,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="882557203579758546">Пронађи на страници…</translation>
 <translation id="8829809207373502270">Овај приступни кључ више не ради. Избрисан је са <ph name="WEBSITE" /> и ускоро ће бити избрисан и овде. <ph name="BEGIN_LINK" />О приступним кључевима<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затвори све неактивне</translation>
+<translation id="8831871601813227635">Примењују се <ph name="BEGIN_LINK" />услови<ph name="END_LINK" />, <ph name="BEGIN_LINK" />услови коришћења локације за Кореју<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Обавештење о приватности<ph name="END_LINK" />. Четови се прегледају и користе за побољшавање Google вештачке интелигенције. Gemini је вештачка интелигенција и може да погреши, укључујући и у вези са људима. Неки садржај можда није прикладан за свакога. Можете да <ph name="BEGIN_LINK" />управљате активностима<ph name="END_LINK" />, укључујући информације о локацији. <ph name="BEGIN_LINK" />Сазнајте више о изборима<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Сортирај према објављивачу</translation>
 <translation id="884351711508006491">Информације се чувају на уређају.</translation>
 <translation id="8844136307393039959">Пад цене производа који пратите</translation>

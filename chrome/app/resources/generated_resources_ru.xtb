@@ -74,7 +74,6 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 пароль импортирован в <ph name="BRAND" /> этом устройстве.}one{{NUM_PASSWORDS} пароль импортирован в <ph name="BRAND" /> на этом устройстве.}few{{NUM_PASSWORDS} пароля импортировано в <ph name="BRAND" /> на этом устройстве.}many{{NUM_PASSWORDS} паролей импортировано в <ph name="BRAND" /> на этом устройстве.}other{{NUM_PASSWORDS} пароля импортировано в <ph name="BRAND" /> на этом устройстве.}}</translation>
 <translation id="1046572983040892965">Окно перемещено вверх и влево</translation>
 <translation id="1047431265488717055">Скопировать &amp;текст ссылки</translation>
-<translation id="1048350929895890054">Сайты, на которых заблокировано плавающее меню</translation>
 <translation id="1048986595386481879">Динамическое выделение места</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}one{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}few{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}many{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}other{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -5770,6 +5769,7 @@
 <translation id="5444281205834970653">Удалить и продолжить</translation>
 <translation id="5444452275167152925">Импортированные из ChromeOS</translation>
 <translation id="5445400788035474247">10x</translation>
+<translation id="5446836766119801744">⌥L</translation>
 <translation id="5447289297870286353">Сгенерировать идеи</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
 <translation id="5449588825071916739">Добавить все вкладки в закладки</translation>
@@ -5903,7 +5903,6 @@
 <translation id="5546865291508181392">Найти</translation>
 <translation id="5547868626772433490">Спросить Gemini</translation>
 <translation id="5548075230008247516">Выбор всех объектов отменен, выполнен выход из режима выбора.</translation>
-<translation id="554810465530189549">Не показывать плавающее меню при выделении текста</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" и ещё 1 вкладка}one{"<ph name="TAB_TITLE" />" и ещё # вкладка}few{"<ph name="TAB_TITLE" />" и ещё # вкладки}many{"<ph name="TAB_TITLE" />" и ещё # вкладок}other{"<ph name="TAB_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Клавиатура и ввод текста</translation>
@@ -6061,7 +6060,6 @@
 <translation id="5678955352098267522">Просмотр данных на сайте <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Удалить профиль "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">Файл уже открывается</translation>
-<translation id="5682950763196110705">Показывать плавающее меню при выделении текста</translation>
 <translation id="5684110242705861346">Этим параметром управляет расширение "<ph name="NAME" />", добавленное в соответствии с правилами вашей организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Сведения о сети Wi-Fi</translation>
 <translation id="5687340364605915800">Некоторые сайты могут не реагировать на этот запрос</translation>
@@ -7356,6 +7354,7 @@
 <translation id="6702859741546259407">Чтобы использовать функцию "<ph name="FEATURE_NAME" />", включите Bluetooth и Wi-Fi.</translation>
 <translation id="6703109186846420472">,</translation>
 <translation id="670431355064244920">Малый фокус</translation>
+<translation id="6706210727756204531">Область применения</translation>
 <translation id="6707122714992751648">Запуск диагностики ChromeOS</translation>
 <translation id="6707389671160270963">Клиентский сертификат SSL</translation>
 <translation id="6707671917294473995">У сайтов нет доступа к камере</translation>
@@ -8140,6 +8139,7 @@
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7312040805247765153">Не удалось установить приложение</translation>
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
+<translation id="731239254927333251">Alt + L</translation>
 <translation id="7313539585802573958">Цвета подсветки клавиатуры</translation>
 <translation id="7314722166530073269">{NUM_EVENTS,plural, =1{Не удалось датировать 1 событие, поэтому оно не показано.}one{Не удалось датировать # событие, поэтому они не показаны.}few{Не удалось датировать # события, поэтому они не показаны.}many{Не удалось датировать # событий, поэтому они не показаны.}other{Не удалось датировать # события, поэтому они не показаны.}}</translation>
 <translation id="7314865262803554456">Вы не будете получать уведомления о том, что запись началась.</translation>

@@ -193,6 +193,7 @@
 <translation id="132301787627749051">搵剪貼簿嘅圖</translation>
 <translation id="1323433172918577554">顯示更多</translation>
 <translation id="1330449323196174374">左半邊對摺</translation>
+<translation id="1330952240988133220">將糾正號碼安全地儲存至「Google 錢包」</translation>
 <translation id="133173645041092770">關閉網站</translation>
 <translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1333989956347591814">以下各方<ph name="BEGIN_EMPHASIS" />仍可看到<ph name="END_EMPHASIS" />您的活動：
@@ -324,6 +325,7 @@
 <translation id="1549470594296187301">必須啟用 JavaScript 才能使用此功能。</translation>
 <translation id="1550906923175308360">建立今日的待辦事項清單，讓我按計劃完成工作</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1555014818414775661">新增圖片</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1555191101192706055">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。</translation>
 <translation id="1559231233244409191">紙板 (三層瓦楞紙)</translation>
@@ -341,6 +343,7 @@
 <translation id="1569487616857761740">輸入到期日</translation>
 <translation id="1569694109004336106">Google Chrome 正在嘗試開啟 Windows Hello，以便在填入密碼時驗證。</translation>
 <translation id="1569905000953679183">擷取擴充程式安裝政策</translation>
+<translation id="1572383686781055412">安全地更新 KTN</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
 <translation id="1574714699824202614">正在驗證付款方法</translation>
 <translation id="1576277203042721907">購物分析資料</translation>
@@ -397,6 +400,7 @@
 <translation id="1658918301167915956">藍牙裝置</translation>
 <translation id="1662550410081243962">儲存和填入付款方法</translation>
 <translation id="1662980953334786797">相同順序</translation>
+<translation id="1663578299724791827">安全地儲存 KTN</translation>
 <translation id="1663943134801823270">信用卡和地址選項均來自 Chrome。您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理這些選項。</translation>
 <translation id="1664389769577564606">柔印感光樹脂版</translation>
 <translation id="1667730174533834274">變更設定前先驗證你的身分</translation>
@@ -404,6 +408,7 @@
 <translation id="1670861525135254448">儲存車輛</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
+<translation id="1683083957814090281">安全地更新車輛資料</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
 <translation id="1688718429648938412">將會員卡儲存至「錢包」</translation>
@@ -868,6 +873,7 @@
 <translation id="2469153820345007638">1 至 N 的順序</translation>
 <translation id="24699311393038040">紙 (粉紙)</translation>
 <translation id="2471632709106952369">比較表格</translation>
+<translation id="2472396075297339227">將已知旅客號碼安全地儲存至「Google 錢包」</translation>
 <translation id="2477607419416067650">其他 Google 資料</translation>
 <translation id="247903268499247848">不允許使用動作同光線感應器</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
@@ -926,6 +932,7 @@
 <translation id="2553352788023127673">搜尋記錄和密碼可以在相應的管理設定中刪除</translation>
 <translation id="2553853292994445426">請檢查您的安全 DNS 設定。您可能設定了一個無法連線的安全 DNS 伺服器。</translation>
 <translation id="2555855727505718984">自動填入功能不會在此裝置上使用這項資料協助填寫表格</translation>
+<translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
 <translation id="2559566667529177711">多層</translation>
 <translation id="2570734079541893434">管理設定</translation>
@@ -1325,6 +1332,7 @@
 <translation id="3273738040255912340">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3273757719652748628">打開咗儲存 IBAN 嘅底部工作表，宜家顯示喺成個畫面。</translation>
 <translation id="327455571215090823">自動填入更智能，確保資料保密</translation>
+<translation id="3280440382387335343">安全地更新「Google 錢包」中的護照</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -1464,6 +1472,7 @@
 <translation id="3543597750097719865">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
 <translation id="3543935938072367282">自動填入資料，結帳更快捷</translation>
 <translation id="3547442767634383572">工作設定檔概覽</translation>
+<translation id="3547673868874844776">安全地儲存身分證</translation>
 <translation id="3547746132308051926">20 x 24 吋</translation>
 <translation id="3549904448933807997">瀏覽器和設定檔資料 (包括個人和工作設定檔)</translation>
 <translation id="3552155506104542239">警告：此政策與 <ph name="POLICY_NAME" /> 互相衝突，對 Android 應用程式不會有任何效果。否則，此政策會運作正常。</translation>
@@ -1672,6 +1681,7 @@
 <translation id="388632593194507180">偵測到監控</translation>
 <translation id="3886948180919384617">堆疊器 3</translation>
 <translation id="3890664840433101773">新增電郵</translation>
+<translation id="3892626428170730309">安全地儲存護照</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3901925938762663762">卡片已過期</translation>
 <translation id="390391808978419508">開啟逾時</translation>
@@ -1827,6 +1837,7 @@
 <translation id="4153858337812834972">最近的分頁</translation>
 <translation id="4154277373259957087">Chrome 現在將驗證您的身分，然後才填入付款方法。您可隨時在<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />變更此項目。</translation>
 <translation id="4157273919218514718">採用 Gemini「個人化智能」技術。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
+<translation id="4157469997675439324">安全地更新駕駛執照</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165422751765527461">喺新分頁度打開說明中心文章</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -1841,6 +1852,7 @@
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4178863275556660738">使用卡以外的方式付款</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
+<translation id="4185037616931963178">安全地更新糾正號碼</translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
 <translation id="4190446002599583608">利用 AI 技術搜尋記錄</translation>
 <translation id="4191334393248735295">長度</translation>
@@ -1882,6 +1894,7 @@
 <translation id="4231448684371260244">8 x 13 吋</translation>
 <translation id="4234996384188431444">無需在 Google Chrome 切換應用程式也可透過 Pix 付款</translation>
 <translation id="4238607350028440048">扮演招募經理向我提問，幫我練習面試</translation>
+<translation id="4239215166147486528">將駕駛執照安全地儲存至「Google 錢包」</translation>
 <translation id="4239799716689808527">標籤</translation>
 <translation id="424063167283213501">儲存已知的旅客編號</translation>
 <translation id="4241830393007970744">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。</translation>
@@ -1994,6 +2007,7 @@
 <translation id="4407758156081352648">為確保安全，你的機構不允許在 Chrome 重用密碼。Chrome  會將密碼加密，以保護使用者私隱。</translation>
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4409556632583862731">新訊息串</translation>
+<translation id="4410614037742891410">安全地更新「Google 錢包」中的身分證資料</translation>
 <translation id="4412074349188076601">此設定已標記為可安裝，但沒有映像可供此架構使用，因此無法安裝。</translation>
 <translation id="4412377069090572315">其他人的評論</translation>
 <translation id="4414515549596849729">Cookie 和網站數據</translation>
@@ -2207,9 +2221,11 @@
 <translation id="4800132727771399293">請檢查您的到期日和卡片驗證碼 (CVC)，然後再試一次</translation>
 <translation id="4800546479758254481">允許使用 AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4805128460707321168">安全地更新身分證</translation>
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
+<translation id="4811696127853690432">將車輛資料安全地儲存至「Google 錢包」</translation>
 <translation id="4811918461974803225">Google Pay、Affirm 標誌</translation>
 <translation id="4813512666221746211">網絡錯誤</translation>
 <translation id="4814114628197290459">刪除 IBAN</translation>
@@ -2339,11 +2355,13 @@
 <translation id="5020862932518041900">如果你選取或忽略建議，Chrome 會作出調整，確保只向你顯示相關內容</translation>
 <translation id="5021500396464456616">請與傳送此連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
+<translation id="502229363433123770">安全地儲存糾正號碼</translation>
 <translation id="5023310440958281426">請查看您的管理員政策</translation>
 <translation id="5024171724744627792">儲存信用卡可加快付款速度。Google 帳戶會加密信用卡詳情。</translation>
 <translation id="5026121202864677765">撰寫求職信</translation>
 <translation id="5030338702439866405">發行者：</translation>
 <translation id="503069730517007720">未安裝「<ph name="SOFTWARE_NAME" />」必要的「根憑證」。IT 管理員應查看「<ph name="SOFTWARE_NAME" />」的設定指示，才能修正此問題。<ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="5034488401832901795">將 KTN 安全地儲存至「Google 錢包」</translation>
 <translation id="503498442187459473"><ph name="HOST" /> 要求使用相機和麥克風</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">字型大小</translation>
@@ -2720,6 +2738,7 @@
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5651323159439184939">連續送紙</translation>
+<translation id="5653681867130739344">安全地更新「Google 錢包」中的身分證</translation>
 <translation id="5654927323611874862">已上載的當機報告 ID：</translation>
 <translation id="5654965123204121933">網址未包含所需的替換字串「<ph name="SEARCH_TERMS_REPLACEMENT" />」：<ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -2832,6 +2851,7 @@
 <translation id="5866898949289125849">您正在查看 Developer Tools 頁面</translation>
 <translation id="5869405914158311789">無法連線至此網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5872115357279348603">安全地更新「Google 錢包」中的 KTN</translation>
 <translation id="5872215789867188990">無法再存取「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5879989559903563723">在訪客模式下無法使用</translation>
@@ -2855,6 +2875,7 @@
 <translation id="5914185423510719251">將 KTN 儲存至「Google 錢包」</translation>
 <translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />已加入此分頁</translation>
 <translation id="59174027418879706">已啟用</translation>
+<translation id="5917538780499455803">安全地儲存身分證</translation>
 <translation id="5918847752193018339">儲存 CVC，加快結帳速度。<ph name="LINK_BEGIN" />刪除已儲存的安全碼<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">開啟</translation>
@@ -2917,6 +2938,7 @@
 <translation id="6019118530636932154">Google Apps Script</translation>
 <translation id="6023960830218262456">無法儲存影片至 OneDrive</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
+<translation id="6025471531651464742">新增檔案</translation>
 <translation id="6028591542479806248">管理流動裝置/應用程式和電郵通知</translation>
 <translation id="603068602130820122">雙釘 (右側)</translation>
 <translation id="6031824805267965302">使用動作感應器</translation>
@@ -3161,6 +3183,7 @@
 <translation id="6415778972515849510">Chromium 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">請務必將任何重要商家或個人資料儲存至外部位置。</translation>
+<translation id="6422648598133086441">安全地更新「Google 錢包」中的車輛資料</translation>
 <translation id="6425092077175753609">質感</translation>
 <translation id="6427730057873428458">摺頁</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
@@ -3334,6 +3357,7 @@
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>
 <translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745212570062463886">自動填入你 Google 帳戶的姓名和電郵地址</translation>
+<translation id="674580074662200768">安全地更新護照</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6753434778807740853">刪除項目 <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3493,6 +3517,7 @@
 <translation id="7023765275461720661">要連結帳戶並透過 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>
 <translation id="7030164307377592766">修改填入付款方法的設定</translation>
 <translation id="7031110846419387930">瀏覽器、作業系統、裝置、已安裝的軟件、檔案和 IP 位址的相關資料</translation>
+<translation id="7031356333130415891">安全地更新身分證</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7035705295266423040">銀行要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶私隱設定</translation>
@@ -3617,6 +3642,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7252424535852086046">如要刪除這類資料，請前往相關管理設定</translation>
+<translation id="7253051586755429279">安全地更新「Google 錢包」中的糾正號碼</translation>
 <translation id="7255540419660272073">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意「<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」嘅原因</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="725866823122871198">您電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
@@ -3981,6 +4007,7 @@
 <translation id="7860345425589240791">輸入<ph name="SIDE_OF_CARD" />的新到期日和 CVC</translation>
 <translation id="7862185352068345852">要離開網站嗎？</translation>
 <translation id="7862306158978555061">顯示敏感資料</translation>
+<translation id="7863122976993412643">安全地儲存駕駛執照</translation>
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7865482168955081228">「先買後付」嘅錯誤畫面閂咗。</translation>
 <translation id="7869655448736341731">不限</translation>
@@ -4029,6 +4056,7 @@
 <translation id="7943893128817522649">可要求自動下載多個檔案</translation>
 <translation id="7947285636476623132">請檢查您的到期年份，然後再試一次</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
+<translation id="7947964969544524438">安全地儲存已知旅客號碼</translation>
 <translation id="7948579849190819732">目前分頁</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
@@ -4227,6 +4255,7 @@
 <translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="SETTINGS" />」。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8298399736867690281">卡資料只儲存在裝置上</translation>
+<translation id="8300302621078931927">將身分證安全地儲存至「Google 錢包」</translation>
 <translation id="8301894345671534559">輸入驗證碼</translation>
 <translation id="830498451218851433">對摺</translation>
 <translation id="830868413617744215">測試版</translation>
@@ -4436,6 +4465,8 @@
 <translation id="8710842507289500830">字型樣式</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8715198179991802709">Chrome 剛剛標示你嘗試瀏覽的網站。請花 1 分鐘填寫問卷，協助改善這類警告訊息。</translation>
+<translation id="8716983145825913456">安全地儲存車輛資料</translation>
+<translation id="8717177139469452440">將護照安全地儲存至「Google 錢包」</translation>
 <translation id="8718314106902482036">未完成付款程序</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />，<ph name="DESCRIPTION" />，搜尋建議</translation>
 <translation id="8719528812645237045">多孔 (頂端)</translation>
@@ -4537,6 +4568,7 @@
 <translation id="888169490072887292">尋找設有兒童餐單的合家歡餐廳</translation>
 <translation id="8883863364960302898">「Google 雲端硬碟」資料夾</translation>
 <translation id="8884537526797090108">無法錄影機密內容</translation>
+<translation id="8889525327610245418">安全地更新「Google 錢包」中的駕駛執照</translation>
 <translation id="8891031436559779793">如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>
@@ -4772,6 +4804,7 @@
 <translation id="978750072783101994">只要將此卡儲存至「Google 錢包」，就能在 Chromium 中購物時自動填入卡資料</translation>
 <translation id="979107176848483472">你的瀏覽器和個人檔案由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="981121421437150478">離線</translation>
+<translation id="98237783946365638">將身分證安全地儲存至「Google 錢包」</translation>
 <translation id="983587187183716432"><ph name="AI_ENGINE_NAME" />掣，㩒 Enter 鍵就可以問 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">付款方法</translation>
 <translation id="985199708454569384">&lt;p&gt;如果電腦或流動裝置的日期和時間不正確，您便會看到此錯誤訊息。&lt;/p&gt;

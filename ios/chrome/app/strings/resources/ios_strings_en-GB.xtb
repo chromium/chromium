@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">This account won't work with Gemini. Sign in with a different Google Account.</translation>
 <translation id="3265736395246760288">Sign in faster from any of your synced devices.</translation>
 <translation id="3272527697863656322">Cancel</translation>
+<translation id="3272955648592358996">Your data improves Google AI</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3280562213547448728">Voice search</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
 <translation id="3891414008432200754">Price</translation>
 <translation id="3892144330757387737">You'll find your history here</translation>
+<translation id="3892695492576181257">When it’s on, your activity is saved in Gemini Apps activity for 18 months, which you can change to 3 or 36 months. Google uses your activity to develop and improve its services (including Gemini models) as well as to protect Google, its users and the public with the help of human reviewers. Data reviewed by service providers is disconnected from your account and saved for 3 years.</translation>
 <translation id="3893858854379998374">To save bookmarks in your account, delete your unused bookmarks</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Edit carousel</translation>
@@ -1494,6 +1496,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5971459446352190251">QR code search</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark deleted}other{{count} bookmarks deleted}}</translation>
 <translation id="5972844218283131174">Deselect all</translation>
+<translation id="597482816780655631">Gemini is AI and can make mistakes, including about people. Some content may not be suitable for everyone. Chats are reviewed and used to improve Google AI. <ph name="BEGIN_LINK" />Learn about your choices<ph name="END_LINK" />. Our <ph name="BEGIN_LINK" />Terms<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Privacy Notice<ph name="END_LINK" /> apply.</translation>
 <translation id="5976160379964388480">Others</translation>
 <translation id="5977976211062815271">On this device</translation>
 <translation id="5986043348928676121">Next</translation>
@@ -1860,6 +1863,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7102005569666697658">Downloading… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Settings → Payment methods</translation>
 <translation id="7108338896283013870">Hide</translation>
+<translation id="7119533351103192286">Use Gemini</translation>
 <translation id="7127922377013221748">Hide Toolbar</translation>
 <translation id="7128693485119315539">Your organisation may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8796634520835503150">Reading mode available</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803639129939845298">Secure</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> membership</translation>
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8814308045751067027">To use Live, give Chrome access to your microphone in settings</translation>
 <translation id="8814719628147284151">Continue</translation>
@@ -2397,6 +2402,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="882557203579758546">Find in page…</translation>
 <translation id="8829809207373502270">This passkey doesn't work any more. It was deleted from <ph name="WEBSITE" /> and will get deleted from here soon. <ph name="BEGIN_LINK" />About passkeys<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Close all inactive</translation>
+<translation id="8831871601813227635">Our <ph name="BEGIN_LINK" />Terms<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korean Location Terms<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Privacy Notice<ph name="END_LINK" /> apply. Chats are reviewed and used to improve Google AI. Gemini is AI and can make mistakes, including about people. Some content may not be suitable for everyone. You can <ph name="BEGIN_LINK" />manage your activity<ph name="END_LINK" />, including info about your location. <ph name="BEGIN_LINK" />Learn more about your choices<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Sort by publisher</translation>
 <translation id="884351711508006491">Your info is saved to your device.</translation>
 <translation id="8844136307393039959">Price drop on your tracked product</translation>

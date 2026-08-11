@@ -683,6 +683,7 @@
 <translation id="8286943863733751221">‏<ph name="BEGIN_LINK" />يحذرك Chromium<ph name="END_LINK" /> بشأن المواقع الإلكترونية وعمليات التنزيل غير الآمنة</translation>
 <translation id="8295827201165805317">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذن <ph name="PERMISSION" />.</translation>
 <translation id="8296236834352487533">‏باستخدام الكاميرا في تطبيق Chromium على iOS، يمكنك تسوّق ما يظهر لك أو ترجمته أو التعرّف عليه</translation>
+<translation id="8310603974518734211">‏رمز الاستجابة السريعة لتسجيل الدخول إلى Chromium باسم "<ph name="USER_NAME" />"</translation>
 <translation id="8313851650939857356">خطأ في بدء التشغيل: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">حفظ كصورة</translation>

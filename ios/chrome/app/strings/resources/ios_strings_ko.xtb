@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">이 계정은 Gemini에서 지원되지 않습니다. 다른 Google 계정으로 로그인하세요.</translation>
 <translation id="3265736395246760288">동기화된 기기에서 더 빠르게 로그인하세요</translation>
 <translation id="3272527697863656322">취소</translation>
+<translation id="3272955648592358996">사용자의 데이터를 통한 Google AI의 개선</translation>
 <translation id="3273510436356991673">홈 화면 맞춤설정하기</translation>
 <translation id="3277021493514034324">사이트 주소가 복사되었습니다.</translation>
 <translation id="3280562213547448728">음성 검색</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">일정에 초대할 수 있는 사람을 표시하는 데 사용됩니다.</translation>
 <translation id="3891414008432200754">가격</translation>
 <translation id="3892144330757387737">여기에서 방문 기록을 확인할 수 있습니다</translation>
+<translation id="3892695492576181257">사용 설정하면 활동이 Gemini 앱 활동에 18개월 동안 저장되며 이 기간을 3개월 또는 36개월로 변경할 수 있습니다. Google은 Gemini 모델을 비롯한 Google 서비스를 개발 및 개선하고, 인적 검토자의 도움을 받아 Google, Google 사용자, 일반 대중을 보호하는 용도로 사용자의 활동을 사용합니다. 서비스 제공업체에서 검토한 데이터는 사용자 계정과 분리되어 3년 동안 저장됩니다.</translation>
 <translation id="3893858854379998374">계정에 북마크를 저장하려면 사용하지 않는 북마크를 삭제하세요.</translation>
 <translation id="3897092660631435901">메뉴</translation>
 <translation id="3904270275864974753">캐러셀 편집</translation>
@@ -1494,6 +1496,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5971459446352190251">QR 코드 검색</translation>
 <translation id="5971872012779224351">{count,plural, =1{북마크 1개가 삭제되었습니다.}other{북마크 {count}개가 삭제되었습니다.}}</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
+<translation id="597482816780655631">Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 사용자에게 적합하지 않은 콘텐츠가 있을 수 있습니다. Google AI 개선을 위해 채팅을 검토하고 사용합니다. <ph name="BEGIN_LINK" />사용자의 선택권에 대해 자세히 알아보세요<ph name="END_LINK" />. Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다.</translation>
 <translation id="5976160379964388480">기타</translation>
 <translation id="5977976211062815271">이 기기에서</translation>
 <translation id="5986043348928676121">다음</translation>
@@ -1860,6 +1863,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7102005569666697658">다운로드 중… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">메뉴 → 설정 → 결제 수단</translation>
 <translation id="7108338896283013870">숨기기</translation>
+<translation id="7119533351103192286">Gemini 사용</translation>
 <translation id="7127922377013221748">툴바 숨기기</translation>
 <translation id="7128693485119315539">조직에서 방문 기록, 비밀번호 등 관리 계정과 연결된 인터넷 사용 기록을 확인하고 관리해야 할 수 있습니다.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" />(<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8796634520835503150">읽기 모드 사용 가능</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8803639129939845298">안전함</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" /> 멤버십</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8814308045751067027">Live를 사용하려면 설정에서 Chrome에 마이크 액세스 권한을 부여하세요</translation>
 <translation id="8814719628147284151">계속</translation>
@@ -2397,6 +2402,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="882557203579758546">페이지에서 찾기…</translation>
 <translation id="8829809207373502270">이 패스키는 더 이상 작동하지 않습니다. <ph name="WEBSITE" />에서 삭제되었으며, 곧 여기에서도 삭제됩니다. <ph name="BEGIN_LINK" />패스키에 관한 정보<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">모든 비활성 탭 닫기</translation>
+<translation id="8831871601813227635">Google <ph name="BEGIN_LINK" />약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />대한민국 위치 서비스 약관<ph name="END_LINK" />, <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />이 적용됩니다. Google AI 개선을 위해 채팅을 검토하고 사용합니다. Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다. 일부 사용자에게 적합하지 않은 콘텐츠가 있을 수 있습니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK" />활동을 관리<ph name="END_LINK" />할 수 있습니다. <ph name="BEGIN_LINK" />사용자의 선택권에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">게시자순 정렬</translation>
 <translation id="884351711508006491">정보가 기기에 저장됩니다.</translation>
 <translation id="8844136307393039959">추적 중인 제품의 가격 인하</translation>

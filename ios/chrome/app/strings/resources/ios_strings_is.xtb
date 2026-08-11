@@ -692,6 +692,7 @@
 <translation id="3259451381796379533">Þessi reikningur mun ekki virka með Gemini. Skráðu þig inn með öðrum Google-reikningi</translation>
 <translation id="3265736395246760288">Skráðu þig inn hraðar úr öllum samstilltu tækjunum þínim.</translation>
 <translation id="3272527697863656322">Hætta við</translation>
+<translation id="3272955648592358996">Gögnin þín bæta gervigreind Google</translation>
 <translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
 <translation id="3277021493514034324">Veffang afritað</translation>
 <translation id="3280562213547448728">Raddleit</translation>
@@ -859,6 +860,7 @@
 <translation id="3888863481921783344">Þetta verður notað til að sýna þér hugsanlega boðsgesti á viðburðinn þinn.</translation>
 <translation id="3891414008432200754">Verð</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
+<translation id="3892695492576181257">Þegar kveikt er á stillingunni vistast virknin þín í Gemini-forritavirkni í 18 mánuði en þú getur breytt því í 3 eða 36 mánuði. Google notar virkni þína til að þróa og bæta þjónustu sína (þ.m.t. Gemini-líkön) og til að vernda Google, notendur þess og almenning með aðstoð mannlegra yfirlesara. Gögn sem yfirfarin eru af þjónustuveitendum eru aftengd reikningnum þínum og vistuð í 3 ár.</translation>
 <translation id="3893858854379998374">Ef þú vilt bókamerki á reikningnum þínum skaltu eyða ónotuðum bókamerkjum</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3904270275864974753">Breyta hringekju</translation>
@@ -1494,6 +1496,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5971459446352190251">QR-kóðaleit</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5972844218283131174">Afvelja allt</translation>
+<translation id="597482816780655631">Gemini er gervigreind og getur gert mistök, þ.m.t. um fólk. Sumt efni er hugsanlega ekki við hæfi allra. Spjall er yfirfarið og notað til að bæta gervigreind Google. <ph name="BEGIN_LINK" />Nánar um val þitt<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Skilmálar<ph name="END_LINK" /> okkar og <ph name="BEGIN_LINK" />upplýsingar um persónuvernd<ph name="END_LINK" /> gilda.</translation>
 <translation id="5976160379964388480">Annað</translation>
 <translation id="5977976211062815271">Í þessu tæki</translation>
 <translation id="5986043348928676121">Áfram</translation>
@@ -1860,6 +1863,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7102005569666697658">Sækir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Valmynd → Stillingar → Greiðslumátar</translation>
 <translation id="7108338896283013870">Fela</translation>
+<translation id="7119533351103192286">Nota Gemini</translation>
 <translation id="7127922377013221748">Fela tækjastiku</translation>
 <translation id="7128693485119315539">Fyrirtækið þitt þarf hugsanlega að skoða og stjórna vefskoðunargögnum sem tengjast stýrða reikningnum þínum, t.d. vafraferli og aðgangsorðum.</translation>
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2386,6 +2390,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8796634520835503150">Lesstilling í boði</translation>
 <translation id="8803526663383843427">Þegar kveikt er á þessu</translation>
 <translation id="8803639129939845298">Öruggt</translation>
+<translation id="8809212245338455710"><ph name="AI_TIER_NAME" />-aðild</translation>
 <translation id="8813277370772331957">Minna mig á seinna</translation>
 <translation id="8814308045751067027">Veittu Chrome aðgang að hljóðnemanum þínum í stillingum til að nota Live</translation>
 <translation id="8814719628147284151">Halda áfram</translation>
@@ -2397,6 +2402,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="882557203579758546">Finna á síðu…</translation>
 <translation id="8829809207373502270">Þessi aðgangslykill virkar ekki lengur. Honum var eytt á <ph name="WEBSITE" /> og verður eytt héðan innan skamms. <ph name="BEGIN_LINK" />Um aðgangslykla<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Loka öllum óvirkum</translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Skilmálar<ph name="END_LINK" /> okkar, <ph name="BEGIN_LINK" />kóreskir staðsetningarskilmálar<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />upplýsingar um persónuvernd<ph name="END_LINK" /> gilda. Spjall er yfirfarið og notað til að bæta gervigreind Google. Gemini er gervigreind og getur gert mistök, þ.m.t. um fólk. Sumt efni er hugsanlega ekki við hæfi allra. Þú getur <ph name="BEGIN_LINK" />stjórnað virkni þinni<ph name="END_LINK" />, þar á meðal upplýsingum um staðsetningu þína. <ph name="BEGIN_LINK" />Nánar um valkosti þína<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Raða eftir útgefanda</translation>
 <translation id="884351711508006491">Upplýsingarnar þínar eru vistaðar í tækinu þínu</translation>
 <translation id="8844136307393039959">Vara sem þú ert með í rakningu lækkaði í verði</translation>

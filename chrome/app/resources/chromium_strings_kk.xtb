@@ -684,6 +684,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>
 <translation id="8295827201165805317">Жақында кірмедіңіз. Chromium <ph name="PERMISSION" /> рұқсатын өшірді.</translation>
 <translation id="8296236834352487533">Chromium iOS қолданбасында камера көмегімен нәрселерді сатып алуға, аударуға және анықтауға болады.</translation>
+<translation id="8310603974518734211">Chromium-ге <ph name="USER_NAME" /> ретінде кіруге арналған QR коды</translation>
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
 <translation id="8321888067342493336">Сурет түрінде сақтау</translation>
