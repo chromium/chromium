@@ -473,7 +473,10 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           timestamp);
     }
   } else if (data.is_opaque_data()) {
-    DCHECK(metadata.tracking_token.has_value());
+    if (!metadata.tracking_token.has_value()) {
+      DLOG(ERROR) << "Tracking token is unexpectedly missing";
+      return false;
+    }
     frame = media::VideoFrame::WrapTrackingToken(
         format, *metadata.tracking_token, coded_size, visible_rect,
         natural_size, timestamp);
