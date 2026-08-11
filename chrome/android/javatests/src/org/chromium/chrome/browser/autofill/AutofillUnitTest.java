@@ -34,8 +34,8 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Tests the Autofill's java code for creating the AutofillPopup object, opening and selecting
- * popups.
+ * Tests the Autofill's java code for creating the AutofillPopup object, opening and accepting
+ * suggestions in popups.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
@@ -77,14 +77,14 @@ public class AutofillUnitTest {
     private static final int CHECK_INTERVAL_MS = 100;
 
     private class MockAutofillCallback implements AutofillDelegate {
-        private final AtomicBoolean mGotPopupSelection = new AtomicBoolean(false);
+        private final AtomicBoolean mGotPopupAcceptance = new AtomicBoolean(false);
         public int mListIndex = -1;
 
         @Override
-        public void suggestionSelected(int listIndex) {
+        public void suggestionAccepted(int listIndex) {
             mListIndex = listIndex;
             mAutofillPopup.dismiss();
-            mGotPopupSelection.set(true);
+            mGotPopupAcceptance.set(true);
         }
 
         @Override
@@ -92,7 +92,7 @@ public class AutofillUnitTest {
 
         public void waitForCallback() {
             CriteriaHelper.pollInstrumentationThread(
-                    mGotPopupSelection::get, CALLBACK_TIMEOUT_MS, CHECK_INTERVAL_MS);
+                    mGotPopupAcceptance::get, CALLBACK_TIMEOUT_MS, CHECK_INTERVAL_MS);
         }
 
         @Override

@@ -695,8 +695,8 @@ public class AutofillProvider {
                                     }
 
                                     @Override
-                                    public void suggestionSelected(int listIndex) {
-                                        onSuggestionSelected(
+                                    public void suggestionAccepted(int listIndex) {
+                                        onSuggestionAccepted(
                                                 mDatalistSuggestions[listIndex].getLabel());
                                     }
 
@@ -728,7 +728,7 @@ public class AutofillProvider {
         mAnchorView = null;
     }
 
-    private void onSuggestionSelected(String value) {
+    private void onSuggestionAccepted(String value) {
         if (mNativeAutofillProvider != 0) {
             acceptDataListSuggestion(mNativeAutofillProvider, value);
         }

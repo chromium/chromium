@@ -14,22 +14,22 @@ public interface AutofillDelegate {
     void dismissed();
 
     /**
-     * Handles the selection of an Autofill suggestion from an AutofillPopup or
+     * Handles the acceptance of an Autofill suggestion from an AutofillPopup or
      * AutofillKeyboardAccessory.
      *
-     * @param listIndex The index of the selected Autofill suggestion.
+     * @param listIndex The index of the accepted Autofill suggestion.
      */
-    void suggestionSelected(int listIndex);
+    void suggestionAccepted(int listIndex);
 
     /**
-     * Handles the selection of an Autofill suggestion, with metadata about whether the suggestion
+     * Handles the acceptance of an Autofill suggestion, with metadata about whether the suggestion
      * triggers a loading state.
      *
-     * @param listIndex The index of the selected Autofill suggestion.
+     * @param listIndex The index of the accepted Autofill suggestion.
      * @param showLoadingOnAcceptance True if the suggestion shows a loading UI on acceptance.
      */
-    default void suggestionSelected(int listIndex, boolean showLoadingOnAcceptance) {
-        suggestionSelected(listIndex);
+    default void suggestionAccepted(int listIndex, boolean showLoadingOnAcceptance) {
+        suggestionAccepted(listIndex);
     }
 
     /**

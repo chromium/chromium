@@ -157,11 +157,11 @@ class KeyboardAccessoryProperties {
         }
 
         /**
-         * Updates the state of this item when a suggestion is selected.
+         * Updates the state of this item when a suggestion is accepted.
          *
-         * @param clickedSuggestion The suggestion that was clicked, or null if none.
+         * @param acceptedSuggestion The suggestion that was accepted, or null if none.
          */
-        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {}
+        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {}
 
         /**
          * If this {@link BarItem} is a instance of {@link ActionBarItem}, returns itself in a list.
@@ -183,9 +183,9 @@ class KeyboardAccessoryProperties {
         }
 
         @Override
-        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
+        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {
             for (ActionBarItem item : mActionBarItems) {
-                item.updateStateOnItemSelection(clickedSuggestion);
+                item.updateStateOnItemAcceptance(acceptedSuggestion);
             }
         }
 
@@ -226,7 +226,7 @@ class KeyboardAccessoryProperties {
         }
 
         @Override
-        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
+        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {
             setViewState(ViewState.DEACTIVATED);
         }
 
@@ -311,9 +311,10 @@ class KeyboardAccessoryProperties {
         }
 
         @Override
-        void updateStateOnItemSelection(@Nullable AutofillSuggestion clickedSuggestion) {
-            boolean isClicked = clickedSuggestion != null && mSuggestion.equals(clickedSuggestion);
-            setViewState(isClicked ? ViewState.LOADING : ViewState.DEACTIVATED);
+        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {
+            boolean isAccepted =
+                    acceptedSuggestion != null && mSuggestion.equals(acceptedSuggestion);
+            setViewState(isAccepted ? ViewState.LOADING : ViewState.DEACTIVATED);
         }
 
         AutofillSuggestion getSuggestion() {

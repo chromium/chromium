@@ -59,12 +59,12 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     }
 
     @Override
-    public void suggestionSelected(int listIndex) {
-        suggestionSelected(listIndex, false);
+    public void suggestionAccepted(int listIndex) {
+        suggestionAccepted(listIndex, false);
     }
 
     @Override
-    public void suggestionSelected(int listIndex, boolean showLoadingOnAcceptance) {
+    public void suggestionAccepted(int listIndex, boolean showLoadingOnAcceptance) {
         if (mManualFillingComponent != null) {
             if (showLoadingOnAcceptance) {
                 mManualFillingComponent.setWaitingForFetch(true);
@@ -75,7 +75,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         }
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .suggestionSelected(mNativeAutofillKeyboardAccessory, listIndex);
+                .suggestionAccepted(mNativeAutofillKeyboardAccessory, listIndex);
     }
 
     @Override
@@ -284,7 +284,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     interface Natives {
         void viewDismissed(long nativeAutofillKeyboardAccessoryViewImpl);
 
-        void suggestionSelected(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
+        void suggestionAccepted(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
 
         void deletionRequested(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
 

@@ -438,7 +438,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testSuggestionSelectionUpdatesViewState() {
+    public void testSuggestionAcceptanceUpdatesViewState() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =
@@ -468,7 +468,7 @@ public class KeyboardAccessoryControllerTest {
         // Simulate a click on the first suggestion.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
 
-        verify(mMockAutofillDelegate).suggestionSelected(0, true);
+        verify(mMockAutofillDelegate).suggestionAccepted(0, true);
 
         barItems = flattenItemGroups();
         assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.LOADING));
@@ -594,7 +594,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testSuggestionSelectionWithoutLoadingKeepsViewStateEnabled() {
+    public void testSuggestionAcceptanceWithoutLoadingKeepsViewStateEnabled() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =
@@ -624,7 +624,7 @@ public class KeyboardAccessoryControllerTest {
         // Simulate a click on the first suggestion, which does not require loading.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
 
-        verify(mMockAutofillDelegate).suggestionSelected(0, false);
+        verify(mMockAutofillDelegate).suggestionAccepted(0, false);
 
         // The ViewState should remain ENABLED because showLoadingUIOnSuggestion is not called.
         barItems = flattenItemGroups();
@@ -633,7 +633,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testSuggestionSelectionUpdatesSheetOpenerViewState() {
+    public void testSuggestionAcceptanceUpdatesSheetOpenerViewState() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =

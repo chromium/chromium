@@ -162,7 +162,7 @@ void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
       confirmation_body_link, confirmation_button_text);
 }
 
-void AutofillKeyboardAccessoryViewImpl::SuggestionSelected(JNIEnv* env,
+void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
                                                            int32_t list_index) {
   if (controller_) {
     controller_->AcceptSuggestion(
