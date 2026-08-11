@@ -120,8 +120,7 @@ static sk_sp<SkTypeface> DeserializeTypeface(SkStream& stream, void* ctx) {
   // on Android due to the above behavior w/r to system fonts. Thus, we
   // call the underlying SkTypeface::MakeDeserialize and pass in the
   // system font manager ourselves.
-  return SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr(),
-                                     &skia::SanitizeTypefaceStream);
+  return SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
 }
 
 static bool is_supported_codec(sk_sp<const SkData> data) {
