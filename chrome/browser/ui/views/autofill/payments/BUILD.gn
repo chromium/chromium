@@ -80,3 +80,19 @@ source_set("bnpl_tos_dialog") {
     "//ui/gfx",
   ]
 }
+
+source_set("bnpl_tos_view_desktop") {
+  public = [ "bnpl_tos_view_desktop.h" ]
+  sources = [ "bnpl_tos_view_desktop.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":bnpl_tos_dialog",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
