@@ -2476,6 +2476,7 @@
                         "state": "2"
                     },
                     "enable_features": [
+                        "AtMemoryMqlsLogging",
                         "AutofillAtMemory",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
