@@ -14,10 +14,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -41,6 +44,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -51,6 +55,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -72,6 +77,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.base.SigninDeepLinkPayload;
@@ -888,5 +894,57 @@ public class SigninBridgeTest {
                                         .getString(R.string.signin_account_picker_dismiss_button))
                         .build(),
                 config.bottomSheetStrings);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(SigninFeatures.OPEN_SYSTEM_ACCOUNT_SETTINGS_DIRECTLY)
+    public void testOpenAccountManagementScreen_desktop_flagEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        SigninBridge.openAccountManagementScreen(
+                mWindowAndroidMock, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+
+        Intent intent = shadowOf(activity).getNextStartedActivity();
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(Settings.ACTION_SYNC_SETTINGS, intent.getAction());
+        Assert.assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(SigninFeatures.OPEN_SYSTEM_ACCOUNT_SETTINGS_DIRECTLY)
+    public void testOpenAccountManagementScreen_desktop_flagDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        SigninBridge.openAccountManagementScreen(
+                mWindowAndroidMock, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+
+        Intent intent =
+                shadowOf((Application) ApplicationProvider.getApplicationContext())
+                        .getNextStartedActivity();
+        Assert.assertNotNull(intent);
+        Assert.assertNotEquals(Settings.ACTION_SYNC_SETTINGS, intent.getAction());
+        Assert.assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(SigninFeatures.OPEN_SYSTEM_ACCOUNT_SETTINGS_DIRECTLY)
+    public void testOpenAccountManagementScreen_nonDesktop_flagEnabled() {
+        DeviceInfo.setIsDesktopForTesting(false);
+
+        SigninBridge.openAccountManagementScreen(
+                mWindowAndroidMock, GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+
+        Intent intent =
+                shadowOf((Application) ApplicationProvider.getApplicationContext())
+                        .getNextStartedActivity();
+        Assert.assertNotNull(intent);
+        Assert.assertNotEquals(Settings.ACTION_SYNC_SETTINGS, intent.getAction());
+        Assert.assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
     }
 }

@@ -7845,6 +7845,11 @@
     "expiry_milestone": 153
   },
   {
+    "name": "open-system-account-settings-directly",
+    "owners": [ "bsazonov@chromium.org", "chrome-signin-mobile-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "optimization-guide-debug-logs",
     "owners": [ "wittman@chromium.org", "holte@chromium.org", "chrome-intelligence-core@google.com" ],
     // This flag is used by regular debugging by developers and internal users

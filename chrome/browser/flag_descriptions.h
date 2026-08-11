@@ -623,6 +623,12 @@ inline constexpr char kEnableActivitylessSigninAllEntryPointDescription[] =
     "When enabled, activityless sign-in will be used for all entry points on "
     "Android.";
 
+inline constexpr char kOpenSystemAccountSettingsDirectlyName[] =
+    "Open system account settings directly";
+inline constexpr char kOpenSystemAccountSettingsDirectlyDescription[] =
+    "When enabled, system account settings will be opened directly instead of "
+    "the account management screen on Desktop Android.";
+
 inline constexpr char kEnableWebSigninLoadingDialogName[] =
     "Enable Web Signin Loading Dialog";
 inline constexpr char kEnableWebSigninLoadingDialogDescription[] =

@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -259,9 +260,20 @@ final class SigninBridge {
 
     /** Opens account management screen. */
     @CalledByNative
-    private static void openAccountManagementScreen(
+    static void openAccountManagementScreen(
             WindowAndroid windowAndroid, @GAIAServiceType int gaiaServiceType) {
         ThreadUtils.assertOnUiThread();
+        // TODO(crbug.com/8225307): Allowlist DeviceInfo.isDesktop() for this use case or branch
+        // in native code for desktop.
+        if (DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(
+                        SigninFeatures.OPEN_SYSTEM_ACCOUNT_SETTINGS_DIRECTLY)) {
+            Activity activity = windowAndroid.getActivity().get();
+            if (activity != null) {
+                SigninUtils.openSettingsForAllAccounts(activity);
+            }
+            return;
+        }
         final Context context = windowAndroid.getContext().get();
         if (context != null) {
             AccountManagementFragment.openAccountManagementScreen(context, gaiaServiceType);
