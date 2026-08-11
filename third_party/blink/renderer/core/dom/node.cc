@@ -1219,19 +1219,17 @@ WritableStream* Node::streamBeforeHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(
-      script_state, parentNode(), this, Sanitizer::Mode::kUnsafe,
-      *resolved_options, trusted_types_names::kNode,
-      trusted_types_names::kStreamBeforeHTMLUnsafe, exception_state);
+  return HTMLStream::Create(script_state, parentNode(), this,
+                            Sanitizer::Mode::kUnsafe, *resolved_options,
+                            exception_state);
 }
 
 WritableStream* Node::streamBeforeHTML(ScriptState* script_state,
                                        SetHTMLOptions* options,
                                        ExceptionState& exception_state) {
-  return HTMLStream::Create(
-      script_state, parentNode(), this, Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), trusted_types_names::kNode,
-      trusted_types_names::kStreamBeforeHTML, exception_state);
+  return HTMLStream::Create(script_state, parentNode(), this,
+                            Sanitizer::Mode::kSafe,
+                            FragmentParserOptions(options), exception_state);
 }
 
 WritableStream* Node::streamAfterHTMLUnsafe(
@@ -1246,19 +1244,17 @@ WritableStream* Node::streamAfterHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(
-      script_state, parentNode(), nextSibling(), Sanitizer::Mode::kUnsafe,
-      *resolved_options, trusted_types_names::kNode,
-      trusted_types_names::kStreamAfterHTMLUnsafe, exception_state);
+  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+                            Sanitizer::Mode::kUnsafe, *resolved_options,
+                            exception_state);
 }
 
 WritableStream* Node::streamAfterHTML(ScriptState* script_state,
                                       SetHTMLOptions* options,
                                       ExceptionState& exception_state) {
-  return HTMLStream::Create(
-      script_state, parentNode(), nextSibling(), Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), trusted_types_names::kNode,
-      trusted_types_names::kStreamAfterHTML, exception_state);
+  return HTMLStream::Create(script_state, parentNode(), nextSibling(),
+                            Sanitizer::Mode::kSafe,
+                            FragmentParserOptions(options), exception_state);
 }
 
 WritableStream* Node::streamReplaceWithHTMLUnsafe(
@@ -1275,8 +1271,7 @@ WritableStream* Node::streamReplaceWithHTMLUnsafe(
   }
   return HTMLStream::Create(script_state, parentNode(), nextSibling(),
                             Sanitizer::Mode::kUnsafe, *resolved_options,
-                            trusted_types_names::kNode,
-                            trusted_types_names::kStreamReplaceWithHTMLUnsafe,
+
                             exception_state, [&]() { remove(); });
 }
 
@@ -1285,9 +1280,7 @@ WritableStream* Node::streamReplaceWithHTML(ScriptState* script_state,
                                             ExceptionState& exception_state) {
   return HTMLStream::Create(
       script_state, parentNode(), nextSibling(), Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), trusted_types_names::kNode,
-      trusted_types_names::kStreamReplaceWithHTML, exception_state,
-      [&]() { remove(); });
+      FragmentParserOptions(options), exception_state, [&]() { remove(); });
 }
 
 void Node::replaceWith(

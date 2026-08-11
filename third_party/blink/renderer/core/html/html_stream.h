@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 
 namespace blink {
-class AtomicString;
 class FragmentParserOptions;
 class ContainerNode;
 class ExceptionState;
@@ -26,8 +25,6 @@ class HTMLStream {
                                 Node* ref_node,
                                 Sanitizer::Mode,
                                 const FragmentParserOptions& options,
-                                const AtomicString& interface_name,
-                                const AtomicString& property_name,
                                 ExceptionState&);
 
   template <typename T>
@@ -36,13 +33,10 @@ class HTMLStream {
                                 Node* ref_node,
                                 Sanitizer::Mode sanitizer_mode,
                                 const FragmentParserOptions& options,
-                                const AtomicString& interface_name,
-                                const AtomicString& property_name,
                                 ExceptionState& exception_state,
                                 T on_start) {
-    auto* stream =
-        Create(script_state, target, ref_node, sanitizer_mode, options,
-               interface_name, property_name, exception_state);
+    auto* stream = Create(script_state, target, ref_node, sanitizer_mode,
+                          options, exception_state);
     if (stream) {
       on_start();
     }

@@ -1965,20 +1965,23 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(
-      script_state, this, nullptr, Sanitizer::Mode::kUnsafe, *resolved_options,
-      TrustedTypesInterfaceName(this),
-      trusted_types_names::kStreamAppendHTMLUnsafe, exception_state);
+
+  ContainerNode* target = TargetForHTMLInsertion();
+  return HTMLStream::Create(script_state, target, nullptr,
+                            Sanitizer::Mode::kUnsafe, *resolved_options,
+
+                            exception_state);
 }
 
 WritableStream* ContainerNode::streamAppendHTML(
     ScriptState* script_state,
     SetHTMLOptions* options,
     ExceptionState& exception_state) {
-  return HTMLStream::Create(
-      script_state, this, nullptr, Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), TrustedTypesInterfaceName(this),
-      trusted_types_names::kStreamAppendHTML, exception_state);
+  ContainerNode* target = TargetForHTMLInsertion();
+  ;
+  return HTMLStream::Create(script_state, target, nullptr,
+                            Sanitizer::Mode::kSafe,
+                            FragmentParserOptions(options), exception_state);
 }
 
 WritableStream* ContainerNode::streamPrependHTMLUnsafe(
@@ -1993,20 +1996,21 @@ WritableStream* ContainerNode::streamPrependHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(
-      script_state, this, firstChild(), Sanitizer::Mode::kUnsafe,
-      *resolved_options, TrustedTypesInterfaceName(this),
-      trusted_types_names::kStreamPrependHTMLUnsafe, exception_state);
+
+  ContainerNode* target = TargetForHTMLInsertion();
+  return HTMLStream::Create(script_state, target, target->firstChild(),
+                            Sanitizer::Mode::kUnsafe, *resolved_options,
+                            exception_state);
 }
 
 WritableStream* ContainerNode::streamPrependHTML(
     ScriptState* script_state,
     SetHTMLOptions* options,
     ExceptionState& exception_state) {
-  return HTMLStream::Create(
-      script_state, this, firstChild(), Sanitizer::Mode::kSafe,
-      FragmentParserOptions(options), TrustedTypesInterfaceName(this),
-      trusted_types_names::kStreamPrependHTML, exception_state);
+  ContainerNode* target = TargetForHTMLInsertion();
+  return HTMLStream::Create(script_state, target, target->firstChild(),
+                            Sanitizer::Mode::kSafe,
+                            FragmentParserOptions(options), exception_state);
 }
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
@@ -2021,20 +2025,23 @@ WritableStream* ContainerNode::streamHTMLUnsafe(
   if (!resolved_options) {
     return nullptr;
   }
-  return HTMLStream::Create(
-      script_state, this, nullptr, Sanitizer::Mode::kUnsafe, *resolved_options,
-      TrustedTypesInterfaceName(this), trusted_types_names::kStreamHTMLUnsafe,
-      exception_state, [&] { RemoveChildren(); });
+
+  ContainerNode* target = TargetForHTMLInsertion();
+  return HTMLStream::Create(script_state, target, nullptr,
+                            Sanitizer::Mode::kUnsafe, *resolved_options,
+
+                            exception_state, [&] { target->RemoveChildren(); });
 }
 
 WritableStream* ContainerNode::streamHTML(ScriptState* script_state,
                                           SetHTMLOptions* options,
                                           ExceptionState& exception_state) {
-  return HTMLStream::Create(script_state, this, nullptr, Sanitizer::Mode::kSafe,
+  ContainerNode* target = TargetForHTMLInsertion();
+  return HTMLStream::Create(script_state, target, nullptr,
+                            Sanitizer::Mode::kSafe,
                             FragmentParserOptions(options),
-                            TrustedTypesInterfaceName(this),
-                            trusted_types_names::kStreamHTML, exception_state,
-                            [&] { RemoveChildren(); });
+
+                            exception_state, [&] { target->RemoveChildren(); });
 }
 
 void ContainerNode::appendHTML(const String& html,
@@ -2126,11 +2133,8 @@ void ContainerNode::InsertHTMLBefore(Node* ref_child,
   }
   if (DocumentFragment* fragment =
           ParseHTMLFragment(html, config, options, exception_state)) {
-    ContainerNode* container = this;
-    if (auto* template_element = DynamicTo<HTMLTemplateElement>(this)) {
-      container = template_element->content();
-    }
-    container->InsertBefore(fragment, ref_child, exception_state);
+    TargetForHTMLInsertion()->InsertBefore(fragment, ref_child,
+                                           exception_state);
   }
 }
 void ContainerNode::ReplaceChildWithHTML(Node* ref_child,
@@ -2143,12 +2147,17 @@ void ContainerNode::ReplaceChildWithHTML(Node* ref_child,
   }
   if (DocumentFragment* fragment =
           ParseHTMLFragment(html, config, options, exception_state)) {
-    ContainerNode* container = this;
-    if (auto* template_element = DynamicTo<HTMLTemplateElement>(this)) {
-      container = template_element->content();
-    }
-    container->ReplaceChild(fragment, ref_child, exception_state);
+    TargetForHTMLInsertion()->ReplaceChild(fragment, ref_child,
+                                           exception_state);
   }
+}
+
+ContainerNode* ContainerNode::TargetForHTMLInsertion() {
+  if (auto* template_element = DynamicTo<HTMLTemplateElement>(this)) {
+    return template_element->content();
+  }
+
+  return this;
 }
 
 }  // namespace blink
