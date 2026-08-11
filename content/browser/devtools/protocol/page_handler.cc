@@ -2398,6 +2398,9 @@ DisableForRenderFrameHostReasonToProtocol(
         case back_forward_cache::DisabledReasonId::kPostMessageByWebViewClient:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               PostMessageByWebViewClient;
+        case back_forward_cache::DisabledReasonId::kPrivilegedWebContents:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              EmbedderPrivilegedWebContents;
       }
   }
 }

@@ -55,6 +55,11 @@ enum class DisabledReasonId : uint16_t {
   // share the same agent. Therefore, we can't enforce these not being scripted
   // while cached.
   kExtensionFrame = 18,
+  // A privileged WebContents (see //chrome's PrivilegedWebContents) must never
+  // enter the back-forward cache: a restored page is not a fresh network
+  // navigation and would skip the navigation gauntlet (throttles, process
+  // isolation). Not fixable by design; privileged content always reloads.
+  kPrivilegedWebContents = 19,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.

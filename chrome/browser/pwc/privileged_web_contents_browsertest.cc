@@ -15,9 +15,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -88,6 +94,36 @@ IN_PROC_BROWSER_TEST_F(PrivilegedWebContentsBrowserTest,
   EXPECT_EQ(true, content::EvalJs(
                       browser()->tab_strip_model()->GetActiveWebContents(),
                       "!!window.open('https://a.test/', '_blank');"));
+}
+
+// A privileged WebContents keeps its committed documents out of the
+// back-forward cache: the committing frame is recorded as bfcache-disabled with
+// the privileged reason.
+IN_PROC_BROWSER_TEST_F(PrivilegedWebContentsBrowserTest,
+                       DisablesBackForwardCache) {
+  const GURL allowed = https_server_.GetURL("a.test", "/allowed.html");
+  content::BackForwardCacheDisabledTester tester;
+  std::unique_ptr<PrivilegedWebContents> privileged = MakePrivileged(allowed);
+  content::WebContents* web_contents = privileged->web_contents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, allowed));
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPrivilegedWebContents)));
+
+  // Navigate away to another allowed page, then go back. Because the first
+  // document was kept out of the back-forward cache, navigating away must
+  // destroy its RenderFrameHost (rather than cache it), and going back must
+  // load a fresh document -- proving the page was not restored from bfcache.
+  const GURL allowed2 = https_server_.GetURL("a.test", "/allowed2.html");
+  content::RenderFrameHostWrapper rfh_wrapper(rfh);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, allowed2));
+  EXPECT_TRUE(rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  ASSERT_TRUE(content::HistoryGoBack(web_contents));
+  EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
 }
 
 }  // namespace

@@ -681,6 +681,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="196624" label="kEmbedder-kRequestedByWebViewClient"/>
   <int value="196625" label="kEmbedder-kPostMessageByWebViewClient"/>
   <int value="196626" label="kEmbedder-kExtensionFrame"/>
+  <int value="196627" label="kEmbedder-kPrivilegedWebContents"/>
 </enum>
 
 <enum name="BackgroundColorChangeOrigin">

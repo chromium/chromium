@@ -12,7 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -89,6 +93,7 @@ PrivilegedWebContents::PrivilegedWebContents(
   web_contents_ = content::WebContents::Create(params);
   PrivilegedWebContentsHolder::CreateForWebContents(web_contents_.get(), this);
   web_contents_->SetDelegate(this);
+  Observe(web_contents_.get());
 }
 
 PrivilegedWebContents::~PrivilegedWebContents() {
@@ -117,6 +122,24 @@ content::WebContents* PrivilegedWebContents::AddNewContents(
   // (ChromeContentBrowserClient::CanCreateWindow), so a new WebContents should
   // never be handed to this delegate. Drop it loudly if it ever is.
   NOTREACHED();
+}
+
+void PrivilegedWebContents::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Keep every committed document out of the back-forward cache. Disabling the
+  // primary main frame is sufficient: a page can only be cached if its main
+  // frame and all subframes can. See the header for why. A same-document
+  // navigation stays in the same RenderFrameHost, which is already disabled, so
+  // there is nothing to re-disable.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+  content::BackForwardCache::DisableForRenderFrameHost(
+      navigation_handle->GetRenderFrameHost(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPrivilegedWebContents));
 }
 
 }  // namespace pwc
