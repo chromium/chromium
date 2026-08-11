@@ -10,6 +10,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -386,7 +387,7 @@ void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {
   back_button->RequestFocus();
 }
 
-void ShowPageInfoDialogImpl(Browser* browser,
+void ShowPageInfoDialogImpl(BrowserWindowInterface* browser,
                             content::WebContents* web_contents,
                             const GURL& virtual_url,
                             bubble_anchor_util::Anchor anchor,
