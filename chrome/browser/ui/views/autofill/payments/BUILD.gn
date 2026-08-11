@@ -1,0 +1,10 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("dialog_view_ids") {
+  public = [ "dialog_view_ids.h" ]
+  public_deps = [ "//components/autofill/core/browser" ]
+}
