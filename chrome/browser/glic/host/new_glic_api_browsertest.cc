@@ -214,6 +214,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestGeminiEnterpriseSettingsOverride",
       "NewGlicApiTestGeminiEnterpriseSettingsDisabled",
       "NewGlicApiTestGeminiEnterpriseSettingsPolicy",
+      "NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithSkills",
@@ -745,6 +746,28 @@ class NewGlicApiTestGeminiEnterpriseSettingsPolicy : public NewGlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestGeminiEnterpriseSettingsPolicy,
                        testGeminiEnterpriseSettingsPolicy) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset
+    : public NewGlicApiTestGeminiEnterpriseSettingsPolicy {
+ public:
+  void SetUpOnMainThread() override {
+    NewGlicApiTestGeminiEnterpriseSettingsPolicy::SetUpOnMainThread();
+    // Unset the policy.
+    policy::PolicyMap policies =
+        policy_provider_.policies()
+            .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                         std::string()))
+            .Clone();
+    policies.Erase(policy::key::kGeminiEnterpriseSettings);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset,
+                       testGeminiEnterpriseSettingsPolicyUnset) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -3736,6 +3759,11 @@ INSTANTIATE_TEST_SUITE_P(,
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestGeminiEnterpriseSettingsPolicy,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestGeminiEnterpriseSettingsPolicyUnset,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 #endif

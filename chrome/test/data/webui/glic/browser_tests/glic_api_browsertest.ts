@@ -40,12 +40,6 @@ class ApiTests extends ApiTestFixtureBase {
 
 
 
-  async testGeminiEnterpriseSettingsDisabled() {
-    assertDefined(this.host.getGeminiEnterpriseSettings);
-    const settingsObservable = this.host.getGeminiEnterpriseSettings();
-    const settings = settingsObservable.getCurrentValue();
-    assertUndefined(settings);
-  }
 
   async testCancelActions() {
     assertDefined(this.host.cancelActions);

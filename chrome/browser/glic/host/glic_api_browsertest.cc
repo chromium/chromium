@@ -694,11 +694,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsPolicyUnset,
-                       testGeminiEnterpriseSettingsDisabled) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDefaultInvocationSource) {
   RunTestSequence(CloseGlic(), WaitForGlicClose(),
                   ToggleGlicWindowFromSource(
@@ -2520,9 +2515,5 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestGeminiEnterpriseSettingsPolicyUnset,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
 }  // namespace
 }  // namespace glic
