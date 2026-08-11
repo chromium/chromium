@@ -181,6 +181,10 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   std::string GetClientTag(
       const syncer::EntityData& entity_data) const override;
 
+  base::WeakPtr<SpellcheckCustomDictionary> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class DictionarySyncIntegrationTestHelper;
   friend class SpellcheckCustomDictionaryTest;
