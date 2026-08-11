@@ -483,7 +483,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -524,7 +524,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2026-11-29">
+    units="minutes" expires_after="2027-02-07">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -564,7 +564,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.AdaptiveChargingMinutes.{ReportType}" units="minutes"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -698,7 +698,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BacklightLevel{PrivacyScreenState}{PowerSource}"
-    units="%" expires_after="2026-11-29">
+    units="%" expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -722,7 +722,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryCapacity.{BatteryCapacityType}" units="mWh"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -827,7 +827,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
-    enum="BatteryDischargeMode" expires_after="2026-11-29">
+    enum="BatteryDischargeMode" expires_after="2027-02-07">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -901,7 +901,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2026-11-29">
+    units="milliwatts" expires_after="2027-02-07">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -988,7 +988,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryLife.Detail.{BatteryCapacityType}" units="minute"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1006,7 +1006,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryLife.RollingAverage.{BatteryCapacityType}"
-    units="minute" expires_after="2026-11-29">
+    units="minute" expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1020,7 +1020,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
@@ -1126,7 +1126,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType2.{Visibility}"
-    enum="ShortProcessType" expires_after="2026-11-29">
+    enum="ShortProcessType" expires_after="2027-02-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1305,7 +1305,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.DisplayAfterResumeDurationMs{PowerSource}" units="ms"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>mhiramat@google.com</owner>
   <owner>cros-suspend-resume@google.com</owner>
   <summary>
@@ -1382,7 +1382,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1414,7 +1414,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.ForegroundBatteryDrainPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
-    units="uAh" expires_after="2026-12-06">
+    units="uAh" expires_after="2027-02-07">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -1428,7 +1428,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1543,7 +1543,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnBattery" units="ms"
-    expires_after="2026-12-08">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1588,7 +1588,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -1741,7 +1741,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1777,7 +1777,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2026-10-11">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1836,7 +1836,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1887,7 +1887,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2026-12-06">
+    units="units" expires_after="2027-02-07">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>

@@ -45,7 +45,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.FeatureName" enum="PrivateAiFeatureName"
-    expires_after="2026-12-01">
+    expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -58,7 +58,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.RequestLatency.{FeatureName}" units="ms"
-    expires_after="2026-11-25">
+    expires_after="2027-02-07">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>lamzin@google.com</owner>
@@ -143,7 +143,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.ServerStatusCode" enum="GoogleRpcCode"
-    expires_after="2026-12-01">
+    expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -218,7 +218,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Phosphor.ConfigHttp.ResponseCode"
-    enum="HttpResponseCode" expires_after="2026-12-01">
+    enum="HttpResponseCode" expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -231,7 +231,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Phosphor.FeatureTokenManager.ServedFromCache"
-    enum="Boolean" expires_after="2026-12-01">
+    enum="Boolean" expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -244,7 +244,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Phosphor.FeatureTokenManager.TokensFetched"
-    units="count" expires_after="2026-12-01">
+    units="count" expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -257,7 +257,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Phosphor.TokenFetcher.GetAuthnTokens.Result"
-    enum="PrivateAiPhosphorGetAuthnTokensResult" expires_after="2026-12-01">
+    enum="PrivateAiPhosphorGetAuthnTokensResult" expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -282,7 +282,7 @@ reviewer.
 
 <histogram
     name="PrivateAi.SecureChannel.ConnectionEstablishmentLatency.Success"
-    units="ms" expires_after="2026-11-25">
+    units="ms" expires_after="2027-02-07">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>lamzin@google.com</owner>
@@ -331,7 +331,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.SecureChannel.RequestsPerSession" units="requests"
-    expires_after="2026-11-28">
+    expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -385,7 +385,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.SecureChannel.SessionDuration2" units="ms"
-    expires_after="2026-11-28">
+    expires_after="2027-02-07">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>

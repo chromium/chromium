@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
-    units="microseconds" expires_after="2026-11-29">
+    units="microseconds" expires_after="2027-02-07">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -230,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
-    enum="AdsViolations" expires_after="2026-12-06">
+    enum="AdsViolations" expires_after="2027-02-07">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
-    units="resource loads" expires_after="2026-11-15">
+    units="resource loads" expires_after="2027-02-07">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2026-11-29">
+    units="microseconds" expires_after="2027-02-07">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

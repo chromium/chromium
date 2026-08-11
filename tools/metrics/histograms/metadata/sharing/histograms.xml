@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.Android.Origin" enum="ShareOrigin"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>jinsukkim@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.MemoryLimitOnCapture" units="%"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScrollCapture.MemoryPressureOnSearch"
-    enum="MemoryPressureLevel" expires_after="2026-12-06">
+    enum="MemoryPressureLevel" expires_after="2027-02-07">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -642,7 +642,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ShareSheetLongScreenshots.BitmapGeneratorStatus"
     enum="SharingShareSheetLongScreenshotsBitmapGenerationStatus"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>

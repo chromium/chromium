@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.DesktopToIOSPromo.{PromoType}.BubbleView.Created"
-    enum="DesktopToIOSPromoBubbleType" expires_after="2026-11-29">
+    enum="DesktopToIOSPromoBubbleType" expires_after="2027-02-07">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.DesktopToIOSPromo.{PromoType}.{BubbleType}.Action"
-    enum="DesktopToIOSPromoActionType" expires_after="2026-10-23">
+    enum="DesktopToIOSPromoActionType" expires_after="2027-02-07">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.NtpPromos.Promos.{NtpPromoIdentifier}.{NtpPromoAction}"
-    units="int" expires_after="2026-11-29">
+    units="int" expires_after="2027-02-07">
   <owner>cjgrant@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

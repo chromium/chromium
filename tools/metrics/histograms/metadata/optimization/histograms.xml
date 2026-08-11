@@ -906,7 +906,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount.{AIPageContentMode}"
-    units="nodes" expires_after="2026-11-29">
+    units="nodes" expires_after="2027-02-07">
   <owner>khushalsagar@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>gklassen@chromium.org</owner>
@@ -1287,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.FetchLatency2.{ModelExecutionFeature}"
-    units="ms" expires_after="2026-12-01">
+    units="ms" expires_after="2027-02-07">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>lamzin@google.com</owner>
@@ -2056,7 +2056,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached"
-    enum="BooleanCacheHit" expires_after="M155">
+    enum="BooleanCacheHit" expires_after="2027-02-07">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2068,7 +2068,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.BatchRequestedSize.{AnnotationType}"
-    units="counts" expires_after="2026-11-29">
+    units="counts" expires_after="2027-02-07">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2138,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.JobScheduleTime.{AnnotationType}"
-    units="ms" expires_after="M155">
+    units="ms" expires_after="2027-02-07">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2151,7 +2151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotated"
-    enum="BooleanAnnotated" expires_after="M155">
+    enum="BooleanAnnotated" expires_after="2027-02-07">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

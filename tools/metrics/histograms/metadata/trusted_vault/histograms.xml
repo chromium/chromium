@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="TrustedVault.AccessTokenFetchSuccess{SecurityDomainId}"
-    enum="Boolean" expires_after="2026-11-29">
+    enum="Boolean" expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.DownloadKeysStatus{LocalRecoveryFactorType}{SecurityDomainId}"
-    enum="TrustedVaultDownloadKeysStatus" expires_after="2026-11-29">
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.FileReadStatus{SecurityDomainId}"
-    enum="TrustedVaultFileReadStatus" expires_after="2026-11-30">
+    enum="TrustedVaultFileReadStatus" expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.RecoverKeysOutcome{SecurityDomainId}"
-    enum="TrustedVaultRecoverKeysOutcome" expires_after="2026-11-29">
+    enum="TrustedVaultRecoverKeysOutcome" expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.RecoveryFactorRegistrationOutcome{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultRecoveryFactorRegistrationOutcome"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.RecoveryFactorRegistrationState{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultRecoveryFactorRegistrationState"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>
@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.SecurityDomainServiceURLFetchResponse{Reason}{SecurityDomainId}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-29">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-02-07">
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedVault.SetEncryptionKeysForSecurityDomain{ProfileType}"
-    enum="SecurityDomainId" expires_after="2026-11-29">
+    enum="SecurityDomainId" expires_after="2027-02-07">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

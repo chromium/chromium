@@ -52,7 +52,7 @@ reviewer.
 </histogram>
 
 <histogram name="Projects.ProjectsPanel.TimeOpen" units="seconds"
-    expires_after="2026-12-01">
+    expires_after="2027-02-07">
   <owner>chazzy@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

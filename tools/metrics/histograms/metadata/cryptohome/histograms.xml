@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2026-12-06">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2027-02-07">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2026-12-01">
+    expires_after="2027-02-07">
   <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>

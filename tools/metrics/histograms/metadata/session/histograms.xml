@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>avi@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.ID.RestoredDifference" units="Session IDs"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>gambard@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.LockedDuration" units="ms" expires_after="2026-12-06">
+<histogram name="Session.LockedDuration" units="ms" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.LockedDuration.RestartabilityV2.{SmartRestartDuration}"
-    enum="SmartRestartability" expires_after="2026-12-06">
+    enum="SmartRestartability" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Restore.SettingChanged.{SessionRestoreInfobarType}"
-    enum="Boolean" expires_after="2026-11-29">
+    enum="Boolean" expires_after="2027-02-07">
   <owner>musalmaan@chromium.org</owner>
   <owner>koretadaniel@chromium.org</owner>
   <summary>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.ExecutionOutcome{TabCount}"
-    enum="SmartRestartExtendedExecutionOutcome" expires_after="2026-12-06">
+    enum="SmartRestartExtendedExecutionOutcome" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.ProtectionReason{TabCount}"
-    enum="SmartRestartBlocker" expires_after="2026-12-06">
+    enum="SmartRestartBlocker" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.RemainingTimeAtCancellation"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.Lock.TimeSinceUpgradeDetected"
-    units="minutes" expires_after="2026-12-06">
+    units="minutes" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.ZeroWindow.ExecutionOutcome"
-    enum="SmartRestartExecutionOutcome" expires_after="2026-12-06">
+    enum="SmartRestartExecutionOutcome" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.ZeroWindow.RemainingTimeAtCancellation"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -454,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.SmartRestart.ZeroWindow.TimeSinceUpgradeDetected"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{HistorySyncState}{Profile}"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-02-07">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1108,7 +1108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1229,7 +1229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.ZeroWindowDuration" units="ms"
-    expires_after="2026-12-06">
+    expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Session.ZeroWindowDuration.RestartabilityV2.{SmartRestartDuration}"
-    enum="SmartRestartability" expires_after="2026-12-06">
+    enum="SmartRestartability" expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -1294,7 +1294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SessionRestore.ForegroundTabFirstPaint4{SessionRestoreTabCounts}"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-02-07">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1353,7 +1353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
-    expires_after="2026-11-29">
+    expires_after="2027-02-07">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1380,7 +1380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.TabDiffAfterRestart.{Type}" units="tabs"
-    expires_after="2026-12-01">
+    expires_after="2027-02-07">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
