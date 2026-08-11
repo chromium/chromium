@@ -62,6 +62,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
 
     @VisibleForTesting static final String ASK_GEMINI_POSITION_SECONDARY = "secondary";
 
+    @VisibleForTesting static final String ASK_GEMINI_POSITION_ASSIST = "assist";
+
     private final Tab mTab;
     private @Nullable String mSelectedText;
 
@@ -94,10 +96,14 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             SelectionMenuItem.Builder builder =
                     new SelectionMenuItem.Builder(R.string.glic_button_entrypoint_ask_gemini_label)
                             .setId(R.id.contextmenu_ask_gemini)
-                            .setGroupId(R.id.select_action_menu_delegate_items)
-                            .setShowAsActionFlags(
-                                    MenuItem.SHOW_AS_ACTION_ALWAYS
-                                            | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                            .setGroupId(R.id.select_action_menu_delegate_items);
+            if (menuType == MenuType.DROPDOWN) {
+                builder.setShowAsActionFlags(
+                        MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            } else {
+                builder.setShowAsActionFlags(
+                        MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            }
             setAskGeminiOrderAndCategory(builder);
             items.add(builder.build());
         }
@@ -184,13 +190,17 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     // TODO(b/543135302): Move Ask Gemini menu enabling checks and feature params into GlicEnabling
     // as helper methods.
     /**
-     * Whether to show the "Ask Gemini" item in the mobile text selection (floating action mode)
-     * menu. Mirrors {@code ChromeContextMenuPopulator#shouldShowAskGeminiForLink}: targets the
-     * mobile form factor where Glic is presented in a bottom sheet.
+     * Whether to show the "Ask Gemini" item in the text selection menu. Supports both mobile
+     * (floating action mode with bottom sheet) and desktop Android (right-click dropdown menu with
+     * side panel).
      */
     private boolean shouldShowAskGeminiForSelection(
             @MenuType int menuType, boolean isSelectionPassword, String selectedText) {
-        if (menuType != MenuType.FLOATING) return false;
+        boolean isFormFactorSupported =
+                (menuType == MenuType.DROPDOWN && AndroidSidePanelEnabledFn.isEnabled())
+                        || (menuType == MenuType.FLOATING
+                                && TabBottomSheetUtils.isTabBottomSheetEnabled());
+        if (!isFormFactorSupported) return false;
         if (TextUtils.isEmpty(selectedText) || isSelectionPassword) return false;
         if (mTab.isDestroyed() || mTab.isIncognito()) return false;
         Profile profile = mTab.getProfile();
@@ -200,8 +210,6 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                         ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
                         PARAM_SHOW_ASK_GEMINI_ON_SELECTION,
                         true)
-                && !AndroidSidePanelEnabledFn.isEnabled()
-                && TabBottomSheetUtils.isTabBottomSheetEnabled()
                 && !DeviceInfo.isAutomotive()
                 && GlicEnabling.isEnabledForProfile(profile);
     }
@@ -211,10 +219,12 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
                         PARAM_ASK_GEMINI_SELECTION_MENU_POSITION);
-        if (ASK_GEMINI_POSITION_SECONDARY.equals(position)) {
-            builder.setOrderAndCategory(0, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
-        } else {
+        // Defaults to the secondary assist section; the field trial can opt into the assist
+        // section instead.
+        if (ASK_GEMINI_POSITION_ASSIST.equals(position)) {
             builder.setOrderAndCategory(0, ItemGroupOffset.ASSIST_ITEMS);
+        } else {
+            builder.setOrderAndCategory(0, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
         }
     }
 
