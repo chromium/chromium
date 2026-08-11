@@ -4,9 +4,11 @@
 
 #include "content/browser/renderer_host/text_input_manager.h"
 
+#include "build/build_config.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
@@ -17,6 +19,65 @@ class TextInputManagerTest : public RenderViewHostTestHarness {
   TextInputManagerTest() = default;
   ~TextInputManagerTest() override = default;
 };
+
+#if BUILDFLAG(IS_WIN)
+class TestTextInputManagerObserver : public TextInputManager::Observer {
+ public:
+  void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,
+                                    RenderWidgetHostViewBase* updated_view,
+                                    bool did_update_state) override {
+    last_did_update_state_ = did_update_state;
+    ++update_call_count_;
+  }
+
+  bool last_did_update_state_ = false;
+  int update_call_count_ = 0;
+};
+
+TEST_F(TextInputManagerTest, CustomPasswordFlagDoesNotRefocusNativePassword) {
+  auto* view =
+      static_cast<RenderWidgetHostViewBase*>(rvh()->GetWidget()->GetView());
+  TextInputManager* manager = view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  state.flags = ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
+  state.node_id = 1;
+  manager->UpdateTextInputState(view, state);
+
+  TestTextInputManagerObserver observer;
+  manager->AddObserver(&observer);
+
+  // Adding only the redundant custom password flag is not a state update.
+  state.flags |= ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD;
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.update_call_count_, 1);
+  EXPECT_FALSE(observer.last_did_update_state_);
+  EXPECT_EQ(manager->GetTextInputState()->flags, state.flags);
+
+  // Removing only the redundant custom password flag is also not an update.
+  state.flags = ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.update_call_count_, 2);
+  EXPECT_FALSE(observer.last_did_update_state_);
+
+  // Changing another flag at the same time remains a state update.
+  state.flags |= ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD |
+                 ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF;
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.update_call_count_, 3);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  // A different node represents a genuine focus change that must update TSF.
+  state.node_id = 2;
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.update_call_count_, 4);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  manager->RemoveObserver(&observer);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Test that ImeCompositionRangeChanged clamps out-of-bounds character bounds.
 TEST_F(TextInputManagerTest, ImeCompositionRangeChanged_Clamped) {
