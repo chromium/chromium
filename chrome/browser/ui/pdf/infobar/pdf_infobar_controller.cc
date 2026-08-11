@@ -359,8 +359,11 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
     auto* browser_infobar_manager =
         infobars::BrowserInfoBarManager::From(g_browser_process);
     if (browser_infobar_manager) {
-      browser_infobar_manager->Show(
-          web_contents, infobars::InfoBarDelegate::PDF_INFOBAR_DELEGATE);
+      auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+      if (tab) {
+        browser_infobar_manager->Show(
+            tab, infobars::InfoBarDelegate::PDF_INFOBAR_DELEGATE);
+      }
     }
   } else {
     if (infobar_manager) {

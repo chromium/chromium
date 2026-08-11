@@ -75,6 +75,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -253,8 +254,11 @@ void ShowInfobar(content::WebContents* web_contents) {
     auto* browser_infobar_manager =
         infobars::BrowserInfoBarManager::From(g_browser_process);
     if (browser_infobar_manager) {
-      browser_infobar_manager->Show(
-          web_contents, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+      auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+      if (tab) {
+        browser_infobar_manager->Show(
+            tab, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+      }
     }
   } else {
     infobars::ContentInfoBarManager* infobar_manager =

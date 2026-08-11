@@ -21,6 +21,10 @@
 class BrowserProcess;
 class BrowserWindowInterface;
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace infobars {
 
 class InfoBar;
@@ -42,8 +46,8 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // Registers an InfoBarSpec with the manager.
   void Register(InfoBarSpec spec);
 
-  // Shows the InfoBar with the given identifier for a specific WebContents.
-  void Show(content::WebContents* web_contents,
+  // Shows the InfoBar with the given identifier for a specific Tab.
+  void Show(tabs::TabInterface* tab,
             infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
   // Shows the InfoBar with the given identifier globally.

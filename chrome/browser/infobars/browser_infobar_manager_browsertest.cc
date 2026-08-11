@@ -12,12 +12,14 @@
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -62,12 +64,12 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 
   manager()->Register(std::move(spec));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
   ASSERT_EQ(0u, infobar_manager->infobars().size());
 
-  manager()->Show(web_contents, identifier);
+  manager()->Show(tab, identifier);
 
   // Now one infobar should be present.
   EXPECT_EQ(1u, infobar_manager->infobars().size());
@@ -87,11 +89,11 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 
   manager()->Register(std::move(spec));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
 
-  manager()->Show(web_contents, identifier);
+  manager()->Show(tab, identifier);
   EXPECT_EQ(1u, infobar_manager->infobars().size());
 
   manager()->Hide(identifier);
@@ -113,11 +115,11 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, ButtonConfiguration) {
 
   manager()->Register(std::move(spec));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
 
-  manager()->Show(web_contents, identifier);
+  manager()->Show(tab, identifier);
   ASSERT_EQ(1u, infobar_manager->infobars().size());
 
   auto* delegate =
@@ -323,10 +325,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {
   manager()->Register(std::move(spec_show));
 
   // 3. Show them.
-  content::WebContents* web_contents1 =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  manager()->Show(web_contents1, InfoBarDelegate::TEST_INFOBAR);
-  manager()->Show(web_contents1, InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE);
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+  manager()->Show(tab1, InfoBarDelegate::TEST_INFOBAR);
+  manager()->Show(tab1, InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -369,12 +370,12 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CentralizedMetrics) {
 
   manager()->Register(std::move(spec));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
 
   // 1. Show the infobar and check "Show" metric.
-  manager()->Show(web_contents, identifier);
+  manager()->Show(tab, identifier);
   ASSERT_EQ(1u, infobar_manager->infobars().size());
   histogram_tester.ExpectUniqueSample("InfoBar.Centralized.Show", identifier,
                                       1);
@@ -402,6 +403,53 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CentralizedMetrics) {
   delegate->LinkClicked(WindowOpenDisposition::CURRENT_TAB);
   histogram_tester.ExpectUniqueSample("InfoBar.Centralized.LinkClicked",
                                       identifier, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, TabMovement) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  bool ok_clicked = false;
+  auto spec = InfoBarSpec::Builder(identifier)
+                  .SetMessageText(u"Test Message")
+                  .SetScope(InfoBarScope::kTab)
+                  .AddOkButton(u"OK", base::BindLambdaForTesting(
+                                          [&](content::WebContents* contents) {
+                                            EXPECT_TRUE(contents);
+                                            ok_clicked = true;
+                                          }))
+                  .Build();
+
+  manager()->Register(std::move(spec));
+
+  // 1. Show the infobar on the active tab of the first browser.
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  manager()->Show(tab, identifier);
+
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+
+  // 2. Create a second browser window.
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(second_browser);
+
+  // 3. Move the tab containing the infobar to the second browser.
+  std::unique_ptr<tabs::TabModel> tab_model =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+  second_browser->tab_strip_model()->AppendTab(std::move(tab_model), true);
+
+  // The infobar manager should still have the infobar on the moved tab.
+  auto* new_infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+  ASSERT_EQ(1u, new_infobar_manager->infobars().size());
+
+  auto* delegate =
+      new_infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // 4. Interact with the infobar (Accept) and verify it doesn't crash
+  // and the callback runs with the correct WebContents.
+  EXPECT_TRUE(delegate->Accept());
+  EXPECT_TRUE(ok_clicked);
 }
 
 }  // namespace infobars

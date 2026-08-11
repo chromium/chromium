@@ -49,6 +49,7 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
@@ -264,9 +265,12 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
     auto* browser_infobar_manager =
         infobars::BrowserInfoBarManager::From(g_browser_process);
     if (browser_infobar_manager) {
-      browser_infobar_manager->Show(
-          web_contents_, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
-      return true;
+      auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents_);
+      if (tab) {
+        browser_infobar_manager->Show(
+            tab, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+        return true;
+      }
     }
     return false;
   }

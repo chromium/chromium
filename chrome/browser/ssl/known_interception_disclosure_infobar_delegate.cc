@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/urls.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -102,9 +103,12 @@ void MaybeShowKnownInterceptionDisclosureDialog(
                 KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)) {
       if (auto* manager =
               infobars::BrowserInfoBarManager::From(g_browser_process)) {
-        manager->Show(web_contents,
-                      infobars::InfoBarDelegate::
-                          KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE);
+        auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+        if (tab) {
+          manager->Show(tab,
+                        infobars::InfoBarDelegate::
+                            KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE);
+        }
       }
     } else {
       infobars::ContentInfoBarManager* infobar_manager =

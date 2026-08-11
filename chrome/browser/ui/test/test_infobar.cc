@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/tabs/public/tab_interface.h"
 
 TestInfoBar::TestInfoBar() = default;
 
@@ -49,6 +50,14 @@ content::WebContents* TestInfoBar::GetWebContents() {
 
 const content::WebContents* TestInfoBar::GetWebContents() const {
   return browser()->tab_strip_model()->GetActiveWebContents();
+}
+
+tabs::TabInterface* TestInfoBar::GetTab() {
+  return browser()->tab_strip_model()->GetActiveTab();
+}
+
+const tabs::TabInterface* TestInfoBar::GetTab() const {
+  return browser()->tab_strip_model()->GetActiveTab();
 }
 
 infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() {

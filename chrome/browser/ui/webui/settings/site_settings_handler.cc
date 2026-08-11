@@ -1814,8 +1814,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
             infobars::BrowserInfoBarManager::From(g_browser_process);
         if (browser_infobar_manager) {
           browser_infobar_manager->Show(
-              web_contents,
-              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+              tab, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
         }
       } else {
         infobars::ContentInfoBarManager* const infobar_manager =

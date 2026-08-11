@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -33,7 +34,9 @@ namespace {
 // InfoBarSpec and the legacy ConfirmInfoBarDelegate.
 class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
  public:
-  explicit RegistryInfoBarDelegate(InfoBarSpec spec) : spec_(std::move(spec)) {}
+  explicit RegistryInfoBarDelegate(
+      InfoBarSpec spec)
+      : spec_(std::move(spec)) {}
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return spec_.identifier();
@@ -78,24 +81,27 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
 
   bool Accept() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Accept", GetIdentifier());
-    if (spec_.ok_button_callback()) {
-      spec_.ok_button_callback().Run(GetWebContents());
+    auto* contents = GetWebContents();
+    if (contents && spec_.ok_button_callback()) {
+      spec_.ok_button_callback().Run(contents);
     }
     return true;
   }
 
   bool Cancel() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Cancel", GetIdentifier());
-    if (spec_.cancel_button_callback()) {
-      spec_.cancel_button_callback().Run(GetWebContents());
+    auto* contents = GetWebContents();
+    if (contents && spec_.cancel_button_callback()) {
+      spec_.cancel_button_callback().Run(contents);
     }
     return true;
   }
 
   void InfoBarDismissed() override {
     base::UmaHistogramSparse("InfoBar.Centralized.Dismiss", GetIdentifier());
-    if (spec_.dismiss_callback()) {
-      spec_.dismiss_callback().Run(GetWebContents());
+    auto* contents = GetWebContents();
+    if (contents && spec_.dismiss_callback()) {
+      spec_.dismiss_callback().Run(contents);
     }
   }
 
@@ -188,21 +194,27 @@ void BrowserInfoBarManager::Register(InfoBarSpec spec) {
 }
 
 void BrowserInfoBarManager::Show(
-    content::WebContents* contents,
+    tabs::TabInterface* tab,
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
     return;
   }
-  CHECK(contents);
+  CHECK(tab);
   CHECK(it->second.scope() == InfoBarScope::kTab);
+
+  auto* contents = tab->GetContents();
+  if (!contents) {
+    return;
+  }
 
   auto* manager = ContentInfoBarManager::FromWebContents(contents);
   if (!manager) {
     return;
   }
-  if (manager->AddInfoBar(CreateConfirmInfoBar(
-          std::make_unique<RegistryInfoBarDelegate>(it->second)))) {
+  if (manager->AddInfoBar(
+          CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
+              it->second)))) {
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
   }
 }
@@ -233,8 +245,9 @@ void BrowserInfoBarManager::ShowGlobally(
           auto* manager =
               ContentInfoBarManager::FromWebContents(active_contents);
           if (manager) {
-            auto infobar = CreateConfirmInfoBar(
-                std::make_unique<RegistryInfoBarDelegate>(spec));
+            auto infobar =
+                CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
+                    spec));
             auto* added_infobar = manager->AddInfoBar(std::move(infobar));
             if (added_infobar) {
               active_global_infobars_[identifier].active_instances[manager] =
@@ -401,8 +414,9 @@ void BrowserInfoBarManager::OnActiveTabChanged(
 
   if (new_manager) {
     for (auto& [identifier, context] : active_global_infobars_) {
-      auto infobar = CreateConfirmInfoBar(
-          std::make_unique<RegistryInfoBarDelegate>(context.spec));
+      auto infobar =
+          CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
+              context.spec));
       auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
       if (added_infobar) {
         context.active_instances[new_manager] = added_infobar;

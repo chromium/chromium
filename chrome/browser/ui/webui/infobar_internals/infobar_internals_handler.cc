@@ -444,7 +444,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
           return false;
         }
         browser_infobar_manager->Show(
-            web_contents,
+            bwi->GetActiveTabInterface(),
             infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
       } else {
         infobars::ContentInfoBarManager* infobar_manager =
