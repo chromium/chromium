@@ -179,7 +179,17 @@ public class DeferredStartupHandlerTest {
     }
 
     @Test
+    public void queueDeferredTasksOnIdleHandler_EmptyQueue() {
+        Assert.assertEquals(0, mIdleHandlers.size());
+        mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
+        Assert.assertEquals(0, mIdleHandlers.size());
+    }
+
+    @Test
     public void queueDeferredTasksOnIdleHandler_MultipleActivities() {
+        CallbackHelper helper = new CallbackHelper();
+        mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
+
         Assert.assertEquals(0, mIdleHandlers.size());
 
         mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
@@ -187,17 +197,39 @@ public class DeferredStartupHandlerTest {
         IdleHandler initialIdleHandler = mIdleHandlers.get(0);
 
         mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
-        Assert.assertTrue(mIdleHandlers.size() >= 1);
+        Assert.assertEquals(1, mIdleHandlers.size());
         Assert.assertEquals(initialIdleHandler, mIdleHandlers.get(0));
 
         runIdleHandlers();
 
         Assert.assertEquals(0, mIdleHandlers.size());
+        Assert.assertEquals(1, helper.getCallCount());
 
         // Ensure a call queueDeferredTasksOnIdleHandler after the previous IdleHandler completes
-        // adds a new IdleHandler.
+        // and a new task is added adds a new IdleHandler.
+        mDeferredStartupHandler.addDeferredTask(() -> helper.notifyCalled());
         mDeferredStartupHandler.queueDeferredTasksOnIdleHandler();
         Assert.assertEquals(1, mIdleHandlers.size());
+    }
+
+    @Test
+    public void singletonPreservedAcrossInvocations() {
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+        DeferredStartupHandler handler1 = DeferredStartupHandler.getInstance();
+        DeferredStartupHandler handler2 = DeferredStartupHandler.getInstance();
+        Assert.assertSame(handler1, handler2);
+        Assert.assertSame(mDeferredStartupHandler, handler1);
+
+        CallbackHelper helper = new CallbackHelper();
+        handler1.addDeferredTask(() -> helper.notifyCalled());
+        handler1.queueDeferredTasksOnIdleHandler();
+
+        // Flush the queue.
+        runIdleHandlers();
+        Assert.assertEquals(1, helper.getCallCount());
+
+        DeferredStartupHandler handler3 = DeferredStartupHandler.getInstance();
+        Assert.assertSame(handler1, handler3);
     }
 
     private void runIdleHandlers() {

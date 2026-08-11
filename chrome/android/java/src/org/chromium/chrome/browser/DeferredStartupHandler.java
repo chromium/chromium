@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.os.Handler;
 import android.os.Looper;
 import android.os.MessageQueue;
 
@@ -26,9 +25,9 @@ public class DeferredStartupHandler {
     private static @Nullable DeferredStartupHandler sInstance;
 
     private final MessageQueue mMessageQueue;
-    private final Queue<Runnable> mDeferredTasks = new ArrayDeque<>();
-
+    private @Nullable Queue<Runnable> mDeferredTasks;
     private @Nullable CountDownLatch mLatchForTesting;
+    private boolean mIsIdleHandlerQueued;
 
     /**
      * This class is an application specific object that handles the deferred startup.
@@ -57,22 +56,28 @@ public class DeferredStartupHandler {
      */
     public void queueDeferredTasksOnIdleHandler() {
         ThreadUtils.assertOnUiThread();
-        // Adding multiple IdleHandlers is okay - they'll remove themselves once the queue is empty.
+        if (mIsIdleHandlerQueued || mDeferredTasks == null || mDeferredTasks.isEmpty()) return;
+        mIsIdleHandlerQueued = true;
         mMessageQueue.addIdleHandler(
                 () -> {
                     try {
-                        Runnable currentTask = mDeferredTasks.poll();
+                        Runnable currentTask =
+                                mDeferredTasks != null ? mDeferredTasks.poll() : null;
                         if (currentTask != null) currentTask.run();
-                        if (mDeferredTasks.isEmpty()) {
-                            if (mLatchForTesting != null) mLatchForTesting.countDown();
-                            if (sInstance == DeferredStartupHandler.this) sInstance = null;
+                        if (mDeferredTasks == null || mDeferredTasks.isEmpty()) {
+                            mDeferredTasks = null;
+                            mIsIdleHandlerQueued = false;
+                            if (mLatchForTesting != null) {
+                                mLatchForTesting.countDown();
+                                mLatchForTesting = null;
+                            }
                             return false;
                         }
                     } catch (Throwable e) {
                         // The Android MessageQueue swallows and logs all thrown exceptions
                         // leading to silently broken deferred startup handlers. Post the
                         // exception to avoid Android swallowing it.
-                        new Handler()
+                        ThreadUtils.getUiThreadHandler()
                                 .post(
                                         () -> {
                                             throw e;
@@ -82,7 +87,7 @@ public class DeferredStartupHandler {
                     // Note that we can't simply check myQueue().isIdle() as this will
                     // continue to return true even if native tasks are queued up (until
                     // we return control to the Looper).
-                    new Handler().post(CallbackUtils.emptyRunnable());
+                    ThreadUtils.getUiThreadHandler().post(CallbackUtils.emptyRunnable());
                     return true;
                 });
     }
@@ -95,6 +100,9 @@ public class DeferredStartupHandler {
      */
     public void addDeferredTask(Runnable deferredTask) {
         ThreadUtils.assertOnUiThread();
+        if (mDeferredTasks == null) {
+            mDeferredTasks = new ArrayDeque<>();
+        }
         mDeferredTasks.add(deferredTask);
     }
 
@@ -106,6 +114,9 @@ public class DeferredStartupHandler {
      */
     public void addDeferredTasks(List<Runnable> deferredTasks) {
         ThreadUtils.assertOnUiThread();
+        if (mDeferredTasks == null) {
+            mDeferredTasks = new ArrayDeque<>(deferredTasks.size());
+        }
         mDeferredTasks.addAll(deferredTasks);
     }
 
@@ -120,20 +131,22 @@ public class DeferredStartupHandler {
      */
     public static boolean waitForDeferredStartupCompleteForTesting(long timeoutMillis) {
         ThreadUtils.assertOnBackgroundThread();
-        // sInstance could become null while executing this function, so keep a ref here.
-        DeferredStartupHandler instance =
+        CountDownLatch latch =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            if (sInstance != null) {
-                                sInstance.mLatchForTesting = new CountDownLatch(1);
+                            DeferredStartupHandler instance = getInstance();
+                            if (instance.mDeferredTasks == null
+                                    || instance.mDeferredTasks.isEmpty()) {
+                                return null;
                             }
-                            return sInstance;
+                            if (instance.mLatchForTesting == null) {
+                                instance.mLatchForTesting = new CountDownLatch(1);
+                            }
+                            return instance.mLatchForTesting;
                         });
-        // Tasks completed and instance was cleared before we started waiting.
-        if (instance == null) return true;
-        assert instance.mLatchForTesting != null;
+        if (latch == null) return true;
         try {
-            return instance.mLatchForTesting.await(timeoutMillis, TimeUnit.MILLISECONDS);
+            return latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             return false;
         }
