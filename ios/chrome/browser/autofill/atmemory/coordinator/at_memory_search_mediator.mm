@@ -56,9 +56,7 @@
 
   [_consumer setNoticeVisible:_noticeIsVisible];
   [_consumer
-      updateTableViewBackgroundStyle:[self
-                                         tableViewBackgroundStyleForViewState:
-                                             AtMemoryViewState::kInitialState]];
+      updateTableViewBackgroundStyle:[self initialTableViewBackgroundStyle]];
 }
 
 #pragma mark - AtMemorySearchMutator
@@ -116,11 +114,10 @@
   // to the consumer. If the array is nil, there was an error.
 }
 
-- (AtMemoryBackgroundStyle)tableViewBackgroundStyleForViewState:
-    (AtMemoryViewState)viewState {
+- (AtMemoryBackgroundStyle)initialTableViewBackgroundStyle {
   // TODO(crbug.com/540877897): Verify if there are any recent fills. If yes,
   // show kDefaultStyle.
-  if (_noticeIsVisible || viewState != AtMemoryViewState::kInitialState) {
+  if (_noticeIsVisible) {
     return AtMemoryBackgroundStyle::kDefaultStyle;
   }
   return AtMemoryBackgroundStyle::kEmptyStyle;

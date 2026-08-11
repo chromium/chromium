@@ -35,4 +35,7 @@ extern NSString* const kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
 // Accessibility identifier for the AtMemory search cell.
 extern NSString* const kAtMemorySearchCellAccessibilityIdentifier;
 
+// Accessibility identifier for the AtMemory fetching cell.
+extern NSString* const kAtMemoryFetchingCellAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_PUBLIC_AT_MEMORY_CONSTANTS_H_

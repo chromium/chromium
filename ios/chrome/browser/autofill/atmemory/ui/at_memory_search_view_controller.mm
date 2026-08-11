@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
 
 #import "base/check.h"
-#import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -99,7 +99,6 @@ enum class ItemIdentifier {
   self.navigationItem.rightBarButtonItem = cancelButton;
 
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
-
   [self loadModel];
 }
 
@@ -119,13 +118,14 @@ enum class ItemIdentifier {
                              itemIdentifier:static_cast<ItemIdentifier>(
                                                 itemIdentifier.integerValue)];
            }];
-  [self createSnapshotForViewState:AtMemoryViewState::kInitialState];
+  [self createSnapshotForInitialState];
 }
 
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar {
   [self.mutator startSearchWithQuery:searchBar.text];
+  [self createSnapshotForFetchingState];
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -135,7 +135,7 @@ enum class ItemIdentifier {
   NSString* query = searchController.searchBar.text;
 
   if (query.length == 0) {
-    [self createSnapshotForViewState:AtMemoryViewState::kInitialState];
+    [self createSnapshotForInitialState];
     return;
   }
 
@@ -145,7 +145,7 @@ enum class ItemIdentifier {
       NSNotFound) {
     [self updateSnapshotForItemIdentifier:ItemIdentifier::kSearchItem];
   } else {
-    [self createSnapshotForViewState:AtMemoryViewState::kSearchState];
+    [self createSnapshotForSearchState];
   }
 }
 
@@ -157,8 +157,7 @@ enum class ItemIdentifier {
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   if (itemIdentifier == ItemIdentifier::kSearchItem) {
     [self.mutator startSearchWithQuery:_searchController.searchBar.text];
-    // TODO(crbug.com/542645452): Call createSnapshotForViewState for Fetching
-    // state once the Fetching cell has been implemented.
+    [self createSnapshotForFetchingState];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -173,7 +172,7 @@ enum class ItemIdentifier {
 
 - (void)setErrorType:(AtMemoryErrorType)errorType {
   _errorType = errorType;
-  [self createSnapshotForViewState:AtMemoryViewState::kErrorState];
+  [self createSnapshotForErrorState];
 }
 
 - (void)setNoticeVisible:(BOOL)noticeVisible {
@@ -202,28 +201,6 @@ enum class ItemIdentifier {
 
 #pragma mark - Private
 
-// Creates the diffable data source snapshot for the given `viewState`.
-- (void)createSnapshotForViewState:(AtMemoryViewState)viewState {
-  switch (viewState) {
-    case AtMemoryViewState::kInitialState:
-      [self createSnapshotForInitialState];
-      return;
-    case AtMemoryViewState::kSearchState:
-      self.tableView.backgroundView = nil;
-      [self createSnapshotForSearchState];
-      return;
-    case AtMemoryViewState::kErrorState:
-      self.tableView.backgroundView = nil;
-      [self createSnapshotForErrorState];
-      return;
-    case AtMemoryViewState::kFetchingState:
-    case AtMemoryViewState::kResultState:
-      self.tableView.backgroundView = nil;
-      return;
-  }
-  NOTREACHED();
-}
-
 // Creates the `snapshot` for the initial state.
 - (void)createSnapshotForInitialState {
   [self updateTableViewBackgroundStyle:_backgroundStyle];
@@ -231,16 +208,7 @@ enum class ItemIdentifier {
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
-  if (_noticeIsVisible) {
-    [snapshot appendSectionsWithIdentifiers:@[
-      @(static_cast<int>(SectionIdentifier::kNoticeSection))
-    ]];
-    [snapshot
-        appendItemsWithIdentifiers:@[ @(static_cast<int>(
-                                       ItemIdentifier::kNoticeItem)) ]
-         intoSectionWithIdentifier:@(static_cast<int>(
-                                       SectionIdentifier::kNoticeSection))];
-  }
+  [self appendNoticeSectionToSnapshot:snapshot];
 
   if (_recentFillsAreVisible) {
     [snapshot appendSectionsWithIdentifiers:@[
@@ -283,22 +251,14 @@ enum class ItemIdentifier {
              intoSectionWithIdentifier:@(static_cast<int>(errorSection))];
 
   // Add the notice if needed below the error cell.
-  if (_noticeIsVisible) {
-    [snapshot appendSectionsWithIdentifiers:@[
-      @(static_cast<int>(SectionIdentifier::kNoticeSection))
-    ]];
-    [snapshot
-        appendItemsWithIdentifiers:@[ @(static_cast<int>(
-                                       ItemIdentifier::kNoticeItem)) ]
-         intoSectionWithIdentifier:@(static_cast<int>(
-                                       SectionIdentifier::kNoticeSection))];
-  }
+  [self appendNoticeSectionToSnapshot:snapshot];
 
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 // Creates the diffable data source snapshot for the search state.
 - (void)createSnapshotForSearchState {
+  self.tableView.backgroundView = nil;
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
@@ -308,7 +268,40 @@ enum class ItemIdentifier {
                                            ItemIdentifier::kSearchItem)) ]
              intoSectionWithIdentifier:@(static_cast<int>(
                                            SectionIdentifier::kSearchSection))];
+  [self appendNoticeSectionToSnapshot:snapshot];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Populates `snapshot` for the fetching state.
+- (void)createSnapshotForFetchingState {
+  NSDiffableDataSourceSnapshot* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(static_cast<int>(SectionIdentifier::kFetchingSection))
+  ]];
+  [snapshot
+      appendItemsWithIdentifiers:@[ @(static_cast<int>(
+                                     ItemIdentifier::kFetchingItem)) ]
+       intoSectionWithIdentifier:@(static_cast<int>(
+                                     SectionIdentifier::kFetchingSection))];
+
+  [self appendNoticeSectionToSnapshot:snapshot];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Appends the notice section and item to `snapshot` if the notice is visible.
+- (void)appendNoticeSectionToSnapshot:(NSDiffableDataSourceSnapshot*)snapshot {
+  if (!_noticeIsVisible) {
+    return;
+  }
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(static_cast<int>(SectionIdentifier::kNoticeSection))
+  ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(static_cast<int>(
+                                           ItemIdentifier::kNoticeItem)) ]
+             intoSectionWithIdentifier:@(static_cast<int>(
+                                           SectionIdentifier::kNoticeSection))];
 }
 
 // Sets the table view background to the empty state.
@@ -345,7 +338,7 @@ enum class ItemIdentifier {
       cell = [self noticeCellForTableView:tableView];
       break;
     case ItemIdentifier::kFetchingItem:
-      // TODO(crbug.com/542645452): Implement cells for each item identifier.
+      cell = [self fetchingCellForTableView:tableView];
       break;
     case ItemIdentifier::kNoDataItem:
       cell = [self noDataCellForTableView:tableView];
@@ -474,6 +467,29 @@ enum class ItemIdentifier {
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier =
       kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
+
+  return cell;
+}
+
+// Returns the table view cell for the fetching state.
+- (UITableViewCell*)fetchingCellForTableView:(UITableView*)tableView {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _searchController.searchBar.text;
+  configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
+  configuration.subtitle =
+      l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE);
+
+  ActivityIndicatorContentConfiguration* activityIndicatorConfiguration =
+      [[ActivityIndicatorContentConfiguration alloc] init];
+  configuration.leadingConfiguration = activityIndicatorConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.userInteractionEnabled = NO;
+  cell.accessibilityIdentifier = kAtMemoryFetchingCellAccessibilityIdentifier;
 
   return cell;
 }

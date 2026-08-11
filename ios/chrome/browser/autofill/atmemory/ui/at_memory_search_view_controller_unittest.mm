@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_view_controller.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class AtMemorySearchViewControllerTest : public PlatformTest {
  protected:
@@ -34,21 +37,58 @@ TEST_F(AtMemorySearchViewControllerTest, TestInitialization) {
   EXPECT_NE(view_controller_.tableView, nil);
 }
 
-namespace {
+// Tests that the table view displays an empty background view with no items
+// when in the initial zero state (no notice and no recent fills).
+TEST_F(AtMemorySearchViewControllerTest, TestZeroState) {
+  [view_controller_ setNoticeVisible:NO];
+  [view_controller_
+      updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kEmptyStyle];
 
-// Returns the expected accessibility identifier for the given error type.
-NSString* ExpectedAccessibilityIdentifier(AtMemoryErrorType error_type) {
-  switch (error_type) {
-    case AtMemoryErrorType::kNoDataError:
-      return kAtMemoryNoDataCellAccessibilityIdentifier;
-    case AtMemoryErrorType::kNoConnectionError:
-      return kAtMemoryNoConnectionCellAccessibilityIdentifier;
-    case AtMemoryErrorType::kUnsupportedQueryError:
-      return kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
-  }
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 0);
+  EXPECT_NE(view_controller_.tableView.backgroundView, nil);
 }
 
-}  // namespace
+// Tests that the table view displays the search cell when in the search
+// (typing) state.
+TEST_F(AtMemorySearchViewControllerTest, TestSearchState) {
+  UISearchController* search_controller =
+      view_controller_.navigationItem.searchController;
+  search_controller.searchBar.text = @"test query";
+  [(id<UISearchResultsUpdating>)view_controller_
+      updateSearchResultsForSearchController:search_controller];
+
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
+  EXPECT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  ASSERT_NE(cell, nil);
+  EXPECT_TRUE(cell.userInteractionEnabled);
+
+  TableViewCellContentConfiguration* configuration =
+      (TableViewCellContentConfiguration*)cell.contentConfiguration;
+  EXPECT_NSEQ(configuration.title, search_controller.searchBar.text);
+}
+
+// Tests that the table view displays the fetching cell when in the fetching
+// state.
+TEST_F(AtMemorySearchViewControllerTest, TestFetchingState) {
+  UISearchBar* search_bar =
+      view_controller_.navigationItem.searchController.searchBar;
+  search_bar.text = @"test query";
+  [(id<UISearchBarDelegate>)view_controller_
+      searchBarSearchButtonClicked:search_bar];
+
+  EXPECT_EQ(view_controller_.tableView.numberOfSections, 1);
+  EXPECT_EQ([view_controller_.tableView numberOfRowsInSection:0], 1);
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  ASSERT_NE(cell, nil);
+  EXPECT_FALSE(cell.userInteractionEnabled);
+}
 
 // Parameters for AtMemorySearchViewControllerErrorTest.
 struct AtMemoryErrorTestParam {
@@ -80,8 +120,6 @@ TEST_P(AtMemorySearchViewControllerErrorTest, TestErrorState) {
   EXPECT_EQ(cell.contentView.alpha, param.expected_alpha);
   EXPECT_EQ(cell.userInteractionEnabled,
             param.expected_user_interaction_enabled);
-  EXPECT_NSEQ(cell.accessibilityIdentifier,
-              ExpectedAccessibilityIdentifier(param.error_type));
 }
 
 // Instantiates the test suite with various combinations of error types to

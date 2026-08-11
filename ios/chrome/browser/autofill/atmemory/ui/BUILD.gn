@@ -39,7 +39,10 @@ source_set("unit_tests") {
   sources = [ "at_memory_search_view_controller_unittest.mm" ]
   deps = [
     ":ui",
+    "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
