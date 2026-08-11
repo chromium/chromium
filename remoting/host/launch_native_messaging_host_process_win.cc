@@ -8,24 +8,43 @@
 
 #include <shellapi.h>
 
-#include <cstdint>
+#include <limits>
 #include <string>
 
+#include "base/atomic_sequence_num.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
-#include "ipc/ipc_channel.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/win/security_descriptor.h"
 
 namespace {
+
+// Global atomic used to guarantee pipe names are unique.
+base::AtomicSequenceNumber g_last_id;
+
+std::string GenerateUniqueRandomChannelID() {
+  // Note: the string must start with the current process id, this is how
+  // some child processes determine the pid of the parent.
+  //
+  // This is composed of a unique incremental identifier, the process ID of
+  // the creator, an identifier for the child instance, and a strong random
+  // component. The strong random component prevents other processes from
+  // hijacking or squatting on predictable channel names.
+  int process_id = base::GetCurrentProcId();
+  return base::StringPrintf(
+      "%d.%u.%d", process_id, g_last_id.GetNext(),
+      base::RandIntInclusive(0, std::numeric_limits<int32_t>::max()));
+}
 
 // Windows will use default buffer size when 0 is passed to CreateNamedPipeW().
 const uint32_t kBufferSize = 0;
@@ -96,7 +115,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   }
 
   std::string input_pipe_name(kChromePipeNamePrefix);
-  input_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
+  input_pipe_name.append(GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_write_handle;
   CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
                   &temp_write_handle);
@@ -105,7 +124,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   }
 
   std::string output_pipe_name(kChromePipeNamePrefix);
-  output_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
+  output_pipe_name.append(GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_read_handle;
   CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND, &temp_read_handle);
   if (!temp_read_handle.is_valid()) {

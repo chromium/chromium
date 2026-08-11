@@ -46,10 +46,6 @@ ChannelProxy::Context::Context(
 
 ChannelProxy::Context::~Context() = default;
 
-void ChannelProxy::Context::ClearIPCTaskRunner() {
-  ipc_task_runner_.reset();
-}
-
 void ChannelProxy::Context::CreateChannel(mojo::ScopedMessagePipeHandle handle,
                                           Channel::Mode mode) {
   base::AutoLock channel_lock(channel_lifetime_lock_);
@@ -300,11 +296,6 @@ void ChannelProxy::GetRemoteAssociatedInterface(
     mojo::GenericPendingAssociatedReceiver receiver) {
   DCHECK(did_init_);
   context()->thread_safe_channel().GetAssociatedInterface(std::move(receiver));
-}
-
-void ChannelProxy::ClearIPCTaskRunner() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context()->ClearIPCTaskRunner();
 }
 
 void ChannelProxy::SetUrgentMessageObserver(UrgentMessageObserver* observer) {

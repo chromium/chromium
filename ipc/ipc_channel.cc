@@ -11,16 +11,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/process/process_handle.h"
-#include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_listener.h"
@@ -37,9 +33,6 @@
 namespace IPC {
 
 namespace {
-
-// Global atomic used to guarantee channel IDs are unique.
-base::AtomicSequenceNumber g_last_id;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -102,21 +95,6 @@ std::unique_ptr<Channel> Channel::Create(
     const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner) {
   return base::WrapUnique(new Channel(std::move(handle), mode, listener,
                                       ipc_task_runner, proxy_task_runner));
-}
-
-// static
-std::string Channel::GenerateUniqueRandomChannelID() {
-  // Note: the string must start with the current process id, this is how
-  // some child processes determine the pid of the parent.
-  //
-  // This is composed of a unique incremental identifier, the process ID of
-  // the creator, an identifier for the child instance, and a strong random
-  // component. The strong random component prevents other processes from
-  // hijacking or squatting on predictable channel names.
-  int process_id = base::GetCurrentProcId();
-  return base::StringPrintf(
-      "%d.%u.%d", process_id, g_last_id.GetNext(),
-      base::RandIntInclusive(0, std::numeric_limits<int32_t>::max()));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

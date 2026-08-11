@@ -159,9 +159,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy {
     GetRemoteAssociatedInterface(proxy->BindNewEndpointAndPassReceiver());
   }
 
-  // Called to clear the pointer to the IPC task runner when it's going away.
-  void ClearIPCTaskRunner();
-
  protected:
   class Context;
   // A subclass uses this constructor if it needs to add more information
@@ -176,7 +173,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy {
             const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
             const scoped_refptr<base::SingleThreadTaskRunner>&
                 listener_task_runner);
-    void ClearIPCTaskRunner();
     base::SingleThreadTaskRunner* ipc_task_runner() const {
       return ipc_task_runner_.get();
     }

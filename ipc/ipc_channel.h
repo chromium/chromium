@@ -165,9 +165,6 @@ class COMPONENT_EXPORT(IPC) Channel final
   void OnAssociatedInterfaceRequest(
       mojo::GenericPendingAssociatedReceiver receiver) override;
 
-  // Generates a channel ID that's non-predictable and unique.
-  static std::string GenerateUniqueRandomChannelID();
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Sandboxed processes live in a PID namespace, so when sending the IPC hello
   // message from client to server we need to send the PID from the global
