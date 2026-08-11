@@ -42,6 +42,7 @@ class ActorOverlayMediator
     private final Callback<LayoutManager> mLayoutManagerAvailableCallback;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final Runnable mInflateOverlayCallback;
     private final Runnable mBackPressCallback;
     private final Runnable mDismissSnackbarCallback;
 
@@ -56,6 +57,7 @@ class ActorOverlayMediator
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
+     * @param inflateOverlayCallback The callback to ensure the overlay view is inflated.
      * @param backPressCallback The callback to show the snackbar.
      * @param dismissSnackbarCallback The callback to dismiss the snackbar.
      */
@@ -65,6 +67,7 @@ class ActorOverlayMediator
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
+            Runnable inflateOverlayCallback,
             Runnable backPressCallback,
             Runnable dismissSnackbarCallback) {
         mModel = model;
@@ -72,6 +75,7 @@ class ActorOverlayMediator
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mTabObscuringHandler = tabObscuringHandler;
         mLayoutManagerSupplier = layoutManagerSupplier;
+        mInflateOverlayCallback = inflateOverlayCallback;
         mBackPressCallback = backPressCallback;
         mDismissSnackbarCallback = dismissSnackbarCallback;
         updateTakeOverButtonVisibility();
@@ -209,6 +213,9 @@ class ActorOverlayMediator
      * @param visible True to make the overlay visible, false to hide it.
      */
     void setOverlayVisible(boolean visible) {
+        if (visible) {
+            mInflateOverlayCallback.run();
+        }
         mModel.set(ActorOverlayProperties.VISIBLE, visible);
         boolean isVisible = mModel.get(ActorOverlayProperties.VISIBLE);
 

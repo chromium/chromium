@@ -112,6 +112,7 @@ public class ActorOverlayCoordinatorTest {
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mView = Mockito.spy(realView);
+        Mockito.when(mViewStub.getContext()).thenReturn(activity);
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
         mTabObscuringHandler = new TabObscuringHandler();
@@ -180,8 +181,8 @@ public class ActorOverlayCoordinatorTest {
     @Test
     public void testConstruction() {
         Assert.assertNotNull(mCoordinator.getMediator());
-        Assert.assertEquals(mView, mCoordinator.getView());
-        verify(mViewStub).inflate();
+        Assert.assertFalse(mCoordinator.isViewInflatedForTesting());
+        verify(mViewStub, Mockito.never()).inflate();
         Assert.assertTrue(mCurrentTabSupplier.hasObservers());
         verify(mBrowserControlsVisibilityManager).addObserver(any());
         verify(mLayoutManager).addObserver(any());
@@ -657,10 +658,15 @@ public class ActorOverlayCoordinatorTest {
         verify(mBrowserControlsVisibilityManager).addObserver(observerCaptor.capture());
 
         observerCaptor.getValue().onTopControlsHeightChanged(100, 0);
-        verify(mView).setMargins(0, 100, 0, 0);
-
         observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
-        verify(mView).setMargins(0, 100, 0, 50);
+
+        Assert.assertEquals(
+                100, mCoordinator.getModelForTesting().get(ActorOverlayProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                50, mCoordinator.getModelForTesting().get(ActorOverlayProperties.BOTTOM_MARGIN));
+
+        mCoordinator.showOverlayForTesting(true);
+        verify(mView, Mockito.atLeastOnce()).setMargins(0, 100, 0, 50);
     }
 
     @Test
@@ -891,7 +897,11 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertEquals(120, model.get(ActorOverlayProperties.LEFT_MARGIN));
         Assert.assertEquals(80, model.get(ActorOverlayProperties.RIGHT_MARGIN));
 
-        // Test onPreSideUiSpecsChange returns transition
+        // Test onPreSideUiSpecsChange returns null when view is not visible / not inflated
+        Assert.assertNull(observer.onPreSideUiSpecsChange(specs));
+
+        // Test onPreSideUiSpecsChange returns transition when visible
+        mCoordinator.showOverlayForTesting(true);
         Transition transition = observer.onPreSideUiSpecsChange(specs);
         Assert.assertNotNull(transition);
     }
@@ -913,6 +923,44 @@ public class ActorOverlayCoordinatorTest {
         PropertyModel model = coordinator.getModelForTesting();
         Assert.assertEquals(0, model.get(ActorOverlayProperties.LEFT_MARGIN));
         Assert.assertEquals(0, model.get(ActorOverlayProperties.RIGHT_MARGIN));
+    }
+
+    @Test
+    public void testModelChangesPriorToInflationDoNotNpeAndBindOnInflation() {
+        // Verify view is not inflated initially.
+        Assert.assertFalse(mCoordinator.isViewInflatedForTesting());
+        verify(mViewStub, Mockito.never()).inflate();
+
+        // Mutate various model properties while the view is uninflated.
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.LEFT_MARGIN, 20);
+        model.set(ActorOverlayProperties.TOP_MARGIN, 30);
+        model.set(ActorOverlayProperties.RIGHT_MARGIN, 40);
+        model.set(ActorOverlayProperties.BOTTOM_MARGIN, 50);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        // Verify properties are updated safely in the model without any NPE or ViewStub inflation.
+        Assert.assertEquals(20, model.get(ActorOverlayProperties.LEFT_MARGIN));
+        Assert.assertEquals(30, model.get(ActorOverlayProperties.TOP_MARGIN));
+        Assert.assertEquals(40, model.get(ActorOverlayProperties.RIGHT_MARGIN));
+        Assert.assertEquals(50, model.get(ActorOverlayProperties.BOTTOM_MARGIN));
+        Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        Assert.assertFalse(mCoordinator.isViewInflatedForTesting());
+        verify(mViewStub, Mockito.never()).inflate();
+
+        // Transition VISIBLE to true, which should trigger lazy inflation and initial bind.
+        mCoordinator.showOverlayForTesting(true);
+
+        // Verify view is now inflated and all buffered properties are bound.
+        Assert.assertTrue(mCoordinator.isViewInflatedForTesting());
+        verify(mViewStub, Mockito.times(1)).inflate();
+        verify(mView, Mockito.atLeastOnce()).setMargins(20, 30, 40, 50);
+        View takeOverButton = mView.findViewById(R.id.take_over_task_button);
+        Assert.assertEquals(View.VISIBLE, takeOverButton.getVisibility());
+
+        // Verify subsequent updates while inflated propagate directly to the view.
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
+        Assert.assertEquals(View.GONE, takeOverButton.getVisibility());
     }
 
     @Test
