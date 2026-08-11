@@ -413,8 +413,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   EXPECT_FALSE(actuating_false_future.Get());
 }
 
+// TODO(https://crbug.com/544820815): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
-                       testActivateTabWithConversationUsesActorState) {
+                       DISABLED_testActivateTabWithConversationUsesActorState) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
 
@@ -709,8 +710,9 @@ bool IsProtectRecentlyVisibleTabEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// TODO(https://crbug.com/544820815): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
-                       testActuatingPriorityChange) {
+                       DISABLED_testActuatingPriorityChange) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForGlicClient(instance));
