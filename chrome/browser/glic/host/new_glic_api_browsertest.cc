@@ -2375,6 +2375,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDefaultInvocationSource) {
   ExecuteJsTest();
 }
 
+// This test is only useful for platforms that support floaty.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testIsBrowserOpen) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+
+  CloseMainBrowserWithIncognitoKeepAlive();
+
+  ContinueJsTest();
+}
+#endif
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetUserProfileInfo) {
   glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
