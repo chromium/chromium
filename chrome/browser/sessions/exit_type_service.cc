@@ -83,7 +83,7 @@ class ExitTypeService::BrowserTabObserverImpl
       return;
     }
     if (BrowserInitState::From(browser)->create_params().creation_source !=
-        Browser::CreationSource::kStartupCreator) {
+        BrowserWindowCreateParams::CreationSource::kStartupCreator) {
       // Ideally this would call directly to `service_`, but at the time this
       // is called it is too early to do that. So, this waits for the first tab
       // to be added.

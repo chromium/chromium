@@ -4014,10 +4014,11 @@ bool BrowserView::GetSavedWindowPlacement(
 
     // Set a default popup origin if the x/y coordinates are 0 and the original
     // values were not known to be explicitly specified via window.open() in JS.
-    if (rect.origin().IsOrigin() && BrowserInitState::From(&*browser_)
-                                            ->create_params()
-                                            .initial_origin_specified !=
-                                        Browser::ValueSpecified::kSpecified) {
+    if (rect.origin().IsOrigin() &&
+        BrowserInitState::From(&*browser_)
+                ->create_params()
+                .initial_origin_specified !=
+            BrowserWindowCreateParams::ValueSpecified::kSpecified) {
       rect.set_origin(WindowSizer::GetDefaultPopupOrigin(rect.size()));
     }
 

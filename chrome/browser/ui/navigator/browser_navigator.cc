@@ -123,7 +123,7 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
   // If the browser is created from a template, we do not need to check if the
   // url is in the app scope since we know it was saved directly from the app.
   if (BrowserInitState::From(params.browser)->creation_source() !=
-          Browser::CreationSource::kDeskTemplate &&
+          BrowserWindowCreateParams::CreationSource::kDeskTemplate &&
       web_app::AppBrowserController::From(params.browser) &&
       !web_app::AppBrowserController::From(params.browser)
            ->IsUrlInAppScope(params.url)) {

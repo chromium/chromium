@@ -73,24 +73,30 @@ const BrowserInitState* BrowserInitState::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
+BrowserInitState::BrowserInitState(BrowserWindowCreateParams params,
+                                   ui::UnownedUserDataHost& host)
+    : browser_window_create_params_(std::move(params)),
+      omit_from_session_restore_(
+          browser_window_create_params_.omit_from_session_restore),
+      should_trigger_session_restore_(
+          browser_window_create_params_.should_trigger_session_restore),
+      override_bounds_(browser_window_create_params_.initial_bounds),
+      initial_show_state_(browser_window_create_params_.initial_show_state),
+      initial_workspace_(browser_window_create_params_.initial_workspace),
+      initial_visible_on_all_workspaces_state_(
+          browser_window_create_params_
+              .initial_visible_on_all_workspaces_state),
+      creation_source_(browser_window_create_params_.creation_source),
+      initial_vertical_tab_strip_collapsed_(
+          browser_window_create_params_.vertical_tab_strip_collapsed),
+      initial_vertical_tab_strip_uncollapsed_width_(
+          browser_window_create_params_.vertical_tab_strip_uncollapsed_width),
+      initial_focused_tab_group_id_(
+          browser_window_create_params_.focused_tab_group_id),
+      scoped_unowned_user_data_(host, *this) {}
+
 BrowserInitState::BrowserInitState(const Browser::CreateParams& params,
                                    ui::UnownedUserDataHost& host)
-    : create_params_(params),
-      browser_window_create_params_(
-          MakeBrowserWindowCreateParams(create_params_)),
-      omit_from_session_restore_(params.omit_from_session_restore),
-      should_trigger_session_restore_(params.should_trigger_session_restore),
-      override_bounds_(params.initial_bounds),
-      initial_show_state_(params.initial_show_state),
-      initial_workspace_(params.initial_workspace),
-      initial_visible_on_all_workspaces_state_(
-          params.initial_visible_on_all_workspaces_state),
-      creation_source_(params.creation_source),
-      initial_vertical_tab_strip_collapsed_(
-          params.vertical_tab_strip_collapsed),
-      initial_vertical_tab_strip_uncollapsed_width_(
-          params.vertical_tab_strip_uncollapsed_width),
-      initial_focused_tab_group_id_(params.focused_tab_group_id),
-      scoped_unowned_user_data_(host, *this) {}
+    : BrowserInitState(MakeBrowserWindowCreateParams(params), host) {}
 
 BrowserInitState::~BrowserInitState() = default;

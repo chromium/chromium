@@ -70,12 +70,12 @@ bool BrowserDelegateImpl::IsOffTheRecord() const {
 
 bool BrowserDelegateImpl::IsCreatedByStartupCreator() const {
   return BrowserInitState::From(&*browser_)->creation_source() ==
-         Browser::CreationSource::kStartupCreator;
+         BrowserWindowCreateParams::CreationSource::kStartupCreator;
 }
 
 bool BrowserDelegateImpl::IsCreatedBySessionRestoreForStartupUrls() const {
   return BrowserInitState::From(&*browser_)->creation_source() ==
-         Browser::CreationSource::kLastAndUrlsStartupPref;
+         BrowserWindowCreateParams::CreationSource::kLastAndUrlsStartupPref;
 }
 
 gfx::Rect BrowserDelegateImpl::GetBounds() const {
