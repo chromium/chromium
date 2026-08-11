@@ -211,6 +211,16 @@ bool UnpinnedTabContainerView::ShouldSnapToTarget(
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
+std::optional<views::SizeBound>
+UnpinnedTabContainerView::GetAvailableMainAxisSpaceOverride() const {
+  return available_space_.is_bounded() ? std::make_optional(available_space_)
+                                       : std::nullopt;
+}
+
+gfx::Size UnpinnedTabContainerView::GetTargetPreferredSize() const {
+  return layout_manager_->GetTargetPreferredSize();
+}
+
 void UnpinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }

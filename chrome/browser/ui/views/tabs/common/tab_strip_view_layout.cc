@@ -72,18 +72,35 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   const int unpinned_preferred_width =
       unpinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();
 
+  int unpinned_target_preferred_width = unpinned_preferred_width;
+  if (const auto* unpinned_container =
+          tab_strip_view->GetUnpinnedTabsContainer()) {
+    unpinned_target_preferred_width =
+        unpinned_container->GetTargetPreferredSize().width();
+  }
+
+  // Query the parent layout manager (e.g. FlexLayout in the region view) for
+  // the total space available for the tab strip in the window.
+  const views::SizeBounds available_for_tabstrip =
+      tab_strip_view->parent()
+          ? tab_strip_view->parent()->GetAvailableSize(tab_strip_view)
+          : size_bounds;
+  const views::SizeBound available_width =
+      available_for_tabstrip.width().is_bounded()
+          ? available_for_tabstrip.width()
+          : size_bounds.width();
+
   // Place the pinned container.
   int pinned_width = pinned_preferred_width;
-  if (size_bounds.width().is_bounded()) {
-    const int available_width = size_bounds.width().value();
+  if (available_width.is_bounded()) {
     int min_pinned_width = 0;
     if (const auto* pinned_container =
             tab_strip_view->GetPinnedTabsContainer()) {
       min_pinned_width = pinned_container->GetMinimumSize().width();
     }
     pinned_width = CalculatePinnedContainerMainAxisSize(
-        pinned_preferred_width, unpinned_preferred_width, available_width,
-        min_pinned_width);
+        pinned_preferred_width, unpinned_target_preferred_width,
+        available_width.value(), min_pinned_width);
   }
 
   gfx::Rect pinned_bounds(x, 0, pinned_width, container_height);
@@ -99,10 +116,15 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
 
   // Place the unpinned container.
   int unpinned_width = unpinned_preferred_width;
-  if (size_bounds.width().is_bounded()) {
-    const int available_width = size_bounds.width().value();
-    unpinned_width = std::min(unpinned_preferred_width,
-                              std::max(available_width - pinned_width, 0));
+  if (available_width.is_bounded()) {
+    const int available_unpinned_width =
+        std::max(available_width.value() - pinned_width, 0);
+    tab_strip_view->SetAvailableUnpinnedSpace(
+        views::SizeBound(available_unpinned_width));
+    unpinned_width =
+        std::min(unpinned_preferred_width, available_unpinned_width);
+  } else {
+    tab_strip_view->SetAvailableUnpinnedSpace(views::SizeBound());
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,

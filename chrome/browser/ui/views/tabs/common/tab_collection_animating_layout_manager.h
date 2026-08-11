@@ -56,6 +56,13 @@ class TabCollectionAnimatingLayoutManager
     virtual bool ShouldSnapToTarget(const views::View& child_view) const;
     virtual bool ShouldAnimateOpacityForAddAndRemove(
         const views::View& child_view) const;
+    // If provided, this is used to calculate target layouts against the total
+    // available capacity rather than the host view's mid-animation bounds (e.g.
+    // for the horizontal unpinned container). If not provided (the default),
+    // target layout calculations fall back to using the host view's allocated
+    // bounds (e.g. for nested containers like tab groups).
+    virtual std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
+        const;
     virtual void OnAnimationEnded();
 
    protected:
@@ -111,6 +118,10 @@ class TabCollectionAnimatingLayoutManager
                               const gfx::Rect& previous_bounds_in_screen);
 
   const views::ProposedLayout& target_layout() const { return target_layout_; }
+
+  // Returns the target preferred size that `host_view()` will occupy once
+  // current animations complete.
+  gfx::Size GetTargetPreferredSize() const;
 
   bool is_animating() const { return animation_.is_animating(); }
 

@@ -60,6 +60,11 @@ bool TabCollectionAnimatingLayoutManager::Delegate::
   return false;
 }
 
+std::optional<views::SizeBound> TabCollectionAnimatingLayoutManager::Delegate::
+    GetAvailableMainAxisSpaceOverride() const {
+  return std::nullopt;
+}
+
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
@@ -144,6 +149,10 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
     }
   }
   return target_preferred_size;
+}
+
+gfx::Size TabCollectionAnimatingLayoutManager::GetTargetPreferredSize() const {
+  return target_layout_manager_->GetPreferredSize(host_view());
 }
 
 gfx::Size TabCollectionAnimatingLayoutManager::GetMinimumSize(
@@ -299,11 +308,22 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   if (IsVerticalOrWrappingVertically()) {
     size_bounds = views::SizeBounds(std::max(host_view()->width(), 0), {});
   } else {
-    const int available_width = host_view()->parent()
-                                    ? host_view()->parent()->width()
-                                    : host_view()->width();
-    size_bounds = views::SizeBounds(std::max(available_width, 0),
-                                    std::max(host_view()->height(), 0));
+    // For horizontal layouts, top-level containers calculate target layouts
+    // using the total space available to the tab strip (to allow tabs to expand
+    // to their preferred width rather than being constrained to the host's
+    // mid-animation width). Nested containers (e.g. tab groups) that do not
+    // provide an explicit available space override fall back to their host view
+    // width.
+    views::SizeBound available_width;
+    if (const auto space_override =
+            delegate_->GetAvailableMainAxisSpaceOverride();
+        space_override.has_value() && space_override->is_bounded()) {
+      available_width = *space_override;
+    } else if (host_view()->width() > 0) {
+      available_width = views::SizeBound(host_view()->width());
+    }
+    size_bounds =
+        views::SizeBounds(available_width, std::max(host_view()->height(), 0));
   }
   views::ProposedLayout new_target =
       target_layout_manager_->GetProposedLayout(size_bounds, PassKey());

@@ -121,6 +121,10 @@ class TabStripView final : public views::View,
 
   void HideHoverCardOnScroll();
 
+  // Updates the main-axis space allocated for unpinned tabs (e.g. total
+  // available tab strip width minus pinned container width in horizontal mode).
+  void SetAvailableUnpinnedSpace(views::SizeBound space) const;
+
   friend class TabStripViewLayout;
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;

@@ -40,6 +40,8 @@ class UnpinnedTabContainerView
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;
+  std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
+      const override;
 
   // DraggedTabsContainer:
   DraggedTabsContainer& GetTabDragTarget(
@@ -47,6 +49,14 @@ class UnpinnedTabContainerView
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& point_in_local_coords);
+
+  // Returns the unconstrained target preferred size that this container will
+  // occupy once current animations complete.
+  gfx::Size GetTargetPreferredSize() const;
+
+  // Sets the main-axis space allocated for this container during TabStripView
+  // layout passes.
+  void SetAvailableSpace(views::SizeBound space) { available_space_ = space; }
 
  private:
   // DraggedTabsContainer:
@@ -66,6 +76,10 @@ class UnpinnedTabContainerView
   void ResetCollectionNode();
 
   raw_ptr<TabCollectionNode> collection_node_;
+
+  // The available main-axis space allocated by TabStripViewLayout.
+  views::SizeBound available_space_;
+
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
