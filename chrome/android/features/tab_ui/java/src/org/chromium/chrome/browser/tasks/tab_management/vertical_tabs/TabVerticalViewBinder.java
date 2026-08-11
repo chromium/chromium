@@ -134,14 +134,15 @@ class TabVerticalViewBinder {
         }
         bindCommonProperties(model, view, propertyKey);
 
+        Resources resources = view.getContext().getResources();
+        int pinnedHeight = resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
+        int expandedWidth =
+                VerticalTabUtils.isAutoResizeEnabled()
+                        ? ViewGroup.LayoutParams.MATCH_PARENT
+                        : resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
         ViewGroup.LayoutParams params = view.getLayoutParams();
-        int pinnedHeight =
-                view.getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
         if (params != null && params.height != pinnedHeight) {
-            params.height = pinnedHeight;
-            view.setLayoutParams(params);
+            updateTabItemSize(model, view, expandedWidth, pinnedHeight);
         }
 
         if (TabProperties.TITLE == propertyKey) {
@@ -153,12 +154,7 @@ class TabVerticalViewBinder {
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
-            Resources resources = view.getContext().getResources();
-            updateTabItemSize(
-                    model,
-                    view,
-                    resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width),
-                    pinnedHeight);
+            updateTabItemSize(model, view, expandedWidth, pinnedHeight);
             updateChildRowPadding(model, view);
         } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
             boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);

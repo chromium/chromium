@@ -125,6 +125,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -1533,6 +1534,8 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDynamicSpanCountOnWidthChange() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
         createCoordinator();
         int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
         assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
@@ -1542,11 +1545,11 @@ public class VerticalTabListCoordinatorUnitTest {
         int itemWidthPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
         int itemMarginPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         int testWidthPx =
                 itemWidthPx * 2
                         + itemMarginPx
@@ -1568,6 +1571,18 @@ public class VerticalTabListCoordinatorUnitTest {
         // Verify expand restores dynamically calculated span count (2).
         mCoordinator.setRailCollapseState(RailCollapseState.EXPANDED);
         assertEquals(2, mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Verify narrow width (e.g. 90dp equivalent) still enforces minimum 2 columns when
+        // expanded.
+        int narrowWidthPx =
+                itemWidthPx + containerView.getPaddingStart() + containerView.getPaddingEnd();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(narrowWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, narrowWidthPx, 1000);
+        assertEquals(
+                VerticalTabListCoordinator.EXPANDED_MIN_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
     @Test
@@ -1584,11 +1599,11 @@ public class VerticalTabListCoordinatorUnitTest {
         int itemWidthPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_min_width);
         int itemMarginPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_margin_bottom);
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         int testWidthPx =
                 itemWidthPx * 2
                         + itemMarginPx
@@ -1603,6 +1618,87 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(
                 VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testDynamicSpanCount_AutoResizeDisabled() {
+        createCoordinator();
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+
+        // Simulate measuring container with a narrow width.
+        View containerView = mCoordinator.getView();
+        int narrowWidthPx = 100;
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(narrowWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, narrowWidthPx, 1000);
+
+        // Should remain default span count (4) when auto_resize is disabled.
+        assertEquals(
+                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
+        createCoordinator();
+        RecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
+        assertNotNull(decoration);
+
+        int minHorizontalGap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
+
+        Rect outRect = new Rect();
+        View child0 = new View(mActivity);
+        GridLayoutManager.LayoutParams lp0 =
+                new GridLayoutManager.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        child0.setLayoutParams(lp0);
+        pinnedRecyclerView.addView(child0);
+
+        decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
+        assertEquals(0, outRect.left);
+        assertEquals(minHorizontalGap - minHorizontalGap / 4, outRect.right);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
+        createCoordinator();
+        RecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
+        assertNotNull(decoration);
+
+        int minHorizontalGap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
+
+        Rect outRect = new Rect();
+        View child0 = new View(mActivity);
+        GridLayoutManager.LayoutParams lp0 =
+                new GridLayoutManager.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        child0.setLayoutParams(lp0);
+        pinnedRecyclerView.addView(child0);
+
+        decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
+        assertEquals(minHorizontalGap - minHorizontalGap / 4, outRect.left);
+        assertEquals(0, outRect.right);
     }
 
     // =============================================================================================
