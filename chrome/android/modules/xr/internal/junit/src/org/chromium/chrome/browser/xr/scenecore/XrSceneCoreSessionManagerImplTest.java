@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.xr.scenecore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -190,5 +191,31 @@ public class XrSceneCoreSessionManagerImplTest {
 
         PanelEntity panelEntity = (PanelEntity) holder.getEntity();
         assertNotNull(panelEntity);
+    }
+
+    @Test
+    public void testGetHeadPoseInActivitySpace_WhenHeadTrackingDisabled() {
+        mManager.setHeadTrackingEnabled(false);
+        assertNull(mManager.getHeadPoseInActivitySpace());
+    }
+
+    @Test
+    public void testHeadTrackingEnabled_Toggle() {
+        assertFalse(mManager.isHeadTrackingEnabled());
+
+        mManager.setHeadTrackingEnabled(true);
+        assertTrue(mManager.isHeadTrackingEnabled());
+
+        mManager.setHeadTrackingEnabled(false);
+        assertFalse(mManager.isHeadTrackingEnabled());
+    }
+
+    @Test
+    public void testStartHeadPoseTracking() {
+        mManager.setHeadTrackingEnabled(false);
+        assertFalse(mManager.startHeadPoseTracking());
+
+        mManager.setHeadTrackingEnabled(true);
+        assertTrue(mManager.startHeadPoseTracking());
     }
 }

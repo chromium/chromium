@@ -57,6 +57,7 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrFactoryImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrFloatSize3dImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrHeadPoseTracker.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleProviderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImpl.java",
@@ -94,6 +95,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:guava_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_xr_arcore_arcore_java",
     "//third_party/androidx:androidx_xr_arcore_arcore_openxr_java",
@@ -154,6 +156,7 @@ robolectric_binary("xr_junit_tests") {
 
   sources = [
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrFactoryImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrHeadPoseTrackerTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMeshDataTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImplTest.java",
@@ -168,6 +171,7 @@ robolectric_binary("xr_junit_tests") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
