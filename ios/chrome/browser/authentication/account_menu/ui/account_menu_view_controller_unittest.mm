@@ -538,3 +538,14 @@ TEST_F(AccountMenuViewControllerTest, TransitionBetweenErrorTypes) {
       l10n_util::GetNSString(IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON),
       path_for_error_button);
 }
+
+// Tests the effect of centralAccountViewDidTapAISubscriptionChip.
+TEST_F(AccountMenuViewControllerTest,
+       TestcentralAccountViewDidTapAISubscriptionChip) {
+  EXPECT_EQ(user_actions_.GetActionCount("Signin_AccountMenu_SubscriptionChip"),
+            0);
+  [(id<CentralAccountViewDelegate>)view_controller_
+      centralAccountViewDidTapAISubscriptionChip:nil];
+  EXPECT_EQ(user_actions_.GetActionCount("Signin_AccountMenu_SubscriptionChip"),
+            1);
+}

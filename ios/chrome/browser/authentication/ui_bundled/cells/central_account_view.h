@@ -9,6 +9,16 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
+@class CentralAccountView;
+
+// Delegate protocol for CentralAccountView.
+@protocol CentralAccountViewDelegate <NSObject>
+
+// Called when the user taps on the AI subscription chip view.
+- (void)centralAccountViewDidTapAISubscriptionChip:(CentralAccountView*)view;
+
+@end
+
 // View for the signed-in account, used in account settings page. Contains the
 // following subviews:
 // 1. Rounded avatarImage used for the account user picture. The value cannot be
@@ -18,6 +28,9 @@
 // be no secondary label.
 // 3. Email subtitle displayed in secondary label. The value cannot be nil.
 @interface CentralAccountView : UIView
+
+// The delegate to handle interactions with the view.
+@property(nonatomic, weak) id<CentralAccountViewDelegate> delegate;
 
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage

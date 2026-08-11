@@ -6,10 +6,12 @@ import("//build/config/apple/swift_source_set.gni")
 import("//build/config/chrome_build.gni")
 
 swift_source_set("ui_swift") {
+  bridge_header = "account_menu_ui_swift_bridge.h"
   sources = [
     "ai_subscription_chip_view.swift",
     "subscription_bottom_wave.swift",
   ]
+  deps = [ "//ios/chrome/browser/authentication/account_menu/public" ]
   frameworks = [
     "UIKit.framework",
     "SwiftUI.framework",

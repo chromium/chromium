@@ -207,6 +207,16 @@ UIImage* GetEnterpriseIcon() {
     ]];
 
     if (subscriptionChipView) {
+      // We track whether user interacts with this chip as if it were a button.
+      // So we disable any accessibility features it may have on its own.
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(subscriptionChipTapped:)];
+      [subscriptionChipView addGestureRecognizer:tapRecognizer];
+      subscriptionChipView.userInteractionEnabled = YES;
+      subscriptionChipView.isAccessibilityElement = NO;
+      subscriptionChipView.accessibilityElementsHidden = YES;
+
       [self addSubview:subscriptionChipView];
       subscriptionChipView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -341,6 +351,12 @@ UIImage* GetEnterpriseIcon() {
       (_useLargeMargins ? kTableViewLargeVerticalSpacing : kTopLargePadding);
   _topPaddingConstraint.constant = topPadding - existingPadding;
   [self updateFrame];
+}
+
+#pragma mark - Private
+
+- (void)subscriptionChipTapped:(UITapGestureRecognizer*)sender {
+  [self.delegate centralAccountViewDidTapAISubscriptionChip:self];
 }
 
 @end

@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/account_menu/public/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/signin/model/test_constants_utils.h"
@@ -78,6 +80,12 @@ id<GREYMatcher> identityDiscMatcher() {
 + (void)tearDown {
   [SigninEarlGrey clearUseFakeResponsesForProfileSeparationPolicyRequests];
   [super tearDown];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
+  return config;
 }
 
 - (void)setUp {
@@ -560,6 +568,85 @@ id<GREYMatcher> identityDiscMatcher() {
 
   // Verify the Account Menu is dismissed.
   [self assertAccountMenuIsNotShown];
+}
+
+// Tests that tapping the AI Tier Ring and AI subscription chip
+// does not appear in case of error. That they appear when the error is
+// resolved. Test that tapping the AI subscription chip logs the correct metric.
+// Test that the ring and chip disappear if the user lose the tier.
+- (void)testTapAISubscriptionChipLogsMetric {
+  // Sign in.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+
+  // Set the AI subscription tier user preference to 1.
+  [ChromeEarlGrey setIntegerValue:1 forUserPref:"sync.ai_subscription_tier"];
+
+  // Open the account menu.
+  [self selectIdentityDiscAndVerify];
+
+  // Verify that the AI Tier avatar ring and subscription chip are not displayed
+  // due to the sync error.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kPremiumAvatarRingAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuAISubscriptionChipId)]
+      assertWithMatcher:grey_nil()];
+
+  // Tap on the error button to open the passphrase dialog.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuErrorActionButtonId)]
+      performAction:grey_tap()];
+
+  // Verify that the passphrase view was opened.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)];
+
+  // Submit the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+
+  // Wait for the passphrase dialog to disappear and the error button to be
+  // gone.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_allOf(grey_accessibilityID(kAccountMenuErrorActionButtonId),
+                     grey_sufficientlyVisible(), nil)];
+
+  // Set up the user action tester.
+  NSError* error = [MetricsAppInterface setupUserActionTester];
+  chrome_test_util::GREYAssertErrorNil(error,
+                                       @"Failed to setup user action tester");
+
+  // Match the subscription chip view and tap it.
+  id<GREYMatcher> chipMatcher =
+      grey_allOf(grey_accessibilityID(kAccountMenuAISubscriptionChipId),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:chipMatcher] performAction:grey_tap()];
+
+  // Verify that the user action was logged exactly once.
+  error =
+      [MetricsAppInterface expectCount:1
+                         forUserAction:@"Signin_AccountMenu_SubscriptionChip"];
+  chrome_test_util::GREYAssertErrorNil(
+      error, @"Failed to log Signin_AccountMenu_SubscriptionChip user action");
+
+  // Clean up.
+  error = [MetricsAppInterface releaseUserActionTester];
+  chrome_test_util::GREYAssertErrorNil(error,
+                                       @"Failed to release user action tester");
+
+  // Set the AI subscription tier user preference to 0 (losing the tier).
+  [ChromeEarlGrey setIntegerValue:0 forUserPref:"sync.ai_subscription_tier"];
+
+  // Verify that the AI Tier avatar ring and subscription chip disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kPremiumAvatarRingAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kAccountMenuAISubscriptionChipId)];
 }
 
 @end

@@ -8,6 +8,8 @@ source_set("public") {
   sources = [
     "account_menu_constants.h",
     "account_menu_constants.mm",
+    "ai_subscription_chip_constants.h",
+    "ai_subscription_chip_constants.mm",
   ]
   deps = [ "//base" ]
 }

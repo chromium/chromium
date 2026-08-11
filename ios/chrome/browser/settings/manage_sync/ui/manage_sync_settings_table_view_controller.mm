@@ -179,6 +179,8 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                           email:email
                           managementDescription:managementDescription
                                 useLargeMargins:YES];
+  // The delegate is not set, as the subscription chip should not be displayed,
+  // and so it can’t be tapped.
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

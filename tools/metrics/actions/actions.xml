@@ -46710,6 +46710,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountMenu_SubscriptionChip">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user taps on the AI subscription chip in the account menu.
+    iOS only.
+  </description>
+</action>
+
 <action name="Signin_AccountPicker_Close">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
