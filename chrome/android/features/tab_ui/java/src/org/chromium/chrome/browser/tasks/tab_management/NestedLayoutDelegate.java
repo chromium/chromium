@@ -11,6 +11,7 @@ import android.util.SparseIntArray;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -35,13 +36,20 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public boolean requiresThumbnailUpdateOnDeselect() {
+    boolean requiresThumbnailUpdateOnDeselect() {
         return false;
     }
 
     @Override
-    public boolean requiresThumbnailUpdateOnSelect() {
+    boolean requiresThumbnailUpdateOnSelect() {
         return false;
+    }
+
+    @Override
+    @MediaState
+    int getMediaIndicatorState(Tab representativeTab, PropertyModel model) {
+        if (TabProperties.isTabGroupHeader(model)) return MediaState.NONE;
+        return representativeTab.getMediaState();
     }
 
     /**
@@ -49,7 +57,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
      * corresponding UI list position.
      */
     @Override
-    public int getInsertionIndexOfTab(Tab tab) {
+    int getInsertionIndexOfTab(Tab tab) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
@@ -158,7 +166,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didMoveTabGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-        // Move the grouo header along with all the child tabs.
+        // Move the group header along with all the child tabs.
         Token tabGroupId = movedTab.getTabGroupId();
         assert tabGroupId != null;
 
@@ -226,7 +234,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {
+    void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId != null) {
             model.set(TabProperties.TAB_GROUP_ID, tabGroupId);

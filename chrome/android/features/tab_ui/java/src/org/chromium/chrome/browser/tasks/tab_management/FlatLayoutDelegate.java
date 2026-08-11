@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -35,17 +36,23 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public boolean requiresThumbnailUpdateOnDeselect() {
+    boolean requiresThumbnailUpdateOnDeselect() {
         return false;
     }
 
     @Override
-    public boolean requiresThumbnailUpdateOnSelect() {
+    boolean requiresThumbnailUpdateOnSelect() {
         return true;
     }
 
     @Override
-    public int getInsertionIndexOfTab(Tab tab) {
+    @MediaState
+    int getMediaIndicatorState(Tab representativeTab, PropertyModel model) {
+        return representativeTab.getMediaState();
+    }
+
+    @Override
+    int getInsertionIndexOfTab(Tab tab) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
         // Compute the index of the tab within the tab's group.
         @Nullable PropertyModel model = mModelList.getFirstTabPropertyModel();

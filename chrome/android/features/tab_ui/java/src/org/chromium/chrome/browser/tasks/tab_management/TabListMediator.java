@@ -1909,43 +1909,17 @@ public class TabListMediator implements TabListNotificationHandler {
                         : state);
     }
 
-    @VisibleForTesting
-    public boolean isTabInTabGroup(Tab tab) {
+    boolean isTabInTabGroup(Tab tab) {
         TabModel tabModel = getCurrentTabModelChecked();
         assert tabModel.isTabModelRestored();
 
         return tabModel.isTabInTabGroup(tab);
     }
 
-    // TODO(crbug.com/509226293): Delegate media state resolution to TabListLayoutDelegate.
     private @MediaState int getTabGridMediaIndicator(Tab representativeTab, PropertyModel model) {
-        if (mLayoutType == TabListLayoutType.NESTED) {
-            if (TabProperties.isTabGroupHeader(model)) {
-                return MediaState.NONE;
-            }
-            // For nested layout child tabs, we do not aggregate the media state of the entire
-            // group.
-            return representativeTab.getMediaState();
-        }
+        if (!TabProperties.isTabOrTabGroup(model)) return MediaState.MAX_VALUE;
 
-        @MediaState int stateToReturn = representativeTab.getMediaState();
-        // If the tab is not in a group, or the  state has the highest priority, then return
-        // the state of the representative tab.
-        if (mLayoutType == TabListLayoutType.FLAT
-                || !isTabInTabGroup(representativeTab)
-                || stateToReturn == MediaState.MAX_VALUE) {
-            return stateToReturn;
-        }
-
-        List<Tab> relatedTabs = getRelatedTabsForId(representativeTab.getId());
-        for (Tab tab : relatedTabs) {
-            @MediaState int currentState = tab.getMediaState();
-            if (currentState > stateToReturn) {
-                stateToReturn = currentState;
-            }
-            if (stateToReturn == MediaState.MAX_VALUE) return stateToReturn;
-        }
-        return stateToReturn;
+        return mTabListLayoutDelegate.getMediaIndicatorState(representativeTab, model);
     }
 
     /**

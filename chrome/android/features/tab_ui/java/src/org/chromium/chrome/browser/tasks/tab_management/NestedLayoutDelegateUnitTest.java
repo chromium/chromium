@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -69,6 +71,35 @@ public class NestedLayoutDelegateUnitTest {
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
         when(mTab3.getId()).thenReturn(TAB3_ID);
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnDeselect() {
+        assertFalse(mDelegate.requiresThumbnailUpdateOnDeselect());
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnSelect() {
+        assertFalse(mDelegate.requiresThumbnailUpdateOnSelect());
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_Tab() {
+        PropertyModel tabModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        int state = mDelegate.getMediaIndicatorState(mTab1, tabModel);
+        assertEquals(MediaState.AUDIBLE, state);
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_GroupHeader() {
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, new Token(1, 2))
+                        .build();
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        int state = mDelegate.getMediaIndicatorState(mTab1, headerModel);
+        assertEquals(MediaState.NONE, state);
     }
 
     @Test

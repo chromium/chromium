@@ -11,6 +11,7 @@ import android.util.Pair;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -32,19 +33,29 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     }
 
     /** Returns the insertion index for a new tab card. */
-    public abstract int getInsertionIndexOfTab(Tab tab);
+    abstract int getInsertionIndexOfTab(Tab tab);
 
     /**
      * Whether this layout requires a thumbnail cache invalidation fetch when a tab is deselected.
      * Often required for multi-thumbnail cluster views (like Grouped layouts).
      */
-    public abstract boolean requiresThumbnailUpdateOnDeselect();
+    abstract boolean requiresThumbnailUpdateOnDeselect();
 
     /**
      * Whether this layout requires fetching a fresh thumbnail when a tab becomes selected. Should
      * be false for layouts that do not support thumbnails (like Vertical Tabs).
      */
-    public abstract boolean requiresThumbnailUpdateOnSelect();
+    abstract boolean requiresThumbnailUpdateOnSelect();
+
+    /**
+     * Resolves the visual media state indicator (e.g. playing audio) for a tab card or group
+     * header.
+     *
+     * @param representativeTab The representative tab for the card.
+     * @param model The property model associated with the tab or group header.
+     * @return The {@link MediaState} that should be displayed.
+     */
+    abstract @MediaState int getMediaIndicatorState(Tab representativeTab, PropertyModel model);
 
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
@@ -90,7 +101,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      * Initializes layout-specific group properties on a child tab card model. Defaults to a no-op
      * for layouts that do not style child tab cards.
      */
-    public void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {}
+    void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {}
 
     protected boolean hasHigherBackendIndex(int modelIndex, int targetModelIndex) {
         return modelIndex != TabModel.INVALID_TAB_INDEX && modelIndex > targetModelIndex;

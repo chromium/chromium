@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -37,6 +39,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link GroupedLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,6 +67,69 @@ public class GroupedLayoutDelegateUnitTest {
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnDeselect() {
+        assertTrue(mDelegate.requiresThumbnailUpdateOnDeselect());
+    }
+
+    @Test
+    public void testRequiresThumbnailUpdateOnSelect() {
+        assertTrue(mDelegate.requiresThumbnailUpdateOnSelect());
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_NotInGroup() {
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        int state = mDelegate.getMediaIndicatorState(mTab1, model);
+        assertEquals(MediaState.AUDIBLE, state);
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_InGroup() {
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
+        when(mTab2.getMediaState()).thenReturn(MediaState.RECORDING);
+
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
+
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        int state = mDelegate.getMediaIndicatorState(mTab1, model);
+        assertEquals(MediaState.RECORDING, state);
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_InGroup_RepTabHasMaxPriority() {
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getMediaState()).thenReturn(MediaState.MAX_VALUE);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        int state = mDelegate.getMediaIndicatorState(mTab1, model);
+        assertEquals(MediaState.MAX_VALUE, state);
+
+        // Fast exit should mean getRelatedTabsForId is never called.
+        verify(mMediator, never()).getRelatedTabsForId(1);
+    }
+
+    @Test
+    public void testGetMediaIndicatorState_InGroup_RepTabHasHigherPriority() {
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab1.getMediaState()).thenReturn(MediaState.RECORDING);
+        when(mTab2.getMediaState()).thenReturn(MediaState.AUDIBLE);
+
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
+
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        int state = mDelegate.getMediaIndicatorState(mTab1, model);
+        assertEquals(MediaState.RECORDING, state);
     }
 
     @Test
