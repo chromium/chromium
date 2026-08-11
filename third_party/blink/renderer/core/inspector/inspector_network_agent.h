@@ -344,12 +344,6 @@ class CORE_EXPORT InspectorNetworkAgent final
   void getRequestPostData(const String& request_id,
                           std::unique_ptr<GetRequestPostDataCallback>) override;
 
-  protocol::Response setAcceptedEncodings(
-      std::unique_ptr<protocol::Array<protocol::Network::ContentEncoding>>
-          encodings) override;
-
-  protocol::Response clearAcceptedEncodingsOverride() override;
-
   // Called from other agents.
   protocol::Response GetResponseBody(const String& request_id,
                                      String* content,
@@ -429,7 +423,6 @@ class CORE_EXPORT InspectorNetworkAgent final
   InspectorAgentState::Integer total_buffer_size_;
   InspectorAgentState::Integer resource_buffer_size_;
   InspectorAgentState::Integer max_post_data_size_;
-  InspectorAgentState::BooleanMap accepted_encodings_;
   InspectorAgentState::Boolean report_direct_socket_traffic_;
   InspectorAgentState::Boolean is_durable_messages_enabled_;
 };

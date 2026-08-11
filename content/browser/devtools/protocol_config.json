@@ -125,8 +125,6 @@
                   "takeResponseBodyForInterceptionAsStream",
                   "getSecurityIsolationStatus",
                   "loadNetworkResource",
-                  "setAcceptedEncodings",
-                  "clearAcceptedEncodingsOverride",
                   "enableReportingApi",
                   "enableDeviceBoundSessions",
                   "fetchSchemefulSite",

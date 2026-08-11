@@ -1193,25 +1193,6 @@ BuildProtocolDeviceBoundSessionUsages(
   return protocol_list;
 }
 
-using SourceTypeEnum = net::SourceStreamType;
-namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
-std::optional<SourceTypeEnum> SourceTypeFromProtocol(
-    const protocol::Network::ContentEncoding& encoding) {
-  if (ContentEncodingEnum::Gzip == encoding) {
-    return SourceTypeEnum::kGzip;
-  }
-  if (ContentEncodingEnum::Br == encoding) {
-    return SourceTypeEnum::kBrotli;
-  }
-  if (ContentEncodingEnum::Deflate == encoding) {
-    return SourceTypeEnum::kDeflate;
-  }
-  if (ContentEncodingEnum::Zstd == encoding) {
-    return SourceTypeEnum::kZstd;
-  }
-  return std::nullopt;
-}
-
 }  // namespace
 
 class BackgroundSyncRestorer {
@@ -1475,7 +1456,6 @@ DispatchResponse NetworkHandler::Disable() {
   }
   extra_headers_.clear();
   session()->browser_originating_session_state()->extra_request_headers.clear();
-  ClearAcceptedEncodingsOverride();
   enable_third_party_cookie_restriction_ = false;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   device_bound_session_receiver_.reset();
@@ -2292,26 +2272,6 @@ Response NetworkHandler::FetchSchemefulSite(const std::string& origin,
 
 Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {
   cache_disabled_ = cache_disabled;
-  return Response::FallThrough();
-}
-
-Response NetworkHandler::SetAcceptedEncodings(
-    std::unique_ptr<Array<Network::ContentEncoding>> encodings) {
-  std::set<net::SourceStreamType> accepted_stream_types;
-  for (auto encoding : *encodings) {
-    auto type = SourceTypeFromProtocol(encoding);
-    if (!type) {
-      return Response::InvalidParams("Unknown encoding type: " + encoding);
-    }
-    accepted_stream_types.insert(type.value());
-  }
-  accepted_stream_types_ = std::move(accepted_stream_types);
-
-  return Response::FallThrough();
-}
-
-Response NetworkHandler::ClearAcceptedEncodingsOverride() {
-  accepted_stream_types_ = std::nullopt;
   return Response::FallThrough();
 }
 
@@ -3889,15 +3849,6 @@ void NetworkHandler::ApplyOverrides(
   }
   *skip_service_worker |= bypass_service_worker_;
   *disable_cache |= cache_disabled_;
-  if (!accepted_stream_types_) {
-    return;
-  }
-  if (!*accepted_stream_types) {
-    *accepted_stream_types = std::vector<net::SourceStreamType>();
-  }
-  (*accepted_stream_types)
-      ->insert((*accepted_stream_types)->end(), accepted_stream_types_->begin(),
-               accepted_stream_types_->end());
 }
 
 void NetworkHandler::ApplyCookieControlsOverrides(

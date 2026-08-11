@@ -171,11 +171,6 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
-  Response SetAcceptedEncodings(
-      std::unique_ptr<Array<Network::ContentEncoding>> encodings) override;
-
-  Response ClearAcceptedEncodingsOverride() override;
-
   void ClearBrowserCache(
       std::unique_ptr<ClearBrowserCacheCallback> callback) override;
 
@@ -453,7 +448,6 @@ class NetworkHandler : public DevToolsDomainHandler,
            std::unique_ptr<LoadNetworkResourceCallback>,
            base::UniquePtrComparator>
       loaders_;
-  std::optional<std::set<net::SourceStreamType>> accepted_stream_types_;
   absl::flat_hash_map<String, std::pair<String, bool>> received_body_data_;
   bool did_modifications_ = false;
   base::OnceClosure cleanup_after_modifications_callback_;

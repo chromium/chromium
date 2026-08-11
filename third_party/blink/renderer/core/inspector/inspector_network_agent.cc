@@ -772,34 +772,6 @@ String IPAddressToString(const net::IPAddress& address) {
   return StrCat({"[", unbracketed, "]"});
 }
 
-namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
-
-String AcceptedEncodingFromProtocol(
-    const protocol::Network::ContentEncoding& encoding) {
-  String result;
-  if (ContentEncodingEnum::Gzip == encoding ||
-      ContentEncodingEnum::Br == encoding ||
-      ContentEncodingEnum::Deflate == encoding ||
-      ContentEncodingEnum::Zstd == encoding) {
-    result = encoding;
-  }
-  return result;
-}
-
-using SourceTypeEnum = net::SourceStreamType;
-SourceTypeEnum SourceTypeFromString(const String& type) {
-  if (type == ContentEncodingEnum::Gzip)
-    return SourceTypeEnum::kGzip;
-  if (type == ContentEncodingEnum::Deflate)
-    return SourceTypeEnum::kDeflate;
-  if (type == ContentEncodingEnum::Br)
-    return SourceTypeEnum::kBrotli;
-  if (type == ContentEncodingEnum::Zstd) {
-    return SourceTypeEnum::kZstd;
-  }
-  NOTREACHED();
-}
-
 String RenderBlockingBehaviorToString(RenderBlockingBehavior behavior) {
   switch (behavior) {
     case RenderBlockingBehavior::kUnset:
@@ -1592,20 +1564,6 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     if (!stack_id.IsNull()) {
       request.SetDevToolsStackId(stack_id);
     }
-  }
-  if (!accepted_encodings_.IsEmpty()) {
-    scoped_refptr<base::RefCountedData<base::flat_set<net::SourceStreamType>>>
-        accepted_stream_types = request.GetDevToolsAcceptedStreamTypes();
-    if (!accepted_stream_types) {
-      accepted_stream_types = base::MakeRefCounted<
-          base::RefCountedData<base::flat_set<net::SourceStreamType>>>();
-    }
-    if (!accepted_encodings_.Get("none")) {
-      for (auto key : accepted_encodings_.Keys()) {
-        accepted_stream_types->data.insert(SourceTypeFromString(key));
-      }
-    }
-    request.SetDevToolsAcceptedStreamTypes(std::move(accepted_stream_types));
   }
 }
 
@@ -2447,7 +2405,6 @@ protocol::Response InspectorNetworkAgent::disable() {
   extra_request_headers_.clear();
   resources_data_->Clear();
   streaming_request_ids_.clear();
-  clearAcceptedEncodingsOverride();
   return protocol::Response::Success();
 }
 
@@ -2607,36 +2564,6 @@ protocol::Response InspectorNetworkAgent::canClearBrowserCache(bool* result) {
 
 protocol::Response InspectorNetworkAgent::canClearBrowserCookies(bool* result) {
   *result = true;
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorNetworkAgent::setAcceptedEncodings(
-    std::unique_ptr<protocol::Array<protocol::Network::ContentEncoding>>
-        encodings) {
-  HashSet<String> accepted_encodings;
-  for (const protocol::Network::ContentEncoding& encoding : *encodings) {
-    String value = AcceptedEncodingFromProtocol(encoding);
-    if (value.IsNull()) {
-      return protocol::Response::InvalidParams("Unknown encoding type: " +
-                                               encoding.Utf8());
-    }
-    accepted_encodings.insert(value);
-  }
-  // If invoked with an empty list, it means none of the encodings should be
-  // accepted. See InspectorNetworkAgent::PrepareRequest.
-  if (accepted_encodings.empty())
-    accepted_encodings.insert("none");
-
-  // Set the inspector state.
-  accepted_encodings_.Clear();
-  for (auto encoding : accepted_encodings)
-    accepted_encodings_.Set(encoding, true);
-
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorNetworkAgent::clearAcceptedEncodingsOverride() {
-  accepted_encodings_.Clear();
   return protocol::Response::Success();
 }
 
@@ -2900,8 +2827,6 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       resource_buffer_size_(&agent_state_,
                             /*default_value=*/kDefaultResourceBufferSize),
       max_post_data_size_(&agent_state_, /*default_value=*/0),
-      accepted_encodings_(&agent_state_,
-                          /*default_value=*/false),
       report_direct_socket_traffic_(&agent_state_,
                                     /*default_value=*/false),
       is_durable_messages_enabled_(&agent_state_,
