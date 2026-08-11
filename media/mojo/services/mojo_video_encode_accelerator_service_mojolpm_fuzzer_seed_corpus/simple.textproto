@@ -144,7 +144,6 @@ actions {
           m_metadata {
             new {
               id: 1
-              m_allow_overlay: false
               m_capture_version {
                 new {
                   id: 1

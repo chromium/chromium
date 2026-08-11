@@ -224,8 +224,6 @@ void VideoToolboxFrameConverter::Convert(
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }
-  frame->metadata().allow_overlay =
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;

@@ -263,8 +263,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   auto codec_image_holder = std::move(record.codec_image_holder);
 
   CHECK(record.shared_image);
-  const bool has_scanout =
-      record.shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   gfx::ColorSpace color_space = record.shared_image->color_space();
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       pixel_format, std::move(record.shared_image), gpu::SyncToken(),
@@ -289,7 +287,6 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
 
   const bool wants_promotion_hints =
       overlay_mode == OverlayMode::kRequestPromotionHints;
-  frame->metadata().allow_overlay = has_scanout;
   frame->metadata().wants_promotion_hint = wants_promotion_hints;
   frame->metadata().in_surface_view = !is_texture_owner_backed;
 

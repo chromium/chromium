@@ -655,11 +655,6 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   // tests).
   frame->metadata().power_efficient = true;
 
-  // Allow this video frame to be promoted as an overlay, because it was
-  // registered with an ImagePipe.
-  frame->metadata().allow_overlay =
-      frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-
   if (protected_output_) {
     frame->metadata().protected_video = true;
     frame->metadata().hw_protected = true;

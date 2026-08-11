@@ -98,7 +98,6 @@ scoped_refptr<VideoFrame> CreateTestNV12VideoFrame() {
     return nullptr;
   }
 
-  video_frame->metadata().allow_overlay = true;
   video_frame->metadata().end_of_stream = false;
   video_frame->metadata().read_lock_fences_enabled = true;
   video_frame->metadata().power_efficient = true;
@@ -787,7 +786,6 @@ TEST_F(OOPVideoDecoderServiceTest,
   EXPECT_FALSE(video_frame_received->metadata().end_of_stream);
   EXPECT_TRUE(video_frame_received->metadata().read_lock_fences_enabled);
   EXPECT_TRUE(video_frame_received->metadata().power_efficient);
-  EXPECT_TRUE(video_frame_received->metadata().allow_overlay);
 }
 
 // Tests that a mojom::VideoDecoderClient::OnWaiting() call originating from the

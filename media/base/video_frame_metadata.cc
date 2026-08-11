@@ -30,7 +30,6 @@ void VideoFrameMetadata::MergeMetadataFrom(
   if (source.a != kDefaultMetadata.a) \
   this->a = source.a
 
-  MERGE_VALUE_FIELD(allow_overlay, metadata_source);
   MERGE_OPTIONAL_FIELD(capture_begin_time, metadata_source);
   MERGE_OPTIONAL_FIELD(capture_end_time, metadata_source);
   MERGE_OPTIONAL_FIELD(capture_counter, metadata_source);

@@ -44,11 +44,6 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // Clear metadata fields that only make sense for texture backed frames.
   void ClearTextureFrameMetadata();
 
-  // Sources of VideoFrames use this marker to indicate that the associated
-  // VideoFrame can be overlaid, case in which its contents do not need to be
-  // further composited but displayed directly.
-  bool allow_overlay = false;
-
   // Video capture begin/end timestamps.  Consumers can use these values for
   // dynamic optimizations, logging stats, etc.
   std::optional<base::TimeTicks> capture_begin_time;
@@ -138,10 +133,9 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   std::optional<VideoTransformation> transformation;
 
   // Android only: For legacy overlays (SurfaceView/Dialog based) this is
-  // required for the frame to be suitable for overlays, even if `allow_overlay`
-  // is set. if `allow_overlay` is set, but `in_surface_view` is not Display
-  // Compositor will process frame and generate appropriate overlay promotion
-  // hints, but will still composite video.
+  // required for the frame to be suitable for overlays. If `in_surface_view`
+  // is not set, Display Compositor will process frame and generate appropriate
+  // overlay promotion hints, but will still composite video.
   bool in_surface_view = false;
 
   // Android & Windows only: if set, then this frame's resource would like to

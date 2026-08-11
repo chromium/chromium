@@ -65,7 +65,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.capture_counter.has_value());
   EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
   EXPECT_FALSE(metadata_out.transformation.has_value());
-  EXPECT_FALSE(metadata_out.allow_overlay);
   EXPECT_FALSE(metadata_out.region_capture_rect.has_value());
   EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
@@ -122,7 +121,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
 
   // bools
-  metadata_in.allow_overlay = true;
   metadata_in.copy_required = true;
   metadata_in.end_of_stream = true;
   metadata_in.in_surface_view = true;
@@ -180,7 +178,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
   EXPECT_EQ(metadata_in.region_capture_rect, metadata_out.region_capture_rect);
   EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
-  EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
   EXPECT_EQ(metadata_in.capture_version, metadata_out.capture_version);
   EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);

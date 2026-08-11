@@ -394,7 +394,6 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
           media::PIXEL_FORMAT_I420, shared_image, gpu::SyncToken(),
           base::DoNothing(), gfx::Rect(si_size), si_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
@@ -440,7 +439,6 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
           media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
           base::DoNothing(), gfx::Rect(si_size), si_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 

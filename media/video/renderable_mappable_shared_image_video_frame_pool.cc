@@ -278,8 +278,6 @@ scoped_refptr<VideoFrame> FrameResources::CreateVideoFrame() {
   }
 
   video_frame->set_color_space(shared_image_->color_space());
-  video_frame->metadata().allow_overlay =
-      shared_image_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
   // Waiting on GPU fences is necessary for native mappable SIs, but is not
   // necessary for mappable SIs backed by shared memory.

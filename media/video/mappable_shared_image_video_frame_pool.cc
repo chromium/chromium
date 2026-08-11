@@ -1164,8 +1164,6 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
 
   frame->set_color_space(frame_resource->shared_image->color_space());
 
-  frame->metadata().allow_overlay = frame_resource->shared_image->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_SCANOUT);
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   return frame;

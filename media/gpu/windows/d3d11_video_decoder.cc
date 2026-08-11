@@ -944,8 +944,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                      scoped_refptr<D3D11PictureBuffer>(picture_buffer)));
   frame->SetReleaseMailboxCB(
       base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
-  frame->metadata().allow_overlay =
-      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   frame->metadata().power_efficient = true;
 
   // If the output texture is in RGB pixel format, then the color space needs to

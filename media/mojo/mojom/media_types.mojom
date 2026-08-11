@@ -396,8 +396,6 @@ struct CaptureVersion {
 
 // See media/base/video_frame_metadata.h for a description of fields.
 struct VideoFrameMetadata {
-  bool allow_overlay;
-
   mojo_base.mojom.TimeTicks? capture_begin_time;
   mojo_base.mojom.TimeTicks? capture_end_time;
 

@@ -70,7 +70,6 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   metadata.transformation = media::VIDEO_ROTATION_90;
 
   // bools
-  metadata.allow_overlay = true;
   metadata.copy_required = true;
   metadata.end_of_stream = true;
   metadata.in_surface_view = true;
@@ -112,7 +111,6 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
 
 void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
                                       const media::VideoFrameMetadata& b) {
-  EXPECT_EQ(a.allow_overlay, b.allow_overlay);
   EXPECT_EQ(a.capture_begin_time, b.capture_begin_time);
   EXPECT_EQ(a.capture_end_time, b.capture_end_time);
   EXPECT_EQ(a.capture_counter, b.capture_counter);
@@ -1060,7 +1058,6 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   partial_metadata.capture_update_rect = kTempRect;
   partial_metadata.reference_time = kTempTicks;
   partial_metadata.processing_time = kTempDelta;
-  partial_metadata.allow_overlay = false;
 
   // Merging partial metadata into full metadata partially override it.
   full_metadata.MergeMetadataFrom(partial_metadata);
@@ -1068,7 +1065,6 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   EXPECT_EQ(partial_metadata.capture_update_rect, kTempRect);
   EXPECT_EQ(partial_metadata.reference_time, kTempTicks);
   EXPECT_EQ(partial_metadata.processing_time, kTempDelta);
-  EXPECT_EQ(partial_metadata.allow_overlay, false);
 }
 
 TEST(VideoFrame, AccessPlaneDataSpans) {
