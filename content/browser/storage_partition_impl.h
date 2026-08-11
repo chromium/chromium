@@ -149,9 +149,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideDeviceBoundSessionManagerForTesting(
-      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
-          device_bound_session_manager);
 
   // StoragePartition interface.
   const StoragePartitionConfig& GetConfig() const override;
@@ -203,6 +200,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
   network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
       override;
+  void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) override;
 
   void DeleteStaleSessionData() override;
 

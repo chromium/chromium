@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace blink {
@@ -156,6 +157,12 @@ class TestStoragePartition : public StoragePartition {
 
   network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
       override;
+  void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) override;
+
+  // TODO(crbug.com/540787715): Clean up this old setter in favor of
+  // OverrideDeviceBoundSessionManagerForTesting.
   void set_device_bound_session_manager(
       network::mojom::DeviceBoundSessionManager* device_bound_session_manager) {
     device_bound_session_manager_ = device_bound_session_manager;
@@ -265,6 +272,8 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
   raw_ptr<network::mojom::DeviceBoundSessionManager>
       device_bound_session_manager_ = nullptr;
+  std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+      device_bound_session_manager_owned_;
   raw_ptr<PlatformNotificationContext> platform_notification_context_ = nullptr;
   raw_ptr<DevToolsBackgroundServicesContext>
       devtools_background_services_context_ = nullptr;

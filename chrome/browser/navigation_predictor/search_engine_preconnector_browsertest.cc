@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -25,13 +26,21 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/preconnect_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
+#include "components/search_engines/template_url_service.h"
+#include "services/network/test/mock_device_bound_session_manager.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace {
 
@@ -1431,3 +1440,50 @@ IN_PROC_BROWSER_TEST_P(
               GetSearchEnginePreconnector()->CalculateBackoffMultiplier());
   }
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class SearchEnginePreconnectorDeviceBoundSessionBrowserTest
+    : public SearchEnginePreconnectorBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kDeviceBoundSessionsDsePrewarmer};
+};
+
+IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDeviceBoundSessionBrowserTest,
+                       PrewarmsDeviceBoundSessionOnStart) {
+  auto mock_manager =
+      std::make_unique<network::MockDeviceBoundSessionManager>();
+  network::MockDeviceBoundSessionManager* raw_mock = mock_manager.get();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*raw_mock, PrewarmSessionsForUrl)
+      .WillOnce([&run_loop](const GURL& url,
+                            network::mojom::DeviceBoundSessionManager::
+                                PrewarmSessionsForUrlCallback callback) {
+        std::move(callback).Run({}, std::nullopt);
+        run_loop.Quit();
+      });
+
+  auto* preconnector =
+      SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(preconnector);
+
+  // Stop preconnector so the pre-existing pre-warmer is destroyed before we
+  // replace the proxy.
+  preconnector->StopPreconnecting();
+
+  browser()
+      ->GetProfile()
+      ->GetDefaultStoragePartition()
+      ->OverrideDeviceBoundSessionManagerForTesting(std::move(mock_manager));
+
+  preconnector->StartPreconnecting(false);
+
+  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(raw_mock);
+  testing::Mock::AllowLeak(raw_mock);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

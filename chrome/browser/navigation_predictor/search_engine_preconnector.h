@@ -16,13 +16,22 @@
 #include "content/public/browser/preconnect_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/net_buildflags.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/net/device_bound_session_prewarmer.h"
+#endif
 
 namespace content {
 class BrowserContext;
 class WebContents;
 }  // namespace content
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class DeviceBoundSessionPrewarmer;
+#endif
 
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
@@ -245,6 +254,10 @@ class SearchEnginePreconnector
 
   // Used for testing. Override the short session value.
   std::optional<bool> is_short_session_for_testing_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<DeviceBoundSessionPrewarmer> device_bound_session_prewarmer_;
+#endif
 
   base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };

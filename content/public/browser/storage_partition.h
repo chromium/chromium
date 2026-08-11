@@ -167,6 +167,9 @@ class CONTENT_EXPORT StoragePartition {
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual network::mojom::DeviceBoundSessionManager*
   GetDeviceBoundSessionManager() = 0;
+  virtual void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) = 0;
 
   // This clears stale session cookies/storage from the current profile. This
   // must only be called after session restore has completed to ensure active

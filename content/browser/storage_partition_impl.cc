@@ -3461,6 +3461,8 @@ void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(
     std::unique_ptr<network::mojom::DeviceBoundSessionManager>
         device_bound_session_manager) {
   DCHECK(initialized_);
+  device_bound_session_manager_.reset();
+
   mojo::MakeSelfOwnedReceiver(
       std::move(device_bound_session_manager),
       device_bound_session_manager_.BindNewPipeAndPassReceiver());

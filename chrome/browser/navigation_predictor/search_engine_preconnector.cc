@@ -27,11 +27,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/reconnect_notifier.h"
 #include "net/socket/next_proto.h"
 #include "services/network/public/cpp/constants.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "chrome/browser/net/device_bound_session_prewarmer.h"
+#endif
 
 namespace {
 
@@ -199,12 +204,38 @@ SearchEnginePreconnector::~SearchEnginePreconnector() = default;
 
 void SearchEnginePreconnector::StopPreconnecting() {
   preconnector_started_ = false;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  device_bound_session_prewarmer_.reset();
+#endif
   timer_.Stop();
 }
 
 void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
   preconnector_started_ = true;
   timer_.Stop();
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // TODO(crbug.com/544602735): Implement the DeviceBoundSessionPrewarmer as a
+  // KeyedService.
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsDsePrewarmer) &&
+      !device_bound_session_prewarmer_) {
+    device_bound_session_prewarmer_ =
+        std::make_unique<DeviceBoundSessionPrewarmer>(base::BindRepeating(
+            [](content::BrowserContext* browser_context) {
+              return browser_context->GetDefaultStoragePartition()
+                  ->GetDeviceBoundSessionManager();
+            },
+            browser_context_));
+    device_bound_session_prewarmer_->Start(base::BindRepeating(
+        [](base::WeakPtr<SearchEnginePreconnector> preconnector) {
+          return preconnector ? preconnector->GetDefaultSearchEngineOriginURL()
+                              : GURL();
+        },
+        GetWeakPtr()));
+  }
+#endif
+
   if (with_startup_delay) {
     StartPreconnectWithDelay(
         base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
