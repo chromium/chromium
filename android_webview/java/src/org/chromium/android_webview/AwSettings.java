@@ -149,6 +149,7 @@ public class AwSettings {
 
     @LayoutAlgorithm private int mLayoutAlgorithm = LAYOUT_ALGORITHM_NARROW_COLUMNS;
     private int mTextSizePercent = 100;
+    private boolean mTextZoomSetByEmbedder;
     private String mStandardFontFamily = "sans-serif";
     private String mFixedFontFamily = "monospace";
     private String mSansSerifFontFamily = "sans-serif";
@@ -415,14 +416,7 @@ public class AwSettings {
 
             // By default, scale the text size by the system font scale factor. Embedders
             // may override this by invoking setTextZoom().
-            mTextSizePercent =
-                    (int)
-                            (mTextSizePercent
-                                    * mAwContents
-                                            .getProvidedContext()
-                                            .getResources()
-                                            .getConfiguration()
-                                            .fontScale);
+            updateFontScaleLocked();
 
             mSupportLegacyQuirks = supportsLegacyQuirks;
             mAllowEmptyDocumentPersistence = allowEmptyDocumentPersistence;
@@ -963,6 +957,7 @@ public class AwSettings {
     public void setTextZoom(final int textZoom) {
         if (TRACE) Log.i(TAG, "setTextZoom=" + textZoom);
         synchronized (mAwSettingsLock) {
+            mTextZoomSetByEmbedder = true;
             if (mTextSizePercent != textZoom) {
                 mTextSizePercent = textZoom;
                 mEventHandler.updateWebkitPreferencesLocked();
@@ -2423,6 +2418,26 @@ public class AwSettings {
     public @HyperlinkContextMenuItems int getHyperlinkContextMenuItems() {
         synchronized (mAwSettingsLock) {
             return mHyperlinkContextMenuItems;
+        }
+    }
+
+    private void updateFontScaleLocked() {
+        if (mTextZoomSetByEmbedder) {
+            return;
+        }
+
+        float newFontScale =
+                mAwContents.getProvidedContext().getResources().getConfiguration().fontScale;
+        int newTextSizePercent = (int) (newFontScale * 100);
+        if (mTextSizePercent != newTextSizePercent) {
+            mTextSizePercent = newTextSizePercent;
+            mEventHandler.updateWebkitPreferencesLocked();
+        }
+    }
+
+    public void updateContext() {
+        synchronized (mAwSettingsLock) {
+            updateFontScaleLocked();
         }
     }
 

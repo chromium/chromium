@@ -1988,4 +1988,43 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> viewAndroidDelegate.getViewportInsetBottom() == oldInset.get() - scrollAmount,
                 "Insets never updated after scroll");
     }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testAdoptUpdatesSystemFontScale() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        TestAwContentsClient client = new TestAwContentsClient();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getResources().getConfiguration().fontScale =
+                            2.0f;
+                });
+
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getResources().getConfiguration().fontScale =
+                            1.0f;
+                });
+
+        AwTestContainerView newView = mActivityTestRule.reparentAwContents(oldView);
+
+        // Then check that if this was explicitly set we leave it alone.
+        Assert.assertEquals(100, newView.getAwContents().getSettings().getTextZoom());
+        newView.getAwContents().getSettings().setTextZoom(150);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getResources().getConfiguration().fontScale =
+                            1.5f;
+                });
+
+        AwTestContainerView newerView = mActivityTestRule.reparentAwContents(newView);
+
+        Assert.assertEquals(150, newerView.getAwContents().getSettings().getTextZoom());
+    }
 }

@@ -1450,6 +1450,11 @@ public class AwContents implements SmartClipProvider {
      */
     private void updateContext(Context newContext) {
         mContext = ClassLoaderContextWrapperFactory.get(newContext);
+
+        if (mSettings != null) {
+            mSettings.updateContext();
+        }
+
         WindowAndroidWrapper newWindowAndroid = getWindowAndroid(newContext);
         if (newWindowAndroid != mWindowAndroid) {
             mWindowAndroid = newWindowAndroid;
