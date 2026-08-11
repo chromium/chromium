@@ -33,6 +33,7 @@ _CONVERTED_SCHEMAS = [
     ('system_cpu.idl', 'system_cpu.webidl'),
     ('system_memory.idl', 'system_memory.webidl'),
     ('system_network.idl', 'system_network.webidl'),
+    ('image_loader_private.idl', 'image_loader_private.webidl'),
     ('system_storage.idl', 'system_storage.webidl'),
     ('app_runtime.idl', 'app_runtime.webidl'),
     ('bluetooth_low_energy.idl', 'bluetooth_low_energy.webidl'),

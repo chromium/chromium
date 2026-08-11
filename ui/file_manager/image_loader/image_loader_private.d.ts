@@ -1,13 +1,13 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.imageLoaderPrivate API
- * Generated from: chrome/common/extensions/api/image_loader_private.idl
+ * Generated from: chrome/common/extensions/api/image_loader_private.webidl
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/image_loader_private.idl -g ts_definitions` to
- * regenerate.
+ * chrome/common/extensions/api/image_loader_private.webidl -g ts_definitions`
+ * to regenerate.
  */
 
 

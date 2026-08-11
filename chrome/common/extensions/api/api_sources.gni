@@ -127,7 +127,7 @@ if (enable_extensions) {
       "file_manager_private_internal.webidl",
       "file_system_provider.webidl",
       "file_system_provider_internal.idl",
-      "image_loader_private.idl",
+      "image_loader_private.webidl",
       "input_method_private.json",
       "login.webidl",
       "login_screen_storage.webidl",
