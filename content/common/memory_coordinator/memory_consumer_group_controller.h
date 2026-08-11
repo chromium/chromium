@@ -5,7 +5,6 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_CONSUMER_GROUP_CONTROLLER_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_CONSUMER_GROUP_CONTROLLER_H_
 
-#include <optional>
 #include <string_view>
 
 #include "base/memory_coordinator/traits.h"
@@ -31,11 +30,10 @@ class MemoryConsumerGroupController {
       ChildProcessId child_process_id) = 0;
 
   // Called when a new consumer group is added/removed to/from the host.
-  virtual void OnConsumerGroupAdded(
-      uint32_t consumer_id,
-      std::string_view consumer_name,
-      std::optional<base::MemoryConsumerTraits> traits,
-      ChildProcessId child_process_id) = 0;
+  virtual void OnConsumerGroupAdded(uint32_t consumer_id,
+                                    std::string_view consumer_name,
+                                    base::MemoryConsumerTraits traits,
+                                    ChildProcessId child_process_id) = 0;
   virtual void OnConsumerGroupRemoved(uint32_t consumer_id,
                                       ChildProcessId child_process_id) = 0;
 

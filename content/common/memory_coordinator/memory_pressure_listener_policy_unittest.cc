@@ -27,6 +27,12 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::UnorderedElementsAre;
 
+constexpr base::MemoryConsumerTraits kTestTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+
 class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
  public:
   MOCK_METHOD(void,
@@ -59,10 +65,10 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   const std::string kConsumerName2 = "consumer2";
   const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
 
-  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1, {},
-                                        kChildId);
-  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2, {},
-                                        kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                        kTestTraits, kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                        kTestTraits, kChildId);
 
   MemoryPressureListenerPolicy policy(policy_manager());
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
@@ -104,7 +110,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
 
   policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER,
                                               kRemoteChildId, &host);
-  policy_manager().OnConsumerGroupAdded(kRemoteId, kRemoteName, {},
+  policy_manager().OnConsumerGroupAdded(kRemoteId, kRemoteName, kTestTraits,
                                         kRemoteChildId);
 
   MemoryPressureListenerPolicy policy(policy_manager());
@@ -142,8 +148,8 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
     // limit that was set.
     EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
                           MemoryConsumerUpdate{kConsumerId, 50, true})));
-    policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName, {},
-                                          kChildId);
+    policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                          kTestTraits, kChildId);
     Mock::VerifyAndClearExpectations(&host);
 
     // Removing the policy should reset the limit to default (100%).

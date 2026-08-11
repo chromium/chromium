@@ -6,7 +6,6 @@
 
 #include <cstddef>
 #include <map>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -33,13 +32,17 @@ using ::testing::Test;
 struct ConsumerEntry {
   uint32_t consumer_id;
   std::string consumer_name;
-  std::optional<base::MemoryConsumerTraits> traits;
+  base::MemoryConsumerTraits traits;
   ProcessType process_type;
   ChildProcessId child_process_id;
   raw_ptr<MemoryConsumerGroupHost> host;
 };
 
-const std::optional<base::MemoryConsumerTraits> kTestTraits1 = std::nullopt;
+constexpr base::MemoryConsumerTraits kTestTraits1(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 }  // namespace
 
@@ -69,7 +72,7 @@ class MemoryConsumerRegistryTest : public Test,
 
   void OnConsumerGroupAdded(uint32_t consumer_id,
                             std::string_view consumer_name,
-                            std::optional<base::MemoryConsumerTraits> traits,
+                            base::MemoryConsumerTraits traits,
                             ChildProcessId child_process_id) override {
     const HostInfo& host_info = hosts_.at(child_process_id);
     entries_.push_back({consumer_id, std::string(consumer_name), traits,

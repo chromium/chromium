@@ -5,7 +5,6 @@
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -57,6 +56,12 @@ class MockChildMemoryCoordinator : public mojom::ChildMemoryCoordinator {
 #endif
 };
 
+constexpr base::MemoryConsumerTraits kTestTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+
 class MockMemoryConsumerGroupController : public MemoryConsumerGroupController {
  public:
   MOCK_METHOD(void,
@@ -75,7 +80,7 @@ class MockMemoryConsumerGroupController : public MemoryConsumerGroupController {
               OnConsumerGroupAdded,
               (uint32_t consumer_id,
                std::string_view consumer_name,
-               std::optional<base::MemoryConsumerTraits> traits,
+               base::MemoryConsumerTraits traits,
                ChildProcessId child_process_id),
               (override));
 
@@ -144,7 +149,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RegisterAndUnregister) {
 
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, std::nullopt));
+      kConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 
@@ -181,7 +186,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, UpdateConsumers) {
 
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, std::nullopt));
+      kConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 
@@ -221,7 +226,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, DisconnectCoordinator) {
 
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, std::nullopt));
+      kConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 
@@ -278,7 +283,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_TooManyConsumers) {
   for (size_t i = 0; i < kMaxMemoryConsumersPerProcess; ++i) {
     std::string name = "consumer" + base::NumberToString(i);
     registrations.push_back(mojom::MemoryConsumerRegistration::New(
-        base::PersistentHash(name), name, std::nullopt));
+        base::PersistentHash(name), name, kTestTraits));
   }
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
@@ -288,7 +293,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_TooManyConsumers) {
   std::string name = "extra";
   std::vector<mojom::MemoryConsumerRegistrationPtr> extra_registrations;
   extra_registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      base::PersistentHash(name), name, std::nullopt));
+      base::PersistentHash(name), name, kTestTraits));
   remote_host->Register(std::move(extra_registrations));
   EXPECT_EQ("Too many memory consumers registered",
             bad_message_observer.WaitForBadMessage());
@@ -317,7 +322,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_NameTooLong) {
   std::string long_name(kMaxMemoryConsumerNameLength + 1, 'a');
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      base::PersistentHash(long_name), long_name, std::nullopt));
+      base::PersistentHash(long_name), long_name, kTestTraits));
   remote_host->Register(std::move(registrations));
   EXPECT_EQ("Memory consumer name is too long",
             bad_message_observer.WaitForBadMessage());
@@ -345,7 +350,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_InvalidConsumerId) {
   const uint32_t kInvalidConsumerId = base::PersistentHash(kConsumerName) + 1;
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kInvalidConsumerId, kConsumerName, std::nullopt));
+      kInvalidConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   EXPECT_EQ("consumer_id does not match the hash of consumer_name",
             bad_message_observer.WaitForBadMessage());
@@ -379,9 +384,9 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_Batch) {
 
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(
-      mojom::MemoryConsumerRegistration::New(kIdA, kNameA, std::nullopt));
+      mojom::MemoryConsumerRegistration::New(kIdA, kNameA, kTestTraits));
   registrations.push_back(
-      mojom::MemoryConsumerRegistration::New(kIdB, kNameB, std::nullopt));
+      mojom::MemoryConsumerRegistration::New(kIdB, kNameB, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 
@@ -421,11 +426,11 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, Register_StopsOnInvalidEntry) {
 
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(
-      mojom::MemoryConsumerRegistration::New(kGoodId, kGoodName, std::nullopt));
+      mojom::MemoryConsumerRegistration::New(kGoodId, kGoodName, kTestTraits));
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      base::PersistentHash(kBadName) + 1, kBadName, std::nullopt));
+      base::PersistentHash(kBadName) + 1, kBadName, kTestTraits));
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      base::PersistentHash(kAfterName), kAfterName, std::nullopt));
+      base::PersistentHash(kAfterName), kAfterName, kTestTraits));
 
   mojo::test::BadMessageObserver bad_message_observer;
   remote_host->Register(std::move(registrations));
@@ -506,7 +511,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_Valid) {
   EXPECT_CALL(controller_, OnConsumerGroupAdded(kConsumerId, _, _, _));
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, std::nullopt));
+      kConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 
@@ -538,7 +543,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_InvalidRange) {
   EXPECT_CALL(controller_, OnConsumerGroupAdded(kConsumerId, _, _, _));
   std::vector<mojom::MemoryConsumerRegistrationPtr> registrations;
   registrations.push_back(mojom::MemoryConsumerRegistration::New(
-      kConsumerId, kConsumerName, std::nullopt));
+      kConsumerId, kConsumerName, kTestTraits));
   remote_host->Register(std::move(registrations));
   remote_host.FlushForTesting();
 

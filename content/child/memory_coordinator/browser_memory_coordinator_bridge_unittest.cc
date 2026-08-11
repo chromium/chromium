@@ -78,7 +78,11 @@ class DummyChildMemoryConsumerRegistryHost
   int register_count_ = 0;
 };
 
-const std::optional<base::MemoryConsumerTraits> kTestTraits1 = std::nullopt;
+constexpr base::MemoryConsumerTraits kTestTraits1(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 }  // namespace
 

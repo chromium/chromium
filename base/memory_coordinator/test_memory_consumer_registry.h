@@ -26,7 +26,7 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   // MemoryConsumerRegistry:
   void OnMemoryConsumerAdded(uint32_t consumer_id,
                              std::string_view consumer_name,
-                             std::optional<MemoryConsumerTraits> traits,
+                             MemoryConsumerTraits traits,
                              MemoryConsumer* consumer) override;
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                MemoryConsumer* consumer) override;

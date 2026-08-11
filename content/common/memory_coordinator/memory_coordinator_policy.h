@@ -5,7 +5,6 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_H_
 
-#include <optional>
 #include <string_view>
 #include <type_traits>
 
@@ -34,12 +33,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicy {
   virtual ~MemoryCoordinatorPolicy() = default;
 
   // Called when a new consumer group is added/removed.
-  virtual void OnConsumerGroupAdded(
-      uint32_t consumer_id,
-      std::string_view consumer_name,
-      std::optional<base::MemoryConsumerTraits> traits,
-      ProcessType process_type,
-      ChildProcessId child_process_id) = 0;
+  virtual void OnConsumerGroupAdded(uint32_t consumer_id,
+                                    std::string_view consumer_name,
+                                    base::MemoryConsumerTraits traits,
+                                    ProcessType process_type,
+                                    ChildProcessId child_process_id) = 0;
   virtual void OnConsumerGroupRemoved(uint32_t consumer_id,
                                       ChildProcessId child_process_id) = 0;
 

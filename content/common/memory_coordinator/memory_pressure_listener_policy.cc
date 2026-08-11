@@ -4,8 +4,6 @@
 
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
@@ -17,13 +15,12 @@ MemoryPressureListenerPolicy::MemoryPressureListenerPolicy(
     MemoryCoordinatorPolicyManager& manager)
     : PredicateMemoryCoordinatorPolicy(
           manager,
-          base::BindRepeating(
-              [](uint32_t consumer_id,
-                 std::optional<base::MemoryConsumerTraits> traits,
-                 ProcessType process_type,
-                 ChildProcessId child_process_id) {
-                return child_process_id.is_null();
-              })),
+          base::BindRepeating([](uint32_t consumer_id,
+                                 base::MemoryConsumerTraits traits,
+                                 ProcessType process_type,
+                                 ChildProcessId child_process_id) {
+            return child_process_id.is_null();
+          })),
       registration_(
           base::MemoryPressureListenerTag::kMemoryPressureListenerPolicy,
           this) {}

@@ -6,7 +6,6 @@
 #define REMOTING_BASE_MEMORY_CONSUMER_REGISTRY_H_
 
 #include <cstdint>
-#include <optional>
 #include <string_view>
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
@@ -32,7 +31,7 @@ class MemoryConsumerRegistry : public base::MemoryConsumerRegistry {
   // base::MemoryConsumerRegistry:
   void OnMemoryConsumerAdded(uint32_t consumer_id,
                              std::string_view consumer_name,
-                             std::optional<base::MemoryConsumerTraits> traits,
+                             base::MemoryConsumerTraits traits,
                              base::MemoryConsumer* consumer) override;
   void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                base::MemoryConsumer* consumer) override;

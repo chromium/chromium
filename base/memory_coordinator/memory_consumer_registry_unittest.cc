@@ -29,7 +29,7 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
               OnMemoryConsumerAdded,
               (uint32_t observer_id,
                std::string_view consumer_name,
-               std::optional<MemoryConsumerTraits> traits,
+               MemoryConsumerTraits traits,
                MemoryConsumer* consumer),
               (override));
   MOCK_METHOD(void,
@@ -37,6 +37,12 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
               (uint32_t observer_id, MemoryConsumer* consumer),
               (override));
 };
+
+constexpr MemoryConsumerTraits kTestTraits(
+    MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::InformationRetention::kLossless,
+    MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 }  // namespace
 
@@ -50,7 +56,7 @@ TEST(MemoryConsumerRegistryTest, AddAndRemoveMemoryConsumer) {
 
   EXPECT_CALL(registry,
               OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
-  registry.AddMemoryConsumer(kObserverName, std::nullopt, &consumer);
+  registry.AddMemoryConsumer(kObserverName, kTestTraits, &consumer);
 
   EXPECT_CALL(registry, OnMemoryConsumerRemoved(kObserverId, _));
   registry.RemoveMemoryConsumer(kObserverName, &consumer);
@@ -68,8 +74,7 @@ TEST(MemoryConsumerRegistryTest, MemoryConsumerRegistration) {
 
   EXPECT_CALL(registry.Get(),
               OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
-  registration.emplace(std::string_view(kObserverName), std::nullopt,
-                       &consumer);
+  registration.emplace(std::string_view(kObserverName), kTestTraits, &consumer);
 
   EXPECT_CALL(registry.Get(), OnMemoryConsumerRemoved(kObserverId, _));
   registration.reset();
@@ -89,8 +94,7 @@ TEST(MemoryConsumerRegistryTest,
 
   EXPECT_CALL(registry->Get(),
               OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
-  registration.emplace(std::string_view(kObserverName), std::nullopt,
-                       &consumer);
+  registration.emplace(std::string_view(kObserverName), kTestTraits, &consumer);
 
   EXPECT_CHECK_DEATH(registry.reset());
 
@@ -110,7 +114,7 @@ TEST(MemoryConsumerRegistryTest,
 
   EXPECT_CALL(registry->Get(),
               OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
-  registration.emplace(std::string_view(kObserverName), std::nullopt, &consumer,
+  registration.emplace(std::string_view(kObserverName), kTestTraits, &consumer,
                        MemoryConsumerRegistration::CheckUnregister::kDisabled);
 
   EXPECT_CALL(registry->Get(), OnMemoryConsumerRemoved(kObserverId, _));

@@ -17,7 +17,7 @@ namespace content {
 // MemoryConsumerRegistry::ConsumerGroup ---------------------------------------
 
 MemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
-    std::optional<base::MemoryConsumerTraits> traits,
+    base::MemoryConsumerTraits traits,
     std::string_view consumer_name)
     : traits_(traits), consumer_name_(consumer_name) {}
 
@@ -106,7 +106,7 @@ void MemoryConsumerRegistry::UpdateConsumers(
 void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits,
+    base::MemoryConsumerTraits traits,
     base::MemoryConsumer* consumer) {
   CHECK_LE(consumer_name.size(), kMaxMemoryConsumerNameLength);
 

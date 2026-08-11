@@ -25,7 +25,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
   void Init(std::string consumer_name,
-            std::optional<MemoryConsumerTraits> traits,
+            MemoryConsumerTraits traits,
             bool is_passive,
             CheckUnregister check_unregister,
             WeakPtr<AsyncMemoryConsumerRegistration> parent,
@@ -99,7 +99,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
 
 AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
     std::string_view consumer_name,
-    std::optional<MemoryConsumerTraits> traits,
+    MemoryConsumerTraits traits,
     MemoryConsumer* consumer,
     CheckUnregister check_unregister)
     : consumer_(consumer) {

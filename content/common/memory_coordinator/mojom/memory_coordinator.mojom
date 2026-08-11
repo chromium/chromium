@@ -48,7 +48,7 @@ struct MemoryConsumerTraits {
 struct MemoryConsumerRegistration {
   uint32 consumer_id;
   string consumer_name;
-  MemoryConsumerTraits? traits;
+  MemoryConsumerTraits traits;
 };
 
 // The interface for communicating with the MemoryConsumerRegistry that lives in

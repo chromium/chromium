@@ -5,12 +5,12 @@
 #ifndef CONTENT_CHILD_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_BRIDGE_H_
 #define CONTENT_CHILD_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_BRIDGE_H_
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/sequence_checker.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
@@ -45,7 +45,7 @@ class BrowserMemoryCoordinatorBridge
   // MemoryCoordinatorPolicy:
   void OnConsumerGroupAdded(uint32_t consumer_id,
                             std::string_view consumer_name,
-                            std::optional<base::MemoryConsumerTraits> traits,
+                            base::MemoryConsumerTraits traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(uint32_t consumer_id,
@@ -97,7 +97,7 @@ class BrowserMemoryCoordinatorBridge
 
   struct ConsumerDetails {
     std::string consumer_name;
-    std::optional<base::MemoryConsumerTraits> traits;
+    base::MemoryConsumerTraits traits;
   };
   // Tracks all consumer groups known to this class.
   absl::flat_hash_map<uint32_t, ConsumerDetails> groups_;

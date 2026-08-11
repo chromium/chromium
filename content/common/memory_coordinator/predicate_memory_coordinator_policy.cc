@@ -23,7 +23,7 @@ PredicateMemoryCoordinatorPolicy::~PredicateMemoryCoordinatorPolicy() = default;
 void PredicateMemoryCoordinatorPolicy::OnConsumerGroupAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits,
+    base::MemoryConsumerTraits traits,
     ProcessType process_type,
     ChildProcessId child_process_id) {
   if (predicate_.Run(consumer_id, traits, process_type, child_process_id)) {
@@ -48,7 +48,7 @@ void PredicateMemoryCoordinatorPolicy::SetLimit(int percentage,
   if (percentage == percentage_ && release_memory == release_memory_) {
     // If this is a repeated request to release memory, and we are actually
     // under pressure (limit < 100%), trigger a repeated release for stateless
-    // consumers and consumers without defined traits.
+    // consumers.
     if (release_memory &&
         percentage < base::MemoryConsumer::kDefaultMemoryLimit) {
       TriggerRepeatedRelease();
@@ -61,8 +61,7 @@ void PredicateMemoryCoordinatorPolicy::SetLimit(int percentage,
 
   manager().UpdateConsumers(
       this,
-      [this](uint32_t consumer_id,
-             std::optional<base::MemoryConsumerTraits> traits,
+      [this](uint32_t consumer_id, base::MemoryConsumerTraits traits,
              ProcessType process_type, ChildProcessId child_process_id) {
         return predicate_.Run(consumer_id, traits, process_type,
                               child_process_id);
@@ -73,8 +72,7 @@ void PredicateMemoryCoordinatorPolicy::SetLimit(int percentage,
 void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
   manager().UpdateConsumers(
       this,
-      [this](uint32_t consumer_id,
-             std::optional<base::MemoryConsumerTraits> traits,
+      [this](uint32_t consumer_id, base::MemoryConsumerTraits traits,
              ProcessType process_type, ChildProcessId child_process_id) {
         // Don't repeat the signal for consumers that don't match the policy's
         // predicate.
@@ -89,8 +87,7 @@ void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
         // stateless mode regardless of their declared traits, so they still
         // require repeated signals.
         if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) &&
-            traits.has_value() &&
-            traits->is_stateful ==
+            traits.is_stateful ==
                 base::MemoryConsumerTraits::IsStateful::kYes) {
           return false;
         }

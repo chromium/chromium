@@ -5,7 +5,6 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
 
-#include <optional>
 #include <string_view>
 
 #include "base/functional/callback.h"
@@ -34,11 +33,11 @@ class MemoryCoordinatorPolicyManager;
 class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
     : public MemoryCoordinatorPolicy {
  public:
-  using ConsumerPredicate = base::RepeatingCallback<bool(
-      uint32_t consumer_id,
-      std::optional<base::MemoryConsumerTraits> traits,
-      ProcessType process_type,
-      ChildProcessId child_process_id)>;
+  using ConsumerPredicate =
+      base::RepeatingCallback<bool(uint32_t consumer_id,
+                                   base::MemoryConsumerTraits traits,
+                                   ProcessType process_type,
+                                   ChildProcessId child_process_id)>;
 
   PredicateMemoryCoordinatorPolicy(MemoryCoordinatorPolicyManager& manager,
                                    ConsumerPredicate predicate);
@@ -53,7 +52,7 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
   // MemoryCoordinatorPolicy:
   void OnConsumerGroupAdded(uint32_t consumer_id,
                             std::string_view consumer_name,
-                            std::optional<base::MemoryConsumerTraits> traits,
+                            base::MemoryConsumerTraits traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(uint32_t consumer_id,

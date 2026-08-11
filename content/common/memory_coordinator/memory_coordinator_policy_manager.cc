@@ -19,7 +19,7 @@ namespace content {
 
 MemoryCoordinatorPolicyManager::GroupState::GroupState(
     std::string_view consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits)
+    base::MemoryConsumerTraits traits)
     : consumer_name_(consumer_name), traits_(traits) {}
 
 MemoryCoordinatorPolicyManager::GroupState::~GroupState() = default;
@@ -200,7 +200,7 @@ void MemoryCoordinatorPolicyManager::RemoveMemoryConsumerGroupHost(
 void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits,
+    base::MemoryConsumerTraits traits,
     ChildProcessId child_process_id) {
   HostState& host_state = GetHostState(child_process_id);
 

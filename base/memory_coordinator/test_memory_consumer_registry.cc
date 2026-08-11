@@ -27,7 +27,7 @@ TestMemoryConsumerRegistry::~TestMemoryConsumerRegistry() {
 void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
-    std::optional<MemoryConsumerTraits> traits,
+    MemoryConsumerTraits traits,
     MemoryConsumer* consumer) {
   CHECK(!memory_consumers_.HasObserver(consumer));
   memory_consumers_.AddObserver(consumer);

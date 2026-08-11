@@ -5,7 +5,6 @@
 #ifndef BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_H_
 #define BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_H_
 
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -165,12 +164,9 @@ class BASE_EXPORT MemoryConsumerRegistration
     kDisabled,
   };
 
-  // `traits` is only optional temporarily to assist with the migration of
-  // clients from MemoryPressureListener to MemoryCoordinator. It will be made
-  // mandatory in the future.
   MemoryConsumerRegistration(
       std::string_view consumer_name,
-      std::optional<MemoryConsumerTraits> traits,
+      MemoryConsumerTraits traits,
       MemoryConsumer* consumer,
       CheckUnregister check_unregister = CheckUnregister::kEnabled);
 

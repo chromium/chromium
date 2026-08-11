@@ -47,7 +47,7 @@ void MemoryConsumer::UpdateMemoryLimitNoNotification(int percentage) {
 
 MemoryConsumerRegistration::MemoryConsumerRegistration(
     std::string_view consumer_name,
-    std::optional<MemoryConsumerTraits> traits,
+    MemoryConsumerTraits traits,
     MemoryConsumer* consumer,
     CheckUnregister check_unregister)
     : consumer_name_(consumer_name),

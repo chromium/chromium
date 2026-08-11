@@ -147,7 +147,7 @@ void ChildMemoryConsumerRegistryHost::Register(
 bool ChildMemoryConsumerRegistryHost::RegisterImpl(
     uint32_t consumer_id,
     const std::string& consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits) {
+    base::MemoryConsumerTraits traits) {
   if (!coordinator_remote_.is_bound()) {
     mojo::ReportBadMessage("Register called before BindCoordinator");
     return false;

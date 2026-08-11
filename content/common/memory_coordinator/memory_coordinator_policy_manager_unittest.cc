@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstddef>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -47,7 +46,7 @@ class MockPolicy : public MemoryCoordinatorPolicy {
   // MemoryCoordinatorPolicy:
   void OnConsumerGroupAdded(uint32_t consumer_id,
                             std::string_view consumer_name,
-                            std::optional<base::MemoryConsumerTraits> traits,
+                            base::MemoryConsumerTraits traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override {}
   void OnConsumerGroupRemoved(uint32_t consumer_id,
@@ -403,11 +402,10 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
 
   policy.manager().UpdateConsumers(
       &policy,
-      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
+      [](uint32_t consumer_id, base::MemoryConsumerTraits traits,
          ProcessType process_type, ChildProcessId child_process_id) {
-        return traits.has_value() &&
-               traits->supports_memory_limit ==
-                   base::MemoryConsumerTraits::SupportsMemoryLimit::kYes;
+        return traits.supports_memory_limit ==
+               base::MemoryConsumerTraits::SupportsMemoryLimit::kYes;
       },
       50, true);
 
@@ -432,7 +430,7 @@ class MockObserverPolicy : public MemoryCoordinatorPolicy {
               OnConsumerGroupAdded,
               (uint32_t consumer_id,
                std::string_view consumer_name,
-               std::optional<base::MemoryConsumerTraits> traits,
+               base::MemoryConsumerTraits traits,
                ProcessType process_type,
                ChildProcessId child_process_id),
               (override));
@@ -474,9 +472,9 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, PolicyNotification) {
   static constexpr char kConsumerName[] = "consumer";
   const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
-  EXPECT_CALL(policy, OnConsumerGroupAdded(kConsumerId, kConsumerName,
-                                           std::make_optional(kTestTraits1),
-                                           PROCESS_TYPE_RENDERER, kChildId));
+  EXPECT_CALL(policy,
+              OnConsumerGroupAdded(kConsumerId, kConsumerName, kTestTraits1,
+                                   PROCESS_TYPE_RENDERER, kChildId));
   policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                         kTestTraits1, kChildId);
   Mock::VerifyAndClearExpectations(&policy);
@@ -505,9 +503,9 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, AddPolicyNotifiesExistingGroups) {
   MockObserverPolicy policy(policy_manager());
 
   // Adding the policy should trigger notification of the existing group.
-  EXPECT_CALL(policy, OnConsumerGroupAdded(kConsumerId, kConsumerName,
-                                           std::make_optional(kTestTraits1),
-                                           PROCESS_TYPE_RENDERER, kChildId));
+  EXPECT_CALL(policy,
+              OnConsumerGroupAdded(kConsumerId, kConsumerName, kTestTraits1,
+                                   PROCESS_TYPE_RENDERER, kChildId));
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
   Mock::VerifyAndClearExpectations(&policy);
 

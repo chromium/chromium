@@ -16,6 +16,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/observer_list.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -86,7 +87,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void RemoveMemoryConsumerGroupHost(ChildProcessId child_process_id) override;
   void OnConsumerGroupAdded(uint32_t consumer_id,
                             std::string_view consumer_name,
-                            std::optional<base::MemoryConsumerTraits> traits,
+                            base::MemoryConsumerTraits traits,
                             ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(uint32_t consumer_id,
                               ChildProcessId child_process_id) override;
@@ -108,7 +109,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   using ConsumerFilter =
       base::FunctionRef<bool(uint32_t consumer_id,
-                             std::optional<base::MemoryConsumerTraits> traits,
+                             base::MemoryConsumerTraits traits,
                              ProcessType process_type,
                              ChildProcessId child_process_id)>;
 
@@ -141,7 +142,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   class GroupState {
    public:
     GroupState(std::string_view consumer_name,
-               std::optional<base::MemoryConsumerTraits> traits);
+               base::MemoryConsumerTraits traits);
     ~GroupState();
 
     // Updates the limit requested by `policy`. If `percentage` is 100, the
@@ -151,7 +152,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                                                int percentage);
 
     const std::string& consumer_name() const { return consumer_name_; }
-    std::optional<base::MemoryConsumerTraits> traits() const { return traits_; }
+    base::MemoryConsumerTraits traits() const { return traits_; }
     int current_limit() const { return current_limit_; }
 
     // Sets a memory limit override for testing. Returns the new effective
@@ -163,7 +164,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     int RecomputeMemoryLimit() const;
 
     const std::string consumer_name_;
-    const std::optional<base::MemoryConsumerTraits> traits_;
+    const base::MemoryConsumerTraits traits_;
 
     // The limit requested by each policy.
     base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits_;

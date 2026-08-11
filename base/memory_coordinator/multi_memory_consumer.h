@@ -6,7 +6,6 @@
 #define BASE_MEMORY_COORDINATOR_MULTI_MEMORY_CONSUMER_H_
 
 #include <memory>
-#include <optional>
 #include <string_view>
 
 #include "base/base_export.h"
@@ -47,7 +46,7 @@ class BASE_EXPORT MultiMemoryConsumerRegistration {
  public:
   struct Intervention {
     std::string_view name;
-    std::optional<MemoryConsumerTraits> traits = std::nullopt;
+    MemoryConsumerTraits traits;
   };
 
   using CheckUnregister = MemoryConsumerRegistration::CheckUnregister;

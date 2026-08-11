@@ -41,7 +41,7 @@ class MultiMemoryConsumerRegistration::HelperConsumer
  public:
   HelperConsumer(MultiMemoryConsumer* parent,
                  std::string_view name,
-                 std::optional<MemoryConsumerTraits> traits,
+                 MemoryConsumerTraits traits,
                  CheckUnregister check_unregister)
       : internal::ForwardingMemoryConsumer(parent, name),
         registration_(name, traits, this, check_unregister) {}
@@ -97,7 +97,7 @@ class AsyncMultiMemoryConsumerRegistration::HelperConsumer
  public:
   HelperConsumer(MultiMemoryConsumer* parent,
                  std::string_view name,
-                 std::optional<MemoryConsumerTraits> traits,
+                 MemoryConsumerTraits traits,
                  CheckUnregister check_unregister)
       : internal::ForwardingMemoryConsumer(parent, name),
         registration_(name, traits, this, check_unregister) {}

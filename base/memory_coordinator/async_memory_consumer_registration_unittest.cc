@@ -27,7 +27,7 @@ namespace {
 class TestAsyncMemoryConsumer : public MemoryConsumer {
  public:
   explicit TestAsyncMemoryConsumer(std::string_view consumer_name,
-                                   std::optional<MemoryConsumerTraits> traits)
+                                   MemoryConsumerTraits traits)
       : async_memory_consumer_registration_(consumer_name, traits, this) {}
 
   MOCK_METHOD(void, OnUpdateMemoryLimit, (), (override));
@@ -45,14 +45,19 @@ class TestAsyncMemoryConsumer : public MemoryConsumer {
 
 class TestPassiveAsyncMemoryConsumer : public PassiveMemoryConsumer {
  public:
-  explicit TestPassiveAsyncMemoryConsumer(
-      std::string_view consumer_name,
-      std::optional<MemoryConsumerTraits> traits)
+  explicit TestPassiveAsyncMemoryConsumer(std::string_view consumer_name,
+                                          MemoryConsumerTraits traits)
       : async_memory_consumer_registration_(consumer_name, traits, this) {}
 
  private:
   AsyncMemoryConsumerRegistration async_memory_consumer_registration_;
 };
+
+constexpr MemoryConsumerTraits kActiveTraits(
+    MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::InformationRetention::kLossless,
+    MemoryConsumerTraits::ExecutionType::kAsynchronous);
 
 class AsyncMemoryConsumerRegistrationTest : public testing::Test {
  protected:
@@ -67,7 +72,7 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, RegisterOnAnotherSequence) {
   auto async_task_runner = ThreadPool::CreateSequencedTaskRunner({});
 
   SequenceBound<TestAsyncMemoryConsumer> consumer(async_task_runner, "consumer",
-                                                  std::nullopt);
+                                                  kActiveTraits);
 
   ASSERT_TRUE(test::RunUntil([&]() { return registry.size() == 1u; }));
 
@@ -93,7 +98,7 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, DestroyRegistryBeforeAsyncCleanup) {
   auto async_task_runner = ThreadPool::CreateSequencedTaskRunner({});
 
   SequenceBound<TestAsyncMemoryConsumer> consumer(async_task_runner, "consumer",
-                                                  std::nullopt);
+                                                  kActiveTraits);
 
   // Wait for registration.
   ASSERT_TRUE(test::RunUntil([&]() { return registry->size() == 1u; }));

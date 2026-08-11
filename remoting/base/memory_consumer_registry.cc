@@ -15,7 +15,7 @@ MemoryConsumerRegistry::~MemoryConsumerRegistry() {
 void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
-    std::optional<base::MemoryConsumerTraits> traits,
+    base::MemoryConsumerTraits traits,
     base::MemoryConsumer* consumer) {}
 
 void MemoryConsumerRegistry::OnMemoryConsumerRemoved(
