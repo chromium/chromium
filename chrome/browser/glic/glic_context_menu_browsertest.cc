@@ -353,9 +353,10 @@ class GlicContextMenuSimplificationBrowserTest
  public:
   GlicContextMenuSimplificationBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicContextMenu, features::kGlicShareImage,
-         features::kMenuSimplification},
-        {});
+        /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
+                              features::kGlicShareImage,
+                              features::kMenuSimplification},
+        /*disabled_features=*/{features::kGlicContextMenuBelowSearch});
   }
 
  private:
@@ -432,7 +433,8 @@ class GlicContextMenuStandardBrowserTest
         /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
                               features::kGlicShareImage},
         /*disabled_features=*/{features::kMenuSimplification,
-                               features::kDesktopGlowUp});
+                               features::kDesktopGlowUp,
+                               features::kGlicContextMenuBelowSearch});
   }
 
  private:
@@ -615,4 +617,144 @@ IN_PROC_BROWSER_TEST_F(GlicTextSelectionContextMenuBrowserTest,
             l10n_util::GetStringFUTF16(IDS_GLIC_CONTEXT_MENU_ASK_GEMINI_ABOUT,
                                        u"line1 line2 line3  line4"));
 }
+
+class GlicContextMenuBelowSearchBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicContextMenuBelowSearchBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
+                              features::kGlicShareImage,
+                              features::kGlicContextMenuBelowSearch},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the Glic item follows the default search provider in the text
+// selection context menu when kGlicContextMenuBelowSearch is enabled.
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
+                       GlicItemFollowsSearchProvider) {
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(model, nullptr);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+
+  // Set up default search provider to enable Search Google option.
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google.com");
+  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"test query";
+  params.properties[::prefs::kDefaultSearchProviderContextMenuAccessAllowed] =
+      "";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  auto search_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+
+  ASSERT_TRUE(glic_index.has_value());
+  ASSERT_TRUE(search_index.has_value());
+  EXPECT_EQ(glic_index->first, search_index->first);
+  EXPECT_GT(glic_index->second, search_index->second);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
+                       GlicItemFollowsSearchProviderInEditableField) {
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(model, nullptr);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+
+  // Set up default search provider to enable Search Google option.
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google.com");
+  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"test query";
+  params.is_editable = true;
+  params.properties[::prefs::kDefaultSearchProviderContextMenuAccessAllowed] =
+      "";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  auto search_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
+
+  ASSERT_TRUE(glic_index.has_value());
+  ASSERT_TRUE(search_index.has_value());
+  EXPECT_EQ(glic_index->first, search_index->first);
+  EXPECT_GT(glic_index->second, search_index->second);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBelowSearchBrowserTest,
+                       GlicItemFollowsLensInEmptyPage) {
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(model, nullptr);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+
+  // Set up default search provider to enable Lens region search option.
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google.com");
+  data.SetURL("http://www.google.com/search?q={searchTerms}");
+  data.image_url = "http://www.google.com/searchbyimage/upload";
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+  auto glic_index = menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLIC);
+  auto lens_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH);
+
+  ASSERT_TRUE(glic_index.has_value());
+  ASSERT_TRUE(lens_index.has_value());
+  EXPECT_EQ(glic_index->first, lens_index->first);
+  EXPECT_GT(glic_index->second, lens_index->second);
+}
+
 }  // namespace glic
