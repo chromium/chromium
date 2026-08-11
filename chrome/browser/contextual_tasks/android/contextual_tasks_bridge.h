@@ -50,9 +50,6 @@ class ContextualTasksBridge {
   // Returns the ContextualTasksBridge for the given |window|, if one exists.
   static ContextualTasksBridge* From(BrowserWindowInterface* window);
 
-  // Returns the task ID for the given WebContents.
-  static std::string GetTaskIdForTab(content::WebContents* web_contents);
-
   // Asynchronously requests the task title associated with the given tab.
   static void GetTaskTitleForTab(
       content::WebContents* web_contents,
@@ -69,12 +66,6 @@ class ContextualTasksBridge {
   // Called from Java via JNI to send voice search results to WebUI.
   void OnVoiceTranscribed(JNIEnv* env, const std::string& query);
 
-  // Notification methods to call into Java.
-  void NotifyWebUIReady(const base::Uuid& task_id,
-                        content::WebContents* web_contents);
-  void NotifyWebUIDestroyed(const std::optional<base::Uuid>& task_id);
-  void NotifyTaskChanged(const std::optional<base::Uuid>& old_task_id,
-                         const std::optional<base::Uuid>& new_task_id);
   void NotifyShowUndoSnackbar();
   void NotifyOpenFeedbackUi(const GURL& page_url);
 

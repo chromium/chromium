@@ -2443,43 +2443,6 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnStartupIfAlreadyEligible) {
       std::move(mock_synchronizer));
 }
 
-TEST_F(ContextualTasksUiServiceTest, OnWebUIReady) {
-  auto delegate = std::make_unique<MockContextualTasksUiServiceDelegate>();
-  auto* delegate_ptr = delegate.get();
-  ContextualTasksUiService service(
-      profile_.get(), std::move(delegate), contextual_tasks_service_.get(),
-      /*identity_manager=*/nullptr, /*aim_eligibility_service=*/nullptr,
-      /*eligibility_manager=*/nullptr,
-      /*cookie_synchronizer=*/nullptr);
-
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-  MockBrowserWindowInterface browser_window_interface;
-
-  EXPECT_CALL(*delegate_ptr, OnWebUIReady(&browser_window_interface, task_id,
-                                          web_contents.get()))
-      .Times(1);
-
-  service.OnWebUIReady(&browser_window_interface, task_id, web_contents.get());
-}
-TEST_F(ContextualTasksUiServiceTest, OnWebUIDestroyed) {
-  auto delegate = std::make_unique<MockContextualTasksUiServiceDelegate>();
-  auto* delegate_ptr = delegate.get();
-  ContextualTasksUiService service(
-      profile_.get(), std::move(delegate), contextual_tasks_service_.get(),
-      /*identity_manager=*/nullptr, /*aim_eligibility_service=*/nullptr,
-      /*eligibility_manager=*/nullptr,
-      /*cookie_synchronizer=*/nullptr);
-
-  std::optional<base::Uuid> task_id = base::Uuid::GenerateRandomV4();
-  MockBrowserWindowInterface browser_window;
-  EXPECT_CALL(*delegate_ptr, OnWebUIDestroyed(&browser_window, task_id))
-      .Times(1);
-
-  service.OnWebUIDestroyed(&browser_window, task_id);
-}
-
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_AiPage_CobrowseNotEligible_NotIntercepted) {
   GURL ai_url(kAiPageUrl);

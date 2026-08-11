@@ -146,40 +146,6 @@ void ContextualTasksBridge::OnVoiceTranscribed(JNIEnv* env,
   contextual_tasks_ui_service_->OnVoiceTranscribed(query);
 }
 
-void ContextualTasksBridge::NotifyWebUIReady(
-    const base::Uuid& task_id,
-    content::WebContents* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksBridge_onWebUIReady(
-      env, java_obj_,
-      base::android::ConvertUTF8ToJavaString(env, task_id.AsLowercaseString()),
-      web_contents->GetJavaWebContents());
-}
-
-void ContextualTasksBridge::NotifyWebUIDestroyed(
-    const std::optional<base::Uuid>& task_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksBridge_onWebUIDestroyed(
-      env, java_obj_,
-      base::android::ConvertUTF8ToJavaString(
-          env,
-          task_id.has_value() ? task_id->AsLowercaseString() : std::string()));
-}
-
-void ContextualTasksBridge::NotifyTaskChanged(
-    const std::optional<base::Uuid>& old_task_id,
-    const std::optional<base::Uuid>& new_task_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualTasksBridge_onTaskChanged(
-      env, java_obj_,
-      base::android::ConvertUTF8ToJavaString(
-          env, old_task_id.has_value() ? old_task_id->AsLowercaseString()
-                                       : std::string()),
-      base::android::ConvertUTF8ToJavaString(
-          env, new_task_id.has_value() ? new_task_id->AsLowercaseString()
-                                       : std::string()));
-}
-
 void ContextualTasksBridge::NotifyShowUndoSnackbar() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ContextualTasksBridge_showUndoSnackbar(env, java_obj_);
@@ -190,16 +156,6 @@ void ContextualTasksBridge::NotifyOpenFeedbackUi(const GURL& page_url) {
   Java_ContextualTasksBridge_openFeedbackUi(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, page_url.spec()));
-}
-
-// static
-std::string ContextualTasksBridge::GetTaskIdForTab(
-    content::WebContents* web_contents) {
-  ResolvedTaskInfo info = ResolveTaskInfoForWebContents(web_contents);
-  if (info.task_id.is_valid()) {
-    return info.task_id.AsLowercaseString();
-  }
-  return std::string();
 }
 
 // static
@@ -225,23 +181,12 @@ void ContextualTasksBridge::GetTaskTitleForTab(
           std::move(callback)));
 }
 
-static std::string JNI_ContextualTasksBridge_GetTaskIdForTab(
-    JNIEnv* env,
-    content::WebContents* web_contents) {
-  return ContextualTasksBridge::GetTaskIdForTab(web_contents);
-}
-
 static void JNI_ContextualTasksBridge_GetTaskTitleForTab(
     JNIEnv* env,
     content::WebContents* web_contents,
     base::OnceCallback<void(std::string)> j_callback) {
   ContextualTasksBridge::GetTaskTitleForTab(web_contents,
                                             std::move(j_callback));
-}
-
-static bool JNI_ContextualTasksBridge_IsContextualTasksUrl(JNIEnv* env,
-                                                           const GURL& url) {
-  return url.spec().starts_with(chrome::kChromeUIContextualTasksURL);
 }
 
 static bool JNI_ContextualTasksBridge_IsPanelOpen(

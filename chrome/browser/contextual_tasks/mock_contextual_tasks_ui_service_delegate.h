@@ -27,23 +27,6 @@ class MockContextualTasksUiServiceDelegate
               (BrowserWindowInterface * browser_window_interface),
               (override));
   MOCK_METHOD(void,
-              OnWebUIReady,
-              (BrowserWindowInterface * browser_window_interface,
-               const base::Uuid& task_id,
-               content::WebContents* web_contents),
-              (override));
-  MOCK_METHOD(void,
-              OnWebUIDestroyed,
-              (BrowserWindowInterface * browser_window_interface,
-               const std::optional<base::Uuid>& task_id),
-              (override));
-  MOCK_METHOD(void,
-              OnTaskChanged,
-              (BrowserWindowInterface * browser_window_interface,
-               const std::optional<base::Uuid>& old_task_id,
-               const std::optional<base::Uuid>& new_task_id),
-              (override));
-  MOCK_METHOD(void,
               StartPlatformVoiceRecognition,
               (BrowserWindowInterface * browser),
               (override));

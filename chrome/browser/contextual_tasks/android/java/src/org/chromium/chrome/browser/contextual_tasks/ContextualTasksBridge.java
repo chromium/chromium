@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -123,15 +122,6 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
-    void onWebUIReady(String taskId, WebContents webContents) {}
-
-    @CalledByNative
-    void onWebUIDestroyed(String taskId) {}
-
-    @CalledByNative
-    void onTaskChanged(String oldTaskId, String newTaskId) {}
-
-    @CalledByNative
     void startVoiceRecognition() {
         if (mWindowAndroid == null) return;
 
@@ -173,17 +163,6 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     /**
-     * Returns the task ID associated with the given tab.
-     *
-     * @param tab The tab to check.
-     * @return The task ID, or null if no task is associated.
-     */
-    public static @Nullable String getTaskIdForTab(@Nullable Tab tab) {
-        if (tab == null || tab.getWebContents() == null) return null;
-        return ContextualTasksBridgeJni.get().getTaskIdForTab(tab.getWebContents());
-    }
-
-    /**
      * Asynchronously requests the task title associated with the given tab.
      *
      * @param tab The tab to check.
@@ -195,16 +174,6 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
             return;
         }
         ContextualTasksBridgeJni.get().getTaskTitleForTab(tab.getWebContents(), callback);
-    }
-
-    /**
-     * Returns whether the given URL is a contextual tasks WebUI URL.
-     *
-     * @param url The URL to check.
-     * @return True if it is a contextual tasks URL.
-     */
-    public static boolean isContextualTasksUrl(GURL url) {
-        return ContextualTasksBridgeJni.get().isContextualTasksUrl(url);
     }
 
     /**
@@ -232,14 +201,9 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
         void onVoiceTranscribed(
                 long nativeContextualTasksBridge, @JniType("std::string") String query);
 
-        @JniType("std::string")
-        String getTaskIdForTab(@JniType("content::WebContents*") WebContents webContents);
-
         void getTaskTitleForTab(
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("base::OnceCallback<void(std::string)>") Callback<String> callback);
-
-        boolean isContextualTasksUrl(@JniType("GURL") GURL url);
 
         boolean isPanelOpen(@JniType("content::WebContents*") WebContents webContents);
     }

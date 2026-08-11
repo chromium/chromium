@@ -32,38 +32,6 @@ void ContextualTasksUiServiceDelegateAndroid::OpenFeedbackUi(
   bridge->NotifyOpenFeedbackUi(page_url);
 }
 
-void ContextualTasksUiServiceDelegateAndroid::OnWebUIReady(
-    BrowserWindowInterface* browser_window_interface,
-    const base::Uuid& task_id,
-    content::WebContents* web_contents) {
-  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
-  if (!bridge) {
-    return;
-  }
-  bridge->NotifyWebUIReady(task_id, web_contents);
-}
-
-void ContextualTasksUiServiceDelegateAndroid::OnWebUIDestroyed(
-    BrowserWindowInterface* browser_window_interface,
-    const std::optional<base::Uuid>& task_id) {
-  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
-  if (!bridge) {
-    return;
-  }
-  bridge->NotifyWebUIDestroyed(task_id);
-}
-
-void ContextualTasksUiServiceDelegateAndroid::OnTaskChanged(
-    BrowserWindowInterface* browser_window_interface,
-    const std::optional<base::Uuid>& old_task_id,
-    const std::optional<base::Uuid>& new_task_id) {
-  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
-  if (!bridge) {
-    return;
-  }
-  bridge->NotifyTaskChanged(old_task_id, new_task_id);
-}
-
 void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
   if (ShouldShowSidePanel()) {

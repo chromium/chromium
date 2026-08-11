@@ -427,11 +427,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       this, std::move(tracked_element_ids));
 }
 
-ContextualTasksUI::~ContextualTasksUI() {
-  if (ui_service_) {
-    ui_service_->OnWebUIDestroyed(GetBrowser(), task_id_);
-  }
-}
+ContextualTasksUI::~ContextualTasksUI() = default;
 
 content::WebUIDataSource* ContextualTasksUI::RegisterWebUIDataSource(
     Profile* profile) {
@@ -922,11 +918,6 @@ bool ContextualTasksUI::IsInitComplete() {
 }
 
 void ContextualTasksUI::OnInitComplete() {
-  if (task_id_ && ui_service_) {
-    ui_service_->OnWebUIReady(GetBrowser(), *task_id_,
-                              web_ui()->GetWebContents());
-  }
-
   for (auto& observer : observers_) {
     observer.OnInitComplete();
   }
