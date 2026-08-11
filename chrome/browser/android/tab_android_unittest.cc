@@ -17,7 +17,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_group_android.h"
@@ -50,31 +50,6 @@
 
 namespace {
 constexpr int kTabId = 1;
-
-class MockActorUiTabController
-    : public actor::ui::ActorUiTabControllerInterface {
- public:
-  explicit MockActorUiTabController(tabs::TabInterface& tab)
-      : ActorUiTabControllerInterface(tab) {}
-  ~MockActorUiTabController() override = default;
-
-  // ActorUiTabControllerInterface:
-  void OnUiTabStateChange(const actor::ui::UiTabState& ui_tab_state,
-                          actor::ui::UiResultCallback callback) override {
-    std::move(callback).Run(true);
-  }
-  void SetActorTaskPaused() override {}
-  void SetActorTaskResume() override {}
-  base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-  actor::ui::UiTabState GetCurrentUiTabState() const override {
-    return actor::ui::UiTabState();
-  }
-
- private:
-  base::WeakPtrFactory<MockActorUiTabController> weak_ptr_factory_{this};
-};
 }  // namespace
 
 class TabAndroidTest : public testing::Test {
@@ -251,7 +226,7 @@ TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
   ASSERT_NE(nullptr, task);
 
   // Add the tab to the task.
-  MockActorUiTabController mock_controller(*tab);
+  actor::ui::MockActorUiTabController mock_controller(*tab);
   actor::AddTabToTask(*tab, *task);
 
   // Ensure HasActorTaskPreventingNewWebContents returns true.

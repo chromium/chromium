@@ -71,19 +71,6 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
 }
 
 [[nodiscard]] base::ScopedClosureRunner
-ActorUiTabController::RegisterActorTabIndicatorStateChangedCallback(
-    ActorTabIndicatorStateChangedCallback callback) {
-  // Crash if attempting to register a null callback, or if a callback is
-  // already registered.
-  CHECK(!callback.is_null());
-  CHECK(on_actor_tab_indicator_changed_callback_.is_null());
-  on_actor_tab_indicator_changed_callback_ = std::move(callback);
-  return base::ScopedClosureRunner(base::BindOnce(
-      &ActorUiTabController::UnregisterActorTabIndicatorStateChange,
-      weak_factory_.GetWeakPtr()));
-}
-
-[[nodiscard]] base::ScopedClosureRunner
 ActorUiTabController::RegisterActorOverlayBackgroundChange(
     ActorOverlayBackgroundChangeCallback callback) {
   // Crash if attempting to register a null callback, or if a callback is
@@ -117,8 +104,7 @@ void ActorUiTabController::SetActorTabIndicatorVisibility(
   // alert migrates away from the GLIC_ACCESSING resources.
   if (tab_indicator_ != tab_indicator_status) {
     tab_indicator_ = tab_indicator_status;
-    if (on_actor_tab_indicator_changed_callback_) {
-      on_actor_tab_indicator_changed_callback_.Run(tab_indicator_);
+    if (NotifyActorTabIndicatorStateChanged(tab_indicator_)) {
       // Notify tab strip model of state change.
       tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
           base::to_address(tab_), TabChangeType::kAll);
@@ -287,10 +273,6 @@ void ActorUiTabController::UnregisterActorOverlayStateChange() {
 
 void ActorUiTabController::UnregisterActorOverlayBackgroundChange() {
   actor_overlay_background_changed_callback_.Reset();
-}
-
-void ActorUiTabController::UnregisterActorTabIndicatorStateChange() {
-  on_actor_tab_indicator_changed_callback_.Reset();
 }
 
 void ActorUiTabController::UnregisterHandoffButtonController() {

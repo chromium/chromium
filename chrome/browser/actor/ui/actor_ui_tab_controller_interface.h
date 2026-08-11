@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
@@ -72,6 +73,12 @@ class ActorUiTabControllerInterface {
   // nullptr if it does not exist.
   static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
 
+  using ActorTabIndicatorStateChangedCallback =
+      base::RepeatingCallback<void(TabIndicatorStatus)>;
+  [[nodiscard]] base::ScopedClosureRunner
+  RegisterActorTabIndicatorStateChangedCallback(
+      ActorTabIndicatorStateChangedCallback callback);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Called whenever web contents are attached to this tab.
   virtual void OnWebContentsAttached() = 0;
@@ -99,11 +106,6 @@ class ActorUiTabControllerInterface {
   virtual void OnWindowOmniboxPopupVisibilityChanged() = 0;
 
   // Callbacks:
-  using ActorTabIndicatorStateChangedCallback =
-      base::RepeatingCallback<void(TabIndicatorStatus)>;
-  [[nodiscard]] virtual base::ScopedClosureRunner
-  RegisterActorTabIndicatorStateChangedCallback(
-      ActorTabIndicatorStateChangedCallback callback) = 0;
   using ActorOverlayStateChangeCallback =
       base::RepeatingCallback<void(bool, ActorOverlayState, base::OnceClosure)>;
   [[nodiscard]] virtual base::ScopedClosureRunner
@@ -115,9 +117,20 @@ class ActorUiTabControllerInterface {
       ActorOverlayBackgroundChangeCallback callback) = 0;
 #endif
 
+ protected:
+  bool NotifyActorTabIndicatorStateChanged(
+      TabIndicatorStatus tab_indicator_status);
+
  private:
+  void UnregisterActorTabIndicatorStateChange();
+
+  ActorTabIndicatorStateChangedCallback
+      on_actor_tab_indicator_changed_callback_;
+
   ::ui::ScopedUnownedUserData<ActorUiTabControllerInterface>
       scoped_unowned_user_data_;
+
+  base::WeakPtrFactory<ActorUiTabControllerInterface> weak_factory_{this};
 };
 
 }  // namespace actor::ui

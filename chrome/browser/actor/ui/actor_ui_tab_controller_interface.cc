@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
@@ -29,6 +31,32 @@ ActorUiTabControllerInterface* ActorUiTabControllerInterface::From(
   }
 
   return Get(tab->GetUnownedUserDataHost());
+}
+
+base::ScopedClosureRunner
+ActorUiTabControllerInterface::RegisterActorTabIndicatorStateChangedCallback(
+    ActorTabIndicatorStateChangedCallback callback) {
+  // Crash if attempting to register a null callback, or if a callback is
+  // already registered.
+  CHECK(!callback.is_null());
+  CHECK(on_actor_tab_indicator_changed_callback_.is_null());
+  on_actor_tab_indicator_changed_callback_ = std::move(callback);
+  return base::ScopedClosureRunner(base::BindOnce(
+      &ActorUiTabControllerInterface::UnregisterActorTabIndicatorStateChange,
+      weak_factory_.GetWeakPtr()));
+}
+
+void ActorUiTabControllerInterface::UnregisterActorTabIndicatorStateChange() {
+  on_actor_tab_indicator_changed_callback_.Reset();
+}
+
+bool ActorUiTabControllerInterface::NotifyActorTabIndicatorStateChanged(
+    TabIndicatorStatus tab_indicator_status) {
+  if (on_actor_tab_indicator_changed_callback_) {
+    on_actor_tab_indicator_changed_callback_.Run(tab_indicator_status);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace actor::ui

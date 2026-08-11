@@ -16,7 +16,7 @@ namespace actor::ui {
 
 class MockActorUiTabController : public ActorUiTabControllerInterface {
  public:
-  explicit MockActorUiTabController(tabs::MockTabInterface& mock_tab);
+  explicit MockActorUiTabController(tabs::TabInterface& tab);
   ~MockActorUiTabController() override;
 
   // Sets up the default mock expectations to connect a mock tab to a mock
@@ -67,13 +67,6 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(base::ScopedClosureRunner,
               RegisterActorOverlayStateChange,
               (ActorOverlayStateChangeCallback callback),
-              (override));
-
-  using ActorTabIndicatorStateChangedCallback =
-      base::RepeatingCallback<void(TabIndicatorStatus)>;
-  MOCK_METHOD(base::ScopedClosureRunner,
-              RegisterActorTabIndicatorStateChangedCallback,
-              (ActorTabIndicatorStateChangedCallback callback),
               (override));
 
   using ActorOverlayBackgroundChangeCallback =

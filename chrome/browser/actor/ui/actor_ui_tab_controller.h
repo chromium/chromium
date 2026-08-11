@@ -44,9 +44,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   void OnImmersiveModeChanged() override;
 
-  [[nodiscard]] base::ScopedClosureRunner
-  RegisterActorTabIndicatorStateChangedCallback(
-      ActorTabIndicatorStateChangedCallback callback) override;
   [[nodiscard]] base::ScopedClosureRunner RegisterActorOverlayStateChange(
       ActorOverlayStateChangeCallback callback) override;
   [[nodiscard]] base::ScopedClosureRunner RegisterActorOverlayBackgroundChange(
@@ -95,7 +92,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   void UnregisterActorOverlayStateChange();
   void UnregisterActorOverlayBackgroundChange();
-  void UnregisterActorTabIndicatorStateChange();
   void UnregisterHandoffButtonController();
 
   // The current UiTabState.
@@ -117,8 +113,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
 #if !BUILDFLAG(IS_ANDROID)
-  ActorTabIndicatorStateChangedCallback
-      on_actor_tab_indicator_changed_callback_;
   ActorOverlayStateChangeCallback on_actor_overlay_state_changed_callback_;
   ActorOverlayBackgroundChangeCallback
       actor_overlay_background_changed_callback_;

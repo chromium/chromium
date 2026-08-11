@@ -49,7 +49,15 @@ void ActorUiTabControllerAndroid::OnUiTabStateChange(
           << "ui_tab_state: " << current_ui_tab_state_ << " -> " << ui_tab_state
           << "\n";
 
+  bool indicator_changed =
+      current_ui_tab_state_.tab_indicator != ui_tab_state.tab_indicator;
   current_ui_tab_state_ = ui_tab_state;
+
+  if (indicator_changed) {
+    // Notify TabAlertController. TabAndroid observes TabAlertController and
+    // propagates alert state changes to the Java tab strip.
+    NotifyActorTabIndicatorStateChanged(ui_tab_state.tab_indicator);
+  }
 
   DCHECK(tab_->GetContents());
   TabAndroid* tab_android = TabAndroid::FromWebContents(tab_->GetContents());
