@@ -873,26 +873,24 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   ongoing_navigate_event_ = navigate_event;
 
   if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
-    NavigationState::Create(*window_->document(), window_->Url(), params->url,
-                            params->source_element);
+    auto& state = NavigationState::Create(*window_->document(), window_->Url(),
+                                          params->url, params->source_element);
+    if (params->frame_load_type == WebFrameLoadType::kBackForward) {
+      if (destination_entry) {
+        int previous_index = GetIndexFor(currentEntry());
+        int next_index = GetIndexFor(destination_entry);
+        NavigationState::HistoryTraverseType direction =
+            next_index < previous_index ? NavigationState::kBack
+                                        : NavigationState::kForward;
+        state.SetTraverseType(direction);
+      }
+    } else if (IsReloadLoadType(params->frame_load_type)) {
+      state.SetTraverseType(NavigationState::kReload);
+    }
   }
 
   if (auto* routemap = RouteMap::Get(window_->document())) {
     routemap->SetNavigationStarted();
-    if (routemap->HasHistoryRules()) {
-      if (params->frame_load_type == WebFrameLoadType::kBackForward) {
-        if (destination_entry) {
-          int previous_index = GetIndexFor(currentEntry());
-          int next_index = GetIndexFor(destination_entry);
-          NavigationState::HistoryTraverseType direction =
-              next_index < previous_index ? NavigationState::kBack
-                                          : NavigationState::kForward;
-          routemap->SetTraverseType(direction);
-        }
-      } else if (IsReloadLoadType(params->frame_load_type)) {
-        routemap->SetTraverseType(NavigationState::kReload);
-      }
-    }
   }
 
   has_dropped_navigation_ = false;

@@ -17,7 +17,7 @@ namespace blink {
 
 class Document;
 class Element;
-class Route;
+class URLPattern;
 
 // <navigation-location>
 //
@@ -38,10 +38,10 @@ class NavigationLocation : public GarbageCollected<NavigationLocation> {
   Type GetType() const { return type_; }
   const AtomicString& GetValue() const { return value_; }
 
-  // Look for a `Route` entry in the route map. Additionally, if this
-  // <navigation-location> is a URLPattern, an entry will be inserted if it's
-  // missing.
-  const Route* FindOrCreateRoute(Document&) const;
+  // Look for a URLPattern entry in the route map. Additionally, if this
+  // <navigation-location> is a URLPattern (and not a named location), an entry
+  // will be inserted if it's missing.
+  const URLPattern* FindOrCreateURLPattern(Document&) const;
 
   bool CheckSelectorMatch(
       const Element&,

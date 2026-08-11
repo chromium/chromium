@@ -58,7 +58,6 @@ void StyleRuleLocation::CreateRouteIfNeeded(Document* document) const {
   if (!document) {
     return;
   }
-  auto& route_map = RouteMap::Ensure(*document);
   URLPattern* url_pattern;
   if (pattern_) {
     const AtomicString& str = pattern_->UrlString();
@@ -100,7 +99,7 @@ void StyleRuleLocation::CreateRouteIfNeeded(Document* document) const {
   if (!url_pattern) {
     return;
   }
-  route_map.AddRouteFromRule(name_, url_pattern);
+  RouteMap::Ensure(*document).AddURLPatternFromLocation(name_, url_pattern);
 }
 
 }  // namespace blink
