@@ -41,8 +41,6 @@ std::string LoadRefreshTokenV3() {
 
 namespace chromeos {
 
-BASE_FEATURE(kRefreshTokenV3Feature, base::FEATURE_ENABLED_BY_DEFAULT);
-
 DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
     PrefService* local_state)
     : local_state_(local_state),
@@ -71,8 +69,7 @@ void DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(
 void DeviceOAuth2TokenStoreChromeOS::Init(InitCallback callback) {
   state_ = State::INITIALIZING;
 
-  if (!base::FeatureList::IsEnabled(kRefreshTokenV3Feature) ||
-      !local_state_->GetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used)) {
+  if (!local_state_->GetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used)) {
     // Pull in the system salt.
     ash::SystemSaltGetter::Get()->GetSystemSalt(
         base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt,
@@ -112,28 +109,16 @@ void DeviceOAuth2TokenStoreChromeOS::SetAndSaveRefreshToken(
 
   token_save_callbacks_.push_back(std::move(callback));
   if (state_ == State::READY) {
-    // TODO(b/320682630): When the feature is removed, we need to make sure to
-    // remove the code that stores the token using the old methods, but also
-    // make sure the FlushTokenSaveCallbacks() is called.
-    if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
-      // An empty token cannot be saved. The operation should fail asynchronously
-      // to match the behavior of the V2 encryption path.
-      if (refresh_token_.empty()) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::OnStoreTokenV3Done,
-                           weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
-        return;
-      }
-      StoreRefreshTokenV3();
+    // An empty token cannot be saved. The operation should fail asynchronously
+    // to match the behavior of the V2 encryption path.
+    if (refresh_token_.empty()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DeviceOAuth2TokenStoreChromeOS::OnStoreTokenV3Done,
+                         weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
       return;
     }
-
-    if (system_salt_.empty()) {
-      FlushTokenSaveCallbacks(false);
-    } else {
-      EncryptAndSaveToken();
-    }
+    StoreRefreshTokenV3();
   }
 }
 
@@ -144,13 +129,7 @@ void DeviceOAuth2TokenStoreChromeOS::OnStoreTokenV3Done(bool success) {
     local_state_->SetBoolean(prefs::kDeviceRefreshTokenAnyApiIsV3Used, true);
   }
 
-  // Keep storing the token with the old method, to have a backup in case the
-  // feature is rolled back.
-  if (system_salt_.empty()) {
-    FlushTokenSaveCallbacks(false);
-  } else {
-    EncryptAndSaveToken();
-  }
+  FlushTokenSaveCallbacks(success);
 }
 
 void DeviceOAuth2TokenStoreChromeOS::OnRefreshTokenLoadedV3(
@@ -219,22 +198,6 @@ void DeviceOAuth2TokenStoreChromeOS::FlushTokenSaveCallbacks(bool result) {
   }
 }
 
-void DeviceOAuth2TokenStoreChromeOS::EncryptAndSaveToken() {
-  ash::CryptohomeTokenEncryptor encryptor(system_salt_);
-  std::string encrypted_refresh_token =
-      encryptor.EncryptWithSystemSalt(refresh_token_);
-  bool result = true;
-  if (encrypted_refresh_token.empty()) {
-    LOG(ERROR) << "Failed to encrypt refresh token; save aborted.";
-    result = false;
-  } else {
-    local_state_->SetString(prefs::kDeviceRobotAnyApiRefreshTokenV2,
-                            encrypted_refresh_token);
-  }
-
-  FlushTokenSaveCallbacks(result);
-}
-
 std::optional<std::string>
 DeviceOAuth2TokenStoreChromeOS::LoadAndDecryptToken() {
   // Try to load a more strongly encrypted v2 token if it exists, but if it does
@@ -278,13 +241,7 @@ void DeviceOAuth2TokenStoreChromeOS::DidGetSystemSalt(
 
   // If the token has been set meanwhile, write it to |local_state_|.
   if (!refresh_token_.empty()) {
-    if (base::FeatureList::IsEnabled(kRefreshTokenV3Feature)) {
-      StoreRefreshTokenV3();
-      return;
-    }
-
-    EncryptAndSaveToken();
-    std::move(callback).Run(true, false);
+    StoreRefreshTokenV3();
     return;
   }
 

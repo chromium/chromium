@@ -12,6 +12,9 @@
 #include "apps/test/app_window_waiter.h"
 #include "base/check_deref.h"
 #include "base/test/test_future.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_path_override.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
@@ -112,6 +115,16 @@ class KioskIdentityTest : public MixinBasedInProcessBrowserTest {
   KioskIdentityTest& operator=(const KioskIdentityTest&) = delete;
   ~KioskIdentityTest() override = default;
 
+  void SetUp() override {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    token_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
+        temp_dir_.GetPath().Append("device_refresh_token"),
+        /*is_absolute=*/true,
+        /*create=*/false);
+    MixinBasedInProcessBrowserTest::SetUp();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     SetServiceAccountInPolicy(
@@ -130,6 +143,9 @@ class KioskIdentityTest : public MixinBasedInProcessBrowserTest {
   FakeGaia& fake_gaia() { return CHECK_DEREF(fake_gaia_.fake_gaia()); }
 
  private:
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<base::ScopedPathOverride> token_path_override_;
+
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   KioskMixin kiosk_{

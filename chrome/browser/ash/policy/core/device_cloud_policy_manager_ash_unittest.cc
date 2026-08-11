@@ -1137,31 +1137,9 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   ExpectSuccessfulEnrollment();
 }
 
-// A subclass that runs with a blank system salt.
-class DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest
-    : public DeviceCloudPolicyManagerAshEnrollmentTest {
- protected:
-  DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest() {
-    set_empty_system_salt_ = true;
-  }
-};
-
-TEST_P(DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest,
-       RobotRefreshSaveFailed) {
-  // Without the system salt, the robot token can't be stored.
-  expect_robot_auth_fetch_failure_ = true;
-  RunTest();
-  ExpectFailedEnrollment(EnrollmentStatus::Code::kRobotRefreshStoreFailed);
-}
-
 INSTANTIATE_TEST_SUITE_P(Cert,
                          DeviceCloudPolicyManagerAshEnrollmentTest,
                          ::testing::Values(false, true));
-
-INSTANTIATE_TEST_SUITE_P(
-    Cert,
-    DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest,
-    ::testing::Values(false, true));
 
 }  // namespace
 }  // namespace policy

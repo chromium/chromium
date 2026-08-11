@@ -11,6 +11,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -49,6 +50,13 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   DeviceOAuth2TokenStoreChromeOSTest() = default;
 
   void SetUp() override {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    token_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
+        temp_dir_.GetPath().Append("device_refresh_token"),
+        /*is_absolute=*/true,
+        /*create=*/false);
+
     ash::CryptohomeMiscClient::InitializeFake();
     ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
     ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
@@ -118,7 +126,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
 
   base::FilePath GetTempPath() const {
     base::FilePath temp_path = base::MakeAbsoluteFilePath(temp_dir_.GetPath());
-    return temp_path.Append("device_refresh_token_test");
+    return temp_path.Append("device_refresh_token");
   }
 
   void StoreV1TokenInLocalState(const std::string& token) {
@@ -137,10 +145,6 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   }
 
   void StoreV3Token(const std::string& token) {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
-        chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, GetTempPath(), true,
-        false));
     ASSERT_TRUE(base::WriteFile(GetTempPath(), token));
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
         prefs::kDeviceRefreshTokenAnyApiIsV3Used,
@@ -155,33 +159,41 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()->local_state()};
   ash::FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;
+  std::unique_ptr<base::ScopedPathOverride> token_path_override_;
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessful) {
-  ash::FakeCryptohomeMiscClient::Get()->set_system_salt(std::vector<uint8_t>());
-  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
-
+TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessfulWithToken) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       TestingBrowserProcess::GetGlobal()->local_state());
-
-  EXPECT_TRUE(store.GetAccountId().empty());
-  EXPECT_TRUE(store.GetRefreshToken().empty());
+  StoreV3Token("test-token");
 
   DeviceOAuth2TokenStoreInitWaiter init_waiter;
   store.Init(init_waiter.GetCallback());
-
-  EXPECT_FALSE(init_waiter.HasInitBeenCalled());
-
-  // Make the system salt available.
-  ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
-      ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
-  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   ASSERT_TRUE(init_waiter.Wait());
 
   EXPECT_TRUE(init_waiter.HasInitBeenCalled());
   EXPECT_TRUE(init_waiter.GetInitResult());
   EXPECT_TRUE(init_waiter.GetValidationRequired());
+  EXPECT_EQ("test-token", store.GetRefreshToken());
+}
+
+TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitWithNoToken) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kDeviceRefreshTokenAnyApiIsV3Used,
+      std::make_unique<base::Value>(true));
+
+  chromeos::DeviceOAuth2TokenStoreChromeOS store(
+      TestingBrowserProcess::GetGlobal()->local_state());
+
+  DeviceOAuth2TokenStoreInitWaiter init_waiter;
+  store.Init(init_waiter.GetCallback());
+  ASSERT_TRUE(init_waiter.Wait());
+
+  EXPECT_TRUE(init_waiter.HasInitBeenCalled());
+  EXPECT_FALSE(init_waiter.GetInitResult());
+  EXPECT_FALSE(init_waiter.GetValidationRequired());
+  EXPECT_TRUE(store.GetRefreshToken().empty());
 }
 
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadV1Token) {
@@ -208,16 +220,13 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadV3Token) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       TestingBrowserProcess::GetGlobal()->local_state());
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(chromeos::kRefreshTokenV3Feature);
   StoreV3Token("test-token");
   InitStore(&store);
 
   EXPECT_EQ("test-token", store.GetRefreshToken());
 }
 
-TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadPrefersV2Token) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::kRefreshTokenV3Feature);
+TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadPrefersV3Token) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       TestingBrowserProcess::GetGlobal()->local_state());
 
@@ -226,7 +235,7 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadPrefersV2Token) {
   StoreV3Token("test-token-v3");
   InitStore(&store);
 
-  EXPECT_EQ("test-token-v2", store.GetRefreshToken());
+  EXPECT_EQ("test-token-v3", store.GetRefreshToken());
 }
 
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveToken) {
@@ -243,11 +252,12 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveToken) {
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveEncryptedTokenEarly) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       TestingBrowserProcess::GetGlobal()->local_state());
-  StoreV3Token("test-token");
 
   // Set a new refresh token without the system salt available.
   InitWithPendingSalt(&store);
 
+  store.SetAndSaveRefreshToken("test-token",
+                               DeviceOAuth2TokenStore::StatusCallback());
   EXPECT_EQ("test-token", store.GetRefreshToken());
 
   // Make the system salt available.
@@ -255,11 +265,10 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, SaveEncryptedTokenEarly) {
       ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
   ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   base::RunLoop().RunUntilIdle();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop().RunUntilIdle();
 
-  // The original token should still be present.
-  EXPECT_EQ("test-token", store.GetRefreshToken());
-
-  // Reloading shouldn't change the token either.
+  // The token should be encrypted and saved now.
   chromeos::DeviceOAuth2TokenStoreChromeOS other_store(
       TestingBrowserProcess::GetGlobal()->local_state());
   InitStore(&other_store);

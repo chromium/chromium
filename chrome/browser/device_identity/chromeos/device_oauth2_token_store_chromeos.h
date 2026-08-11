@@ -17,8 +17,6 @@ class PrefService;
 
 namespace chromeos {
 
-BASE_DECLARE_FEATURE(kRefreshTokenV3Feature);
-
 // ChromeOS specific implementation of the DeviceOAuth2TokenStore interface used
 // by the DeviceOAuth2TokenService to store and retrieve encrypted device-level
 // refresh tokens.
@@ -54,10 +52,6 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
  private:
   // Flushes |token_save_callbacks_|, indicating the specified result.
   void FlushTokenSaveCallbacks(bool result);
-
-  // Encrypts and saves the refresh token. Should only be called when the system
-  // salt is available.
-  void EncryptAndSaveToken();
 
   // Attempt to load a refresh token from the local state. This will return null
   // if an error occurs while loading the token, otherwise the token will be
