@@ -754,6 +754,13 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
   if (input_state_model_) {
     input_state_model_->SetSmartTabSharingActive(active);
   }
+  if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+      active_task_context_provider->ClearAllLocalTabUnderlines();
+    }
+    active_task_context_provider->RefreshContext();
+  }
+  selected_tabs.clear();
   bool computed_active = IsSmartTabSharingActive();
   if (!last_sent_smart_tab_sharing_active_.has_value() ||
       *last_sent_smart_tab_sharing_active_ != computed_active) {
@@ -2135,6 +2142,8 @@ void ContextualSearchboxHandler::OpenUrl(
       contextual_session_handle->smart_tab_sharing_active());
   new_contextual_session_handle->set_smart_tab_sharing_toggled_since_last_turn(
       contextual_session_handle->smart_tab_sharing_toggled_since_last_turn());
+  new_contextual_session_handle->set_sts_toggled_removed_contexts(
+      contextual_session_handle->sts_toggled_removed_contexts());
 
   // TODO(crbug.com/470404040): Determine what to do with the return
   // value of this call, or move this call to a different location.
