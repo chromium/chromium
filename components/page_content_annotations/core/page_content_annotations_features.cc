@@ -105,10 +105,6 @@ BASE_FEATURE(kPageContentAnnotations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageContentAnnotationsValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables fetching page metadata from the remote Optimization Guide service,
-// left as a killswitch.
-BASE_FEATURE(kRemotePageMetadata, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations,
              enabled_by_default_non_ios);
 
@@ -195,14 +191,7 @@ base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
 }
 
 bool ShouldEnablePageContentAnnotations() {
-  // Allow for the validation experiment or remote page metadata to enable the
-  // PCAService without need to enable both features.
-  return base::FeatureList::IsEnabled(kPageContentAnnotations) ||
-         base::FeatureList::IsEnabled(page_content_annotations::features::
-                                          kPageContentAnnotationsValidation) ||
-         base::FeatureList::IsEnabled(
-             page_content_annotations::features::kRemotePageMetadata) ||
-         base::FeatureList::IsEnabled(kOnDeviceCategoryClassifier);
+  return true;
 }
 
 bool ShouldWriteContentAnnotationsToHistoryService() {
@@ -248,18 +237,6 @@ bool ShouldExecuteOnDeviceCategoryClassifierOnPageContent(
          IsSupportedLocale(locale, "en") &&
          IsSupportedCountryForFeature(country_code, kOnDeviceCategoryClassifier,
                                       "US");
-}
-
-bool RemotePageMetadataEnabled(const std::string& locale,
-                               const std::string& country_code) {
-  return base::FeatureList::IsEnabled(kRemotePageMetadata) &&
-         IsSupportedLocaleForFeature(locale, kRemotePageMetadata, "*") &&
-         IsSupportedCountryForFeature(country_code, kRemotePageMetadata, "*");
-}
-
-int GetMinimumPageCategoryScoreToPersist() {
-  return GetFieldTrialParamByFeatureAsInt(kRemotePageMetadata,
-                                          "min_page_category_score", 85);
 }
 
 int NumBitsForRAPPORMetrics() {
@@ -360,24 +337,6 @@ PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode() {
 
 base::TimeDelta GetPageSettledCaptureDelay() {
   return kPageSettledCaptureDelay.Get();
-}
-
-bool IsSupportedLocaleForFeature(
-    const std::string& locale,
-    const base::Feature& feature,
-    const std::string& default_value = "de,en,es,fr,it,nl,pt,tr") {
-  if (!base::FeatureList::IsEnabled(feature)) {
-    return false;
-  }
-
-  std::string value =
-      base::GetFieldTrialParamValueByFeature(feature, "supported_locales");
-  if (value.empty()) {
-    // The default list of supported locales for optimization guide features.
-    value = default_value;
-  }
-
-  return IsSupportedLocale(locale, value);
 }
 
 bool IsSupportedCountryForFeature(const std::string& country_code,

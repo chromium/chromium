@@ -725,12 +725,8 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
   PageContentAnnotationsServiceRemoteMetadataBrowserTest() {
     // Make sure remote page metadata works without page content annotations
     // enabled.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{page_content_annotations::features::kRemotePageMetadata,
-          {{"min_page_category_score", "80"},
-           {"supported_countries", "*"},
-           {"supported_locales", "*"}}}},
-        /*disabled_features=*/{{features::kPageContentAnnotations}});
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPageContentAnnotations);
     set_load_model_on_startup(false);
   }
   ~PageContentAnnotationsServiceRemoteMetadataBrowserTest() override = default;

@@ -61,79 +61,39 @@ TEST(PageContentAnnotationsFeaturesTest,
   EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
 }
 
-TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledDefaults) {
-  // All allowed by default
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en", "US"));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-CA", "CA"));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("zh-CN", "CN"));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("de", "DE"));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
-}
-
 TEST(PageContentAnnotationsFeaturesTest,
-     IsSupportedLocaleOrCountryForFeatureEmptyParams) {
+     IsSupportedCountryForFeatureEmptyParams) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   // Empty params.
-  scoped_feature_list.InitAndEnableFeature(features::kRemotePageMetadata);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageContentAnnotationsValidation);
   // Allow for both "" and "*" as |default_value|.
-  EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "en-US", features::kRemotePageMetadata,
-      /*default_value=*/""));
-  EXPECT_TRUE(
-      features::IsSupportedLocaleForFeature("it", features::kRemotePageMetadata,
-                                            /*default_value=*/"*"));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "US", features::kRemotePageMetadata,
+      "US", features::kPageContentAnnotationsValidation,
       /*default_value=*/""));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "CA", features::kRemotePageMetadata,
+      "CA", features::kPageContentAnnotationsValidation,
       /*default_value=*/"*"));
 }
 
 TEST(PageContentAnnotationsFeaturesTest,
-     IsSupportedLocaleOrCountryForFeatureParamsOverride) {
+     IsSupportedCountryForFeatureParamsOverride) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Specified params should override defaults.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemotePageMetadata,
-      {{"supported_locales", "en-US,en-CA,fr"}, {"supported_countries", "*"}});
+      features::kPageContentAnnotationsValidation,
+      {{"supported_countries", "*"}});
   // All countries allowed by param, ignoring default_value allowlist.
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "US", features::kRemotePageMetadata,
+      "US", features::kPageContentAnnotationsValidation,
       /*default_value=*/""));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "CA", features::kRemotePageMetadata,
+      "CA", features::kPageContentAnnotationsValidation,
       /*default_value=*/"*"));
   EXPECT_TRUE(features::IsSupportedCountryForFeature(
-      "CA", features::kRemotePageMetadata,
+      "CA", features::kPageContentAnnotationsValidation,
       /*default_value=*/"US"));
-  // Locales only allow en-US,en-CA specifically respecting param.
-  EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "en-CA", features::kRemotePageMetadata,
-      /*default_value=*/"*"));
-  EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "en-US", features::kRemotePageMetadata,
-      /*default_value=*/"*"));
-  // en locale is less specific than allowlist so it doesn't match.
-  EXPECT_FALSE(
-      features::IsSupportedLocaleForFeature("en", features::kRemotePageMetadata,
-                                            /*default_value=*/""));
-  // More specific than allowlist is allowed.
-  EXPECT_TRUE(
-      features::IsSupportedLocaleForFeature("fr", features::kRemotePageMetadata,
-                                            /*default_value=*/"*"));
-  EXPECT_TRUE(features::IsSupportedLocaleForFeature(
-      "fr-CA", features::kRemotePageMetadata,
-      /*default_value=*/"*"));
-  EXPECT_FALSE(
-      features::IsSupportedLocaleForFeature("it", features::kRemotePageMetadata,
-                                            /*default_value=*/""));
-  EXPECT_FALSE(features::IsSupportedLocaleForFeature(
-      "zh-TW", features::kRemotePageMetadata,
-      /*default_value=*/""));
 }
 
 }  // namespace

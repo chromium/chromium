@@ -20,8 +20,6 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kRemotePageMetadata);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 
 // Enables extraction of AnnotatedPageContent for every page load.
@@ -193,16 +191,9 @@ base::TimeDelta PageContentAnnotationBatchSizeTimeoutDuration();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 base::TimeDelta PCAServiceWaitForTitleDelayDuration();
 
-// Returns whether page metadata should be retrieved from the remote
-// Optimization Guide service.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool RemotePageMetadataEnabled(const std::string& locale,
-                               const std::string& country_code);
-
-// Returns the minimum score associated with a category for it to be persisted.
-// Will be a value from 0 to 100, inclusive.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-int GetMinimumPageCategoryScoreToPersist();
+// The minimum score associated with a category for it to be persisted.
+// Value from 0 to 100, inclusive.
+inline constexpr int kMinimumPageCategoryScoreToPersist = 85;
 
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.
@@ -263,20 +254,6 @@ PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode();
 // the page has been settled using PageSettledMonitor.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 base::TimeDelta GetPageSettledCaptureDelay();
-
-// Returns whether |locale| is a supported locale for |feature|.
-//
-// This matches |locale| with the "supported_locales" feature param value in
-// |feature|, which is expected to be a comma-separated list of locales. A
-// feature param containing "en,es-ES,zh-TW" restricts the feature to English
-// language users from any locale and Spanish language users from the Spain
-// es-ES locale. A feature param containing "*" is unrestricted by locale and
-// any user may load it, while "" uses the |default_value| allowlist.
-// Exposed for test coverage.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-extern bool IsSupportedLocaleForFeature(const std::string& locale,
-                                        const base::Feature& feature,
-                                        const std::string& default_value);
 
 // Returns whether |country_code| is supported for |feature|, checking
 // against |default_value| allowlist if the feature param "supported_countries"

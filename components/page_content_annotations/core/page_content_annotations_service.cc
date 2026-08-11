@@ -167,9 +167,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : min_page_category_score_to_persist_(
-          features::GetMinimumPageCategoryScoreToPersist()),
-      history_service_(history_service),
+    : history_service_(history_service),
       template_url_service_(template_url_service),
       zero_suggest_cache_service_(zero_suggest_cache_service),
       prefetched_related_searches_(features::MaxRelatedSearchesCacheSize()),
@@ -207,14 +205,11 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     on_device_category_classifier_->AddObserver(this);
   }
 
-  if (features::RemotePageMetadataEnabled(application_locale, country_code)) {
-    std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-    optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
-    optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
-    if (optimization_guide_decider_) {
-      optimization_guide_decider_->RegisterOptimizationTypes(
-          optimization_types);
-    }
+  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
+  optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
+  optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
   }
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
@@ -836,7 +831,7 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
   std::vector<history::VisitContentModelAnnotations::Category> categories;
   for (const auto& category : page_entities_metadata.categories()) {
     int category_score = static_cast<int>(100 * category.score());
-    if (category_score < min_page_category_score_to_persist_) {
+    if (category_score < features::kMinimumPageCategoryScoreToPersist) {
       continue;
     }
     model_annotations.categories.emplace_back(category.category_id(),
