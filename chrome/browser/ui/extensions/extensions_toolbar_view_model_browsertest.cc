@@ -474,3 +474,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   // Verify the action is not draggable.
   EXPECT_FALSE(toolbar_model()->IsActionDraggable(id));
 }
+
+// Tests that OnWebContentsReplaced updates the observed WebContents and
+// notifies observers.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       OnWebContentsReplaced_NotifiesObservers) {
+  MockExtensionsToolbarObserver observer;
+  toolbar_model()->AddObserver(&observer);
+
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+  content::WebContents* old_contents = active_tab->GetContents();
+
+  // Create a new WebContents to simulate replacing the tab's WebContents.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+
+  EXPECT_CALL(observer, OnActiveWebContentsChanged(false, new_contents.get()));
+
+  toolbar_model()->OnWebContentsReplaced(*tab_list, active_tab, old_contents,
+                                         new_contents.get());
+
+  toolbar_model()->RemoveObserver(&observer);
+}

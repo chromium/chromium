@@ -18,6 +18,7 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -102,6 +103,8 @@ public class ExtensionsMenuCoordinator
                 }
             };
     private final ModalDialogManager mModalDialogManager;
+    private final Callback<@Nullable Tab> mTabSupplierObserver =
+            (tab) -> updateButtonState(tab != null ? tab.getWebContents() : null);
 
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
     private long mLastDismissalTimeMs;
@@ -236,6 +239,7 @@ public class ExtensionsMenuCoordinator
 
         mExtensionModels = new ModelList();
         setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
+        mCurrentTabSupplier.addSyncObserver(mTabSupplierObserver);
         updateButtonState();
 
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
@@ -457,9 +461,8 @@ public class ExtensionsMenuCoordinator
         extensionRecyclerView.setItemAnimator(null);
     }
 
-    private void updateButtonState() {
-        Tab currentTab = mCurrentTabSupplier.get();
-        if (currentTab == null || currentTab.getWebContents() == null) return;
+    private void updateButtonState(@Nullable WebContents webContents) {
+        if (webContents == null) return;
 
         int color = SemanticColorUtils.getDefaultIconColor(mContext);
 
@@ -471,7 +474,7 @@ public class ExtensionsMenuCoordinator
 
         ExtensionsMenuButtonState state =
                 mExtensionsToolbarBridge.getMenuButtonState(
-                        currentTab.getWebContents(), iconSizeDp, iconSizeDp, density, color);
+                        webContents, iconSizeDp, iconSizeDp, density, color);
 
         if (state.getIcon() != null) {
             mExtensionsMenuButton.setImageBitmap(state.getIcon());
@@ -485,6 +488,11 @@ public class ExtensionsMenuCoordinator
         mExtensionsMenuButton.setContentDescription(state.getAccessibleText());
     }
 
+    private void updateButtonState() {
+        Tab currentTab = mCurrentTabSupplier.get();
+        updateButtonState(currentTab != null ? currentTab.getWebContents() : null);
+    }
+
     @Override
     public void onToolbarControlStateUpdated() {
         updateButtonState();
@@ -492,7 +500,7 @@ public class ExtensionsMenuCoordinator
 
     @Override
     public void onActiveWebContentsChanged(WebContents webContents) {
-        updateButtonState();
+        updateButtonState(webContents);
     }
 
     @Override
@@ -522,6 +530,7 @@ public class ExtensionsMenuCoordinator
 
     @Override
     public void destroy() {
+        mCurrentTabSupplier.removeObserver(mTabSupplierObserver);
         destroyMediator();
         mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         mExtensionsMenuButton.setOnClickListener(null);

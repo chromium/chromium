@@ -485,6 +485,19 @@ void ExtensionsToolbarViewModel::OnActiveTabChanged(TabListInterface& tab_list,
   }
 }
 
+void ExtensionsToolbarViewModel::OnWebContentsReplaced(
+    TabListInterface& tab_list,
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  if (tab == tab_list.GetActiveTab()) {
+    WebContentsObserver::Observe(new_contents);
+    for (Observer& obs : observers_) {
+      obs.OnActiveWebContentsChanged(/*is_same_document=*/false, new_contents);
+    }
+  }
+}
+
 void ExtensionsToolbarViewModel::OnTabListDestroyed(
     TabListInterface& tab_list) {
   tab_list_observation_.Reset();

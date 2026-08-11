@@ -484,6 +484,32 @@ public class ExtensionsMenuCoordinatorTest {
         verify(mockPopup).updateDesiredContentSize(0, 0, true);
     }
 
+    @Test
+    public void testOnActiveWebContentsChanged_UpdatesButtonStateWithWebContents() {
+        org.chromium.content_public.browser.WebContents mockWebContents =
+                mock(org.chromium.content_public.browser.WebContents.class);
+        clearInvocations(mExtensionsToolbarBridge);
+
+        mExtensionsMenuCoordinator.onActiveWebContentsChanged(mockWebContents);
+
+        verify(mExtensionsToolbarBridge)
+                .getMenuButtonState(eq(mockWebContents), anyInt(), anyInt(), anyFloat(), anyInt());
+    }
+
+    @Test
+    public void testCurrentTabSupplierChange_UpdatesButtonState() {
+        Tab newTab = mock(Tab.class);
+        org.chromium.content_public.browser.WebContents newWebContents =
+                mock(org.chromium.content_public.browser.WebContents.class);
+        when(newTab.getWebContents()).thenReturn(newWebContents);
+        clearInvocations(mExtensionsToolbarBridge);
+
+        mCurrentTabSupplier.set(newTab);
+
+        verify(mExtensionsToolbarBridge)
+                .getMenuButtonState(eq(newWebContents), anyInt(), anyInt(), anyFloat(), anyInt());
+    }
+
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
             String label, boolean isOn) {
         return createSiteSettingsState(
