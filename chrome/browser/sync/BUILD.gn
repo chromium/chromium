@@ -19,8 +19,6 @@ source_set("sync") {
     "chrome_sync_controller_builder.h",
     "cross_device_theme_tracker_factory.cc",
     "cross_device_theme_tracker_factory.h",
-    "data_type_store_service_factory.cc",
-    "data_type_store_service_factory.h",
     "device_info_sync_client_impl.cc",
     "device_info_sync_client_impl.h",
     "device_info_sync_service_factory.cc",
@@ -88,6 +86,7 @@ source_set("sync") {
     "//components/paint_preview/buildflags",
   ]
   deps = [
+    ":data_type_store_service_factory",
     "//chrome/app:branded_strings",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:generated_resources",
@@ -301,11 +300,9 @@ source_set("sync") {
 # to pick up the implementations. The reason for this target separation is
 # because KeyedServiceFactories mix the interface and implementation.
 source_set("factories") {
-  sources = [
-    "data_type_store_service_factory.h",
-    "sync_service_factory.h",
-  ]
+  sources = [ "sync_service_factory.h" ]
   public_deps = [
+    ":data_type_store_service_factory",
     "//base",
     "//chrome/browser/profiles",
     "//components/sync/engine",
@@ -426,4 +423,15 @@ if (!is_android) {
       "//testing/gtest",
     ]
   }
+}
+
+source_set("data_type_store_service_factory") {
+  public = [ "data_type_store_service_factory.h" ]
+  sources = [ "data_type_store_service_factory.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/sync/model",
+  ]
+  deps = [ "//components/keyed_service/content" ]
 }
