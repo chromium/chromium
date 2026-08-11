@@ -1184,8 +1184,8 @@ PasswordAutofillAgent::CreateSuggestionRequest(
                                 trigger_source);
   // TODO(crbug.com/408843433): Don't extract the data here but pass it in from
   // the caller who needs it anyways for autofill requests.
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = form_util::FindFormAndFieldForFormControlElement(
+  std::optional<form_util::FormAndField> form_and_field =
+      form_util::FindFormAndFieldForFormControlElement(
           user_input, field_data_manager(),
           autofill_agent_->GetCallTimerState(
               CallTimerState::CallSite::kShowSuggestionPopup),
@@ -1205,10 +1205,10 @@ PasswordAutofillAgent::CreateSuggestionRequest(
                              &password_info);
 
   return PasswordSuggestionRequest(
-      TriggeringField(*form_and_field->second, trigger_source, typed_username,
+      TriggeringField(form_and_field->field, trigger_source, typed_username,
                       gfx::RectF(unsafe_render_frame()->ConvertViewportToWindow(
                           user_input.BoundsInWidget()))),
-      std::move(form_and_field->first),
+      std::move(form_and_field->form),
       {.frame_token = {},
        .renderer_id = username_element ? GetFieldRendererId(username_element)
                                        : FieldRendererId()},

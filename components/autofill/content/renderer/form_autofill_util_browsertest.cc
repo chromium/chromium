@@ -92,6 +92,7 @@ using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
@@ -305,8 +306,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
                                       /*button_titles_cache=*/nullptr);
   }
 
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-  FindFormAndFieldForFormControlElement(WebFormControlElement control) {
+  std::optional<FormAndField> FindFormAndFieldForFormControlElement(
+      WebFormControlElement control) {
     return form_util::FindFormAndFieldForFormControlElement(
         control, field_data_manager(), kCallTimerStateDummy,
         /*button_titles_cache=*/nullptr,
@@ -1207,8 +1208,8 @@ TEST_F(FormAutofillUtilsTest,
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(web_control);
+  std::optional<FormAndField> form_and_field =
+      FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -1220,8 +1221,8 @@ TEST_F(FormAutofillUtilsTest,
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(web_control);
+  std::optional<FormAndField> form_and_field =
+      FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -1268,8 +1269,8 @@ TEST_F(FormAutofillUtilsTest,
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(web_control);
+  std::optional<FormAndField> form_and_field =
+      FindFormAndFieldForFormControlElement(web_control);
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
@@ -1279,7 +1280,7 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(options[1].value, u"2");
   EXPECT_EQ(options[0].text, u"one");
   EXPECT_EQ(options[1].text, u"two");
-  EXPECT_EQ(field->datalist_options().size(), options.size());
+  EXPECT_EQ(field.datalist_options().size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -1339,11 +1340,12 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_FALSE(is_ancestor(f1, t));
   ASSERT_EQ(t.Form(), f2);  // nocheck
 
-  EXPECT_THAT(FindFormAndFieldForFormControlElement(t),
-              Optional(Pair(AllOf(HasRendererIdOf(f1),
-                                  Property(&FormData::fields,
-                                           ElementsAre(HasRendererIdOf(t)))),
-                            _)));
+  EXPECT_THAT(
+      FindFormAndFieldForFormControlElement(t),
+      Optional(Field(&FormAndField::form,
+                     AllOf(HasRendererIdOf(f1),
+                           Property(&FormData::fields,
+                                    ElementsAre(HasRendererIdOf(t)))))));
 }
 
 // Tests the fallback mechanism where FindFormAndFieldForFormControlElement()
@@ -1367,14 +1369,14 @@ TEST_F(FormAutofillUtilsTest,
   WebFormElement form_element = GetFormElementById(doc, "f");
   WebFormControlElement control_element = GetFormControlElementById(doc, "i0");
 
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = form_util::FindFormAndFieldForFormControlElement(
+  std::optional<FormAndField> form_and_field =
+      form_util::FindFormAndFieldForFormControlElement(
           control_element, field_data_manager(), kCallTimerStateDummy,
           /*button_titles_cache=*/nullptr,
           /*form_cache=*/{});
 
   ASSERT_TRUE(form_and_field);
-  const FormData& fallback_form = form_and_field->first;
+  const FormData& fallback_form = form_and_field->form;
 
   // The fallback form should represent the owning form, so its `FormRendererId`
   // should match `form_element`'s renderer ID, and the form's only field's
@@ -3091,7 +3093,7 @@ FormData FindForm(const blink::WebFormControlElement& element) {
           kExtractFormDataCallTimerStateDummy,
           /*button_titles_cache=*/nullptr,
           /*form_cache=*/{})) {
-    return p->first;
+    return p->form;
   }
   return FormData();
 }

@@ -114,8 +114,6 @@ using enum CallTimerState::CallSite;
 // will be acted upon, instead of multiple in close succession (debounce time).
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
-using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
-
 void LogRendererExtractLabeledTextNodeValueLatency(base::TimeDelta latency,
                                                    bool is_successful) {
   base::UmaHistogramTimes(
@@ -633,7 +631,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl() {
 
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kDidChangeScrollOffsetImpl),
@@ -641,7 +639,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl() {
               /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidScroll(form, field->renderer_id());
+      autofill_driver->TextFieldDidScroll(form, field.renderer_id());
     }
   }
 
@@ -709,7 +707,7 @@ void AutofillAgent::FocusedElementChanged(
   };
 
   if (auto control = new_focused_element.DynamicTo<WebFormControlElement>()) {
-    if (std::optional<FormAndField> form_and_field =
+    if (std::optional<form_util::FormAndField> form_and_field =
             form_util::FindFormAndFieldForFormControlElement(
                 control, field_data_manager(),
                 GetCallTimerState(kFocusedElementChanged),
@@ -718,7 +716,7 @@ void AutofillAgent::FocusedElementChanged(
       auto& [form, field] = *form_and_field;
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_id_ = form_util::GetFieldRendererId(control);
-        autofill_driver->FocusOnFormField(form, field->renderer_id());
+        autofill_driver->FocusOnFormField(form, field.renderer_id());
         handle_focus_change(form);
         return;
       }
@@ -773,7 +771,7 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
     gfx::Rect caret_bounds = GetCaretBounds(*self.unsafe_render_frame());
     if (WebFormControlElement control =
             element.DynamicTo<WebFormControlElement>()) {
-      if (std::optional<FormAndField> form_and_field =
+      if (std::optional<form_util::FormAndField> form_and_field =
               form_util::FindFormAndFieldForFormControlElement(
                   control, self.field_data_manager(),
                   self.GetCallTimerState(kHandleCaretMovedInFormField),
@@ -781,7 +779,7 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
                   /*form_cache=*/{})) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = self.unsafe_autofill_driver()) {
-          autofill_driver->CaretMovedInFormField(form, field->renderer_id(),
+          autofill_driver->CaretMovedInFormField(form, field.renderer_id(),
                                                  caret_bounds);
           return;
         }
@@ -961,14 +959,14 @@ void AutofillAgent::OnTextFieldValueChanged(
                      weak_ptr_factory_.GetWeakPtr(),
                      form_util::GetFieldRendererId(element)));
 
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kOnTextFieldValueChanged),
               button_titles_cache(), form_cache)) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldValueChanged(form, field->renderer_id(),
+      autofill_driver->TextFieldValueChanged(form, field.renderer_id(),
                                              base::TimeTicks::Now());
     }
   }
@@ -993,15 +991,14 @@ void AutofillAgent::OnSelectControlSelectionChanged(
     const WebFormControlElement& element,
     const SynchronousFormCache& form_cache) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kOnProvisionallySaveForm),
               button_titles_cache(), form_cache)) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->SelectControlSelectionChanged(form,
-                                                     field->renderer_id());
+      autofill_driver->SelectControlSelectionChanged(form, field.renderer_id());
     }
   }
 }
@@ -1655,7 +1652,7 @@ void AutofillAgent::ShowSuggestions(
     return;
   }
 
-  std::optional<FormAndField> form_and_field =
+  std::optional<form_util::FormAndField> form_and_field =
       form_util::FindFormAndFieldForFormControlElement(
           element, field_data_manager(),
           GetCallTimerState(kQueryAutofillSuggestions), button_titles_cache(),
@@ -1665,14 +1662,14 @@ void AutofillAgent::ShowSuggestions(
   }
   auto& [form, field] = *form_and_field;
 
-  if (ShouldThrottleAskForValuesToFill(field->renderer_id())) {
+  if (ShouldThrottleAskForValuesToFill(field.renderer_id())) {
     return;
   }
 
   is_popup_possibly_visible_ = true;
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     if (auto* render_frame = unsafe_render_frame()) {
-      autofill_driver->AskForValuesToFill(form, field->renderer_id(),
+      autofill_driver->AskForValuesToFill(form, field.renderer_id(),
                                           GetCaretBounds(*render_frame),
                                           trigger_source, password_request);
       at_memory_handler_.MaybeUpdateAskForValuesToFill(element, trigger_source);
@@ -2189,15 +2186,15 @@ void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
 
   // Look for the form and field associated with the select element. If they are
   // found, notify the driver that the form was modified dynamically.
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kBatchSelectOptionChange),
               button_titles_cache(), /*form_cache=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
-        autofill_driver && !field->options().empty()) {
-      autofill_driver->SelectFieldOptionsDidChange(form, field->renderer_id());
+        autofill_driver && !field.options().empty()) {
+      autofill_driver->SelectFieldOptionsDidChange(form, field.renderer_id());
     }
   }
 }
@@ -2311,7 +2308,7 @@ void AutofillAgent::JavaScriptSetValue(WebFormControlElement element,
   if (!was_autofilled) {
     return;
   }
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               element, field_data_manager(),
               GetCallTimerState(kJavaScriptSetValue), button_titles_cache(),
@@ -2319,7 +2316,7 @@ void AutofillAgent::JavaScriptSetValue(WebFormControlElement element,
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->JavaScriptChangedAutofilledValue(
-          form, field->renderer_id(), old_value.Utf16());
+          form, field.renderer_id(), old_value.Utf16());
     }
   }
 }
@@ -2366,7 +2363,7 @@ mojom::AutofillDriver* AutofillAgent::unsafe_autofill_driver() {
 void AutofillAgent::OnJavaScriptAutofillDetected(
     blink::WebFormControlElement trigger_field,
     std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications) {
-  if (std::optional<FormAndField> form_and_field =
+  if (std::optional<form_util::FormAndField> form_and_field =
           form_util::FindFormAndFieldForFormControlElement(
               trigger_field, field_data_manager(),
               GetCallTimerState(kOnJavaScriptAutofillDetected),
@@ -2374,7 +2371,7 @@ void AutofillAgent::OnJavaScriptAutofillDetected(
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->DidDetectJavaScriptAutofill(
-          form, field->renderer_id(), std::move(field_modifications));
+          form, field.renderer_id(), std::move(field_modifications));
     }
   }
 }

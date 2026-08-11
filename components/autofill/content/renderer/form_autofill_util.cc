@@ -2505,8 +2505,7 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
   return elements;
 }
 
-std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-FindFormAndFieldForFormControlElement(
+std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
@@ -2539,7 +2538,7 @@ FindFormAndFieldForFormControlElement(
   if (auto it = std::ranges::find(form->fields(), GetFieldRendererId(element),
                                   &FormFieldData::renderer_id);
       it != form->fields().end()) {
-    return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
+    return FormAndField{std::move(*form), *it};
   }
 
   // This is not reachable if the following holds:

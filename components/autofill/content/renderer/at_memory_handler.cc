@@ -55,8 +55,6 @@ using ::blink::WebLocalFrame;
 using ::blink::WebRange;
 using ::blink::WebString;
 
-using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
-
 // Returns true if `event` may produce a character.
 bool IsPrintable(const WebKeyboardEvent& event) {
   if (base::IsAsciiControl(event.text[0])) {
@@ -351,12 +349,12 @@ void AtMemoryHandler::MaybeRecordAtAt(
 
   if (WebFormControlElement control =
           element.DynamicTo<WebFormControlElement>()) {
-    if (std::optional<FormAndField> form_and_field =
+    if (std::optional<form_util::FormAndField> form_and_field =
             form_util::FindFormAndFieldForFormControlElement(
                 control, field_data_manager, timer_state, button_titles_cache,
                 /*form_cache=*/{})) {
       const auto& [form, field] = *form_and_field;
-      set_metrics(form, *field);
+      set_metrics(form, field);
     }
   } else if (element && element.IsContentEditable()) {
     if (std::optional<FormData> form =

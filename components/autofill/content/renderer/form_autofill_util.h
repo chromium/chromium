@@ -16,6 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/stack_allocated.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -131,13 +132,20 @@ std::vector<blink::WebFormControlElement> GetOwnedAutofillableFormControls(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element);
 
+struct FormAndField {
+  STACK_ALLOCATED();
+
+ public:
+  FormData form;
+  const FormFieldData& field;
+};
+
 // Extracts the FormData that represents the form of `element`. If that form
 // cannot be extracted (e.g., because it is too large), falls back to a
 // single-field form that contains `element`. If however `element` is not
 // autofillable, returns nullopt. `form_cache` can be used to optimize form
 // extractions occurring synchronously after this function call.
-std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-FindFormAndFieldForFormControlElement(
+std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
