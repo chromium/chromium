@@ -1413,6 +1413,7 @@ void TabDragController::AttachToNewContext(
   const std::optional<tab_groups::TabGroupId> focused_group =
       tab_strip_model->GetFocusedGroup();
   if (focused_group.has_value() &&
+      !drag_data_.group_header_drag_data_.has_value() &&
       !std::ranges::any_of(drag_data_.tab_drag_data_, &TabDragData::pinned)) {
     const TabGroup* group =
         tab_strip_model->group_model()->GetTabGroup(*focused_group);

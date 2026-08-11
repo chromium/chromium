@@ -695,6 +695,10 @@ gfx::Range TabStripModel::InsertDetachedTabGroupAt(
   CHECK(std::holds_alternative<std::unique_ptr<tabs::TabGroupTabCollection>>(
       group->collection_));
 
+  if (selection_model_.focused_group().has_value()) {
+    SetFocusedGroup(std::nullopt);
+  }
+
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection_unique_ptr =
       std::move(std::get<std::unique_ptr<tabs::TabGroupTabCollection>>(
           group->collection_));

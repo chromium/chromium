@@ -1406,6 +1406,32 @@ TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocus) {
                                       1);
 }
 
+TEST_F(TabStripModelTest, InsertingDetachedTabGroupUnsetsFocus) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  ASSERT_TRUE(model.empty());
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group1 = model.AddToNewGroup({0, 1});
+  model.SetFocusedGroup(group1);
+  EXPECT_EQ(model.GetFocusedGroup(), group1);
+
+  TestTabStripModelDelegate delegate2;
+  TabStripModel model2(&delegate2, profile());
+  model2.AppendWebContents(CreateWebContents(), true);
+  model2.AppendWebContents(CreateWebContents(), true);
+  const tab_groups::TabGroupId group2 = model2.AddToNewGroup({0, 1});
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      model2.DetachTabGroupForInsertion(group2);
+
+  model.InsertDetachedTabGroupAt(std::move(detached_group), 0);
+  EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+  EXPECT_TRUE(model.group_model()->ContainsTabGroup(group1));
+  EXPECT_TRUE(model.group_model()->ContainsTabGroup(group2));
+}
+
 TEST_F(TabStripModelTest,
        ClosingLastTabOfFocusedGroupUnsetsFocusAndLogsHistogram) {
   TestTabStripModelDelegate delegate;

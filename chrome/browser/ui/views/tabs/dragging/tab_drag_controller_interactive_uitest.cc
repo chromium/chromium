@@ -5387,6 +5387,48 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
   EXPECT_EQ(std::nullopt, model->GetTabGroupForTab(3));
 }
 
+// Creates two browsers, focuses a group in the second browser, then drags a
+// group from the first browser into the second browser. The second browser
+// should lose its focused state.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithFocusMode,
+                       DragGroupHeaderIntoWindowWithFocusedGroupUnfocuses) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  TabStripModel* model = browser()->tab_strip_model();
+  AddTabsAndResetBrowser(browser(), 1);
+  tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
+  StopAnimating(tab_strip);
+
+  // Create another browser with a tab group.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+  TabStripModel* model2 = browser2->tab_strip_model();
+  AddTabsAndResetBrowser(browser2, 1);
+  tab_groups::TabGroupId group2 = model2->AddToNewGroup({0, 1});
+  StopAnimating(tab_strip2);
+
+  // Focus group2 in browser2.
+  model2->SetFocusedGroup(group2);
+  ASSERT_EQ(model2->GetFocusedGroup(), group2);
+
+  // Drag group1 by its header from browser into browser2.
+  DragToDetachGroupAndNotify(tab_strip,
+                             base::BindOnce(&DragAllToSeparateWindowStep2, this,
+                                            tab_strip, tab_strip2),
+                             group1);
+
+  ASSERT_TRUE(WaitForAttach(tab_strip2, 4));
+  ASSERT_TRUE(ReleaseInput());
+  StopAnimating(tab_strip2);
+
+  // Expect browser2 to lose the focused state so both groups are occupied
+  // safely.
+  EXPECT_EQ(model2->GetFocusedGroup(), std::nullopt);
+  EXPECT_TRUE(model2->group_model()->ContainsTabGroup(group1));
+  EXPECT_TRUE(model2->group_model()->ContainsTabGroup(group2));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
