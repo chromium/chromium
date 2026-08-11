@@ -2296,36 +2296,6 @@ TEST_F(AutofillAgentTest_AtMemory,
   EXPECT_EQ(input.SelectionStart(), 17u);
 }
 
-// Tests that ApplyFieldAction correctly handles targeted preview
-// (suggested value) of "@@" in standard text inputs.
-TEST_F(AutofillAgentTest_AtMemory,
-       AtMemorySearchResult_ApplyFieldAction_StandardInput_Preview) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  blink::WebInputElement input = GetInputElementById("f");
-  FieldRendererId field_id = form_util::GetFieldRendererId(input);
-  Focus("f");
-
-  // 1. Targeted replacement: "hello @@" -> "hello result"
-  set_action_persistence_to_respond(mojom::ActionPersistence::kPreview);
-  SimulateSlowTyping("hello @@");
-  WaitForApplyFieldAction();
-  // The actual value is NOT mutated during preview.
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@");
-  // The suggested value (ghost text) should be targeted.
-  EXPECT_EQ(input.SuggestedValue().Utf16(), u"hello result");
-
-  // 2. Fallback insertion (no @@): "hello result" -> "hello result extra"
-  task_environment_.FastForwardBy(base::Milliseconds(100));
-  input.SetValue(blink::WebString::FromUtf16(u"hello result"));
-  input.SetSelectionRange(12, 12);
-  set_fill_value_to_respond(u" extra");
-  autofill_agent().TriggerSuggestions(
-      field_id, AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
-  WaitForApplyFieldAction();
-  EXPECT_EQ(input.SuggestedValue().Utf16(), u"hello result extra");
-}
-
 // Tests that trigger string removal does NOT happen when triggered by keyboard
 // shortcut.
 TEST_F(AutofillAgentTest_AtMemory,

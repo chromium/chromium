@@ -174,41 +174,6 @@ bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& element,
   return false;
 }
 
-// TODO(crbug.com/540805115): Remove or merge with the rest of the code.
-bool AtMemoryHandler::PreviewReplaceSelectionForAtMemory(
-    WebFormControlElement& form_control,
-    const std::u16string& value) {
-  const std::optional<AtMemoryHandler::AskForValuesToFillInfo> info =
-      FindAskForValuesToFill(form_control,
-                             /*pop=*/false);
-  if (!info) {
-    return false;
-  }
-
-  const blink::RendererPreferences* prefs = GetRendererPreferences();
-  WebString trigger =
-      WebString::FromUtf8(prefs ? prefs->autofill_trigger_string : "");
-  const unsigned int sel_start = form_control.SelectionStart();
-  const unsigned int sel_end = form_control.SelectionEnd();
-  std::u16string preview_value = form_control.EditingValue().Utf16();
-  // If there is no selection and the cursor is immediately preceded
-  // by the trigger string, we replace the trigger. Otherwise (e.g. if
-  // the user has already selected text or triggered via the context
-  // menu), we replace the current selection or insert at the cursor.
-  if (info->caused_by_trigger_string && !trigger.IsEmpty() &&
-      sel_start == sel_end && sel_start >= trigger.length() &&
-      form_control.EditingValue()
-          .Substring(sel_start - trigger.length(), trigger.length())
-          .Equals(trigger)) {
-    preview_value.replace(sel_start - trigger.length(), trigger.length(),
-                          value);
-  } else {
-    preview_value.replace(sel_start, sel_end - sel_start, value);
-  }
-  form_control.SetSuggestedValue(WebString::FromUtf16(preview_value));
-  return true;
-}
-
 void AtMemoryHandler::ReplaceSelectionForAtMemory(WebElement& element,
                                                   const std::u16string& value) {
   const std::optional<AskForValuesToFillInfo> info =

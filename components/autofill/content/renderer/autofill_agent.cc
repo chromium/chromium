@@ -1357,12 +1357,8 @@ void AutofillAgent::ApplyFieldAction(
                 << "Previewing replacement of selection is not implemented";
             break;
           case mojom::FieldActionType::kReplaceSelectionForAtMemory:
-            if (at_memory_handler_.PreviewReplaceSelectionForAtMemory(
-                    form_control, value)) {
-              previewed_elements_.emplace_back(
-                  form_util::GetFieldRendererId(form_control),
-                  form_control.GetAutofillState());
-            }
+            NOTIMPLEMENTED()
+                << "Previewing for AtMemory is not implemented: b/540805115";
             break;
           case mojom::FieldActionType::kSelectAll:
             NOTIMPLEMENTED() << "Previewing select all is not implemented";
@@ -1416,8 +1412,7 @@ void AutofillAgent::ApplyFieldAction(
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
         // TODO(crbug.com/488311191): Implement for contenteditable.
-        NOTIMPLEMENTED()
-            << "Previewing replacement of selection is not implemented";
+        NOTIMPLEMENTED() << "Previewing on contenteditables is not implemented";
         break;
       case mojom::ActionPersistence::kFill:
         switch (action_type) {

@@ -59,12 +59,6 @@ class AtMemoryHandler {
   bool DidReceiveKeyDown(const blink::WebElement& element,
                          const blink::WebKeyboardEvent& event);
 
-  // Tries to preview filling `value` into `form_control` at the location where
-  // AtMemory was last triggered on `form_control`.
-  bool PreviewReplaceSelectionForAtMemory(
-      blink::WebFormControlElement& form_control,
-      const std::u16string& value);
-
   // Tries to fill `value` into `element` at the location where AtMemory was
   // last triggered on `element`.
   void ReplaceSelectionForAtMemory(blink::WebElement& element,
