@@ -111,6 +111,7 @@ public class ActorTabStateHelperTest {
         assertEquals(
                 Integer.valueOf(101),
                 sessions.get(0).getTabDataList().get(0).getPlaceholderTabId());
+        assertEquals(0, sessions.get(0).getTabDataList().get(0).getOriginalTabIndex());
 
         verify(mTabRemover).removeTab(mTab, false);
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
@@ -200,5 +201,21 @@ public class ActorTabStateHelperTest {
                         eq(mTab),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
+    }
+
+    @Test
+    public void testBackgroundSession_addTabData_storesOriginalIndex() {
+        BackgroundSession session = new BackgroundSession(mTab, 500);
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX, session.getTabDataList().get(0).getOriginalTabIndex());
+
+        Tab otherTab = mock(Tab.class);
+        when(otherTab.getId()).thenReturn(200);
+        session.addTabData(new BackgroundSession.BackgroundTabData(otherTab, 102, 3));
+
+        assertEquals(2, session.getTabDataList().size());
+        assertEquals(otherTab, session.getTabDataList().get(1).getTab());
+        assertEquals(Integer.valueOf(102), session.getTabDataList().get(1).getPlaceholderTabId());
+        assertEquals(3, session.getTabDataList().get(1).getOriginalTabIndex());
     }
 }

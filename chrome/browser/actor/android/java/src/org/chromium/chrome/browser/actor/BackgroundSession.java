@@ -28,11 +28,6 @@ public class BackgroundSession {
             mTab = tab;
         }
 
-        public BackgroundTabData(Tab tab, @Nullable @TabId Integer placeholderTabId) {
-            mTab = tab;
-            mPlaceholderTabId = placeholderTabId;
-        }
-
         public BackgroundTabData(
                 Tab tab, @Nullable @TabId Integer placeholderTabId, int originalTabIndex) {
             mTab = tab;
