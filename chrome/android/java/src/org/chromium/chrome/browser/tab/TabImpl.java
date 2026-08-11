@@ -1170,9 +1170,11 @@ class TabImpl implements Tab, TabInternal {
         var webContents = getWebContents();
         if (webContents == null) return;
 
-        if (mIsHidden) {
+        boolean isOffscreenRendering = mIsOffscreenRenderingSupplier.get();
+        if (mIsHidden && !isOffscreenRendering) {
             webContents.updateWebContentsVisibility(Visibility.HIDDEN);
         } else if (!mIsDetachedFromActivity
+                && !isOffscreenRendering
                 && assumeNonNull(mWindowAndroid).getOcclusionSupplier().get()) {
             // If we are not attached to a window, occlusion does not make sense.
             webContents.updateWebContentsVisibility(Visibility.OCCLUDED);
@@ -3155,6 +3157,7 @@ class TabImpl implements Tab, TabInternal {
         assert !mIsOffscreenRenderingSupplier.get();
         assert mWebContents != null : "WebContents must exist to start offscreen rendering";
         mIsOffscreenRenderingSupplier.set(true);
+        updateWebContentsVisibility();
     }
 
     @Override
@@ -3168,6 +3171,7 @@ class TabImpl implements Tab, TabInternal {
                             ? mWindowAndroid
                             : null;
             mWebContents.setTopLevelNativeWindow(window);
+            updateWebContentsVisibility();
         }
     }
 

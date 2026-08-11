@@ -34,6 +34,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link TabImpl} class. */
@@ -332,5 +333,30 @@ public class TabImplTest {
         assertEquals(originalWindow, tab.getWindowAndroid());
 
         ThreadUtils.runOnUiThreadBlocking(() -> testWindow.destroy());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testOffscreenRenderingUpdatesVisibility() {
+        TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.hide(TabHidingType.ACTIVITY_HIDDEN);
+                });
+        assertEquals(Visibility.HIDDEN, tab.getWebContents().getVisibility());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.startOffscreenRendering();
+                });
+        assertEquals(Visibility.VISIBLE, tab.getWebContents().getVisibility());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.stopOffscreenRendering();
+                });
+        assertEquals(Visibility.HIDDEN, tab.getWebContents().getVisibility());
     }
 }
