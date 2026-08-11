@@ -426,18 +426,10 @@ class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
   ExtensionId extension_id_;
 };
 
-// Test failing on Linux: https://crbug.com/40837231
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_TerminateExtensionWithTooManyReloads \
-  DISABLED_TerminateExtensionWithTooManyReloads
-#else
-#define MAYBE_TerminateExtensionWithTooManyReloads \
-  TerminateExtensionWithTooManyReloads
-#endif
-// Verifies that an extension is terminated when reloaded excessively within
-// a short interval.
+// Ensures that an extension is properly terminated if it gets stuck in a rapid
+// reload loop.
 TEST_F(ChromeRuntimeAPIDelegateReloadTest,
-       MAYBE_TerminateExtensionWithTooManyReloads) {
+       TerminateExtensionWithTooManyReloads) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Expect the extension to be reloaded 30 times in quick succession before
