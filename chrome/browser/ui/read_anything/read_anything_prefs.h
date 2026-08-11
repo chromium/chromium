@@ -101,6 +101,10 @@ inline constexpr char kAccessibilityReadAnythingLastOpenedPresentationState[] =
 inline constexpr char kAccessibilityReadAnythingRecentUsagesStartTimes[] =
     "settings.a11y.read_anything.recent_usages_start_times";
 
+// String list with the 3 most recently used font names.
+inline constexpr char kAccessibilityReadAnythingRecentlyUsedFonts[] =
+    "settings.a11y.read_anything.recently_used_fonts";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(

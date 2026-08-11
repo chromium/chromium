@@ -923,6 +923,46 @@ TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
   ASSERT_EQ(controller().FontName(), expected_font);
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetSupportedFonts_DelegatesToModelCache) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingImprovedUi);
+
+  // Populate recently used fonts list in model and trigger cache update.
+  model().UpdateRecentlyUsedFonts("Serif");
+  model().UpdateRecentlyUsedFonts("Poppins");
+
+  // Verify controller().GetSupportedFonts() delegates directly to
+  // model_.prioritized_supported_fonts().
+  const std::vector<std::string>& model_cached_fonts =
+      model().prioritized_supported_fonts();
+  std::vector<std::string> controller_fonts = controller().GetSupportedFonts();
+
+  EXPECT_EQ(controller_fonts, model_cached_fonts);
+  EXPECT_THAT(
+      controller_fonts,
+      testing::ElementsAre("Poppins", "Serif", "Sans-serif", "Comic Neue",
+                           "Lexend Deca", "EB Garamond", "STIX Two Text",
+                           "Andika", "Atkinson Hyperlegible Next"));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnFontChange_UpdatesRecentlyUsedFontsCache) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingImprovedUi);
+
+  std::string expected_font = "Serif";
+
+  EXPECT_CALL(page_handler_, OnFontChange(expected_font)).Times(1);
+
+  // Trigger font change via controller.
+  controller().OnFontChange(expected_font);
+  ASSERT_EQ(controller().FontName(), expected_font);
+
+  // Verify prioritized supported fonts cache is updated with the selected font.
+  EXPECT_EQ(model().prioritized_supported_fonts().front(), expected_font);
+  EXPECT_EQ(controller().GetSupportedFonts().front(), expected_font);
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_FontWithQuotes) {
   std::string expected_font = "\"Lexend Deca\"";
   std::string actual_font = controller().GetValidatedFontName("Lexend Deca");
@@ -1107,7 +1147,7 @@ TEST_F(ReadAnythingAppControllerTest,
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
       std::move(languages_enabled_in_pref), highlight_granularity,
-      line_focus_enabled_mode, false);
+      line_focus_enabled_mode, false, std::vector<std::string>());
 
   EXPECT_EQ(static_cast<int>(line_focus_enabled_mode),
             controller().LastNonDisabledLineFocus());
@@ -1318,13 +1358,15 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   int highlight_granularity_value = 0;
   auto line_focus_enabled_mode = read_anything::mojom::LineFocus::kLineCursor;
 
+  std::vector<std::string> recently_used_fonts = {"Roboto", "Arial"};
+
   controller().SetLanguageForTesting(language_value);
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
       std::move(languages_enabled_in_pref), highlight_granularity,
-      line_focus_enabled_mode, true);
+      line_focus_enabled_mode, true, recently_used_fonts);
 
   EXPECT_EQ(std::to_underlying(line_spacing), controller().LineSpacing());
   EXPECT_EQ(std::to_underlying(letter_spacing), controller().LetterSpacing());
@@ -1341,6 +1383,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
             controller().LastNonDisabledLineFocus());
   EXPECT_FALSE(controller().IsLineFocusOn());
+  EXPECT_EQ(model().prioritized_supported_fonts(), model().supported_fonts());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -2341,7 +2384,7 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
       std::move(languages_enabled_in_pref), highlight_granularity,
-      line_focus_enabled_mode, false);
+      line_focus_enabled_mode, false, std::vector<std::string>());
   controller().RequestImageData(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);

@@ -322,6 +322,22 @@ class ReadAnythingAppModel {
     return supported_fonts_;
   }
 
+  // Returns the cached list of supported fonts. The first
+  // `kReadAnythingMaxRecentFonts` are the recently used fonts.
+  const std::vector<std::string>& prioritized_supported_fonts() const {
+    return prioritized_supported_fonts_;
+  }
+
+  // Adds the given font to the list of recently used fonts, trims the list to
+  // the limit `kReadAnythingMaxRecentFonts`, and updates the prioritized
+  // supported fonts list.
+  void UpdateRecentlyUsedFonts(const std::string& font);
+
+  // Updates the prioritized supported fonts list based on the recently used
+  // fonts and supported fonts.
+  void UpdatePrioritizedSupportedFonts(
+      const std::vector<std::string>& recently_used_fonts = {});
+
   const std::string& font_name() const { return font_name_; }
   void set_font_name(std::string font_name) {
     font_name_ = std::move(font_name);
@@ -587,7 +603,8 @@ class ReadAnythingAppModel {
       bool images_enabled,
       read_anything::mojom::Colors color,
       read_anything::mojom::LineFocus last_non_disabled_line_focus,
-      bool line_focus_enabled);
+      bool line_focus_enabled,
+      const std::vector<std::string>& recently_used_fonts);
 
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
@@ -984,6 +1001,9 @@ class ReadAnythingAppModel {
   // that is changed.
   std::vector<std::string> supported_fonts_ =
       GetSupportedFonts(base_language_code_);
+
+  // Cached set of fonts based on supported fonts and recently used fonts.
+  std::vector<std::string> prioritized_supported_fonts_;
 
   // Theme information.
   std::string font_name_ = supported_fonts_.front();

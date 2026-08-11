@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_READ_ANYTHING_READ_ANYTHING_UTIL_H_
 #define CHROME_COMMON_READ_ANYTHING_READ_ANYTHING_UTIL_H_
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -14,6 +15,9 @@
 // all fonts.
 [[nodiscard]] std::vector<std::string> GetSupportedFonts(
     std::string_view language_code);
+
+// The maximum number of recently used fonts persisted and displayed in menus.
+inline constexpr size_t kReadAnythingMaxRecentFonts = 3;
 
 // Records `font_name` in histograms.
 void LogFontName(std::string_view font_name);

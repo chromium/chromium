@@ -1391,13 +1391,15 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     base::ListValue languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity,
     read_anything::mojom::LineFocus last_non_disabled_line_focus,
-    bool line_focus_enabled) {
+    bool line_focus_enabled,
+    const std::vector<std::string>& recently_used_fonts) {
   read_aloud_model_.OnSettingsRestoredFromPrefs(
       speech_rate, &languages_enabled_in_pref, &voices, granularity);
   bool needs_redraw_for_links = model_.links_enabled() != links_enabled;
-  model_.OnSettingsRestoredFromPrefs(
-      line_spacing, letter_spacing, font, font_size, links_enabled,
-      images_enabled, color, last_non_disabled_line_focus, line_focus_enabled);
+  model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
+                                     font_size, links_enabled, images_enabled,
+                                     color, last_non_disabled_line_focus,
+                                     line_focus_enabled, recently_used_fonts);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
   // Only redraw if there is an active tree.
   if (needs_redraw_for_links &&
@@ -2312,6 +2314,9 @@ bool ReadAnythingAppController::IsPdf() const {
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
+  if (features::IsReadAnythingImprovedUiEnabled()) {
+    return model_.prioritized_supported_fonts();
+  }
   return model_.supported_fonts();
 }
 
@@ -2623,6 +2628,9 @@ void ReadAnythingAppController::OnThemeChange(int value) {
 }
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {
+  if (IsReadAnythingImprovedUiEnabled()) {
+    model_.UpdateRecentlyUsedFonts(font);
+  }
   page_handler_->OnFontChange(font);
   model_.set_font_name(font);
 }

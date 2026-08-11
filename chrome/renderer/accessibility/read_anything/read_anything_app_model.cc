@@ -102,6 +102,7 @@ ReadAnythingAppModel::SelectionEndpoint::SelectionEndpoint(
 ReadAnythingAppModel::ReadAnythingAppModel() {
   ResetTextSize();
   SetDefaultDistillationMethod();
+  UpdatePrioritizedSupportedFonts();
 }
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
@@ -130,7 +131,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool images_enabled,
     read_anything::mojom::Colors color,
     read_anything::mojom::LineFocus last_non_disabled_line_focus,
-    bool line_focus_enabled) {
+    bool line_focus_enabled,
+    const std::vector<std::string>& recently_used_fonts) {
   line_spacing_ = line_spacing;
   letter_spacing_ = letter_spacing;
   font_name_ = std::move(font_name);
@@ -140,6 +142,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   color_theme_ = color;
   last_non_disabled_line_focus_ = last_non_disabled_line_focus;
   line_focus_enabled_ = line_focus_enabled;
+  UpdatePrioritizedSupportedFonts(recently_used_fonts);
 }
 
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
@@ -1295,6 +1298,7 @@ void ReadAnythingAppModel::SetBaseLanguageCode(std::string base_language_code) {
   DCHECK(!base_language_code.empty());
   base_language_code_ = std::move(base_language_code);
   supported_fonts_ = GetSupportedFonts(base_language_code_);
+  UpdatePrioritizedSupportedFonts(prioritized_supported_fonts_);
 }
 
 void ReadAnythingAppModel::AddObserver(ModelObserver* observer) {
@@ -1307,6 +1311,42 @@ void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
 
 void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
   font_size_ = AdjustFontScale(font_size, increment);
+}
+
+void ReadAnythingAppModel::UpdateRecentlyUsedFonts(const std::string& font) {
+  if (!features::IsReadAnythingImprovedUiEnabled()) {
+    return;
+  }
+  std::erase(prioritized_supported_fonts_, font);
+  if (std::ranges::contains(supported_fonts_, font)) {
+    prioritized_supported_fonts_.insert(prioritized_supported_fonts_.begin(),
+                                        font);
+  }
+}
+
+void ReadAnythingAppModel::UpdatePrioritizedSupportedFonts(
+    const std::vector<std::string>& recently_used_fonts) {
+  if (!features::IsReadAnythingImprovedUiEnabled()) {
+    prioritized_supported_fonts_ = supported_fonts_;
+    return;
+  }
+
+  prioritized_supported_fonts_.clear();
+  prioritized_supported_fonts_.reserve(supported_fonts_.size());
+
+  for (const std::string& font : recently_used_fonts) {
+    if (prioritized_supported_fonts_.size() >= kReadAnythingMaxRecentFonts) {
+      break;
+    }
+    if (std::ranges::contains(supported_fonts_, font)) {
+      prioritized_supported_fonts_.push_back(font);
+    }
+  }
+  for (const std::string& font : supported_fonts_) {
+    if (!std::ranges::contains(prioritized_supported_fonts_, font)) {
+      prioritized_supported_fonts_.push_back(font);
+    }
+  }
 }
 
 const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
