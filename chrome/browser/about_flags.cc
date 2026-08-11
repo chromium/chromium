@@ -13722,6 +13722,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillIgnorePaymentsChurnedUsersStrikesForTesting)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"read-anything-distiller-refactor",
+     flag_descriptions::kReadAnythingDistillerRefactorName,
+     flag_descriptions::kReadAnythingDistillerRefactorDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingDistillerRefactor)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -6726,6 +6726,12 @@ inline constexpr char kReadAnythingReadAloudPhraseHighlightingDescription[] =
     "when reading aloud, when the phrase option is selected from the highlight "
     "menu.";
 
+inline constexpr char kReadAnythingDistillerRefactorName[] =
+    "Reading Mode Distiller Stability Updates";
+inline constexpr char kReadAnythingDistillerRefactorDescription[] =
+    "Optimizes how web page content is prepared and processed for Reading "
+    "Mode.";
+
 inline constexpr char kReadAnythingDocsIntegrationName[] =
     "Reading Mode Google Docs Integration";
 inline constexpr char kReadAnythingDocsIntegrationDescription[] =

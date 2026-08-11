@@ -11931,6 +11931,7 @@ from previous Chrome versions.
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
   <int value="-837473047" label="AutofillEnableStickyPaymentsBubble:disabled"/>
   <int value="-836123854" label="wallet-service-use-sandbox"/>
+  <int value="-836062602" label="ReadAnythingDistillerRefactor:disabled"/>
   <int value="-835672415" label="PointerEventV1SpecCapturing:disabled"/>
   <int value="-835627918" label="QuickSettingsNetworkRevamp:enabled"/>
   <int value="-835487878" label="FedCmDelegation:enabled"/>
@@ -18282,6 +18283,7 @@ from previous Chrome versions.
   <int value="1174161831" label="ContentAnalysisClipboardCopy:disabled"/>
   <int value="1175517481" label="DeviceBoundSessionsDsePrewarmer:disabled"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>
+  <int value="1176158917" label="ReadAnythingDistillerRefactor:enabled"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>

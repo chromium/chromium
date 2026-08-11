@@ -376,6 +376,11 @@ AX_BASE_EXPORT bool IsReadAnythingWithReadabilityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDistillationQualityEvaluation);
 AX_BASE_EXPORT bool IsReadAnythingDistillationQualityEvaluationEnabled();
 
+// Enables unifying distillation triggers to the renderer and decoupling
+// distillation logic.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDistillerRefactor);
+AX_BASE_EXPORT bool IsReadAnythingDistillerRefactorEnabled();
+
 // ScreenAI library's Main Content Extraction service is enabled.
 AX_BASE_EXPORT bool IsScreenAIMainContentExtractionEnabled();
 
