@@ -899,6 +899,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
               kGoogleOnExampleEntry,
               kExampleOnGoogleSecureEntry,
               kExampleOnGoogleInsecureEntry,
+              kExampleOnGoogleAuEntry,
               kExampleLocalStorage,
               kHttpExampleCookie,
               kHttpsWwwExampleCookie,
@@ -1077,6 +1078,17 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
               /*third_party_partitioning_allowed=*/true),
           {{BrowsingDataModel::StorageType::kQuotaStorage}, 100, 0}};
 
+  const browsing_data_model_test_util::BrowsingDataEntry
+      kExampleOnGoogleAuEntry{
+          "www.example.com",
+          blink::StorageKey::Create(
+              url::Origin::Create(GURL("https://www.example.com/")),
+              net::SchemefulSite(
+                  url::Origin::Create(GURL("https://www.google.com.au/"))),
+              blink::mojom::AncestorChainBit::kCrossSite,
+              /*third_party_partitioning_allowed=*/true),
+          {{BrowsingDataModel::StorageType::kQuotaStorage}, 400, 0}};
+
   const browsing_data_model_test_util::BrowsingDataEntry kHttpExampleCookie{
       "example.com",
       *(CreateCookieKey(GURL("http://example.com"), "A=1")),
@@ -1238,6 +1250,7 @@ TEST_P(SiteSettingsHandlerSchemeTest, HandleClearUnpartitionedUsage) {
           kGoogleOnExampleEntry,
           kExampleOnGoogleSecureEntry,
           kExampleOnGoogleInsecureEntry,
+          kExampleOnGoogleAuEntry,
           kExampleLocalStorage,
           kHttpExampleCookie,
           kHttpsWwwExampleCookie,
@@ -1939,7 +1952,11 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(origin_info_2.FindString("origin")));
     EXPECT_EQ(0, origin_info_2.FindDouble("engagement"));
-    EXPECT_EQ(302, origin_info_2.FindDouble("usage"));
+    // Usage is reported per displayed row. This unpartitioned row only includes
+    // www.example.com's unpartitioned storage:
+    // kExampleUnpartitionedEntry (100 B) + kExampleLocalStorage (2 B) = 102 B.
+    // Partitioned storage for the same origin is reported separately below.
+    EXPECT_EQ(102, origin_info_2.FindDouble("usage"));
     EXPECT_EQ(1, origin_info_2.FindDouble("numCookies"));
     EXPECT_FALSE(origin_info_2.FindBool("isPartitioned").value_or(false));
   }
@@ -1963,7 +1980,10 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(partitioned_origin_info.FindString("origin")));
     EXPECT_EQ(0, partitioned_origin_info.FindDouble("engagement"));
-    EXPECT_EQ(302, partitioned_origin_info.FindDouble("usage"));
+    // This partitioned row only includes www.example.com's storage under
+    // google.com: kExampleOnGoogleSecureEntry (100 B) +
+    // kExampleOnGoogleInsecureEntry (100 B) = 200 B.
+    EXPECT_EQ(200, partitioned_origin_info.FindDouble("usage"));
     EXPECT_EQ(1, partitioned_origin_info.FindDouble("numCookies"));
     EXPECT_TRUE(
         partitioned_origin_info.FindBool("isPartitioned").value_or(false));
@@ -2027,7 +2047,9 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(partitioned_origin_three_info.FindString("origin")));
     EXPECT_EQ(0, partitioned_origin_three_info.FindDouble("engagement"));
-    EXPECT_EQ(302, partitioned_origin_three_info.FindDouble("usage"));
+    // This partitioned row only includes www.example.com's storage under
+    // google.com.au: kExampleOnGoogleAuEntry (400 B).
+    EXPECT_EQ(400, partitioned_origin_three_info.FindDouble("usage"));
     EXPECT_EQ(1, partitioned_origin_three_info.FindDouble("numCookies"));
     EXPECT_TRUE(partitioned_origin_three_info.FindBool("isPartitioned")
                     .value_or(false));
@@ -6033,6 +6055,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
           kGoogleOnExampleEntry,
           kExampleOnGoogleSecureEntry,
           kExampleOnGoogleInsecureEntry,
+          kExampleOnGoogleAuEntry,
           kExampleLocalStorage,
           kHttpExampleCookie,
           kHttpsWwwExampleCookie,
@@ -6119,6 +6142,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
   // present.
   RemoveModelEntries(expected_browsing_data_model_entries,
                      {
+                         kExampleOnGoogleAuEntry,
                          kPartitionedHttpsWwwExampleOnGoogleAuCookie,
                          kHttpGoogleAuCookie,
                          kPartitionedHttpsGoogleAu1PCookie,
@@ -6449,6 +6473,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
           kGoogleOnExampleEntry,
           kExampleOnGoogleSecureEntry,
           kExampleOnGoogleInsecureEntry,
+          kExampleOnGoogleAuEntry,
           kExampleLocalStorage,
           kHttpExampleCookie,
           kHttpsWwwExampleCookie,
@@ -6480,6 +6505,149 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   browsing_data_model_test_util::ValidateBrowsingDataEntries(
       handler()->GetBrowsingDataModelForTesting(),
       expected_browsing_data_model_entries);
+}
+
+TEST_F(SiteSettingsHandlerTest,
+       HandleClearPartitionedUsageDoesNotAffectOtherPartitions) {
+  // www.example.com has unpartitioned storage (102 B) and partitioned storage
+  // under two top-level sites: google.com (200 B) and google.com.au (400 B).
+  // Clearing its google.com.au partition must leave the unpartitioned storage,
+  // the google.com partition, and other origins' google.com.au-partitioned
+  // storage intact.
+  SetupModel();
+  std::vector<browsing_data_model_test_util::BrowsingDataEntry>
+      expected_browsing_data_model_entries = {
+          kGoogleUnpartitionedEntry,
+          kExampleUnpartitionedEntry,
+          kGoogleOnExampleEntry,
+          kExampleOnGoogleSecureEntry,
+          kExampleOnGoogleInsecureEntry,
+          kExampleOnGoogleAuEntry,
+          kExampleLocalStorage,
+          kHttpExampleCookie,
+          kHttpsWwwExampleCookie,
+          kPartitionedHttpsWwwExampleOnGoogleAuCookie,
+          kPartitionedHttpsWwwExampleOnGoogleCookie,
+          kHttpAbcExampleCookie,
+          kHttpGoogleCookieA,
+          kHttpGoogleCookieB,
+          kHttpGoogleAuCookie,
+          kPartitionedHttpsGoogleAu1PCookie,
+          kPartitionedHttpsWwwAnotherExampleOnGoogleAuCookie,
+          kUngroupedHttpCookie,
+      };
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(
+      handler()->GetBrowsingDataModelForTesting(),
+      expected_browsing_data_model_entries);
+
+  auto find_origin_info = [](const base::ListValue& site_groups,
+                             const std::string& etld_plus1,
+                             const std::string& origin,
+                             bool is_partitioned) -> const base::DictValue* {
+    const std::string grouping_key =
+        GroupingKey::CreateFromEtldPlus1(etld_plus1).Serialize();
+    for (const base::Value& site_group_value : site_groups) {
+      const base::DictValue& site_group = site_group_value.GetDict();
+      if (CHECK_DEREF(site_group.FindString("groupingKey")) != grouping_key) {
+        continue;
+      }
+      for (const base::Value& origin_value :
+           CHECK_DEREF(site_group.FindList("origins"))) {
+        const base::DictValue& origin_info = origin_value.GetDict();
+        if (CHECK_DEREF(origin_info.FindString("origin")) == origin &&
+            origin_info.FindBool("isPartitioned").value_or(false) ==
+                is_partitioned) {
+          return &origin_info;
+        }
+      }
+    }
+    return nullptr;
+  };
+
+  constexpr int kUnpartitionedExampleUsage = 102;
+  constexpr int kExampleOnGoogleUsage = 200;
+  constexpr int kExampleOnGoogleAuUsage = 400;
+  constexpr int kOtherOriginOnGoogleAuUsage = 0;
+
+  base::ListValue storage_and_cookie_list = GetOnStorageFetchedSentList();
+  ASSERT_EQ(4U, storage_and_cookie_list.size());
+
+  const base::DictValue* unpartitioned_example_before = find_origin_info(
+      storage_and_cookie_list, "example.com", "https://www.example.com/",
+      /*is_partitioned=*/false);
+  ASSERT_TRUE(unpartitioned_example_before);
+  EXPECT_EQ(kUnpartitionedExampleUsage,
+            unpartitioned_example_before->FindDouble("usage"));
+
+  const base::DictValue* example_on_google_before = find_origin_info(
+      storage_and_cookie_list, "google.com", "https://www.example.com/",
+      /*is_partitioned=*/true);
+  ASSERT_TRUE(example_on_google_before);
+  EXPECT_EQ(kExampleOnGoogleUsage,
+            example_on_google_before->FindDouble("usage"));
+
+  const base::DictValue* example_on_google_au_before = find_origin_info(
+      storage_and_cookie_list, "google.com.au", "https://www.example.com/",
+      /*is_partitioned=*/true);
+  ASSERT_TRUE(example_on_google_au_before);
+  EXPECT_EQ(kExampleOnGoogleAuUsage,
+            example_on_google_au_before->FindDouble("usage"));
+
+  const base::DictValue* other_origin_on_google_au_before = find_origin_info(
+      storage_and_cookie_list, "google.com.au",
+      "https://www.another-example.com/", /*is_partitioned=*/true);
+  ASSERT_TRUE(other_origin_on_google_au_before);
+  EXPECT_EQ(kOtherOriginOnGoogleAuUsage,
+            other_origin_on_google_au_before->FindDouble("usage"));
+  EXPECT_EQ(1, other_origin_on_google_au_before->FindDouble("numCookies"));
+
+  // Clear www.example.com's storage partitioned under google.com.au only.
+  base::ListValue args;
+  args.Append("https://www.example.com/");
+  args.Append(GroupingKey::CreateFromEtldPlus1("google.com.au").Serialize());
+  handler()->HandleClearPartitionedUsage(args);
+
+  // Only www.example.com's google.com.au partition is removed. Its google.com
+  // partition, google.com.au's first-party storage, and
+  // www.another-example.com's google.com.au partition all remain untouched.
+  RemoveModelEntries(expected_browsing_data_model_entries,
+                     {
+                         kExampleOnGoogleAuEntry,
+                         kPartitionedHttpsWwwExampleOnGoogleAuCookie,
+                     });
+
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(
+      handler()->GetBrowsingDataModelForTesting(),
+      expected_browsing_data_model_entries);
+
+  storage_and_cookie_list = GetOnStorageFetchedSentList();
+  ASSERT_EQ(4U, storage_and_cookie_list.size());
+
+  const base::DictValue* unpartitioned_example_after = find_origin_info(
+      storage_and_cookie_list, "example.com", "https://www.example.com/",
+      /*is_partitioned=*/false);
+  ASSERT_TRUE(unpartitioned_example_after);
+  EXPECT_EQ(kUnpartitionedExampleUsage,
+            unpartitioned_example_after->FindDouble("usage"));
+
+  const base::DictValue* example_on_google_after = find_origin_info(
+      storage_and_cookie_list, "google.com", "https://www.example.com/",
+      /*is_partitioned=*/true);
+  ASSERT_TRUE(example_on_google_after);
+  EXPECT_EQ(kExampleOnGoogleUsage,
+            example_on_google_after->FindDouble("usage"));
+
+  EXPECT_FALSE(find_origin_info(storage_and_cookie_list, "google.com.au",
+                                "https://www.example.com/",
+                                /*is_partitioned=*/true));
+
+  const base::DictValue* other_origin_on_google_au_after = find_origin_info(
+      storage_and_cookie_list, "google.com.au",
+      "https://www.another-example.com/", /*is_partitioned=*/true);
+  ASSERT_TRUE(other_origin_on_google_au_after);
+  EXPECT_EQ(kOtherOriginOnGoogleAuUsage,
+            other_origin_on_google_au_after->FindDouble("usage"));
+  EXPECT_EQ(1, other_origin_on_google_au_after->FindDouble("numCookies"));
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetRwsMembershipLabel) {
@@ -6526,10 +6694,13 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
       .Times(2)
       .WillRepeatedly(Return(true));
 
-  // Confirm that usage info only returns unpartitioned storage.
+  // Confirm that usage info for an origin returns its total storage summed
+  // across all partitions (both unpartitioned and partitioned). This is
+  // intentionally different from OnStorageFetched, which reports each partition
+  // separately; HandleFetchUsageTotal shows a single combined total per origin.
   SetupModel();
 
-  EXPECT_EQ(17,
+  EXPECT_EQ(18,
             std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
 
@@ -6537,7 +6708,11 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("http://www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://www.example.com", "302 B", "1 cookie",
+  // www.example.com usage is summed across all partitions: 100 (unpartitioned
+  // quota) + 2 (local storage) + 100 (partitioned on google.com, secure) + 100
+  // (partitioned on google.com, insecure) + 400 (partitioned on google.com.au)
+  // = 702 B.
+  ValidateUsageInfo("http://www.example.com", "702 B", "1 cookie",
                     "1 site in example.com's group", true);
 
   args.clear();

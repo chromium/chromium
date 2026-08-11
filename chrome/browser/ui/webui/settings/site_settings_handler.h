@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_HANDLER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -80,6 +82,14 @@ class SiteSettingsHandler
 
   using AllSitesMap =
       std::map<GroupingKey, std::set<std::pair<url::Origin, bool>>>;
+
+  // Maps an (origin, partitioning site `GroupingKey`) pair to the storage size
+  // used by that origin under that partitioning site. The `GroupingKey` is the
+  // eTLD+1 for HTTP(S) origins and the origin itself for other schemes. A
+  // std::nullopt partitioning site represents the origin's unpartitioned
+  // (first-party) storage size.
+  using PerPartitionOriginSizeMap =
+      std::map<std::pair<url::Origin, std::optional<GroupingKey>>, int64_t>;
 
   explicit SiteSettingsHandler(Profile* profile);
 
@@ -253,9 +263,11 @@ class SiteSettingsHandler
   void StopObservingSourcesForProfile(Profile* profile);
 
   // Calculates the data storage that has been used for each origin, and
-  // stores the information in the |all_sites_map| and |origin_size_map|.
-  void GetOriginStorage(AllSitesMap* all_sites_map,
-                        std::map<url::Origin, int64_t>* origin_size_map);
+  // stores the information in the |all_sites_map| and
+  // |per_partition_origin_size_map|.
+  void GetOriginStorage(
+      AllSitesMap* all_sites_map,
+      PerPartitionOriginSizeMap* per_partition_origin_size_map);
 
   // Calculates the number of cookies for each etld+1 and each host, and
   // stores the information in the |all_sites_map| and |host_cookie_map|.
@@ -270,9 +282,28 @@ class SiteSettingsHandler
   // `SiteSettingsBrowserProxy#getCategoryList`.
   void HandleGetCategoryList(const base::ListValue& args);
 
-  // Returns a list of sites, grouped by their effective top level domain plus
-  // 1, with their cookies number and data usage information. This method will
-  // only be called after HandleGetAllSites is called.
+  // Builds the data backing the All sites page: the list of site groups (each
+  // keyed by a `GroupingKey`, the eTLD+1 for normal web content), listing the
+  // origins in each group annotated with their cookie count and storage usage.
+  //
+  // Usage is keyed by origin and, for partitioned storage, by the partitioning
+  // site's `GroupingKey`. Thus, exact partitioning sites with the same
+  // `GroupingKey` are aggregated. An origin can appear on several rows, each
+  // showing only that aggregate: an unpartitioned row shows first-party
+  // storage, while a partitioned row shows only what the origin stored while
+  // embedded under that group's sites. For example, if `a.test` has 50KB of
+  // first-party storage and `example.com` is embedded under both `a.test` and
+  // `b.test`:
+  //
+  //   example.com ......... 50 KB   (unpartitioned)
+  //     example.com ....... 50 KB
+  //   a.test .............. 250 KB
+  //     a.test ............ 50 KB   (unpartitioned)
+  //     example.com ....... 200 KB  (partitioned under a.test)
+  //   b.test .............. 232 KB
+  //     example.com ....... 232 KB  (partitioned under b.test)
+  //
+  // Only called after HandleGetAllSites is called.
   base::ListValue PopulateCookiesAndUsageData(Profile* profile);
 
   // Returns whether a given string is a valid origin.
