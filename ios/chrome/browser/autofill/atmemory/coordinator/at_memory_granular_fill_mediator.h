@@ -7,17 +7,29 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_mutator.h"
+
 @protocol AtMemoryFillCommands;
 @protocol AtMemoryGranularFillConsumer;
 
+namespace autofill {
+struct MemorySearchResult;
+}
+
 // Mediator for AtMemory granular fill.
-@interface AtMemoryGranularFillMediator : NSObject
+@interface AtMemoryGranularFillMediator : NSObject <AtMemoryGranularFillMutator>
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AtMemoryGranularFillConsumer> consumer;
 
 // Handler for filling commands.
 @property(nonatomic, weak) id<AtMemoryFillCommands> fillHandler;
+
+// Initializes the mediator by moving `result`.
+- (instancetype)initWithResult:(autofill::MemorySearchResult&&)result
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

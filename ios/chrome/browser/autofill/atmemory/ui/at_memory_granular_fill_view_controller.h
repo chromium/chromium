@@ -8,10 +8,15 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol AtMemoryGranularFillMutator;
+
 // View controller that displays the details page with tap-to-fill chips for
 // AtMemory granular fill.
 @interface AtMemoryGranularFillViewController
     : ChromeTableViewController <AtMemoryGranularFillConsumer>
+
+// Mutator for user actions on this view controller.
+@property(nonatomic, weak) id<AtMemoryGranularFillMutator> mutator;
 
 @end
 

@@ -7,9 +7,18 @@ source_set("utils") {
     "atmemory_ui_util.h",
     "atmemory_ui_util.mm",
   ]
+  deps = [ "//components/autofill/core/browser" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "atmemory_ui_util_unittest.mm" ]
   deps = [
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
-    "//ios/chrome/common/ui/colors",
+    ":utils",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/strings",
+    "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_coordinator.h"
 
+#import "base/check.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_view_controller.h"
@@ -41,9 +42,13 @@
       [[AtMemoryGranularFillViewController alloc]
           initWithStyle:ChromeTableViewStyle()];
 
-  _mediator = [[AtMemoryGranularFillMediator alloc] init];
+  CHECK(_result.has_value());
+  _mediator =
+      [[AtMemoryGranularFillMediator alloc] initWithResult:std::move(*_result)];
+  _result.reset();
   _mediator.fillHandler = self.fillHandler;
   _mediator.consumer = _atMemoryGranularFillViewController;
+  _atMemoryGranularFillViewController.mutator = _mediator;
 
   [self.baseNavigationController
       pushViewController:_atMemoryGranularFillViewController
