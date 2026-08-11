@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -162,14 +163,14 @@ std::unique_ptr<contextual_search::ContextualSearchContextController::
 PrepareClientToAimRequestInfo(
     const std::string& query,
     contextual_search::ContextualSearchSessionHandle* session_handle,
-    ContextualTasksUIInterface* web_ui_interface,
+    AimMessagePoster* message_poster,
     omnibox::ToolMode active_tool,
     omnibox::ModelMode active_model,
     std::optional<int64_t> active_tab_context_id,
     std::optional<base::UnguessableToken> overlay_token,
     bool is_voice_search,
     const std::map<std::string, std::string>& additional_cgi_params) {
-  CHECK(web_ui_interface);
+  CHECK(message_poster);
   auto info =
       std::make_unique<contextual_search::ContextualSearchContextController::
                            CreateClientToAimRequestInfo>();
@@ -203,7 +204,7 @@ PrepareClientToAimRequestInfo(
     const contextual_search::FileInfo* file_info =
         session_handle->GetController()->GetFileInfo(token);
     if (file_info && file_info->GetInjectedInputId().has_value()) {
-      SendInjectedInputRemovedUpdate(web_ui_interface,
+      SendInjectedInputRemovedUpdate(message_poster,
                                      file_info->GetInjectedInputId().value());
     }
   }
@@ -228,21 +229,20 @@ void FinalizeAndSendAimQuery(
     std::unique_ptr<contextual_search::ContextualSearchContextController::
                         CreateClientToAimRequestInfo> request_info,
     contextual_search::ContextualSearchSessionHandle* session_handle,
-    ContextualTasksUIInterface* web_ui_interface) {
-  if (!session_handle || !web_ui_interface) {
+    AimMessagePoster* message_poster) {
+  if (!session_handle || !message_poster) {
     return;
   }
 
   lens::ClientToAimMessage client_to_page_message =
       session_handle->CreateClientToAimRequest(std::move(request_info));
 
-  web_ui_interface->PostAimMessage(client_to_page_message);
+  message_poster->PostAimMessage(client_to_page_message);
 }
 
-void SendInjectedInputRemovedUpdate(
-    ContextualTasksUIInterface* web_ui_interface,
-    const std::string& id) {
-  CHECK(web_ui_interface);
+void SendInjectedInputRemovedUpdate(AimMessagePoster* message_poster,
+                                    const std::string& id) {
+  CHECK(message_poster);
 
   lens::ClientToAimMessage client_to_aim_message;
   lens::InjectedInputUpdate* injected_input_update =
@@ -252,7 +252,7 @@ void SendInjectedInputRemovedUpdate(
       lens::InjectedInputUpdatePayload::UpdateType::
           InjectedInputUpdatePayload_UpdateType_REMOVED);
 
-  web_ui_interface->PostAimMessage(client_to_aim_message);
+  message_poster->PostAimMessage(client_to_aim_message);
 }
 
 bool ShouldShowSidePanel() {

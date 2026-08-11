@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_INTERFACE_H_
 
 #include "base/observer_list.h"
+#include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -38,7 +39,8 @@ class ContextualTasksAutoSuggestionManager;
 
 // An interface to interact with the Contextual Tasks WebUI (ContextualTasksUI)
 // from the rest of the browser process.
-class ContextualTasksUIInterface : public TaskInfoDelegate {
+class ContextualTasksUIInterface : public TaskInfoDelegate,
+                                   public AimMessagePoster {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -110,7 +112,7 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Sends a message to the <webview> guest. The WebUI is responsible for
   // taking the 'message' (a serialized lens.ClientToAimMessage protobuf) and
   // using the <webview> postMessage API to send it to the guest content.
-  virtual void PostAimMessage(const lens::ClientToAimMessage& message) = 0;
+  void PostAimMessage(const lens::ClientToAimMessage& message) override = 0;
 
   // Lazily creates and returns a reference to the owned contextual search
   // session handle.
