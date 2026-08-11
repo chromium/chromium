@@ -286,9 +286,9 @@ void SimulateCrash(PrefService* local_state) {
   metrics::CleanExitBeacon::SkipCleanShutdownStepsForTesting();
 }
 
-void WriteSeedData(PrefService* local_state,
-                   const SignedSeedData& seed_data,
-                   const SignedSeedPrefKeys& pref_keys) {
+void WriteSignedSeedData(PrefService* local_state,
+                         const SignedSeedData& seed_data,
+                         const SignedSeedPrefKeys& pref_keys) {
   local_state->SetString(pref_keys.base64_compressed_data_key,
                          seed_data.base64_compressed_data);
   local_state->SetString(pref_keys.base64_signature_key,

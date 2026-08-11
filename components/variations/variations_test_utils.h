@@ -28,8 +28,8 @@ namespace variations {
 struct ClientFilterableState;
 
 // Packages signed variations seed data into a tuple for use with
-// WriteSeedData(). This allows for encapsulated seed information to be created
-// below for generic test seeds as well as seeds which cause crashes.
+// WriteSignedSeedData(). This allows for encapsulated seed information to be
+// created below for generic test seeds as well as seeds which cause crashes.
 //
 // Note: To manually get the raw data, you can use the following command:
 // echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
@@ -117,9 +117,9 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
 void SimulateCrash(PrefService* local_state);
 
 // Writes |seed_info| into |local_state| using the given seed |pref_keys|.
-void WriteSeedData(PrefService* local_state,
-                   const SignedSeedData& seed_data,
-                   const SignedSeedPrefKeys& pref_keys);
+void WriteSignedSeedData(PrefService* local_state,
+                         const SignedSeedData& seed_data,
+                         const SignedSeedPrefKeys& pref_keys);
 
 // Returns true if all of the study_names listed in |seed_data| exist in the
 // (global) field trial list.
