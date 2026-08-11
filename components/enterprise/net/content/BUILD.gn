@@ -3,6 +3,27 @@
 # found in the LICENSE file.
 
 static_library("content") {
-  sources = []
-  deps = [ "//base" ]
+  public = [ "enterprise_proxy_navigation_error_data.h" ]
+  sources = [ "enterprise_proxy_navigation_error_data.cc" ]
+  public_deps = [
+    "//base",
+    "//components/enterprise/net/core",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enterprise_proxy_navigation_error_data_unittest.cc" ]
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/net/core",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
 }

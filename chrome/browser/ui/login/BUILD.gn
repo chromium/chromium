@@ -35,6 +35,7 @@ source_set("impl") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/tab_contents",
     "//components/autofill/core/browser",
+    "//components/enterprise/net/content",
     "//components/no_state_prefetch/browser",
     "//components/strings:components_strings",
     "//components/url_formatter",

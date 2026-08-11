@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
+#include "components/enterprise/net/content/enterprise_proxy_navigation_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/browser_context.h"
@@ -127,8 +128,13 @@ bool HttpAuthCoordinator::Flow::ForwardToEnterpriseProxy(
   }
 
   auto callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
+  // TODO(crbug.com/543015664): Pass the actual navigation handle instead of
+  // nullptr here.
   return error_service->InterceptProxyAuthChallenge(
-      auth_info_, url_, response_headers_, std::move(callback));
+      auth_info_, url_, response_headers_,
+      std::make_unique<enterprise_net::EnterpriseProxyErrorDataDelegate>(
+          /*navigation_handle=*/nullptr),
+      std::move(callback));
 }
 
 bool HttpAuthCoordinator::Flow::ForwardToExtension(

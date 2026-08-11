@@ -7,23 +7,26 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
-#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
+#include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/auth.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,10 +54,32 @@ constexpr char kPvdConfigJsonTemplate[] = R"({
       "proxy-match": [
         {
           "proxies": ["proxy1"],
-          "domains": ["*.securegateway.com"]
+          "domains": ["*.example.com"]
         }
       ]
     })";
+
+class TestDelegate : public EnterpriseProxyErrorService::Delegate {
+ public:
+  explicit TestDelegate(bool* attached_flag,
+                        EnterpriseProxyErrorData* error_data_out = nullptr)
+      : attached_flag_(attached_flag), error_data_out_(error_data_out) {}
+  ~TestDelegate() override = default;
+
+  void AttachDisguisedErrorData(
+      const EnterpriseProxyErrorData& error_data) override {
+    if (attached_flag_) {
+      *attached_flag_ = true;
+    }
+    if (error_data_out_) {
+      *error_data_out_ = error_data;
+    }
+  }
+
+ private:
+  raw_ptr<bool> attached_flag_ = nullptr;
+  raw_ptr<EnterpriseProxyErrorData> error_data_out_ = nullptr;
+};
 
 base::DictValue CreateDomainPolicyEntry(const std::string& pvd_id,
                                         bool use_oauth) {
@@ -90,9 +115,6 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
-    shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_.get());
 
     auth_service_ = std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
@@ -117,14 +139,13 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
     error_service_.reset();
     proxy_service_.reset();
     auth_service_.reset();
-    shared_url_loader_factory_.reset();
     test_url_loader_factory_.reset();
   }
 
   void SetupManagedDomainWithProxy(std::string_view proxy_host,
                                    bool with_auth = true) {
     base::ListValue policy_domains;
-    policy_domains.Append(CreateDomainPolicyEntry("secure-gateway.com", true));
+    policy_domains.Append(CreateDomainPolicyEntry("example-pvd.com", true));
     pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
 
     std::string auth_block = with_auth ? kAuthBlockJson : "";
@@ -133,7 +154,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
                            std::string(proxy_host).c_str(), auth_block.c_str());
 
     test_url_loader_factory_->SimulateResponseForPendingRequest(
-        "https://secure-gateway.com/.well-known/pvd", pvd_config_json);
+        "https://example-pvd.com/.well-known/pvd", pvd_config_json);
   }
 
   net::AuthChallengeInfo CreateProxyAuthChallengeInfo(
@@ -155,7 +176,6 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   enterprise::ProfileIdService profile_id_service_{"test_profile_id"};
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<EnterpriseNetworkAuthService> auth_service_;
   std::unique_ptr<EnterpriseProxyService> proxy_service_;
   std::unique_ptr<EnterpriseProxyErrorService> error_service_;
@@ -165,47 +185,100 @@ TEST_F(EnterpriseProxyErrorServiceTest, NotApplicableWhenNoManagedProxy) {
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("unmanaged.example.com"),
-      GURL("https://target.securegateway.com/test"), nullptr,
-      future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr,
+      /*delegate=*/nullptr, future.GetCallback());
 
   EXPECT_FALSE(handled);
   EXPECT_FALSE(future.IsReady());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, DisguisedErrorRealm403_CancelsAuth) {
-  SetupManagedDomainWithProxy("proxy.securegateway.com");
+  SetupManagedDomainWithProxy("proxy.example.com");
 
+  bool attached = false;
+  EnterpriseProxyErrorData attached_data;
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.securegateway.com", "403"),
-      GURL("https://target.securegateway.com/test"), nullptr,
+      CreateProxyAuthChallengeInfo("proxy.example.com", "403"),
+      GURL("https://target.example.com/test"), nullptr,
+      std::make_unique<TestDelegate>(&attached, &attached_data),
       future.GetCallback());
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(attached);
+  EXPECT_EQ(attached_data.destination_url(),
+            GURL("https://target.example.com/test"));
+  EXPECT_EQ(attached_data.proxy_url(), GURL("https://proxy.example.com:443"));
+  EXPECT_EQ(attached_data.error_code(), 403);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       DisguisedErrorOtherRealms_CancelsAuthAndAttachesData) {
+  for (int error_code : {500, 502, 503, 504}) {
+    SetupManagedDomainWithProxy("proxy.example.com");
+
+    bool attached = false;
+    EnterpriseProxyErrorData attached_data;
+    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+    bool handled = error_service_->InterceptProxyAuthChallenge(
+        CreateProxyAuthChallengeInfo("proxy.example.com",
+                                     base::NumberToString(error_code)),
+        GURL("https://target.example.com/test"), nullptr,
+        std::make_unique<TestDelegate>(&attached, &attached_data),
+        future.GetCallback());
+
+    EXPECT_TRUE(handled);
+    EXPECT_FALSE(future.Get().has_value());
+    EXPECT_TRUE(attached);
+    EXPECT_EQ(attached_data.error_code(), error_code);
+  }
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       InvalidOrUnsupportedRealm_ProceedsAsStandardAuth) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+
+  bool attached = false;
+  EnterpriseProxyErrorData attached_data;
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  // A realm like "404" or "unknown" is not a disguised error code, so it is
+  // treated as a standard proxy auth challenge.
+  bool handled = error_service_->InterceptProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "404"),
+      GURL("https://target.example.com/test"), nullptr,
+      std::make_unique<TestDelegate>(&attached, &attached_data),
+      future.GetCallback());
+
+  EXPECT_TRUE(handled);
+  // It fetches standard OAuth credentials rather than canceling as a disguised
+  // error.
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(u"access_token", future.Get()->password());
+  EXPECT_FALSE(attached);
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
-  SetupManagedDomainWithProxy("proxy.securegateway.com", /*with_auth=*/false);
+  SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
 
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.securegateway.com"),
-      GURL("https://target.securegateway.com/test"), nullptr,
-      future.GetCallback());
+      CreateProxyAuthChallengeInfo("proxy.example.com"),
+      GURL("https://target.example.com/test"), nullptr,
+      /*delegate=*/nullptr, future.GetCallback());
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, ValidAuthChallenge_FetchesCredentials) {
-  SetupManagedDomainWithProxy("proxy.securegateway.com");
+  SetupManagedDomainWithProxy("proxy.example.com");
 
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.securegateway.com", "Secure Gateway"),
-      GURL("https://target.securegateway.com/test"), nullptr,
-      future.GetCallback());
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr,
+      /*delegate=*/nullptr, future.GetCallback());
 
   EXPECT_TRUE(handled);
   ASSERT_TRUE(future.Get().has_value());
@@ -213,14 +286,14 @@ TEST_F(EnterpriseProxyErrorServiceTest, ValidAuthChallenge_FetchesCredentials) {
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
-  SetupManagedDomainWithProxy("proxy.securegateway.com");
+  SetupManagedDomainWithProxy("proxy.example.com");
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.securegateway.com", "Secure Gateway"),
-      GURL("https://target.securegateway.com/test"), nullptr,
-      future.GetCallback());
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr,
+      /*delegate=*/nullptr, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

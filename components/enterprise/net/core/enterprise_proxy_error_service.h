@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_NET_CORE_ENTERPRISE_PROXY_ERROR_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_NET_CORE_ENTERPRISE_PROXY_ERROR_SERVICE_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback.h"
@@ -18,10 +19,23 @@
 
 namespace enterprise_net {
 
+class EnterpriseProxyErrorData;
+class EnterpriseProxyService;
+
 // KeyedService responsible for handling proxy errors and 407 Proxy
 // Authentication challenges for managed Provisioning Domain dynamic routes.
 class EnterpriseProxyErrorService : public KeyedService {
  public:
+  // Delegate interface for platform-specific error marking and display.
+  // Non-iOS platforms implement this using content::NavigationHandle, while
+  // iOS platforms can implement this using WebKit / WKWebView classes.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void AttachDisguisedErrorData(
+        const EnterpriseProxyErrorData& error_data) = 0;
+  };
+
   explicit EnterpriseProxyErrorService(
       EnterpriseProxyService* enterprise_proxy_service);
   EnterpriseProxyErrorService(const EnterpriseProxyErrorService&) = delete;
@@ -37,14 +51,17 @@ class EnterpriseProxyErrorService : public KeyedService {
       const net::AuthChallengeInfo& auth_info,
       const GURL& destination_url,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      std::unique_ptr<Delegate> delegate,
       base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
           callback);
 
  private:
-  void AttachDisguisedErrorData();
-
   void OnProxyAuthChallengeResult(
       bool* handled_flag,
+      std::unique_ptr<Delegate> delegate,
+      const GURL& destination_url,
+      const GURL& proxy_url,
+      int error_code,
       base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
           coord_callback,
       EnterpriseProxyService::ProxyAuthChallengeResult result,

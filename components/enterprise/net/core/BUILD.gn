@@ -22,7 +22,7 @@ static_library("core") {
 
   if (enterprise_proxy) {
     public += [
-      "enterprise_network_auth_service.h",
+      "enterprise_proxy_error_data.h",
       "enterprise_proxy_error_service.h",
       "enterprise_proxy_service.h",
       "flag_descriptions.h",
@@ -34,6 +34,7 @@ static_library("core") {
     ]
     sources += [
       "enterprise_network_auth_service.cc",
+      "enterprise_proxy_error_data.cc",
       "enterprise_proxy_error_service.cc",
       "enterprise_proxy_service.cc",
       "flag_descriptions.cc",
@@ -84,6 +85,9 @@ source_set("unit_tests") {
       "//testing/gmock",
       "//testing/gtest",
     ]
+    if (!is_ios) {
+      deps += [ "//content/test:test_support" ]
+    }
   }
 }
 
