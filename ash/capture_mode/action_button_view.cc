@@ -66,13 +66,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
                                    std::u16string text,
                                    const gfx::VectorIcon* icon,
                                    ActionButtonRank rank)
-    : views::Button(std::move(callback)),
-      rank_(rank),
-      // Since this view has fully circular rounded corners, we can't use a
-      // nine patch layer for the shadow. We have to use the
-      // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
-      shadow_(SystemShadow::CreateShadowOnTextureLayer(
-          SystemShadow::Type::kElevation12)) {
+    : views::Button(std::move(callback)), rank_(rank) {
   box_layout_ = SetLayoutManager(
       icon ? std::make_unique<views::BoxLayout>(
                  views::BoxLayout::Orientation::kHorizontal,
@@ -85,7 +79,6 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
 
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kActionButtonRadius));
-  shadow_->SetRoundedCornerRadius(kActionButtonRadius);
   capture_mode_util::SetHighlightBorder(
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
@@ -99,6 +92,12 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
       AddChildView(std::make_unique<views::InkDropContainerView>());
   // The container should adjust its bounds if we collapse to an icon button.
   ink_drop_container_->SetAutoMatchParentBounds(true);
+
+  // Needs to be initialize after `ink_drop_container_` since `shadow_` is added
+  // to `ink_drop_container_`. (See `ActionButtonView::AddLayerToRegion()`)
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kActionButtonRadius);
 
   if (icon) {
     image_view_ = AddChildView(
@@ -114,27 +113,6 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
 
 ActionButtonView::~ActionButtonView() {
   views::InkDrop::Remove(this);
-}
-
-void ActionButtonView::AddedToWidget() {
-  views::Button::AddedToWidget();
-
-  // Since the layer of the shadow has to be added as a sibling to this view's
-  // layer, we need to wait until the view is added to the widget.
-  auto* parent = layer()->parent();
-  ui::Layer* shadow_layer = shadow_->GetLayer();
-  parent->Add(shadow_layer);
-  parent->StackAtBottom(shadow_layer);
-
-  // Make the shadow observe the color provider source change to update the
-  // colors.
-  shadow_->ObserveColorProviderSource(GetWidget());
-}
-
-void ActionButtonView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // The shadow layer is a sibling of this view's layer, and should have the
-  // same bounds.
-  shadow_->SetContentBounds(layer()->bounds());
 }
 
 void ActionButtonView::AddLayerToRegion(ui::Layer* layer,

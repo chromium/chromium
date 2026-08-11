@@ -46,7 +46,8 @@ SkColor GetColor() {
 
 KeyItemView::KeyItemView(ui::KeyboardCode key_code)
     : key_code_(key_code),
-      shadow_(SystemShadow::CreateShadowOnTextureLayer(
+      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
           SystemShadow::Type::kElevation4)) {
   SetPaintToLayer();
   SetBackground(
@@ -61,25 +62,6 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code)
 }
 
 KeyItemView::~KeyItemView() = default;
-
-void KeyItemView::AddedToWidget() {
-  // Since the layer of the shadow has to be added as a sibling to this view's
-  // layer, we need to wait until the view is added to the widget.
-  auto* parent = layer()->parent();
-  parent->Add(shadow_->GetLayer());
-  parent->StackAtBottom(shadow_->GetLayer());
-
-  // Make the shadow observe the color provider source change to update the
-  // colors.
-  shadow_->ObserveColorProviderSource(GetWidget());
-}
-
-void KeyItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // The shadow layer is a sibling of this view's layer, and should have the
-  // same bounds. Need to update the location of the shadow when the key items
-  // in the combo change position and/or size.
-  shadow_->SetContentBounds(layer()->bounds());
-}
 
 void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();

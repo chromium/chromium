@@ -54,11 +54,6 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
 
     views::Link* try_again_link() { return try_again_link_; }
 
-    // views::BoxLayoutView:
-    void SetVisible(bool visible) override;
-    void AddedToWidget() override;
-    void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
     // Sets the error message to show on the error view.
     void SetErrorMessage(const std::u16string& error_message);
 

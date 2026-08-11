@@ -68,29 +68,11 @@ bool CaptureModeBarView::IsEventOnSettingsButton(
          settings_button_->GetBoundsInScreen().Contains(screen_location);
 }
 
-void CaptureModeBarView::AddedToWidget() {
-  // Since the layer of the shadow has to be added as a sibling to this view's
-  // layer, we need to wait until the view is added to the widget.
-  auto* parent = layer()->parent();
-  parent->Add(shadow_->GetLayer());
-  parent->StackAtBottom(shadow_->GetLayer());
-
-  // Make the shadow observe the color provider source change to update the
-  // colors.
-  shadow_->ObserveColorProviderSource(GetWidget());
-}
-
-void CaptureModeBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  // The shadow layer is a sibling of this view's layer, and should have the
-  // same bounds.
-  shadow_->SetContentBounds(layer()->bounds());
-}
-
 // TODO(hewer): Add a check and/or test so that the behavior sets
 // `ShouldShowUserNudge()` to false if the `settings_button_` doesn't exist.
 CaptureModeBarView::CaptureModeBarView()
-    // Use the `ShadowOnTextureLayer` for the view with fully rounded corners.
-    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
+    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   SetBackground(views::CreateSolidBackground(

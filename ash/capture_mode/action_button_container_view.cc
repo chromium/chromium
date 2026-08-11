@@ -93,7 +93,8 @@ constexpr base::TimeDelta kSmartActionsButtonTransitionSlideInDuration =
 }  // namespace
 
 ActionButtonContainerView::ErrorView::ErrorView()
-    : shadow_(SystemShadow::CreateShadowOnTextureLayer(
+    : shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
           SystemShadow::Type::kElevation12)) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(kErrorViewBorderInsets);
@@ -152,33 +153,6 @@ ActionButtonContainerView::ErrorView::ErrorView()
 }
 
 ActionButtonContainerView::ErrorView::~ErrorView() = default;
-
-void ActionButtonContainerView::ErrorView::SetVisible(bool visible) {
-  views::BoxLayoutView::SetVisible(visible);
-  shadow_->GetLayer()->SetVisible(visible);
-}
-
-void ActionButtonContainerView::ErrorView::AddedToWidget() {
-  views::BoxLayoutView::AddedToWidget();
-
-  // Since the layer of the shadow has to be added as a sibling to this view's
-  // layer, we need to wait until the view is added to the widget.
-  auto* parent = layer()->parent();
-  ui::Layer* shadow_layer = shadow_->GetLayer();
-  parent->Add(shadow_layer);
-  parent->StackAtBottom(shadow_layer);
-
-  // Make the shadow observe the color provider source change to update the
-  // colors.
-  shadow_->ObserveColorProviderSource(GetWidget());
-}
-
-void ActionButtonContainerView::ErrorView::OnBoundsChanged(
-    const gfx::Rect& previous_bounds) {
-  // The shadow layer is a sibling of this view's layer, and should have the
-  // same bounds.
-  shadow_->SetContentBounds(layer()->bounds());
-}
 
 void ActionButtonContainerView::ErrorView::SetErrorMessage(
     const std::u16string& error_message) {

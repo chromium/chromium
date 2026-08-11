@@ -73,8 +73,6 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   bool IsInCountDownAnimation() const;
 
   // views::View:
-  void AddedToWidget() override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
