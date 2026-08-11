@@ -71,8 +71,11 @@ void NtpAndroidThemeSyncBridge::UpdateTheme(
   write_batch->WriteData(kAndroidThemeStorageKey,
                          specifics.SerializeAsString());
 
-  change_processor()->Put(kAndroidThemeStorageKey, CreateEntityData(specifics),
-                          write_batch->GetMetadataChangeList());
+  if (change_processor()->IsTrackingMetadata()) {
+    change_processor()->Put(kAndroidThemeStorageKey,
+                            CreateEntityData(specifics),
+                            write_batch->GetMetadataChangeList());
+  }
 
   store_->CommitWriteBatch(
       std::move(write_batch),

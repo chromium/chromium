@@ -78,6 +78,9 @@ class NtpAndroidThemeSyncBridgeTest : public testing::Test {
 };
 
 TEST_F(NtpAndroidThemeSyncBridgeTest, UpdateTheme_Success) {
+  ON_CALL(mock_processor_, IsTrackingMetadata())
+      .WillByDefault(testing::Return(true));
+
   sync_pb::ThemeAndroidSpecifics specifics;
   specifics.mutable_ntp_background()->set_url(kTestImageUrl);
 
@@ -94,6 +97,22 @@ TEST_F(NtpAndroidThemeSyncBridgeTest, UpdateTheme_Success) {
       bridge_->GetDataForCommit({kTestStorageKey});
   ASSERT_TRUE(data_batch);
   EXPECT_TRUE(data_batch->HasNext());
+}
+
+TEST_F(NtpAndroidThemeSyncBridgeTest, UpdateTheme_WhenNotTrackingMetadata) {
+  ON_CALL(mock_processor_, IsTrackingMetadata())
+      .WillByDefault(testing::Return(false));
+
+  sync_pb::ThemeAndroidSpecifics specifics;
+  specifics.mutable_ntp_background()->set_url(kTestImageUrl);
+
+  EXPECT_CALL(mock_processor_, Put(kTestStorageKey, _, _)).Times(0);
+  bridge_->UpdateTheme(specifics);
+
+  auto records = syncer::DataTypeStoreTestUtil::ReadAllDataAsProtoAndWait<
+      sync_pb::ThemeAndroidSpecifics>(*store_);
+  ASSERT_EQ(1u, records.count(kTestStorageKey));
+  EXPECT_EQ(kTestImageUrl, records[kTestStorageKey].ntp_background().url());
 }
 
 TEST_F(NtpAndroidThemeSyncBridgeTest, UpdateTheme_BeforeStoreCreated) {
