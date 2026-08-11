@@ -3717,7 +3717,6 @@ const FeatureEntry::FeatureVariation kMaliciousApkDownloadCheckChoices[] = {
 #if BUILDFLAG(IS_ANDROID)
 constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
     "disable-facilitated-payments-merchant-allowlist";
-constexpr char kSettingsInTabInternalName[] = "settings-in-tab";
 constexpr char kSettingsInTabUrlNavInternalName[] = "settings-in-tab-url-nav";
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -7697,7 +7696,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncRestoreOnStartupPrefDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSyncRestoreOnStartupPref)},
 
-    {kSettingsInTabInternalName, flag_descriptions::kSettingsInTabName,
+    {"settings-in-tab", flag_descriptions::kSettingsInTabName,
      flag_descriptions::kSettingsInTabDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTab)},
 
@@ -13988,10 +13987,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
   }
-  // Only show the settings in tab flag on tablets and desktops.
-  if (std::string_view(kSettingsInTabInternalName) == entry.internal_name ||
-      std::string_view(kSettingsInTabUrlNavInternalName) ==
-          entry.internal_name) {
+  // Only show the settings in tab URL nav flag on tablets and desktops.
+  if (std::string_view(kSettingsInTabUrlNavInternalName) ==
+      entry.internal_name) {
     auto form_factor = ui::GetDeviceFormFactor();
     return form_factor != ui::DEVICE_FORM_FACTOR_DESKTOP &&
            form_factor != ui::DEVICE_FORM_FACTOR_TABLET;
