@@ -78,6 +78,20 @@ class TestCollectWarnings(unittest.TestCase):
         self.RunTestForWarning("]", "everything.txt", ["-s"])
         self.RunTestForWarning("]", "everything_links.txt", ["-s", "-k"])
 
+    ## Tests for Rust warning parsing
+    def testRustWarnings(self):
+        rust_input = os.path.join(self._input_dir, "sample_rust.txt")
+        args = ["-l", rust_input, "-o", "stdout", "-w", "used"]
+        with mock.patch("sys.stdout", write=mock.Mock()) as mock_stdout:
+            collect_warnings.main(args)
+            output = mock_stdout.write.call_args_list
+
+        call_strs = [call.args[0] for call in output]
+        written_text = "".join(call_strs)
+        self.assertIn("mojo/public/rust/system/message.rs", written_text)
+        self.assertIn("fn foo()", written_text)
+        self.assertIn("let x", written_text)
+        self.assertNotIn("struct bar;", written_text)
 
 if __name__ == '__main__':
     unittest.main()

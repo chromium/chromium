@@ -32,7 +32,8 @@ def parse_args(args):
                   a single build log.
     output :      Where the collected warning information should go. Either the
                   string "stdout" (case-insensitive) or a path to a file.
-    warning_text: The text in the log indicating a warning was raised.
+    warning:      A substring to match against the warning message. If empty,
+                  all warnings are collected.
     summarize:    If present, we output a human-readable summary.
                   Otherwise, we output a json with more information.
     print-links:  If present, try to provide a direct link to the first warning
@@ -56,11 +57,13 @@ def parse_args(args):
     parser.add_argument("-w",
                         "--warning",
                         type=str,
-                        required=True,
-                        help="Text indicating the warning of interest. "
-                        "Should appear at the end of a line containing the "
-                        "filename and warning location.\n"
-                        "ex. -w [-Wthread-safety-reference-return]")
+                        default=None,
+                        help="String to match in the warning line. "
+                        "All lines containing the string and beginning with "
+                        "'warning: ' will be collected. "
+                        "If omitted or empty, matches all warnings.\n"
+                        "ex. -w \"unused variable\", "
+                        "-w [-Wthread-safety-reference-return]")
     parser.add_argument(
         "-s",
         "--summarize",
@@ -81,8 +84,6 @@ def parse_args(args):
     return parsed_args
 
 
-_TARGET_RE = re.compile(r'([^:(]+)(?:[:(])([0-9]+)(?::|, ?)([0-9]+)\)?:')
-
 def make_codesearch_link(file, line):
     """
     Construct a codesearch link to the specified position in the file, to
@@ -95,16 +96,21 @@ def make_codesearch_link(file, line):
     return "https://crsrc.org/{};l={}".format(file.removeprefix('../../'), line)
 
 
+# Matches:
+# |/path/to/file(123, 45):...|, for Windows Clang
+# |/path/to/file:123:45:...|, for Linux/macOS Clang
+# |--> path/to/file:123:45|, for Rust
+# Captures file path, line number, and column number.
+_TARGET_RE = re.compile(
+    r'^\s*(?:-->\s*)?([^:(]+)(?:[:(])([0-9]+)(?::|, ?)([0-9]+)\)?:?')
+
+
 def extract_warning_location(line):
     """
     Given a line of the build log indicating that a warning has occurred,
     extract the file name and position of the warning (line # + col #).
     """
-    # Matches:
-    # |/path/to/file(123, 45):...|, for Windows
-    # |/path/to/file:123:45:...|, elsewhere
-    # Captures path, line number, and column number.
-    match = _TARGET_RE.match(line)
+    match = _TARGET_RE.search(line)
     if not match:
         return None
     path, line, col = match.groups()
@@ -137,10 +143,10 @@ def collect_warning(summarize, print_links, log_name, log_file, collection,
         return
 
     # If we're not summarizing, we store extra info:
-    # 1. The next (nonempty) line, and
+    # 1. The next line with a non-empty code snippet after '|', and
     # 2. the name of the log that the warning occurred in
     next_line = next(log_file)
-    while "|" not in next_line:
+    while "|" not in next_line or not next_line.split("|")[1].strip():
         next_line = next(log_file)
 
     log_name = os.path.basename(log_name)
@@ -178,10 +184,21 @@ def read_file(filename, warning_text, summarize, print_links, collection,
     """
     with open(filename) as file:
         for line in file:
-            if not line.rstrip().endswith(warning_text):
+            line_str = line.rstrip()
+            # Only check lines that contain "warning:", except summary lines.
+            if ("warning:" not in line_str or
+                    re.search(r'\d+\s+warnings?\s+emitted', line_str)):
                 continue
 
-            warning_info = extract_warning_location(line)
+            if warning_text not in line_str:
+                continue
+
+            # Clang warnings have location info on the same line as the warning
+            warning_info = extract_warning_location(line_str)
+            # Rust warnings have location info on the next line
+            if not warning_info:
+                warning_info = extract_warning_location(next(file, "").rstrip())
+            # If we still didn't get anything, something is weird
             if not warning_info:
                 builder_name, _ = os.path.splitext(os.path.basename(filename))
                 failures.append("{}: {}".format(builder_name, line))
@@ -208,6 +225,8 @@ def log_output(summarize, print_links, collection, output):
 
     if not summarize:
         json.dump(collection, output_file, indent=2, sort_keys=True)
+        if not output_to_stdout:
+            output_file.close()
         return
 
     keys = list(collection.keys())
@@ -243,8 +262,10 @@ def main(args):
 
     collection = collections.defaultdict(list)
     failures = []
+    warning_text = parsed_args["warning"] or ""
+
     for file in log_files:
-        read_file(file, parsed_args["warning"], parsed_args["summarize"],
+        read_file(file, warning_text, parsed_args["summarize"],
                   parsed_args["print_links"], collection, failures)
 
     items = collection.copy().items()
@@ -256,7 +277,7 @@ def main(args):
 
     if failures:
         sys.stderr.write(
-            "\nFound lines with an unexpected format but the right ending:")
+            "\nFound lines with the target substring but an unexpected format:")
         for line in failures:
             sys.stderr.write("\n" + line)
 

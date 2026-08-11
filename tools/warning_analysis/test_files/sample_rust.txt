@@ -1,0 +1,53 @@
+[54846/111174] 12m26.71s F RUST obj/mojo/public/rust/system/libsystem_0d7c61ac.rlib obj/mojo/public/rust/system/libsystem_0d7c61ac.rmeta obj/mojo/public/rust/system/system.rustflags.json obj/mojo/public/rust/system/system.rsp.rust
+stdout:
+warning: type `bar` should have an upper camel case name
+  --> ../../mojo/public/rust/system/message.rs:37:8
+   |
+37 | struct bar;
+   |        ^^^ help: convert the identifier to upper camel case: `Bar`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: irrefutable `if let` pattern
+  --> ../../mojo/public/rust/system/message.rs:40:8
+   |
+40 |     if let x = 0 {}
+   |        ^^^^^^^^^
+   |
+   = note: this pattern will always match, so the `if let` is useless
+   = help: consider replacing the `if let` with a `let`
+   = note: `#[warn(irrefutable_let_patterns)]` on by default
+
+warning: unused variable: `x`
+  --> ../../mojo/public/rust/system/message.rs:40:12
+   |
+40 |     if let x = 0 {}
+   |            ^ help: if this is intentional, prefix it with an underscore: `_x`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Foo` is never constructed
+  --> ../../mojo/public/rust/system/message.rs:36:8
+   |
+36 | struct Foo;
+   |        ^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `bar` is never constructed
+  --> ../../mojo/public/rust/system/message.rs:37:8
+   |
+37 | struct bar;
+   |        ^^^
+
+warning: function `foo` is never used
+  --> ../../mojo/public/rust/system/message.rs:39:4
+   |
+39 | fn foo() {
+   |    ^^^
+
+warning: 6 warnings emitted
+
+
+
+[54847/111174] 12m26.71s S SOLINK ./libcomponents_sessions.so
