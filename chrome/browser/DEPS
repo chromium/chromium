@@ -250,6 +250,7 @@ include_rules = [
   "+components/optimization_guide/content",
   "+components/optimization_guide",
   "+components/optimization_guide/optimization_guide_internals",
+  "+components/origin_gating",
   "+components/origin_trials",
   "+components/os_crypt/async",
   "+components/ownership",

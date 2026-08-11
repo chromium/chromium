@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -36,6 +37,9 @@ class DevToolsNavigationThrottle : public content::NavigationThrottle {
 
  private:
   content::NavigationThrottle::ThrottleCheckResult WillStartOrRedirectRequest();
+  void OnGatingDecision(bool is_allowed);
+
+  base::WeakPtrFactory<DevToolsNavigationThrottle> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_NAVIGATION_THROTTLE_H_

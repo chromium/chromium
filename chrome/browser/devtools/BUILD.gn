@@ -409,6 +409,7 @@ static_library("devtools") {
       "//components/custom_handlers",
       "//components/media_router/browser",
       "//components/media_router/common/mojom:media_router",
+      "//components/origin_gating/core",
       "//components/payments/content",
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/security_state/content",
