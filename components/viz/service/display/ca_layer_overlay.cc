@@ -8,6 +8,7 @@
 #include <limits>
 #include <variant>
 
+#include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -19,6 +20,7 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace viz {
@@ -76,6 +78,36 @@ bool FilterOperationSupported(const cc::FilterOperation& operation) {
     default:
       return false;
   }
+}
+
+// Returns whether the specified `RRectF` is representable as a single radius
+// plus a bitmask of which corners the radius applies to (with the other corners
+// being square). This is the most specific corner format supported by CALayer.
+bool IsMaskableRRect(const gfx::RRectF& rrect) {
+  // Certain simple types of rrects are always supported.
+  if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
+    return true;
+  }
+
+  // Verify that if there are rounded corners, all have simple radii (x == y)
+  // and all corners which are rounded have the same simple radius.
+  using Corner = gfx::RRectF::Corner;
+  float found = 0.0f;
+  for (auto corner : {Corner::kUpperLeft, Corner::kUpperRight,
+                      Corner::kLowerRight, Corner::kLowerLeft}) {
+    const auto radii = rrect.GetCornerRadii(corner);
+    const float radius = radii.x();
+    if (radius != radii.y()) {
+      return false;
+    }
+    if (radius > 0.0f) {
+      if (found > 0.0f && found != radius) {
+        return false;
+      }
+      found = radius;
+    }
+  }
+  return true;
 }
 
 gfx::CALayerResult FromRenderPassQuad(
@@ -202,13 +234,13 @@ class CALayerOverlayProcessorInternal {
     }
 
     // Support rounded corner bounds when they have the same rect as the clip
-    // rect, and all corners have the same radius. Note that it is entirely
-    // possible to make rounded corner rects independent of clip rect (by adding
-    // another CALayer to the tree). Handling non-single border radii is also,
-    // but requires APIs not supported on all macOS versions.
+    // rect, and all corners have the same radius or are zero. Note that it is
+    // entirely possible to make rounded corner rects independent of clip rect
+    // (by adding another CALayer to the tree). Handling non-single border radii
+    // is also, but requires APIs not supported on all macOS versions.
     if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
-      if (quad->shared_quad_state->mask_filter_info.rounded_corner_bounds()
-              .GetType() > gfx::RRectF::Type::kSingle) {
+      if (!IsMaskableRRect(quad->shared_quad_state->mask_filter_info
+                               .rounded_corner_bounds())) {
         return gfx::kCALayerFailedQuadRoundedCornerNotUniform;
       }
     }

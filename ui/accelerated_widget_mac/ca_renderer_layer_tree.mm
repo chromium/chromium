@@ -10,6 +10,7 @@
 #include <CoreVideo/CoreVideo.h>
 #include <GLES2/gl2extchromium.h>
 
+#include <array>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
@@ -27,6 +28,7 @@
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gl/ca_renderer_layer_params.h"
@@ -57,6 +59,54 @@ bool UseCALayerContentsHeadroom() {
     return feature_enabled;
   }
   return false;
+}
+
+// Sets CALayer `layer`'s corner radii from `rrect` using `scale_factor`.
+// Fails on any `rrect` which is not compatible with CALayer's rendering
+// capabilities (this should have been detected earlier and sent through a
+// different rendering pathway).
+void SetCALayerRadii(CALayer* layer,
+                     const gfx::RRectF& rrect,
+                     float scale_factor) {
+  // With all one radius no further computation is necessary.
+  if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
+    static constexpr CACornerMask kAllCorners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+        kCALayerMaxXMaxYCorner | kCALayerMinXMaxYCorner;
+    layer.cornerRadius = rrect.GetSimpleRadius() / scale_factor;
+    layer.maskedCorners |= kAllCorners;
+    return;
+  }
+
+  // This RRectF may have some corners with a radius and some without. As long
+  // as the radius is the same for all corners which have one, a CALayer can be
+  // used. Compute and set the appropriate CALayer properties.
+  using Corner = gfx::RRectF::Corner;
+  using CornerInfo = std::tuple<Corner, CACornerMask, std::string_view>;
+  // Note that corners are already flipped for Apple "Y = 0 is the bottom of the
+  // screen" coordinate system. This makes the RRect corner names misleading.
+  static constexpr auto corners = std::to_array(
+      {CornerInfo(Corner::kUpperLeft, kCALayerMinXMinYCorner, "min x min y"),
+       CornerInfo(Corner::kUpperRight, kCALayerMaxXMinYCorner, "max x min y"),
+       CornerInfo(Corner::kLowerRight, kCALayerMaxXMaxYCorner, "max x max y"),
+       CornerInfo(Corner::kLowerLeft, kCALayerMinXMaxYCorner, "min x max y")});
+  layer.cornerRadius = 0.0f;
+  layer.maskedCorners = 0;
+  for (const auto& corner : corners) {
+    const auto radii = rrect.GetCornerRadii(std::get<Corner>(corner));
+    const float radius = radii.x();
+    CHECK_EQ(radius, radii.y())
+        << "Corner " << std::get<std::string_view>(corner)
+        << " (screen coords) is not symmetric.";
+    if (radius > 0.0f) {
+      CHECK(layer.cornerRadius == radius || layer.cornerRadius == 0.0f)
+          << "Not all corner radii match (" << layer.cornerRadius << " vs. "
+          << radius << ")";
+      layer.cornerRadius = radius;
+      layer.maskedCorners |= std::get<CACornerMask>(corner);
+    }
+  }
+  layer.cornerRadius /= scale_factor;
 }
 
 class ComparatorSkColor4f {
@@ -1018,8 +1068,8 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
       rounded_corner_ca_layer_.sublayerTransform = CATransform3DMakeTranslation(
           -dip_rounded_corner_bounds.x(), -dip_rounded_corner_bounds.y(), 0);
 
-      rounded_corner_ca_layer_.cornerRadius =
-          rounded_corner_bounds_.GetSimpleRadius() / tree()->scale_factor_;
+      SetCALayerRadii(rounded_corner_ca_layer_, rounded_corner_bounds_,
+                      tree()->scale_factor_);
     }
   } else {
     rounded_corner_ca_layer_.masksToBounds = false;
