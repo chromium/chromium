@@ -1473,11 +1473,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // downloading.
   bool process_when_pending_request_complete_ = true;
 
-  enum class RangeSelectionDirection { Left, Right };
-  RangeSelectionDirection range_selection_direction_ =
-      RangeSelectionDirection::Right;
-
-  gfx::Point range_selection_base_;
+  std::optional<PageCharacterIndex> range_selection_base_;
 
   bool edit_mode_ = false;
 

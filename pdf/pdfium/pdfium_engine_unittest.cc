@@ -1173,6 +1173,32 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, MoveRangeSelectionExtentInvalidBase) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({300, 300});
+
+  // Base is out of page bounds while extent is on "Goodbye" on page 0.
+  constexpr gfx::Point kPage0GoodbyePosition(100, 125);
+  engine->SetSelectionBounds(gfx::Point(-50, -50), kPage0GoodbyePosition);
+  engine->MoveRangeSelectionExtent(kPage0GoodbyePosition);
+
+  // Selection between "Goodbye" on page 0 and "Goodbye" on page 1.
+  constexpr gfx::Point kPage0TextPosition(85, 125);
+  constexpr gfx::Point kPage1TextPosition(105, 410);
+  engine->SetSelectionBounds(kPage0TextPosition, kPage1TextPosition);
+
+  // Scroll shifts page 0 offscreen so its original viewport position is in the
+  // margin (char_index = -1).
+  engine->ScrolledToYPosition(250);
+
+  // Drag extent handle on "Goodbye" on page 1 (410 - 250 = 160).
+  constexpr gfx::Point kPage1ScrolledTextPosition(105, 160);
+  engine->MoveRangeSelectionExtent(kPage1ScrolledTextPosition);
+}
+
 TEST_P(PDFiumEngineTest, GetCharUnicode) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
