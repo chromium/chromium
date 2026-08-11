@@ -55,6 +55,8 @@ generate_grd("build_grdp") {
     "translation_cr23.svg",
     "trending_up_cr23.svg",
     "win_share_cr23.svg",
+    "screenshot_entire_screen.svg",
+    "screenshot_window.svg",
   ]
   if (!is_chrome_branded) {
     input_files += [

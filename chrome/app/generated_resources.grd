@@ -19252,6 +19252,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Protected Audiences Debugging is enabled.
     </message>
 
+    <!-- Omnibox Everywhere Screenshot Menu -->
+    <message name="IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT" desc="Title of the screenshot sharing menu option.">
+      Share a screenshot
+    </message>
+    <message name="IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN" desc="Label of the option to capture an entire screen screenshot.">
+      Entire screen
+    </message>
+    <message name="IDS_OMNIBOX_EVERYWHERE_WINDOW" desc="Label of the option to capture a window screenshot.">
+      Window
+    </message>
+
     <!-- Responsive Toolbar -->
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE" desc="Overflow menu item text of profile button">
       Profile

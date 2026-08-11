@@ -179,6 +179,12 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                              IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE);
   source->AddLocalizedString("searchBoxHintAskOrType",
                              IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE);
+  source->AddLocalizedString("shareScreenshotLabel",
+                             IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT);
+  source->AddLocalizedString("screenshotWindowLabel",
+                             IDS_OMNIBOX_EVERYWHERE_WINDOW);
+  source->AddLocalizedString("screenshotEntireScreenLabel",
+                             IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN);
 
   // Sanitized image and favicon source initialization
   content::URLDataSource::Add(profile_,
