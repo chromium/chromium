@@ -62,8 +62,8 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
     return Do([]() {
       OmniboxEverywhereController* controller =
           g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-      controller->OnKeyPressed(ui::Accelerator(
-          ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR));
+      controller->OnKeyPressed(
+          ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN));
     });
   }
 

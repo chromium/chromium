@@ -172,8 +172,7 @@ TEST_F(OmniboxEverywhereControllerTest, HotkeyPrefDisablesHotkey) {
           }),
       &fake_listener);
 
-  ui::Accelerator hotkey(ui::VKEY_SPACE,
-                         ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
+  ui::Accelerator hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
 
   // Controller should register the hotkey on initialization if pref is enabled.
   EXPECT_TRUE(fake_listener.IsRegistered(hotkey));
@@ -200,8 +199,7 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerInitWithDisabledHotkeyPref) {
           }),
       &fake_listener);
 
-  ui::Accelerator hotkey(ui::VKEY_SPACE,
-                         ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
+  ui::Accelerator hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
 
   // Controller should NOT register the hotkey on initialization if pref is
   // disabled.

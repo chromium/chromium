@@ -98,9 +98,7 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
       hotkey_pref_member_.prefs() && hotkey_pref_member_.GetValue();
   if (is_enabled) {
     listener_->RegisterAccelerator(
-        ui::Accelerator(ui::VKEY_SPACE,
-                        ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR),
-        this);
+        ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN), this);
   }
 }
 
