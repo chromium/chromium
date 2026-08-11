@@ -15,10 +15,18 @@ typedef void* EGLDisplay;
 
 namespace angle {
 
+struct PlatformMethods;
+
 GL_EXPORT bool InitializePlatform(EGLDisplay display,
                                   GLGetProcAddressProc get_proc_address);
 GL_EXPORT void ResetPlatform(EGLDisplay display,
                              GLGetProcAddressProc get_proc_address);
+
+GL_EXPORT void SetPostTaskFailedForTesting(bool failed);
+
+GL_EXPORT void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
+                                                void (*callback)(void*),
+                                                void* user_data);
 
 }  // namespace angle
 
