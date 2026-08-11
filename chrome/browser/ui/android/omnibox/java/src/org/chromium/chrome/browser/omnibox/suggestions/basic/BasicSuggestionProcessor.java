@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.DocumentType;
@@ -197,8 +197,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         final boolean isDocumentSuggestion =
                 suggestion.getType() == OmniboxSuggestionType.DOCUMENT_SUGGESTION;
         final boolean isTabSearch =
-                input.getPageClassification()
-                        == PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE;
+                input.getPageClassification() == PageClassification.ANDROID_TAB_SEARCH_OVERLAY;
         SuggestionSpannable textLine2 = null;
         boolean urlHighlighted = false;
         @ColorInt int textLine2Color = 0;

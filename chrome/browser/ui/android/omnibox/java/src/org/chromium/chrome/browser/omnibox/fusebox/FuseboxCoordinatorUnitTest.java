@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -91,7 +91,6 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -163,8 +162,7 @@ public class FuseboxCoordinatorUnitTest {
         mAutocompleteInput =
                 new AutocompleteInput()
                         .setPageClassification(
-                                PageClassification
-                                        .INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
 
         mCoordinator = createCoordinator(/* isForcedPhoneStyleOmnibox= */ false);
     }
@@ -292,16 +290,18 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
-        final Set<PageClassification> supportedPageClassifications =
-                EnumSet.of(
+        final Set<@PageClassification Integer> supportedPageClassifications =
+                Set.of(
                         PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
                         PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                         PageClassification.CO_BROWSING_COMPOSEBOX,
                         PageClassification.OTHER);
 
-        for (PageClassification pageClass : PageClassification.values()) {
+        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
+                pageClass <= PageClassification.MAX_VALUE;
+                pageClass++) {
             reset(mMediator);
-            mAutocompleteInput.setPageClassification(pageClass.getNumber());
+            mAutocompleteInput.setPageClassification(pageClass);
 
             mCoordinator.beginInput(createSession());
 

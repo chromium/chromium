@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSug
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -415,8 +415,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void switchTabIcon_shownForSwitchToTabSuggestions() {
-        mInput.setPageClassification(
-                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+        mInput.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
 
         createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED);
         PropertyModel model = mProcessor.createModel();
@@ -658,7 +657,7 @@ public class BasicSuggestionProcessorUnitTest {
                         .build();
 
         // 1. For a standard URL suggestion, desktop platform forces a single-line layout.
-        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET);
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
 
@@ -670,7 +669,7 @@ public class BasicSuggestionProcessorUnitTest {
                         .contains("google.com/search?q=test"));
 
         // 2. For Tab Search suggestion, it is exempt and maintains a 2-line layout.
-        mInput.setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE);
+        mInput.setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
 

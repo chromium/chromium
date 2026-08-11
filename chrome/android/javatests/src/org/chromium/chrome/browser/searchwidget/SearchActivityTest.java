@@ -82,7 +82,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -354,7 +354,7 @@ public class SearchActivityTest {
         verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
         Assert.assertEquals("", captor.getValue().getUserText());
         Assert.assertEquals(
-                PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
+                PageClassification.ANDROID_SEARCH_WIDGET,
                 captor.getValue().getPageClassification());
     }
 

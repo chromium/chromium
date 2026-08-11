@@ -49,7 +49,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.SecurityStatusIcon;
@@ -744,8 +744,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public int getPageClassification(boolean prefetch) {
-        if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC_VALUE;
+    public @PageClassification int getPageClassification(boolean prefetch) {
+        if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC;
 
         return LocationBarModelJni.get()
                 .getPageClassification(mNativeLocationBarModelAndroid, prefetch);
@@ -1026,6 +1026,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         GURL getUrlOfVisibleNavigationEntry(long nativeLocationBarModelAndroid);
 
+        @PageClassification
         int getPageClassification(long nativeLocationBarModelAndroid, boolean isPrefetch);
     }
 

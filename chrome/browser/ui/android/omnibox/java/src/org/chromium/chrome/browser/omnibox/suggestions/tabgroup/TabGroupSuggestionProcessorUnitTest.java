@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewPrope
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -123,7 +123,7 @@ public class TabGroupSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void testPopulateModelTabGroupSuggestions() {
-        mInput.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+        mInput.setPageClassification(PageClassification.ANDROID_HUB);
 
         createTabGroupSuggestion(OmniboxSuggestionType.TAB_GROUP);
         assertEquals(

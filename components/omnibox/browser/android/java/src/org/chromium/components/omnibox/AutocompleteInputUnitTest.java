@@ -22,7 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -42,9 +42,11 @@ public class AutocompleteInputUnitTest {
     private @Mock Callback<GURL> mGurlCallback;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
-    private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
-        for (var pageClass : PageClassification.values()) {
-            mInput.setPageClassification(pageClass.getNumber());
+    private void verifyCacheablePageClasses(Set<@PageClassification Integer> allowedPageClasses) {
+        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
+                pageClass <= PageClassification.MAX_VALUE;
+                pageClass++) {
+            mInput.setPageClassification(pageClass);
 
             // Typed contexts are never cacheable.
             mInput.setUserText("text");
@@ -52,9 +54,7 @@ public class AutocompleteInputUnitTest {
 
             // Only ZPS contexts are cacheable.
             mInput.setUserText("");
-            assertEquals(
-                    mInput.isInCacheableContext(),
-                    allowedPageClasses.contains(pageClass.getNumber()));
+            assertEquals(mInput.isInCacheableContext(), allowedPageClasses.contains(pageClass));
         }
     }
 
@@ -73,8 +73,8 @@ public class AutocompleteInputUnitTest {
     public void isInCacheableContext_defaultContexts() {
         verifyCacheablePageClasses(
                 Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE));
+                        PageClassification.ANDROID_SEARCH_WIDGET,
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET));
     }
 
     @Test
@@ -84,8 +84,8 @@ public class AutocompleteInputUnitTest {
         OmniboxFeatures.setJumpStartOmniboxEnabled(false);
         verifyCacheablePageClasses(
                 Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE));
+                        PageClassification.ANDROID_SEARCH_WIDGET,
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET));
     }
 
     @Test
@@ -95,9 +95,9 @@ public class AutocompleteInputUnitTest {
         OmniboxFeatures.setJumpStartOmniboxEnabled(true);
         verifyCacheablePageClasses(
                 Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE));
+                        PageClassification.ANDROID_SEARCH_WIDGET,
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET,
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS));
     }
 
     @Test
@@ -107,11 +107,11 @@ public class AutocompleteInputUnitTest {
         OmniboxFeatures.setJumpStartOmniboxEnabled(true);
         verifyCacheablePageClasses(
                 Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
-                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
-                        PageClassification.OTHER_VALUE));
+                        PageClassification.ANDROID_SEARCH_WIDGET,
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET,
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                        PageClassification.OTHER));
     }
 
     @Test
@@ -254,33 +254,32 @@ public class AutocompleteInputUnitTest {
     @Test
     public void getPageClassification() {
         // Test initial value
-        assertEquals(PageClassification.BLANK_VALUE, mInput.getPageClassification());
+        assertEquals(PageClassification.BLANK, mInput.getPageClassification());
 
         // Test setting and getting different values
-        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
-        assertEquals(
-                PageClassification.ANDROID_SEARCH_WIDGET_VALUE, mInput.getPageClassification());
+        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET);
+        assertEquals(PageClassification.ANDROID_SEARCH_WIDGET, mInput.getPageClassification());
 
-        mInput.setPageClassification(PageClassification.OTHER_VALUE);
-        assertEquals(PageClassification.OTHER_VALUE, mInput.getPageClassification());
+        mInput.setPageClassification(PageClassification.OTHER);
+        assertEquals(PageClassification.OTHER, mInput.getPageClassification());
     }
 
     @Test
     public void getPageClassification_forFuseboxRequests() {
-        Map<Integer, Integer> testCases =
+        Map<@PageClassification Integer, @PageClassification Integer> testCases =
                 Map.of(
                         // NTP
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
-                        PageClassification.NTP_OMNIBOX_COMPOSEBOX_VALUE,
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+                        PageClassification.NTP_OMNIBOX_COMPOSEBOX,
                         // SRP
-                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
-                        PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE,
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                        PageClassification.SRP_OMNIBOX_COMPOSEBOX,
                         // Co-browsing
-                        PageClassification.CO_BROWSING_COMPOSEBOX_VALUE,
-                        PageClassification.CO_BROWSING_COMPOSEBOX_VALUE,
+                        PageClassification.CO_BROWSING_COMPOSEBOX,
+                        PageClassification.CO_BROWSING_COMPOSEBOX,
                         // Web
-                        PageClassification.OTHER_VALUE, //
-                        PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE);
+                        PageClassification.OTHER, //
+                        PageClassification.OTHER_OMNIBOX_COMPOSEBOX);
 
         for (@AutocompleteRequestType
         int requestType :
@@ -290,20 +289,23 @@ public class AutocompleteInputUnitTest {
                         AutocompleteRequestType.DEEP_SEARCH,
                         AutocompleteRequestType.CANVAS)) {
             mInput.setRequestType(requestType);
-            for (var givePageClass : PageClassification.values()) {
-                Integer wantPageClass = testCases.getOrDefault(givePageClass.getNumber(), null);
+            for (@PageClassification int givePageClass = PageClassification.MIN_VALUE;
+                    givePageClass <= PageClassification.MAX_VALUE;
+                    givePageClass++) {
+                @PageClassification
+                Integer wantPageClass = testCases.getOrDefault(givePageClass, null);
                 String message =
                         String.format(
-                                "Unexpected results in mode %d for page class %s",
-                                requestType, givePageClass.name());
+                                "Unexpected results in mode %d for page class %d",
+                                requestType, givePageClass);
 
                 if (wantPageClass != null) {
                     // Page classes known to Fusebox.
-                    mInput.setPageClassification(givePageClass.getNumber());
+                    mInput.setPageClassification(givePageClass);
                     assertEquals(message, (int) wantPageClass, mInput.getPageClassification());
                 } else {
                     // These page classes not recognized by Fusebox.
-                    mInput.setPageClassification(givePageClass.getNumber());
+                    mInput.setPageClassification(givePageClass);
                     assertThrows(message, AssertionError.class, mInput::getPageClassification);
                 }
             }
@@ -336,11 +338,11 @@ public class AutocompleteInputUnitTest {
     @Test
     public void integrationTest_resetClearsAllState() {
         // Set up some state
-        mInput.setPageClassification(PageClassification.OTHER_VALUE);
+        mInput.setPageClassification(PageClassification.OTHER);
         mInput.setUserText("test ");
 
         // Verify state is set
-        assertEquals(PageClassification.OTHER_VALUE, mInput.getPageClassification());
+        assertEquals(PageClassification.OTHER, mInput.getPageClassification());
         assertEquals("test ", mInput.getUserText());
         assertTrue(mInput.allowExactKeywordMatch());
         assertFalse(mInput.isInZeroPrefixContext());
@@ -348,7 +350,7 @@ public class AutocompleteInputUnitTest {
         // Reset should clear text and keyword match but not page classification
         mInput.reset();
 
-        assertEquals(PageClassification.BLANK_VALUE, mInput.getPageClassification());
+        assertEquals(PageClassification.BLANK, mInput.getPageClassification());
         assertEquals("", mInput.getUserText());
         assertFalse(mInput.allowExactKeywordMatch());
         assertTrue(mInput.isInZeroPrefixContext());
@@ -357,7 +359,7 @@ public class AutocompleteInputUnitTest {
     @Test
     public void integrationTest_cacheableContextAndKeywordMatch() {
         // Set up cacheable context
-        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+        mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET);
         mInput.setUserText("");
 
         // Should be cacheable and zero-prefix, but not allow keyword match
@@ -507,7 +509,7 @@ public class AutocompleteInputUnitTest {
     public void testCopyFrom() {
         long urlFocusTime = 12345L;
         GURL pageUrl = GURL.emptyGURL();
-        int pageClassification = PageClassification.OTHER_VALUE;
+        @PageClassification int pageClassification = PageClassification.OTHER;
         String pageTitle = "pageTitle";
         String userText = "initialUserText";
         String initialUserText = "initialUserText";

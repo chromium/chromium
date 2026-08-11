@@ -53,7 +53,7 @@ import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -421,11 +421,12 @@ public class StatusMediator
                         && UrlUtilities.isNtpUrl(url)
                         && !mLocationBarDataProvider.isIncognitoBranded();
 
+        @PageClassification
         int pageClassification =
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
         mModel.set(
                 StatusProperties.USE_WIDE_STATUS_ICON,
-                pageClassification != PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE
+                pageClassification != PageClassification.ANDROID_TAB_SEARCH_OVERLAY
                         && (mUrlHasFocus || isRegularNtpUrl));
     }
 
@@ -1100,7 +1101,7 @@ public class StatusMediator
 
     private boolean isContextualTasksFusebox() {
         return mLocationBarDataProvider.getPageClassification(/* prefetch= */ false)
-                == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+                == PageClassification.CO_BROWSING_COMPOSEBOX;
     }
 
     private boolean isUrlBarTextSearch() {

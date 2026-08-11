@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBrid
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -305,7 +306,7 @@ public class AutocompleteController {
             int suggestionLine,
             int disposition,
             GURL currentPageUrl,
-            int pageClassification,
+            @PageClassification int pageClassification,
             long elapsedTimeSinceModified,
             int completedLength,
             @Nullable OmniboxAction action) {
@@ -390,15 +391,14 @@ public class AutocompleteController {
     }
 
     /**
-     * Updates searchbox stats parameters on the selected match that we will navigate to and
-     * returns the updated URL.
+     * Updates searchbox stats parameters on the selected match that we will navigate to and returns
+     * the updated URL.
      *
      * @param match the AutocompleteMatch object to get the updated destination URL for
      * @param elapsedTimeSinceInputChange the number of ms between the time the user started typing
      *     in the omnibox and the time the user has selected a suggestion
      */
-    @Nullable
-    GURL updateMatchDestinationUrlWithQueryFormulationTime(
+    @Nullable GURL updateMatchDestinationUrlWithQueryFormulationTime(
             AutocompleteMatch match, long elapsedTimeSinceInputChange) {
         if (mNativeController == 0) return null;
         if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
@@ -465,7 +465,8 @@ public class AutocompleteController {
                 int cursorPosition,
                 @Nullable @JniType("std::string") String desiredTld,
                 @JniType("GURL") GURL currentUrl,
-                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
+                @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
+                        int pageClassification,
                 @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean inKeywordMode,
@@ -488,7 +489,8 @@ public class AutocompleteController {
                 int matchIndex,
                 int disposition,
                 @JniType("GURL") GURL currentPageUrl,
-                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
+                @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
+                        int pageClassification,
                 long elapsedTimeSinceModified,
                 int completedLength,
                 long nativeOmniboxAction);
@@ -504,7 +506,8 @@ public class AutocompleteController {
                 @Nullable @JniType("content::WebContents*") WebContents webContents,
                 @JniType("std::u16string") String omniboxText,
                 @JniType("GURL") GURL currentUrl,
-                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
+                @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
+                        int pageClassification,
                 @JniType("omnibox::ToolMode") int toolMode,
                 @JniType("std::u16string") String currentTitle);
 
@@ -534,7 +537,8 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 @Nullable @JniType("content::WebContents*") WebContents webContents,
                 @JniType("GURL") GURL currentUrl,
-                @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification);
+                @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
+                        int pageClassification);
 
         // Create a navigation observser.
         void createNavigationObserver(

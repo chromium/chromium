@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -182,9 +182,9 @@ public class FuseboxSessionState implements UserData {
         // Apply the initial default value unless user text is already set.
         if (mAutocompleteInput.getUserText().isEmpty()
                 && mAutocompleteInput.getPageClassification()
-                        != PageClassification.ANDROID_SEARCH_WIDGET_VALUE
+                        != PageClassification.ANDROID_SEARCH_WIDGET
                 && mAutocompleteInput.getPageClassification()
-                        != PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE
+                        != PageClassification.ANDROID_SHORTCUTS_WIDGET
                 && !PageClassificationUtils.isHubOrTabSearch(
                         mAutocompleteInput.getPageClassification())) {
             mAutocompleteInput

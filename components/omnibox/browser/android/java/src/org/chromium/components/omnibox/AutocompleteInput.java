@@ -19,7 +19,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 
@@ -178,7 +178,7 @@ public class AutocompleteInput implements UserData {
     // LINT.IfChange(Members)
     private long mUrlFocusTime;
     private GURL mPageUrl;
-    private int mPageClassification;
+    private @PageClassification int mPageClassification;
     private String mPageTitle;
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
@@ -225,7 +225,7 @@ public class AutocompleteInput implements UserData {
      * @param pageClassification The page classification to be used for this input.
      * @return The AutocompleteInput object.
      */
-    public AutocompleteInput setPageClassification(int pageClassification) {
+    public AutocompleteInput setPageClassification(@PageClassification int pageClassification) {
         mPageClassification = pageClassification;
         return this;
     }
@@ -262,17 +262,16 @@ public class AutocompleteInput implements UserData {
 
     // LINT.ThenChange(:Members)
 
-    private int getComposeboxEquivalentOfPageClassification() {
+    private @PageClassification int getComposeboxEquivalentOfPageClassification() {
         return switch (mPageClassification) {
             // LINT.IfChange(FuseboxSupportedPageClassifications)
-            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE ->
-                    PageClassification.NTP_OMNIBOX_COMPOSEBOX_VALUE;
-            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE ->
-                    PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE;
-            case PageClassification.CO_BROWSING_COMPOSEBOX_VALUE ->
-                    PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
-            case PageClassification.OTHER_VALUE ->
-                    PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS ->
+                    PageClassification.NTP_OMNIBOX_COMPOSEBOX;
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ->
+                    PageClassification.SRP_OMNIBOX_COMPOSEBOX;
+            case PageClassification.CO_BROWSING_COMPOSEBOX ->
+                    PageClassification.CO_BROWSING_COMPOSEBOX;
+            case PageClassification.OTHER -> PageClassification.OTHER_OMNIBOX_COMPOSEBOX;
             // LINT.ThenChange(/chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinator.java:FuseboxSupportedPageClassifications)
             default -> {
                 // TODO(crbug.com/474808407): address the issue with top resumed activity change and
@@ -284,7 +283,7 @@ public class AutocompleteInput implements UserData {
                                     "Unrecognized page classification: %d",
                                     mPageClassification);
                 }
-                yield PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
+                yield PageClassification.OTHER_OMNIBOX_COMPOSEBOX;
             }
         };
     }
@@ -294,12 +293,12 @@ public class AutocompleteInput implements UserData {
      *
      * @return The raw page classification.
      */
-    public int getRawPageClassification() {
+    public @PageClassification int getRawPageClassification() {
         return mPageClassification;
     }
 
     /** Returns the current page classification. */
-    public int getPageClassification() {
+    public @PageClassification int getPageClassification() {
         return ToolModeUtils.isAimRequest(mRequestTypeSupplier.get())
                 ? getComposeboxEquivalentOfPageClassification()
                 : mPageClassification;
@@ -617,15 +616,15 @@ public class AutocompleteInput implements UserData {
         if (!isInZeroPrefixContext()) return false;
 
         switch (mPageClassification) {
-            case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
-            case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
+            case PageClassification.ANDROID_SEARCH_WIDGET:
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET:
                 return true;
 
-            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS:
                 return OmniboxFeatures.isJumpStartOmniboxEnabled();
 
-            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
-            case PageClassification.OTHER_VALUE:
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+            case PageClassification.OTHER:
                 return OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue();
 
             default:
@@ -674,7 +673,7 @@ public class AutocompleteInput implements UserData {
         // Selection after all text
         mSelection = TextSelection.SELECT_END;
         mRefineActionUsage = RefineActionUsage.NOT_USED;
-        mPageClassification = PageClassification.BLANK_VALUE;
+        mPageClassification = PageClassification.BLANK;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mUserText.set("");
         mPreviewText = null;

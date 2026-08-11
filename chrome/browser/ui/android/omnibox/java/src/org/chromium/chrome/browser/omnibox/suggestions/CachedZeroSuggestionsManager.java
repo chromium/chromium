@@ -31,7 +31,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.url.GURL;
@@ -43,9 +43,9 @@ import java.util.Set;
 @NullMarked
 public class CachedZeroSuggestionsManager {
     public interface OverridesForTesting {
-        void saveToCache(int pageClass, AutocompleteResult r);
+        void saveToCache(@PageClassification int pageClass, AutocompleteResult r);
 
-        AutocompleteResult readFromCache(int pageClass);
+        AutocompleteResult readFromCache(@PageClassification int pageClass);
     }
 
     /** Jump-Start Omnibox: the context of the most recently visited page. */
@@ -54,9 +54,9 @@ public class CachedZeroSuggestionsManager {
         public final GURL url;
 
         /** {@link PageClassification} value associated with the most recently visited page. */
-        public final int pageClass;
+        public final @PageClassification int pageClass;
 
-        public JumpStartContext(GURL url, int pageClass) {
+        public JumpStartContext(GURL url, @PageClassification int pageClass) {
             this.url = url;
             this.pageClass = pageClass;
         }
@@ -93,7 +93,8 @@ public class CachedZeroSuggestionsManager {
 
     /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
     @SuppressWarnings("ApplySharedPref")
-    public static void saveToCache(int pageClass, AutocompleteResult resultToCache) {
+    public static void saveToCache(
+            @PageClassification int pageClass, AutocompleteResult resultToCache) {
         if (sOverridesForTesting != null) {
             sOverridesForTesting.saveToCache(pageClass, resultToCache);
             return;
@@ -134,7 +135,7 @@ public class CachedZeroSuggestionsManager {
      *
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
-    static AutocompleteResult readFromCache(int pageClass) {
+    static AutocompleteResult readFromCache(@PageClassification int pageClass) {
         if (sOverridesForTesting != null) {
             return sOverridesForTesting.readFromCache(pageClass);
         }
@@ -163,7 +164,7 @@ public class CachedZeroSuggestionsManager {
      *
      * @param pageClass the PageClassification to clear cache for
      */
-    static void eraseCachedSuggestionsByPageClass(int pageClass) {
+    static void eraseCachedSuggestionsByPageClass(@PageClassification int pageClass) {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         String key = getCacheKey(pageClass);
         prefs.edit().remove(key).apply();
@@ -197,10 +198,11 @@ public class CachedZeroSuggestionsManager {
         UrlConstantResolver defaultResolver =
                 UrlConstantResolverFactory.getForProfile(/* profile= */ null);
         String url = prefs.getString(KEY_JUMP_START_URL, defaultResolver.getNtpUrl());
+        @PageClassification
         int pageClass =
                 prefs.getInt(
                         KEY_JUMP_START_PAGE_CLASS,
-                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
         return new JumpStartContext(new GURL(url), pageClass);
     }
 
@@ -208,8 +210,10 @@ public class CachedZeroSuggestionsManager {
     public static void eraseCachedData() {
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
 
-        for (var pageClass : PageClassification.values()) {
-            editor.remove(getCacheKey(pageClass.getNumber()));
+        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
+                pageClass <= PageClassification.MAX_VALUE;
+                pageClass++) {
+            editor.remove(getCacheKey(pageClass));
         }
         for (String key : ADDITIONAL_KEYS_TO_ERASE) {
             editor.remove(key);
@@ -249,7 +253,7 @@ public class CachedZeroSuggestionsManager {
     }
 
     @VisibleForTesting
-    static String getCacheKey(int pageClass) {
+    static String getCacheKey(@PageClassification int pageClass) {
         return String.format(Locale.getDefault(), "omnibox:cached_suggestions:%d", pageClass);
     }
 }

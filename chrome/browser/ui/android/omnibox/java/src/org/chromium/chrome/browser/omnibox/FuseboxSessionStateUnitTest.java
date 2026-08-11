@@ -31,7 +31,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -222,7 +222,7 @@ public class FuseboxSessionStateUnitTest {
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
-        doReturn(PageClassification.OTHER_VALUE)
+        doReturn(PageClassification.OTHER)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
 
@@ -238,7 +238,7 @@ public class FuseboxSessionStateUnitTest {
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
-        doReturn(PageClassification.ANDROID_SEARCH_WIDGET_VALUE)
+        doReturn(PageClassification.ANDROID_SEARCH_WIDGET)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
 
@@ -254,7 +254,7 @@ public class FuseboxSessionStateUnitTest {
         UrlBarData.setShouldShowUrlForTesting(true);
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
-        doReturn(PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE)
+        doReturn(PageClassification.ANDROID_SHORTCUTS_WIDGET)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(false);
 

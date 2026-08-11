@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabNativeUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.PageClassificationUtils;
 
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class ChromeAutocompleteProviderClient {
     // this is all hidden tabs, but for PageClassification.ANDROID_HUB and
     // PageClassification.ANDROID_TAB_SEARCH_OVERLAY, they include all tabs.
     private static @JniType("std::vector<int64_t>") long[] getAllEligibleTabs(
-            TabModel[] tabModels, int pageClassification, int activeTabId) {
+            TabModel[] tabModels, @PageClassification int pageClassification, int activeTabId) {
         int totalTabs = 0;
         for (TabModel tabModel : tabModels) {
             if (tabModel == null) continue;

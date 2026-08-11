@@ -12,7 +12,7 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -374,7 +374,8 @@ public class OmniboxMetrics {
      * @param pageClass Page classification.
      * @param wasScrolled Whether the suggestions list was scrolled.
      */
-    public static void recordSuggestionsListScrolled(int pageClass, boolean wasScrolled) {
+    public static void recordSuggestionsListScrolled(
+            @PageClassification int pageClass, boolean wasScrolled) {
         RecordHistogram.recordBooleanHistogram(
                 histogramName("Android.Omnibox.SuggestionsListScrolled", pageClass), wasScrolled);
     }
@@ -543,58 +544,58 @@ public class OmniboxMetrics {
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */
-    private static String histogramName(String prefix, int pageClass) {
+    private static String histogramName(String prefix, @PageClassification int pageClass) {
         String suffix = "Other";
 
         switch (pageClass) {
-            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.NTP_REALBOX_VALUE:
-            case PageClassification.NTP_VALUE:
-            case PageClassification.NTP_ZPS_PREFETCH_VALUE:
-            case PageClassification.SEARCH_BUTTON_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.START_SURFACE_HOMEPAGE_VALUE:
-            case PageClassification.START_SURFACE_NEW_TAB_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS:
+            case PageClassification.NTP_REALBOX:
+            case PageClassification.NTP:
+            case PageClassification.NTP_ZPS_PREFETCH:
+            case PageClassification.SEARCH_BUTTON_AS_STARTING_FOCUS:
+            case PageClassification.START_SURFACE_HOMEPAGE:
+            case PageClassification.START_SURFACE_NEW_TAB:
                 suffix = "NTP";
                 break;
 
-            case PageClassification.LENS_SIDE_PANEL_SEARCHBOX_VALUE:
-            case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT_VALUE:
-            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
-            case PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE:
-            case PageClassification.SEARCH_SIDE_PANEL_SEARCHBOX_VALUE:
-            case PageClassification.SRP_ZPS_PREFETCH_VALUE:
+            case PageClassification.LENS_SIDE_PANEL_SEARCHBOX:
+            case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT:
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+            case PageClassification.SEARCH_RESULT_PAGE_ON_CCT:
+            case PageClassification.SEARCH_SIDE_PANEL_SEARCHBOX:
+            case PageClassification.SRP_ZPS_PREFETCH:
                 suffix = "SRP";
                 break;
 
-            case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
-            case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
+            case PageClassification.ANDROID_SEARCH_WIDGET:
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET:
                 suffix = "Widget";
                 break;
 
-            case PageClassification.ANDROID_HUB_VALUE:
-            case PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE:
+            case PageClassification.ANDROID_HUB:
+            case PageClassification.ANDROID_TAB_SEARCH_OVERLAY:
                 suffix = "HUB";
                 break;
 
-            case PageClassification.BLANK_VALUE:
-            case PageClassification.CONTEXTUAL_SEARCHBOX_VALUE:
-            case PageClassification.HOME_PAGE_VALUE:
-            case PageClassification.JOURNEYS_VALUE:
-            case PageClassification.OTHER_ON_CCT_VALUE:
-            case PageClassification.OTHER_VALUE:
-            case PageClassification.OTHER_ZPS_PREFETCH_VALUE:
+            case PageClassification.BLANK:
+            case PageClassification.CONTEXTUAL_SEARCHBOX:
+            case PageClassification.HOME_PAGE:
+            case PageClassification.JOURNEYS:
+            case PageClassification.OTHER_ON_CCT:
+            case PageClassification.OTHER:
+            case PageClassification.OTHER_ZPS_PREFETCH:
                 // use default value for websites.
                 break;
 
-            case PageClassification.NTP_COMPOSEBOX_VALUE:
-            case PageClassification.NTP_OMNIBOX_COMPOSEBOX_VALUE:
-            case PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE:
-            case PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE:
+            case PageClassification.NTP_COMPOSEBOX:
+            case PageClassification.NTP_OMNIBOX_COMPOSEBOX:
+            case PageClassification.OTHER_OMNIBOX_COMPOSEBOX:
+            case PageClassification.SRP_OMNIBOX_COMPOSEBOX:
                 suffix = "ComposeBox";
                 break;
 
-            case PageClassification.OBSOLETE_INSTANT_NTP_VALUE:
-            case PageClassification.OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.OBSOLETE_INSTANT_NTP:
+            case PageClassification.OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS:
                 assert false
                         : "Obsolete page classification. Please use the OMNIBOX variant instead.";
                 break;

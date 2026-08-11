@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -445,6 +446,7 @@ class LocationBarPhone extends LocationBarLayout {
         }
 
         // Do not center in Android Hub or Custom Tabs.
+        @PageClassification
         int pageClassification = mLocationBarDataProvider.getPageClassification(false);
         if (!OmniboxViewUtil.isRegularTabContext(pageClassification)) {
             return false;

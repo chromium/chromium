@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 
 /** Tests for {@link PageClassificationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -20,11 +20,11 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 public class PageClassificationUtilsUnitTest {
     @Test
     public void testIsHubOrTabSearch() {
-        assertTrue(PageClassificationUtils.isHubOrTabSearch(PageClassification.ANDROID_HUB_VALUE));
+        assertTrue(PageClassificationUtils.isHubOrTabSearch(PageClassification.ANDROID_HUB));
         assertTrue(
                 PageClassificationUtils.isHubOrTabSearch(
-                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE));
-        assertFalse(PageClassificationUtils.isHubOrTabSearch(PageClassification.NTP_VALUE));
-        assertFalse(PageClassificationUtils.isHubOrTabSearch(PageClassification.BLANK_VALUE));
+                        PageClassification.ANDROID_TAB_SEARCH_OVERLAY));
+        assertFalse(PageClassificationUtils.isHubOrTabSearch(PageClassification.NTP));
+        assertFalse(PageClassificationUtils.isHubOrTabSearch(PageClassification.BLANK));
     }
 }

@@ -124,7 +124,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
@@ -347,7 +347,7 @@ public class LocationBarMediatorUnitTest {
         lenient().doReturn(true).when(mLocationBarDataProvider).hasTab();
         lenient().doReturn(mTabView).when(mTab).getView();
         lenient()
-                .doReturn(PageClassification.OTHER_VALUE)
+                .doReturn(PageClassification.OTHER)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(anyBoolean());
         lenient().doReturn(mSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();

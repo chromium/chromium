@@ -4177,6 +4177,10 @@ if (!is_robolectric && enable_java_templates) {
           rebase_path(_path, root_build_dir),
         ]
       }
+
+      if (build_with_chromium) {
+        args += [ "--generate-intdefs" ]
+      }
     }
 
     android_library(target_name) {
@@ -4184,6 +4188,9 @@ if (!is_robolectric && enable_java_templates) {
       sources = []
       srcjar_deps = [ ":${_template_name}__protoc_java" ]
       deps = [ "//third_party/android_deps:protobuf_lite_runtime_java" ]
+      if (build_with_chromium) {
+        deps += [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      }
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }

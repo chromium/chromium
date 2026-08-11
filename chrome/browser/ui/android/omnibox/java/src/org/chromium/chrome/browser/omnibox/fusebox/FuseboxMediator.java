@@ -71,7 +71,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -555,7 +555,7 @@ import java.util.function.Supplier;
         boolean isContextualTasks =
                 mInput != null
                         && mInput.getRawPageClassification()
-                                == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
+                                == PageClassification.CO_BROWSING_COMPOSEBOX;
 
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;

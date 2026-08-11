@@ -5,7 +5,7 @@
 package org.chromium.components.omnibox;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 
 /** Utility methods for checking page classifications. */
 @NullMarked
@@ -17,8 +17,8 @@ public class PageClassificationUtils {
      *
      * @param pageClassification The page classification to check.
      */
-    public static boolean isHubOrTabSearch(int pageClassification) {
-        return pageClassification == PageClassification.ANDROID_HUB_VALUE
-                || pageClassification == PageClassification.ANDROID_TAB_SEARCH_OVERLAY_VALUE;
+    public static boolean isHubOrTabSearch(@PageClassification int pageClassification) {
+        return pageClassification == PageClassification.ANDROID_HUB
+                || pageClassification == PageClassification.ANDROID_TAB_SEARCH_OVERLAY;
     }
 }
