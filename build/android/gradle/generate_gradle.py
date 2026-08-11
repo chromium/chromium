@@ -56,7 +56,7 @@ _DEFAULT_ANDROID_MANIFEST_PATH = os.path.join(
     'AndroidManifest.xml',
 )
 _FILE_DIR = os.path.dirname(__file__)
-_GENERATED_JAVA_SUBDIR = 'generated_java'
+_INPUT_SRCJARS_SUBDIR = os.path.join('generated_java', 'input_srcjars')
 _JNI_LIBS_SUBDIR = 'symlinked-libs'
 _ARMEABI_SUBDIR = 'armeabi'
 _GRADLE_BUILD_FILE = 'build.gradle'
@@ -209,9 +209,9 @@ class _ProjectEntry:
             ninja_target = ninja_target[1:]
         return ninja_target.replace(':', os.path.sep)
 
-    def GeneratedJavaSubdir(self):
+    def InputSrcjarsSubdir(self):
         return _RebasePath(
-            os.path.join('gen', self.GradleSubdir(), _GENERATED_JAVA_SUBDIR)
+            os.path.join('gen', self.GradleSubdir(), _INPUT_SRCJARS_SUBDIR)
         )
 
     def ProjectName(self):
@@ -373,7 +373,7 @@ class _ProjectContextGenerator:
         variables = {}
         java_dirs, excludes = self._GenJavaDirs(root_entry)
         java_dirs.extend(
-            e.GeneratedJavaSubdir() for e in self._GetEntries(root_entry)
+            e.InputSrcjarsSubdir() for e in self._GetEntries(root_entry)
         )
         self.processed_java_dirs.update(java_dirs)
         java_dirs.sort()
