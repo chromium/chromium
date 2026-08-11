@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Indigo.PageAction.ClickedEntryPoint"
+    enum="IndigoPageActionEntryPoint" expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records the entry point or presentation style of the Indigo page action when
+    it is clicked by the user.
+  </summary>
+</histogram>
+
+<histogram name="Indigo.PageAction.ShownEntryPoint"
+    enum="IndigoPageActionEntryPoint" expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records the entry point or presentation style of the Indigo page action when
+    it is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.PageAction.TriggerSource" enum="IndigoTriggerSource"
     expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>

@@ -131,21 +131,38 @@ void RecordTransformationResultCannotGenerateImage(
   base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
 }
 
-void RecordInvokeEntryPointMetrics(EntryPoint entry_point) {
+void RecordInvokeEntryPointMetrics(
+    EntryPoint entry_point,
+    std::optional<page_actions::PageActionPriorityCategory>
+        last_anchored_message_priority) {
   switch (entry_point) {
     case EntryPoint::kSuggestionChip:
-      base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
       base::RecordAction(
           base::UserMetricsAction("Indigo.PageAction.SuggestionChip.Click"));
+      base::UmaHistogramEnumeration(
+          "Indigo.PageAction.ClickedEntryPoint",
+          IndigoPageActionEntryPoint::kSuggestionChip);
       break;
     case EntryPoint::kAnchoredMessage:
-      base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
       base::RecordAction(
           base::UserMetricsAction("Indigo.PageAction.AnchoredMessage.Click"));
+      if (last_anchored_message_priority ==
+          page_actions::PageActionPriorityCategory::kContextualCue) {
+        base::UmaHistogramEnumeration(
+            "Indigo.PageAction.ClickedEntryPoint",
+            IndigoPageActionEntryPoint::kProactiveAnchoredMessage);
+      } else if (last_anchored_message_priority ==
+                 page_actions::PageActionPriorityCategory::kUserInteraction) {
+        base::UmaHistogramEnumeration(
+            "Indigo.PageAction.ClickedEntryPoint",
+            IndigoPageActionEntryPoint::kReactiveAnchoredMessage);
+      }
       break;
     case EntryPoint::kErrorToast:
       base::RecordAction(
           base::UserMetricsAction("Indigo.ErrorToast.Retry.Click"));
+      base::UmaHistogramEnumeration("Indigo.PageAction.ClickedEntryPoint",
+                                    IndigoPageActionEntryPoint::kErrorToast);
       break;
   }
 }
@@ -234,7 +251,7 @@ IndigoPageActionController* IndigoPageActionController::From(
 }
 
 void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
-  RecordInvokeEntryPointMetrics(entry_point);
+  RecordInvokeEntryPointMetrics(entry_point, last_anchored_message_priority_);
 
   if (!indigo_service_) {
     return;
@@ -600,6 +617,8 @@ void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction("Indigo.Regenerate.Trigger"));
+
   auto* manager =
       IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
   if (manager && manager->RegenerateImage()) {
@@ -674,6 +693,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   optimization_guide_decision_ =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   page_has_allowed_category_by_heuristic_ = false;
+  last_anchored_message_priority_ = std::nullopt;
   metadata_remote_.reset();
   UpdateEntryPointsState();
 }
@@ -700,7 +720,6 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
-    base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
     base::UmaHistogramEnumeration("Indigo.PageAction.TriggerSource",
                                   *trigger_source);
 
@@ -772,8 +791,29 @@ void IndigoPageActionController::OnPageActionAnchoredMessageShown(
   if (indigo_service_) {
     indigo_service_->ContextualCueShown();
   }
+  if (last_anchored_message_priority_ ==
+      page_actions::PageActionPriorityCategory::kUserInteraction) {
+    base::RecordAction(base::UserMetricsAction(
+        "Indigo.PageAction.AnchoredMessage.Reactive.Show"));
+    base::UmaHistogramEnumeration(
+        "Indigo.PageAction.ShownEntryPoint",
+        IndigoPageActionEntryPoint::kReactiveAnchoredMessage);
+  } else if (last_anchored_message_priority_ ==
+             page_actions::PageActionPriorityCategory::kContextualCue) {
+    base::RecordAction(base::UserMetricsAction(
+        "Indigo.PageAction.AnchoredMessage.Proactive.Show"));
+    base::UmaHistogramEnumeration(
+        "Indigo.PageAction.ShownEntryPoint",
+        IndigoPageActionEntryPoint::kProactiveAnchoredMessage);
+  }
+}
+
+void IndigoPageActionController::OnPageActionChipShown(
+    const page_actions::PageActionState& page_action) {
   base::RecordAction(
-      base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
+      base::UserMetricsAction("Indigo.PageAction.SuggestionChip.Show"));
+  base::UmaHistogramEnumeration("Indigo.PageAction.ShownEntryPoint",
+                                IndigoPageActionEntryPoint::kSuggestionChip);
 }
 
 void IndigoPageActionController::OnOptimizationGuideDecision(
@@ -806,6 +846,7 @@ views::View* IndigoPageActionController::GetIndigoOverlayView() const {
 
 void IndigoPageActionController::ShowAnchoredMessage(
     page_actions::PageActionPriorityCategory priority) {
+  last_anchored_message_priority_ = priority;
   page_action_controller_->SetAnchoredMessageText(
       kActionIndigo,
       l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));

@@ -87,6 +87,19 @@ enum class IndigoTriggerSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTriggerSource)
 
+// Entry points / presentation styles for the Indigo page action metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoPageActionEntryPoint)
+enum class IndigoPageActionEntryPoint {
+  kSuggestionChip = 0,
+  kProactiveAnchoredMessage = 1,
+  kReactiveAnchoredMessage = 2,
+  kErrorToast = 3,
+  kMaxValue = kErrorToast,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoPageActionEntryPoint)
+
 enum class ResetType {
   kResetReplacementsAndContentScript,
   kResetReplacementsOnly,
@@ -184,6 +197,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // page_actions::PageActionObserver:
   void OnPageActionAnchoredMessageShown(
       const page_actions::PageActionState& page_action) override;
+  void OnPageActionChipShown(
+      const page_actions::PageActionState& page_action) override;
 
   class TestApi {
    public:
@@ -204,6 +219,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
     void SetOnboardingDialogFactory(OnboardingDialogFactory factory) {
       controller_->onboarding_dialog_factory_for_testing_ = std::move(factory);
+    }
+
+    void SetLastAnchoredMessagePriority(
+        page_actions::PageActionPriorityCategory priority) {
+      controller_->last_anchored_message_priority_ = priority;
     }
 
    private:
@@ -303,6 +323,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // The floating toolbar, if shown.
   std::unique_ptr<IndigoToolbar> toolbar_;
+
+  // The priority of the most recently shown anchored message.
+  std::optional<page_actions::PageActionPriorityCategory>
+      last_anchored_message_priority_;
 
   // The latest tracked bounds of the primary image, in DIPs.
   std::optional<gfx::Rect> tracked_bounds_;
