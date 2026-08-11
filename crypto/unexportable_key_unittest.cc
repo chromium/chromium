@@ -678,8 +678,8 @@ TEST_P(UnexportableKeyTest, AttestationKeySignFailsForTpmGeneratedValue) {
     GTEST_SKIP() << "Skipping test because of lack of attestation key support.";
   }
 
-  auto payload = base::ToVector(base::U32ToBigEndian(
-      std::to_underlying(crypto::tpm::TPM_GENERATED_VALUE)));
+  auto payload =
+      base::ToVector(base::EnumToBigEndian(crypto::tpm::TPM_GENERATED_VALUE));
   payload.insert(payload.end(), {0x01, 0x02, 0x03, 0x04});
   EXPECT_EQ(attestation_key->SignSlowly(payload), std::nullopt);
 }

@@ -61,9 +61,8 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   std::vector<uint8_t> attestation_statement(kAttestationStatementFixedSize +
                                              challenge.size());
   base::SpanWriter<uint8_t> attest_writer(attestation_statement);
-  attest_writer.WriteU32BigEndian(std::to_underlying(tpm::TPM_GENERATED_VALUE));
-  attest_writer.WriteU16BigEndian(
-      std::to_underlying(tpm::TPM_ST_ATTEST_CERTIFY));
+  attest_writer.WriteEnumBigEndian(tpm::TPM_GENERATED_VALUE);
+  attest_writer.WriteEnumBigEndian(tpm::TPM_ST_ATTEST_CERTIFY);
   // qualifiedSigner (empty)
   attest_writer.WriteU16BigEndian(0);
 
@@ -83,7 +82,7 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   // name: TPM2B_NAME
   std::array<uint8_t, kNameBufSize> name_buf;
   base::SpanWriter<uint8_t> name_writer(name_buf);
-  name_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
+  name_writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
   name_writer.Write(hash::Sha256(signing_key.GetSubjectPublicKeyInfo()));
   CHECK_EQ(name_writer.remaining(), 0u);
 
@@ -119,8 +118,8 @@ std::vector<uint8_t> CreateTpmEcdsaSignature(
 
   std::vector<uint8_t> signature(kEcdsaTpmSigSize);
   base::SpanWriter<uint8_t> sig_writer(signature);
-  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_ECDSA));
-  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
+  sig_writer.WriteEnumBigEndian(tpm::TPM_ALG_ECDSA);
+  sig_writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
 
   WriteTpm2b(sig_writer, r_bytes);
   WriteTpm2b(sig_writer, s_bytes);
@@ -140,8 +139,8 @@ std::vector<uint8_t> CreateTpmRsaSignature(
   CHECK_EQ(der_signature.size(), kRsa2048SigSize);
   std::vector<uint8_t> signature(2 + 2 + 2 + kRsa2048SigSize);
   base::SpanWriter<uint8_t> sig_writer(signature);
-  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_RSASSA));
-  sig_writer.WriteU16BigEndian(std::to_underlying(tpm::TPM_ALG_SHA256));
+  sig_writer.WriteEnumBigEndian(tpm::TPM_ALG_RSASSA);
+  sig_writer.WriteEnumBigEndian(tpm::TPM_ALG_SHA256);
   WriteTpm2b(sig_writer, der_signature);
   CHECK_EQ(sig_writer.remaining(), 0u);
   return signature;
@@ -234,8 +233,7 @@ class SoftwareAttestationKey
     // TPM2_Hash/TPM2_Sign to prevent forging TPM-generated attestation
     // structures (e.g., TPMS_ATTEST).
     return std::ranges::starts_with(
-               data, base::U32ToBigEndian(
-                         std::to_underlying(tpm::TPM_GENERATED_VALUE)))
+               data, base::EnumToBigEndian(tpm::TPM_GENERATED_VALUE))
                ? std::nullopt
                : Base::SignSlowly(data);
   }

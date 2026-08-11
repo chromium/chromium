@@ -57,8 +57,8 @@ std::vector<uint8_t> BuildTpmRsaSignature(TpmAlg hash_alg,
   size_t size = 2 + 2 + 2 + sig.size();
   std::vector<uint8_t> tpm_sig(size);
   base::SpanWriter<uint8_t> writer(tpm_sig);
-  writer.WriteU16BigEndian(std::to_underlying(TPM_ALG_RSASSA));
-  writer.WriteU16BigEndian(std::to_underlying(hash_alg));
+  writer.WriteEnumBigEndian(TPM_ALG_RSASSA);
+  writer.WriteEnumBigEndian(hash_alg);
   writer.WriteU16BigEndian(sig.size());
   writer.Write(sig);
   CHECK_EQ(writer.remaining(), 0u);
@@ -82,8 +82,8 @@ std::vector<uint8_t> BuildTpmEcdsaSignature(TpmAlg hash_alg,
   size_t size = 2 + 2 + 2 + r.size() + 2 + s.size();
   std::vector<uint8_t> tpm_sig(size);
   base::SpanWriter<uint8_t> writer(tpm_sig);
-  writer.WriteU16BigEndian(std::to_underlying(TPM_ALG_ECDSA));
-  writer.WriteU16BigEndian(std::to_underlying(hash_alg));
+  writer.WriteEnumBigEndian(TPM_ALG_ECDSA);
+  writer.WriteEnumBigEndian(hash_alg);
   writer.WriteU16BigEndian(r.size());
   writer.Write(r);
   writer.WriteU16BigEndian(s.size());
@@ -114,8 +114,8 @@ std::vector<uint8_t> BuildFakeCertifyStatement(
   size_t size = 4 + 2 + 2 + 2 + challenge.size() + 17 + 8 + 2 + 2;
   std::vector<uint8_t> statement(size);
   base::SpanWriter<uint8_t> writer(statement);
-  writer.WriteU32BigEndian(std::to_underlying(magic));
-  writer.WriteU16BigEndian(std::to_underlying(type));
+  writer.WriteEnumBigEndian(magic);
+  writer.WriteEnumBigEndian(type);
   writer.WriteU16BigEndian(0);  // qualified_signer size = 0
   writer.WriteU16BigEndian(challenge.size());
   writer.Write(challenge);
@@ -161,7 +161,7 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(std::to_underlying(TPM_ST_NO_SESSIONS));
+  writer.WriteEnumBigEndian(TPM_ST_NO_SESSIONS);
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
@@ -192,15 +192,15 @@ std::vector<uint8_t> BuildFakeHashResponse(
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(std::to_underlying(TPM_ST_NO_SESSIONS));
+  writer.WriteEnumBigEndian(TPM_ST_NO_SESSIONS);
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
   if (response_code == 0) {
     writer.WriteU16BigEndian(digest.size());
     writer.Write(digest);
-    writer.WriteU16BigEndian(std::to_underlying(ticket_tag));
-    writer.WriteU32BigEndian(std::to_underlying(ticket_hierarchy));
+    writer.WriteEnumBigEndian(ticket_tag);
+    writer.WriteEnumBigEndian(ticket_hierarchy);
     writer.WriteU16BigEndian(ticket_digest.size());
     writer.Write(ticket_digest);
   }
@@ -224,7 +224,7 @@ std::vector<uint8_t> BuildFakeSignResponse(base::span<const uint8_t> signature,
 
   std::vector<uint8_t> resp(resp_size);
   base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(std::to_underlying(tag));
+  writer.WriteEnumBigEndian(tag);
   writer.WriteU32BigEndian(resp_size);
   writer.WriteU32BigEndian(response_code);
 
@@ -482,29 +482,14 @@ TEST(TpmCppParserTest, BuildHashCommand) {
   EXPECT_EQ(cmd.size(), 22u);
 
   base::SpanReader<const uint8_t> reader(cmd);
-  uint16_t tag;
-  uint32_t size, cc;
-  ASSERT_TRUE(reader.ReadU16BigEndian(tag));
-  ASSERT_TRUE(reader.ReadU32BigEndian(size));
-  ASSERT_TRUE(reader.ReadU32BigEndian(cc));
-  EXPECT_EQ(tag, std::to_underlying(TPM_ST_NO_SESSIONS));
-  EXPECT_EQ(size, 22u);
-  EXPECT_EQ(cc, std::to_underlying(TPM_CC_HASH));
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_NO_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 22u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_HASH);
 
-  uint16_t data_len;
-  ASSERT_TRUE(reader.ReadU16BigEndian(data_len));
-  EXPECT_EQ(data_len, 4u);
-  auto data_span = reader.Read<4>();
-  ASSERT_TRUE(data_span.has_value());
-  EXPECT_THAT(*data_span, ElementsAre(1, 2, 3, 4));
-
-  uint16_t alg;
-  ASSERT_TRUE(reader.ReadU16BigEndian(alg));
-  EXPECT_EQ(alg, std::to_underlying(hash_alg));
-
-  uint32_t hier;
-  ASSERT_TRUE(reader.ReadU32BigEndian(hier));
-  EXPECT_EQ(hier, std::to_underlying(hierarchy));
+  EXPECT_EQ(reader.ReadU16BigEndian(), 4u);
+  EXPECT_EQ(reader.Read<4>(), kData);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlg>(), hash_alg);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmRh>(), hierarchy);
 }
 
 TEST(TpmCppParserTest, ParseHashResponse_Success) {
@@ -550,43 +535,19 @@ TEST(TpmCppParserTest, BuildSignCommand) {
   EXPECT_EQ(cmd.size(), 40u);
 
   base::SpanReader<const uint8_t> reader(cmd);
-  uint16_t tag;
-  uint32_t size, cc;
-  ASSERT_TRUE(reader.ReadU16BigEndian(tag));
-  ASSERT_TRUE(reader.ReadU32BigEndian(size));
-  ASSERT_TRUE(reader.ReadU32BigEndian(cc));
-  EXPECT_EQ(tag, std::to_underlying(TPM_ST_SESSIONS));
-  EXPECT_EQ(size, 40u);
-  EXPECT_EQ(cc, std::to_underlying(TPM_CC_SIGN));
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 40u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_SIGN);
 
-  uint32_t handle;
-  ASSERT_TRUE(reader.ReadU32BigEndian(handle));
-  EXPECT_EQ(handle, key_handle);
+  EXPECT_EQ(reader.ReadU32BigEndian(), key_handle);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 9u);
+  EXPECT_TRUE(reader.Read<9>().has_value());
 
-  uint32_t auth_size;
-  ASSERT_TRUE(reader.ReadU32BigEndian(auth_size));
-  EXPECT_EQ(auth_size, 9u);
-  auto auth_span = reader.Read<9>();
-  ASSERT_TRUE(auth_span.has_value());
-
-  uint16_t digest_len;
-  ASSERT_TRUE(reader.ReadU16BigEndian(digest_len));
-  EXPECT_EQ(digest_len, 3u);
-  auto digest_span = reader.Read<3>();
-  ASSERT_TRUE(digest_span.has_value());
-  EXPECT_THAT(*digest_span, ElementsAre(1, 2, 3));
-
-  uint16_t sig_scheme;
-  ASSERT_TRUE(reader.ReadU16BigEndian(sig_scheme));
-  EXPECT_EQ(sig_scheme, std::to_underlying(sig_alg));
-
-  uint16_t hash;
-  ASSERT_TRUE(reader.ReadU16BigEndian(hash));
-  EXPECT_EQ(hash, std::to_underlying(hash_alg));
-
-  auto ticket_span = reader.Read<4>();
-  ASSERT_TRUE(ticket_span.has_value());
-  EXPECT_THAT(*ticket_span, ElementsAre(7, 8, 9, 10));
+  EXPECT_EQ(reader.ReadU16BigEndian(), 3u);
+  EXPECT_EQ(reader.Read<3>(), kDigest);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlg>(), sig_alg);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlg>(), hash_alg);
+  EXPECT_EQ(reader.Read<4>(), kTicket);
 }
 
 TEST(TpmCppParserTest, ParseSignResponse_Success) {
@@ -638,9 +599,8 @@ TEST(TpmCppParserTest, ParseTpmSignature_InvalidAlgorithm) {
   size_t size = 2 + 2 + 2 + kDummySig.size();
   std::vector<uint8_t> tpm_sig(size);
   base::SpanWriter<uint8_t> writer(tpm_sig);
-  writer.WriteU16BigEndian(
-      std::to_underlying(TPM_ALG_SHA256));  // Invalid sigAlg.
-  writer.WriteU16BigEndian(std::to_underlying(TPM_ALG_SHA256));
+  writer.WriteEnumBigEndian(TPM_ALG_SHA256);  // Invalid sigAlg.
+  writer.WriteEnumBigEndian(TPM_ALG_SHA256);
   writer.WriteU16BigEndian(kDummySig.size());
   writer.Write(kDummySig);
 
