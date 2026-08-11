@@ -342,8 +342,6 @@ bool MinidumpUploader::DoWork() {
     }
 
     LOG(INFO) << "Uploaded report id " << response;
-    // upload succeeded, so delete the entry
-    dumps.erase(dumps.begin());
     // delete the dump if it exists in /data/minidumps.
     // (We may use a fake dump file which should not be deleted.)
     if (!dump_path.empty() && dump_path.DirName() == dump_path_ &&
@@ -364,6 +362,8 @@ bool MinidumpUploader::DoWork() {
         }
       }
     }
+    // upload succeeded, so delete the entry
+    dumps.erase(dumps.begin());
     ++num_uploaded;
   }
 
