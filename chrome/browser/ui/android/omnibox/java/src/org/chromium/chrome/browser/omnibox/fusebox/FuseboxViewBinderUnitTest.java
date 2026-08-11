@@ -709,6 +709,12 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, false);
         assertEquals(View.GONE, mViewHolder.activationChip.getVisibility());
 
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_COMPACT, true);
+        assertTrue(mViewHolder.activationChip.isCompact());
+
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_COMPACT, false);
+        assertFalse(mViewHolder.activationChip.isCompact());
+
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, mRunnable);
 
         mViewHolder.activationChip.performClick();

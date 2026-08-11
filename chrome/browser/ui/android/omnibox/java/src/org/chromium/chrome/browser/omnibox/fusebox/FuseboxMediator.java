@@ -10,9 +10,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -87,6 +89,7 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -104,7 +107,9 @@ import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
-/* package */ class FuseboxMediator implements FuseboxAttachmentChangeListener, BackPressHandler {
+/* package */ class FuseboxMediator
+        implements FuseboxAttachmentChangeListener, BackPressHandler, ComponentCallbacks {
+
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -154,6 +159,7 @@ import java.util.function.Supplier;
     private boolean mPopupItemSelected;
     private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
     private boolean mNeedUnfocusOnCancel;
+    private boolean mShouldBeCompact;
     @VisibleForTesting /* package */ @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
 
     private final ListObserver<Void> mListObserver =
@@ -251,10 +257,13 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
         mBackPressManager.addHandler(this, BackPressHandler.Type.FUSEBOX_POPUP);
         updatePlusButtonBackgroundStyle();
+        mContext.registerComponentCallbacks(this);
+        onConfigurationChanged(mContext.getResources().getConfiguration());
     }
 
     /* package */ void destroy() {
         endInput();
+        mContext.unregisterComponentCallbacks(this);
         mBackPressManager.removeHandler(this);
         mWindowHasFocusSupplier.removeObserver(mOnWindowFocusChanged);
     }
@@ -1097,6 +1106,27 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, showActivationChip);
         mActivationChipVisibilitySupplier.set(showActivationChip);
     }
+
+    /* package */ void updateActivationChipCompact() {
+        boolean isCompact = mModel.get(FuseboxProperties.ACTIVATION_CHIP_COMPACT);
+
+        if (isCompact == mShouldBeCompact) return;
+        mModel.set(FuseboxProperties.ACTIVATION_CHIP_COMPACT, mShouldBeCompact);
+    }
+
+    // ComponentCallbacks implementation.
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        int screenWidthPx = ViewUtils.dpToPx(mContext, newConfig.screenWidthDp);
+        int maxCompactWidthPx =
+                mResourceProvider.getDimen(R.dimen.fusebox_compact_activation_chip_width);
+        mShouldBeCompact = screenWidthPx <= maxCompactWidthPx && mIsDesktopPlatform;
+        updateActivationChipCompact();
+    }
+
+    @Override
+    public void onLowMemory() {}
 
     void onActivationChipSelectionChanged(boolean selected) {
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_SELECTED, selected);

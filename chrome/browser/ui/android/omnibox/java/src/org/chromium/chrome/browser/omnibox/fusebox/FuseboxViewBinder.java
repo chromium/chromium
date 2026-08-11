@@ -76,6 +76,8 @@ class FuseboxViewBinder {
         if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_CLICKED) {
             view.activationChip.setOnClickListener(
                     v -> model.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_COMPACT) {
+            view.activationChip.setIsCompact(model.get(FuseboxProperties.ACTIVATION_CHIP_COMPACT));
         } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_SELECTED) {
             view.activationChip.setSelected(model.get(FuseboxProperties.ACTIVATION_CHIP_SELECTED));
         } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_VISIBLE) {

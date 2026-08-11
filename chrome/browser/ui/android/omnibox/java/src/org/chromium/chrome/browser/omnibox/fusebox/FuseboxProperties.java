@@ -106,6 +106,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> ACTIVATION_CHIP_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the activation chip should be compact (displaying only the icon). */
+    public static final WritableBooleanPropertyKey ACTIVATION_CHIP_COMPACT =
+            new WritableBooleanPropertyKey();
+
     /** Whether the activation chip should be selected. */
     public static final WritableBooleanPropertyKey ACTIVATION_CHIP_SELECTED =
             new WritableBooleanPropertyKey();
@@ -287,6 +291,7 @@ class FuseboxProperties {
     public static final PropertyKey[] ALL_KEYS = {
         // go/keep-sorted start
         ACTIVATION_CHIP_CLICKED,
+        ACTIVATION_CHIP_COMPACT,
         ACTIVATION_CHIP_SELECTED,
         ACTIVATION_CHIP_VISIBLE,
         ADAPTER,
