@@ -295,7 +295,7 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
   SwitchToPanel(window, (prefix + panel_name).c_str());
 }
 
-void DisallowDevToolsForForceInstalledExtenions(
+void DisallowDevToolsForForceInstalledExtensions(
     BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
@@ -3021,7 +3021,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
 
   // Policy change must close the connection with the policy installed
   // extension.
-  DisallowDevToolsForForceInstalledExtenions(browser_window_interface());
+  DisallowDevToolsForForceInstalledExtensions(browser_window_interface());
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
@@ -3072,7 +3072,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
 
   // Policy change to must not disrupt CDP coneciton unrelated to a force
   // installed extension.
-  DisallowDevToolsForForceInstalledExtenions(browser_window_interface());
+  DisallowDevToolsForForceInstalledExtensions(browser_window_interface());
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
