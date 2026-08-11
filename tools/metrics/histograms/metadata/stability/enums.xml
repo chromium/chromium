@@ -550,6 +550,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="371" label="RFHI_INVALID_CLIENT_SIDE_REDIRECT_URL"/>
   <int value="372" label="RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED"/>
   <int value="373" label="RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED"/>
+  <int value="374" label="RFH_DOWNLOAD_URL_INVALID_REFERRER"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

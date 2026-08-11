@@ -5542,6 +5542,71 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, MathMLAnchorDownloadAttribute) {
   DownloadManagerForShell(shell())->Shutdown();
 }
 
+// Ensure that a real <a download> click preserves the user gesture claim since
+// it legitimately has transient user activation.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadURLWithGenuineClick) {
+  GURL download_url =
+      embedded_test_server()->GetURL("/download/download-test.lib");
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "let a = document.createElement('a');"
+                     "a.id = 'downloadlink';"
+                     "a.download = 'download-test.lib';"
+                     "a.href = '" +
+                         download_url.spec() +
+                         "';"
+                         "a.innerText = 'click me';"
+                         "document.body.appendChild(a);"));
+
+  std::unique_ptr<DownloadTestObserver> observer(
+      CreateInProgressWaiter(shell(), 1));
+  EXPECT_TRUE(ExecJs(web_contents, "document.getElementById('downloadlink').click()"));
+
+  observer->WaitForFinished();
+
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  EXPECT_TRUE(downloads[0]->HasUserGesture());
+}
+
+// Ensure that calling DownloadURL from a frame without transient user
+// activation does not preserve a spoofed has_user_gesture claim.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadURLWithoutUserActivation) {
+  GURL download_url =
+      embedded_test_server()->GetURL("/download/download-test.lib");
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame =
+      web_contents->GetPrimaryFrameTree().root()->current_frame_host();
+
+  EXPECT_FALSE(main_frame->HasTransientUserActivation());
+
+  std::unique_ptr<DownloadTestObserver> observer(
+      CreateInProgressWaiter(shell(), 1));
+
+  auto params = blink::mojom::DownloadURLParams::New();
+  params->url = download_url;
+  params->initiator_origin = main_frame->GetLastCommittedOrigin();
+  params->has_user_gesture = true;
+  main_frame->DownloadURL(std::move(params));
+
+  observer->WaitForFinished();
+
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  EXPECT_FALSE(downloads[0]->HasUserGesture());
+}
+
 using DownloadRangeTestParams =
     std::tuple<int64_t /*starting byte in range request*/,
                int64_t /*ending byte in range request*/,

@@ -200,6 +200,17 @@ bool VerifyDownloadUrlParams(RenderProcessHost* process,
       !VerifyInitiatorOrigin(process_id, *params.initiator_origin))
     return false;
 
+  // Verify |params.referrer|.
+  if (params.referrer && !params.referrer->url.is_empty()) {
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    if (!policy->HostsOrigin(process_id.GetUnsafeValue(),
+                             url::Origin::Create(params.referrer->url))) {
+      bad_message::ReceivedBadMessage(
+          process_id, bad_message::RFH_DOWNLOAD_URL_INVALID_REFERRER);
+      return false;
+    }
+  }
+
   // If |params.url| is not set, this must be a large data URL being passed
   // through |params.data_url_blob|.
   if (!params.url.is_valid() && !params.data_url_blob.is_valid())
