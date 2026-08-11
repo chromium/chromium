@@ -73,9 +73,17 @@ void RightClickExtensionButton(content::WebContents* web_contents,
 // Returns JavaScript expression selecting an element inside toolbar-app.
 std::string GetButtonAppJS(const std::string& selector);
 
+// Checks if an element matching `selector` inside toolbar-app is visible.
+bool IsButtonVisible(content::WebContents* web_contents,
+                     const std::string& selector);
+
 // Waits until an element matching `selector` inside toolbar-app is visible.
 bool WaitForButtonVisible(content::WebContents* web_contents,
                           const std::string& selector);
+
+// Waits until an element matching `selector` inside toolbar-app is hidden.
+bool WaitForButtonHidden(content::WebContents* web_contents,
+                         const std::string& selector);
 
 // Pins a button preference and waits for composition in WebUI toolbar.
 void PinButton(Browser* browser, views::WebView* web_view, const char* pref);

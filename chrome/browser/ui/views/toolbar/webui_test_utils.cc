@@ -805,8 +805,8 @@ std::string GetButtonAppJS(const std::string& selector) {
       selector.c_str());
 }
 
-bool WaitForButtonVisible(content::WebContents* web_contents,
-                          const std::string& selector) {
+bool IsButtonVisible(content::WebContents* web_contents,
+                     const std::string& selector) {
   static constexpr char kScript[] = R"(
     (() => {
       const btn = %s;
@@ -814,12 +814,22 @@ bool WaitForButtonVisible(content::WebContents* web_contents,
     })();
   )";
 
-  return base::test::RunUntil([&]() {
-    return content::EvalJs(
-               web_contents,
-               base::StringPrintf(kScript, GetButtonAppJS(selector).c_str()))
-        .ExtractBool();
-  });
+  return content::EvalJs(
+             web_contents,
+             base::StringPrintf(kScript, GetButtonAppJS(selector).c_str()))
+      .ExtractBool();
+}
+
+bool WaitForButtonVisible(content::WebContents* web_contents,
+                          const std::string& selector) {
+  return base::test::RunUntil(
+      [&]() { return IsButtonVisible(web_contents, selector); });
+}
+
+bool WaitForButtonHidden(content::WebContents* web_contents,
+                         const std::string& selector) {
+  return base::test::RunUntil(
+      [&]() { return !IsButtonVisible(web_contents, selector); });
 }
 
 void PinButton(Browser* browser, views::WebView* web_view, const char* pref) {

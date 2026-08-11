@@ -1248,15 +1248,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // 1. Verify initially hidden.
   EXPECT_FALSE(webui_toolbar_view->battery_saver_control_.IsVisible());
-  auto check_visible = [&]() {
-    return content::EvalJs(
-               webui_web_contents,
-               base::StringPrintf("(() => { const btn = %s; return !!btn && "
-                                  "btn.checkVisibility(); })()",
-                                  GetButtonAppJS(bsm_selector).c_str()))
-        .ExtractBool();
-  };
-  EXPECT_FALSE(check_visible());
+  EXPECT_FALSE(IsButtonVisible(webui_web_contents, bsm_selector));
 
   // 2. Enable Battery Saver.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1332,14 +1324,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !webui_toolbar_view->battery_saver_control_.IsVisible();
   }));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(
-               webui_web_contents,
-               base::StringPrintf("(() => { const btn = %s; return !btn || "
-                                  "!btn.checkVisibility(); })()",
-                                  GetButtonAppJS(bsm_selector).c_str()))
-        .ExtractBool();
-  }));
+  EXPECT_TRUE(WaitForButtonHidden(webui_web_contents, bsm_selector));
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
@@ -2933,7 +2918,6 @@ IN_PROC_BROWSER_TEST_F(WebUIAvatarButtonBrowserTest, AvatarButtonIPHPromo) {
 
 struct ButtonVisibilityToggleTestParam {
   const char* test_name;
-  const char* button_acc_name_key;
   const char* button_pref;
   const char* button_selector;
 };
@@ -2942,15 +2926,8 @@ class WebUIToolbarWebViewButtonVisibilityTest
     : public WebUIToolbarWebViewBrowserTest,
       public testing::WithParamInterface<ButtonVisibilityToggleTestParam> {};
 
-// TODO(crbug.com/540745897): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TogglesVisibility DISABLED_TogglesVisibility
-#else
-#define MAYBE_TogglesVisibility TogglesVisibility
-#endif
 IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewButtonVisibilityTest,
-                       MAYBE_TogglesVisibility) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+                       TogglesVisibility) {
   const auto& param = GetParam();
 
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
@@ -2958,49 +2935,19 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewButtonVisibilityTest,
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   ASSERT_TRUE(web_view);
 
-  // Get button name from WebUI.
-  std::string button_name =
-      content::EvalJs(
-          web_view->GetWebContents(),
-          base::StringPrintf(
-              "import('//resources/js/load_time_data.js').then(m => "
-              "m.loadTimeData.getString('%s'))",
-              param.button_acc_name_key))
-          .ExtractString();
-
-  content::FindAccessibilityNodeCriteria find_criteria;
-  find_criteria.name = button_name;
-  find_criteria.role = ax::mojom::Role::kButton;
-
-  // Wait for a known always-present node to ensure the accessibility tree is
-  // populated.
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), "Reload");
-
-  // Verify the button is initially not found.
-  EXPECT_FALSE(content::FindAccessibilityNode(web_view->GetWebContents(),
-                                              find_criteria));
+  // Verify the button is initially not visible.
+  EXPECT_FALSE(
+      IsButtonVisible(web_view->GetWebContents(), param.button_selector));
 
   // Pin the button and wait for it to become visible.
   PinButton(browser(), web_view, param.button_pref);
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), param.button_selector));
 
-  // Wait for it to appear in the accessibility tree.
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), button_name);
-
-  // Verify it now exists.
-  EXPECT_TRUE(content::FindAccessibilityNode(web_view->GetWebContents(),
-                                             find_criteria));
-
-  // Disable the button via pref and wait for the tree to update.
+  // Disable the button via pref and wait for it to become hidden.
   browser()->GetProfile()->GetPrefs()->SetBoolean(param.button_pref, false);
-  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
-
-  // Verify it is gone.
-  EXPECT_FALSE(content::FindAccessibilityNode(web_view->GetWebContents(),
-                                              find_criteria));
+  EXPECT_TRUE(
+      WaitForButtonHidden(web_view->GetWebContents(), param.button_selector));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3009,12 +2956,10 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         ButtonVisibilityToggleTestParam{
             .test_name = "SplitTabsButton",
-            .button_acc_name_key = "splitTabsButtonAccNamePinned",
             .button_pref = prefs::kPinSplitTabButton,
             .button_selector = kSplitTabsSelector},
         ButtonVisibilityToggleTestParam{
             .test_name = "HomeButton",
-            .button_acc_name_key = "homeButtonAccName",
             .button_pref = prefs::kShowHomeButton,
             .button_selector = kHomeSelector}),
     [](const testing::TestParamInfo<ButtonVisibilityToggleTestParam>& info) {
