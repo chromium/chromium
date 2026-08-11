@@ -236,6 +236,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, InlineCueMenuPage) {
   RunTest("settings/inline_cue_menu_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, DictationPage) {
+  RunTest("settings/dictation_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, AiSuggestionsPage) {
   RunTest("settings/ai_suggestions_page_test.js", "mocha.run()");
 }

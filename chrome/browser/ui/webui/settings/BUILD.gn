@@ -16,6 +16,7 @@ source_set("settings") {
     "browser_lifetime_handler.h",
     "captions_handler.h",
     "custom_home_pages_table_model.h",
+    "dictation_handler.h",
     "downloads_handler.h",
     "font_handler.h",
     "glic_handler.h",
@@ -141,6 +142,7 @@ source_set("impl") {
     "browser_lifetime_handler.cc",
     "captions_handler.cc",
     "custom_home_pages_table_model.cc",
+    "dictation_handler.cc",
     "downloads_handler.cc",
     "font_handler.cc",
     "glic_handler.cc",
@@ -200,6 +202,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/custom_handlers",
+    "//chrome/browser/dictation",
     "//chrome/browser/engagement",
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
@@ -491,6 +494,7 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "dictation_handler_unittest.cc",
       "downloads_handler_unittest.cc",
       "hats_handler_unittest.cc",
       "metrics_reporting_handler_unittest.cc",

@@ -201,6 +201,9 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('showSkillsSettingPage')) {
       r.SKILLS = r.AI.createChild('/ai/skills');
     }
+    if (loadTimeData.getBoolean('showDictationControl')) {
+      r.DICTATION = r.AI.createChild('/ai/dictation');
+    }
   }
 
   if (visibility.appearance !== false) {

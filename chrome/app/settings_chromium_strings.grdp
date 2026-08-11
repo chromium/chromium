@@ -444,4 +444,15 @@
   <message name="IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_TWO" desc="Second bullet point under the 'When on' column in the Skills settings page.">
     Use them alongside other Gemini features in Chromium
   </message>
+  <!-- Dictation Settings Page -->
+  <!-- TODO(b/510738735): Make these translatable when finalized. -->
+  <message name="IDS_SETTINGS_DICTATION_SETTING_LABEL" translateable="false" desc="Label for the Dictation setting entry point in Settings > AI page.">
+    Dictation
+  </message>
+  <message name="IDS_SETTINGS_DICTATION_SETTING_SUBLABEL" translateable="false" desc="Sublabel for the Dictation setting entry point in Settings > AI page.">
+    Chromium uses your microphone to capture your voice and fill in text fields with cleaned up content
+  </message>
+  <message name="IDS_SETTINGS_DICTATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel for the keyboard shortcut setting in Dictation settings page.">
+    Open Dictation with a keyboard shortcut
+  </message>
 </grit-part>

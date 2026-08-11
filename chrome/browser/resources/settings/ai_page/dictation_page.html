@@ -1,0 +1,43 @@
+<style include="cr-shared-style settings-shared">
+  .keyboard-shortcut-setting {
+    align-items: center;
+  }
+
+  .shortcut-input {
+    margin-top: 2px;
+  }
+
+  .section {
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<settings-subpage page-title="$i18n{dictationSettingLabel}"
+    route-path="[[routePath]]">
+  <div class="section">
+    <h2 class="cr-title-text">$i18n{dictationPreferencesHeader}</h2>
+    <div class="cr-row keyboard-shortcut-setting">
+      <div class="flex cr-padded-text">
+        <div class="shortcut-label" aria-hidden>
+          $i18n{dictationShortcutLabel}
+        </div>
+        <div class="secondary">
+          $i18n{dictationShortcutSublabel}
+          <a id="dictationLearnMoreLabel" class="learn-more-label"
+              href="https://support.google.com/chrome?p=voice_typing"
+              aria-description="$i18n{opensInNewTab}" target="_blank">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </div>
+      <cr-shortcut-input id="shortcutInput"
+          class="cr-padded-text shortcut-input"
+          input-aria-label="$i18n{dictationShortcutLabel}"
+          edit-button-aria-label="$i18n{dictationShortcutEditLabel}"
+          clear-button-aria-label="$i18n{dictationShortcutClearLabel}"
+          shortcut="[[registeredShortcut_]]"
+          allow-ctrl-alt-shortcuts
+          on-shortcut-updated="onShortcutUpdated_">
+      </cr-shortcut-input>
+    </div>
+  </div>
+</settings-subpage>

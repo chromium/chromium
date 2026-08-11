@@ -56,6 +56,14 @@
         role-description="$i18n{subpageArrowRoleDescription}"
         on-click="onSkillsRowClick_">
     </cr-link-row>
+    <cr-link-row id="dictationRow" class="hr"
+        hidden="[[!showDictationControl_]]"
+        start-icon="privacy:mic"
+        label="$i18n{dictationSettingLabel}"
+        sub-label="$i18n{dictationSettingSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onDictationRowClick_">
+    </cr-link-row>
     <cr-link-row id="indigoRow" class="hr"
         hidden="[[!showIndigoControl_]]"
 <if expr="not _google_chrome">

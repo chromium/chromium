@@ -505,7 +505,19 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiSuggestionsWhenOn2", IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_2},
       {"aiSuggestionsConsider2", IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2},
       {"aiSuggestionsConsider2Link",
-       IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK}};
+       IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK},
+
+      // Dictation (Voice typing) strings.
+      {"dictationSettingLabel", IDS_SETTINGS_DICTATION_SETTING_LABEL},
+      {"dictationSettingSublabel", IDS_SETTINGS_DICTATION_SETTING_SUBLABEL},
+      {"dictationPreferencesHeader", IDS_SETTINGS_DICTATION_PREFERENCES_HEADER},
+      {"dictationShortcutLabel", IDS_SETTINGS_DICTATION_SHORTCUT_LABEL},
+      {"dictationShortcutSublabel", IDS_SETTINGS_DICTATION_SHORTCUT_SUBLABEL},
+      {"dictationShortcutEditLabel",
+       IDS_SETTINGS_DICTATION_SHORTCUT_EDIT_LABEL},
+      {"dictationShortcutClearLabel",
+       IDS_SETTINGS_DICTATION_SHORTCUT_CLEAR_LABEL},
+  };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("aiPageTitle",
                                   features::IsWebuiRefresh2026Enabled()

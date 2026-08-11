@@ -43,6 +43,7 @@ suite('AiPageIndex', function() {
       actorLoginFederatedLoginSupportEnabled: true,
       showAiSuggestionsControl: true,
       showInlineCueMenuControl: true,
+      showDictationControl: true,
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -86,6 +87,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.INLINE_CUE_MENU);
     await microtasksFinished();
     assertActiveViews(['inlineCueMenu']);
+
+    Router.getInstance().navigateTo(routes.DICTATION);
+    await microtasksFinished();
+    assertActiveViews(['dictation']);
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -125,6 +130,18 @@ suite('AiPageIndex', function() {
     assertFalse(!!index.$.viewManager.querySelector('#glic[slot=view]'));
   });
 
+  test('dictationSectionVisibility', async function() {
+    assertTrue(!!index.$.viewManager.querySelector('#dictation[slot=view]'));
+
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showDictationControl: false,
+    });
+    resetRouterForTesting();
+    await createAiPageIndex();
+    assertFalse(!!index.$.viewManager.querySelector('#dictation[slot=view]'));
+  });
+
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
     const childViewsId = [
@@ -132,6 +149,7 @@ suite('AiPageIndex', function() {
       'compose',
       'aiSuggestions',
       'inlineCueMenu',
+      'dictation',
     ];
     for (const id of childViewsId) {
       assertTrue(!!index.$.viewManager.querySelector(
@@ -165,14 +183,14 @@ suite('AiPageIndex', function() {
     assertVisibleViews(['parent'], ['glic']);
 
     // Case2: Results only in the "Glic" card.
-    result = await index.searchContents('keyboard shortcut');
+    result = await index.searchContents('takeaways');
     assertFalse(result.canceled);
     assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);
     assertVisibleViews(['glic'], ['parent']);
 
-    // Case3: Results only in both "AI Innovations" and "Glic" card.
-    result = await index.searchContents('a');
+    // Case3: Results in both "AI Innovations" and "Glic" card.
+    result = await index.searchContents('keyboard shortcut');
     assertFalse(result.canceled);
     assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);

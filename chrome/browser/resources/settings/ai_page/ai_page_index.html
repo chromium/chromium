@@ -79,4 +79,11 @@
         route-path$="[[routes_.SKILLS.path]]">
     </settings-skills-page>
   </template>
+
+  <template is="dom-if" if="[[showDictationControl_]]">
+    <settings-dictation-page slot="view" id="dictation"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.DICTATION.path]]">
+    </settings-dictation-page>
+  </template>
 </cr-view-manager>
