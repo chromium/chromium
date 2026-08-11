@@ -9,12 +9,18 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_request.h"
+#import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "components/policy/core/common/mock_policy_service.h"
+#import "components/policy/core/common/schema_registry.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -462,7 +468,12 @@ class ProfileReportSchedulerIOSTest : public ReportSchedulerIOSTest {
     scoped_feature_list_.InitAndEnableFeature(
         enterprise_reporting::kCloudProfileReporting);
     ReportSchedulerIOSTest::SetUp();
-    profile_ = TestProfileIOS::Builder().Build();
+
+    TestProfileIOS::Builder builder;
+    builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
+        std::make_unique<policy::MockPolicyService>(), &schema_registry_));
+    profile_ = std::move(builder).Build();
+
     Init(true, kDMToken, kClientId);
   }
 
@@ -480,6 +491,8 @@ class ProfileReportSchedulerIOSTest : public ReportSchedulerIOSTest {
   void ToggleCloudReport(bool enabled) override {
     profile_->GetPrefs()->SetBoolean(kCloudProfileReportingEnabled, enabled);
   }
+
+  policy::SchemaRegistry schema_registry_;
 };
 
 // Profile reporting without require_policy_fetch_with_profile_id, schedule
@@ -545,6 +558,136 @@ TEST_F(ProfileReportSchedulerIOSTest,
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+// Security reports are enabled when the UserSecuritySignalsReporting policy is
+// enabled and kIOSSignalSharingEnabled is enabled, but cookie-based
+// authentication is disabled by default.
+TEST_F(ProfileReportSchedulerIOSTest, UserSecuritySignalsReportingPolicyEnabled) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                           enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+
+  std::unique_ptr<ReportScheduler::Delegate> delegate =
+      report_delegate_factory_.GetReportSchedulerDelegate(profile_.get());
+  EXPECT_TRUE(delegate->AreSecurityReportsEnabled());
+  EXPECT_FALSE(delegate->UseCookiesInUploads());
+}
+
+// Cookie-based authentication for uploads is enabled when both the
+// UserSecuritySignalsReporting and UserSecurityAuthenticatedReporting policies
+// are enabled.
+TEST_F(ProfileReportSchedulerIOSTest,
+       UserSecurityAuthenticatedReportingPolicyEnabled) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                           enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+  profile_->GetPrefs()->SetBoolean(kUserSecurityAuthenticatedReporting, true);
+
+  std::unique_ptr<ReportScheduler::Delegate> delegate =
+      report_delegate_factory_.GetReportSchedulerDelegate(profile_.get());
+  EXPECT_TRUE(delegate->AreSecurityReportsEnabled());
+  EXPECT_TRUE(delegate->UseCookiesInUploads());
+}
+
+// Security reports are disabled when kIOSSignalSharingEnabled is disabled,
+// even if UserSecuritySignalsReporting policy is enabled.
+TEST_F(ProfileReportSchedulerIOSTest, IOSSignalSharingFeatureDisabled) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+
+  std::unique_ptr<ReportScheduler::Delegate> delegate =
+      report_delegate_factory_.GetReportSchedulerDelegate(profile_.get());
+  EXPECT_FALSE(delegate->AreSecurityReportsEnabled());
+}
+
+// Tests that OnReportEventTriggered runs the callback with
+// ReportTrigger::kTriggerSecurity when security reports are enabled.
+TEST_F(ProfileReportSchedulerIOSTest, OnReportEventTriggered) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                           enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+
+  ReportSchedulerIOS scheduler(profile_.get());
+  base::MockRepeatingCallback<void(ReportTrigger)> callback;
+  scheduler.SetReportTriggerCallback(callback.Get());
+
+  EXPECT_CALL(callback, Run(ReportTrigger::kTriggerSecurity)).Times(1);
+  scheduler.OnReportEventTriggered(SecurityReportTrigger::kTimer);
+}
+
+// Tests that OnReportEventTriggered does not run the callback when security
+// reports are disabled.
+TEST_F(ProfileReportSchedulerIOSTest,
+       OnReportEventTriggered_SecurityReportsDisabled) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                           enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, false);
+
+  ReportSchedulerIOS scheduler(profile_.get());
+  base::MockRepeatingCallback<void(ReportTrigger)> callback;
+  scheduler.SetReportTriggerCallback(callback.Get());
+
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  scheduler.OnReportEventTriggered(SecurityReportTrigger::kTimer);
+}
+
+// Tests that OnReportEventTriggered does not crash when the callback is null.
+TEST_F(ProfileReportSchedulerIOSTest, OnReportEventTriggered_NullCallback) {
+  base::test::ScopedFeatureList signals_feature_list;
+  signals_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
+                           enterprise_signals::features::
+                               kProfileSignalsReportingEnabled},
+      /*disabled_features=*/{});
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
+
+  ReportSchedulerIOS scheduler(profile_.get());
+  // Callback is null by default; this should not crash.
+  scheduler.OnReportEventTriggered(SecurityReportTrigger::kTimer);
+}
+
+// Tests that GetCookieManager returns the profile's cookie manager for a
+// profile report scheduler, and nullptr for a browser-level scheduler.
+TEST_F(ProfileReportSchedulerIOSTest, GetCookieManager) {
+  ReportSchedulerIOS profile_scheduler(profile_.get());
+  EXPECT_EQ(profile_scheduler.GetCookieManager(), profile_->GetCookieManager());
+  EXPECT_NE(profile_scheduler.GetCookieManager(), nullptr);
+
+  ReportSchedulerIOS browser_scheduler(nullptr);
+  EXPECT_EQ(browser_scheduler.GetCookieManager(), nullptr);
 }
 
 }  // namespace enterprise_reporting

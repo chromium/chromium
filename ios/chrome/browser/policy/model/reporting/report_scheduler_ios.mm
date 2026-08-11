@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/policy/model/reporting/report_scheduler_ios.h"
 
-#import "base/feature_list.h"
+#import "components/device_signals/core/common/signals_features.h"
+#import "components/enterprise/browser/reporting/reporting_features.h"
+#import "components/enterprise/browser/reporting/user_security_signals_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/cloud/dm_token.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/policy/core/common/policy_service.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -19,6 +23,15 @@ ReportSchedulerIOS::ReportSchedulerIOS(ProfileIOS* profile)
   if (profile_) {
     DCHECK(base::FeatureList::IsEnabled(
         enterprise_reporting::kCloudProfileReporting));
+    ProfilePolicyConnector* policy_connector = profile_->GetPolicyConnector();
+    if (base::FeatureList::IsEnabled(
+            enterprise_reporting::kIOSSignalSharingEnabled) &&
+        enterprise_signals::features::IsProfileSignalsReportingEnabled() &&
+        policy_connector && policy_connector->GetPolicyService()) {
+      user_security_signals_service_ =
+          std::make_unique<UserSecuritySignalsService>(
+              GetPrefService(), this, policy_connector->GetPolicyService());
+    }
   }
 }
 
@@ -47,18 +60,18 @@ void ReportSchedulerIOS::OnBrowserVersionUploaded() {
   // Not used on iOS because there is no in-app auto-update.
 }
 
-bool ReportSchedulerIOS::AreSecurityReportsEnabled() {
-  // Not supported.
-  return false;
+void ReportSchedulerIOS::OnReportEventTriggered(
+    SecurityReportTrigger trigger) {
+  if (!AreSecurityReportsEnabled()) {
+    return;
+  }
+  if (!trigger_report_callback_.is_null()) {
+    trigger_report_callback_.Run(ReportTrigger::kTriggerSecurity);
+  }
 }
 
-bool ReportSchedulerIOS::UseCookiesInUploads() {
-  // Not supported.
-  return false;
-}
-
-void ReportSchedulerIOS::OnSecuritySignalsUploaded() {
-  // No-op because signals reporting is not supported on Android.
+network::mojom::CookieManager* ReportSchedulerIOS::GetCookieManager() {
+  return profile_ ? profile_->GetCookieManager() : nullptr;
 }
 
 policy::DMToken ReportSchedulerIOS::GetProfileDMToken() {
