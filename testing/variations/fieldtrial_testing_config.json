@@ -3017,6 +3017,25 @@
             ]
         }
     ],
+    "AutofillEnableExpandIbanRegexPattern": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableExpandIbanRegexPattern"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableImportOfUnchangedValuesForCountryAndState": [
         {
             "platforms": [
