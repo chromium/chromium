@@ -964,6 +964,12 @@ SearchboxHandler::CreateAutocompleteMatch(
           AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
   if (!match.from_keyword) {
     for (const auto& action : match.actions) {
+// TODO(b/544764632): Implement Pedals for Android.
+#if BUILDFLAG(IS_ANDROID)
+      if (action->ActionId() == OmniboxActionId::PEDAL) {
+        continue;
+      }
+#endif
       std::string icon_path;
       if (action->GetIconImage().IsEmpty()) {
         icon_path = AutocompleteIconToResourceName(action->GetVectorIcon());
