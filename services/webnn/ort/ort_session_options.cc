@@ -317,6 +317,20 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(), kOrtSessionOptionsDisableModelCompile, "1"));
 
+  // Enforce the model format to be ONNX so ORT-format models are rejected.
+  // Ensure that a compromised Compiler process cannot feed a crafted ORT-format
+  // model buffer to the GPU process.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(), kOrtSessionOptionsConfigLoadModelFormat, "ONNX"));
+
+  // Block external initializer file reads. The all-zero volume GUID is never
+  // assigned by Windows, so ORT cannot resolve any external data path to a real
+  // file.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(),
+      kOrtSessionOptionsModelExternalInitializersFileFolderPath,
+      "\\\\?\\Volume{00000000-0000-0000-0000-000000000000}\\"));
+
   // Disable CPU EP fallback to ensure the session will be created on the
   // expected EP device.
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
