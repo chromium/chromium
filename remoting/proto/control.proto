@@ -349,8 +349,8 @@ message TerminalControl {
   message ProcessInfo {
     optional int32 terminal_id = 1;
 
-    // The process title, to be displayed in the tab.
-    optional string title = 2;
+    // The name of the current running process.
+    optional string process_name = 2;
 
     // True if the process is "active", in which case the client should prompt
     // the user to confirm before destroying the terminal.
