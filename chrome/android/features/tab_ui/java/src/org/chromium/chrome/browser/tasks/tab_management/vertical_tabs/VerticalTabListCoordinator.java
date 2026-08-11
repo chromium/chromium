@@ -991,7 +991,12 @@ public class VerticalTabListCoordinator {
                         itemTouchHelper.setExternalDragItem(viewHolder);
                         dragHandler.setDragHandlerDelegate(
                                 createDragHandlerDelegate(
-                                        recyclerView, itemTouchHelper, dragHandler, model));
+                                        recyclerView,
+                                        itemTouchHelper,
+                                        touchHelperCallback,
+                                        dragHandler,
+                                        viewHolder,
+                                        model));
 
                         mLastDraggedGroupId = tabGroupId;
 
@@ -1036,7 +1041,12 @@ public class VerticalTabListCoordinator {
                     itemTouchHelper.setExternalDragItem(viewHolder);
                     dragHandler.setDragHandlerDelegate(
                             createDragHandlerDelegate(
-                                    recyclerView, itemTouchHelper, dragHandler, model));
+                                    recyclerView,
+                                    itemTouchHelper,
+                                    touchHelperCallback,
+                                    dragHandler,
+                                    viewHolder,
+                                    model));
 
                     mLastDraggedGroupId = null;
                     View gridCardView = buildGridCardDragShadow(activity, model);
@@ -1080,7 +1090,9 @@ public class VerticalTabListCoordinator {
     private DragHandlerDelegate createDragHandlerDelegate(
             RecyclerView recyclerView,
             ItemTouchHelper2 itemTouchHelper,
+            VerticalTabListItemTouchHelperCallback touchHelperCallback,
             TabSwitcherDragHandler dragHandler,
+            RecyclerView.ViewHolder viewHolder,
             @Nullable PropertyModel model) {
         return new DragHandlerDelegate() {
             private final int[] mTempViewLoc = new int[2];
@@ -1120,7 +1132,7 @@ public class VerticalTabListCoordinator {
                 // outside the bounds of the RecyclerView, we will never receive an
                 // ACTION_DRAG_EXITED event. Therefore, we must explicitly trigger the collapse of
                 // the drag gap right away.
-                itemTouchHelper.clearExternalDragItemVisibility();
+                touchHelperCallback.collapseDraggedItem(viewHolder);
                 return true;
             }
 
@@ -1140,7 +1152,7 @@ public class VerticalTabListCoordinator {
             public boolean handleDragEnter() {
                 dragHandler.showDragShadow(recyclerView, false);
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
-                itemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
+                touchHelperCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
                 return true;
             }
 
@@ -1151,7 +1163,7 @@ public class VerticalTabListCoordinator {
                 // Keep a minimum height during external drag so a single-item list does not
                 // collapse to 0px.
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ true);
-                itemTouchHelper.clearExternalDragItemVisibility();
+                touchHelperCallback.collapseDraggedItem(null);
                 return true;
             }
 
@@ -1165,7 +1177,7 @@ public class VerticalTabListCoordinator {
             @Override
             public boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
-                itemTouchHelper.restoreExternalDragItemVisibility(isOSNewWindowDrop);
+                touchHelperCallback.restoreDraggedItem(isOSNewWindowDrop);
                 itemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
 
                 if (mLastDraggedGroupId != null) {

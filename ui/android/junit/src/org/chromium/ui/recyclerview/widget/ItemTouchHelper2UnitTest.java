@@ -53,12 +53,22 @@ public class ItemTouchHelper2UnitTest {
         private int mMovementFlags = makeMovementFlags(0, 0);
         private RecyclerView.ViewHolder mLiveViewHolder;
 
+        private RecyclerView.ViewHolder mReboundOldHolder;
+        private RecyclerView.ViewHolder mReboundNewHolder;
+
         public void setMovementFlags(int flags) {
             mMovementFlags = flags;
         }
 
         public void setLiveViewHolder(RecyclerView.ViewHolder liveViewHolder) {
             mLiveViewHolder = liveViewHolder;
+        }
+
+        @Override
+        public void onExternalDragItemRebound(
+                RecyclerView.ViewHolder oldHolder, RecyclerView.ViewHolder newHolder) {
+            mReboundOldHolder = oldHolder;
+            mReboundNewHolder = newHolder;
         }
 
         @Override
@@ -124,73 +134,6 @@ public class ItemTouchHelper2UnitTest {
     }
 
     @Test
-    public void testExternalDrag_ReEntrySelectionAndAlphaRestoration() {
-        mItemView.setAlpha(1.0f);
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
-        mItemView.setLayoutParams(layoutParams);
-
-        mItemTouchHelper.setExternalDragItem(mViewHolder);
-        mItemTouchHelper.onExternalDragStart(10.0f, 20.0f, /* hideItemWhileDragging= */ true);
-        assertEquals("Alpha should be 0 while hidden externally.", 0f, mItemView.getAlpha(), 0.0f);
-
-        mItemTouchHelper.clearExternalDragItemVisibility();
-        assertEquals("Item should be GONE.", View.GONE, mItemView.getVisibility());
-
-        // Simulate re-entry
-        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
-        assertEquals(
-                "Item should be VISIBLE on re-entry.", View.VISIBLE, mItemView.getVisibility());
-        assertEquals(
-                "Item alpha should be restored on re-entry.", 1.0f, mItemView.getAlpha(), 0.0f);
-
-        mItemTouchHelper.onExternalDragLocation(15.0f, 25.0f);
-        assertEquals(
-                "Item should remain selected during external drag location update.",
-                mViewHolder,
-                mItemTouchHelper.mSelected);
-
-        // Simulate dragging back out again (secondary exit)
-        mItemTouchHelper.clearExternalDragItemVisibility();
-        assertEquals(
-                "Item should be GONE on secondary exit.", View.GONE, mItemView.getVisibility());
-        assertEquals("Alpha should be 0 on secondary exit.", 0f, mItemView.getAlpha(), 0.0f);
-    }
-
-    @Test
-    public void testExternalDrag_VisibilityModifications() {
-        // Setup original layout params with specific height.
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
-        layoutParams.topMargin = 10;
-        layoutParams.bottomMargin = 20;
-        mItemView.setLayoutParams(layoutParams);
-
-        // Set the external drag item.
-        mItemTouchHelper.setExternalDragItem(mViewHolder);
-
-        // Clear visibility.
-        mItemTouchHelper.clearExternalDragItemVisibility();
-
-        assertEquals("Item should be hidden.", View.GONE, mItemView.getVisibility());
-        RecyclerView.LayoutParams newParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        assertEquals(0, newParams.width);
-        assertEquals(0, newParams.height);
-        assertEquals(0, newParams.topMargin);
-        assertEquals(0, newParams.bottomMargin);
-
-        // Restore visibility.
-        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
-
-        assertEquals("Item should be visible.", View.VISIBLE, mItemView.getVisibility());
-        RecyclerView.LayoutParams restoredParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        assertEquals(100, restoredParams.width);
-        assertEquals(200, restoredParams.height);
-        assertEquals(10, restoredParams.topMargin);
-        assertEquals(20, restoredParams.bottomMargin);
-    }
-
-    @Test
     public void testExternalDrag_HideItemWhileDragging() {
         mItemView.setAlpha(1.0f);
         mItemTouchHelper.setExternalDragItem(mViewHolder);
@@ -230,79 +173,6 @@ public class ItemTouchHelper2UnitTest {
         // Replace with null, should restore previous item's recyclability.
         mItemTouchHelper.setExternalDragItem(null);
         assertTrue("Item should be recyclable again.", mViewHolder.isRecyclable());
-    }
-
-    @Test
-    public void testExternalDrag_Visibility_MultipleCalls() {
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
-        mItemView.setLayoutParams(layoutParams);
-
-        mItemTouchHelper.setExternalDragItem(mViewHolder);
-
-        // Call clear multiple times.
-        mItemTouchHelper.clearExternalDragItemVisibility();
-
-        // Mutate params slightly to ensure they don't get saved over the original state.
-        RecyclerView.LayoutParams newParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        newParams.width = 50;
-
-        mItemTouchHelper.clearExternalDragItemVisibility();
-
-        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
-
-        RecyclerView.LayoutParams restoredParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        assertEquals("Original width should be restored.", 100, restoredParams.width);
-    }
-
-    @Test
-    public void testExternalDrag_ClearRestoreClearRestore() {
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
-        mItemView.setLayoutParams(layoutParams);
-        mItemTouchHelper.setExternalDragItem(mViewHolder);
-        mItemTouchHelper.clearExternalDragItemVisibility();
-        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
-        mItemTouchHelper.clearExternalDragItemVisibility();
-        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
-        assertEquals(100, mItemView.getLayoutParams().width);
-    }
-
-    @Test
-    public void testExternalDrag_OSNewWindowDrop_Detached_RestoresCleanState() {
-        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
-        mItemView.setLayoutParams(layoutParams);
-
-        mItemTouchHelper.setExternalDragItem(mViewHolder);
-        mItemTouchHelper.clearExternalDragItemVisibility();
-
-        // Mutate params physically simulating collapse.
-        RecyclerView.LayoutParams newParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        assertEquals(0, newParams.width);
-
-        // Call restore with true (OS new window drop).
-        mItemTouchHelper.restoreExternalDragItemVisibility(true);
-
-        // It should still be GONE because the restore is delayed.
-        assertEquals(
-                "Item should still be GONE because restoration is delayed.",
-                View.GONE,
-                mItemView.getVisibility());
-
-        // Simulate detachment (item successfully removed from adapter).
-        if (mItemTouchHelper.mDelayedExternalItemRestorationRunnable != null) {
-            mItemTouchHelper.mDelayedExternalItemRestorationRunnable.run();
-        }
-
-        // Visibility and dimensions should be instantly restored for the recycle pool.
-        assertEquals(
-                "Item should be VISIBLE instantly on detach.",
-                View.VISIBLE,
-                mItemView.getVisibility());
-        RecyclerView.LayoutParams restoredParams =
-                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
-        assertEquals("Original width should be restored.", 100, restoredParams.width);
     }
 
     @Test
@@ -467,6 +337,14 @@ public class ItemTouchHelper2UnitTest {
         assertTrue("Old ViewHolder should be marked recyclable.", mViewHolder.isRecyclable());
         assertFalse(
                 "New ViewHolder should be marked non-recyclable.", newViewHolder.isRecyclable());
+        assertEquals(
+                "Callback should be notified of rebound old holder.",
+                mViewHolder,
+                ((TestCallback) mCallback).mReboundOldHolder);
+        assertEquals(
+                "Callback should be notified of rebound new holder.",
+                newViewHolder,
+                ((TestCallback) mCallback).mReboundNewHolder);
 
         mItemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
     }

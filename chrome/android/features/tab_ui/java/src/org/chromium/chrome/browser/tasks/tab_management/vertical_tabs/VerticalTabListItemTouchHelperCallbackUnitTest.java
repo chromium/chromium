@@ -1791,4 +1791,145 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         RecyclerView.ViewHolder found = mCallback.findLiveViewHolder(mRecyclerView, detachedHeader);
         assertEquals(mViewHolder, found);
     }
+
+    @Test
+    @SmallTest
+    public void testCollapseAndRestoreDraggedItem() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        params.topMargin = 10;
+        params.bottomMargin = 20;
+        params.leftMargin = 5;
+        params.rightMargin = 5;
+        realView.setLayoutParams(params);
+        realView.setAlpha(1.0f);
+
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        assertFalse(mCallback.isDraggedItemCollapsed());
+
+        // Collapse dragged item
+        mCallback.collapseDraggedItem(realHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+        assertEquals(View.GONE, realView.getVisibility());
+        assertEquals(0f, realView.getAlpha(), 0.0f);
+        RecyclerView.LayoutParams collapsedParams =
+                (RecyclerView.LayoutParams) realView.getLayoutParams();
+        assertEquals(0, collapsedParams.width);
+        assertEquals(0, collapsedParams.height);
+        assertEquals(0, collapsedParams.topMargin);
+        assertEquals(0, collapsedParams.bottomMargin);
+
+        // Restore dragged item immediately
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
+        assertFalse(mCallback.isDraggedItemCollapsed());
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(1.0f, realView.getAlpha(), 0.0f);
+        RecyclerView.LayoutParams restoredParams =
+                (RecyclerView.LayoutParams) realView.getLayoutParams();
+        assertEquals(100, restoredParams.width);
+        assertEquals(200, restoredParams.height);
+        assertEquals(10, restoredParams.topMargin);
+        assertEquals(20, restoredParams.bottomMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testRestoreDraggedItem_OSNewWindowDrop() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        mCallback.collapseDraggedItem(realHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+
+        // Restore with OS new window drop (delayed)
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ true);
+        assertFalse(mCallback.isDraggedItemCollapsed());
+        assertEquals(View.GONE, realView.getVisibility());
+
+        // Run delayed runnable
+        assertNotNull(mCallback.mDelayedExternalItemRestorationRunnable);
+        mCallback.mDelayedExternalItemRestorationRunnable.run();
+
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        RecyclerView.LayoutParams restoredParams =
+                (RecyclerView.LayoutParams) realView.getLayoutParams();
+        assertEquals(100, restoredParams.width);
+        assertEquals(200, restoredParams.height);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnExternalDragItemRebound_WhenCollapsed() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        mCallback.collapseDraggedItem(realHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+
+        View newItemView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams newParams = new RecyclerView.LayoutParams(100, 200);
+        newItemView.setLayoutParams(newParams);
+        SimpleRecyclerViewAdapter.ViewHolder newHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(newItemView, null));
+
+        mCallback.onExternalDragItemRebound(realHolder, newHolder);
+
+        assertEquals(View.GONE, newItemView.getVisibility());
+        assertEquals(0f, newItemView.getAlpha(), 0.0f);
+        RecyclerView.LayoutParams reboundParams =
+                (RecyclerView.LayoutParams) newItemView.getLayoutParams();
+        assertEquals(0, reboundParams.width);
+        assertEquals(0, reboundParams.height);
+    }
+
+    @Test
+    @SmallTest
+    public void testCollapseAndRestore_MultipleCycles() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        realView.setAlpha(1.0f);
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        when(mRecyclerView.getChildCount()).thenReturn(1);
+        when(mRecyclerView.getChildAt(0)).thenReturn(realView);
+        when(mRecyclerView.getChildViewHolder(realView)).thenReturn(realHolder);
+
+        // Cycle 1: Collapse -> Restore
+        mCallback.collapseDraggedItem(realHolder);
+        assertEquals(View.GONE, realView.getVisibility());
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
+
+        // Cycle 2: Secondary Exit (pass null to resolve live holder) -> Restore
+        mCallback.collapseDraggedItem(null);
+        assertEquals(View.GONE, realView.getVisibility());
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
+
+        // Cycle 3: Tertiary Exit -> Restore
+        mCallback.collapseDraggedItem(null);
+        assertEquals(View.GONE, realView.getVisibility());
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
+    }
 }
