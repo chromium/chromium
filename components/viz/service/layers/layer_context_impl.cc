@@ -1885,7 +1885,8 @@ void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
 }
 
 void LayerContextImpl::SetNeedsCommitOnImplThread(cc::BeginMainFrameReason,
-                                                  bool urgent) {
+                                                  bool urgent,
+                                                  bool unthrottled) {
   NOTREACHED();
 }
 

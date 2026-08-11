@@ -181,7 +181,9 @@ class LayerTreeHostImplTestBase : public testing::Test,
   void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
-  void SetNeedsCommitOnImplThread(BeginMainFrameReason, bool urgent) override;
+  void SetNeedsCommitOnImplThread(BeginMainFrameReason,
+                                  bool urgent,
+                                  bool unthrottled) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
   void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;

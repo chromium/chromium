@@ -116,6 +116,62 @@ class LayerTreeHostProxyTestSetNeedsCommitUrgent
 
 MULTI_THREAD_TEST_F(LayerTreeHostProxyTestSetNeedsCommitUrgent);
 
+class LayerTreeHostProxyTestSetNeedsCommitUnthrottled
+    : public LayerTreeHostProxyTest {
+ public:
+  LayerTreeHostProxyTestSetNeedsCommitUnthrottled() = default;
+  LayerTreeHostProxyTestSetNeedsCommitUnthrottled(
+      const LayerTreeHostProxyTestSetNeedsCommitUnthrottled&) = delete;
+  ~LayerTreeHostProxyTestSetNeedsCommitUnthrottled() override = default;
+
+  LayerTreeHostProxyTestSetNeedsCommitUnthrottled& operator=(
+      const LayerTreeHostProxyTestSetNeedsCommitUnthrottled&) = delete;
+
+ protected:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostProxyTest::InitializeSettings(settings);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kThrottleRepeatedNoDamageFrames);
+  }
+
+  void BeginTest() override {
+    EXPECT_EQ(ProxyMain::NO_PIPELINE_STAGE,
+              GetProxyMain()->max_requested_pipeline_stage());
+    EXPECT_FALSE(GetProxyMain()->has_sent_unthrottled_commit_request());
+
+    // Simulate being in throttled state.
+    GetProxyMain()->set_consecutive_no_damage_main_frames_for_testing(90);
+
+    // Requesting a rAF commit should NOT set
+    // has_sent_unthrottled_commit_request.
+    proxy()->SetNeedsAnimate(BeginMainFrameReason::kRAF);
+    EXPECT_EQ(ProxyMain::ANIMATE_PIPELINE_STAGE,
+              GetProxyMain()->max_requested_pipeline_stage());
+    EXPECT_FALSE(GetProxyMain()->has_sent_unthrottled_commit_request());
+
+    // Requesting a non-rAF commit while throttled SHOULD set
+    // has_sent_unthrottled_commit_request.
+    proxy()->SetNeedsCommit();
+    EXPECT_EQ(ProxyMain::COMMIT_PIPELINE_STAGE,
+              GetProxyMain()->max_requested_pipeline_stage());
+    EXPECT_TRUE(GetProxyMain()->has_sent_unthrottled_commit_request());
+  }
+
+  void DidBeginMainFrame() override {
+    EXPECT_EQ(ProxyMain::NO_PIPELINE_STAGE,
+              GetProxyMain()->max_requested_pipeline_stage());
+    EXPECT_EQ(ProxyMain::NO_PIPELINE_STAGE,
+              GetProxyMain()->current_pipeline_stage());
+  }
+
+  void DidCommit() override { EndTest(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostProxyTestSetNeedsCommitUnthrottled);
+
 class LayerTreeHostProxyTestSetNeedsAnimate : public LayerTreeHostProxyTest {
  protected:
   LayerTreeHostProxyTestSetNeedsAnimate() = default;

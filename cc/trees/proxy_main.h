@@ -106,6 +106,13 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool has_sent_urgent_commit_request() const {
     return has_sent_urgent_commit_request_;
   }
+  bool has_sent_unthrottled_commit_request() const {
+    return has_sent_unthrottled_commit_request_;
+  }
+  void set_consecutive_no_damage_main_frames_for_testing(int count) {
+    consecutive_no_damage_main_frames_ = count;
+  }
+
   ProxyImpl* proxy_impl_for_testing() const { return proxy_impl_.get(); }
 
  private:
@@ -216,6 +223,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   // request, then get an "urgent" request later, we should inform impl that the
   // request became urgent.
   bool has_sent_urgent_commit_request_ = false;
+  // As with "urgent" requests, if we get an "unthrottled" request later, we
+  // need to inform impl.
+  bool has_sent_unthrottled_commit_request_ = false;
 
   // Set when the Proxy is started using Proxy::Start() and reset when it is
   // stopped using Proxy::Stop().
@@ -246,6 +256,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   int main_frames_in_flight_ = 0;
   bool needs_begin_main_frame_ = false;
   BeginMainFrameReasons begin_main_frame_reason_;
+  int consecutive_no_damage_main_frames_ = 0;
   viz::BeginFrameArgs last_begin_main_frame_args_;
   bool begin_impl_frame_idle_ = false;
   bool request_begin_main_frame_not_expected_ = false;

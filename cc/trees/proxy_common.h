@@ -37,7 +37,15 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
   BeginMainFrameTraceId trace_id;
   // Reasons that BeginMainFrame was triggered, used for metrics only.
   BeginMainFrameReasons reason;
+  // How many no-damage frames we've had in a row, used to determine if we are
+  // currently throttled. See |ThrottleRepeatedNoDamageFrames| for details.
+  int consecutive_no_damage_main_frames = 0;
 };
+
+// Returns the factor by which we are currently throttled. E.g. a return value
+// of 2 means we are throttled down to 1/2 of the normal framerate. A return
+// value of 0 means we are unthrottled.
+int CC_EXPORT GetThrottlingFactor(int consecutive_no_damage_main_frames);
 
 }  // namespace cc
 

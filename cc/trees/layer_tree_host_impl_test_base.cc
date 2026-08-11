@@ -231,7 +231,8 @@ void LayerTreeHostImplTestBase::SetNeedsPrepareTilesOnImplThread() {
   did_request_prepare_tiles_ = true;
 }
 void LayerTreeHostImplTestBase::SetNeedsCommitOnImplThread(BeginMainFrameReason,
-                                                           bool urgent) {
+                                                           bool urgent,
+                                                           bool unthrottled) {
   did_request_commit_ = true;
 }
 void LayerTreeHostImplTestBase::SetVideoNeedsBeginFrames(

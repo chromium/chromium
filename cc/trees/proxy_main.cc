@@ -202,6 +202,9 @@ void ProxyMain::BeginMainFrame(
     MaybeIdleMainThread();
   };
 
+  consecutive_no_damage_main_frames_ =
+      begin_main_frame_state->consecutive_no_damage_main_frames;
+
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
   main_frames_in_flight_++;
   needs_begin_main_frame_ = false;
@@ -273,6 +276,7 @@ void ProxyMain::BeginMainFrame(
   final_pipeline_stage_ = max_requested_pipeline_stage_;
   max_requested_pipeline_stage_ = NO_PIPELINE_STAGE;
   has_sent_urgent_commit_request_ = false;
+  has_sent_unthrottled_commit_request_ = false;
 
   // If main frame updates and commits are deferred, skip the entire pipeline.
   if (defer_main_frame_update_ || pause_rendering_) {
@@ -1114,15 +1118,28 @@ bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
   bool already_posted = max_requested_pipeline_stage_ != NO_PIPELINE_STAGE;
   max_requested_pipeline_stage_ =
       std::max(max_requested_pipeline_stage_, required_stage);
-  if (already_posted && (!urgent || has_sent_urgent_commit_request_)) {
+  bool unthrottle_next = reason != BeginMainFrameReason::kRAF;
+  // When we are throttled, we may not get the next frame immediately. This
+  // means that our count of no-damage frames may be delayed. To make sure
+  // we still unthrottle quickly in this case, we add 2 to our count (one for
+  // the current frame, and potentially one more if we are pipelined). If we
+  // are wrong, we post one extra task, for these two frames only, but there is
+  // no correctness issue.
+  bool next_frame_may_be_throttled =
+      GetThrottlingFactor(consecutive_no_damage_main_frames_ + 2);
+  if (already_posted && (!urgent || has_sent_urgent_commit_request_) &&
+      (!next_frame_may_be_throttled || !unthrottle_next ||
+       has_sent_unthrottled_commit_request_)) {
     return false;
   }
   ImplThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
-                     base::Unretained(proxy_impl_.get()), reason, urgent));
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
+                                base::Unretained(proxy_impl_.get()), reason,
+                                urgent, unthrottle_next));
   layer_tree_host_->OnCommitRequested();
   has_sent_urgent_commit_request_ |= urgent;
+  has_sent_unthrottled_commit_request_ |=
+      next_frame_may_be_throttled && unthrottle_next;
   return true;
 }
 

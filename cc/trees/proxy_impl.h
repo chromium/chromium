@@ -82,7 +82,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   void SetPauseRendering(bool pause_rendering,
                          bool delay_until_visibility_change);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
-  void SetNeedsCommitOnImpl(BeginMainFrameReason reason, bool urgent);
+  void SetNeedsCommitOnImpl(BeginMainFrameReason reason,
+                            bool urgent,
+                            bool unthrottle_next);
   void SendEarlyFinalBeginMainFrame();
   void SetTargetLocalSurfaceIdOnImpl(
       const viz::LocalSurfaceId& target_local_surface_id);
@@ -153,7 +155,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
-                                  bool urgent) override;
+                                  bool urgent,
+                                  bool unthrottled) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
   void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
@@ -222,6 +225,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   bool IsMainThreadBlocked() const;
   base::SingleThreadTaskRunner* MainThreadTaskRunner();
   bool ShouldDeferBeginMainFrame() const;
+
+  int consecutive_no_damage_main_frames() const {
+    return scheduler_->consecutive_no_damage_main_frames();
+  }
 
   void set_begin_main_frame_reason(BeginMainFrameReason reason) {
     begin_main_frame_reason_.set(static_cast<int>(reason));

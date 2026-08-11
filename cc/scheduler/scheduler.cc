@@ -180,8 +180,8 @@ void Scheduler::NotifyPaintWorkletStateChange(PaintWorkletState state) {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetNeedsBeginMainFrame(bool now) {
-  state_machine_->SetNeedsBeginMainFrame(now);
+void Scheduler::SetNeedsBeginMainFrame(bool now, bool unthrottled) {
+  state_machine_->SetNeedsBeginMainFrame(now, unthrottled);
   ProcessScheduledActions();
 }
 

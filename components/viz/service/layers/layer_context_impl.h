@@ -95,7 +95,8 @@ class VIZ_SERVICE_EXPORT LayerContextImpl
   void SetNeedsOneBeginImplFrameOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(cc::BeginMainFrameReason,
-                                  bool urgent) override;
+                                  bool urgent,
+                                  bool unthrottled) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
   void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;

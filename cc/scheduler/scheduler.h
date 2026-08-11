@@ -160,7 +160,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // happen as the next opportunity. This is useful when main frame updates are
   // running at a lower rate than compositor frames, but we don't want to wait
   // (e.g. there is an input event).
-  void SetNeedsBeginMainFrame(bool now = false);
+  void SetNeedsBeginMainFrame(bool now = false, bool unthrottled = false);
 
   // Requests a single impl frame (after the current frame if there is one
   // active).
@@ -286,6 +286,10 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   size_t CommitDurationSampleCountForTesting() const;
 
   void SetRequestHighFramerate(bool flag);
+
+  int consecutive_no_damage_main_frames() const {
+    return state_machine_->consecutive_no_damage_main_frames();
+  }
 
  protected:
   // Virtual for testing.

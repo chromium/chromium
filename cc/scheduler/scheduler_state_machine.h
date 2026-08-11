@@ -269,7 +269,7 @@ class CC_EXPORT SchedulerStateMachine {
   // of the interval since the last one. This is to be used in cases where
   // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
   // that should not wait more than necessary.
-  void SetNeedsBeginMainFrame(bool now);
+  void SetNeedsBeginMainFrame(bool now, bool unthrottled = false);
   void SetUrgentBeginMainFramePending();
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
@@ -381,6 +381,10 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   void SetRequestHighFramerate(bool flag);
+
+  int consecutive_no_damage_main_frames() const {
+    return consecutive_no_damage_main_frames_;
+  }
 
  protected:
   bool BeginFrameRequiredForAction() const;

@@ -3659,6 +3659,39 @@ TEST(SchedulerStateMachineTest, ThrottleDueToConsecutiveNoDamageFrames) {
       SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
 }
 
+TEST(SchedulerStateMachineTest, UnthrottledBeginMainFrameRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThrottleRepeatedNoDamageFrames);
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.FrameIntervalUpdated(base::Hertz(60));
+
+  // Simulating 90 consecutive no-update frames to trigger throttling.
+  for (int i = 0; i < 90; i++) {
+    state.IssueNextBeginImplFrame();
+    state.SetNeedsBeginMainFrame(false);
+    EXPECT_ACTION_UPDATE_STATE(
+        SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+    state.BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
+  }
+
+  // Issue next frame immediately (0ms advanced). It would normally throttle.
+  state.IssueNextBeginImplFrame();
+  state.SetNeedsBeginMainFrame(false);
+  EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Requesting an unthrottled begin main frame should clear throttling.
+  state.SetNeedsBeginMainFrame(/*now=*/false, /*unthrottled=*/true);
+  EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+}
+
 TEST(SchedulerStateMachineTest,
      ThrottleDueToConsecutiveNoDamageFramesCustomConfig) {
   base::test::ScopedFeatureList scoped_feature_list;
