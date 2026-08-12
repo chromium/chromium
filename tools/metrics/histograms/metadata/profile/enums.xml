@@ -550,6 +550,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
+<!-- LINT.IfChange(ProfilePickerPages) -->
+
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>
   <int value="1" label="profileTypeChoice"/>
@@ -559,6 +561,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="profileSwitch"/>
   <int value="6" label="accountSelectionLacros"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/navigation_mixin.ts:ProfilePickerPages) -->
 
 <enum name="ProfilePickerReauthResult">
   <int value="0" label="Success"/>

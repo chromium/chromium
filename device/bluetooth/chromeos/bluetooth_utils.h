@@ -76,6 +76,7 @@ enum class ConnectionFailureReason {
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
 // change one without changing the other).
+// LINT.IfChange(BluetoothUiSurface)
 enum class BluetoothUiSurface {
   kSettingsDeviceListSubpage = 0,
   kSettingsDeviceDetailSubpage = 1,
@@ -89,6 +90,10 @@ enum class BluetoothUiSurface {
   kPairedToast = 9,
   kMaxValue = kPairedToast
 };
+// LINT.ThenChange(
+//   //ash/webui/common/resources/bluetooth/bluetooth_metrics_utils.ts:BluetoothUiSurface,
+//   //tools/metrics/histograms/metadata/bluetooth/enums.xml:BluetoothUiSurface
+// )
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

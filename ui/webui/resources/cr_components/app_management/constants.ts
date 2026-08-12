@@ -20,9 +20,10 @@ export enum PageType {
 export const AppManagementEntryPointsHistogramName =
     'AppManagement.EntryPoints';
 
+// LINT.IfChange(AppManagementEntryPoint)
 /**
  * These values are persisted to logs and should not be renumbered or reused.
- * See tools/metrics/histograms/enums.xml.
+ * See tools/metrics/histograms/metadata/apps/enums.xml.
  */
 export enum AppManagementEntryPoint {
   APP_LIST_CONTEXT_MENU_APP_INFO_ARC = 0,
@@ -37,12 +38,23 @@ export enum AppManagementEntryPoint {
   OS_SETTINGS_MAIN_PAGE = 9,
   DEPRECATED_MAIN_VIEW_PLUGIN_VM = 10,
   DEPRECATED_D_BUS_SERVICE_PLUGIN_VM = 11,
-  MAIN_VIEW_BOREALIS = 12,
+  DEPRECATED_NOTIFICATION_PLUGIN_VM = 12,
+  MAIN_VIEW_BOREALIS = 13,
+  PAGE_INFO_VIEW = 14,
+  PRIVACY_INDICATORS_NOTIFICATION_SETTINGS = 15,
+  SUB_APPS_INSTALL_PROMPT = 16,
+  SITE_DATA_DIALOG = 17,
+  COUNT = SITE_DATA_DIALOG + 1,
 }
+// LINT.ThenChange(
+//   //chromeos/ash/experiences/settings_ui/settings_app_manager.h:EntryPoint,
+//   //tools/metrics/histograms/metadata/apps/enums.xml:AppManagementEntryPoint
+// )
 
+// LINT.IfChange(AppManagementUserAction)
 /**
  * These values are persisted to logs and should not be renumbered or reused.
- * See tools/metrics/histograms/enums.xml.
+ * See tools/metrics/histograms/metadata/apps/enums.xml.
  */
 export enum AppManagementUserAction {
   VIEW_OPENED = 0,
@@ -78,7 +90,9 @@ export enum AppManagementUserAction {
   FILE_HANDLING_TURNED_OFF = 30,
   FILE_HANDLING_OVERFLOW_SHOWN = 31,
   APP_STORE_LINK_CLICKED = 32,
+  COUNT = APP_STORE_LINK_CLICKED + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:AppManagementUserAction)
 
 // A Record (tuple) of app IDs to app used mostly for the supported links
 // frontend components.

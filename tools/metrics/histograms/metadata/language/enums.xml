@@ -60,6 +60,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Model File Valid and Available">Added in M128</int>
 </enum>
 
+<!-- LINT.IfChange(LanguageSettingsActionType) -->
+
 <enum name="LanguageSettingsActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Click on the 'Add Language' button">
@@ -88,6 +90,11 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Enhanced spell check selected"/>
 </enum>
 
+<!-- LINT.ThenChange(
+  //chrome/browser/resources/settings/languages_page/languages_settings_metrics_proxy.ts:LanguageSettingsActionType,
+  //chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguagesManager.java:LanguageSettingsActionType
+) -->
+
 <enum name="LanguageSettingsAppLanguagePromptAction">
   <int value="0" label="Dismissed via cancel button"/>
   <int value="1" label="Dismissed via system back"/>
@@ -95,6 +102,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Ok button same language"/>
   <int value="4" label="Other"/>
 </enum>
+
+<!-- LINT.IfChange(LanguageSettingsPageType) -->
 
 <enum name="LanguageSettingsPageType">
   <int value="0" label="Main"/>
@@ -110,6 +119,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Always Translate Add Language"/>
   <int value="11" label="View Never Translate Sites"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/languages_page/languages_settings_metrics_proxy.ts:LanguageSettingsPageType) -->
 
 <enum name="LanguageSettingsSplitInstallStatus">
   <int value="0" label="Success"/>

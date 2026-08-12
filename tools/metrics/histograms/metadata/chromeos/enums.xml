@@ -1782,10 +1782,17 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Geolocation"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacyHubNavigationOrigin) -->
+
 <enum name="PrivacyHubNavigationOrigin">
   <int value="0" label="System settings"/>
   <int value="1" label="Notification"/>
 </enum>
+
+<!-- LINT.ThenChange(
+  //ash/system/privacy_hub/privacy_hub_metrics.h:PrivacyHubNavigationOrigin,
+  //chrome/browser/resources/ash/settings/os_privacy_page/privacy_hub_subpage.ts:PrivacyHubNavigationOrigin
+) -->
 
 <enum name="RgbKeyboardBacklightChangeType">
   <int value="0" label="StaticBackgroundColorChanged"/>

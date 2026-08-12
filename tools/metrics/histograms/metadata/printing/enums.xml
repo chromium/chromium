@@ -40,10 +40,14 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Print job fail with manually selected printer"/>
 </enum>
 
+<!-- LINT.IfChange(PrinterEditDialogActions) -->
+
 <enum name="PrinterEditDialogActions">
   <int value="0" label="Dialog opened"/>
   <int value="1" label="View PPD clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_printing_page/cups_edit_printer_dialog.ts:DialogActions) -->
 
 <enum name="PrinterProtocol">
   <int value="0" label="Unknown"/>
@@ -57,6 +61,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="IPP-over-USB (ippusb)"/>
 </enum>
 
+<!-- LINT.IfChange(PrinterSettingsUserAction) -->
+
 <enum name="PrinterSettingsUserAction">
   <int value="0" label="Add printer manually"/>
   <int value="1" label="Save printer"/>
@@ -64,6 +70,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Remove printer"/>
   <int value="4" label="Click help link"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_printing_page/cups_printers.ts:PrinterSettingsUserAction) -->
+
+<!-- LINT.IfChange(PrinterSetupResult) -->
 
 <enum name="PrinterSetupResult">
   <int value="0" label="Fatal Error"/>
@@ -90,6 +100,11 @@ chromium-metrics-reviews@google.com.
   <int value="67" label="No reply from printscanmgr over D-Bus"/>
   <int value="68" label="No reply from debugd over D-Bus"/>
 </enum>
+
+<!-- LINT.ThenChange(
+  //chrome/browser/ash/printing/printer_configurer.h:PrinterSetupResult,
+  //chrome/browser/resources/ash/settings/os_printing_page/cups_printers_browser_proxy.ts:PrinterSetupResult
+) -->
 
 <enum name="PrinterStatusQueryResult">
   <int value="0" label="UNKNOWN_FAILURE">All other query failures.</int>

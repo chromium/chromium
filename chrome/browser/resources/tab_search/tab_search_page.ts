@@ -50,14 +50,17 @@ export const SEARCH_QUERY_MAX_LENGTH: number = 400;
 
 const TabSearchSearchFieldBase = CrSearchFieldMixinLit(CrLitElement);
 
+// LINT.IfChange(TabSearchTabSwitchAction)
 /**
  * These values are persisted to logs and should not be renumbered or reused.
- * See tools/metrics/histograms/enums.xml.
+ * See tools/metrics/histograms/metadata/tab/enums.xml.
  */
 export enum TabSwitchAction {
   WITHOUT_SEARCH = 0,
   WITH_SEARCH = 1,
+  COUNT = WITH_SEARCH + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchTabSwitchAction)
 
 // LINT.IfChange(TabSearchUserAction)
 /**
@@ -519,7 +522,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           'Tabs.TabSearch.WebUI.TabSwitchAction',
           withSearch ? TabSwitchAction.WITH_SEARCH :
                        TabSwitchAction.WITHOUT_SEARCH,
-          Object.keys(TabSwitchAction).length);
+          TabSwitchAction.COUNT);
     }
 
     switch (action) {

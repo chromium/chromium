@@ -505,6 +505,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User opened the Tab Search UI via touch gesture"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchRecentlyClosedItemOpenAction) -->
+
 <enum name="TabSearchRecentlyClosedItemOpenAction">
   <int value="0"
       label="Opened a recently closed item from an unfiltered item list"/>
@@ -512,15 +514,21 @@ chromium-metrics-reviews@google.com.
       label="Opened a recently closed item from a filtered item list"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/resources/tab_search/tab_search_api_proxy.ts:TabSearchRecentlyClosedItemOpenAction) -->
+
 <enum name="TabSearchRecentlyClosedToggleActions">
   <int value="0" label="Expand the recently closed items section"/>
   <int value="1" label="Collapse the recently closed items section"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchTabSwitchAction) -->
+
 <enum name="TabSearchTabSwitchAction">
   <int value="0" label="Switch to tab from unfiltered tab list"/>
   <int value="1" label="Switch to tab from filtered search tab list"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/tab_search/tab_search_page.ts:TabSearchTabSwitchAction) -->
 
 <!-- LINT.IfChange(TabSearchWebUIAction) -->
 

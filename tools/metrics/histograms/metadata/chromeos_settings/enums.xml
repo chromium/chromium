@@ -399,12 +399,18 @@ chromium-metrics-reviews@google.com.
   <int value="1900" label="Show snap window suggestions"/>
 </enum>
 
+<!-- LINT.IfChange(OsSettingSearchBoxUserAction) -->
+
 <enum name="OsSettingSearchBoxUserAction">
   <int value="0" label="User clicked on a search result"/>
   <int value="1"
       label="User clicked out of the search box, but still on area within the
              OS Settings window"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_settings_search_box/os_settings_search_box.ts:OsSettingSearchBoxUserAction) -->
+
+<!-- LINT.IfChange(OsSettingSearchRequestTypes) -->
 
 <enum name="OsSettingSearchRequestTypes">
   <int value="0"
@@ -419,6 +425,8 @@ chromium-metrics-reviews@google.com.
              to the user since the query used to fetch results still matches
              the current query."/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_settings_search_box/os_settings_search_box.ts:OsSettingSearchRequestTypes) -->
 
 <enum name="OsSettingsSearchResultType">
   <int value="0" label="kSection"/>
@@ -585,12 +593,18 @@ chromium-metrics-reviews@google.com.
   <int value="404" label="kDynamicColor"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsInputsShortcutReminderState) -->
+
 <enum name="SettingsInputsShortcutReminderState">
   <int value="0" label="No shortcuts"/>
   <int value="1" label="Last used IME shortcut"/>
   <int value="2" label="Next IME shortcut"/>
   <int value="3" label="Last used IME shortcut and next IME shortcut"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_languages_page/languages_metrics_proxy.ts:InputsShortcutReminderState) -->
+
+<!-- LINT.IfChange(SettingsLanguagesPageInteraction) -->
 
 <enum name="SettingsLanguagesPageInteraction">
   <int value="0" label="Switch system language"/>
@@ -602,6 +616,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Open 'Learn more' link about web languages"/>
   <int value="7" label="Open 'Learn more' link about language packs"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/ash/settings/os_languages_page/languages_metrics_proxy.ts:LanguagesPageInteraction) -->
 
 <enum name="TouchpadSensitivity">
   <int value="0" label="NONE"/>

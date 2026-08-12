@@ -371,6 +371,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="ViaSmds"/>
 </enum>
 
+<!-- LINT.IfChange(ESimSetupFlowResult) -->
+
 <enum name="ESimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="INSTALL_FAIL"/>
@@ -381,6 +383,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="CANCELLED_NO_PROFILES"/>
   <int value="7" label="NO_NETWORK"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/common/resources/cellular_setup/esim_flow_ui.ts:EsimSetupFlowResult) -->
 
 <enum name="ESimUserInstallMethod">
   <int value="0" label="ViaSmds"/>
@@ -1497,6 +1501,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
 
+<!-- LINT.IfChange(PSimSetupFlowResult) -->
+
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="CANCELLED"/>
@@ -1505,9 +1511,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="CANCELLED_CARRIER_PORTAL"/>
   <int value="5" label="CANCELLED_PORTAL_ERROR"/>
   <int value="6" label="CARRIER_PORTAL_TIMEOUT"/>
-  <int value="7" label="TIMEOUT_FINISH_ACTIVATION"/>
-  <int value="8" label="NETWORK_ERROR"/>
+  <int value="7" label="NETWORK_ERROR"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/common/resources/cellular_setup/psim_flow_ui.ts:PsimSetupFlowResult) -->
 
 <enum name="RegulatoryDomain">
   <int value="1" label="00"/>

@@ -71,21 +71,23 @@ import type {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_prin
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
+// LINT.IfChange(PrinterSettingsUserAction)
 export enum PrinterSettingsUserAction {
   ADD_PRINTER_MANUALLY = 0,
   SAVE_PRINTER = 1,
   EDIT_PRINTER = 2,
   REMOVE_PRINTER = 3,
   CLICK_HELP_LINK = 4,
+  COUNT = CLICK_HELP_LINK + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/printing/enums.xml:PrinterSettingsUserAction)
 
 export function recordPrinterSettingsUserAction(
     userAction: PrinterSettingsUserAction): void {
   chrome.metricsPrivate.recordEnumerationValue(
       'Printing.CUPS.SettingsUserAction', userAction,
-      Object.keys(PrinterSettingsUserAction).length);
+      PrinterSettingsUserAction.COUNT);
 }
 
 const SettingsCupsPrintersElementBase =

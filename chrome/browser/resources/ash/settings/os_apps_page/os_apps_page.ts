@@ -332,7 +332,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
         AppManagementEntryPoint.OS_SETTINGS_MAIN_PAGE,
-        Object.keys(AppManagementEntryPoint).length);
+        AppManagementEntryPoint.COUNT);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT);
   }
 

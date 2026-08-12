@@ -23,6 +23,7 @@ class DlcserviceClient;
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
+// LINT.IfChange(PrinterSetupResult)
 enum class PrinterSetupResult {
   kFatalError = 0,                // Setup failed in an unrecognized way
   kSuccess = 1,                   // Printer set up successfully
@@ -61,6 +62,10 @@ enum class PrinterSetupResult {
 
   kMaxValue = kDebugdDbusNoReply  // Maximum value for histograms
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/ash/settings/os_printing_page/cups_printers_browser_proxy.ts:PrinterSetupResult,
+//   //tools/metrics/histograms/metadata/printing/enums.xml:PrinterSetupResult
+// )
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.

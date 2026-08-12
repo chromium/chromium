@@ -509,7 +509,7 @@ export class OsSettingsPrivacyPageElement extends
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.PrivacyHub.Opened',
         PrivacyHubNavigationOrigin.SYSTEM_SETTINGS,
-        Object.keys(PrivacyHubNavigationOrigin).length);
+        PrivacyHubNavigationOrigin.COUNT);
     Router.getInstance().navigateTo(routes.PRIVACY_HUB);
   }
 

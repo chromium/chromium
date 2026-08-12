@@ -180,6 +180,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Invalid"/>
 </enum>
 
+<!-- LINT.IfChange(BluetoothUiSurface) -->
+
 <enum name="BluetoothUiSurface">
   <int value="0" label="Settings - device list subpage"/>
   <int value="1" label="Settings - device detail subpage"/>
@@ -192,6 +194,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="OOBE HID Detection"/>
   <int value="9" label="Paired toast"/>
 </enum>
+
+<!-- LINT.ThenChange(//device/bluetooth/chromeos/bluetooth_utils.h:BluetoothUiSurface, //ash/webui/common/resources/bluetooth/bluetooth_metrics_utils.ts:BluetoothUiSurface) -->
 
 <enum name="DisconnectResult">
   <int value="0" label="Failure"/>
@@ -304,6 +308,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairRetroactiveEngagementFlowEvent) -->
 
+<!-- LINT.IfChange(FastPairSavedDevicesUiEvent) -->
+
 <enum name="FastPairSavedDevicesUiEvent">
   <int value="0" label="Settings - saved device list subpage shown"/>
   <int value="1" label="Settings - user has devices saved to their account"/>
@@ -311,6 +317,8 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Settings - remove confirmed on remove saved device dialog"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/common/resources/bluetooth/bluetooth_metrics_utils.ts:FastPairSavedDevicesUiEvent) -->
 
 <!-- LINT.IfChange(FastPairVersion) -->
 

@@ -9,6 +9,7 @@
  * is completed and data analysed.
  */
 
+// LINT.IfChange(SettingsLanguagesPageInteraction)
 /**
  * Keeps in sync with SettingsLanguagesPageInteraction
  * in tools/metrics/histograms/enums.xml.
@@ -22,8 +23,11 @@ export enum LanguagesPageInteraction {
   OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE = 5,
   OPEN_WEB_LANGUAGES_LEARN_MORE = 6,
   OPEN_LANGUAGE_PACKS_LEARN_MORE = 7,
+  COUNT = OPEN_LANGUAGE_PACKS_LEARN_MORE + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos_settings/enums.xml:SettingsLanguagesPageInteraction)
 
+// LINT.IfChange(SettingsInputsShortcutReminderState)
 /**
  * Keeps in sync with SettingsInputsShortcutReminderState
  * in tools/metrics/histograms/enums.xml.
@@ -33,7 +37,9 @@ export enum InputsShortcutReminderState {
   LAST_USED_IME = 1,
   NEXT_IME = 2,
   LAST_USED_IME_AND_NEXT_IME = 3,
+  COUNT = LAST_USED_IME_AND_NEXT_IME + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos_settings/enums.xml:SettingsInputsShortcutReminderState)
 
 export interface LanguagesMetricsProxy {
   /**
@@ -92,7 +98,7 @@ export class LanguagesMetricsProxyImpl implements LanguagesMetricsProxy {
   recordInteraction(interaction: LanguagesPageInteraction): void {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.Languages.Interaction', interaction,
-        Object.keys(LanguagesPageInteraction).length);
+        LanguagesPageInteraction.COUNT);
   }
 
   recordAddInputMethod(): void {
@@ -133,6 +139,6 @@ export class LanguagesMetricsProxyImpl implements LanguagesMetricsProxy {
   recordShortcutReminderDismissed(value: InputsShortcutReminderState): void {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.Settings.Inputs.ShortcutReminderDismissed', value,
-        Object.keys(InputsShortcutReminderState).length);
+        InputsShortcutReminderState.COUNT);
   }
 }

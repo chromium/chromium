@@ -5,14 +5,17 @@
 import type {ProfileData, SwitchToTabInfo, TokenRange} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
+// LINT.IfChange(TabSearchRecentlyClosedItemOpenAction)
 /**
  * These values are persisted to logs and should not be renumbered or reused.
- * See tools/metrics/histograms/enums.xml.
+ * See tools/metrics/histograms/metadata/tab/enums.xml.
  */
 export enum RecentlyClosedItemOpenAction {
   WITHOUT_SEARCH = 0,
   WITH_SEARCH = 1,
+  COUNT = WITH_SEARCH + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchRecentlyClosedItemOpenAction)
 
 export interface TabSearchApiProxy {
   closeTab(tabId: number): void;
@@ -79,7 +82,7 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
                 'Tabs.TabSearch.WebUI.RecentlyClosedGroupOpenAction',
         withSearch ? RecentlyClosedItemOpenAction.WITH_SEARCH :
                      RecentlyClosedItemOpenAction.WITHOUT_SEARCH,
-        Object.keys(RecentlyClosedItemOpenAction).length);
+        RecentlyClosedItemOpenAction.COUNT);
     this.handler.openRecentlyClosedEntry(id);
   }
 

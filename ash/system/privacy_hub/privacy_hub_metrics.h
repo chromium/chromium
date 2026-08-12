@@ -15,11 +15,16 @@ using Sensor = SensorDisabledNotificationDelegate::Sensor;
 // Keep in sync with PrivacyHubNavigationOrigin in
 // tools/metrics/histograms/enums.xml and
 // c/b/resources/ash/settings/os_privacy_page/privacy_hub_subpage.js.
+// LINT.IfChange(PrivacyHubNavigationOrigin)
 enum class PrivacyHubNavigationOrigin {
   kSystemSettings = 0,
   kNotification = 1,
   kMaxValue = kNotification
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/ash/settings/os_privacy_page/privacy_hub_subpage.ts:PrivacyHubNavigationOrigin,
+//   //tools/metrics/histograms/metadata/chromeos/enums.xml:PrivacyHubNavigationOrigin
+// )
 
 // These values are persisted to logs and should not be renumbered or reused.
 enum class PrivacyHubLearnMoreSensor {

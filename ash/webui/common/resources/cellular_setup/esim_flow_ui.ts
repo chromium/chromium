@@ -62,6 +62,7 @@ export enum EsimUiState {
 // The reason that caused the user to exit the ESim Setup flow.
 // These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
+// LINT.IfChange(ESimSetupFlowResult)
 export enum EsimSetupFlowResult {
   SUCCESS = 0,
   INSTALL_FAIL = 1,
@@ -71,7 +72,9 @@ export enum EsimSetupFlowResult {
   CANCELLED_WITHOUT_ERROR = 5,
   CANCELLED_NO_PROFILES = 6,
   NO_NETWORK = 7,
+  COUNT = NO_NETWORK + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:ESimSetupFlowResult)
 
 export const ESIM_SETUP_RESULT_METRIC_NAME =
     'Network.Cellular.ESim.SetupFlowResult';
@@ -289,7 +292,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     assert(resultCode !== null);
     MetricsBrowserProxy.getInstance().recordEnumerationValue(
         ESIM_SETUP_RESULT_METRIC_NAME, resultCode,
-        Object.keys(EsimSetupFlowResult).length);
+        EsimSetupFlowResult.COUNT);
 
     const elapsedTimeMs = new Date().getTime() - this.timeOnAttached_!.getTime();
     if (resultCode === EsimSetupFlowResult.SUCCESS) {

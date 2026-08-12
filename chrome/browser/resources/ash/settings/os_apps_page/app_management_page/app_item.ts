@@ -50,7 +50,7 @@ export class AppManagementAppItemElement extends
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
         this.getAppManagementEntryPoint_(this.app.type),
-        Object.keys(AppManagementEntryPoint).length);
+        AppManagementEntryPoint.COUNT);
   }
 
   private iconUrlFromId_(app: App): string {

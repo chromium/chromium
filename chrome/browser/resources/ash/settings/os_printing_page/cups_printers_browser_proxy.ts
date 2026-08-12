@@ -65,6 +65,7 @@ export interface PrinterPpdMakeModel {
   ppdModel: string;
 }
 
+// LINT.IfChange(PrinterSetupResult)
 /**
  * These values must be kept in sync with the PrinterSetupResult enum in
  * chrome/browser/ash/printing/printer_configurer.h.
@@ -78,6 +79,8 @@ export enum PrinterSetupResult {
   INVALID_PRINTER_UPDATE = 5,
   COMPONENT_UNAVAILAVLE = 6,
   EDIT_SUCCESS = 7,
+  PRINTER_SENT_UNEXPECTED_RESPONSE = 8,
+  PRINTER_REQUIRES_PPD = 9,
   PPD_TOO_LARGE = 10,
   INVALID_PPD = 11,
   PPD_NOT_FOUND = 12,
@@ -88,7 +91,15 @@ export enum PrinterSetupResult {
   MANUAL_SETUP_REQUIRED = 17,
   DBUS_NO_REPLY = 64,
   DBUS_TIMEOUT = 65,
+  PRINTER_REMOVED = 66,
+  PRINTSCANMGR_DBUS_NO_REPLY = 67,
+  DEBUGD_DBUS_NO_REPLY = 68,
+  COUNT = DEBUGD_DBUS_NO_REPLY + 1,
 }
+// LINT.ThenChange(
+//   //chrome/browser/ash/printing/printer_configurer.h:PrinterSetupResult,
+//   //tools/metrics/histograms/metadata/printing/enums.xml:PrinterSetupResult
+// )
 
 /**
  * These values must be kept in sync with the PrintServerQueryResult enum in

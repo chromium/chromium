@@ -25,6 +25,7 @@ class COMPONENT_EXPORT(SETTINGS_UI) SettingsAppManager {
   // adding to this enum with the intention that it will be logged, update the
   // EntryPoint enum listing in
   // tools/metrics/histograms/metadata/apps/enums.xml.
+  // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
     kAppListContextMenuAppInfoArc = 0,
     kAppListContextMenuAppInfoChromeApp = 1,
@@ -46,6 +47,10 @@ class COMPONENT_EXPORT(SETTINGS_UI) SettingsAppManager {
     kSiteDataDialog = 17,
     kMaxValue = kSiteDataDialog,
   };
+  // LINT.ThenChange(
+  //   //ui/webui/resources/cr_components/app_management/constants.ts:AppManagementEntryPoint,
+  //   //tools/metrics/histograms/metadata/apps/enums.xml:AppManagementEntryPoint
+  // )
 
   // Helper method to create the path.
   static std::string CreateAppManagementPagePath(std::string_view app_id);

@@ -37,16 +37,19 @@ import {getDisplayPpd, getErrorText, isNameAndAddressValid, isNetworkProtocol, i
 import type {CupsPrinterInfo, CupsPrintersBrowserProxy, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 
+// LINT.IfChange(PrinterEditDialogActions)
 /**
  * The types of actions that can be performed with the edit dialog.  These
  * values are written to logs and used as metrics.  New enum values can be
  * added, but existing values must never be renumbered or deleted and reused.
- * See PrinterEditDialogActions enum in tools/metrics/hisograms/enums.xml.
+ * See PrinterEditDialogActions enum in tools/metrics/histograms/metadata/printing/enums.xml.
  */
 enum DialogActions {
   DIALOG_OPENED = 0,
   VIEW_PPD_CLICKED = 1,
+  COUNT = VIEW_PPD_CLICKED + 1,
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/printing/enums.xml:PrinterEditDialogActions)
 
 /** Keyword used for recording metrics */
 const METRICS_KEYWORD = 'Printing.CUPS.PrinterEditDialogActions';
@@ -218,7 +221,7 @@ export class SettingsCupsEditPrinterDialogElement extends
 
     chrome.metricsPrivate.recordEnumerationValue(
         METRICS_KEYWORD, DialogActions.DIALOG_OPENED,
-        Object.keys(DialogActions).length);
+        DialogActions.COUNT);
 
     // Create a copy of activePrinter so that we can modify its fields.
     this.pendingPrinter_ = Object.assign({}, this.activePrinter);
@@ -413,7 +416,7 @@ export class SettingsCupsEditPrinterDialogElement extends
   private onViewPpd_(): void {
     chrome.metricsPrivate.recordEnumerationValue(
         METRICS_KEYWORD, DialogActions.VIEW_PPD_CLICKED,
-        Object.keys(DialogActions).length);
+        DialogActions.COUNT);
 
     // We always use the activePrinter (the printer when the dialog was first
     // displayed) when viewing the PPD.  Once the user has modified the dialog,
