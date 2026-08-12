@@ -372,7 +372,7 @@ void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
   }
 
   auto show_iph_closure = base::BindOnce(
-      [](base::WeakPtr<Browser> browser,
+      [](base::WeakPtr<BrowserWindowInterface> browser,
          const extensions::ExtensionId& extension_id) {
         if (!browser) {
           return;
@@ -416,7 +416,7 @@ void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
           extension_view->ClearProperty(views::kElementIdentifierKey);
         }
       },
-      browser_->AsWeakPtr(), extension_id);
+      browser_->GetWeakPtr(), extension_id);
 
   auto run_or_wait_for_active_widget = base::BindOnce(
       [](views::Widget* browser_widget, base::OnceClosure show_iph_closure) {

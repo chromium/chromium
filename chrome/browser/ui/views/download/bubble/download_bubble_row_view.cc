@@ -330,7 +330,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
     const DownloadBubbleRowViewInfo& info,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     int fixed_width)
     : info_(info),
       context_menu_(std::make_unique<DownloadUiContextMenuView>(

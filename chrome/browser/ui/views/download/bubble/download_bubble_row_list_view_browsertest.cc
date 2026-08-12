@@ -81,7 +81,7 @@ class DownloadBubbleRowListViewBrowserTest : public InProcessBrowserTest {
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
-        browser()->AsWeakPtr(), bubble_controller()->GetWeakPtr(),
+        browser()->GetWeakPtr(), bubble_controller()->GetWeakPtr(),
         navigation_handler()->GetWeakPtr(), bubble_width, *info_);
   }
 

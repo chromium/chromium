@@ -12,7 +12,7 @@
 using offline_items_collection::ContentId;
 
 DownloadBubbleRowListView::DownloadBubbleRowListView(
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     int fixed_width,

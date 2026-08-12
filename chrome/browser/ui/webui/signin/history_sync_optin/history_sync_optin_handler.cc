@@ -89,7 +89,7 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
         history_optin_completed_callback)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      browser_(browser ? browser->AsWeakPtr() : nullptr),
+      browser_(browser ? browser->GetWeakPtr() : nullptr),
       profile_(profile),
       should_close_modal_dialog_(should_close_modal_dialog),
       history_optin_completed_callback_(

@@ -65,7 +65,7 @@ class OidcEnterpriseSigninInterceptionHandle
       signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure dialog_closed_closure,
       base::RepeatingClosure retry_callback)
-      : browser_(browser->AsWeakPtr()),
+      : browser_(browser->GetWeakPtr()),
         bubble_parameters_(bubble_parameters),
         callback_(std::move(callback)) {
     DCHECK(browser_);
@@ -132,7 +132,7 @@ class OidcEnterpriseSigninInterceptionHandle
                              std::move(retry_callback));
   }
 
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> browser_;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   signin::SigninChoiceWithConfirmAndRetryCallback callback_;
   base::WeakPtrFactory<OidcEnterpriseSigninInterceptionHandle>
@@ -146,7 +146,7 @@ class ForcedEnterpriseSigninInterceptionHandle
       Browser* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
-      : browser_(browser->AsWeakPtr()),
+      : browser_(browser->GetWeakPtr()),
         bubble_parameters_(bubble_parameters),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
@@ -213,7 +213,7 @@ class ForcedEnterpriseSigninInterceptionHandle
     std::move(callback_).Run(interception_result);
   }
 
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> browser_;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   const bool profile_creation_required_by_policy_;
   const bool show_link_data_option_;

@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
@@ -71,7 +72,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
   // Interface to send information to the web ui page.
   const mojo::Remote<history_sync_optin::mojom::Page> page_;
 
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<BrowserWindowInterface> browser_;
   const raw_ptr<Profile> profile_;
   std::optional<bool> should_close_modal_dialog_;
   HistorySyncOptinHelper::FlowCompletedCallback

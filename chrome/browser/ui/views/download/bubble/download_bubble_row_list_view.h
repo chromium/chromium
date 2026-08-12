@@ -19,7 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class DownloadBubbleRowView;
 class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;
@@ -30,7 +30,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
 
  public:
   DownloadBubbleRowListView(
-      base::WeakPtr<Browser> browser,
+      base::WeakPtr<BrowserWindowInterface> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       int fixed_width,
@@ -73,7 +73,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView,
            raw_ptr<DownloadBubbleRowView, CtnExperimental>>
       rows_by_id_;
 
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> browser_;
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_;
   int fixed_width_ = 0;

@@ -396,7 +396,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       headless::ProcessHeadlessCommands(
           profile_, tab.url,
           base::BindOnce(
-              [](base::WeakPtr<Browser> browser,
+              [](base::WeakPtr<BrowserWindowInterface> browser,
                  std::unique_ptr<ScopedProfileKeepAlive> profile_keepalive,
                  headless::HeadlessCommandHandler::Result result) {
                 if (browser && browser->GetWindow()) {
@@ -410,7 +410,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
                   browser->GetWindow()->Close();
                 }
               },
-              browser->AsWeakPtr(), std::move(profile_keepalive)));
+              browser->GetWeakPtr(), std::move(profile_keepalive)));
       continue;
     }
     // Active tab overwrites apply only to one tab per launch, and can only

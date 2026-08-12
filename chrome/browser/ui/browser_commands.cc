@@ -1386,7 +1386,8 @@ void NewTabFromClipboardURL(BrowserWindowInterface* browser) {
     clipboard->ReadText(
         ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
         base::BindOnce(
-            [](base::WeakPtr<Browser> browser_weak, std::u16string text) {
+            [](base::WeakPtr<BrowserWindowInterface> browser_weak,
+               std::u16string text) {
               if (!browser_weak || text.empty()) {
                 return;
               }
@@ -1402,11 +1403,11 @@ void NewTabFromClipboardURL(BrowserWindowInterface* browser) {
                   content::ChildProcessSecurityPolicy::GetInstance()
                       ->IsWebSafeScheme(
                           std::string(match.destination_url.scheme()))) {
-                browser_weak->tab_strip_model()->delegate()->AddTabAt(
+                browser_weak->GetTabStripModel()->delegate()->AddTabAt(
                     match.destination_url, -1, true);
               }
             },
-            browser->GetBrowserForMigrationOnly()->AsWeakPtr()));
+            browser->GetWeakPtr()));
   }
 #endif
 }

@@ -113,11 +113,6 @@ class Browser : public TabStripModelObserver,
 
   ~Browser() override;
 
-  // Accessors ////////////////////////////////////////////////////////////////
-
-  base::WeakPtr<Browser> AsWeakPtr();
-  base::WeakPtr<const Browser> AsWeakPtr() const;
-
   // Interface implementations ////////////////////////////////////////////////
 
   // Overridden from TabStripModelObserver:

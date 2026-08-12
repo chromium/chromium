@@ -38,7 +38,7 @@ constexpr base::TimeDelta kShowPromoInPageTimeout = base::Seconds(30);
 class ShowPromoInPageImpl : public ShowPromoInPage {
  public:
   explicit ShowPromoInPageImpl(Browser* browser, Params params)
-      : browser_(browser->AsWeakPtr()), callback_(std::move(params.callback)) {
+      : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
     DCHECK(callback_);
     DCHECK(browser_);
     DCHECK(!params.bubble_text.empty());
@@ -149,7 +149,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
     delete this;
   }
 
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<BrowserWindowInterface> browser_;
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
   base::CallbackListSubscription help_bubble_closed_subscription_;
   user_education::HelpBubbleParams bubble_params_;

@@ -176,7 +176,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
               /*accessibility_label=*/std::nullopt,
               /*explicit_action=*/
               base::BindRepeating(
-                  [](base::WeakPtr<Browser> weak_browser,
+                  [](base::WeakPtr<BrowserWindowInterface> weak_browser,
                      bool is_source_accelerator) {
                     if (weak_browser) {
                       weak_browser->GetFeatures()
@@ -184,7 +184,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
                           ->CloseBubbleSignin();
                     }
                   },
-                  browser->GetBrowserForMigrationOnly()->AsWeakPtr()));
+                  browser->GetWeakPtr()));
     }
   }
 

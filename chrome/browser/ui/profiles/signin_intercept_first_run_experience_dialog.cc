@@ -272,7 +272,7 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
  private:
   const base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog_;
   // Store `browser_` separately as it may outlive `dialog_`.
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<BrowserWindowInterface> browser_;
 
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
@@ -283,7 +283,7 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     InterceptTurnSyncOnHelperDelegate(
         base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
-    : dialog_(std::move(dialog)), browser_(dialog_->browser_->AsWeakPtr()) {
+    : dialog_(std::move(dialog)), browser_(dialog_->browser_->GetWeakPtr()) {
   CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 }
 

@@ -27,7 +27,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace ui {
 class Event;
@@ -59,7 +59,7 @@ class DownloadBubbleRowView : public views::View,
       const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      base::WeakPtr<Browser> browser,
+      base::WeakPtr<BrowserWindowInterface> browser,
       int fixed_width);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
@@ -221,7 +221,7 @@ class DownloadBubbleRowView : public views::View,
 
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
 
-  base::WeakPtr<Browser> browser_ = nullptr;
+  base::WeakPtr<BrowserWindowInterface> browser_ = nullptr;
 
   // The last override icon, e.g. an incognito or warning icon. If this is
   // null, we should either use the filetype icon or a default icon.

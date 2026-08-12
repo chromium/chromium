@@ -149,7 +149,7 @@ void RunCallback(std::optional<base::OnceClosure> callback) {
 void OnIOSPromoClassificationResult(
     PromoType promo_type,
     BubbleType bubble_type,
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     std::optional<base::OnceClosure> promo_will_be_shown_callback,
     std::optional<base::OnceClosure> promo_not_shown_callback,
     const segmentation_platform::ClassificationResult& result) {
@@ -208,7 +208,7 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
         ->GetClassificationResult(
             segmentation_platform::kDeviceSwitcherKey, options, input_context,
             base::BindOnce(&OnIOSPromoClassificationResult, promo_type,
-                           bubble_type, browser->AsWeakPtr(),
+                           bubble_type, browser->GetWeakPtr(),
                            std::move(promo_will_be_shown_callback),
                            std::move(promo_not_shown_callback)));
     return;

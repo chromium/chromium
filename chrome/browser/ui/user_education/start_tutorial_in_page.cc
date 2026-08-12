@@ -21,7 +21,7 @@ namespace {
 class StartTutorialInPageImpl : public StartTutorialInPage {
  public:
   explicit StartTutorialInPageImpl(Browser* browser, Params params)
-      : browser_(browser->AsWeakPtr()), callback_(std::move(params.callback)) {
+      : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
     DCHECK(callback_);
     DCHECK(browser_);
     DCHECK(params.tutorial_id.has_value());
@@ -89,7 +89,7 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
   void OnTutorialCompleted() { delete this; }
   void OnTutorialAborted() { delete this; }
 
-  const base::WeakPtr<Browser> browser_;
+  const base::WeakPtr<BrowserWindowInterface> browser_;
   user_education::TutorialIdentifier tutorial_id_;
   Callback callback_;
   THREAD_CHECKER(thread_checker_);

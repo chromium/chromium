@@ -57,10 +57,8 @@ void DownloadBubblePrimaryView::BuildAndAddScrollView(
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     const DownloadBubbleRowListViewInfo& info,
     int fixed_width) {
-  base::WeakPtr<Browser> row_view_browser =
-      browser && browser->GetBrowserForMigrationOnly()
-          ? browser->GetBrowserForMigrationOnly()->AsWeakPtr()
-          : nullptr;
+  base::WeakPtr<BrowserWindowInterface> row_view_browser =
+      browser ? browser->GetWeakPtr() : nullptr;
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
       row_view_browser, bubble_controller, navigation_handler, fixed_width,
       info);

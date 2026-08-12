@@ -172,7 +172,7 @@ class DiceWebSigninInterceptionBubbleView
   // https://crbug.com/40217096). Retain the profile to prevent use-after-free.
   ScopedProfileKeepAlive profile_keep_alive_;
 
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

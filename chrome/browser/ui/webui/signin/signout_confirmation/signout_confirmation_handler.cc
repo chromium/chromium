@@ -187,7 +187,7 @@ SignoutConfirmationHandler::SignoutConfirmationHandler(
     ChromeSignoutConfirmationPromptVariant variant,
     size_t unsynced_data_count,
     SignoutConfirmationCallback callback)
-    : browser_(browser ? browser->AsWeakPtr() : nullptr),
+    : browser_(browser ? browser->GetWeakPtr() : nullptr),
       variant_(variant),
       unsynced_data_count_(unsynced_data_count),
       completion_callback_(std::move(callback)),

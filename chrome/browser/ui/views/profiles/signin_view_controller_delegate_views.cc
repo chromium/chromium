@@ -87,7 +87,7 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void CloseModalSigninInBrowser(
-    base::WeakPtr<Browser> browser,
+    base::WeakPtr<BrowserWindowInterface> browser,
     bool show_profile_switch_iph,
     bool show_supervised_user_iph,
     ProfileCustomizationHandler::CustomizationResult result) {
@@ -207,7 +207,7 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
                                        ->GetAs<ProfileCustomizationUI>();
   DCHECK(web_ui);
   web_ui->Initialize(
-      base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr(),
+      base::BindOnce(&CloseModalSigninInBrowser, browser->GetWeakPtr(),
                      show_profile_switch_iph, show_supervised_user_iph));
   return web_view;
 }

@@ -108,7 +108,7 @@ void AtMemoryPromoBubbleView::OnLearnMoreClicked() {
     // it destroys the view before navigation can be initiated.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<Browser> browser) {
+                       [](base::WeakPtr<BrowserWindowInterface> browser) {
                          if (!browser) {
                            return;
                          }
@@ -121,7 +121,7 @@ void AtMemoryPromoBubbleView::OnLearnMoreClicked() {
                              WindowOpenDisposition::NEW_FOREGROUND_TAB;
                          Navigate(&params);
                        },
-                       browser->AsWeakPtr()));
+                       browser->GetWeakPtr()));
   }
 
   NotifyUserAction(CustomHelpBubbleUi::UserAction::kDismiss);

@@ -234,11 +234,11 @@ void AppHomePageHandler::LaunchAppInternal(
     // it automatically. However, if the chrome://apps page is the LAST page in
     // the browser window, then we don't close it.
     Browser* browser = GetCurrentBrowser();
-    base::WeakPtr<Browser> browser_ptr;
+    base::WeakPtr<BrowserWindowInterface> browser_ptr;
     content::WebContents* old_contents = nullptr;
     base::WeakPtr<content::WebContents> old_contents_ptr;
     if (browser) {
-      browser_ptr = browser->AsWeakPtr();
+      browser_ptr = browser->GetWeakPtr();
       old_contents = browser->tab_strip_model()->GetActiveWebContents();
       old_contents_ptr = old_contents->GetWeakPtr();
     }
@@ -252,19 +252,20 @@ void AppHomePageHandler::LaunchAppInternal(
     web_app::LaunchExtensionOrWebApp(
         profile_, std::move(params),
         base::BindOnce(
-            [](base::WeakPtr<Browser> apps_page_browser,
+            [](base::WeakPtr<BrowserWindowInterface> apps_page_browser,
                base::WeakPtr<content::WebContents> old_contents,
                content::WebContents* new_web_contents) {
               if (!apps_page_browser || !old_contents) {
                 return;
               }
               if (new_web_contents != old_contents.get() &&
-                  apps_page_browser->tab_strip_model()->count() > 1) {
+                  apps_page_browser->GetTabStripModel()->count() > 1) {
                 // This will also destroy the handler, so do not perform
                 // any actions after.
-                chrome::CloseWebContents(apps_page_browser.get(),
-                                         old_contents.get(),
-                                         /*add_to_history=*/true);
+                chrome::CloseWebContents(
+                    apps_page_browser->GetBrowserForMigrationOnly(),
+                    old_contents.get(),
+                    /*add_to_history=*/true);
               }
             },
             browser_ptr, old_contents_ptr));

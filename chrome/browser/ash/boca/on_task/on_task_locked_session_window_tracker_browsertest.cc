@@ -880,11 +880,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   // Attempt to create a new browser window and verify it gets closed.
   size_t original_browser_count =
       GlobalBrowserCollection::GetInstance()->GetSize();
-  const base::WeakPtr<Browser> browser_weak_ptr =
+  const base::WeakPtr<BrowserWindowInterface> browser_weak_ptr =
       CreateBrowserWindow(
           BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly()
-          ->AsWeakPtr();
+          ->GetWeakPtr();
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
             original_browser_count);

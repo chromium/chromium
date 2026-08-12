@@ -954,13 +954,13 @@ class InteractiveGlicTestMixin : public T {
   // it can change which browser it operates. This changes the browser to be
   // used in functions of `InteractiveGlicTestMixin`.
   void SetActiveBrowser(Browser* browser) {
-    active_browser_ = browser->AsWeakPtr();
+    active_browser_ = browser->GetWeakPtr();
   }
 
   // Returns the active browser.
   Browser* browser() {
     if (active_browser_) {
-      return active_browser_.get();
+      return active_browser_->GetBrowserForMigrationOnly();
     } else {
       CHECK(!active_browser_.WasInvalidated())
           << "SetActiveBrowser() was called, but that browser no longer "
@@ -1024,7 +1024,7 @@ class InteractiveGlicTestMixin : public T {
   // many functions in this fixture. Only one will be present at a time.
   GlicInstanceTracker instance_tracker_;
 
-  base::WeakPtr<Browser> active_browser_;
+  base::WeakPtr<BrowserWindowInterface> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
   // This is the default test file. Tests can override with a different path.
   base::test::ScopedFeatureList features_;

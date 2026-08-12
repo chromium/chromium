@@ -394,18 +394,6 @@ Browser::~Browser() {
   profile_pref_registrar_.Reset();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Getters & Setters
-
-
-base::WeakPtr<Browser> Browser::AsWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
-  return weak_factory_.GetWeakPtr();
-}
-
 Profile* Browser::GetProfile() {
   return profile_;
 }
@@ -454,7 +442,7 @@ base::CallbackListSubscription Browser::RegisterBrowserCloseCancelled(
 }
 
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
-  return AsWeakPtr();
+  return weak_factory_.GetWeakPtr();
 }
 
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(

@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 class SignoutConfirmationHandler
     : public signout_confirmation::mojom::PageHandler {
@@ -62,7 +63,7 @@ class SignoutConfirmationHandler
   void ComputeAccountExtensions();
 #endif
 
-  base::WeakPtr<Browser> browser_;
+  base::WeakPtr<BrowserWindowInterface> browser_;
 
   // The variant of the signout confirmation prompt. This affects which actions
   // are taken when the user accepts or cancels the prompt, and the strings that

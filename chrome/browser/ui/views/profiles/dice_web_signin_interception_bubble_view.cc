@@ -305,7 +305,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
       profile_keep_alive_(
           browser->GetProfile(),
           ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble),
-      browser_(browser->AsWeakPtr()),
+      browser_(browser->GetWeakPtr()),
       profile_(browser->GetProfile()),
       bubble_parameters_(bubble_parameters),
       callback_(std::move(callback)) {
