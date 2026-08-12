@@ -35,6 +35,7 @@ class ChannelProxy;
 namespace remoting {
 
 class IpcDesktopEnvironmentFactory;
+struct JingleTransportInfo;
 
 // Implements the Peer Connection process. This process runs at lower privileges
 // and hosts the WebRTC connection (signaling and data channels). It
@@ -72,6 +73,10 @@ class PeerConnectionProcess : public IPC::Listener,
              const DesktopEnvironmentOptions& desktop_environment_options,
              const SessionPolicies& session_policies,
              const SessionOptions& session_options) override;
+  void StartTransport(const std::string& auth_key,
+                      mojo::PendingRemote<mojom::TransportEventHandler>
+                          transport_event_handler) override;
+  void ProcessTransportInfo(const JingleTransportInfo& transport_info) override;
   void DisconnectSession(protocol::ErrorCode error,
                          const std::string& error_details,
                          const SourceLocation& error_location) override;
@@ -87,6 +92,7 @@ class PeerConnectionProcess : public IPC::Listener,
   // IPC::Listener implementation.
   void OnChannelError() override;
 
+  void OnSendTransportInfo(std::unique_ptr<JingleTransportInfo> transport_info);
   void OnSessionDisconnected();
 
   void Shutdown(int exit_code);
@@ -111,6 +117,7 @@ class PeerConnectionProcess : public IPC::Listener,
 
   std::unique_ptr<IpcDesktopEnvironmentFactory> desktop_environment_factory_;
   mojo::Remote<mojom::PeerSessionEventHandler> event_handler_;
+  mojo::Remote<mojom::TransportEventHandler> transport_event_handler_;
   std::unique_ptr<::remoting::PeerSession> peer_session_;
 
   base::OnceClosure on_shutdown_for_testing_;

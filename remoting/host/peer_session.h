@@ -94,7 +94,7 @@ class PeerSession {
   virtual void OnSessionServicesClientConnected(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) = 0;
 
-  virtual protocol::Transport* transport() const = 0;
+  virtual protocol::Transport* transport() = 0;
 };
 
 // Factory interface for creating `PeerSession` instances.

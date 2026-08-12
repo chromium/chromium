@@ -961,7 +961,7 @@ const std::string& PeerSessionImpl::client_jid() const {
   return client_jid_;
 }
 
-protocol::Transport* PeerSessionImpl::transport() const {
+protocol::Transport* PeerSessionImpl::transport() {
   return connection_ ? connection_->transport() : nullptr;
 }
 

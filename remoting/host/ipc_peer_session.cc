@@ -69,6 +69,7 @@ void IpcPeerSession::Start(
 
   mojo::PendingRemote<mojom::PeerSessionEventHandler> event_handler_remote;
   if (event_handler) {
+    event_handler_ = event_handler;
     event_handler_receiver_ =
         std::make_unique<mojo::Receiver<mojom::PeerSessionEventHandler>>(
             event_handler);
@@ -107,9 +108,39 @@ void IpcPeerSession::OnSessionServicesClientConnected(
   remote_->OnSessionServicesClientConnected(std::move(receiver));
 }
 
-protocol::Transport* IpcPeerSession::transport() const {
+protocol::Transport* IpcPeerSession::transport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nullptr;
+  return this;
+}
+
+void IpcPeerSession::Start(
+    const std::string& auth_key,
+    SendTransportInfoCallback send_transport_info_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  send_transport_info_callback_ = std::move(send_transport_info_callback);
+  if (remote_.is_bound()) {
+    transport_event_handler_receiver_.reset();
+    remote_->StartTransport(
+        auth_key, transport_event_handler_receiver_.BindNewPipeAndPassRemote());
+  }
+}
+
+bool IpcPeerSession::ProcessTransportInfo(
+    const JingleTransportInfo& transport_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (remote_.is_bound()) {
+    remote_->ProcessTransportInfo(transport_info);
+  }
+  return true;
+}
+
+void IpcPeerSession::SendTransportInfo(
+    const JingleTransportInfo& transport_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (send_transport_info_callback_) {
+    send_transport_info_callback_.Run(
+        std::make_unique<JingleTransportInfo>(transport_info));
+  }
 }
 
 void IpcPeerSession::OnPeerSessionDisconnected() {
@@ -144,10 +175,12 @@ void IpcPeerSession::DoNotifySessionClosed(
     const std::string& error_details,
     const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  event_handler_receiver_.reset();
+  transport_event_handler_receiver_.reset();
+  send_transport_info_callback_.Reset();
   if (event_handler_) {
     auto* handler = event_handler_.get();
     event_handler_ = nullptr;
-    event_handler_receiver_.reset();
     handler->OnSessionClosed(error, error_details, error_location);
   }
 }

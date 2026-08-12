@@ -21,12 +21,16 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/peer_session.mojom.h"
 #include "remoting/host/peer_session.h"
+#include "remoting/protocol/transport.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting {
 
 // Proxy implementation of `PeerSession` that communicates with the remote
 // `PeerSessionImpl` in the dedicated Peer Connection process over Mojo IPC.
-class IpcPeerSession : public PeerSession {
+class IpcPeerSession : public PeerSession,
+                       public protocol::Transport,
+                       public mojom::TransportEventHandler {
  public:
   using GetDesktopSessionCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<mojom::DesktopSession>,
@@ -52,7 +56,15 @@ class IpcPeerSession : public PeerSession {
   void OnSessionServicesClientConnected(
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
-  protocol::Transport* transport() const override;
+  protocol::Transport* transport() override;
+
+  // protocol::Transport interface:
+  void Start(const std::string& auth_key,
+             SendTransportInfoCallback send_transport_info_callback) override;
+  bool ProcessTransportInfo(const JingleTransportInfo& transport_info) override;
+
+  // mojom::TransportEventHandler interface:
+  void SendTransportInfo(const JingleTransportInfo& transport_info) override;
 
  private:
   void OnPeerSessionDisconnected();
@@ -69,8 +81,11 @@ class IpcPeerSession : public PeerSession {
   mojo::Remote<mojom::PeerSession> remote_;
   std::unique_ptr<mojo::Receiver<mojom::PeerSessionEventHandler>>
       event_handler_receiver_;
+  mojo::Receiver<mojom::TransportEventHandler>
+      transport_event_handler_receiver_{this};
   raw_ptr<EventHandler> event_handler_ = nullptr;
   GetDesktopSessionCallback get_desktop_session_callback_;
+  SendTransportInfoCallback send_transport_info_callback_;
 
   base::WeakPtrFactory<IpcPeerSession> weak_factory_{this};
 };

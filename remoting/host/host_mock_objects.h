@@ -433,7 +433,7 @@ class MockPeerSession : public PeerSession {
       OnSessionServicesClientConnected,
       (mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver),
       (override));
-  MOCK_METHOD(protocol::Transport*, transport, (), (const, override));
+  MOCK_METHOD(protocol::Transport*, transport, (), (override));
 };
 
 class MockPeerSessionFactory : public PeerSessionFactory {

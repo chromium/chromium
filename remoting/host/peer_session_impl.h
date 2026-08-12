@@ -203,7 +203,7 @@ class PeerSessionImpl : public PeerSession,
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 #endif
 
-  protocol::Transport* transport() const override;
+  protocol::Transport* transport() override;
 
   bool channels_connected() const { return channels_connected_; }
 

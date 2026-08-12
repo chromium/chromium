@@ -19,6 +19,8 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/peer_session_impl.h"
 #include "remoting/protocol/ice_config_fetcher.h"
+#include "remoting/protocol/transport.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting {
 
@@ -114,6 +116,47 @@ void PeerConnectionProcess::Start(
                        session_policies, session_options);
 }
 
+void PeerConnectionProcess::StartTransport(
+    const std::string& auth_key,
+    mojo::PendingRemote<mojom::TransportEventHandler> transport_event_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!peer_session_ || !peer_session_->transport()) {
+    LOG(WARNING) << "StartTransport called when peer session or transport is "
+                 << "not initialized.";
+    return;
+  }
+  transport_event_handler_.reset();
+  if (transport_event_handler) {
+    transport_event_handler_.Bind(std::move(transport_event_handler));
+  }
+  peer_session_->transport()->Start(
+      auth_key, base::BindRepeating(&PeerConnectionProcess::OnSendTransportInfo,
+                                    weak_factory_.GetWeakPtr()));
+}
+
+void PeerConnectionProcess::ProcessTransportInfo(
+    const JingleTransportInfo& transport_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!peer_session_ || !peer_session_->transport()) {
+    LOG(WARNING)
+        << "ProcessTransportInfo called when peer session or transport is "
+        << "not initialized.";
+    return;
+  }
+  peer_session_->transport()->ProcessTransportInfo(transport_info);
+}
+
+void PeerConnectionProcess::OnSendTransportInfo(
+    std::unique_ptr<JingleTransportInfo> transport_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!transport_info) {
+    return;
+  }
+  if (transport_event_handler_.is_bound()) {
+    transport_event_handler_->SendTransportInfo(std::move(*transport_info));
+  }
+}
+
 void PeerConnectionProcess::DisconnectSession(
     protocol::ErrorCode error,
     const std::string& error_details,
@@ -142,6 +185,7 @@ void PeerConnectionProcess::OnSessionDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO)
       << "PeerSession dropped by Network process; shutting down PC process.";
+  transport_event_handler_.reset();
   Shutdown(0);
 }
 

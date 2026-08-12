@@ -95,6 +95,19 @@ interface PeerSessionEventHandler {
 };
 // LINT.ThenChange(//remoting/host/peer_session.h:peer_session_event_handler)
 
+// Handles outgoing transport signaling messages from the PC process to the
+// Network process.
+// Implemented by `IpcPeerSession` in the Network process.
+[EnableIf=is_win|is_linux]
+interface TransportEventHandler {
+  // Relays outgoing transport information (local ICE candidates / SDP)
+  // from the PC process to the Network process.
+  // Consecutive calls append newly gathered ICE candidates to the existing
+  // candidate pool, whereas `session_description` (if present) updates or
+  // replaces the previous session description.
+  SendTransportInfo(JingleTransportInfo transport_info);
+};
+
 // A session interface implemented by the Peer Connection process.
 // If the caller drops the remote, the disconnect handler terminates the Peer
 // Connection process.
@@ -111,6 +124,18 @@ interface PeerSession {
         DesktopEnvironmentOptions desktop_environment_options,
         SessionPolicies session_policies,
         SessionOptions session_options);
+
+  // Starts the WebRTC transport with the given authentication key and
+  // transport event handler remote.
+  StartTransport(string auth_key,
+                 pending_remote<TransportEventHandler> transport_event_handler);
+
+  // Relays incoming transport information (remote ICE candidates / SDP)
+  // from the Network process to the PC process.
+  // Consecutive calls append received remote ICE candidates to the existing
+  // candidate pool, whereas `session_description` (if present) updates or
+  // replaces the previous remote session description.
+  ProcessTransportInfo(JingleTransportInfo transport_info);
 
   // Disconnects the peer session and tears down transport and desktop
   // resources. `error_details` is a human-readable diagnostic string intended
