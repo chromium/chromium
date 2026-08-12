@@ -88,7 +88,8 @@ export function getHtml(this: MostVisitedElement) {
       </div>
     </cr-button>
   </div>
-  <cr-dialog id="dialog" @close="${this.onDialogClose_}">
+  <cr-dialog id="dialog" consume-keydown-event
+      @keydown="${this.onDialogKeydown_}" @close="${this.onDialogClose_}">
     <div slot="title">${this.dialogTitle_}</div>
     <div slot="body" id="dialogContent">
       ${this.isFromEnterpriseShortcut_(this.dialogSource_) ? html`

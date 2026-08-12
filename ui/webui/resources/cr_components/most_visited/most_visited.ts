@@ -845,6 +845,31 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.adding_ = false;
   }
 
+  protected onDialogKeydown_(e: KeyboardEvent) {
+    if (e.key !== 'Tab') {
+      return;
+    }
+
+    const focusable = Array.from(this.$.dialog.querySelectorAll<HTMLElement>(
+        'cr-input, cr-button:not([disabled]):not([hidden])'));
+
+    if (focusable.length === 0) {
+      return;
+    }
+
+    const firstEl = focusable[0]!;
+    const lastEl = focusable[focusable.length - 1]!;
+    const path = e.composedPath();
+
+    if (e.shiftKey && path.includes(firstEl)) {
+      e.preventDefault();
+      lastEl.focus();
+    } else if (!e.shiftKey && path.includes(lastEl)) {
+      e.preventDefault();
+      firstEl.focus();
+    }
+  }
+
   protected onDialogTileUrlBlur_() {
     if (this.dialogTileUrl_.length > 0 &&
         (normalizeUrl(this.dialogTileUrl_) === null ||
