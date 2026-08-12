@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] random() should be allowed in if() style() condition
+  assert_equals: expected "true" but got "false"
+[FAIL] random() in var() should be allowed in if() style() condition
+  assert_equals: expected "true" but got "false"
+[FAIL] Sharing random() in if() style() condition within same property
+  assert_equals: expected false but got true
+[FAIL] Sharing property-index-scoped random() in if() style() condition across different properties
+  assert_equals: expected false but got true
+[FAIL] Sharing element-scoped random() in if() style() condition across different elements
+  assert_equals: expected false but got true
+Harness: the test ran to completion.
+
