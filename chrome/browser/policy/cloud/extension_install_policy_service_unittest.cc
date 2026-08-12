@@ -28,6 +28,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -150,6 +151,10 @@ class ExtensionInstallPolicyServiceTest : public testing::Test {
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_ = nullptr;
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+#if !BUILDFLAG(IS_CHROMEOS)
+    TestingBrowserProcess::GetGlobal()->local_state()->ClearPref(
+        extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled);
+#endif
   }
 
   TestingProfile* profile() { return profile_; }
@@ -344,6 +349,29 @@ TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByPolicy) {
                        ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
                    .value());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ExtensionInstallPolicyServiceTest, IsExtensionBlockedByMachinePolicy) {
+  PolicyMap policy;
+  policy.Set(kExtensionId, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+             POLICY_SOURCE_CLOUD,
+             GetPolicyValueForAction(
+                 kExtensionVersion,
+                 enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK),
+             nullptr);
+  policy_provider_->UpdateExtensionInstallPolicy(policy);
+
+  profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, false);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  EXPECT_FALSE(service_
+                   ->IsExtensionAllowed(
+                       ExtensionIdAndVersion(kExtensionId, kExtensionVersion))
+                   .value());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ExtensionInstallPolicyServiceTest,
        IsExtensionBlockedByExtensionSettings) {

@@ -1308,6 +1308,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/messaging",
+      "//extensions/buildflags",
       "//extensions/strings",
     ]
   }

@@ -309,6 +309,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionBlockedByMachineLevelPolicy) {
   GetProfile()->GetPrefs()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  g_browser_process->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
   SetExtensionInstallPolicy(
       kExtensionId1, kExtensionVersion1,
@@ -335,9 +337,57 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                                               /*expected_result=*/false));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ExtensionInstallPolicyServiceTest,
+    CanInstallExtensionBlockedByMachineLevelPolicyUserCheckDisabled) {
+  GetProfile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, false);
+  g_browser_process->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/true);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
+
+  ASSERT_NO_FATAL_FAILURE(CheckUserMayInstall(kExtensionId1, kExtensionVersion1,
+                                              /*is_from_webstore=*/true,
+                                              /*expected_result=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionInstallPolicyServiceTest,
+    CanInstallExtensionIgnoresUserPolicyWhenUserCheckDisabled) {
+  GetProfile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, false);
+  g_browser_process->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/false);
+
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
+                                                   kExtensionVersion1,
+                                                   /*expected_result=*/true));
+
+  ASSERT_NO_FATAL_FAILURE(CheckUserMayInstall(kExtensionId1, kExtensionVersion1,
+                                              /*is_from_webstore=*/true,
+                                              /*expected_result=*/true));
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionBlockedMessage) {
   GetProfile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  g_browser_process->local_state()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
   // We should display a different message to the user, depending on the
@@ -428,6 +478,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionBlockedInBothLevels) {
   GetProfile()->GetPrefs()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  g_browser_process->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
   SetExtensionInstallPolicy(
       kExtensionId1, kExtensionVersion1,
@@ -461,6 +513,8 @@ IN_PROC_BROWSER_TEST_F(
     CanInstallExtensionBlockedByUserLevelPolicyAllowedByMachineLevelPolicy) {
   GetProfile()->GetPrefs()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  g_browser_process->local_state()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
   SetExtensionInstallPolicy(
       kExtensionId1, kExtensionVersion1,
@@ -491,6 +545,8 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionInstallPolicyServiceTest,
     CanInstallExtensionAllowedByUserLevelPolicyBlockedByMachineLevelPolicy) {
   GetProfile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+  g_browser_process->local_state()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
 
   SetExtensionInstallPolicy(
