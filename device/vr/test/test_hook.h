@@ -31,9 +31,7 @@ class VRTestHook {
   virtual void OnFrameSubmitted(const std::vector<ViewData>& frame_data,
                                 const std::vector<LayerData>& layers) = 0;
   virtual DeviceConfig WaitGetDeviceConfig() = 0;
-  virtual std::optional<gfx::Transform> WaitGetPresentingPose() = 0;
-  virtual std::optional<gfx::Transform> WaitGetMagicWindowPose() = 0;
-  virtual std::vector<ControllerFrameData> WaitGetAllControllerData() = 0;
+  virtual device_test::mojom::XRTestFrameDataPtr WaitGetFrameData() = 0;
   virtual device_test::mojom::EventData WaitGetEventData() = 0;
   virtual bool WaitGetCanCreateSession() = 0;
   virtual device::mojom::XRVisibilityMaskPtr WaitGetVisibilityMask(

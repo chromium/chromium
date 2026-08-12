@@ -1249,8 +1249,6 @@ XrResult XRAPI_PTR xrSyncActions(XrSession session,
                                  const XrActionsSyncInfo* sync_info) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
-  RETURN_IF_FALSE(GetTestHelper().UpdateData(), XR_ERROR_VALIDATION_FAILURE,
-                  "xrSyncActionData can't receive data from test");
   RETURN_IF(sync_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionsSyncInfo is nullptr");
   RETURN_IF(sync_info->type != XR_TYPE_ACTIONS_SYNC_INFO,
@@ -1280,6 +1278,8 @@ XrResult XRAPI_PTR xrWaitFrame(XrSession session,
                                XrFrameState* frame_state) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
+  RETURN_IF_FALSE(GetTestHelper().UpdateData(), XR_ERROR_VALIDATION_FAILURE,
+                  "xrWaitFrame can't receive data from test");
   RETURN_IF(frame_wait_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrFrameWaitInfo is nullptr");
   RETURN_IF(frame_wait_info->type != XR_TYPE_FRAME_WAIT_INFO,

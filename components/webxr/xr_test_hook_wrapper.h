@@ -30,9 +30,7 @@ class XRTestHookWrapper : public device::VRTestHook {
   void OnFrameSubmitted(const std::vector<device::ViewData>& views,
                         const std::vector<device::LayerData>& layers) override;
   device::DeviceConfig WaitGetDeviceConfig() override;
-  std::optional<gfx::Transform> WaitGetPresentingPose() override;
-  std::optional<gfx::Transform> WaitGetMagicWindowPose() override;
-  std::vector<device::ControllerFrameData> WaitGetAllControllerData() override;
+  device_test::mojom::XRTestFrameDataPtr WaitGetFrameData() override;
   device_test::mojom::EventData WaitGetEventData() override;
   bool WaitGetCanCreateSession() override;
   device::mojom::XRVisibilityMaskPtr WaitGetVisibilityMask(

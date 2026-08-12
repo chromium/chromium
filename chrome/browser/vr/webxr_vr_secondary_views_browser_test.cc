@@ -18,16 +18,9 @@ const float kIpd = 0.7f;
 
 class MyXRMock : public MockXRDeviceHookBase {
  public:
-  void WaitGetDeviceConfig(
-      device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
-      final {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-    std::move(callback).Run({.interpupillary_distance = kIpd});
-  }
+  MyXRMock() { SetDeviceConfig({.interpupillary_distance = kIpd}); }
 
-  void WaitGetPresentingPose(
-      device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
-      final {
+  void UpdateFrameDataUnlocked() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
     gfx::Transform pose;
     uint32_t frame_count = GetFrameCount();
@@ -36,7 +29,7 @@ class MyXRMock : public MockXRDeviceHookBase {
     // Rotate about the Y-axis similarly.
     pose.RotateAboutYAxis(frame_count);
 
-    std::move(callback).Run(std::move(pose));
+    SetHeadPose(pose);
   }
 };
 

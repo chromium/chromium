@@ -309,6 +309,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       secondary_configs_supported_;
 
   std::vector<device::ControllerFrameData> controllers_;
+  std::optional<gfx::Transform> presenting_pose_;
 
   std::queue<XrEventDataBuffer> event_queue_;
 

@@ -134,44 +134,38 @@ void MockXRDeviceHookBase::OnFrameSubmitted(
   std::move(callback).Run();
 }
 
+void MockXRDeviceHookBase::SetDeviceConfig(const device::DeviceConfig& config) {
+  base::AutoLock lock(lock_);
+  config_ = config;
+}
+
 void MockXRDeviceHookBase::WaitGetDeviceConfig(
     device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  device::DeviceConfig ret = {.interpupillary_distance = 0.1f};
+  device::DeviceConfig ret;
+  {
+    base::AutoLock lock(lock_);
+    ret = config_;
+  }
   std::move(callback).Run(std::move(ret));
 }
 
-void MockXRDeviceHookBase::WaitGetPresentingPose(
-    device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback) {
+void MockXRDeviceHookBase::WaitGetFrameData(
+    device_test::mojom::XRTestHook::WaitGetFrameDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  gfx::Transform pose;
+  UpdateFrameDataUnlocked();
+  auto frame_data = device_test::mojom::XRTestFrameData::New();
   {
     base::AutoLock lock(lock_);
     if (head_pose_) {
-      pose = *head_pose_;
+      frame_data->head_pose = *head_pose_;
     }
-  }
-  std::move(callback).Run(pose);
-}
-
-void MockXRDeviceHookBase::WaitGetMagicWindowPose(
-    device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  std::move(callback).Run(gfx::Transform());
-}
-
-void MockXRDeviceHookBase::WaitGetAllControllerData(
-    device_test::mojom::XRTestHook::WaitGetAllControllerDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  std::vector<device::ControllerFrameData> ret;
-  {
-    base::AutoLock lock(lock_);
-    ret.reserve(input_sources_.size());
+    frame_data->controllers.reserve(input_sources_.size());
     for (const auto& source : input_sources_) {
-      ret.push_back(source->GetFrameData());
+      frame_data->controllers.push_back(source->GetFrameData());
     }
   }
-  std::move(callback).Run(std::move(ret));
+  std::move(callback).Run(std::move(frame_data));
 }
 
 void MockXRDeviceHookBase::WaitGetEventData(
@@ -208,7 +202,6 @@ MockXRInputSource& MockXRDeviceHookBase::CreateMinimalGamepad(
 }
 
 void MockXRDeviceHookBase::SetHeadPose(const gfx::Transform& pose) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
   head_pose_ = pose;
 }

@@ -44,6 +44,11 @@ struct ControllerFrameData {
   bool is_valid = false;
 };
 
+struct XRTestFrameData {
+  gfx.mojom.Transform? head_pose;
+  array<ControllerFrameData> controllers;
+};
+
 // Event type is used by test to simulate runtime events.
 enum EventType {
   kSessionLost,
@@ -78,17 +83,9 @@ interface XRTestHook {
   // the test.
   [Sync] WaitGetDeviceConfig() => (DeviceConfig config);
 
-  // Called by the XR runtime to retrieve the XR device's pose while in a
-  // presenting/exclusive session.
-  [Sync] WaitGetPresentingPose() => (gfx.mojom.Transform? data);
-
-  // Called by the XR runtime to retrieve the XR device's pose while in a
-  // magic window/non-exclusive session.
-  [Sync] WaitGetMagicWindowPose() => (gfx.mojom.Transform? data);
-
-  // Called by the XR runtime anytime it updates its controller data to retrieve
-  // all controller data registered by the test.
-  [Sync] WaitGetAllControllerData() => (array<ControllerFrameData> data);
+  // Called by the XR runtime to get data that is only expected to update once
+  // per frame (e.g. head and controller poses).
+  [Sync] WaitGetFrameData() => (XRTestFrameData data);
 
   // Called by the OpenXR test to simulate runtime events.
   [Sync] WaitGetEventData() => (EventData data);
@@ -96,7 +93,10 @@ interface XRTestHook {
   // Used to indicate if the Fake Runtime would allow creating any session.
   [Sync] WaitGetCanCreateSession() => (bool can_create_session);
 
-  // Called by the OpenXR test to get visibility mask data.
+  // Called by the OpenXR test to get visibility mask data. While this is queried
+  // as part of the per-frame view configuration data, OpenXR also supports
+  // updating it asynchronously via an event, and so we leave it as a separate
+  // method from WaitGetFrameData.
   [Sync] WaitGetVisibilityMask(uint32 view_index)
       => (device.mojom.XRVisibilityMask? mask);
 };

@@ -32,38 +32,15 @@ device::DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
   return {};
 }
 
-std::optional<gfx::Transform> XRTestHookWrapper::WaitGetPresentingPose() {
+device_test::mojom::XRTestFrameDataPtr XRTestHookWrapper::WaitGetFrameData() {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    std::optional<gfx::Transform> pose;
-    hook_->WaitGetPresentingPose(&pose);
-    return pose;
+    device_test::mojom::XRTestFrameDataPtr frame_data;
+    hook_->WaitGetFrameData(&frame_data);
+    return frame_data;
   }
 
-  return std::nullopt;
-}
-
-std::optional<gfx::Transform> XRTestHookWrapper::WaitGetMagicWindowPose() {
-  if (hook_) {
-    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    std::optional<gfx::Transform> pose;
-    hook_->WaitGetMagicWindowPose(&pose);
-    return pose;
-  }
-
-  return std::nullopt;
-}
-
-std::vector<device::ControllerFrameData>
-XRTestHookWrapper::WaitGetAllControllerData() {
-  if (hook_) {
-    mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    std::vector<device::ControllerFrameData> data;
-    hook_->WaitGetAllControllerData(&data);
-    return data;
-  }
-
-  return {};
+  return nullptr;
 }
 
 device_test::mojom::EventData XRTestHookWrapper::WaitGetEventData() {

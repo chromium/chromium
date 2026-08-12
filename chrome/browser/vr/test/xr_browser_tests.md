@@ -186,9 +186,9 @@ runtimes once they have been attempted to be started.
 
 Once created, the runtime being used will call the various functions inherited
 from [`VRTestHook`][vr test hook] whenever it would normally acquire or submit
-data from or to an actual device. For example, `WaitGetControllerData()` will be
-called every time the runtime would normally check the state of a real
-controller, and `OnFrameSubmitted()` will be called each time the runtime
+data from or to an actual device. For example, `WaitGetFrameData()` will be
+called every time the runtime would normally check the state of the headset pose
+and controllers, and `OnFrameSubmitted()` will be called each time the runtime
 submits a finished frame to the headset.
 
 [vr test hook]: https://chromium.googlesource.com/chromium/src/+/main/device/vr/test/test_hook.h

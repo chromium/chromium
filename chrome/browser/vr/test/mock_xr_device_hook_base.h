@@ -47,25 +47,18 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
-      override;
-  void WaitGetPresentingPose(
-      device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
-      override;
-  void WaitGetMagicWindowPose(
-      device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback)
-      override;
-  void WaitGetAllControllerData(
-      device_test::mojom::XRTestHook::WaitGetAllControllerDataCallback callback)
-      override;
-  void WaitGetEventData(device_test::mojom::XRTestHook::WaitGetEventDataCallback
-                            callback) override;
+      final;
+  void WaitGetFrameData(
+      device_test::mojom::XRTestHook::WaitGetFrameDataCallback callback) final;
+  void WaitGetEventData(
+      device_test::mojom::XRTestHook::WaitGetEventDataCallback callback) final;
   void WaitGetCanCreateSession(
       device_test::mojom::XRTestHook::WaitGetCanCreateSessionCallback callback)
-      override;
+      final;
   void WaitGetVisibilityMask(
       uint32_t view_index,
       device_test::mojom::XRTestHook::WaitGetVisibilityMaskCallback callback)
-      override;
+      final;
 
   // Input source management:
   MockXRInputSource& CreateInputSource(device::mojom::XRHandedness handedness =
@@ -74,6 +67,9 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   MockXRInputSource& CreateMinimalGamepad(
       device::mojom::XRHandedness handedness =
           device::mojom::XRHandedness::RIGHT);
+
+  // Device configuration:
+  void SetDeviceConfig(const device::DeviceConfig& config);
 
   // Head pose:
   void SetHeadPose(const gfx::Transform& pose);
@@ -97,6 +93,10 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void WaitForTotalFrameCount(uint32_t total_count);
 
  protected:
+  // This allows subclasses to update frame data (e.g. SetHeadPose) before
+  // the frame data is returned to the runtime.
+  virtual void UpdateFrameDataUnlocked() {}
+
   // This allows subclasses to process the submitted frame. This method will be
   // called *after* the frame count has been incremented but *before* any
   // potential wait loop is signaled.
@@ -113,6 +113,8 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   absl::flat_hash_map<uint32_t, device::mojom::XRVisibilityMaskPtr>
       visibility_masks_ GUARDED_BY(lock_);
   std::optional<gfx::Transform> head_pose_ GUARDED_BY(lock_);
+  device::DeviceConfig config_ GUARDED_BY(lock_) = {
+      .interpupillary_distance = 0.1f};
 
  private:
   mojo::Receiver<device_test::mojom::XRTestHook> receiver_{this};

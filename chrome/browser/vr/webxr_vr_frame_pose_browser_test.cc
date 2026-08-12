@@ -27,20 +27,12 @@ struct Frame {
 
 class MyXRMock : public MockXRDeviceHookBase {
  public:
+  MyXRMock() { SetDeviceConfig({.interpupillary_distance = kIPD}); }
+
   void ProcessSubmittedFrameUnlocked(
       const std::vector<device::ViewData>& views,
       const std::vector<device::LayerData>& layers) final;
-  void WaitGetDeviceConfig(
-      device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
-      final {
-    std::move(callback).Run(GetDeviceConfig());
-  }
-  void WaitGetPresentingPose(
-      device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback)
-      final;
-  void WaitGetMagicWindowPose(
-      device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback)
-      final;
+  void UpdateFrameDataUnlocked() override;
 
   base::Lock frame_data_lock;
   std::vector<Frame> submitted_frames GUARDED_BY(frame_data_lock);
@@ -86,20 +78,9 @@ void MyXRMock::ProcessSubmittedFrameUnlocked(
   }
 }
 
-void MyXRMock::WaitGetMagicWindowPose(
-    device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback) {
+void MyXRMock::UpdateFrameDataUnlocked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  // Almost identity matrix - enough different that we can identify if magic
-  // window poses are used instead of presenting poses.
-  gfx::Transform pose;
-  pose.set_rc(1, 1, -1);
-  std::move(callback).Run(std::move(pose));
-}
-
-void MyXRMock::WaitGetPresentingPose(
-    device_test::mojom::XRTestHook::WaitGetPresentingPoseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  DLOG(ERROR) << "WaitGetPresentingPose: " << frame_id_;
+  DLOG(ERROR) << "UpdateFrameData: " << frame_id_;
 
   gfx::Transform pose;
 
@@ -113,7 +94,7 @@ void MyXRMock::WaitGetPresentingPose(
     last_immersive_frame_data = pose;
   }
 
-  std::move(callback).Run(pose);
+  SetHeadPose(pose);
 }
 
 std::string GetMatrixAsString(const gfx::Transform& m) {

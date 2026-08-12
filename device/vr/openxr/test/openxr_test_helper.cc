@@ -159,6 +159,11 @@ void OpenXrTestHelper::Reset() {
   action_localized_names_.clear();
   action_set_names_.clear();
   action_set_localized_names_.clear();
+
+  presenting_pose_ = std::nullopt;
+  for (auto& controller : controllers_) {
+    controller = {};
+  }
 }
 
 void OpenXrTestHelper::TestFailure() {
@@ -1232,10 +1237,7 @@ void OpenXrTestHelper::UpdateEventQueue() {
 
 std::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
   base::AutoLock lock(lock_);
-  if (test_hook_) {
-    return test_hook_->WaitGetPresentingPose();
-  }
-  return std::nullopt;
+  return presenting_pose_;
 }
 
 std::optional<device::DeviceConfig> OpenXrTestHelper::GetDeviceConfig() {
@@ -1491,7 +1493,12 @@ std::string OpenXrTestHelper::PathToString(XrPath path) const {
 bool OpenXrTestHelper::UpdateData() {
   base::AutoLock auto_lock(lock_);
   if (test_hook_) {
-    controllers_ = test_hook_->WaitGetAllControllerData();
+    device_test::mojom::XRTestFrameDataPtr frame_data =
+        test_hook_->WaitGetFrameData();
+    if (frame_data) {
+      presenting_pose_ = std::move(frame_data->head_pose);
+      controllers_ = std::move(frame_data->controllers);
+    }
     return true;
   }
   return false;
