@@ -10331,21 +10331,6 @@
             ]
         }
     ],
-    "EnableDlpFileSystemApi": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDlpFileSystemApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableDrDc": [
         {
             "platforms": [
