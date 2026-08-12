@@ -36,8 +36,6 @@ external/wpt/client-hints/viewport-size/viewport-size-window-different-dimension
 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-blended-with-transform-and-perspective.html
 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-both-parent-and-blended-with-3D-transform.html
 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-with-transform-and-preserve-3D.html
-external/wpt/css/compositing/root-element-opacity-change.html
-external/wpt/css/compositing/svg/mix-blend-mode-svg-rectangle.html
 external/wpt/css/CSS2/floats-clear/floats-142.xht
 external/wpt/css/CSS2/floats-clear/floats-143.xht
 external/wpt/css/CSS2/linebox/empty-inline-003.xht
