@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/storage/storage_pressure_bubble_view.h"
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -86,26 +85,15 @@ StoragePressureBubbleView::StoragePressureBubbleView(
 }
 
 StoragePressureBubbleView::~StoragePressureBubbleView() {
-  CHECK(!in_accept_);
   if (ignored_) {
     RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kIgnored);
   }
 }
 
 void StoragePressureBubbleView::OnDialogAccepted() {
-  base::AutoReset reset_in_accept(&in_accept_, true);
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
-
   ignored_ = false;
   RecordBubbleHistogramValue(
       StoragePressureBubbleHistogramValue::kOpenedAllSites);
-  // TODO(ellyjones): What is this doing here? The widget's about to close
-  // anyway?
-  GetWidget()->Close();
-
-  CHECK(weak_this);
-  CHECK(bwi_);
-  CHECK(bwi_->GetProfile());
 
   const GURL all_sites_gurl(kAllSitesContentSettingsUrl);
   NavigateParams params(bwi_->GetBrowserForMigrationOnly(), all_sites_gurl,
