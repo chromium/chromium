@@ -102,6 +102,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "ai_overlay_notes_browsertest.cc",
     "markdown_builder_browsertest.cc",
     "tools/tools_browsertest.cc",
   ]

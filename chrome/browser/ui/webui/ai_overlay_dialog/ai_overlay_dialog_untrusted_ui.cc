@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -54,9 +56,18 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIAiOverlayDialogUntrustedURL);
 
+  // TODO(crbug.com/543871096): Localize remaining Notes subpage strings.
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"add", IDS_ADD},
+      {"delete", IDS_DELETE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
   webui::SetupWebUIDataSource(
       html_source, kAiOverlayDialogUntrustedResources,
       IDR_AI_OVERLAY_DIALOG_UNTRUSTED_AI_OVERLAY_DIALOG_HTML);
+  html_source->AddResourcePath(
+      "notes", IDR_AI_OVERLAY_DIALOG_UNTRUSTED_NOTES_NOTES_HTML);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->OverrideContentSecurityPolicy(
@@ -107,6 +118,13 @@ void AiOverlayDialogUntrustedUI::BindInterface(
         receiver) {
   page_handler_factory_receiver_.reset();
   page_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void AiOverlayDialogUntrustedUI::BindInterface(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver) {
+  mojo::PendingRemote<ai_overlay_dialog::mojom::Page> dummy_remote;
+  page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
+      std::move(receiver), std::move(dummy_remote), nullptr);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AiOverlayDialogUntrustedUI)

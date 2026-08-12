@@ -42,6 +42,8 @@ class AiOverlayDialogUntrustedUI
   void BindInterface(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandlerFactory>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver);
 
   // ai_overlay_dialog::mojom::PageHandlerFactor interface
   void CreatePageHandler(

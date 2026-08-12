@@ -1,0 +1,64 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+}
+
+#add-note-section {
+  align-items: flex-end;
+  display: flex;
+  gap: 12px;
+}
+
+#newNoteKey,
+#newNoteValue {
+  flex: 1;
+}
+
+#notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.note-key {
+  font-weight: 500;
+  min-width: 140px;
+  word-break: break-word;
+}
+
+.note-value-input {
+  flex: 1;
+}
+
+#empty-state {
+  color: var(--cr-secondary-text-color);
+  font-style: italic;
+  margin: 0;
+}

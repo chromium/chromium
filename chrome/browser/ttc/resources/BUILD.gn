@@ -27,9 +27,15 @@ action("generate_tool_definitions") {
 build_webui("build") {
   grd_prefix = "ai_overlay_dialog_untrusted"
 
-  static_files = [ "ai_overlay_dialog.html" ]
+  static_files = [
+    "ai_overlay_dialog.html",
+    "notes/notes.html",
+  ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "notes/app.css",
+  ]
 
   web_component_files = [ "app.ts" ]
 
@@ -42,6 +48,9 @@ build_webui("build") {
     "journal.ts",
     "local_speech_recognition.ts",
     "logging.ts",
+    "notes/app.html.ts",
+    "notes/app.ts",
+    "notes/browser_proxy.ts",
     "page_context_manager.ts",
   ]
 
@@ -57,6 +66,7 @@ build_webui("build") {
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
