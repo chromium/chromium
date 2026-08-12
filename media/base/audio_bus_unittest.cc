@@ -318,12 +318,12 @@ TEST_F(AudioBusTest, CopyTo) {
                          kSampleRate, kFrameCount);
   std::unique_ptr<AudioBus> bus1 =
       AudioBus::Create(kDefaultChannels, kFrameCount);
-  std::unique_ptr<AudioBus> bus2 = AudioBus::Create(params);
 
   const size_t memory_size = AudioBus::CalculateMemorySize(params);
 
   {
     SCOPED_TRACE("Created");
+    std::unique_ptr<AudioBus> bus2 = AudioBus::Create(params);
     CopyTest(bus1.get(), bus2.get());
   }
   {
@@ -332,7 +332,8 @@ TEST_F(AudioBusTest, CopyTo) {
     auto data =
         base::AlignedUninit<uint8_t>(memory_size, AudioBus::kChannelAlignment);
 
-    bus2 = AudioBus::WrapMemory(params, data.as_span());
+    std::unique_ptr<AudioBus> bus2 =
+        AudioBus::WrapMemory(params, data.as_span());
     CopyTest(bus1.get(), bus2.get());
   }
   {
@@ -341,7 +342,8 @@ TEST_F(AudioBusTest, CopyTo) {
     auto data = base::AlignedUninit<float>(memory_size / sizeof(float),
                                            AudioBus::kChannelAlignment);
 
-    bus2 = AudioBus::WrapMemory(params, data.as_span());
+    std::unique_ptr<AudioBus> bus2 =
+        AudioBus::WrapMemory(params, data.as_span());
     CopyTest(bus1.get(), bus2.get());
   }
 }

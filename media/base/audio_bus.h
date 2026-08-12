@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
@@ -261,13 +262,12 @@ class MEDIA_EXPORT AudioBus {
 
   // Chunk of binary data for bitstream formats.
   // This might point towards external memory, or `data_`.
-  // TODO(crbug.com/385028986): Convert to `base::raw_span`
-  RAW_PTR_EXCLUSION base::span<uint8_t> reserved_memory_;
+  base::raw_span<uint8_t> reserved_memory_;
 
   // View over `reserved_memory_`, which represents the chunk of memory which
   // is actively reserved to hold bitstream data. The size of this memory can
   // be adjusted using SetBitstreamDataSize().
-  RAW_PTR_EXCLUSION BitstreamData bitstream_data_;
+  base::raw_span<uint8_t> bitstream_data_;
 
   // Whether the data is compressed bitstream or not.
   bool is_bitstream_format_ = false;
