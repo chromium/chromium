@@ -177,7 +177,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator.StatusIndicatorObserver;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
@@ -243,7 +242,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
-import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
@@ -309,7 +308,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -387,8 +385,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CharSequence mApplicationLabel;
     private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
     private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
-    private @Nullable EnterpriseSignalsDisclaimerCoordinator
-            mEnterpriseSignalsDisclaimerCoordinator;
+    private @Nullable EnterpriseSignalsDisclaimerController mEnterpriseSignalsDisclaimerController;
     private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
@@ -925,9 +922,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mGlicPromoCoordinator != null) {
             mGlicPromoCoordinator.destroy();
         }
-        if (mEnterpriseSignalsDisclaimerCoordinator != null) {
-            mEnterpriseSignalsDisclaimerCoordinator.destroy();
-            mEnterpriseSignalsDisclaimerCoordinator = null;
+        if (mEnterpriseSignalsDisclaimerController != null) {
+            mEnterpriseSignalsDisclaimerController.destroy();
+            mEnterpriseSignalsDisclaimerController = null;
         }
 
         if (mInactivityTrackerSupplier.get() != null) {
@@ -1336,33 +1333,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mProfileSupplier.asNonNull().get().getOriginalProfile(),
                         SigninAndHistorySyncActivityLauncherImpl.get());
 
-        // TODO(b/512836948): This is temporary for testing purposes. A proper way to launch and
-        // control the dialog shall be introduced later on.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
-            final Profile profile = mProfileSupplier.asNonNull().get().getOriginalProfile();
-            final SigninManager signinManager =
-                    Objects.requireNonNull(
-                            IdentityServicesProvider.get().getSigninManager(profile));
-            final IdentityManager identityManager =
-                    Objects.requireNonNull(signinManager.getIdentityManager());
-            final @Nullable AccountInfo primaryAccount = identityManager.getPrimaryAccountInfo();
-            if (primaryAccount != null) {
-                signinManager.isAccountManaged(
-                        primaryAccount,
-                        (Boolean isManaged) -> {
-                            if (isManaged) {
-                                mEnterpriseSignalsDisclaimerCoordinator =
-                                        new EnterpriseSignalsDisclaimerCoordinator(
-                                                mActivity,
-                                                assertNonNull(getBottomSheetController()),
-                                                signinManager,
-                                                url ->
-                                                        CustomTabActivity.showInfoPage(
-                                                                mActivity, url));
-                                mEnterpriseSignalsDisclaimerCoordinator.show();
-                            }
-                        });
-            }
+            mEnterpriseSignalsDisclaimerController =
+                    EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
+                            mProfileSupplier.asNonNull().get().getOriginalProfile(),
+                            assertNonNull(getBottomSheetController()),
+                            mActivity,
+                            url -> CustomTabActivity.showInfoPage(mActivity, url));
         }
     }
 
@@ -2665,6 +2642,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
         if (TabbedCrashRecoveryDelegate.getInstance()
                 .maybeShowCrashRecoveryDialog(mModalDialogManagerSupplier, mActivity)) {
+            return true;
+        }
+
+        if (mEnterpriseSignalsDisclaimerController != null
+                && mEnterpriseSignalsDisclaimerController.maybeShow()) {
             return true;
         }
 

@@ -65,13 +65,17 @@ public class EnterpriseSignalsDisclaimerCoordinator {
     }
 
     /** Shows the enterprise signals disclaimer bottom sheet. */
-    public void show() {
-        mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+    public boolean show() {
+        return mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+    }
+
+    public boolean isShowing() {
+        return mBottomSheetController.getCurrentSheetContent() == mSheetContent;
     }
 
     /** Destroys the coordinator, hiding the sheet and cleaning up resources. */
     public void destroy() {
-        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+        mBottomSheetController.hideContent(mSheetContent, /* animate= */ false);
         mModelChangeProcessor.destroy();
         mMediator.destroy();
     }
