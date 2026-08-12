@@ -418,7 +418,45 @@ public class WebViewChromiumAwInit {
                     }
                 });
 
-        return new StartupTasksRunner(preBrowserProcessStartTasks, postBrowserProcessStartTasks);
+        // Initialize the decoupled StartupTasksRunner with a Delegate interface implementation.
+        return new StartupTasksRunner(
+                new StartupTasksRunner.Delegate() {
+                    @Override
+                    public void onStartupComplete(
+                            @StartupCallSite int startCallSite,
+                            @StartupCallSite int finishCallSite,
+                            long startTimeMs,
+                            long totalTimeTakenMs,
+                            long longestUiBlockingTaskTimeMs,
+                            @StartupTasksRunner.StartupMode int startupMode) {
+                        recordStartupMetrics(
+                                startCallSite,
+                                finishCallSite,
+                                startTimeMs,
+                                totalTimeTakenMs,
+                                longestUiBlockingTaskTimeMs,
+                                startupMode);
+                    }
+
+                    @Override
+                    public void onStartupFailed(RuntimeException e) {
+                        mStartupException = e;
+                    }
+
+                    @Override
+                    public void onStartupFailed(Error e) {
+                        mStartupError = e;
+                    }
+
+                    @Override
+                    public boolean isStartupFinished() {
+                        return mInitState.get() == INIT_FINISHED;
+                    }
+                },
+                preBrowserProcessStartTasks,
+                postBrowserProcessStartTasks,
+                mRunStartupTasksAsync,
+                mChromiumFirstStartupRequestMode.get());
     }
 
     private void preBrowserProcessStartTask() {
@@ -1008,11 +1046,31 @@ public class WebViewChromiumAwInit {
 
     // This class is responsible for running chromium startup tasks asynchronously or synchronously
     // depending on if startup is triggered from the background or UI thread.
-    private final class StartupTasksRunner {
+    private static final class StartupTasksRunner {
+        public interface Delegate {
+            void onStartupComplete(
+                    @StartupCallSite int startCallSite,
+                    @StartupCallSite int finishCallSite,
+                    long startTimeMs,
+                    long totalTimeTakenMs,
+                    long longestUiBlockingTaskTimeMs,
+                    @StartupMode int startupMode);
+
+            void onStartupFailed(RuntimeException e);
+
+            void onStartupFailed(Error e);
+
+            boolean isStartupFinished();
+        }
+
+        private final Delegate mDelegate;
         private final ArrayDeque<Runnable> mPreBrowserProcessStartQueue;
         private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
         private final int mPreBrowserProcessStartTasksSize;
         private final int mNumTasks;
+        private final boolean mRunStartupTasksAsync;
+        private final int mChromiumFirstStartupRequestMode;
+
         private boolean mAsyncHasBeenTriggered;
         private long mLongestUiBlockingTaskTimeMs;
         private long mTotalTimeTakenMs;
@@ -1055,12 +1113,18 @@ public class WebViewChromiumAwInit {
         // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewChromiumStartupMode)
 
         StartupTasksRunner(
+                Delegate delegate,
                 ArrayDeque<Runnable> preBrowserProcessStartTasks,
-                ArrayDeque<Runnable> postBrowserProcessStartTasks) {
+                ArrayDeque<Runnable> postBrowserProcessStartTasks,
+                boolean runStartupTasksAsync,
+                int chromiumFirstStartupRequestMode) {
+            mDelegate = delegate;
             mPreBrowserProcessStartQueue = preBrowserProcessStartTasks;
             mPostBrowserProcessStartQueue = postBrowserProcessStartTasks;
             mPreBrowserProcessStartTasksSize = preBrowserProcessStartTasks.size();
             mNumTasks = mPreBrowserProcessStartTasksSize + postBrowserProcessStartTasks.size();
+            mRunStartupTasksAsync = runStartupTasksAsync;
+            mChromiumFirstStartupRequestMode = chromiumFirstStartupRequestMode;
         }
 
         void run(@StartupCallSite int callSite, boolean triggeredFromUIThread) {
@@ -1076,7 +1140,7 @@ public class WebViewChromiumAwInit {
 
             // Early return to avoid repeating the return call within sync and async blocks
             if (mPostBrowserProcessStartQueue.isEmpty()) {
-                assert mInitState.get() == INIT_FINISHED;
+                assert mDelegate.isStartupFinished();
                 return;
             }
 
@@ -1177,7 +1241,7 @@ public class WebViewChromiumAwInit {
                 mTotalTimeTakenMs += durationMs;
                 if (mPostBrowserProcessStartQueue.isEmpty()) {
                     // We are done running all the tasks, so record the metrics.
-                    recordStartupMetrics(
+                    mDelegate.onStartupComplete(
                             mStartCallSite,
                             mFinishCallSite,
                             /* startTimeMs= */ mStartupTimeMs,
@@ -1185,13 +1249,13 @@ public class WebViewChromiumAwInit {
                             /* longestUiBlockingTaskTimeMs= */ mLongestUiBlockingTaskTimeMs,
                             calculateStartupMode());
                 }
-            } catch (RuntimeException | Error e) {
+            } catch (RuntimeException e) {
                 Log.e(TAG, "WebView chromium startup failed", e);
-                if (e instanceof RuntimeException re) {
-                    mStartupException = re;
-                } else {
-                    mStartupError = (Error) e;
-                }
+                mDelegate.onStartupFailed(e);
+                throw e;
+            } catch (Error e) {
+                Log.e(TAG, "WebView chromium startup failed", e);
+                mDelegate.onStartupFailed(e);
                 throw e;
             }
         }
@@ -1218,7 +1282,7 @@ public class WebViewChromiumAwInit {
             }
 
             if (mFirstTaskFromSynchronousCall) {
-                return mChromiumFirstStartupRequestMode.get() == SYNC
+                return mChromiumFirstStartupRequestMode == SYNC
                         ? StartupMode.FULLY_SYNC
                         : StartupMode.ASYNC_BUT_FULLY_SYNC;
             }
