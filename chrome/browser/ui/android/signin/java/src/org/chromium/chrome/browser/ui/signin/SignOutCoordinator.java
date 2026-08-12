@@ -179,10 +179,9 @@ public class SignOutCoordinator {
      * Starts a silent sign-out flow that only shows a snackbar upon completion. This bypasses the
      * standard signout confirmation dialog.
      *
-     * <p>This should ONLY be used when caller is sure there's no unsynced data, such as reversing a
-     * sign-in action immediately after it was completed (e.g., via an "Undo" button on a snackbar).
-     * For all other sign-out scenarios, use {@link #startSignOutFlow()} to ensure the user can save
-     * their work.
+     * <p>This should ONLY be used for reversing a sign-in action immediately after it was completed
+     * (e.g., via an "Undo" button on a snackbar). For all other sign-out scenarios, use {@link
+     * #startSignOutFlow()} to ensure the user can save their work.
      *
      * @param context Context to create the view.
      * @param profile The Profile to sign out of.
@@ -192,7 +191,7 @@ public class SignOutCoordinator {
      *     finishes. If sign-out fails it will not be called.
      */
     @MainThread
-    public static void undoSignInWithSnackbar(
+    static void undoSignInWithSnackbar(
             Context context,
             Profile profile,
             SnackbarManager snackbarManager,
@@ -223,13 +222,6 @@ public class SignOutCoordinator {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(syncService);
 
-        syncService.getTypesWithUnsyncedData(
-                unsyncedTypes -> {
-                    if (!unsyncedTypes.isEmpty()) {
-                        throw new IllegalStateException(
-                                "This sign-out flow should not be used if there is unsaved data.");
-                    }
-                });
         signOutAndShowSnackbar(
                 context,
                 snackbarManager,

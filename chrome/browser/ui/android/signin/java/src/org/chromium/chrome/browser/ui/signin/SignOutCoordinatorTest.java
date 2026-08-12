@@ -352,13 +352,25 @@ public class SignOutCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testUndoSignInWithSnackbarThrowsOnUnsyncedData() {
+    // There can be situations where unsynced data exists during the sign-in undo flow. In this
+    // case, the undo flow should not throw an exception.
+    public void testUndoSignInWithSnackbarWithUnsyncedData() {
         setUpMocks();
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+        @SignoutReason
+        int signOutReason = SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS;
+        mockSignOutSuccess(signOutReason);
 
-        assertUndoSignInWithSnackbarThrows(
-                IllegalStateException.class,
-                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SignOutCoordinator.undoSignInWithSnackbar(
+                                mActivityTestRule.getActivity(),
+                                mProfile,
+                                mSnackbarManager,
+                                signOutReason,
+                                mOnSignOut));
+
+        verifySignOutAndSnackbar();
     }
 
     @Test
@@ -444,7 +456,8 @@ public class SignOutCoordinatorTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount();
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        doAnswer(
+        org.mockito.Mockito.lenient()
+                .doAnswer(
                         args -> {
                             Callback<Set<Integer>> callback = args.getArgument(0);
                             callback.onResult(mUnsyncedDataTypes);
