@@ -53760,6 +53760,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabMultiSelect_AddSelectionFromAnchorTo">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a user Shift+Ctrl+clicks (Shift+Cmd+clicks on macOS) a tab to
+    add a range of tabs from the anchor tab to the selection in the tab strip.
+  </description>
+</action>
+
+<action name="TabMultiSelect_ExtendSelectionTo">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a user Shift+clicks a tab to extend the tab selection from the
+    anchor tab to the clicked tab in the tab strip.
+  </description>
+</action>
+
+<action name="TabMultiSelect_ToggleSelected">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a user Ctrl+clicks (Cmd+clicks on macOS) a tab to toggle its
+    selection state in the tab strip.
+  </description>
+</action>
+
 <action name="TabMultiSelectV2{ActionType}">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>

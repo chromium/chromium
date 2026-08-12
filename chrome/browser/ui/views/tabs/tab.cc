@@ -708,10 +708,14 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
                                    parent());
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
       controller_->AddSelectionFromAnchorTo(this);
+      base::RecordAction(
+          UserMetricsAction("TabMultiSelect_AddSelectionFromAnchorTo"));
     } else if (event.IsShiftDown()) {
       controller_->ExtendSelectionTo(this);
+      base::RecordAction(UserMetricsAction("TabMultiSelect_ExtendSelectionTo"));
     } else if (IsSelectionModifierDown(event)) {
       controller_->ToggleSelected(this);
+      base::RecordAction(UserMetricsAction("TabMultiSelect_ToggleSelected"));
       if (!IsSelected()) {
         // Don't allow dragging non-selected tabs.
         return false;

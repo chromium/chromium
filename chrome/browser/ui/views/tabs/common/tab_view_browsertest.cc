@@ -43,6 +43,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
@@ -851,4 +852,64 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, AlertIndicatorDecorateOnCollapse) {
   const gfx::Rect expected_bounds(tab_bounds.width() / 2,
                                   tab_bounds.height() / 2, 0, 0);
   EXPECT_EQ(expected_bounds, alert_indicator->bounds());
+}
+
+IN_PROC_BROWSER_TEST_F(TabViewTest, MultiSelectUserActions) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+
+  views::View* tab_view_1 = unpinned_collection_node()->children()[1]->view();
+  views::View* tab_view_2 = unpinned_collection_node()->children()[2]->view();
+  views::View* tab_view_3 = unpinned_collection_node()->children()[3]->view();
+
+  const ui::EventFlags ctrl_modifier =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+
+  ui::MouseEvent ctrl_click(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                            gfx::Point(0, 0), ui::EventTimeForNow(),
+                            ui::EF_LEFT_MOUSE_BUTTON | ctrl_modifier,
+                            ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_1->OnMousePressed(ctrl_click);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("TabMultiSelect_ToggleSelected"));
+  ui::MouseEvent release_ctrl(ui::EventType::kMouseReleased, gfx::Point(0, 0),
+                              gfx::Point(0, 0), ui::EventTimeForNow(),
+                              ui::EF_LEFT_MOUSE_BUTTON | ctrl_modifier,
+                              ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_1->OnMouseReleased(release_ctrl);
+
+  ui::MouseEvent shift_click(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_2->OnMousePressed(shift_click);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+  ui::MouseEvent release_shift(ui::EventType::kMouseReleased, gfx::Point(0, 0),
+                               gfx::Point(0, 0), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_2->OnMouseReleased(release_shift);
+
+  ui::MouseEvent shift_ctrl_click(
+      ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+      ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN | ctrl_modifier,
+      ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_3->OnMousePressed(shift_ctrl_click);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabMultiSelect_AddSelectionFromAnchorTo"));
+  ui::MouseEvent release_shift_ctrl(
+      ui::EventType::kMouseReleased, gfx::Point(0, 0), gfx::Point(0, 0),
+      ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN | ctrl_modifier,
+      ui::EF_LEFT_MOUSE_BUTTON);
+  tab_view_3->OnMouseReleased(release_shift_ctrl);
 }

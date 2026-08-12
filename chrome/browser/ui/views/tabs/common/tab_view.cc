@@ -528,10 +528,16 @@ bool TabView::OnMousePressed(const ui::MouseEvent& event) {
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
       controller->AddSelectionFromAnchorTo(GetTabInterface());
+      base::RecordAction(
+          base::UserMetricsAction("TabMultiSelect_AddSelectionFromAnchorTo"));
     } else if (event.IsShiftDown()) {
       controller->ExtendSelectionTo(GetTabInterface());
+      base::RecordAction(
+          base::UserMetricsAction("TabMultiSelect_ExtendSelectionTo"));
     } else if (IsSelectionModifierDown(event)) {
       controller->ToggleSelected(GetTabInterface());
+      base::RecordAction(
+          base::UserMetricsAction("TabMultiSelect_ToggleSelected"));
       if (!selected_) {
         return false;
       }

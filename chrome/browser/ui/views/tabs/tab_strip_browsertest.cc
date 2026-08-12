@@ -10,6 +10,7 @@
 
 #include "base/byte_size.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -1496,6 +1497,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderAccessibleState) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ToggleTabSelection) {
+  base::UserActionTester user_action_tester;
   AppendTab();
   AppendTab();
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
@@ -1513,9 +1515,12 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ToggleTabSelection) {
   tab_strip()->tab_at(1)->OnMousePressed(click);
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount("TabMultiSelect_ToggleSelected"));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ExtendTabSelection) {
+  base::UserActionTester user_action_tester;
   AppendTab();
   AppendTab();
   AppendTab();
@@ -1531,6 +1536,34 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ExtendTabSelection) {
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AddSelectionFromAnchorTo) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
+
+  const ui::EventFlags modifier =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                       gfx::Point(0, 0), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN | modifier,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip()->tab_at(2)->OnMousePressed(click);
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(0)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(1)));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(2)));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabMultiSelect_AddSelectionFromAnchorTo"));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CreateSplitUKMLogged) {
