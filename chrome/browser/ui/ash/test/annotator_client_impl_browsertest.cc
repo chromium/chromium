@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -55,6 +56,22 @@ class AnnotatorClientTest : public InProcessBrowserTest {
 // This test verifies that the annotator WebUI URL is valid.
 IN_PROC_BROWSER_TEST_F(AnnotatorClientTest, AppUrlsValid) {
   VerifyUrlValid(kChromeUIUntrustedAnnotatorUrl);
+}
+
+// This test verifies that the overlay's WebContents does not allow its main
+// frame to be navigated away from the annotator origin by the renderer.
+IN_PROC_BROWSER_TEST_F(AnnotatorClientTest,
+                       OverlayBlocksRendererInitiatedMainFrameNavigation) {
+  auto overlay = AnnotatorClient::Get()->CreateAnnotationsOverlayView();
+  auto* overlay_impl = static_cast<AnnotationsOverlayViewImpl*>(overlay.get());
+  content::WebContents* web_contents =
+      overlay_impl->GetWebViewForTest()->GetWebContents();
+  content::WebContentsDelegate* delegate = web_contents->GetDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_FALSE(delegate->ShouldAllowRendererInitiatedCrossProcessNavigation(
+      /*is_outermost_main_frame_navigation=*/true));
+  EXPECT_TRUE(delegate->ShouldAllowRendererInitiatedCrossProcessNavigation(
+      /*is_outermost_main_frame_navigation=*/false));
 }
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP) && BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
