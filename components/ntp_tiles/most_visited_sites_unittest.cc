@@ -948,7 +948,7 @@ TEST_F(MostVisitedSitesTest, ShouldPinHomepageAgainIfBlockedUndone) {
                            Contains(MatchesTile(u"", kHomepageUrl,
                                                 TileSource::HOMEPAGE))))));
 
-  most_visited_sites_->OnURLFilterChanged();
+  most_visited_sites_->OnUrlFilteringServiceChanged();
 
   base::RunLoop().RunUntilIdle();
 }

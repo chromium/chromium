@@ -256,10 +256,6 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
   }
 }
 
-void SupervisedUserNavigationObserver::OnURLFilterChanged() {
-  OnUrlFilteringServiceChanged();
-}
-
 void SupervisedUserNavigationObserver::OnUrlFilteringServiceChanged() {
   auto* main_frame = web_contents()->GetPrimaryMainFrame();
   int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
@@ -445,7 +441,7 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
   // If the RenderFrameHost is not live return.
   // If the RenderFrameHost belongs to the main frame, return. This is because
   // the main frame is already filtered in
-  // |SupervisedUserNavigationObserver::OnURLFilterChanged|.
+  // |SupervisedUserNavigationObserver::OnUrlFilteringServiceChanged|.
   if (!render_frame_host->IsRenderFrameLive() ||
       render_frame_host->IsInPrimaryMainFrame()) {
     return;

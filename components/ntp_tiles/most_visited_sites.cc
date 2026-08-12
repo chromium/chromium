@@ -521,11 +521,8 @@ void MostVisitedSites::ClearBlockedUrls() {
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-void MostVisitedSites::OnURLFilterChanged() {
-  OnUrlFilteringServiceChanged();
-}
 void MostVisitedSites::OnUrlFilteringServiceChanged() {
-  BuildCurrentTiles(/* is_user_triggered= */ false);
+  BuildCurrentTiles(/*is_user_triggered=*/false);
 }
 #endif
 

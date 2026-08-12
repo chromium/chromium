@@ -7,12 +7,6 @@
 
 class SupervisedUserServiceObserver {
  public:
-  // Called whenever the URL filter is updated, e.g. a manual exception or a
-  // content pack is added, or when filtering behavior is changed.
-  // TODO(crbug.com/465666528): remove once migration to url filtering service
-  // is done.
-  virtual void OnURLFilterChanged() {}
-
   // Called when information about the supervised user's custodian is changed,
   // e.g. the display name.
   virtual void OnCustodianInfoChanged() {}
