@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
@@ -24,14 +25,15 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "components/omnibox/common/omnibox_features.h"
 #endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -120,6 +122,21 @@ ContextualTasksUIInterface* GetWebUiInterface(
   }
 
   return controller->GetAs<ContextualTasksUI>();
+}
+
+bool IsTabSharingEligible(Profile* profile) {
+  // Forcing entry point eligibility should ONLY be used for local testing and
+  // debugging purposes to bypass server and backend eligibility checks.
+  if (base::FeatureList::IsEnabled(
+          kContextualTasksForceEntryPointEligibility)) {
+    return true;
+  }
+  if (!profile || profile->IsOffTheRecord()) {
+    return false;
+  }
+  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_service && aim_service->IsAimEligible() &&
+         aim_service->IsFuseboxEligible();
 }
 
 bool IsValidUrlForSuggestedTab(const GURL& url,

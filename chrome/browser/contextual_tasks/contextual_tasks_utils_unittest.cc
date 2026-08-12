@@ -7,13 +7,17 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -167,6 +171,114 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Pinne
 
   EXPECT_TRUE(action_item->GetVisible());
   EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_NullProfile) {
+  EXPECT_FALSE(IsTabSharingEligible(nullptr));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_OffTheRecord) {
+  Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
+  EXPECT_FALSE(IsTabSharingEligible(otr_profile));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_NoAimService) {
+  EXPECT_FALSE(IsTabSharingEligible(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_AimIneligible) {
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](testing::NiceMock<MockAimEligibilityService>** mock_out,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+            *mock_out = mock.get();
+            return mock;
+          },
+          &mock_aim_service));
+
+  AimEligibilityServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_FALSE(IsTabSharingEligible(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_FuseboxIneligible) {
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](testing::NiceMock<MockAimEligibilityService>** mock_out,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+            *mock_out = mock.get();
+            return mock;
+          },
+          &mock_aim_service));
+
+  AimEligibilityServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_FALSE(IsTabSharingEligible(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       IsTabSharingEligible_FuseboxEligible_CobrowseIneligible) {
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](testing::NiceMock<MockAimEligibilityService>** mock_out,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+            *mock_out = mock.get();
+            return mock;
+          },
+          &mock_aim_service));
+
+  AimEligibilityServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsCobrowseEligible())
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       IsTabSharingEligible_ForceEntryPointEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
+  EXPECT_TRUE(IsTabSharingEligible(nullptr));
+  EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
 }
 
 }  // namespace

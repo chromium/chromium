@@ -646,10 +646,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
 
 bool ContextualTasksComposeboxHandler::IsContextualSearchTabSharingEligible()
     const {
-  if (!profile_ || profile_->IsOffTheRecord()) {
-    return false;
-  }
-  return contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_);
+  return contextual_tasks::IsTabSharingEligible(profile_);
 }
 
 void ContextualTasksComposeboxHandler::SetAimThreadRestoredTabs(

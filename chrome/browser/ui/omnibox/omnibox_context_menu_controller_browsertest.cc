@@ -132,7 +132,8 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
          {contextual_tasks::kContextualTasks, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled,
-                               omnibox::kAimUsePecApi});
+                               omnibox::kAimUsePecApi,
+                               contextual_tasks::kContextualTasksContext});
   }
 
   OmniboxContextMenuControllerBrowserTest(
