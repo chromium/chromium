@@ -78,7 +78,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddFrameAncestor(const GURL& frame_ancestor) override;
 
   // URL path to resource ID (Grit IDR) map.
-  const std::map<std::string, int>& path_to_idr_map() const {
+  const base::flat_map<std::string, int>& path_to_idr_map() const {
     return path_to_idr_map_;
   }
 
@@ -128,7 +128,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   // specific resources like "favicon/34" getting sent to this source.
   std::string source_name_;
   bool use_strings_js_ = false;
-  std::map<std::string, int> path_to_idr_map_;
+  base::flat_map<std::string, int> path_to_idr_map_;
   std::map<std::string, std::string> path_to_response_map_;
 #if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
   std::map<int, std::string> idr_to_file_map_;

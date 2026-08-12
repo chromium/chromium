@@ -13,12 +13,12 @@
 #include "content/public/test/test_content_client.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/webui/resource_path.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 #include "base/command_line.h"
 #include "content/public/common/content_switches.h"
-#include "ui/base/webui/resource_path.h"
 #endif
 
 namespace content {
@@ -179,6 +179,30 @@ TEST_F(WebUIDataSourceTest, NamedResource) {
   source()->AddResourcePath("foobar", kDummyResourceId);
   StartDataRequest("foobar", base::BindOnce(&NamedResourceFoobarCallback));
   StartDataRequest("strings.js", base::BindOnce(&NullCallback));
+}
+
+TEST_F(WebUIDataSourceTest, AddResourcePathsPreservesOverwriteSemantics) {
+  constexpr webui::ResourcePath kInitialResources[] = {
+      {"same-batch.js", kDummyResourceId},
+      {"a.js", kDummyResourceId},
+      {"same-batch.js", kDummyJSResourceId},
+      {"across-batches.js", kDummyResourceId},
+  };
+  constexpr webui::ResourcePath kOverridingResources[] = {
+      {"across-batches.js", kDummyJSResourceId},
+      {"existing.js", kDummyJSResourceId},
+  };
+  source()->AddResourcePath("existing.js", kDummyResourceId);
+
+  source()->AddResourcePaths(kInitialResources);
+  source()->AddResourcePaths(kOverridingResources);
+
+  const auto& resource_map = source()->path_to_idr_map();
+  EXPECT_EQ(4u, resource_map.size());
+  EXPECT_EQ(kDummyResourceId, resource_map.at("a.js"));
+  EXPECT_EQ(kDummyJSResourceId, resource_map.at("across-batches.js"));
+  EXPECT_EQ(kDummyJSResourceId, resource_map.at("existing.js"));
+  EXPECT_EQ(kDummyJSResourceId, resource_map.at("same-batch.js"));
 }
 
 void NamedResourceWithQueryStringCallback(

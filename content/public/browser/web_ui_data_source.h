@@ -96,8 +96,8 @@ class WebUIDataSource {
   // Adds a mapping between a path name and a resource to return.
   virtual void AddResourcePath(std::string_view path, int resource_id) = 0;
 
-  // Calls AddResourcePath() in a for-loop for |paths|. Reduces code size vs.
-  // reimplementing the same for-loop.
+  // Adds mappings for `paths` in order. If a path occurs more than once, the
+  // last resource ID wins.
   virtual void AddResourcePaths(
       base::span<const webui::ResourcePath> paths) = 0;
 
