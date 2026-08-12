@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -487,7 +488,7 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
   // LINT.IfChange(RenderViewContextMenuItem)
   // These UMA values are for the RenderViewContextMenuItem enum, used for
   // the RenderViewContextMenu.Shown and RenderViewContextMenu.Used histograms.
-  static const base::NoDestructor<std::map<int, int>> kGeneralMap(
+  static constexpr auto kGeneralMap = base::MakeFixedFlatMap<int, int>(
       {// NB: UMA values for 0 and 1 are detected using
        // RenderViewContextMenu::IsContentCustomCommandId() and
        // ContextMenuMatcher::IsExtensionsCustomCommandId()
@@ -662,7 +663,7 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
   // LINT.IfChange(ContextMenuOptionDesktop)
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
-  static const base::NoDestructor<std::map<int, int>> kSpecificMap(
+  static constexpr auto kSpecificMap = base::MakeFixedFlatMap<int, int>(
       {{IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0},
        {IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 1},
        {IDC_CONTENT_CONTEXT_COPYLINKLOCATION, 2},
@@ -706,10 +707,17 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
        {kUmaMaxValueKey, 35}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:ContextMenuOptionDesktop)
 
-  const auto& map = *(
-      type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap : kSpecificMap);
-  auto it = map.find(key);
-  return it != map.end() ? it->second : -1;
+  switch (type) {
+    case UmaEnumIdLookupType::GeneralEnumId: {
+      auto it = kGeneralMap.find(key);
+      return it != kGeneralMap.end() ? it->second : -1;
+    }
+    case UmaEnumIdLookupType::ContextSpecificEnumId: {
+      auto it = kSpecificMap.find(key);
+      return it != kSpecificMap.end() ? it->second : -1;
+    }
+  }
+  NOTREACHED();
 }
 
 int GetUmaValueMax(UmaEnumIdLookupType type) {
