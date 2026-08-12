@@ -20,9 +20,9 @@
 
 namespace blink {
 
+class ImagePaintTimingDetector;
 class ImageResourceContent;
 class PropertyTreeStateOrAlias;
-class StyleFetchedImage;
 class StyleImage;
 
 // ImageElementTiming is responsible for tracking the paint timings for <img>
@@ -34,17 +34,12 @@ class CORE_EXPORT ImageElementTiming final
   // Contentful Paint for inline images.
   static constexpr const unsigned kInlineImageMaxChars = 100;
 
-  explicit ImageElementTiming(LocalDOMWindow&);
+  ImageElementTiming(LocalDOMWindow&, const ImagePaintTimingDetector&);
   ImageElementTiming(const ImageElementTiming&) = delete;
   ImageElementTiming& operator=(const ImageElementTiming&) = delete;
   ~ImageElementTiming() = default;
 
   static ImageElementTiming& From(LocalDOMWindow&);
-
-  void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
-
-  void NotifyBackgroundImageFinished(const StyleFetchedImage*);
-  base::TimeTicks GetBackgroundImageLoadTime(const StyleImage*);
 
   // Called when the LayoutObject has been painted. Does nothing if the image is
   // not fully loaded. This method might queue a presentation promise to compute
@@ -55,8 +50,8 @@ class CORE_EXPORT ImageElementTiming final
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
 
-  void NotifyBackgroundImagePainted(
-      Node&,
+  void NotifyBackgroundImagePaint(
+      Node& generating_node,
       const StyleImage& background_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
@@ -70,20 +65,6 @@ class CORE_EXPORT ImageElementTiming final
 
  private:
   friend class ImageElementTimingTest;
-
-  bool ContributesToContainerTiming(const Element*);
-  bool NeededForTiming(const LayoutObject&);
-
-  void EnsureContainerTiming();
-  bool IsContainerTimingEnabled();
-
-  void NotifyImagePaintedInternal(
-      Node&,
-      const LayoutObject&,
-      const ImageResourceContent& cached_image,
-      const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      base::TimeTicks load_time,
-      const gfx::Rect& image_border);
 
   // Class containing information about image element timing.
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
@@ -117,32 +98,38 @@ class CORE_EXPORT ImageElementTiming final
     Member<Element> element;
   };
 
+  bool ContributesToContainerTiming(const Element*);
+  bool NeededForTiming(const LayoutObject&);
+
+  void EnsureContainerTiming();
+  bool IsContainerTimingEnabled();
+
+  void NotifyImagePaintedInternal(
+      Node& generating_node,
+      const LayoutObject&,
+      const MediaTiming&,
+      const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+      const gfx::Rect& image_border,
+      const StyleImage*);
+
+  void QueueElementTimingInfoForReporingIfNeeded(
+      Node& generating_node,
+      const LayoutObject&,
+      const ImageResourceContent&,
+      const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+      const gfx::Rect& image_border,
+      base::TimeTicks load_time);
+
   // Vector containing the element timing infos that will be reported during the
   // next presentation promise callback.
   Member<GCedHeapVector<Member<ElementTimingInfo>>> element_timings_;
-  struct ImageInfo {
-    ImageInfo() {}
 
-    base::TimeTicks load_time_;
-    bool is_painted_ = false;
-
-    DISALLOW_NEW();
-  };
-  // Hashmap of pairs of elements, LayoutObjects (for the elements) and
-  // MediaTiming (for the src) which correspond to either images or background
-  // images whose paint has been observed. For background images, only the
-  // |is_painted_| bit is used, as the timestamp needs to be tracked by
-  // |background_image_timestamps_|.
-  HashMap<MediaRecordIdHash, ImageInfo> images_notified_;
-
-  // Hashmap of background images which contain information about the load time
-  // of the background image.
-  HeapHashMap<WeakMember<const StyleImage>, base::TimeTicks>
-      background_image_timestamps_;
+  // Set of images that have already been considered for Element Timing.
+  HashSet<MediaRecordIdHash> recorded_images_;
 
   Member<ContainerTiming> container_timing_;
-
   Member<LocalDOMWindow> window_;
+  Member<const ImagePaintTimingDetector> image_paint_timing_detector_;
 };
 
 }  // namespace blink

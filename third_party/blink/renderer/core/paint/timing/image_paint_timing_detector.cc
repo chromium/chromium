@@ -380,7 +380,8 @@ bool ImagePaintTimingDetector::RecordImage(
   if (is_video) {
     SetVideoFirstAnimatedFrameTime(record);
   } else {
-    SetLoadTime(record, style_image);
+    record->SetLoadTime(style_image ? LoadTime(*style_image)
+                                    : LoadTime(record_id_hash));
   }
 
   if (SoftNavigationContext* context = record->GetSoftNavigationContext()) {
@@ -395,13 +396,19 @@ void ImagePaintTimingDetector::NotifyImageFinished(
     const LayoutObject& object,
     const MediaTiming* media_timing) {
   auto hash(MediaRecordId::GenerateHash(&object, media_timing));
-  // TODO(npm): Ideally NotifyImageFinished() would only be called when the
-  // record has not yet been inserted in |image_finished_times_| but that's not
-  // currently the case. If we plumb some information from MediaTiming we may be
-  // able to ensure that this call does not require the Contains() check, which
-  // would save time.
-  if (!image_finished_times_.Contains(hash)) {
-    image_finished_times_.insert(hash, base::TimeTicks::Now());
+  const auto& insertion_result =
+      image_finished_times_.insert(hash, base::TimeTicks());
+  if (insertion_result.is_new_entry) {
+    insertion_result.stored_value->value = base::TimeTicks::Now();
+  }
+}
+
+void ImagePaintTimingDetector::NotifyBackgroundImageFinished(
+    const StyleImage* style_image) {
+  const auto& insertion_result =
+      background_image_finished_times_.insert(style_image, base::TimeTicks());
+  if (insertion_result.is_new_entry) {
+    insertion_result.stored_value->value = base::TimeTicks::Now();
   }
 }
 
@@ -449,21 +456,6 @@ void ImagePaintTimingDetector::SetVideoFirstAnimatedFrameTime(
                        DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
 }
 
-void ImagePaintTimingDetector::SetLoadTime(ImageRecord* record,
-                                           const StyleImage* style_image) {
-  if (!style_image) {
-    auto it = image_finished_times_.find(record->Hash());
-    if (it != image_finished_times_.end()) {
-      record->SetLoadTime(it->value);
-    }
-  } else {
-    LocalDOMWindow* window =
-        paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
-    record->SetLoadTime(ImageElementTiming::From(CHECK_DEREF(window))
-                            .GetBackgroundImageLoadTime(style_image));
-  }
-}
-
 ImageRecord* ImagePaintTimingDetector::RemoveRecord(
     MediaRecordIdHash record_id_hash) {
   recorded_images_.erase(record_id_hash);
@@ -483,6 +475,7 @@ void ImagePaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(pending_images_);
   visitor->Trace(images_queued_for_paint_time_);
+  visitor->Trace(background_image_finished_times_);
 }
 
 LargestContentfulPaintManager*
@@ -506,6 +499,25 @@ uint64_t ImagePaintTimingDetector::ViewportSize() {
       paint_timing_detector_->BlinkSpaceToDIPs(gfx::RectF(viewport_int_rect));
   viewport_size_ = viewport.size().GetArea();
   return *viewport_size_;
+}
+
+base::TimeTicks ImagePaintTimingDetector::LoadTime(
+    const LayoutObject* object,
+    const MediaTiming* timing) const {
+  return LoadTime(MediaRecordId::GenerateHash(object, timing));
+}
+
+base::TimeTicks ImagePaintTimingDetector::LoadTime(
+    const StyleImage& image) const {
+  auto it = background_image_finished_times_.find(&image);
+  return it != background_image_finished_times_.end() ? it->value
+                                                      : base::TimeTicks();
+}
+
+base::TimeTicks ImagePaintTimingDetector::LoadTime(
+    MediaRecordIdHash hash) const {
+  auto it = image_finished_times_.find(hash);
+  return it != image_finished_times_.end() ? it->value : base::TimeTicks();
 }
 
 ImagePaintTimingDetector::QueuedImageRecordInfo::QueuedImageRecordInfo(

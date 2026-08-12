@@ -83,6 +83,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // image-finished time if it's not already set.
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
 
+  // Notifies the detector that a background image has finished loading. Sets
+  // the image-finished time if it's not already set.
+  void NotifyBackgroundImageFinished(const StyleImage*);
+
   // Notifies the detector that an image was removed. Removes the image data
   // from the relevant collections and notifies clients of the removal if the
   // image is pending.
@@ -107,6 +111,16 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void NotifyInteractionTriggeredVideoSrcChange(const LayoutObject&);
 
   void Trace(Visitor*) const;
+
+  // Returns the load time for the image associated with the `LayoutObject` and
+  // `MediaTiming` pair. Note that a given image resource, represented by a
+  // `MediaTiming`, may be used for multiple `LayoutObject`s.
+  base::TimeTicks LoadTime(const LayoutObject*, const MediaTiming*) const;
+
+  // Returns the load time for the background image associated with the given
+  // `StyleImage`. Note that the `StyleImage` can apply to multiple nodes, and a
+  // node can have multiple associated `StyleImage`s.
+  base::TimeTicks LoadTime(const StyleImage&) const;
 
  private:
   friend class ImagePaintTimingDetectorTestBase;
@@ -151,11 +165,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // record's `MediaTiming`, which must be a VideoTiming.
   void SetVideoFirstAnimatedFrameTime(ImageRecord*);
 
-  // Sets the load time on the given `ImageRecord`. If the `StyleImage` is
-  // non-null, the background image load time is used, otherwise the timestamp
-  // from `image_finished_times_` is used.
-  void SetLoadTime(ImageRecord*, const StyleImage*);
-
   void AssignPaintTimeToRegisteredQueuedRecords(
       uint32_t last_queued_frame_index,
       const base::TimeTicks&,
@@ -163,6 +172,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
       HeapVector<Member<ImageRecord>>& settled_records);
 
   void QueueToMeasurePaintTime(ImageRecord*, PresentationReason);
+
+  base::TimeTicks LoadTime(MediaRecordIdHash) const;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;
@@ -192,6 +203,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.
   HashMap<MediaRecordIdHash, base::TimeTicks> image_finished_times_;
+
+  // Map containing timestamps of when a background (style) images are finished
+  // loading.
+  HeapHashMap<WeakMember<const StyleImage>, base::TimeTicks>
+      background_image_finished_times_;
 };
 
 }  // namespace blink

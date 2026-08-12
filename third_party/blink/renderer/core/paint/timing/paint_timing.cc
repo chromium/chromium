@@ -490,7 +490,8 @@ PaintTiming::PaintTiming(Document& document)
   // isn't guaranteed since it's created lazily.
   if (LocalDOMWindow* window = document.domWindow()) {
     text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
-    image_element_timing_ = MakeGarbageCollected<ImageElementTiming>(*window);
+    image_element_timing_ = MakeGarbageCollected<ImageElementTiming>(
+        *window, paint_timing_detector_->GetImagePaintTimingDetector());
     largest_contentful_paint_manager_ =
         MakeGarbageCollected<LargestContentfulPaintManager>(
             document.domWindow());

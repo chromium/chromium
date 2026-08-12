@@ -4,12 +4,20 @@
 
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 namespace blink {
 
@@ -18,29 +26,51 @@ extern bool IsExplicitlyRegisteredForElementTiming(
     const LayoutObject& layout_object);
 }
 
+namespace {
+
+// Simple matcher for matching the id of a `PerformanceElementTiming` entry.
+MATCHER_P(ForId, id, "") {
+  CHECK_EQ(arg->EntryTypeEnum(), PerformanceEntry::EntryType::kElement);
+  return static_cast<PerformanceElementTiming*>(arg.Get())->id() == id;
+}
+
+}  // namespace
+
 class ImageElementTimingTest : public PaintTimingTestBase,
                                public PaintTestConfigurations {
  protected:
-  bool ImagesNotifiedContains(MediaRecordIdHash record_id_hash) {
-    return ImageElementTiming::From(*GetDocument().domWindow())
-        .images_notified_.Contains(record_id_hash);
+  // Returns true if the LayoutObject/Image with the given hash was recorded,
+  // meaning it was processed. Note that this does not mean it an entry will be
+  // emitted for it.
+  bool IsRecorded(const char* id, const MediaTiming* timing) {
+    return IsRecorded(GetLayoutObjectById(id), timing);
   }
 
-  unsigned ImagesNotifiedSize() {
+  bool IsRecorded(const LayoutObject* object, const MediaTiming* timing) {
     return ImageElementTiming::From(*GetDocument().domWindow())
-        .images_notified_.size();
+        .recorded_images_.Contains(MediaRecordId::GenerateHash(object, timing));
+  }
+
+  unsigned RecordedImagesSize() {
+    return ImageElementTiming::From(*GetDocument().domWindow())
+        .recorded_images_.size();
   }
 
   LayoutObject* GetLayoutObjectById(const char* id) {
     Element* element = GetElementById(id);
     return element ? element->GetLayoutObject() : nullptr;
   }
+
+  PerformanceEntryVector GetElementTimingEntries() {
+    return DOMWindowPerformance::performance(*GetDocument().domWindow())
+        ->getBufferedEntriesByType(performance_entry_names::kElement);
+  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ImageElementTimingTest);
 
 TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <img id="missing-attribute" style='width: 100px; height: 100px;'/>
     <img id="unset-attribute" elementtiming
          style='width: 100px; height: 100px;'/>
@@ -49,6 +79,7 @@ TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
     <img id="valid-attribute" elementtiming="valid-id"
          style='width: 100px; height: 100px;'/>
   )HTML");
+  SimulateRenderingAndPresentationTime();
 
   LayoutObject* without_attribute = GetLayoutObjectById("missing-attribute");
   bool actual =
@@ -78,19 +109,19 @@ TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
 }
 
 TEST_P(ImageElementTimingTest, IgnoresUnmarkedElement) {
-  // Tests that, if the 'elementtiming' attribute is missing, the element isn't
-  // considered by ImageElementTiming.
-  SetBodyInnerHTML(R"HTML(
+  // Tests that, if the 'elementtiming' attribute is missing, the element is
+  // ignored by `ImageElementTiming`.
+  SetMainFrameBodyContent(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  SimulateRenderingAndPresentationTime();
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
 TEST_P(ImageElementTimingTest, ImageInsideSVG) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <svg>
       <foreignObject width="100" height="100">
         <img elementtiming="image-inside-svg" id="target"
@@ -99,15 +130,15 @@ TEST_P(ImageElementTimingTest, ImageInsideSVG) {
     </svg>
   )HTML");
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
+  SimulateRenderingAndPresentationTime();
 
-  // `image` should have had its paint notified to ImageElementTiming.
-  EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  // An entry should have been emitted for the image.
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 }
 
 TEST_P(ImageElementTimingTest, ImageInsideNonRenderedSVG) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <svg mask="url(#mask)">
       <mask id="mask">
         <foreignObject width="100" height="100">
@@ -118,49 +149,51 @@ TEST_P(ImageElementTimingTest, ImageInsideNonRenderedSVG) {
       <rect width="100" height="100" fill="green"/>
     </svg>
   )HTML");
+  SimulateRenderingAndPresentationTime();
 
   // HTML inside foreignObject in a non-rendered SVG subtree should not generate
   // layout objects. Generating layout objects for caused crashes
   // (crbug.com/905850) as well as correctness issues.
   EXPECT_FALSE(GetLayoutObjectById("target"));
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
 TEST_P(ImageElementTimingTest, ImageRemoved) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <img elementtiming="will-be-removed" id="target"
          style='width: 100px; height: 100px;'/>
   )HTML");
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  SimulateRenderingAndPresentationTime();
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
   // `image` should no longer be part of `images_notified_` since it will
   // be destroyed.
-  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+  EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
 TEST_P(ImageElementTimingTest, SVGImageRemoved) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <svg>
       <image elementtiming="svg-will-be-removed" id="target"
              style='width: 100px; height: 100px;'/>
     </svg>
   )HTML");
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  SimulateRenderingAndPresentationTime();
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
   // `image` should no longer be part of `images_notified_` since it will be
   // destroyed.
-  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+  EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
 TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       #target {
         width: 100px;
@@ -170,35 +203,36 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
     </style>
     <div elementtiming="time-my-background-image" id="target"></div>
   )HTML");
+  SimulateRenderingAndPresentationTime();
   LayoutObject* object = GetLayoutObjectById("target");
   ImageResourceContent* content =
       object->StyleRef().BackgroundLayers().GetImage()->CachedImage();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(ImagesNotifiedSize(), 1u);
-  EXPECT_TRUE(
-      ImagesNotifiedContains(MediaRecordId::GenerateHash(object, content)));
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_TRUE(IsRecorded(object, content));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
-  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+  EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
 TEST_P(ImageElementTimingTest, LateAddedElementTimingBeforePaint) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
+  SimulateRenderingAndPresentationTime();
   // This image should not be tracked because it hasn't finished loading yet.
-  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+  EXPECT_EQ(RecordedImagesSize(), 0u);
 
   // Add the elementtiming attribute dynamically after the image before the
   // image has finished loading and is ready for to be rendered.
   GetElementById("target")->setAttribute(html_names::kElementtimingAttr,
                                          AtomicString("test"));
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
-  EXPECT_EQ(ImagesNotifiedSize(), 1u);
+  SimulateRenderingAndPresentationTime();
+  // The image should be recorded and an entry should have been emitted.
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 }
 
 TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
@@ -207,11 +241,12 @@ TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
   ImageResourceContent* image = SetImageContent("target", 100, 100);
-  UpdateAllLifecyclePhasesForTest();
-  // This image should not be tracked because the elementtiming attribute is not
-  // set.
-  EXPECT_FALSE(ImagesNotifiedContains(
-      MediaRecordId::GenerateHash(GetLayoutObjectById("target"), image)));
+  SimulateRenderingAndPresentationTime();
+  // This image should have been recorded, but no entry should have been
+  // emitted.
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 
   // Add the elementtiming attribute dynamically after the image was already
   // rendered.
@@ -220,8 +255,10 @@ TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
   // Remove the <div>. This causes a layout shift which should cause the image
   // to repaint, but this should not trigger an elementtiming entry.
   GetElementById("to-be-removed")->remove();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(ImagesNotifiedSize(), 0u);
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_TRUE(IsRecorded("target", image));
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
 }  // namespace blink
