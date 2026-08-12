@@ -44,13 +44,21 @@ CORE_EXPORT base::span<const char* const> GetMonkeyPatchableApiPropertyPath(
 CORE_EXPORT MonkeyPatchableApiFunctionInfo
 GetMonkeyPatchableApiFunctionInfo(v8::Isolate* isolate, MonkeyPatchableApi api);
 
-// Returns true if `api` is a monkeypatched function and matches `function` in
-// the `isolate`'s current context. Uses DisallowJavascriptExecutionScope
-// during prototype chain traversal to prevent script execution during lookup.
+// Returns true if `api` is a monkeypatched function (or Proxy) and matches
+// `function` (or the proxy's `apply` trap) in the `isolate`'s current context.
+// Uses DisallowJavascriptExecutionScope during prototype/proxy handler chain
+// traversal to prevent script execution during lookup.
 // TODO(jkarlin): This function really wants a context, not an isolate.
 CORE_EXPORT bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
                                         const v8::Local<v8::Function>& function,
                                         MonkeyPatchableApi api);
+
+// Overload that takes the pre-fetched `api_function` to avoid redundant
+// lookups.
+CORE_EXPORT bool IsFunctionAMonkeyPatch(
+    v8::Isolate* isolate,
+    const v8::Local<v8::Function>& function,
+    const v8::Local<v8::Function>& api_function);
 
 }  // namespace blink
 

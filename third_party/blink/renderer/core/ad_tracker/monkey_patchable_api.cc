@@ -83,8 +83,11 @@ MonkeyPatchableApiFunctionInfo GetMonkeyPatchableApiFunctionInfo(
   v8::Local<v8::Function> api_function = current_value.As<v8::Function>();
 
   // Native functions will have an invalid script ID. User-defined functions
-  // (monkey patches) will have a valid one.
+  // (monkey patches) will have a valid one. A Proxy object is also considered
+  // a monkey patch since native Blink API properties are never backed by
+  // Proxies. If one is found, it means script has overwritten the property.
   bool is_monkey_patched =
+      current_value->IsProxy() ||
       api_function->ScriptId() != v8::Message::kNoScriptIdInfo;
 
   return {handle_scope.Escape(api_function), is_monkey_patched};
@@ -105,7 +108,57 @@ bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
     return false;
   }
 
-  return function == api_function;
+  return IsFunctionAMonkeyPatch(isolate, function, api_function);
+}
+
+bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
+                            const v8::Local<v8::Function>& function,
+                            const v8::Local<v8::Function>& api_function) {
+  if (function == api_function) {
+    return true;
+  }
+
+  // If the API is monkey-patched via a Proxy, the function on the stack
+  // will be the proxy's `apply` trap, not the Proxy object itself.
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  if (context.IsEmpty()) {
+    return false;
+  }
+
+  // Prevent script execution to avoid evasion, side effects, or DOM mutation
+  // re-entrancy crashes when accessing the proxy's handler properties.
+  v8::Isolate::DisallowJavascriptExecutionScope disallow_js(
+      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
+  v8::TryCatch try_catch(isolate);
+
+  v8::Local<v8::Value> current = api_function;
+  while (current->IsProxy()) {
+    v8::Local<v8::Proxy> proxy = current.As<v8::Proxy>();
+    if (proxy->IsRevoked()) {
+      break;
+    }
+
+    v8::Local<v8::Value> handler = proxy->GetHandler();
+    if (handler->IsObject()) {
+      v8::Local<v8::Object> handler_obj = handler.As<v8::Object>();
+      v8::Local<v8::String> apply_key = V8AtomicString(isolate, "apply");
+      v8::MaybeLocal<v8::Value> maybe_apply_trap =
+          handler_obj->Get(context, apply_key);
+
+      v8::Local<v8::Value> apply_trap;
+      if (maybe_apply_trap.ToLocal(&apply_trap)) {
+        if (apply_trap == function) {
+          return true;
+        }
+      }
+    }
+    current = proxy->GetTarget();
+    if (current == function) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink

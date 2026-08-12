@@ -187,16 +187,6 @@ class CORE_EXPORT ScriptAncestryTracker
                                          MonkeyPatchableApi api,
                                          LazyStackTrace& stack_trace) const;
 
-  // Returns true if `api` is a monkeypatched function and matches `function` in
-  // the `isolate`'s current context.
-  // WARNING: This function executes js and can therefore modify the members of
-  // this class. Consider all iterators obtained before calling
-  // IsFunctionAMonkeyPatch to be invalid.
-  // TODO(jkarlin): This function really wants a context, not an isolate.
-  bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
-                              const v8::Local<v8::Function>& function,
-                              MonkeyPatchableApi api) const;
-
   // The local root frame of the frame tree monitored by this tracker.
   Member<LocalFrame> local_root_;
 

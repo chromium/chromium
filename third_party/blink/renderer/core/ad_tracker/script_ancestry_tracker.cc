@@ -437,27 +437,21 @@ bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
 
     // Frame `i` is the first non-marked script. The previous frame (`i-1`)
     // must be the marked script entry point. We expect this to be the patched
-    // API itself.
+    // API itself (or its proxy's apply trap).
     const v8::StackTrace::ScriptData& marked_barrier_frame = stack[i - 1];
 
     // Verify that the function at the boundary is indeed the API we are
     // tracking. This prevents misidentifying unrelated calls (e.g., a
     // non-marked script calling a random helper function inside an
     // ad/extension) as a monkey patch. If the boundary function doesn't match
-    // the API, it's not the pattern we are looking for.
-    return api_function == marked_barrier_frame.function;
+    // the API or its proxy trap, it's not the pattern we are looking for.
+    return IsFunctionAMonkeyPatch(isolate, marked_barrier_frame.function,
+                                  api_function);
   }
 
   // If the loop completes, the entire stack trace is from marked scripts, so
   // the call did not originate from a non-marked script.
   return false;
-}
-
-bool ScriptAncestryTracker::IsFunctionAMonkeyPatch(
-    v8::Isolate* isolate,
-    const v8::Local<v8::Function>& function,
-    MonkeyPatchableApi api) const {
-  return blink::IsFunctionAMonkeyPatch(isolate, function, api);
 }
 
 }  // namespace blink

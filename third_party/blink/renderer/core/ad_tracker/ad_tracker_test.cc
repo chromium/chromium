@@ -3181,6 +3181,45 @@ TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_FirstProxiedCall_IsNotAd) {
   EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
+// Tests that the heuristic correctly ignores the first call to a monkeypatched
+// API from a non-ad script when using an ES6 Proxy. This prevents
+// misattributing the call to the ad script, which is likely acting only as a
+// proxy.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_Proxy_IsNotAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState using a Proxy.
+  ad_script.Complete(R"SCRIPT(
+    const proxyHandler = {
+      apply: function(target, thisArg, argumentsList) {
+        return target.apply(thisArg, argumentsList);
+      }
+    };
+    window.history.pushState = new Proxy(window.history.pushState, proxyHandler);
+  )SCRIPT");
+
+  // The vanilla script calls the now-monkeypatched API. The call stack will
+  // have the ad script's wrapper at the top.
+  vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The IsAdScriptInStack check is triggered by the pushState implementation.
+  // The heuristic identifies the monkeypatch and, for this first call, assumes
+  // the ad script is a proxy and returns false.
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
 // Tests that the monkey-patch heuristic correctly distinguishes between the
 // actual monkey-patched API function and a different function that happens
 // to share the same internal name and script ID.
