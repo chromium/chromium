@@ -1753,7 +1753,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
            "FrameNavObserver::DidFinishNavigation zero state logic";
     base::Uuid new_task_id;
     if (old_task_id && old_task_id->is_valid() &&
-        !task_info_delegate_->GetThreadId().has_value()) {
+        !task_info_delegate_->GetThreadId().has_value() &&
+        !has_zero_state_changed) {
       // Reuse the existing task ID if it is valid and has no thread ID yet
       // (it represents an unassociated zero-state task).
       new_task_id = *old_task_id;
