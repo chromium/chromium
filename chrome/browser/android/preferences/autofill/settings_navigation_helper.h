@@ -72,7 +72,7 @@ void ShowAutofillPersonalContextSettings(content::WebContents* web_contents,
                                          AutofillOptionsReferrer referrer);
 
 // Open the autofill settings page.
-void ShowAutofillSettings(content::WebContents* web_contents);
+void ShowAutofillSettingsPage(content::WebContents* web_contents);
 
 }  // namespace autofill
 

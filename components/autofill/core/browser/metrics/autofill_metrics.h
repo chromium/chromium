@@ -937,6 +937,10 @@ class AutofillMetrics {
 
   // Logs the status of Autofill prompts.
   static void LogAutofillPromptStatus(AutofillPromptStatus status);
+
+  // Logs the user action taken on the Autofill AI private inference notice.
+  static void LogAutofillAiPrivateInferenceNoticeInteraction(
+      PopupNoticeInteractions interaction);
 };
 
 #if defined(UNIT_TEST)

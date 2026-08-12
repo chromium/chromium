@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -107,8 +106,9 @@ AutofillMessageModel::CreateForPersonalContextFetchingFailure() {
 
 std::unique_ptr<AutofillMessageModel>
 AutofillMessageModel::CreateForPrivateInferenceNotice(
-    content::WebContents* web_contents,
-    base::OnceClosure action_callback) {
+    base::OnceClosure action_callback,
+    messages::MessageWrapper::DismissCallback dismiss_callback,
+    base::RepeatingClosure secondary_action_callback) {
   std::unique_ptr<messages::MessageWrapper> message =
       std::make_unique<messages::MessageWrapper>(
           messages::MessageIdentifier::PRIVATE_INFERENCE_NOTICE);
@@ -122,12 +122,11 @@ AutofillMessageModel::CreateForPrivateInferenceNotice(
       IDR_ANDROID_AUTOFILL_ID_CHROME_PRODUCT));
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message->SetSecondaryActionCallback(
-      base::BindRepeating(&ShowAutofillSettings, web_contents));
+  message->SetSecondaryActionCallback(std::move(secondary_action_callback));
 
   return base::WrapUnique(new AutofillMessageModel(
       std::move(message), Type::kPrivateInferenceNotice,
-      std::move(action_callback), base::DoNothing()));
+      std::move(action_callback), std::move(dismiss_callback)));
 }
 
 std::string_view AutofillMessageModel::TypeToString(Type message_type) {

@@ -1607,4 +1607,11 @@ void AutofillMetrics::LogAutofillPromptStatus(AutofillPromptStatus status) {
   base::UmaHistogramEnumeration("Autofill.PromptStatus", status);
 }
 
+// static
+void AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+    PopupNoticeInteractions interaction) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.PrivateInferenceNoticeInteractions", interaction);
+}
+
 }  // namespace autofill

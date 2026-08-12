@@ -201,6 +201,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/messages/android/message_enums.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -1579,7 +1580,6 @@ void ChromeAutofillClient::ShowAutofillAiPreFetchFailureNotification() {
 
 void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/530174611): Record the timestamp when the notice was shown.
   base::OnceClosure action_callback = base::BindOnce(
       [](base::WeakPtr<AutofillClient> client) {
         if (client && client->GetPrefs()) {
@@ -1587,11 +1587,28 @@ void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
               prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
               base::Time::Now());
         }
+        AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+            AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
       },
       GetWeakPtr());
+  messages::MessageWrapper::DismissCallback dismiss_callback =
+      base::BindOnce([](messages::DismissReason unused) {
+        AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+            AutofillMetrics::PopupNoticeInteractions::kDismissed);
+      });
+  base::RepeatingClosure secondary_action_callback = base::BindRepeating(
+      [](content::WebContents* web_contents) {
+        AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+            AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
+        ShowAutofillSettingsPage(web_contents);
+      },
+      web_contents());
   GetAutofillMessageController()->Show(
       AutofillMessageModel::CreateForPrivateInferenceNotice(
-          web_contents(), std::move(action_callback)));
+          std::move(action_callback), std::move(dismiss_callback),
+          std::move(secondary_action_callback)));
+  AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
+      AutofillMetrics::PopupNoticeInteractions::kShown);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
