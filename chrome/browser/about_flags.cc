@@ -13783,6 +13783,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordChangeWithGlicDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_change::features::kPasswordChangeWithGlic)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"xplat-synced-setup-themes",
+     flag_descriptions::kXplatSyncedSetupThemesName,
+     flag_descriptions::kXplatSyncedSetupThemesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kXplatSyncedSetupThemes)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -758,6 +758,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_UI_ANDROID_THEMING = "WebUiAndroidTheming";
     public static final String WIDE_SCREEN_FEED_FOR_FOLDABLES = "WideScreenFeedForFoldables";
     public static final String XPLAT_SYNCED_SETUP = "XplatSyncedSetup";
+    public static final String XPLAT_SYNCED_SETUP_THEMES = "XplatSyncedSetupThemes";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID =
             "YourSavedInfoSettingsPageAndroid";
@@ -1615,6 +1616,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
     public static final MutableFlagWithSafeDefault sXplatSyncedSetup =
             newMutableFlagWithSafeDefault(XPLAT_SYNCED_SETUP, false);
+    public static final MutableFlagWithSafeDefault sXplatSyncedSetupThemes =
+            newMutableFlagWithSafeDefault(XPLAT_SYNCED_SETUP_THEMES, false);
     // keep-sorted end
 
     // CachedFeatureParam instances.

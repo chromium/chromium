@@ -13424,6 +13424,7 @@ from previous Chrome versions.
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-366310479" label="AndroidContextMenuDisabledMenuItems:enabled"/>
+  <int value="-366027210" label="XplatSyncedSetupThemes:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
   <int value="-365806433" label="BuiltInModuleAll:disabled"/>
   <int value="-365166949" label="SuspiciousSiteWarnings:enabled"/>
@@ -20578,6 +20579,7 @@ from previous Chrome versions.
   <int value="1866963423" label="SyncPseudoUSSThemes:enabled"/>
   <int value="1866995531" label="AndroidMetaClickHistoryNavigation:disabled"/>
   <int value="1867085340" label="brotli-encoding:enabled"/>
+  <int value="1867437206" label="XplatSyncedSetupThemes:disabled"/>
   <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870187746" label="TabStripTransitionInDesktopWindow:enabled"/>
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>

@@ -6584,6 +6584,12 @@ inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
 inline constexpr char kXplatSyncedSetupDescription[] =
     "Enables the Cross-platform synced setup feature.";
 
+inline constexpr char kXplatSyncedSetupThemesName[] =
+    "Cross-platform synced setup themes";
+inline constexpr char kXplatSyncedSetupThemesDescription[] =
+    "Allows users to import themes from another device as part of the one-time "
+    "synced setup experience.";
+
 inline constexpr char kXsurfaceMetricsReportingName[] =
     "Xsurface Metrics Reporting";
 inline constexpr char kXsurfaceMetricsReportingDescription[] =
