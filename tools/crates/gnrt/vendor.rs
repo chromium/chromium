@@ -527,6 +527,17 @@ fn apply_patches(
         patches_contents.push((path, contents));
     }
 
+    fn cleanup_and_fail(crate_vendor_dir: &Path, err: anyhow::Error) -> Result<()> {
+        log::error!(
+            "Applying patches failed - cleaning up: Removing the {} directory.",
+            crate_vendor_dir.display(),
+        );
+        if let Err(rm_err) = std::fs::remove_dir_all(crate_vendor_dir) {
+            Err(rm_err).context(err)
+        } else {
+            Err(err)
+        }
+    }
     for (path, contents) in patches_contents {
         let args = vec![
             "apply".to_string(),
@@ -539,6 +550,30 @@ fn apply_patches(
 
         println!("Applying patch {}", path.to_string_lossy());
         if let Err(e) = run_command(c, "patch", Some(&contents)) {
+            let e = e.context(format!("Failed to apply patch {}", path.display()));
+
+            // Check if the patch is obsolete (already applied upstream).
+            let mut check_reverse_cmd = std::process::Command::new("git");
+            let mut check_reverse_args = args.clone();
+            check_reverse_args.push("--check".to_string());
+            check_reverse_args.push("--reverse".to_string());
+            check_reverse_cmd.args(check_reverse_args);
+
+            if run_command(check_reverse_cmd, "patch reverse check", Some(&contents)).is_ok() {
+                log::warn!(
+                    "Patch {} is obsolete (already applied upstream). Deleting it.",
+                    path.display()
+                );
+                if let Err(rm_err) = std::fs::remove_file(&path) {
+                    let rm_err = anyhow::Error::new(rm_err).context(format!(
+                        "Failed to delete obsolete patch file {}",
+                        path.display()
+                    ));
+                    return cleanup_and_fail(&crate_vendor_dir, rm_err);
+                }
+                continue;
+            }
+
             log::error!(
                 "Applying patches failed - retrying with verbose output to help diagnose..."
             );
@@ -547,15 +582,7 @@ fn apply_patches(
             c.arg("-v");
             let _ignoring_error = run_command(c, "patch", Some(&contents));
 
-            log::error!(
-                "Applying patches failed - cleaning up: Removing the {} directory.",
-                crate_vendor_dir.display(),
-            );
-            if let Err(rm_err) = std::fs::remove_dir_all(&crate_vendor_dir) {
-                Err(rm_err).context(e)?
-            } else {
-                Err(e)?
-            }
+            return cleanup_and_fail(&crate_vendor_dir, e);
         }
     }
 
